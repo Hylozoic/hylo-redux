@@ -1,0 +1,7 @@
+dist/
+node_modules/
+public/index.js
+public/index.js.map
+public/index.css
+.env
+npm-debug.log

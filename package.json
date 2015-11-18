@@ -1,0 +1,49 @@
+{
+  "private": true,
+  "scripts": {
+    "start": "./node_modules/.bin/gulp"
+  },
+  "standard": {
+    "parser": "babel-eslint"
+  },
+  "babel": {
+    "stage": 0
+  },
+  "dependencies": {
+    "aws-sdk": "^2.2.17",
+    "babel-core": "^5.8.23",
+    "bluebird": "^3.0.5",
+    "bootstrap": "^3.3.5",
+    "chalk": "^1.1.1",
+    "express": "^4.13.3",
+    "history": "^1.13.1",
+    "react": "^0.14.2",
+    "react-dom": "^0.14.2",
+    "react-redux": "^4.0.0",
+    "react-router": "^1.0.0",
+    "redux": "^3.0.4",
+    "redux-logger": "^2.0.4",
+    "redux-simple-router": "0.0.8"
+  },
+  "devDependencies": {
+    "babel": "^5.8.23",
+    "babel-plugin-react-transform": "^1.1.1",
+    "babelify": "^6.3.0",
+    "dotenv": "^1.2.0",
+    "gulp": "^3.9.0",
+    "gulp-less": "^3.0.5",
+    "gulp-livereload": "^3.8.1",
+    "gulp-minify-css": "^1.2.1",
+    "gulp-nodemon": "^2.0.4",
+    "gulp-rename": "^1.2.2",
+    "gulp-sourcemaps": "^1.6.0",
+    "gulp-streamify": "^1.0.2",
+    "gulp-uglify": "^1.5.1",
+    "livereactload": "^2.1.0",
+    "node-notifier": "^4.3.1",
+    "react-proxy": "^1.1.1",
+    "vinyl-buffer": "^1.0.0",
+    "vinyl-source-stream": "^1.1.0",
+    "watchify": "^3.6.1"
+  }
+}

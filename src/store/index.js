@@ -1,4 +1,5 @@
 import { createStore, applyMiddleware, compose } from 'redux'
+import promiseMiddleware from 'redux-promise'
 import rootReducer from '../reducers'
 import createLogger from 'redux-logger'
 
@@ -11,7 +12,8 @@ const serverLogger = store => next => action => {
 }
 
 export function configureStore (initialState) {
-  var middleware = []
+  var middleware = [promiseMiddleware]
+
   if (typeof window !== 'undefined') {
     middleware.push(createLogger({collapsed: true}))
   } else {

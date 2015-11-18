@@ -10,10 +10,19 @@ import { Provider } from 'react-redux'
 import createHistory from 'history/lib/createMemoryHistory'
 import { syncReduxAndRouter } from 'redux-simple-router'
 import { green } from 'chalk'
+import { post, del } from 'request'
 
 const server = express()
 server.use(express.static('public'))
 server.use(express.static('dist'))
+
+server.post('/login', function (req, res) {
+  req.pipe(post(config.upstreamHost + '/noo/login?resp=user')).pipe(res)
+})
+
+server.delete('/logout', function (req, res) {
+  req.pipe(del(config.upstreamHost + '/noo/session')).pipe(res)
+})
 
 server.use((req, res) => {
   console.log(green(req.originalUrl))

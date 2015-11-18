@@ -20,7 +20,7 @@ gulp.task('serve', function () {
 
 gulp.task('watch', function () {
   if (config.livereload) livereload.listen()
-  gulp.watch('src/**/*.less', ['bundle-dev-css'])
+  gulp.watch('css/**/*.less', ['bundle-dev-css'])
 })
 
 gulp.task('default', ['watch-js', 'serve', 'watch'])

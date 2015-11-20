@@ -1,10 +1,19 @@
 import { combineReducers } from 'redux'
 import { routeReducer } from 'redux-simple-router'
-import { FETCH_COMMUNITY, FETCH_CURRENT_USER, FETCH_USER, LOGIN } from '../actions'
+import { FETCH_COMMUNITY, FETCH_CURRENT_USER, FETCH_USER, LOGIN, LOGOUT } from '../actions'
 import { isEmpty } from 'lodash'
 
 export default combineReducers({
-  routing: routeReducer,
+  routing: (state = {path: '/'}, action) => {
+    switch (action.type) {
+      case LOGIN:
+        return {path: `/u/${action.payload.id}`}
+      case LOGOUT:
+        return {path: '/'}
+      default:
+        return routeReducer(state, action)
+    }
+  },
 
   loginError: (state = null, action) => {
     if (action.type === LOGIN && action.error) {
@@ -26,7 +35,9 @@ export default combineReducers({
     switch (action.type) {
       case LOGIN:
       case FETCH_CURRENT_USER:
-        return !isEmpty(action.payload) && action.payload
+        return !isEmpty(action.payload) ? action.payload : null
+      case LOGOUT:
+        return null
     }
 
     return state
@@ -50,5 +61,5 @@ export default combineReducers({
   users: (state = {}, action) => state, // TODO
 
   // TODO cache communities from LOGIN, FETCH_COMMUNITY, FETCH_CURRENT_USER
-  communities: (state = {}, action) => state, // TODO
+  communities: (state = {}, action) => state // TODO
 })

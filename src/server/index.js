@@ -12,7 +12,7 @@ server.post('/login', function (req, res) {
   req.pipe(request.post(config.upstreamHost + '/noo/login?resp=user')).pipe(res)
 })
 
-server.delete('/logout', function (req, res) {
+server.post('/logout', function (req, res) {
   req.pipe(request.del(config.upstreamHost + '/noo/session')).pipe(res)
 })
 

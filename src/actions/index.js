@@ -12,7 +12,8 @@ export const LOGOUT = 'LOGOUT'
 
 export function logout () {
   return {
-    type: LOGOUT
+    type: LOGOUT,
+    payload: {api: true, path: '/logout', method: 'post'}
   }
 }
 

@@ -1,22 +1,10 @@
-import request from 'request'
-import { promisify } from 'bluebird'
-const post = promisify(request.post, request)
-
 export const LOGIN = 'LOGIN'
 
-const postLogin = (email, password) => {
-  let url = `${window.location.origin}/login`
-  return post(url, {form: {email, password}, json: true})
-  .then(resp => {
-    if (resp.status === 200) return resp.body
-    return Promise.reject(resp.body)
-  })
-}
-
+// this is a client-only action
 export function login (email, password) {
   return {
     type: LOGIN,
-    payload: postLogin(email, password)
+    payload: {api: true, path: '/login', params: {email, password}, method: 'post'}
   }
 }
 
@@ -25,5 +13,23 @@ export const LOGOUT = 'LOGOUT'
 export function logout () {
   return {
     type: LOGOUT
+  }
+}
+
+export const FETCH_USER = 'FETCH_USER'
+
+export function fetchUser (userId) {
+  return {
+    type: FETCH_USER,
+    payload: {api: true, path: `/noo/user/${userId}`}
+  }
+}
+
+export const FETCH_CURRENT_USER = 'FETCH_CURRENT_USER'
+
+export function fetchCurrentUser () {
+  return {
+    type: FETCH_CURRENT_USER,
+    payload: {api: true, path: '/noo/user/me'}
   }
 }

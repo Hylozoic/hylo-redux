@@ -1,11 +1,13 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { login } from '../actions'
+const { func, string } = React.PropTypes
 
 @connect(state => ({error: state.loginError}))
 export default class Login extends React.Component {
   static propTypes = {
-    error: React.PropTypes.string
+    error: string,
+    dispatch: func
   }
 
   submit = event => {

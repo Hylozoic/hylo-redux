@@ -11,11 +11,11 @@ const TopNav = (props) => {
       <li><IndexLink to='/'>Home</IndexLink></li>
     </ul>
     {currentUser
-    ? <ul className='left'>
+    ? <ul className='right'>
         <li><Link to={`/u/${currentUser.id}`}>{currentUser.name}</Link></li>
         <li><a href='#' onClick={logout}>Log out</a></li>
       </ul>
-    : <ul className='left'>
+    : <ul className='right'>
         <li><Link to='/login'>Log in</Link></li>
       </ul>}
   </nav>

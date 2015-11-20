@@ -5,18 +5,18 @@ import { configureStore } from '../store'
 import createHistory from 'history/lib/createBrowserHistory'
 import { Provider } from 'react-redux'
 import { Router } from 'react-router'
-import routes from '../routes'
+import makeRoutes from '../routes'
 import { syncReduxAndRouter } from 'redux-simple-router'
 
-const initialState = window.INITIAL_STATE
+const store = configureStore(window.INITIAL_STATE)
+const routes = makeRoutes(store)
 const history = createHistory()
-const store = configureStore(initialState)
-const rootElement = document.getElementById('app')
+syncReduxAndRouter(history, store)
+
 const component = (
   <Provider store={store}>
     <Router routes={routes} history={history}/>
   </Provider>
 )
 
-syncReduxAndRouter(history, store)
-render(component, rootElement)
+render(component, document.getElementById('app'))

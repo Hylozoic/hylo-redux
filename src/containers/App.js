@@ -1,8 +1,9 @@
 import React from 'react'
-import { Link, IndexLink } from 'react-router'
 import { connect } from 'react-redux'
 import TopNav from '../components/TopNav'
-import { logout } from '../actions'
+import { fetchCurrentUser, logout } from '../actions'
+import { prefetch } from 'react-fetcher'
+const { func, number, object } = React.PropTypes
 
 const increment = function () {
   return {
@@ -13,22 +14,25 @@ const increment = function () {
   }
 }
 
+@prefetch(({dispatch}) => dispatch(fetchCurrentUser()))
 @connect(state => state)
 export default class App extends React.Component {
   static propTypes = {
-    children: React.PropTypes.object,
-    count: React.PropTypes.number
+    children: object,
+    count: number,
+    currentUser: object,
+    dispatch: func
   }
 
   render () {
-    let { currentUser } = this.props
+    let { currentUser, dispatch } = this.props
     return <div>
       <div className='row'>
         <TopNav currentUser={currentUser} logout={() => dispatch(logout())}/>
       </div>
       <div className='row' id='mainRow'>
         <nav id='leftNav'>
-          <button onClick={() => this.props.dispatch(increment())}>{this.props.count}</button>
+          <button onClick={() => dispatch(increment())}>{this.props.count}</button>
         </nav>
         <div id='main'>
           {this.props.children}

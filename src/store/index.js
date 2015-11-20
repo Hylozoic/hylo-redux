@@ -2,23 +2,19 @@ import { createStore, applyMiddleware, compose } from 'redux'
 import promiseMiddleware from 'redux-promise'
 import rootReducer from '../reducers'
 import createLogger from 'redux-logger'
+import { compact } from 'lodash'
+import { serverLogger, apiMiddleware } from '../middleware'
 
-const serverLogger = store => next => action => {
-  console.log('action!', action.type)
-  console.log('- prev state', store.getState())
-  let result = next(action)
-  console.log('- next state', store.getState())
-  return result
-}
+export function configureStore (initialState, req) {
+  const isServer = typeof window === 'undefined'
 
-export function configureStore (initialState) {
-  var middleware = [promiseMiddleware]
+  var middleware = compact([
+    isServer && serverLogger,
+    apiMiddleware(req),
+    promiseMiddleware,
+    !isServer && createLogger({collapsed: true})
+  ])
 
-  if (typeof window !== 'undefined') {
-    middleware.push(createLogger({collapsed: true}))
-  } else {
-    middleware.push(serverLogger)
-  }
   const store = compose(
     applyMiddleware(...middleware)
   )(createStore)(rootReducer, initialState)

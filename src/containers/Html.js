@@ -6,7 +6,8 @@ class Html extends React.Component {
     pageTitle: string,
     markup: string,
     cssBundle: string,
-    jsBundle: string
+    jsBundle: string,
+    state: string
   }
 
   render () {
@@ -22,6 +23,7 @@ class Html extends React.Component {
       <body>
         <div id='app' dangerouslySetInnerHTML={{__html: markup}}></div>
         <script src='//tinymce.cachefly.net/4.2/tinymce.min.js'></script>
+        <script dangerouslySetInnerHTML={{__html: state}}></script>
         <script src={jsBundle} defer></script>
       </body>
     </html>

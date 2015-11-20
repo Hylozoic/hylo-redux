@@ -1,6 +1,6 @@
 import { combineReducers } from 'redux'
 import { routeReducer } from 'redux-simple-router'
-import { FETCH_CURRENT_USER, FETCH_USER, LOGIN } from '../actions'
+import { FETCH_COMMUNITY, FETCH_CURRENT_USER, FETCH_USER, LOGIN } from '../actions'
 import { isEmpty } from 'lodash'
 
 export default combineReducers({
@@ -37,5 +37,18 @@ export default combineReducers({
       return {user: action.payload}
     }
     return state
-  }
+  },
+
+  communityProfile: (state = {}, action) => {
+    if (action.type === FETCH_COMMUNITY && !action.error) {
+      return {community: action.payload}
+    }
+    return state
+  },
+
+  // TODO cache users from FETCH_USER
+  users: (state = {}, action) => state, // TODO
+
+  // TODO cache communities from LOGIN, FETCH_COMMUNITY, FETCH_CURRENT_USER
+  communities: (state = {}, action) => state, // TODO
 })

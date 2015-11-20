@@ -5,6 +5,7 @@ import { omit } from 'lodash'
 
 export function apiMiddleware (req) {
   return store => next => action => {
+    // TODO check store for cached users and communities
     let { type, payload } = action
     if (payload && payload.api) {
       let { path, params, method } = payload
@@ -51,6 +52,8 @@ export function serverLogger (store) {
     // by apiMiddleware and promiseMiddleware
     if (!payload || !payload.api) {
       console.log('action:', inspect(omit(action, 'payload')))
+    } else {
+      console.log('action:', inspect({api: true, ...omit(action, 'payload')}))
     }
 
     return next(action)

@@ -33,3 +33,17 @@ export function fetchCurrentUser () {
     payload: {api: true, path: '/noo/user/me'}
   }
 }
+
+export const FETCH_COMMUNITY = 'FETCH_COMMUNITY'
+
+export function fetchCommunity (id) {
+  return {
+    type: FETCH_COMMUNITY,
+    payload: {
+      api: true,
+      path: `/noo/community/${id}`,
+      cache: 'communities',
+      cacheId: id
+    }
+  }
+}

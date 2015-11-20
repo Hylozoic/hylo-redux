@@ -10,7 +10,7 @@ import { match, RoutingContext } from 'react-router'
 import createHistory from 'history/lib/createMemoryHistory'
 import { syncReduxAndRouter } from 'redux-simple-router'
 import { getPrefetchedData } from 'react-fetcher'
-import { cyan, yellow } from 'chalk'
+import { cyan } from 'chalk'
 
 const matchPromise = promisify(match, {multiArgs: true})
 
@@ -33,8 +33,8 @@ export default function (req, res) {
       return
     }
 
-    renderApp(res, renderProps, history, store)
-    .then(html => res.status(200).send(html))
+    return renderApp(res, renderProps, history, store)
+    .then(html => res.status(200).send(renderToStaticMarkup(html)))
   })
   .catch(error => {
     res.status(500).send(error.message)
@@ -56,20 +56,17 @@ function renderApp (res, renderProps, history, store) {
     history.transitionTo(renderProps.location)
     syncReduxAndRouter(history, store)
 
-    console.log(yellow('rendering'))
     const markup = renderToString(
       <Provider store={store}>
         <RoutingContext location='history' {...renderProps}/>
       </Provider>
     )
 
-    const page = React.createElement(Html, {
+    return React.createElement(Html, {
       markup: markup,
       state: `window.INITIAL_STATE=${JSON.stringify(store.getState())}`,
       cssBundle: config.cssBundle,
       jsBundle: config.jsBundle
     })
-
-    return renderToStaticMarkup(page)
   })
 }

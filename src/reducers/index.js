@@ -5,6 +5,8 @@ import { isEmpty } from 'lodash'
 
 export default combineReducers({
   routing: (state = {path: '/'}, action) => {
+    if (action.error) return state
+
     switch (action.type) {
       case LOGIN:
         return {path: `/u/${action.payload.id}`}

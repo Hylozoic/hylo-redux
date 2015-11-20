@@ -14,8 +14,24 @@ const routes = makeRoutes(store)
 const history = createHistory()
 syncReduxAndRouter(history, store)
 
+var prevLocation = {}
+
 history.listen(location => {
   match({routes, location}, (error, redirectLocation, renderProps) => {
+    if (error) {
+      console.error(error)
+      return
+    }
+
+    // WEIRD: when the logout action is dispatched, it triggers
+    // a history event even though the location didn't change.
+    // i don't know why that happens, but we work around it here
+    // by comparing the new location to the previous one.
+    if (location.pathname === prevLocation.pathname) {
+      console.log('suppressed a redundant history event')
+      return
+    }
+
     const components = renderProps.routes.map(r => r.component)
     const locals = {
       path: renderProps.location.pathname,
@@ -25,6 +41,7 @@ history.listen(location => {
     }
     getPrefetchedData(components, locals)
     .then(() => getDeferredData(components, locals))
+    .then(() => prevLocation = location)
   })
 })
 

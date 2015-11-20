@@ -35,7 +35,8 @@ export default combineReducers({
     switch (action.type) {
       case LOGIN:
       case FETCH_CURRENT_USER:
-        return !isEmpty(action.payload) ? action.payload : null
+        let user = action.payload
+        return !isEmpty(user) ? user : null
       case LOGOUT:
         return null
     }
@@ -57,9 +58,43 @@ export default combineReducers({
     return state
   },
 
-  // TODO cache users from FETCH_USER
-  users: (state = {}, action) => state, // TODO
+  users: (state = {}, action) => {
+    if (action.error) return state
+    let { cache } = action.meta || {}
+    if (cache && cache.hit) return state
+    let user = action.payload
 
-  // TODO cache communities from LOGIN, FETCH_COMMUNITY, FETCH_CURRENT_USER
-  communities: (state = {}, action) => state // TODO
+    switch (action.type) {
+      case FETCH_USER:
+        return {
+          ...state,
+          [user.id]: user
+        }
+      case FETCH_CURRENT_USER:
+        return {
+          ...state,
+          [user.id]: user,
+          current: user
+        }
+    }
+
+    return state
+  },
+
+  communities: (state = {}, action) => {
+    if (action.error) return state
+    let { cache } = action.meta || {}
+    if (cache && cache.hit) return state
+
+    switch (action.type) {
+      case FETCH_COMMUNITY:
+        let community = action.payload
+        return {
+          ...state,
+          [community.slug]: community
+        }
+    }
+
+    return state
+  }
 })

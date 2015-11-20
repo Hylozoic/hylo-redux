@@ -3,13 +3,14 @@ import promiseMiddleware from 'redux-promise'
 import rootReducer from '../reducers'
 import createLogger from 'redux-logger'
 import { compact } from 'lodash'
-import { serverLogger, apiMiddleware } from '../middleware'
+import { serverLogger, apiMiddleware, cacheMiddleware } from '../middleware'
 
 export function configureStore (initialState, req) {
   const isServer = typeof window === 'undefined'
 
   var middleware = compact([
     isServer && serverLogger,
+    cacheMiddleware,
     apiMiddleware(req),
     promiseMiddleware,
     !isServer && createLogger({collapsed: true})

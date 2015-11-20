@@ -3,9 +3,24 @@ import { inspect } from 'util'
 import { upstreamHost } from '../config'
 import { omit } from 'lodash'
 
+export function cacheMiddleware (store) {
+  return next => action => {
+    let { type, meta } = action
+    let { bucket, id, level } = (meta || {}).cache || {}
+    if (bucket && id) {
+      // TODO cache expiration
+      var hit = store.getState()[bucket][id]
+      if (hit) {
+        console.log(`${bucket} ${id}: cache hit`)
+        return next({type, payload: hit, meta: {cache: {hit: true}}})
+      }
+    }
+    return next(action)
+  }
+}
+
 export function apiMiddleware (req) {
   return store => next => action => {
-    // TODO check store for cached users and communities
     let { type, payload } = action
     if (payload && payload.api) {
       let { path, params, method } = payload

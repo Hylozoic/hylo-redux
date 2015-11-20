@@ -21,7 +21,7 @@ server.use((req, res, next) => {
   if (!req.originalUrl.startsWith('/noo')) return next()
 
   let upstreamUrl = config.upstreamHost + req.originalUrl
-  console.log('\n' + magenta(`${req.method} ${upstreamUrl}`))
+  console.log(magenta(`${req.method} ${upstreamUrl}`))
 
   let headers = req.headers
   let method = request[req.method.toLowerCase()]

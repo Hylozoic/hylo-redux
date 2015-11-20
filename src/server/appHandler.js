@@ -15,7 +15,7 @@ import { cyan } from 'chalk'
 const matchPromise = promisify(match, {multiArgs: true})
 
 export default function (req, res) {
-  console.log('\n' + cyan(`${req.method} ${req.originalUrl}`))
+  console.log(cyan(`${req.method} ${req.originalUrl}`))
 
   const store = configureStore({}, req)
   const routes = makeRoutes(store)
@@ -37,7 +37,8 @@ export default function (req, res) {
     .then(html => res.status(200).send(renderToStaticMarkup(html)))
   })
   .catch(error => {
-    res.status(500).send(error.message)
+    res.setHeader('Content-Type', 'text/plain')
+    res.status(500).send(error.stack)
   })
 }
 

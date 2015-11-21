@@ -1,9 +1,9 @@
 import React from 'react'
-import { fetchPosts } from '../../actions'
+import { fetchPosts, FETCH_POSTS } from '../../actions'
 import { prefetch } from 'react-fetcher'
 import { connect } from 'react-redux'
 import PostList from '../../components/PostList'
-const { array, func, object } = React.PropTypes
+const { array, bool, func, number, object } = React.PropTypes
 
 @prefetch(({dispatch, params: {slug}}) => {
   return dispatch(fetchPosts({subject: 'community', id: slug, limit: 20}))
@@ -12,18 +12,23 @@ const { array, func, object } = React.PropTypes
   let { slug } = props.params
   return {
     posts: state.postsByCommunity[slug],
-    postsTotal: state.totalPostsByCommunity[slug]
+    total: state.totalPostsByCommunity[slug],
+    pending: state.pending[FETCH_POSTS]
   }
 })
 export default class CommunityPosts extends React.Component {
   static propTypes = {
     posts: array,
+    total: number,
     dispatch: func,
-    params: object
+    params: object,
+    pending: bool
   }
 
   loadMore = () => {
-    let { posts, dispatch, params } = this.props
+    let { posts, dispatch, params, total, pending } = this.props
+    if (posts.length >= total || pending) return
+
     dispatch(fetchPosts({
       subject: 'community',
       id: params.slug,

@@ -144,5 +144,21 @@ export default combineReducers({
     }
 
     return state
+  },
+
+  pending: (state = {}, action) => {
+    switch (action.type) {
+      case 'FETCH_POSTS_PENDING':
+        return {
+          ...state,
+          [FETCH_POSTS]: true
+        }
+      case FETCH_POSTS:
+        return {
+          ...state,
+          [FETCH_POSTS]: false
+        }
+    }
+    return state
   }
 })

@@ -8,22 +8,21 @@ export function cacheMiddleware (store) {
     let { bucket, id, array, limit, offset } = (meta || {}).cache || {}
     if (bucket && id) {
       // TODO cache expiration
-
+      let hit
       if (array) {
-        var hit = store.getState()[bucket][id]
+        hit = store.getState()[bucket][id]
         if (hit && hit.length > offset) {
           console.log(`cache hit: ${bucket} ${id}[${offset}] + ${limit}`)
           let payload = hit.slice(offset, offset + limit)
           return next({type, payload, meta: {cache: {hit: true}}})
         }
       } else {
-        var hit = store.getState()[bucket][id]
+        hit = store.getState()[bucket][id]
         if (hit) {
           console.log(`cache hit: ${bucket} ${id}`)
           return next({type, payload: hit, meta: {cache: {hit: true}}})
         }
       }
-
     }
     return next(action)
   }
@@ -54,6 +53,19 @@ export function serverLogger (store) {
       console.log('action:', inspect({api: true, ...omit(action, 'payload')}))
     }
 
+    return next(action)
+  }
+}
+
+function isPromise (value) {
+  return value && typeof value.then === 'function'
+}
+
+export function pendingPromiseMiddleware (store) {
+  return next => action => {
+    if (isPromise(action.payload)) {
+      store.dispatch({...action, type: action.type + '_PENDING', payload: null})
+    }
     return next(action)
   }
 }

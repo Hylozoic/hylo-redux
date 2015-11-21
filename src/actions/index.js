@@ -46,3 +46,23 @@ export function fetchCommunity (id) {
     meta: {cache: {bucket: 'communities', id}}
   }
 }
+
+export const FETCH_POSTS = 'FETCH_POSTS'
+
+export function fetchPosts (opts) {
+  let { subject, id, limit, offset } = opts
+  if (!offset) offset = 0
+  let payload = { api: true }
+  let meta = { subject, id }
+
+  switch (subject) {
+    case 'community':
+      payload.path = `/noo/community/${opts.id}/posts?limit=${limit}&offset=${offset}`
+  }
+
+  return {
+    type: FETCH_POSTS,
+    payload,
+    meta
+  }
+}

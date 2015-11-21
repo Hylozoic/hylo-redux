@@ -1,7 +1,7 @@
 import { combineReducers } from 'redux'
 import { routeReducer } from 'redux-simple-router'
-import { FETCH_COMMUNITY, FETCH_CURRENT_USER, FETCH_USER, LOGIN, LOGOUT } from '../actions'
-import { isEmpty } from 'lodash'
+import { FETCH_COMMUNITY, FETCH_CURRENT_USER, FETCH_POSTS, FETCH_USER, LOGIN, LOGOUT } from '../actions'
+import { isEmpty, uniq } from 'lodash'
 
 export default combineReducers({
   routing: (state = {path: '/'}, action) => {
@@ -20,13 +20,6 @@ export default combineReducers({
   loginError: (state = null, action) => {
     if (action.type === LOGIN && action.error) {
       return action.payload.message
-    }
-    return state
-  },
-
-  count: (state = 0, action) => {
-    if (action.type === 'INCREMENT') {
-      return state + 1
     }
     return state
   },
@@ -94,6 +87,54 @@ export default combineReducers({
         return {
           ...state,
           [community.slug]: community
+        }
+    }
+
+    return state
+  },
+
+  posts: (state = {}, action) => {
+    if (action.error) return state
+    let { type, payload } = action
+
+    switch (type) {
+      case FETCH_POSTS:
+        let posts = payload.posts.reduce((m, p) => {
+          m[p.id] = p
+          return m
+        }, {})
+        console.log(`cached ${payload.posts.length} posts`)
+        return {
+          ...state,
+          ...posts
+        }
+    }
+
+    return state
+  },
+
+  totalPostsByCommunity: (state = {}, action) => {
+    let { type, payload, meta, error } = action
+    if (type === FETCH_POSTS && !error && meta && meta.subject === 'community') {
+      return {
+        ...state,
+        [meta.id]: payload.posts_total
+      }
+    }
+    return state
+  },
+
+  postsByCommunity: (state = {}, action) => {
+    if (action.error) return state
+    let { meta, payload } = action
+    switch (action.type) {
+      case FETCH_POSTS:
+        if (meta && meta.subject === 'community') {
+          let existingPosts = state[meta.id] || []
+          return {
+            ...state,
+            [meta.id]: uniq([...existingPosts, ...payload.posts], (v, i) => v.id)
+          }
         }
     }
 

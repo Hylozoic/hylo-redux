@@ -1,6 +1,6 @@
 import express from 'express'
 import config from '../../config'
-import { magenta } from 'chalk'
+import { magenta, red } from 'chalk'
 import request from 'request'
 import appHandler from './appHandler'
 
@@ -27,7 +27,9 @@ server.use((req, res, next) => {
   let method = request[req.method.toLowerCase()]
   let upstreamReq = method(upstreamUrl, {headers})
 
-  req.pipe(upstreamReq).pipe(res)
+  req.pipe(upstreamReq)
+  .on('error', err => console.error(magenta('✗ ') + red(err.message)))
+  .pipe(res)
 })
 
 server.use(appHandler)

@@ -1,12 +1,12 @@
 import { upstreamHost } from '../../config'
 import fetch from 'isomorphic-fetch'
 
-const host = typeof window === 'undefined'
+export const HOST = typeof window === 'undefined'
   ? upstreamHost
   : window.location.origin
 
 export const fetchJSON = (path, params, options = {}) => {
-  return fetch((options.host || host) + path, {
+  return fetch((options.host || HOST) + path, {
     method: options.method || 'get',
     headers: {
       'Accept': 'application/json',

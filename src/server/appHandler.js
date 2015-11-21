@@ -21,7 +21,7 @@ export default function (req, res) {
   const routes = makeRoutes(store)
   const history = createHistory()
 
-  matchPromise({routes, location: req.originalUrl})
+  return matchPromise({routes, location: req.originalUrl})
   .then(([redirectLocation, renderProps]) => {
     if (redirectLocation) {
       res.redirect(302, redirectLocation.pathname + redirectLocation.search)
@@ -34,7 +34,9 @@ export default function (req, res) {
     }
 
     return renderApp(res, renderProps, history, store)
-    .then(html => res.status(200).send(renderToStaticMarkup(html)))
+    .then(renderToStaticMarkup)
+    .then(html => '<!DOCTYPE html>\n' + html)
+    .then(html => res.status(200).send(html))
   })
   .catch(error => {
     res.setHeader('Content-Type', 'text/plain')

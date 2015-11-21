@@ -1,10 +1,18 @@
 {
   "private": true,
   "scripts": {
-    "start": "./node_modules/.bin/gulp"
+    "start": "./node_modules/.bin/gulp",
+    "test": "./node_modules/.bin/babel-node ./node_modules/.bin/_mocha"
   },
   "standard": {
-    "parser": "babel-eslint"
+    "parser": "babel-eslint",
+    "global": [
+      "before",
+      "describe",
+      "expect",
+      "it",
+      "spy"
+    ]
   },
   "babel": {
     "stage": 0
@@ -39,7 +47,10 @@
     "babel": "^5.8.23",
     "babel-plugin-react-transform": "^1.1.1",
     "babelify": "^6.3.0",
+    "chai": "^3.4.1",
+    "chai-spies": "^0.7.1",
     "dotenv": "^1.2.0",
+    "glob": "^6.0.1",
     "gulp": "^3.9.0",
     "gulp-less": "^3.0.5",
     "gulp-livereload": "^3.8.1",
@@ -50,6 +61,8 @@
     "gulp-streamify": "^1.0.2",
     "gulp-uglify": "^1.5.1",
     "livereactload": "^2.1.0",
+    "mocha": "^2.3.4",
+    "nock": "^3.1.1",
     "node-notifier": "^4.3.1",
     "react-proxy": "^1.1.1",
     "vinyl-buffer": "^1.0.0",

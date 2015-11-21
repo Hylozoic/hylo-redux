@@ -26,7 +26,7 @@ export default class CommunityPosts extends React.Component {
     let { posts, dispatch, params } = this.props
     dispatch(fetchPosts({
       subject: 'community',
-      id: params.id,
+      id: params.slug,
       offset: posts.length,
       limit: 20
     }))

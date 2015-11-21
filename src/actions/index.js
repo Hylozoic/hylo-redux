@@ -53,7 +53,7 @@ export function fetchPosts (opts) {
   let { subject, id, limit, offset } = opts
   if (!offset) offset = 0
   let payload = { api: true }
-  let meta = { subject, id }
+  let meta = { subject, id, cache: {id, bucket: 'postsByCommunity', limit, offset, array: true} }
 
   switch (subject) {
     case 'community':

@@ -95,8 +95,10 @@ export default combineReducers({
 
   posts: (state = {}, action) => {
     if (action.error) return state
-    let { type, payload } = action
+    let { cache } = action.meta || {}
+    if (cache && cache.hit) return state
 
+    let { type, payload } = action
     switch (type) {
       case FETCH_POSTS:
         let posts = payload.posts.reduce((m, p) => {
@@ -126,6 +128,9 @@ export default combineReducers({
 
   postsByCommunity: (state = {}, action) => {
     if (action.error) return state
+    let { cache } = action.meta || {}
+    if (cache && cache.hit) return state
+
     let { meta, payload } = action
     switch (action.type) {
       case FETCH_POSTS:

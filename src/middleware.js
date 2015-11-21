@@ -5,14 +5,25 @@ import { fetchJSON } from './util/api'
 export function cacheMiddleware (store) {
   return next => action => {
     let { type, meta } = action
-    let { bucket, id } = (meta || {}).cache || {}
+    let { bucket, id, array, limit, offset } = (meta || {}).cache || {}
     if (bucket && id) {
       // TODO cache expiration
-      var hit = store.getState()[bucket][id]
-      if (hit) {
-        console.log(`cache hit: ${bucket} ${id}`)
-        return next({type, payload: hit, meta: {cache: {hit: true}}})
+
+      if (array) {
+        var hit = store.getState()[bucket][id]
+        if (hit && hit.length > offset) {
+          console.log(`cache hit: ${bucket} ${id}[${offset}] + ${limit}`)
+          let payload = hit.slice(offset, offset + limit)
+          return next({type, payload, meta: {cache: {hit: true}}})
+        }
+      } else {
+        var hit = store.getState()[bucket][id]
+        if (hit) {
+          console.log(`cache hit: ${bucket} ${id}`)
+          return next({type, payload: hit, meta: {cache: {hit: true}}})
+        }
       }
+
     }
     return next(action)
   }

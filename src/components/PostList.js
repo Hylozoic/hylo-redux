@@ -24,7 +24,7 @@ class PostList extends React.Component {
     let posts = this.props.posts
     if (this.props.total <= posts.length) return
 
-    if (isAtBottom(300)) {
+    if (isAtBottom(250)) {
       this.state.waitingForPosts = true
       this.state.numPosts = posts.length
       this.props.loadMore()

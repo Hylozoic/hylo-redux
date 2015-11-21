@@ -6,5 +6,5 @@ export function viewportTop () {
 }
 
 export function isAtBottom (offset) {
-  return viewportTop() + window.innerHeight >= document.documentElement.clientHeight - offset
+  return viewportTop() + window.innerHeight >= document.body.scrollHeight - offset
 }

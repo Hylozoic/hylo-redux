@@ -20,7 +20,8 @@ export default class UserProfile extends React.Component {
 
     let bannerUrl = user.banner_url || defaultBanner
     return <div id='user'>
-      <div className='banner' style={{backgroundImage: `url(${bannerUrl})`}}>
+      <div className='banner'>
+        <div className='background' style={{backgroundImage: `url(${bannerUrl})`}}/>
         <div className='logo person' style={{backgroundImage: `url(${user.avatar_url})`}}/>
         <h2>{user.name}</h2>
       </div>

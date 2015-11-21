@@ -17,7 +17,8 @@ export default class CommunityProfile extends React.Component {
     if (!community) return <div>Loading...</div>
 
     return <div id='community'>
-      <div className='banner' style={{backgroundImage: `url(${community.banner_url})`}}>
+      <div className='banner'>
+        <div className='background' style={{backgroundImage: `url(${community.banner_url})`}}/>
         <div className='logo' style={{backgroundImage: `url(${community.avatar_url})`}}/>
         <h2>{community.name}</h2>
         <ul className='tabs'>

@@ -20,47 +20,7 @@
 
 @import 'type';
 @import 'icons';
-
-.no-bullets() {
-  margin-bottom: 0;
-  padding-left: 0;
-  > li {
-    list-style-type: none;
-  }
-}
-
-.outlined-text(@color: #000) {
-  text-shadow: -1px -1px 0 @color, 1px -1px 0 @color, -1px 1px 0 @color, 1px 1px 0 @color;
-}
-
-.meta-text() {
-  color: @gray-text;
-  font-size: 13px;
-}
-
-.body-text() {
-  a {
-    color: #00a;
-    text-decoration: none;
-    &:hover {
-      border-bottom: 1px solid #00a;
-    }
-  }
-
-  ul {
-    margin-bottom: @p-bottom-margin;
-  }
-}
-
-.shaded-background() {
-  @clear: rgba(0, 0, 0, 0);
-  @dark1: rgba(0, 0, 0, 0.1);
-  @dark2: rgba(0, 0, 0, 0.5);
-  @dark3: rgba(0, 0, 0, 1);
-  background-image: linear-gradient(to right, @clear, @clear, @clear, @dark1, @dark2),
-    linear-gradient(to left, @clear, @clear, @clear, @dark1, @dark2),
-    linear-gradient(to bottom, @clear, @clear, @clear, @dark1, @dark3);
-}
+@import 'mixins';
 
 p {
   margin-bottom: @p-bottom-margin;
@@ -142,6 +102,9 @@ nav {
     text-overflow: ellipsis;
     line-height: 24px;
     text-decoration: none;
+    &:active {
+      font-weight: bold;
+    }
     img {
       height: 24px;
       width: 24px;
@@ -229,11 +192,12 @@ ul.posts {
     text-align: center;
     .proxima-nova-semibold;
     .outlined-text(rgba(0, 0, 0, 0.7));
-    margin-bottom: 15px;
+    margin-bottom: 20px;
   }
 
   ul.tabs {
     .no-bullets;
+    margin-bottom: -15px;
     li {
       display: inline-block;
       margin: 0 5px;
@@ -241,8 +205,12 @@ ul.posts {
         .outlined-text(rgba(0, 0, 0, 0.7));
         display: block;
         color: @off-white;
-        padding: 0 5px;
+        padding: 0 5px 20px;
         .post-type-text;
+
+        &.active {
+          .has-bottom-triangle;
+        }
       }
     }
   }

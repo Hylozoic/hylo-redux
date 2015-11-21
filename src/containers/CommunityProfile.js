@@ -1,4 +1,5 @@
 import React from 'react'
+import { IndexLink, Link } from 'react-router'
 import { connect } from 'react-redux'
 import { prefetch } from 'react-fetcher'
 import { fetchCommunity } from '../actions'
@@ -13,8 +14,10 @@ export default class CommunityProfile extends React.Component {
   }
 
   render () {
-    var community = this.props.community
+    var { community } = this.props
     if (!community) return <div>Loading...</div>
+
+    let { slug } = community
 
     return <div id='community'>
       <div className='banner'>
@@ -22,7 +25,7 @@ export default class CommunityProfile extends React.Component {
         <div className='logo' style={{backgroundImage: `url(${community.avatar_url})`}}/>
         <h2>{community.name}</h2>
         <ul className='tabs'>
-          <li><a>Posts</a></li>
+          <li><IndexLink to={`/c/${slug}`} activeClassName='active'>Posts</IndexLink></li>
           <li><a>Events</a></li>
           <li><a>Projects</a></li>
           <li><a>Members</a></li>

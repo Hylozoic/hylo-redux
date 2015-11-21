@@ -8,7 +8,7 @@ const LeftNav = props => {
       <Link to='myPosts'>My posts</Link>
       <Link to='followedPosts'>Followed posts</Link>
       {props.communities.map((c, i) => <li key={i}>
-        <Link to={`/c/${c.slug}`}>
+        <Link to={`/c/${c.slug}`} activeClassName='active'>
           <img src={c.avatar_url}/>
           {c.name}
         </Link>

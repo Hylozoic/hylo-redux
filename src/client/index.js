@@ -14,12 +14,19 @@ const routes = makeRoutes(store)
 const history = createHistory()
 syncReduxAndRouter(history, store)
 
-var prevLocation = {}
+var prevLocation = null
 
 history.listen(location => {
   match({routes, location}, (error, redirectLocation, renderProps) => {
     if (error) {
       console.error(error)
+      return
+    }
+
+    // don't prefetch for the first route after page load,
+    // because it's all been loaded on the server already
+    if (!prevLocation) {
+      prevLocation = location
       return
     }
 

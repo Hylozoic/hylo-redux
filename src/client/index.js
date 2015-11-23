@@ -8,6 +8,7 @@ import { match, Router } from 'react-router'
 import makeRoutes from '../routes'
 import { syncReduxAndRouter } from 'redux-simple-router'
 import { getPrefetchedData, getDeferredData } from 'react-fetcher'
+import { debug } from '../util/logging'
 
 const store = configureStore(window.INITIAL_STATE)
 const routes = makeRoutes(store)
@@ -35,7 +36,7 @@ history.listen(location => {
     // i don't know why that happens, but we work around it here
     // by comparing the new location to the previous one.
     if (location.pathname === prevLocation.pathname) {
-      console.log('suppressed a redundant history event')
+      debug('suppressed a redundant history event')
       return
     }
 

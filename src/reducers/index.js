@@ -2,6 +2,7 @@ import { combineReducers } from 'redux'
 import { routeReducer } from 'redux-simple-router'
 import { FETCH_COMMUNITY, FETCH_CURRENT_USER, FETCH_POSTS, FETCH_USER, LOGIN, LOGOUT } from '../actions'
 import { isEmpty, uniq } from 'lodash'
+import { debug } from '../util/logging'
 
 export default combineReducers({
   routing: (state = {path: '/'}, action) => {
@@ -105,7 +106,7 @@ export default combineReducers({
           m[p.id] = p
           return m
         }, {})
-        console.log(`cached ${payload.posts.length} posts`)
+        debug(`cached ${payload.posts.length} posts`)
         return {
           ...state,
           ...posts

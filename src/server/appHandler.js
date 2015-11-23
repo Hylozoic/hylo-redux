@@ -11,11 +11,12 @@ import createHistory from 'history/lib/createMemoryHistory'
 import { syncReduxAndRouter } from 'redux-simple-router'
 import { getPrefetchedData } from 'react-fetcher'
 import { cyan } from 'chalk'
+import { info } from '../util/logging'
 
 const matchPromise = promisify(match, {multiArgs: true})
 
 export default function (req, res) {
-  console.log(cyan(`${req.method} ${req.originalUrl}`))
+  info(cyan(`${req.method} ${req.originalUrl}`))
 
   const store = configureStore({}, req)
   const routes = makeRoutes(store)

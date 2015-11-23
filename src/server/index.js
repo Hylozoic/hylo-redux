@@ -3,6 +3,7 @@ import config from '../../config'
 import { magenta, red } from 'chalk'
 import request from 'request'
 import appHandler from './appHandler'
+import { info } from '../util/logging'
 
 const server = express()
 server.use(express.static('public'))
@@ -21,7 +22,7 @@ server.use((req, res, next) => {
   if (!req.originalUrl.startsWith('/noo')) return next()
 
   let upstreamUrl = config.upstreamHost + req.originalUrl
-  console.log(magenta(`${req.method} ${upstreamUrl}`))
+  info(magenta(`${req.method} ${upstreamUrl}`))
 
   let headers = req.headers
   let method = request[req.method.toLowerCase()]
@@ -36,5 +37,5 @@ server.use(appHandler)
 
 server.listen(config.port, function (err) {
   if (err) throw err
-  console.log('listening on port ' + config.port)
+  info('listening on port ' + config.port)
 })

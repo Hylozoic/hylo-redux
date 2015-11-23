@@ -4,4 +4,5 @@ public/index.js
 public/index.js.map
 public/index.css
 .env
+.env.test
 npm-debug.log

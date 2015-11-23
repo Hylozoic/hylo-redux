@@ -1,6 +1,7 @@
 import { inspect } from 'util'
 import { omit } from 'lodash'
 import { fetchJSON } from './util/api'
+import { debug } from './util/logging'
 
 export function cacheMiddleware (store) {
   return next => action => {
@@ -12,14 +13,14 @@ export function cacheMiddleware (store) {
       if (array) {
         hit = store.getState()[bucket][id]
         if (hit && hit.length > offset) {
-          console.log(`cache hit: ${bucket} ${id}[${offset}] + ${limit}`)
+          debug(`cache hit: ${bucket} ${id}[${offset}] + ${limit}`)
           let payload = hit.slice(offset, offset + limit)
           return next({type, payload, meta: {cache: {hit: true}}})
         }
       } else {
         hit = store.getState()[bucket][id]
         if (hit) {
-          console.log(`cache hit: ${bucket} ${id}`)
+          debug(`cache hit: ${bucket} ${id}`)
           return next({type, payload: hit, meta: {cache: {hit: true}}})
         }
       }
@@ -48,9 +49,9 @@ export function serverLogger (store) {
     // ignore api actions, which will be transformed
     // by apiMiddleware and promiseMiddleware
     if (!payload || !payload.api) {
-      console.log('action:', inspect(omit(action, 'payload')))
+      debug('action:', inspect(omit(action, 'payload')))
     } else {
-      console.log('action:', inspect({api: true, ...omit(action, 'payload')}))
+      debug('action:', inspect({api: true, ...omit(action, 'payload')}))
     }
 
     return next(action)

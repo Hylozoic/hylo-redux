@@ -29,6 +29,7 @@ var opts = {
 var watch = function () {
   var b = watchify(browserify(_.assign({}, opts, watchify.args)))
   b.transform('babelify')
+  b.transform('envify')
   b.plugin('livereactload')
   b.on('log', gutil.log)
 
@@ -50,6 +51,7 @@ var watch = function () {
 var bundle = function () {
   return browserify(opts)
   .transform('babelify')
+  .transform('envify')
   .bundle()
   .on('error', gutil.log.bind(gutil, 'Browserify error'))
   .pipe(source('index.min.js'))

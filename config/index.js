@@ -18,7 +18,8 @@ var conf = {
   livereload: !!process.env.LIVERELOAD,
   assetHost: process.env.ASSET_HOST || '',
   cssBundle: minIfProduction('index.css'),
-  jsBundle: minIfProduction('index.js')
+  jsBundle: minIfProduction('index.js'),
+  logLevel: process.env.LOG_LEVEL
 }
 
 export default conf

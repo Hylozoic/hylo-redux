@@ -1,8 +1,8 @@
 // This is based on react-tinymce-mention but has been significantly changed.
 // We keep the logic for managing interaction with the editor and tracking an
-// @-mention while in progress, but we swap the original Redux implementation
-// for a mix of Redux and good old-fashioned component-local state, and we also
-// don't store a list of mentions separately from the text in the editor.
+// @-mention while in progress, but we swap the original implementation for a
+// mix of Redux and good old-fashioned local state, and we also don't store a
+// list of mentions separately from the text in the editor.
 //
 // https://github.com/Kindling/react-tinymce-mention/blob/master/src/mention/plugin.js
 // https://github.com/Kindling/react-tinymce-mention/blob/master/src/mention/components/TinyMCEDelegate.js
@@ -71,6 +71,8 @@ function shouldIgnoreWhileFetching (keyCode) {
   return contains(difference(values(keyMap), whiteList), keyCode)
 }
 
+// insert a DOM node into the editor, using a placeholder node to ensure
+// that the cursor ends up in the right place at the end.
 function addNode (node, editor) {
   const re = new RegExp(delimiter + '\\S+(\n<p>)?___PLACEHOLDER___')
   const markup = renderToStaticMarkup(node)

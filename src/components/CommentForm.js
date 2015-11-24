@@ -46,7 +46,7 @@ export default class CommentForm extends React.Component {
       <RichTextEditor ref='editor'
         content={this.state.input}
         onChange={this.handleChange}
-        template={this.mentionTemplate}
+        mentionTemplate={this.mentionTemplate}
         mentionTypeahead={this.mentionTypeahead}
         mentionChoices={this.props.mentionChoices}
         mentionSelector='[data-user-id]'/>

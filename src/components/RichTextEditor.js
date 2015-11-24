@@ -21,7 +21,7 @@ export default class RichTextEditor extends React.Component {
   static propTypes = {
     onChange: func,
     className: string,
-    template: func,
+    mentionTemplate: func,
     mentionSelector: string,
     mentionChoices: array,
     mentionTypeahead: func
@@ -47,14 +47,14 @@ export default class RichTextEditor extends React.Component {
   }
 
   render () {
-    var { className, template, mentionSelector, mentionChoices, mentionTypeahead } = this.props
+    var { className, mentionTemplate, mentionSelector, mentionChoices, mentionTypeahead } = this.props
 
     return <div className={cx('rich-text-editor', className)}>
       <TinyMCE config={editorConfig} id={this.editorId}
         onChange={this.handleChange}
         onSetContent={this.handleChange}/>
 
-      <Mention template={template}
+      <Mention template={mentionTemplate}
         mentionSelector={mentionSelector}
         choices={mentionChoices}
         typeahead={mentionTypeahead}

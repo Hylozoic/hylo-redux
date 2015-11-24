@@ -126,3 +126,21 @@ export function typeahead (opts) {
     payload: {api: true, path: `/noo/autocomplete?${qs.stringify(params)}`}
   }
 }
+
+export const UPDATE_POST_EDITOR = 'UPDATE_POST_EDITOR'
+
+export function updatePostEditor (payload) {
+  return {
+    type: UPDATE_POST_EDITOR,
+    payload
+  }
+}
+
+export const CREATE_POST = 'CREATE_POST'
+
+export function createPost (params) {
+  return {
+    type: CREATE_POST,
+    payload: {api: true, params, path: '/noo/post', method: 'POST'}
+  }
+}

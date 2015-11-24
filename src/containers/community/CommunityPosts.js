@@ -3,6 +3,7 @@ import { fetchPosts, FETCH_POSTS } from '../../actions'
 import { prefetch } from 'react-fetcher'
 import { connect } from 'react-redux'
 import PostList from '../../components/PostList'
+import PostEditor from '../../components/PostEditor'
 import { debug } from '../../util/logging'
 const { array, bool, func, number, object } = React.PropTypes
 
@@ -14,7 +15,8 @@ const { array, bool, func, number, object } = React.PropTypes
   return {
     posts: state.postsByCommunity[slug],
     total: state.totalPostsByCommunity[slug],
-    pending: state.pending[FETCH_POSTS]
+    pending: state.pending[FETCH_POSTS],
+    community: state.communities[slug]
   }
 })
 export default class CommunityPosts extends React.Component {
@@ -42,15 +44,8 @@ export default class CommunityPosts extends React.Component {
     let posts = this.props.posts || []
     debug(`${posts.length} posts`)
     return <div>
+      <PostEditor community={this.props.community}/>
       <PostList posts={posts} loadMore={this.loadMore}/>
     </div>
   }
 }
-
-/*
-<PostEditor/>
-<PostList posts={this.props.posts}
-  type='community'
-  ownerId={community.id}
-  total={this.props.postsTotal}/>
-*/

@@ -14,7 +14,9 @@ import {
   LOGOUT,
   NAVIGATE,
   TYPEAHEAD,
-  CANCEL_TYPEAHEAD
+  CANCEL_TYPEAHEAD,
+  UPDATE_POST_EDITOR,
+  CREATE_POST
 } from '../actions'
 
 // for pagination -- append a new page of data to existing data if present,
@@ -119,6 +121,11 @@ export default combineReducers({
           ...state,
           ...posts
         }
+      case CREATE_POST:
+        return {
+          ...state,
+          [payload.id]: payload
+        }
     }
 
     return state
@@ -144,6 +151,15 @@ export default combineReducers({
         if (meta.subject === 'community') {
           return appendUniq(state, meta.id, payload.posts)
         }
+        break
+      case CREATE_POST:
+        let updatedCommunities = payload.communities.reduce((m, c) => {
+          if (state[c.slug]) {
+            m[c.slug] = [payload].concat(state[c.slug])
+          }
+          return m
+        }, {})
+        return {...state, ...updatedCommunities}
     }
 
     return state
@@ -191,6 +207,20 @@ export default combineReducers({
         return payload
       case CANCEL_TYPEAHEAD:
         return []
+    }
+
+    return state
+  },
+
+  postEditor: (state = {}, action) => {
+    if (action.error) return state
+
+    let { type, payload } = action
+    switch (type) {
+      case UPDATE_POST_EDITOR:
+        return {...state, ...payload}
+      case CREATE_POST:
+        return {}
     }
 
     return state

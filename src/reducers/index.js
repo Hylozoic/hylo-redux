@@ -1,7 +1,8 @@
 import { combineReducers } from 'redux'
 import { routeReducer } from 'redux-simple-router'
-import { uniq } from 'lodash'
 import { debug } from '../util/logging'
+import { appendUniq } from './util'
+import postsByCommunity from './postsByCommunity'
 
 import {
   FETCH_COMMUNITY,
@@ -18,16 +19,6 @@ import {
   UPDATE_POST_EDITOR,
   CREATE_POST
 } from '../actions'
-
-// for pagination -- append a new page of data to existing data if present,
-// removing any duplicates.
-function appendUniq (state, key, data) {
-  let existing = state[key] || []
-  return {
-    ...state,
-    [key]: uniq([...existing, ...data], (v, i) => v.id)
-  }
-}
 
 export default combineReducers({
   routing: (state = {path: '/'}, action) => {
@@ -142,28 +133,7 @@ export default combineReducers({
     return state
   },
 
-  postsByCommunity: (state = {}, action) => {
-    if (action.error) return state
-
-    let { type, payload, meta } = action
-    switch (type) {
-      case FETCH_POSTS:
-        if (meta.subject === 'community') {
-          return appendUniq(state, meta.id, payload.posts)
-        }
-        break
-      case CREATE_POST:
-        let updatedCommunities = payload.communities.reduce((m, c) => {
-          if (state[c.slug]) {
-            m[c.slug] = [payload].concat(state[c.slug])
-          }
-          return m
-        }, {})
-        return {...state, ...updatedCommunities}
-    }
-
-    return state
-  },
+  postsByCommunity,
 
   pending: (state = {}, action) => {
     switch (action.type) {

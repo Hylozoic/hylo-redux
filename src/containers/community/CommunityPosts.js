@@ -25,7 +25,8 @@ export default class CommunityPosts extends React.Component {
     total: number,
     dispatch: func,
     params: object,
-    pending: bool
+    pending: bool,
+    community: object
   }
 
   loadMore = () => {
@@ -41,6 +42,10 @@ export default class CommunityPosts extends React.Component {
   }
 
   render () {
+    if (this.props.pending) {
+      return <div className='loading'>Loading...</div>
+    }
+
     let posts = this.props.posts || []
     debug(`${posts.length} posts`)
     return <div>

@@ -31,11 +31,14 @@ export function cacheMiddleware (store) {
 
 export function apiMiddleware (req) {
   return store => next => action => {
-    let { payload } = action
+    let { payload, meta } = action
     if (payload && payload.api) {
       let { path, params, method } = payload
       let cookie = req && req.headers.cookie
       let promise = fetchJSON(path, params, {method, cookie})
+      if (meta && meta.then) {
+        promise = promise.then(meta.then)
+      }
       return next({...action, payload: promise})
     }
     return next(action)

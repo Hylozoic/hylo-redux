@@ -33,7 +33,10 @@ export function fetchCurrentUser () {
   return {
     type: FETCH_CURRENT_USER,
     payload: {api: true, path: '/noo/user/me'},
-    meta: {cache: {bucket: 'users', id: 'current'}}
+    meta: {
+      cache: {bucket: 'users', id: 'current'},
+      then: resp => (resp.id ? resp : null)
+    }
   }
 }
 

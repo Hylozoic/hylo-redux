@@ -1,6 +1,6 @@
 import { combineReducers } from 'redux'
 import { routeReducer } from 'redux-simple-router'
-import { isEmpty, uniq } from 'lodash'
+import { uniq } from 'lodash'
 import { debug } from '../util/logging'
 
 import {
@@ -44,7 +44,7 @@ export default combineReducers({
       let currentUser = state.current
       if (!currentUser) return state
 
-      debug('un-cached user:', currentUser.id)
+      debug('un-caching user:', currentUser.id)
       return {
         ...state,
         current: null,
@@ -52,23 +52,22 @@ export default combineReducers({
       }
     }
 
-    let user = isEmpty(payload) ? null : payload
-    if (!user) return state
+    if (!payload) return state
 
     switch (type) {
       case FETCH_USER:
-        debug('cached user:', user.id)
+        debug('caching user:', payload.id)
         return {
           ...state,
-          [user.id]: user
+          [payload.id]: payload
         }
       case LOGIN:
       case FETCH_CURRENT_USER:
-        debug('cached user:', user.id)
+        debug('caching user:', payload.id)
         return {
           ...state,
-          [user.id]: user,
-          current: user
+          [payload.id]: payload,
+          current: payload
         }
     }
 
@@ -81,7 +80,7 @@ export default combineReducers({
     switch (action.type) {
       case FETCH_COMMUNITY:
         let community = action.payload
-        debug('cached community:', community.slug)
+        debug('caching community:', community.slug)
         return {
           ...state,
           [community.slug]: community
@@ -101,7 +100,7 @@ export default combineReducers({
           m[p.id] = p
           return m
         }, {})
-        debug(`cached ${payload.posts.length} posts`)
+        debug(`caching ${payload.posts.length} posts`)
         return {
           ...state,
           ...posts

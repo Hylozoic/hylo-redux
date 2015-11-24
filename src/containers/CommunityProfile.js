@@ -6,7 +6,7 @@ import { fetchCommunity } from '../actions'
 const { object } = React.PropTypes
 
 @prefetch(({dispatch, params: {slug}}) => dispatch(fetchCommunity(slug)))
-@connect(state => ({community: state.communityProfile.community}))
+@connect((state, props) => ({community: state.communities[props.params.slug]}))
 export default class CommunityProfile extends React.Component {
   static propTypes = {
     community: object,

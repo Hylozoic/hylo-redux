@@ -3,6 +3,7 @@ import { fetchPosts, FETCH_POSTS } from '../../actions'
 import { prefetch } from 'react-fetcher'
 import { connect } from 'react-redux'
 import PostList from '../../components/PostList'
+import { debug } from '../../util/logging'
 const { array, bool, func, number, object } = React.PropTypes
 
 @prefetch(({dispatch, params: {slug}}) => {
@@ -38,8 +39,10 @@ export default class CommunityPosts extends React.Component {
   }
 
   render () {
+    let posts = this.props.posts || []
+    debug(`${posts.length} posts`)
     return <div>
-      <PostList posts={this.props.posts || []} loadMore={this.loadMore}/>
+      <PostList posts={posts} loadMore={this.loadMore}/>
     </div>
   }
 }

@@ -7,7 +7,7 @@ const { object } = React.PropTypes
 const defaultBanner = 'http://cdn.hylo.com/misc/default_user_banner.jpg'
 
 @prefetch(({ dispatch, params: {userId} }) => dispatch(fetchUser(userId)))
-@connect(state => ({user: state.userProfile.user}))
+@connect((state, props) => ({user: state.users[props.params.userId]}))
 export default class UserProfile extends React.Component {
   static propTypes = {
     params: object,

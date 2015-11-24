@@ -4,28 +4,27 @@ import { fetchJSON } from './util/api'
 import { debug } from './util/logging'
 import { blue } from 'chalk'
 
+// TODO cache expiration
 export function cacheMiddleware (store) {
   return next => action => {
-    let { type, meta } = action
-    let { bucket, id, array, limit, offset } = (meta || {}).cache || {}
-    if (bucket && id) {
-      // TODO cache expiration
-      let hit
-      if (array) {
-        hit = store.getState()[bucket][id]
-        if (hit && hit.length > offset) {
-          debug(`cache hit: ${bucket}[${id}][${offset}] + ${limit}`)
-          let payload = hit.slice(offset, offset + limit)
-          return next({type, payload, meta: {cache: {hit: true}}})
-        }
-      } else {
-        hit = store.getState()[bucket][id]
-        if (hit) {
-          debug(`cache hit: ${bucket}[${id}]`)
-          return next({type, payload: hit, meta: {cache: {hit: true}}})
-        }
+    let { cache } = action.meta || {}
+    let { bucket, id, array, limit, offset } = cache || {}
+    if (!bucket) return next(action)
+
+    if (array) {
+      let hit = store.getState()[bucket][id]
+      if (hit && hit.length > offset) {
+        debug(`cache hit: ${bucket}[${id}][${offset}] + ${limit}`)
+        return
+      }
+    } else {
+      let hit = store.getState()[bucket][id]
+      if (hit) {
+        debug(`cache hit: ${bucket}[${id}]`)
+        return
       }
     }
+
     return next(action)
   }
 }

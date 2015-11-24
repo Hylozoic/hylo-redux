@@ -36,22 +36,8 @@ export default combineReducers({
     return state
   },
 
-  userProfile: (state = {}, action) => {
-    if (action.type === FETCH_USER && !action.error) {
-      return {user: action.payload}
-    }
-    return state
-  },
-
-  communityProfile: (state = {}, action) => {
-    if (action.type === FETCH_COMMUNITY && !action.error) {
-      return {community: action.payload}
-    }
-    return state
-  },
-
   users: (state = {}, action) => {
-    let { type, error, meta, payload } = action
+    let { type, error, payload } = action
     if (error) return state
 
     if (type === LOGOUT) {
@@ -65,9 +51,6 @@ export default combineReducers({
         [currentUser.id]: null
       }
     }
-
-    let { cache } = (meta || {})
-    if (cache && cache.hit) return state
 
     let user = isEmpty(payload) ? null : payload
     if (!user) return state
@@ -94,8 +77,6 @@ export default combineReducers({
 
   communities: (state = {}, action) => {
     if (action.error) return state
-    let { cache } = action.meta || {}
-    if (cache && cache.hit) return state
 
     switch (action.type) {
       case FETCH_COMMUNITY:
@@ -112,8 +93,6 @@ export default combineReducers({
 
   posts: (state = {}, action) => {
     if (action.error) return state
-    let { cache } = action.meta || {}
-    if (cache && cache.hit) return state
 
     let { type, payload } = action
     switch (type) {
@@ -145,8 +124,6 @@ export default combineReducers({
 
   postsByCommunity: (state = {}, action) => {
     if (action.error) return state
-    let { cache } = action.meta || {}
-    if (cache && cache.hit) return state
 
     let { meta, payload } = action
     switch (action.type) {

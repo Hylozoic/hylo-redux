@@ -8,10 +8,24 @@ import {
   FETCH_CURRENT_USER,
   FETCH_POSTS,
   FETCH_USER,
+  FETCH_COMMENTS,
+  CREATE_COMMENT,
   LOGIN,
   LOGOUT,
-  NAVIGATE
+  NAVIGATE,
+  TYPEAHEAD,
+  CANCEL_TYPEAHEAD
 } from '../actions'
+
+// for pagination -- append a new page of data to existing data if present,
+// removing any duplicates.
+function appendUniq (state, key, data) {
+  let existing = state[key] || []
+  return {
+    ...state,
+    [key]: uniq([...existing, ...data], (v, i) => v.id)
+  }
+}
 
 export default combineReducers({
   routing: (state = {path: '/'}, action) => {
@@ -124,15 +138,11 @@ export default combineReducers({
   postsByCommunity: (state = {}, action) => {
     if (action.error) return state
 
-    let { meta, payload } = action
-    switch (action.type) {
+    let { type, payload, meta } = action
+    switch (type) {
       case FETCH_POSTS:
-        if (meta && meta.subject === 'community') {
-          let existingPosts = state[meta.id] || []
-          return {
-            ...state,
-            [meta.id]: uniq([...existingPosts, ...payload.posts], (v, i) => v.id)
-          }
+        if (meta.subject === 'community') {
+          return appendUniq(state, meta.id, payload.posts)
         }
     }
 
@@ -152,6 +162,37 @@ export default combineReducers({
           [FETCH_POSTS]: false
         }
     }
+    return state
+  },
+
+  commentsByPost: (state = {}, action) => {
+    if (action.error) return state
+
+    let { type, payload, meta } = action
+    switch (type) {
+      case FETCH_COMMENTS:
+        if (meta.subject === 'post') {
+          return appendUniq(state, meta.id, payload)
+        }
+        break
+      case CREATE_COMMENT:
+        return appendUniq(state, meta.id, [payload])
+    }
+
+    return state
+  },
+
+  typeaheadMatches: (state = [], action) => {
+    if (action.error) return state
+
+    let { type, payload } = action
+    switch (type) {
+      case TYPEAHEAD:
+        return payload
+      case CANCEL_TYPEAHEAD:
+        return []
+    }
+
     return state
   }
 })

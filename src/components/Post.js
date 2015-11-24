@@ -1,30 +1,31 @@
 import React from 'react'
 import { Link } from 'react-router'
 import { filter, find, isEmpty } from 'lodash'
-const { bool, func, object } = React.PropTypes
+const { array, bool, func, object } = React.PropTypes
 import cx from 'classnames'
 import { humanDate, present, sanitize } from '../util/RichText'
 import truncate from 'html-truncate'
 import Avatar from './Avatar'
 import Comment from './Comment'
 import CommentForm from './CommentForm'
+import { connect } from 'react-redux'
+import { fetchComments, createComment } from '../actions'
 
 const spacer = <span>&nbsp;&nbsp;•&nbsp;&nbsp;</span>
 
+@connect((state, props) => ({comments: state.commentsByPost[props.post.id]}))
 export default class Post extends React.Component {
   static propTypes = {
     post: object,
     onExpand: func,
-    expanded: bool
+    expanded: bool,
+    comments: array,
+    dispatch: func
   }
 
   constructor (props) {
     super(props)
     this.state = {}
-  }
-
-  static contextTypes = {
-    executeAction: func
   }
 
   expand = () => {
@@ -36,15 +37,14 @@ export default class Post extends React.Component {
     event.stopPropagation()
     event.preventDefault()
 
-    let {post} = this.props
-    if (!post.comments) {
-      this.context.executeAction(loadComments, post)
-    }
-    this.setState({expandedComments: !this.state.expandedComments})
+    let { post, comments } = this.props
+    if (!comments) this.props.dispatch(fetchComments(post.id))
+    this.setState({commentsExpanded: !this.state.commentsExpanded})
   }
 
   render () {
-    let {post, expanded} = this.props
+    let { post, comments, expanded, dispatch } = this.props
+    if (!comments) comments = []
     let image = find(post.media, m => m.type === 'image')
     var style = image ? {backgroundImage: `url(${image.url})`} : {}
     var classes = cx('post', post.type, {expanded: expanded, image: !!image})
@@ -63,7 +63,6 @@ export default class Post extends React.Component {
       var createdAt = new Date(post.created_at)
       var updatedAt = new Date(post.updated_at)
       var shouldShowUpdatedAt = (now - updatedAt) < (now - createdAt) * 0.8
-      var comments = post.comments || []
       var attachments = filter(post.media, m => m.type !== 'image')
     }
 
@@ -108,9 +107,9 @@ export default class Post extends React.Component {
             </Link>)}
           </div>
 
-          {this.state.expandedComments && <div>
+          {this.state.commentsExpanded && <div>
             {comments.map(c => <Comment comment={c} key={c.id}/>)}
-            <CommentForm postId={post.id}/>
+            <CommentForm onCreate={text => dispatch(createComment(post.id, text))}/>
           </div>}
         </div>}
 

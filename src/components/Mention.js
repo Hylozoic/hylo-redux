@@ -3,16 +3,9 @@
 import React from 'react'
 import {isEmpty} from 'lodash'
 import KeyControlledList from './KeyControlledList'
+import MentionController from './MentionController'
 var {array, bool, func, string} = React.PropTypes
 
-// @connectToStores([MentionStore], (context, props) => {
-//   var store = context.getStore(MentionStore)
-//   var cursor = store.editors[props.editorId] || {}
-//   return {
-//     fetching: cursor.fetching,
-//     choices: cursor.choices || []
-//   }
-// })
 export default class Mention extends React.Component {
 
   static propTypes = {
@@ -28,11 +21,11 @@ export default class Mention extends React.Component {
     // a CSS selector so we know when to remove an @-mention when backspacing.
     mentionSelector: string,
 
-    editorId: string
-  }
+    editorId: string,
 
-  static contextTypes = {
-    executeAction: func
+    // the function to call when the text input changes.
+    // takes one argument, the value of the text input.
+    typeahead: func
   }
 
   componentDidMount () {
@@ -43,20 +36,20 @@ export default class Mention extends React.Component {
     this.controller.addMention(this.props.template(choice))
   }
 
-  query = term => {
-    this.context.executeAction(queryMentions, {id: this.props.editorId, query: term})
-  }
-
-  resetQuery = () => {
-    this.context.executeAction(c => c.dispatch('RESET_MENTIONS', this.props.editorId))
-  }
-
   handleKeys = event => {
     this.refs.list.handleKeys(event)
   }
 
+  query = text => {
+    return this.props.typeahead(text)
+  }
+
+  resetQuery = () => {
+    return this.props.typeahead(null)
+  }
+
   render () {
-    var {choices} = this.props
+    var { choices } = this.props
 
     return <div className='dropdown mentions'>
       {!isEmpty(choices) && <KeyControlledList className='dropdown-menu'

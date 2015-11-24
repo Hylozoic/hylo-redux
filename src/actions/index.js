@@ -1,3 +1,6 @@
+import qs from 'querystring'
+import { omit } from 'lodash'
+
 export const LOGIN = 'LOGIN'
 
 // this is a client-only action
@@ -55,8 +58,7 @@ export const FETCH_POSTS = 'FETCH_POSTS'
 export function fetchPosts (opts) {
   let { subject, id, limit, offset } = opts
   if (!offset) offset = 0
-  let payload = { api: true }
-  let meta = { subject, id, cache: {id, bucket: 'postsByCommunity', limit, offset, array: true} }
+  let payload = {api: true}
 
   switch (subject) {
     case 'community':
@@ -66,7 +68,11 @@ export function fetchPosts (opts) {
   return {
     type: FETCH_POSTS,
     payload,
-    meta
+    meta: {
+      id,
+      subject,
+      cache: {id, bucket: 'postsByCommunity', limit, offset, array: true}
+    }
   }
 }
 
@@ -76,5 +82,47 @@ export function navigate (path) {
   return {
     type: NAVIGATE,
     payload: path
+  }
+}
+
+export const FETCH_COMMENTS = 'FETCH_COMMENTS'
+
+export function fetchComments (postId) {
+  // these are ignored since the comment API doesn't do pagination yet
+  let limit = 100
+  let offset = 0
+
+  return {
+    type: FETCH_COMMENTS,
+    payload: {api: true, path: `/noo/post/${postId}/comments`},
+    meta: {
+      id: postId,
+      subject: 'post',
+      cache: {id: postId, bucket: 'commentsByPost', limit, offset, array: true}
+    }
+  }
+}
+
+export const CREATE_COMMENT = 'CREATE_COMMENT'
+
+export function createComment (postId, text) {
+  return {
+    type: CREATE_COMMENT,
+    payload: {api: true, path: `/noo/post/${postId}/comment`, params: {text}, method: 'POST'},
+    meta: {id: postId}
+  }
+}
+
+export const TYPEAHEAD = 'TYPEAHEAD'
+export const CANCEL_TYPEAHEAD = 'CANCEL_TYPEAHEAD'
+
+export function typeahead (opts) {
+  if (opts.cancel) return {type: CANCEL_TYPEAHEAD}
+
+  let params = {...omit(opts, 'text'), q: opts.text}
+
+  return {
+    type: TYPEAHEAD,
+    payload: {api: true, path: `/noo/autocomplete?${qs.stringify(params)}`}
   }
 }

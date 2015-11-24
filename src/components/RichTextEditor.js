@@ -4,7 +4,7 @@ import TinyMCE from 'react-tinymce'
 import cx from 'classnames'
 import Mention from './Mention'
 import uuid from 'react-tinymce/lib/helpers/uuid'
-var {func, string} = React.PropTypes
+var { array, func, string } = React.PropTypes
 
 var editorConfig = {
   content_css: config.cssBundle,
@@ -22,7 +22,9 @@ export default class RichTextEditor extends React.Component {
     onChange: func,
     className: string,
     template: func,
-    mentionSelector: string
+    mentionSelector: string,
+    mentionChoices: array,
+    mentionTypeahead: func
   }
 
   constructor (props) {
@@ -45,13 +47,17 @@ export default class RichTextEditor extends React.Component {
   }
 
   render () {
-    var {className, template, mentionSelector} = this.props
+    var { className, template, mentionSelector, mentionChoices, mentionTypeahead } = this.props
+
     return <div className={cx('rich-text-editor', className)}>
       <TinyMCE config={editorConfig} id={this.editorId}
         onChange={this.handleChange}
         onSetContent={this.handleChange}/>
+
       <Mention template={template}
         mentionSelector={mentionSelector}
+        choices={mentionChoices}
+        typeahead={mentionTypeahead}
         editorId={this.editorId}/>
     </div>
   }

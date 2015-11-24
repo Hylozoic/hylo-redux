@@ -1,14 +1,16 @@
 import React from 'react'
-var { func, string } = React.PropTypes
 import RichTextEditor from './RichTextEditor'
+import { connect } from 'react-redux'
+import { typeahead } from '../actions'
+var { array, func } = React.PropTypes
 
+@connect(state => ({mentionChoices: state.typeaheadMatches}))
 export default class CommentForm extends React.Component {
   static propTypes = {
-    postId: string
-  }
-
-  static contextTypes = {
-    executeAction: func
+    onCreate: func,
+    mentionChoices: array,
+    mentionTypeahead: func,
+    dispatch: func
   }
 
   constructor (props) {
@@ -22,9 +24,7 @@ export default class CommentForm extends React.Component {
 
   submit = event => {
     event.preventDefault()
-    let {postId} = this.props
-    let text = this.state.input
-    this.context.executeAction(createComment, {postId, text})
+    this.props.onCreate(this.state.input)
     this.setState({input: ''})
     this.refs.editor.setContent('')
   }
@@ -33,12 +33,22 @@ export default class CommentForm extends React.Component {
     return <a data-user-id={user.id} href={'/u/' + user.id}>{user.name}</a>
   }
 
+  mentionTypeahead = text => {
+    if (text) {
+      this.props.dispatch(typeahead({text: text}))
+    } else {
+      this.props.dispatch(typeahead({cancel: true}))
+    }
+  }
+
   render () {
     return <form onSubmit={this.submit} className='comment-form'>
       <RichTextEditor ref='editor'
         content={this.state.input}
         onChange={this.handleChange}
         template={this.mentionTemplate}
+        mentionTypeahead={this.mentionTypeahead}
+        mentionChoices={this.props.mentionChoices}
         mentionSelector='[data-user-id]'/>
       <input type='submit' value='Send'/>
     </form>

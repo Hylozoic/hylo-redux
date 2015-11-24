@@ -12,6 +12,7 @@ import { syncReduxAndRouter } from 'redux-simple-router'
 import { getPrefetchedData } from 'react-fetcher'
 import { cyan } from 'chalk'
 import { info } from '../util/logging'
+import { fetchCurrentUser } from '../actions'
 
 const matchPromise = promisify(match, {multiArgs: true})
 
@@ -22,7 +23,8 @@ export default function (req, res) {
   const routes = makeRoutes(store)
   const history = createHistory()
 
-  return matchPromise({routes, location: req.originalUrl})
+  return store.dispatch(fetchCurrentUser())
+  .then(() => matchPromise({routes, location: req.originalUrl}))
   .then(([redirectLocation, renderProps]) => {
     if (redirectLocation) {
       res.redirect(302, redirectLocation.pathname + redirectLocation.search)

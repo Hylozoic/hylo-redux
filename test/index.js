@@ -20,8 +20,19 @@ export default {
       let res = {
         headers: {},
         setHeader: spy((key, value) => res.headers[key] = value),
-        status: spy(() => res),
-        send: spy(body => { res.body = body; return res })
+        status: spy(code => {
+          res.statusCode = code
+          return res
+        }),
+        send: spy(body => {
+          res.body = body
+          return res
+        }),
+        redirect: spy((code, path) => {
+          res.statusCode = code
+          res.redirectLocation = path
+          return res
+        })
       }
       return res
     }

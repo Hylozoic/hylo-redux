@@ -1,13 +1,16 @@
 import React from 'react'
+import qs from 'querystring'
 import { connect } from 'react-redux'
-import { login } from '../actions'
-const { func, string } = React.PropTypes
+import { login, navigate } from '../actions'
+const { bool, func, object, string } = React.PropTypes
 
-@connect(state => ({error: state.loginError}))
+@connect(state => ({...state.login, currentUser: state.users.current}))
 export default class Login extends React.Component {
   static propTypes = {
     error: string,
-    dispatch: func
+    success: bool,
+    dispatch: func,
+    currentUser: object
   }
 
   submit = event => {
@@ -15,6 +18,15 @@ export default class Login extends React.Component {
     let email = this.refs.email.value
     let password = this.refs.password.value
     this.props.dispatch(login(email, password))
+  }
+
+  componentDidUpdate () {
+    let { currentUser, success, dispatch } = this.props
+    if (success && currentUser) {
+      let params = qs.parse(window.location.search.replace(/^\?/, ''))
+      let next = params.next || `/u/${currentUser.id}`
+      dispatch(navigate(next))
+    }
   }
 
   render () {

@@ -2,6 +2,7 @@ import { inspect } from 'util'
 import { omit } from 'lodash'
 import { fetchJSON } from './util/api'
 import { debug } from './util/logging'
+import { blue } from 'chalk'
 
 export function cacheMiddleware (store) {
   return next => action => {
@@ -13,14 +14,14 @@ export function cacheMiddleware (store) {
       if (array) {
         hit = store.getState()[bucket][id]
         if (hit && hit.length > offset) {
-          debug(`cache hit: ${bucket} ${id}[${offset}] + ${limit}`)
+          debug(`cache hit: ${bucket}[${id}][${offset}] + ${limit}`)
           let payload = hit.slice(offset, offset + limit)
           return next({type, payload, meta: {cache: {hit: true}}})
         }
       } else {
         hit = store.getState()[bucket][id]
         if (hit) {
-          debug(`cache hit: ${bucket} ${id}`)
+          debug(`cache hit: ${bucket}[${id}]`)
           return next({type, payload: hit, meta: {cache: {hit: true}}})
         }
       }
@@ -46,12 +47,10 @@ export function serverLogger (store) {
   return next => action => {
     let { payload } = action
 
-    // ignore api actions, which will be transformed
-    // by apiMiddleware and promiseMiddleware
     if (!payload || !payload.api) {
-      debug('action:', inspect(omit(action, 'payload')))
+      debug(blue('action:'), inspect(omit(action, 'payload')))
     } else {
-      debug('action:', inspect({api: true, ...omit(action, 'payload')}))
+      debug(blue('action:'), inspect({api: true, ...omit(action, 'payload')}))
     }
 
     return next(action)
@@ -64,8 +63,9 @@ function isPromise (value) {
 
 export function pendingPromiseMiddleware (store) {
   return next => action => {
-    if (isPromise(action.payload)) {
-      store.dispatch({...action, type: action.type + '_PENDING', payload: null})
+    let { type, payload } = action
+    if (isPromise(payload)) {
+      store.dispatch({...action, type: type + '_PENDING', payload: null})
     }
     return next(action)
   }

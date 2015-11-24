@@ -1,42 +1,38 @@
 import { combineReducers } from 'redux'
 import { routeReducer } from 'redux-simple-router'
-import { FETCH_COMMUNITY, FETCH_CURRENT_USER, FETCH_POSTS, FETCH_USER, LOGIN, LOGOUT } from '../actions'
 import { isEmpty, uniq } from 'lodash'
 import { debug } from '../util/logging'
+
+import {
+  FETCH_COMMUNITY,
+  FETCH_CURRENT_USER,
+  FETCH_POSTS,
+  FETCH_USER,
+  LOGIN,
+  LOGOUT,
+  NAVIGATE
+} from '../actions'
 
 export default combineReducers({
   routing: (state = {path: '/'}, action) => {
     if (action.error) return state
 
     switch (action.type) {
-      case LOGIN:
-        return {path: `/u/${action.payload.id}`}
       case LOGOUT:
-        return {path: '/'}
+        return {path: '/login'}
+      case NAVIGATE:
+        return {path: action.payload}
       default:
         return routeReducer(state, action)
     }
   },
 
-  loginError: (state = null, action) => {
-    if (action.type === LOGIN && action.error) {
-      return action.payload.message
+  login: (state = {}, action) => {
+    let { type, payload, error } = action
+    if (type === LOGIN) {
+      if (error) return {error: payload.message}
+      return {success: true}
     }
-    return state
-  },
-
-  currentUser: (state = null, action) => {
-    if (action.error) return state
-
-    switch (action.type) {
-      case LOGIN:
-      case FETCH_CURRENT_USER:
-        let user = action.payload
-        return !isEmpty(user) ? user : null
-      case LOGOUT:
-        return null
-    }
-
     return state
   },
 
@@ -55,18 +51,37 @@ export default combineReducers({
   },
 
   users: (state = {}, action) => {
-    if (action.error) return state
-    let { cache } = action.meta || {}
-    if (cache && cache.hit) return state
-    let user = action.payload
+    let { type, error, meta, payload } = action
+    if (error) return state
 
-    switch (action.type) {
+    if (type === LOGOUT) {
+      let currentUser = state.current
+      if (!currentUser) return state
+
+      debug('un-cached user:', currentUser.id)
+      return {
+        ...state,
+        current: null,
+        [currentUser.id]: null
+      }
+    }
+
+    let { cache } = (meta || {})
+    if (cache && cache.hit) return state
+
+    let user = isEmpty(payload) ? null : payload
+    if (!user) return state
+
+    switch (type) {
       case FETCH_USER:
+        debug('cached user:', user.id)
         return {
           ...state,
           [user.id]: user
         }
+      case LOGIN:
       case FETCH_CURRENT_USER:
+        debug('cached user:', user.id)
         return {
           ...state,
           [user.id]: user,
@@ -85,6 +100,7 @@ export default combineReducers({
     switch (action.type) {
       case FETCH_COMMUNITY:
         let community = action.payload
+        debug('cached community:', community.slug)
         return {
           ...state,
           [community.slug]: community

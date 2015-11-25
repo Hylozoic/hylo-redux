@@ -64,6 +64,10 @@ export function fetchPosts (opts) {
   switch (subject) {
     case 'community':
       payload.path = `/noo/community/${opts.id}/posts?${qs.stringify(params)}`
+      break
+    case 'person':
+      payload.path = `/noo/user/${opts.id}/posts?${qs.stringify(params)}`
+      break
   }
 
   // query is used to distinguish between fetches that have different filtering

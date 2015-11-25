@@ -18,6 +18,11 @@
 // bootstrap overrides
 @brand-primary: @dark-gray-bg;
 
+body {
+  background-color: @off-white;
+  color: @off-black;
+}
+
 @import 'type';
 @import 'icons';
 @import 'mixins';
@@ -26,17 +31,9 @@ p {
   margin-bottom: @p-bottom-margin;
 }
 
-h4 {
-  .subsection-header-text;
-}
-
 button, input[type=submit] {
   .btn;
   .btn-default;
-}
-
-body {
-  background-color: @off-white;
 }
 
 #app {
@@ -60,7 +57,7 @@ nav {
 #topNav {
   .make-md-column-offset(1);
   .make-md-column(10);
-  border-bottom: 2px solid #4fb19f;
+  border-bottom: 2px solid @hylo-teal;
   padding: 15px 15px 5px;
   line-height: 36px;
   li {
@@ -73,7 +70,7 @@ nav {
       margin-right: 0;
     }
   }
-  &, a {
+  a {
     color: @off-black;
   }
   .icon-hylo-script {
@@ -501,6 +498,19 @@ ul.posts {
   .markdown {
     img {
       max-width: 100%;
+    }
+  }
+}
+
+#person {
+  .about {
+    padding: 15px;
+    border: 1px solid @light-gray-border;
+    section {
+      margin-bottom: 30px;
+      &:last-child {
+        margin-bottom: 0;
+      }
     }
   }
 }

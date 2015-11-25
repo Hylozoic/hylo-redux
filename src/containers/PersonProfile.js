@@ -27,8 +27,8 @@ export default class PersonProfile extends React.Component {
         <div className='logo person' style={{backgroundImage: `url(${person.avatar_url})`}}/>
         <h2>{person.name}</h2>
         <ul className='tabs'>
-          <li><IndexA to={`/u/${person.id}`}>About</IndexA></li>
-          <li><A to={`/u/${person.id}/posts`}>Posts</A></li>
+          <li><IndexA to={`/u/${person.id}`}>Posts</IndexA></li>
+          <li><A to={`/u/${person.id}/about`}>About</A></li>
           <li><A to={`/u/${person.id}/contributions`}>Contributions</A></li>
           <li><A to={`/u/${person.id}/thanks`}>Thanks</A></li>
         </ul>

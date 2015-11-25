@@ -146,7 +146,7 @@ export default class PostEditor extends React.Component {
         onFocus={this.expand} value={title} onInput={this.setTitle}/>
 
       {expanded && <div>
-        <h4>Details</h4>
+        <h3>Details</h3>
         <RichTextEditor className='details'
           content={details}
           onChange={this.setDetails}
@@ -155,7 +155,7 @@ export default class PostEditor extends React.Component {
           mentionChoices={this.props.mentionChoices}
           mentionSelector='[data-user-id]'/>
 
-        <h4>Communities</h4>
+        <h3>Communities</h3>
         <TagInput tags={communities}
           getChoices={this.findCommunities}
           onSelect={this.addCommunity}

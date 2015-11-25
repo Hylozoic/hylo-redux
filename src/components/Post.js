@@ -51,10 +51,10 @@ export default class Post extends React.Component {
     var description
 
     var title = post.name
-    var user = post.user
+    var person = post.user
     if (post.type === 'welcome') {
-      user = post.relatedUsers[0]
-      title = `${user.name} joined ${post.communities[0].name}. Welcome them!`
+      person = post.relatedUsers[0]
+      title = `${person.name} joined ${post.communities[0].name}. Welcome them!`
     }
 
     if (expanded) {
@@ -67,10 +67,10 @@ export default class Post extends React.Component {
     }
 
     return <div className={classes} onClick={this.expand}>
-      <Avatar user={user}/>
+      <Avatar person={person}/>
 
       <div className='content'>
-        <strong className='name'>{post.user.name}</strong>
+        <strong className='name'>{person.name}</strong>
         <p className='title'>{title}</p>
 
         {image && <div className='image' style={style}></div>}

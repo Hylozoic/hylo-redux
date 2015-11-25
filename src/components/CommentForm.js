@@ -29,8 +29,8 @@ export default class CommentForm extends React.Component {
     this.refs.editor.setContent('')
   }
 
-  mentionTemplate = user => {
-    return <a data-user-id={user.id} href={'/u/' + user.id}>{user.name}</a>
+  mentionTemplate = person => {
+    return <a data-user-id={person.id} href={'/u/' + user.id}>{person.name}</a>
   }
 
   mentionTypeahead = text => {

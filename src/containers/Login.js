@@ -4,7 +4,7 @@ import { connect } from 'react-redux'
 import { login, navigate } from '../actions'
 const { bool, func, object, string } = React.PropTypes
 
-@connect(state => ({...state.login, currentUser: state.users.current}))
+@connect(state => ({...state.login, currentUser: state.people.current}))
 export default class Login extends React.Component {
   static propTypes = {
     error: string,

@@ -8,7 +8,7 @@ import {
   FETCH_COMMUNITY,
   FETCH_CURRENT_USER,
   FETCH_POSTS,
-  FETCH_USER,
+  FETCH_PERSON,
   FETCH_COMMENTS,
   CREATE_COMMENT,
   LOGIN,
@@ -43,7 +43,7 @@ export default combineReducers({
     return state
   },
 
-  users: (state = {}, action) => {
+  people: (state = {}, action) => {
     let { type, error, payload } = action
     if (error) return state
 
@@ -51,7 +51,7 @@ export default combineReducers({
       let currentUser = state.current
       if (!currentUser) return state
 
-      debug('un-caching user:', currentUser.id)
+      debug('un-caching person:', currentUser.id)
       return {
         ...state,
         current: null,
@@ -62,15 +62,15 @@ export default combineReducers({
     if (!payload) return state
 
     switch (type) {
-      case FETCH_USER:
-        debug('caching user:', payload.id)
+      case FETCH_PERSON:
+        debug('caching person:', payload.id)
         return {
           ...state,
           [payload.id]: payload
         }
       case LOGIN:
       case FETCH_CURRENT_USER:
-        debug('caching user:', payload.id)
+        debug('caching person:', payload.id)
         return {
           ...state,
           [payload.id]: payload,

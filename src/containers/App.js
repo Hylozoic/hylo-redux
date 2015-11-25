@@ -10,7 +10,7 @@ const { func, number, object } = React.PropTypes
 const lastViewed = m => -Date.parse(m.last_viewed_at || '2001-01-01')
 
 @prefetch(({dispatch}) => dispatch(fetchCurrentUser()))
-@connect(state => ({currentUser: state.users.current}))
+@connect(state => ({currentUser: state.people.current}))
 export default class App extends React.Component {
   static propTypes = {
     children: object,

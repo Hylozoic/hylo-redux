@@ -20,13 +20,13 @@ export function logout () {
   }
 }
 
-export const FETCH_USER = 'FETCH_USER'
+export const FETCH_PERSON = 'FETCH_PERSON'
 
-export function fetchUser (id) {
+export function fetchPerson (id) {
   return {
-    type: FETCH_USER,
+    type: FETCH_PERSON,
     payload: {api: true, path: `/noo/user/${id}`},
-    meta: {cache: {bucket: 'users', id}}
+    meta: {cache: {bucket: 'people', id}}
   }
 }
 
@@ -37,7 +37,7 @@ export function fetchCurrentUser () {
     type: FETCH_CURRENT_USER,
     payload: {api: true, path: '/noo/user/me'},
     meta: {
-      cache: {bucket: 'users', id: 'current'},
+      cache: {bucket: 'people', id: 'current'},
       then: resp => (resp.id ? resp : null)
     }
   }

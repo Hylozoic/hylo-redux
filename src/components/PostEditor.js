@@ -31,7 +31,7 @@ const postTypeData = {
 @connect((state, props) => ({
   communities: props.community ? [props.community] : [],
   mentionChoices: state.typeaheadMatches,
-  currentUser: state.users.current,
+  currentUser: state.people.current,
   ...state.postEditor
 }))
 export default class PostEditor extends React.Component {
@@ -115,8 +115,8 @@ export default class PostEditor extends React.Component {
     return filter(currentUser.memberships.map(m => m.community), match)
   }
 
-  mentionTemplate = user => {
-    return <a data-user-id={user.id} href={'/u/' + user.id}>{user.name}</a>
+  mentionTemplate = person => {
+    return <a data-user-id={person.id} href={'/u/' + person.id}>{person.name}</a>
   }
 
   mentionTypeahead = text => {

@@ -13,6 +13,7 @@ import { getPrefetchedData } from 'react-fetcher'
 import { cyan } from 'chalk'
 import { info } from '../util/logging'
 import { fetchCurrentUser } from '../actions'
+import { localsForPrefetch } from '../util/universal'
 
 const matchPromise = promisify(match, {multiArgs: true})
 
@@ -49,12 +50,7 @@ export default function (req, res) {
 
 function renderApp (res, renderProps, history, store) {
   const components = renderProps.routes.map(r => r.component)
-  const locals = {
-    path: renderProps.location.pathname,
-    query: renderProps.location.query,
-    params: renderProps.params,
-    dispatch: store.dispatch
-  }
+  const locals = localsForPrefetch(renderProps, store)
 
   return getPrefetchedData(components, locals)
   .then(() => {

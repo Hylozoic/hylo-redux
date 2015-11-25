@@ -9,6 +9,7 @@ import makeRoutes from '../routes'
 import { syncReduxAndRouter } from 'redux-simple-router'
 import { getPrefetchedData, getDeferredData } from 'react-fetcher'
 import { debug } from '../util/logging'
+import { localsForPrefetch } from '../util/universal'
 
 const store = configureStore(window.INITIAL_STATE)
 const routes = makeRoutes(store)
@@ -41,12 +42,8 @@ history.listen(location => {
     }
 
     const components = renderProps.routes.map(r => r.component)
-    const locals = {
-      path: renderProps.location.pathname,
-      query: renderProps.location.query,
-      params: renderProps.params,
-      dispatch: store.dispatch
-    }
+    const locals = localsForPrefetch(renderProps, store)
+    
     getPrefetchedData(components, locals)
     .then(() => getDeferredData(components, locals))
     .then(() => prevLocation = location)

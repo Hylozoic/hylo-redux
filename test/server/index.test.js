@@ -1,4 +1,4 @@
-require('../index')
+require('../support')
 import React from 'react'
 import makeRoutes from '../../src/routes'
 import { configureStore } from '../../src/store'

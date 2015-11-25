@@ -1,4 +1,4 @@
-import test from '../index'
+import support from '../support'
 import appHandler from '../../src/server/appHandler'
 import nock from 'nock'
 import { HOST } from '../../src/util/api'
@@ -7,7 +7,7 @@ describe('appHandler', () => {
   let req, res
 
   beforeEach(() => {
-    res = test.mocks.response()
+    res = support.mocks.response()
   })
 
   describe('with an anonymous visitor', () => {
@@ -16,7 +16,7 @@ describe('appHandler', () => {
     })
 
     it('prefetches and renders the logged out home page', () => {
-      req = test.mocks.request('/')
+      req = support.mocks.request('/')
 
       return appHandler(req, res)
       .then(() => {
@@ -29,7 +29,7 @@ describe('appHandler', () => {
     })
 
     it('redirects away from a page that requires login', () => {
-      req = test.mocks.request('/c/foo')
+      req = support.mocks.request('/c/foo')
 
       return appHandler(req, res)
       .then(() => {
@@ -48,7 +48,7 @@ describe('appHandler', () => {
     })
 
     it('loads a page that requires login', () => {
-      req = test.mocks.request('/c/house')
+      req = support.mocks.request('/c/house')
 
       return appHandler(req, res)
       .then(() => {

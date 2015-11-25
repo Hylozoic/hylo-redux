@@ -6,17 +6,24 @@ import PostList from '../../components/PostList'
 import PostEditor from '../../components/PostEditor'
 import { debug } from '../../util/logging'
 const { array, bool, func, number, object } = React.PropTypes
+import qs from 'querystring'
 
-@prefetch(({dispatch, params: {slug}}) => {
-  return dispatch(fetchPosts({subject: 'community', id: slug, limit: 20}))
+const postType = 'all+welcome'
+
+const _fetchPosts = (id, params) =>
+  fetchPosts({subject: 'community', id, type: postType, limit: 20, ...params})
+
+@prefetch(({ dispatch, params: { id } }) => {
+  return dispatch(_fetchPosts(id))
 })
 @connect((state, props) => {
-  let { slug } = props.params
+  let { id } = props.params
+  let query = qs.stringify({id, type: postType})
   return {
-    posts: state.postsByCommunity[slug],
-    total: state.totalPostsByCommunity[slug],
+    posts: state.postsByQuery[query],
+    total: state.totalPostsByQuery[query],
     pending: state.pending[FETCH_POSTS],
-    community: state.communities[slug]
+    community: state.communities[id]
   }
 })
 export default class CommunityPosts extends React.Component {
@@ -30,26 +37,20 @@ export default class CommunityPosts extends React.Component {
   }
 
   loadMore = () => {
-    let { posts, dispatch, params, total, pending } = this.props
-    if (posts.length >= total || pending) return
+    let { posts, dispatch, params: { id }, total, pending } = this.props
+    if (total && posts.length >= total || pending) return
 
-    dispatch(fetchPosts({
-      subject: 'community',
-      id: params.slug,
-      offset: posts.length,
-      limit: 20
-    }))
+    let offset = posts.length
+    dispatch(_fetchPosts(id, {offset}))
   }
 
   render () {
-    if (this.props.pending) {
-      return <div className='loading'>Loading...</div>
-    }
-
-    let posts = this.props.posts || []
-    debug(`${posts.length} posts`)
+    let { pending, total, posts, community } = this.props
+    if (!posts) posts = []
+    debug(`posts: ${posts.length} / ${total || '??'}`)
     return <div>
-      <PostEditor community={this.props.community}/>
+      {pending && <div className='loading'>Loading...</div>}
+      <PostEditor community={community}/>
       <PostList posts={posts} loadMore={this.loadMore}/>
     </div>
   }

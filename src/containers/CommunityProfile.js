@@ -5,8 +5,8 @@ import { prefetch } from 'react-fetcher'
 import { fetchCommunity } from '../actions'
 const { object } = React.PropTypes
 
-@prefetch(({dispatch, params: {slug}}) => dispatch(fetchCommunity(slug)))
-@connect((state, props) => ({community: state.communities[props.params.slug]}))
+@prefetch(({dispatch, params: {id}}) => dispatch(fetchCommunity(id)))
+@connect((state, props) => ({community: state.communities[props.params.id]}))
 export default class CommunityProfile extends React.Component {
   static propTypes = {
     community: object,
@@ -26,7 +26,7 @@ export default class CommunityProfile extends React.Component {
         <h2>{community.name}</h2>
         <ul className='tabs'>
           <li><IndexLink to={`/c/${slug}`} activeClassName='active'>Posts</IndexLink></li>
-          <li><a>Events</a></li>
+          <li><Link to={`/c/${slug}/events`} activeClassName='active'>Events</Link></li>
           <li><a>Projects</a></li>
           <li><a>Members</a></li>
           <li><a>About</a></li>

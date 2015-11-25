@@ -20,7 +20,7 @@ export default function makeRoutes (store) {
     <IndexRoute component={Home}/>
     <Route path='login' component={Login}/>
     <Route path='u/:userId' component={UserProfile} onEnter={requireLogin(store)}/>
-    <Route path='c/:slug' component={CommunityProfile} onEnter={requireLogin(store)}>
+    <Route path='c/:id' component={CommunityProfile} onEnter={requireLogin(store)}>
       <IndexRoute component={CommunityPosts}/>
     </Route>
   </Route>

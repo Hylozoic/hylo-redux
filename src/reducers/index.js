@@ -2,7 +2,7 @@ import { combineReducers } from 'redux'
 import { routeReducer } from 'redux-simple-router'
 import { debug } from '../util/logging'
 import { appendUniq } from './util'
-import postsByCommunity from './postsByCommunity'
+import postsByQuery from './postsByQuery'
 
 import {
   FETCH_COMMUNITY,
@@ -122,18 +122,18 @@ export default combineReducers({
     return state
   },
 
-  totalPostsByCommunity: (state = {}, action) => {
-    let { type, payload, meta, error } = action
-    if (type === FETCH_POSTS && !error && meta && meta.subject === 'community') {
-      return {
-        ...state,
-        [meta.id]: payload.posts_total
-      }
+  totalPostsByQuery: (state = {}, action) => {
+    if (action.error) return state
+
+    let { type, payload, meta } = action
+    switch (type) {
+      case FETCH_POSTS:
+        return {...state, [meta.query]: payload.posts_total}
     }
     return state
   },
 
-  postsByCommunity,
+  postsByQuery,
 
   pending: (state = {}, action) => {
     switch (action.type) {

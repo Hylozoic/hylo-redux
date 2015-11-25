@@ -1,15 +1,9 @@
 import React from 'react'
-import { IndexLink, Link } from 'react-router'
+import { A, IndexA } from '../components/A'
 import { connect } from 'react-redux'
 import { prefetch } from 'react-fetcher'
 import { fetchCommunity } from '../actions'
 const { object } = React.PropTypes
-
-const A = props =>
-  <Link {...props} activeClassName='active'>{props.children}</Link>
-
-const IndexA = props =>
-  <IndexLink {...props} activeClassName='active'>{props.children}</IndexLink>
 
 @prefetch(({dispatch, params: {id}}) => dispatch(fetchCommunity(id)))
 @connect((state, props) => ({community: state.communities[props.params.id]}))

@@ -1,52 +1,81 @@
 require('../support')
 import postsByQuery from '../../src/reducers/postsByQuery'
-import { FETCH_POSTS } from '../../src/actions'
+import { FETCH_POSTS, CREATE_POST } from '../../src/actions'
 
 describe('postsByQuery', () => {
-  it('adds posts to a subtree named after cache id', () => {
-    let action = {
-      type: FETCH_POSTS,
-      payload: {
-        posts: [{id: 'a'}, {id: 'b'}],
-        posts_total: 5
-      },
-      meta: {
-        cache: {id: 'bar'}
+  describe('on FETCH_POSTS', () => {
+    it('adds posts to a subtree named after cache id', () => {
+      let action = {
+        type: FETCH_POSTS,
+        payload: {
+          posts: [{id: 'a'}, {id: 'b'}],
+          posts_total: 5
+        },
+        meta: {
+          cache: {id: 'bar'}
+        }
       }
-    }
 
-    let state = {
-      foo: [{id: 'a'}, {id: 'c'}]
-    }
+      let state = {
+        foo: [{id: 'a'}, {id: 'c'}]
+      }
 
-    let expectedState = {
-      foo: [{id: 'a'}, {id: 'c'}],
-      bar: [{id: 'a'}, {id: 'b'}]
-    }
+      let expectedState = {
+        foo: [{id: 'a'}, {id: 'c'}],
+        bar: [{id: 'a'}, {id: 'b'}]
+      }
 
-    expect(postsByQuery(state, action)).to.deep.equal(expectedState)
+      expect(postsByQuery(state, action)).to.deep.equal(expectedState)
+    })
+
+    it('removes duplicates', () => {
+      let action = {
+        type: FETCH_POSTS,
+        payload: {
+          posts: [{id: 'y'}, {id: 'z'}, {id: 'w'}],
+          posts_total: 5
+        },
+        meta: {
+          cache: {id: 'foo'}
+        }
+      }
+
+      let state = {
+        foo: [{id: 'x'}, {id: 'y'}]
+      }
+
+      let expectedState = {
+        foo: [{id: 'x'}, {id: 'y'}, {id: 'z'}, {id: 'w'}]
+      }
+
+      expect(postsByQuery(state, action)).to.deep.equal(expectedState)
+    })
   })
 
-  it('removes duplicates', () => {
-    let action = {
-      type: FETCH_POSTS,
-      payload: {
-        posts: [{id: 'y'}, {id: 'z'}, {id: 'w'}],
-        posts_total: 5
-      },
-      meta: {
-        cache: {id: 'foo'}
+  describe('on CREATE_POST', () => {
+    it('prepends the post to caches', () => {
+      let post = {
+        id: 5,
+        communities: [{slug: 'foo'}, {slug: 'bar'}]
       }
-    }
 
-    let state = {
-      foo: [{id: 'x'}, {id: 'y'}]
-    }
+      let action = {type: CREATE_POST, payload: post}
 
-    let expectedState = {
-      foo: [{id: 'x'}, {id: 'y'}, {id: 'z'}, {id: 'w'}]
-    }
+      let state = {
+        'subject=all-posts': [{id: 6}],
+        'subject=community&id=foo': [{id: 7}],
+        'subject=community&id=bar': [{id: 8}],
+        'subject=community&id=baz': [{id: 9}]
+      }
 
-    expect(postsByQuery(state, action)).to.deep.equal(expectedState)
+      let expectedState = {
+        'subject=all-posts': [post, {id: 6}],
+        'subject=community&id=foo': [post, {id: 7}],
+        'subject=community&id=bar': [post, {id: 8}],
+        'subject=community&id=baz': [{id: 9}]
+      }
+
+      expect(postsByQuery(state, action)).to.deep.equal(expectedState)
+    })
   })
 })

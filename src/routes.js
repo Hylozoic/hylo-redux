@@ -3,6 +3,7 @@ import { Route, IndexRoute } from 'react-router'
 import Home from './components/Home'
 import Login from './containers/Login'
 import App from './containers/App'
+import AllPosts from './containers/AllPosts'
 import PersonProfile from './containers/PersonProfile'
 import CommunityProfile from './containers/CommunityProfile'
 import CommunityPosts from './containers/community/CommunityPosts'
@@ -23,6 +24,7 @@ export default function makeRoutes (store) {
   return <Route path='/' component={App}>
     <IndexRoute component={Home}/>
     <Route path='login' component={Login}/>
+    <Route path='all-posts' component={AllPosts} onEnter={requireLogin(store)}/>
     <Route path='u/:id' component={PersonProfile} onEnter={requireLogin(store)}>
       <IndexRoute component={PersonPosts}/>
       <Route path='about' component={AboutPerson}/>

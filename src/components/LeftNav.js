@@ -1,17 +1,17 @@
-import { Link } from 'react-router'
+import { A } from './A'
 import React from 'react'
 
 const LeftNav = props => {
   return <nav id='leftNav'>
     <ul>
-      <Link to='allPosts'>All posts</Link>
-      <Link to='myPosts'>My posts</Link>
-      <Link to='followedPosts'>Followed posts</Link>
+      <A to='/all-posts'>All posts</A>
+      <A to='/my-posts'>My posts</A>
+      <A to='/followed-posts'>Followed posts</A>
       {props.communities.map((c, i) => <li key={i}>
-        <Link to={`/c/${c.slug}`} activeClassName='active'>
+        <A to={`/c/${c.slug}`}>
           <img src={c.avatar_url}/>
           {c.name}
-        </Link>
+        </A>
       </li>)}
     </ul>
   </nav>

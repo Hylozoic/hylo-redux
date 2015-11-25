@@ -3,5 +3,5 @@ export const localsForPrefetch = (renderProps, store) => ({
   query: renderProps.location.query,
   params: renderProps.params,
   dispatch: store.dispatch,
-  currentUser: store.getState().currentUser
+  currentUser: store.getState().people.current
 })

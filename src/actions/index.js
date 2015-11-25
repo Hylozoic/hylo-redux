@@ -68,7 +68,7 @@ export function fetchPosts (opts) {
     case 'person':
       payload.path = `/noo/user/${id}/posts?${querystring}`
       break
-    case 'all':
+    case 'all-posts':
       payload.path = `/noo/user/${id}/all-community-posts?${querystring}`
       break
   }

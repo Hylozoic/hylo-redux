@@ -107,16 +107,9 @@ export default combineReducers({
           m[p.id] = p
           return m
         }, {})
-        debug(`caching ${payload.posts.length} posts`)
-        return {
-          ...state,
-          ...posts
-        }
+        return {...state, ...posts}
       case CREATE_POST:
-        return {
-          ...state,
-          [payload.id]: payload
-        }
+        return {...state, [payload.id]: payload}
     }
 
     return state

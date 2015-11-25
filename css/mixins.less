@@ -59,3 +59,12 @@
     -ms-transform: rotate(45deg);
   }
 }
+
+.has-left-side-avatar() {
+  > .avatar {
+    float: left;
+  }
+  > .content {
+    margin-left: @avatar-size + 15px;
+  }
+}

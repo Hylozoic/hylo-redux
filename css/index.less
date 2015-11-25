@@ -1,31 +1,13 @@
 @import '../node_modules/bootstrap/less/bootstrap';
-
-@off-black: #111;
-@off-white: #fffdfb; // #fffff8
-@gray-text: #888;
-@light-gray-bg: #eee;
-@mid-gray-bg: #bbb;
-@dark-gray-bg: #555;
-@light-gray-border: #ddd;
-@dark-gray-border: #888;
-@hylo-teal: #4fb19f;
-@hylo-orange: #e79336;
-@hylo-green: #52b065;
-
-@p-bottom-margin: 10px;
-@avatar-size: 36px;
-
-// bootstrap overrides
-@brand-primary: @dark-gray-bg;
+@import 'globals';
+@import 'type';
+@import 'icons';
+@import 'mixins';
 
 body {
   background-color: @off-white;
   color: @off-black;
 }
-
-@import 'type';
-@import 'icons';
-@import 'mixins';
 
 p {
   margin-bottom: @p-bottom-margin;
@@ -38,10 +20,6 @@ button, input[type=submit] {
 
 #app {
   .container-fluid;
-}
-
-#page-error {
-  margin-top: 15px;
 }
 
 nav {
@@ -134,10 +112,6 @@ nav {
   }
 }
 
-ul.posts {
-  .no-bullets;
-}
-
 .left {
   float: left;
 }
@@ -221,13 +195,8 @@ ul.posts {
   background-size: cover;
 }
 
-.has-left-side-avatar() {
-  > .avatar {
-    float: left;
-  }
-  > .content {
-    margin-left: @avatar-size + 15px;
-  }
+ul.posts {
+  .no-bullets;
 }
 
 .post {

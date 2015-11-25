@@ -7,6 +7,7 @@ import UserProfile from './containers/UserProfile'
 import CommunityProfile from './containers/CommunityProfile'
 import CommunityPosts from './containers/community/CommunityPosts'
 import CommunityEvents from './containers/community/CommunityEvents'
+import AboutCommunity from './containers/community/AboutCommunity'
 import { debug } from './util/logging'
 
 const requireLogin = store => (nextState, replaceState) => {
@@ -24,6 +25,7 @@ export default function makeRoutes (store) {
     <Route path='c/:id' component={CommunityProfile} onEnter={requireLogin(store)}>
       <IndexRoute component={CommunityPosts}/>
       <Route path='events' component={CommunityEvents}/>
+      <Route path='about' component={AboutCommunity}/>
     </Route>
   </Route>
 }

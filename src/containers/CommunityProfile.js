@@ -5,6 +5,12 @@ import { prefetch } from 'react-fetcher'
 import { fetchCommunity } from '../actions'
 const { object } = React.PropTypes
 
+const A = props =>
+  <Link {...props} activeClassName='active'>{props.children}</Link>
+
+const IndexA = props =>
+  <IndexLink {...props} activeClassName='active'>{props.children}</IndexLink>
+
 @prefetch(({dispatch, params: {id}}) => dispatch(fetchCommunity(id)))
 @connect((state, props) => ({community: state.communities[props.params.id]}))
 export default class CommunityProfile extends React.Component {
@@ -25,11 +31,11 @@ export default class CommunityProfile extends React.Component {
         <div className='logo' style={{backgroundImage: `url(${community.avatar_url})`}}/>
         <h2>{community.name}</h2>
         <ul className='tabs'>
-          <li><IndexLink to={`/c/${slug}`} activeClassName='active'>Posts</IndexLink></li>
-          <li><Link to={`/c/${slug}/events`} activeClassName='active'>Events</Link></li>
+          <li><IndexA to={`/c/${slug}`}>Posts</IndexA></li>
+          <li><A to={`/c/${slug}/events`}>Events</A></li>
           <li><a>Projects</a></li>
           <li><a>Members</a></li>
-          <li><a>About</a></li>
+          <li><A to={`/c/${slug}/about`}>About</A></li>
         </ul>
       </div>
       {this.props.children}

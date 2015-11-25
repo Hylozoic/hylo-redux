@@ -3,17 +3,18 @@ import { connect } from 'react-redux'
 import PostList from '../components/PostList'
 import { FETCH_POSTS } from '../actions'
 import { debug } from '../util/logging'
-const { array, bool, func, number } = React.PropTypes
+const { array, bool, func, number, string } = React.PropTypes
 
-@connect(({ postsByQuery, totalPostsByQuery, pending }, { query }) => ({
-  posts: postsByQuery[query],
-  total: totalPostsByQuery[query],
+@connect(({ postsByQuery, totalPostsByQuery, pending }, { id }) => ({
+  posts: postsByQuery[id],
+  total: totalPostsByQuery[id],
   pending: pending[FETCH_POSTS]
 }))
 export default class ConnectedPostList extends React.Component {
   static propTypes = {
+    fetch: func.isRequired,
+    id: string.isRequired,
     posts: array,
-    fetch: func,
     dispatch: func,
     total: number,
     pending: bool

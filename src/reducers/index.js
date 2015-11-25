@@ -128,7 +128,7 @@ export default combineReducers({
     let { type, payload, meta } = action
     switch (type) {
       case FETCH_POSTS:
-        return {...state, [meta.query]: payload.posts_total}
+        return {...state, [meta.cache.id]: payload.posts_total}
     }
     return state
   },

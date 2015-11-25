@@ -56,31 +56,25 @@ export function fetchCommunity (id) {
 export const FETCH_POSTS = 'FETCH_POSTS'
 
 export function fetchPosts (opts) {
-  let { subject, id, limit, offset, type } = opts
+  let { subject, id, limit, offset, type, cacheId } = opts
   if (!offset) offset = 0
   let payload = {api: true}
-  let params = {offset, limit, type}
+  let querystring = qs.stringify({offset, limit, type})
 
   switch (subject) {
     case 'community':
-      payload.path = `/noo/community/${opts.id}/posts?${qs.stringify(params)}`
+      payload.path = `/noo/community/${id}/posts?${querystring}`
       break
     case 'person':
-      payload.path = `/noo/user/${opts.id}/posts?${qs.stringify(params)}`
+      payload.path = `/noo/user/${id}/posts?${querystring}`
+      break
+    case 'all':
+      payload.path = `/noo/user/${id}/all-community-posts?${querystring}`
       break
   }
 
-  // query is used to distinguish between fetches that have different filtering
-  // & sorting conditions; it must be a string because it is used as a property
-  // name in the store.
-  let query = qs.stringify({id, type})
-  let cache = {id: query, bucket: 'postsByQuery', limit, offset, array: true}
-
-  return {
-    type: FETCH_POSTS,
-    payload,
-    meta: {query, cache}
-  }
+  let cache = {id: cacheId, bucket: 'postsByQuery', limit, offset, array: true}
+  return {type: FETCH_POSTS, payload, meta: {cache}}
 }
 
 export const NAVIGATE = 'NAVIGATE'

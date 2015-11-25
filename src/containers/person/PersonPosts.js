@@ -3,11 +3,15 @@ import { connect } from 'react-redux'
 import { prefetch } from 'react-fetcher'
 import { fetchPosts } from '../../actions'
 import ConnectedPostList from '../ConnectedPostList'
-import qs from 'querystring'
+import { createCacheId } from '../../util/caching'
 const { func, object } = React.PropTypes
 
-const fetch = (id, opts = {}) =>
-  fetchPosts({subject: 'person', id, type: 'all', limit: 20, ...opts})
+const fetch = (id, opts = {}) => {
+  let subject = 'person'
+  let type = 'all'
+  let cacheId = createCacheId({subject, id, type})
+  return fetchPosts({subject, id, type, cacheId, limit: 20, ...opts})
+}
 
 @prefetch(({ dispatch, params }) => dispatch(fetch(params.id)))
 @connect((state, { params }) => ({person: state.people[params.id]}))
@@ -20,10 +24,9 @@ export default class PersonPosts extends React.Component {
 
   render () {
     let { id } = this.props.params
-    let type = 'all'
-    let query = qs.stringify({id, type})
+    let cacheId = createCacheId({subject: 'person', id, type: 'all'})
     return <div>
-      <ConnectedPostList fetch={opts => fetch(id, opts)} query={query}/>
+      <ConnectedPostList fetch={opts => fetch(id, opts)} id={cacheId}/>
     </div>
   }
 }

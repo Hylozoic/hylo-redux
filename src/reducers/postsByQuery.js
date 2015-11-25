@@ -12,7 +12,7 @@ export default function (state = {}, action) {
   let { type, payload, meta } = action
   switch (type) {
     case FETCH_POSTS:
-      return appendUniq(state, meta.query, payload.posts)
+      return appendUniq(state, meta.cache.id, payload.posts)
     case CREATE_POST:
       let updatedCommunities = payload.communities.reduce((m, c) => {
         if (state[c.slug]) {

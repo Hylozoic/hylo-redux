@@ -3,7 +3,7 @@ import postsByQuery from '../../src/reducers/postsByQuery'
 import { FETCH_POSTS } from '../../src/actions'
 
 describe('postsByQuery', () => {
-  it('adds posts to a subtree named after id', () => {
+  it('adds posts to a subtree named after cache id', () => {
     let action = {
       type: FETCH_POSTS,
       payload: {
@@ -11,7 +11,7 @@ describe('postsByQuery', () => {
         posts_total: 5
       },
       meta: {
-        query: 'bar'
+        cache: {id: 'bar'}
       }
     }
 
@@ -35,7 +35,7 @@ describe('postsByQuery', () => {
         posts_total: 5
       },
       meta: {
-        query: 'foo'
+        cache: {id: 'foo'}
       }
     }
 

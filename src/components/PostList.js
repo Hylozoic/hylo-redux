@@ -37,15 +37,12 @@ class PostList extends React.Component {
   render () {
     let { posts, pending } = this.props
 
-    if (pending) {
-      return <div className='loading'>Loading...</div>
-    }
-
-    if (posts.length === 0) {
+    if (!pending && posts.length === 0) {
       return <div className='no-posts'>No posts to show.</div>
     }
 
     return <ul className='posts'>
+      {pending && <div className='loading'>Loading...</div>}
       {posts.map(p => <li key={p.id}>
         <Post post={p} expanded={p.id === this.state.expanded} onExpand={this.expand}/>
       </li>)}

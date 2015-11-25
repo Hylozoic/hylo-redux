@@ -70,13 +70,12 @@ export function fetchPosts (opts) {
   // & sorting conditions; it must be a string because it is used as a property
   // name in the store.
   let query = qs.stringify({id, type})
-
   let cache = {id: query, bucket: 'postsByQuery', limit, offset, array: true}
 
   return {
     type: FETCH_POSTS,
     payload,
-    meta: {query, subject, cache}
+    meta: {query, cache}
   }
 }
 

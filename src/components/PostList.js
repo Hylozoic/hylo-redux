@@ -3,12 +3,13 @@ import { isAtBottom } from '../util/scrolling'
 import React from 'react'
 import Post from './Post'
 
-const { array, func } = React.PropTypes
+const { array, bool, func } = React.PropTypes
 
 class PostList extends React.Component {
   static propTypes = {
     posts: array,
-    loadMore: func
+    loadMore: func,
+    pending: bool
   }
 
   constructor (props) {
@@ -34,8 +35,18 @@ class PostList extends React.Component {
   }
 
   render () {
+    let { posts, pending } = this.props
+
+    if (pending) {
+      return <div className='loading'>Loading...</div>
+    }
+
+    if (posts.length === 0) {
+      return <div className='no-posts'>No posts to show.</div>
+    }
+
     return <ul className='posts'>
-      {this.props.posts.map(p => <li key={p.id}>
+      {posts.map(p => <li key={p.id}>
         <Post post={p} expanded={p.id === this.state.expanded} onExpand={this.expand}/>
       </li>)}
     </ul>

@@ -19,9 +19,13 @@ export default function (state = {}, action) {
       let slugs = payload.communities.map(c => c.slug)
       let updatedPostLists = pairs(state).reduce((changedLists, [id, posts]) => {
         let key = qs.parse(id)
-        if (key.subject === 'community' && contains(slugs, key.id) || key.subject === 'all-posts') {
+
+        if ((key.subject === 'community' && contains(slugs, key.id)) ||
+        (key.subject === 'person' && key.id === payload.user_id) ||
+        key.subject === 'all-posts') {
           changedLists[id] = [payload].concat(posts)
         }
+
         return changedLists
       }, {})
       return {...state, ...updatedPostLists}

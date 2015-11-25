@@ -63,15 +63,20 @@ export function fetchPosts (opts) {
 
   switch (subject) {
     case 'community':
-      payload.path = `/noo/community/${id}/posts?${querystring}`
+      payload.path = `/noo/community/${id}/posts`
       break
     case 'person':
-      payload.path = `/noo/user/${id}/posts?${querystring}`
+      payload.path = `/noo/user/${id}/posts`
       break
     case 'all-posts':
-      payload.path = `/noo/user/${id}/all-community-posts?${querystring}`
+      payload.path = `/noo/user/${id}/all-community-posts`
+      break
+    case 'followed-posts':
+      payload.path = `/noo/user/${id}/followed-posts`
       break
   }
+
+  payload.path += '?' + querystring
 
   let cache = {id: cacheId, bucket: 'postsByQuery', limit, offset, array: true}
   return {type: FETCH_POSTS, payload, meta: {cache}}

@@ -55,7 +55,8 @@ describe('postsByQuery', () => {
   describe('on CREATE_POST', () => {
     it('prepends the post to caches', () => {
       let post = {
-        id: 5,
+        id: '5',
+        user_id: '1',
         communities: [{slug: 'foo'}, {slug: 'bar'}]
       }
 
@@ -65,14 +66,16 @@ describe('postsByQuery', () => {
         'subject=all-posts': [{id: 6}],
         'subject=community&id=foo': [{id: 7}],
         'subject=community&id=bar': [{id: 8}],
-        'subject=community&id=baz': [{id: 9}]
+        'subject=community&id=baz': [{id: 9}],
+        'subject=person&id=1': [{id: 10}]
       }
 
       let expectedState = {
         'subject=all-posts': [post, {id: 6}],
         'subject=community&id=foo': [post, {id: 7}],
         'subject=community&id=bar': [post, {id: 8}],
-        'subject=community&id=baz': [{id: 9}]
+        'subject=community&id=baz': [{id: 9}],
+        'subject=person&id=1': [post, {id: 10}]
       }
 
       expect(postsByQuery(state, action)).to.deep.equal(expectedState)

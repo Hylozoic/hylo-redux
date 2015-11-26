@@ -1,4 +1,4 @@
-import qs from 'querystring'
+import cleanAndStringify from '../util/caching'
 import { omit } from 'lodash'
 
 export const LOGIN = 'LOGIN'
@@ -97,11 +97,11 @@ export function typeahead (opts) {
   let { cancel, context } = opts
   if (cancel) return {type: CANCEL_TYPEAHEAD, meta: {context}}
 
-  let params = {...omit(opts, 'text'), q: opts.text}
+  let querystring = cleanAndStringify({...omit(opts, 'text'), q: opts.text})
 
   return {
     type: TYPEAHEAD,
-    payload: {api: true, path: `/noo/autocomplete?${qs.stringify(params)}`},
+    payload: {api: true, path: `/noo/autocomplete?${querystring}`},
     meta: {context}
   }
 }

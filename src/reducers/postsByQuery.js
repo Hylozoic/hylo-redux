@@ -14,10 +14,10 @@ export default function (state = {}, action) {
   let { type, payload, meta } = action
   switch (type) {
     case FETCH_POSTS:
-      let cacheId = meta.cache.id
+      let { cache } = meta
       return {
         ...state,
-        [cacheId]: uniq((state[cacheId] || []).concat(payload.posts.map(p => p.id)))
+        [cache.id]: uniq((state[cache.id] || []).concat(payload.posts.map(p => p.id)))
       }
     case CREATE_POST:
       let post = payload

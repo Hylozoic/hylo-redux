@@ -42,7 +42,7 @@ class PostList extends React.Component {
     }
 
     return <ul className='posts'>
-      {pending && <div className='loading'>Loading...</div>}
+      {pending && <li className='loading'>Loading...</li>}
       {posts.map(p => <li key={p.id}>
         <Post post={p} expanded={p.id === this.state.expanded} onExpand={this.expand}/>
       </li>)}

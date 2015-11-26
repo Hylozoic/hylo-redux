@@ -7,6 +7,7 @@ import { AllPosts, MyPosts, FollowedPosts } from './containers/home'
 import PersonProfile from './containers/PersonProfile'
 import CommunityProfile from './containers/CommunityProfile'
 import CommunityPosts from './containers/community/CommunityPosts'
+import CommunityMembers from './containers/community/CommunityMembers'
 import CommunityEvents from './containers/community/CommunityEvents'
 import AboutCommunity from './containers/community/AboutCommunity'
 import PersonPosts from './containers/person/PersonPosts'
@@ -33,6 +34,7 @@ export default function makeRoutes (store) {
     </Route>
     <Route path='c/:id' component={CommunityProfile} onEnter={requireLogin(store)}>
       <IndexRoute component={CommunityPosts}/>
+      <Route path='members' component={CommunityMembers}/>
       <Route path='events' component={CommunityEvents}/>
       <Route path='about' component={AboutCommunity}/>
     </Route>

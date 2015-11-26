@@ -6,3 +6,5 @@ export const A = props =>
 
 export const IndexA = props =>
   <IndexLink activeClassName='active' {...props}>{props.children}</IndexLink>
+
+export default A

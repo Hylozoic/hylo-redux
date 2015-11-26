@@ -3,7 +3,7 @@ import { routeReducer } from 'redux-simple-router'
 import { debug } from '../util/logging'
 import { appendUniq } from './util'
 import postsByQuery from './postsByQuery'
-import { contains } from 'lodash'
+import { contains, uniq } from 'lodash'
 
 import {
   FETCH_COMMUNITY,
@@ -21,6 +21,7 @@ import {
 } from '../actions'
 
 import { FETCH_POSTS } from '../actions/fetchPosts'
+import { FETCH_PEOPLE } from '../actions/fetchPeople'
 
 export default combineReducers({
   routing: (state = {path: '/'}, action) => {
@@ -78,6 +79,12 @@ export default combineReducers({
           [payload.id]: payload,
           current: payload
         }
+      case FETCH_PEOPLE:
+        let people = payload.people.reduce((m, p) => {
+          m[p.id] = p
+          return m
+        }, {})
+        return {...state, ...people}
     }
 
     return state
@@ -131,19 +138,16 @@ export default combineReducers({
   postsByQuery,
 
   pending: (state = {}, action) => {
-    switch (action.type) {
-      case 'FETCH_POSTS_PENDING':
-        return {
-          ...state,
-          [FETCH_POSTS]: true
-        }
-      case FETCH_POSTS:
-        return {
-          ...state,
-          [FETCH_POSTS]: false
-        }
+    let { type } = action
+
+    let toggle = targetType => {
+      if (type === targetType) return {...state, [targetType]: false}
+      if (type === targetType + '_PENDING') return {...state, [targetType]: true}
     }
-    return state
+
+    return toggle(FETCH_POSTS) ||
+      toggle(FETCH_PEOPLE) ||
+      state
   },
 
   commentsByPost: (state = {}, action) => {
@@ -189,6 +193,32 @@ export default combineReducers({
         return {}
     }
 
+    return state
+  },
+
+  peopleByQuery: (state = {}, action) => {
+    if (action.error) return state
+
+    let { type, payload, meta } = action
+    switch (type) {
+      case FETCH_PEOPLE:
+        let { cache } = meta
+        return {
+          ...state,
+          [cache.id]: uniq((state[cache.id] || []).concat(payload.people.map(p => p.id)))
+        }
+    }
+    return state
+  },
+
+  totalPeopleByQuery: (state = {}, action) => {
+    if (action.error) return state
+
+    let { type, payload, meta } = action
+    switch (type) {
+      case FETCH_PEOPLE:
+        return {...state, [meta.cache.id]: payload.people_total}
+    }
     return state
   }
 })

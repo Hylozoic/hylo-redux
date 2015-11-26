@@ -4,8 +4,8 @@ import { debounce } from 'lodash'
 const { bool, func, string } = React.PropTypes
 
 const postTypes = [
-  {name: 'All Posts', id: 'all+welcome'},
-  {name: 'All Posts', id: 'all'},
+  {name: 'All types', id: 'all+welcome'},
+  {name: 'All types', id: 'all'},
   {name: 'Intentions', id: 'intention'},
   {name: 'Offers', id: 'offer'},
   {name: 'Requests', id: 'request'},

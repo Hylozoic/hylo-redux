@@ -8,13 +8,13 @@ import PostListControls from '../../components/PostListControls'
 import { createCacheId } from '../../util/caching'
 const { func, object } = React.PropTypes
 
-const initialFetchOpts = {type: 'all+welcome', sort: 'recent'}
+const initialFetchOpts = {type: 'all+welcome', sort: 'recent', search: null}
 
 const fetch = (id, opts = initialFetchOpts) => {
-  let { type, sort } = opts
+  let { type, sort, search } = opts
   let subject = 'community'
-  let cacheId = createCacheId({subject, id, type, sort})
-  return fetchPosts({subject, id, type, cacheId, limit: 20, ...opts})
+  let cacheId = createCacheId({subject, id, type, sort, search})
+  return fetchPosts({subject, id, cacheId, limit: 20, ...opts})
 }
 
 @prefetch(({ dispatch, params }) => dispatch(fetch(params.id)))
@@ -39,16 +39,13 @@ export default class CommunityPosts extends React.Component {
 
   render () {
     let { community, params: { id } } = this.props
-    let { type, sort } = this.state
-    let cacheId = createCacheId({subject: 'community', id, type, sort})
+    let { type, sort, search } = this.state
+    let cacheId = createCacheId({subject: 'community', id, type, sort, search})
 
     return <div>
       <PostEditor community={community}/>
-      <PostListControls onChange={this.changeQuery}
-        includeWelcome={true}
-        type={type}
-        sort={sort}
-        search=''/>
+      <PostListControls onChange={this.changeQuery} includeWelcome={true}
+        type={type} sort={sort}/>
       <ConnectedPostList fetch={opts => fetch(id, opts)} id={cacheId}/>
     </div>
   }

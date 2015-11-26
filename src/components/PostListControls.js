@@ -1,5 +1,6 @@
 import React from 'react'
 import Dropdown from './Dropdown'
+import { debounce } from 'lodash'
 const { bool, func, string } = React.PropTypes
 
 const postTypeChoices = [
@@ -16,26 +17,30 @@ const sorts = [
   {name: 'Top', id: 'top'}
 ]
 
-export default class PostListControls extends React.Component {
-  static propTypes = {
-    onChange: func,
-    includeWelcome: bool,
-    type: string,
-    sort: string
-  }
+const PostListControls = props => {
+  let { includeWelcome, sort, type, onChange } = props
+  let selectedType = postTypeChoices.find(t => t.id === type)
+  let types = postTypeChoices.filter(t => t.id !== (includeWelcome ? 'all' : 'all+welcome'))
+  let selectedSort = sorts.find(s => s.id === sort)
 
-  render () {
-    let { includeWelcome, sort, type, onChange } = this.props
-    let selectedType = postTypeChoices.find(t => t.id === type)
-    let types = postTypeChoices.filter(t => t.id !== (includeWelcome ? 'all' : 'all+welcome'))
-    let selectedSort = sorts.find(s => s.id === sort)
+  return <div className='post-list-controls'>
+    <input type='text' className='form-control search'
+      placeholder='Search'
+      onInput={debounce(event => onChange({search: event.target.value}), 500)}/>
 
-    return <div className='post-list-controls'>
-      {false && <input type='text' className='form-control search' placeholder='Filter list by keyword'/>}
-      <Dropdown className='type' choices={types} selected={selectedType}
-        onChange={t => onChange({type: t.id})}/>
-      <Dropdown choices={sorts} selected={selectedSort}
-        onChange={s => onChange({sort: s.id})}/>
-    </div>
-  }
+    <Dropdown className='type' choices={types} selected={selectedType}
+      onChange={t => onChange({type: t.id})}/>
+
+    <Dropdown choices={sorts} selected={selectedSort}
+      onChange={s => onChange({sort: s.id})}/>
+  </div>
 }
+
+PostListControls.propTypes = {
+  onChange: func,
+  sort: string,
+  type: string,
+  includeWelcome: bool
+}
+
+export default PostListControls

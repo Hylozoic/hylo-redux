@@ -3,10 +3,10 @@ import qs from 'querystring'
 export const FETCH_POSTS = 'FETCH_POSTS'
 
 export function fetchPosts (opts) {
-  let { subject, id, limit, offset, type, sort, cacheId } = opts
+  let { subject, id, limit, offset, type, sort, search, cacheId } = opts
   if (!offset) offset = 0
   let payload = {api: true}
-  let querystring = qs.stringify({offset, limit, type, sort})
+  let querystring = qs.stringify({offset, limit, type, sort, search})
 
   switch (subject) {
     case 'community':

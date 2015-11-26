@@ -30,7 +30,7 @@ export default class CommentForm extends React.Component {
   }
 
   mentionTemplate = person => {
-    return <a data-user-id={person.id} href={'/u/' + user.id}>{person.name}</a>
+    return <a data-user-id={person.id} href={'/u/' + person.id}>{person.name}</a>
   }
 
   mentionTypeahead = text => {

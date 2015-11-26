@@ -147,14 +147,14 @@ nav {
 
   .logo {
     display: inline-block;
-    width: 80px;
-    height: 80px;
+    width: @avatar-size-large;
+    height: @avatar-size-large;
     overflow: hidden;
     background-position: center;
     background-size: cover;
     &.person {
       border: 1px solid #fff;
-      border-radius: 80px;
+      border-radius: @avatar-size-large;
     }
   }
 
@@ -188,9 +188,17 @@ nav {
 }
 
 .avatar {
-  width: @avatar-size;
-  height: @avatar-size;
-  border-radius: @avatar-size;
+  width: @avatar-size-default;
+  height: @avatar-size-default;
+  border-radius: @avatar-size-default;
+  background-position: center;
+  background-size: cover;
+}
+
+.large-avatar {
+  width: @avatar-size-large;
+  height: @avatar-size-large;
+  border-radius: @avatar-size-large;
   background-position: center;
   background-size: cover;
 }
@@ -223,7 +231,7 @@ ul.posts {
 
   &.welcome {
     border: 1px solid transparent;
-    min-height: @avatar-size + 21px;
+    min-height: @avatar-size-default + 21px;
     p.title {
       margin-top: 8px;
     }
@@ -491,6 +499,31 @@ ul.posts {
   .markdown {
     img {
       max-width: 100%;
+    }
+  }
+
+  .members {
+    .make-row;
+    > ul {
+      .no-bullets;
+    }
+  }
+
+  .member {
+    .make-xs-column(6);
+    .make-sm-column(3);
+  }
+
+  .member-card {
+    border: 1px solid @light-gray-border;
+    padding: 15px 0;
+    margin-bottom: 15px;
+    text-align: center;
+    height: 142px;
+
+    .large-avatar {
+      display: inline-block;
+      border: 1px solid @light-gray-border;
     }
   }
 }

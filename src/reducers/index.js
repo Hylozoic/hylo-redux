@@ -217,7 +217,7 @@ export default combineReducers({
     let { type, payload, meta } = action
     switch (type) {
       case FETCH_PEOPLE:
-        return {...state, [meta.cache.id]: payload.people_total}
+        return {...state, [meta.cache.id]: Number(payload.people_total)}
     }
     return state
   }

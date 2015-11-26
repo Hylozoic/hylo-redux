@@ -22,7 +22,7 @@ class Html extends React.Component {
       </head>
       <body>
         <div id='app' dangerouslySetInnerHTML={{__html: markup}}></div>
-        <script src='//tinymce.cachefly.net/4.2/tinymce.min.js'></script>
+        <script src='//cdnjs.cloudflare.com/ajax/libs/tinymce/4.2.8/tinymce.min.js'></script>
         <script dangerouslySetInnerHTML={{__html: state}}></script>
         <script src={jsBundle} defer></script>
       </body>
@@ -31,3 +31,6 @@ class Html extends React.Component {
 }
 
 export default Html
+
+// alternate url for tinymce:
+// tinymce.cachefly.net/4.2/tinymce.min.js

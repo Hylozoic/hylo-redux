@@ -95,10 +95,9 @@ export default class MentionController {
     this.active = false
     this.typedMention = typedMentionStore()
 
-    this.editor = window.tinymce.EditorManager.editors.find(e => e.id === this.prop('editorId'))
-
     // Firefox fix
     setTimeout(() => {
+      this.editor = window.tinymce.EditorManager.editors.find(e => e.id === this.prop('editorId'))
       this.editor.on('keypress', this.handleTopLevelEditorInput.bind(this))
       this.editor.on('keydown', this.handleTopLevelActionKeys.bind(this))
       this.editor.on('keyup', this.handleBackspace.bind(this))

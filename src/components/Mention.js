@@ -32,7 +32,7 @@ export default class Mention extends React.Component {
     this.controller = this.controller || new MentionController(this)
   }
 
-  select = (choice, event) => {
+  select = (choice) => {
     this.controller.addMention(this.props.template(choice))
   }
 

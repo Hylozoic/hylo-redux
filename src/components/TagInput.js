@@ -29,11 +29,10 @@ export default class TagInput extends React.Component {
     if (this.refs.list) this.refs.list.handleKeys(event)
   }
 
-  select = (choice, event) => {
+  select = choice => {
     this.props.onSelect(choice)
     this.refs.input.value = ''
     this.setState({choices: []})
-    event.preventDefault()
   }
 
   remove = (tag, event) => {

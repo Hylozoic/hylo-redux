@@ -1,52 +1,50 @@
 import React from 'react'
 import { fetchPosts } from '../../actions/fetchPosts'
+import { navigate } from '../../actions'
 import { connect } from 'react-redux'
 import { prefetch } from 'react-fetcher'
 import ConnectedPostList from '../../containers/ConnectedPostList'
 import PostEditor from '../../components/PostEditor'
 import PostListControls from '../../components/PostListControls'
 import { createCacheId } from '../../util/caching'
+import { compose } from 'redux'
 const { func, object } = React.PropTypes
 
-const initialFetchOpts = {type: 'all+welcome', sort: 'recent', search: null}
-
-const fetch = (id, opts = initialFetchOpts) => {
-  let { type, sort, search } = opts
+const fetch = (id, query = {}) => {
+  let { type, sort, search } = query
   let subject = 'community'
   let cacheId = createCacheId({subject, id, type, sort, search})
-  return fetchPosts({subject, id, cacheId, limit: 20, ...opts})
+  return fetchPosts({subject, id, cacheId, limit: 20, ...query})
 }
 
-@prefetch(({ dispatch, params }) => dispatch(fetch(params.id)))
-@connect((state, { params }) => ({community: state.communities[params.id]}))
-export default class CommunityPosts extends React.Component {
-  static propTypes = {
-    dispatch: func,
-    params: object,
-    community: object
-  }
-
-  constructor (props) {
-    super(props)
-    this.state = initialFetchOpts
-  }
-
-  changeQuery = opts => {
-    let { dispatch, params } = this.props
-    dispatch(fetch(params.id, {...this.state, ...opts}))
-    this.setState(opts)
-  }
-
-  render () {
-    let { community, params: { id } } = this.props
-    let { type, sort, search } = this.state
-    let cacheId = createCacheId({subject: 'community', id, type, sort, search})
-
-    return <div>
-      <PostEditor community={community}/>
-      <PostListControls onChange={this.changeQuery} includeWelcome={true}
-        type={type} sort={sort}/>
-      <ConnectedPostList fetch={opts => fetch(id, opts)} id={cacheId}/>
-    </div>
-  }
+const changeQuery = (opts, props) => {
+  let { dispatch, location: { query, pathname } } = props
+  let newQuery = createCacheId({...query, ...opts})
+  let newPath = `${pathname}${newQuery ? '?' + newQuery : ''}`
+  dispatch(navigate(newPath))
 }
+
+const CommunityPosts = props => {
+  let { community, params: { id }, location: { query } } = props
+  let { type, sort, search } = query
+  let cacheId = createCacheId({subject: 'community', id, type, sort, search})
+
+  return <div>
+    <PostEditor community={community}/>
+    <PostListControls onChange={opts => changeQuery(opts, props)} includeWelcome={true}
+      type={type} sort={sort} search={search}/>
+    <ConnectedPostList fetch={opts => fetch(id, opts)} id={cacheId}/>
+  </div>
+}
+
+CommunityPosts.propTypes = {
+  dispatch: func,
+  params: object,
+  community: object,
+  location: object
+}
+
+export default compose(
+  prefetch(({ dispatch, params, query }) => dispatch(fetch(params.id, query))),
+  connect((state, { params }) => ({community: state.communities[params.id]}))
+)(CommunityPosts)

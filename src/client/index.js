@@ -10,6 +10,7 @@ import { syncReduxAndRouter } from 'redux-simple-router'
 import { getPrefetchedData, getDeferredData } from 'react-fetcher'
 import { debug } from '../util/logging'
 import { localsForPrefetch } from '../util/universal'
+import { isEqual } from 'lodash'
 
 const store = configureStore(window.INITIAL_STATE)
 const routes = makeRoutes(store)
@@ -36,14 +37,15 @@ history.listen(location => {
     // a history event even though the location didn't change.
     // i don't know why that happens, but we work around it here
     // by comparing the new location to the previous one.
-    if (location.pathname === prevLocation.pathname) {
+    if (location.pathname === prevLocation.pathname &&
+      isEqual(location.search, prevLocation.search)) {
       debug('suppressed a redundant history event')
       return
     }
 
     const components = renderProps.routes.map(r => r.component)
     const locals = localsForPrefetch(renderProps, store)
-    
+
     getPrefetchedData(components, locals)
     .then(() => getDeferredData(components, locals))
     .then(() => prevLocation = location)

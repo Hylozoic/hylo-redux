@@ -10,6 +10,7 @@
 
 import { renderToStaticMarkup } from 'react-dom/server'
 import { contains, difference, isEmpty, values } from 'lodash'
+import { debug } from '../util/logging'
 
 const keyMap = {
   BACKSPACE: 8,
@@ -95,13 +96,25 @@ export default class MentionController {
     this.active = false
     this.typedMention = typedMentionStore()
 
-    // Firefox fix
-    setTimeout(() => {
+    // workaround: if TinyMCE plugins are not already loaded, they will be
+    // fetched the first time an editor is rendered, causing a delay.
+    let attempts = 0
+    let waitMs = 50
+    let interval = setInterval(() => {
       this.editor = window.tinymce.EditorManager.editors.find(e => e.id === this.prop('editorId'))
+
+      if (!this.editor) {
+        attempts += 1
+        return
+      }
+
+      if (attempts > 0) debug(`found editor after ${attempts * waitMs} ms`)
+      clearInterval(interval)
+
       this.editor.on('keypress', this.handleTopLevelEditorInput.bind(this))
       this.editor.on('keydown', this.handleTopLevelActionKeys.bind(this))
       this.editor.on('keyup', this.handleBackspace.bind(this))
-    }, 50)
+    }, waitMs)
   }
 
   prop (key) {

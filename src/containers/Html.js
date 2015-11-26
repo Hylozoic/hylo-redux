@@ -32,5 +32,8 @@ class Html extends React.Component {
 
 export default Html
 
-// alternate url for tinymce:
+// this url has plugins embedded:
 // tinymce.cachefly.net/4.2/tinymce.min.js
+
+// this one doesn't, so plugins get fetched the first time an editor is shown:
+// cdnjs.cloudflare.com/ajax/libs/tinymce/4.2.8/tinymce.min.js

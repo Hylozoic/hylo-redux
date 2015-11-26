@@ -94,13 +94,15 @@ export const TYPEAHEAD = 'TYPEAHEAD'
 export const CANCEL_TYPEAHEAD = 'CANCEL_TYPEAHEAD'
 
 export function typeahead (opts) {
-  if (opts.cancel) return {type: CANCEL_TYPEAHEAD}
+  let { cancel, context } = opts
+  if (cancel) return {type: CANCEL_TYPEAHEAD, meta: {context}}
 
   let params = {...omit(opts, 'text'), q: opts.text}
 
   return {
     type: TYPEAHEAD,
-    payload: {api: true, path: `/noo/autocomplete?${qs.stringify(params)}`}
+    payload: {api: true, path: `/noo/autocomplete?${qs.stringify(params)}`},
+    meta: {context}
   }
 }
 

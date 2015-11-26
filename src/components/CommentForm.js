@@ -4,7 +4,7 @@ import { connect } from 'react-redux'
 import { typeahead } from '../actions'
 var { array, func } = React.PropTypes
 
-@connect(state => ({mentionChoices: state.typeaheadMatches}))
+@connect(state => ({mentionChoices: state.typeaheadMatches.comment}))
 export default class CommentForm extends React.Component {
   static propTypes = {
     onCreate: func,
@@ -35,9 +35,9 @@ export default class CommentForm extends React.Component {
 
   mentionTypeahead = text => {
     if (text) {
-      this.props.dispatch(typeahead({text: text}))
+      this.props.dispatch(typeahead({text: text, context: 'comment'}))
     } else {
-      this.props.dispatch(typeahead({cancel: true}))
+      this.props.dispatch(typeahead({cancel: true, context: 'comment'}))
     }
   }
 

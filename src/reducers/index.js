@@ -3,6 +3,7 @@ import { routeReducer } from 'redux-simple-router'
 import { debug } from '../util/logging'
 import { appendUniq } from './util'
 import postsByQuery from './postsByQuery'
+import { contains } from 'lodash'
 
 import {
   FETCH_COMMUNITY,
@@ -162,15 +163,16 @@ export default combineReducers({
     return state
   },
 
-  typeaheadMatches: (state = [], action) => {
-    if (action.error) return state
+  typeaheadMatches: (state = {}, action) => {
+    let { error, type } = action
+    if (error || !contains([TYPEAHEAD, CANCEL_TYPEAHEAD], type)) return state
 
-    let { type, payload } = action
+    let { payload, meta: { context } } = action
     switch (type) {
       case TYPEAHEAD:
-        return payload
+        return {...state, [context]: payload}
       case CANCEL_TYPEAHEAD:
-        return []
+        return {...state, [context]: []}
     }
 
     return state

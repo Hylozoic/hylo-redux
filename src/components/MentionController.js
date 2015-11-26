@@ -8,8 +8,8 @@
 // https://github.com/Kindling/react-tinymce-mention/blob/master/src/mention/components/TinyMCEDelegate.js
 // https://github.com/Kindling/react-tinymce-mention/blob/master/LICENSE
 
-import {renderToStaticMarkup} from 'react-dom/server'
-import {contains, difference, values} from 'lodash'
+import { renderToStaticMarkup } from 'react-dom/server'
+import { contains, difference, isEmpty, values } from 'lodash'
 
 const keyMap = {
   BACKSPACE: 8,
@@ -194,7 +194,7 @@ export default class MentionController {
   }
 
   shouldSelectOrMove (keyCode, event) {
-    if (!this.prop('choices').length) return false
+    if (isEmpty(this.prop('choices'))) return false
 
     if (keyCode === keyMap.BACKSPACE || keyCode === keyCode.DELETE) {
       this.typedMention.update(keyCode)

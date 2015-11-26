@@ -30,7 +30,7 @@ const postTypeData = {
 
 @connect((state, props) => ({
   communities: props.community ? [props.community] : [],
-  mentionChoices: state.typeaheadMatches,
+  mentionChoices: state.typeaheadMatches.post,
   currentUser: state.people.current,
   ...state.postEditor
 }))
@@ -121,9 +121,9 @@ export default class PostEditor extends React.Component {
 
   mentionTypeahead = text => {
     if (text) {
-      this.props.dispatch(typeahead({text: text}))
+      this.props.dispatch(typeahead({text: text, context: 'post'}))
     } else {
-      this.props.dispatch(typeahead({cancel: true}))
+      this.props.dispatch(typeahead({cancel: true, context: 'post'}))
     }
   }
 

@@ -1,5 +1,4 @@
-import { appendUniq } from './util'
-import { contains, pairs } from 'lodash'
+import { contains, pairs, uniq } from 'lodash'
 import qs from 'querystring'
 
 import {
@@ -15,16 +14,21 @@ export default function (state = {}, action) {
   let { type, payload, meta } = action
   switch (type) {
     case FETCH_POSTS:
-      return appendUniq(state, meta.cache.id, payload.posts)
+      let cacheId = meta.cache.id
+      return {
+        ...state,
+        [cacheId]: uniq((state[cacheId] || []).concat(payload.posts.map(p => p.id)))
+      }
     case CREATE_POST:
-      let slugs = payload.communities.map(c => c.slug)
-      let updatedPostLists = pairs(state).reduce((changedLists, [id, posts]) => {
+      let post = payload
+      let slugs = post.communities.map(c => c.slug)
+      let updatedPostLists = pairs(state).reduce((changedLists, [id, postIds]) => {
         let key = qs.parse(id)
 
         if ((key.subject === 'community' && contains(slugs, key.id)) ||
-        (key.subject === 'person' && key.id === payload.user_id) ||
+        (key.subject === 'person' && key.id === post.user_id) ||
         key.subject === 'all-posts') {
-          changedLists[id] = [payload].concat(posts)
+          changedLists[id] = [post.id].concat(postIds)
         }
 
         return changedLists

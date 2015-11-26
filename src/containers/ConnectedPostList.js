@@ -25,10 +25,10 @@ export const refetch = (opts, { dispatch, location: { query, pathname } }) => {
   dispatch(navigate(newPath))
 }
 
-@connect(({ postsByQuery, totalPostsByQuery, pending }, { subject, id, query }) => {
+@connect(({ posts, postsByQuery, totalPostsByQuery, pending }, { subject, id, query }) => {
   let cacheId = createCacheId(subject, id, query)
   return {
-    posts: postsByQuery[cacheId],
+    posts: (postsByQuery[cacheId] || []).map(id => posts[id]),
     total: totalPostsByQuery[cacheId],
     pending: pending[FETCH_POSTS]
   }

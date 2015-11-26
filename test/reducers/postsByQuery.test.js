@@ -5,7 +5,7 @@ import { FETCH_POSTS } from '../../src/actions/fetchPosts'
 
 describe('postsByQuery', () => {
   describe('on FETCH_POSTS', () => {
-    it('adds posts to a subtree named after cache id', () => {
+    it('adds post ids to a subtree named after cache id', () => {
       let action = {
         type: FETCH_POSTS,
         payload: {
@@ -18,12 +18,12 @@ describe('postsByQuery', () => {
       }
 
       let state = {
-        foo: [{id: 'a'}, {id: 'c'}]
+        foo: ['a', 'c']
       }
 
       let expectedState = {
-        foo: [{id: 'a'}, {id: 'c'}],
-        bar: [{id: 'a'}, {id: 'b'}]
+        foo: ['a', 'c'],
+        bar: ['a', 'b']
       }
 
       expect(postsByQuery(state, action)).to.deep.equal(expectedState)
@@ -42,11 +42,11 @@ describe('postsByQuery', () => {
       }
 
       let state = {
-        foo: [{id: 'x'}, {id: 'y'}]
+        foo: ['x', 'y']
       }
 
       let expectedState = {
-        foo: [{id: 'x'}, {id: 'y'}, {id: 'z'}, {id: 'w'}]
+        foo: ['x', 'y', 'z', 'w']
       }
 
       expect(postsByQuery(state, action)).to.deep.equal(expectedState)
@@ -56,7 +56,7 @@ describe('postsByQuery', () => {
   describe('on CREATE_POST', () => {
     it('prepends the post to caches', () => {
       let post = {
-        id: '5',
+        id: 'p',
         user_id: '1',
         communities: [{slug: 'foo'}, {slug: 'bar'}]
       }
@@ -64,19 +64,19 @@ describe('postsByQuery', () => {
       let action = {type: CREATE_POST, payload: post}
 
       let state = {
-        'subject=all-posts': [{id: 6}],
-        'subject=community&id=foo': [{id: 7}],
-        'subject=community&id=bar': [{id: 8}],
-        'subject=community&id=baz': [{id: 9}],
-        'subject=person&id=1': [{id: 10}]
+        'subject=all-posts': ['a'],
+        'subject=community&id=foo': ['b'],
+        'subject=community&id=bar': ['c'],
+        'subject=community&id=baz': ['d'],
+        'subject=person&id=1': ['e']
       }
 
       let expectedState = {
-        'subject=all-posts': [post, {id: 6}],
-        'subject=community&id=foo': [post, {id: 7}],
-        'subject=community&id=bar': [post, {id: 8}],
-        'subject=community&id=baz': [{id: 9}],
-        'subject=person&id=1': [post, {id: 10}]
+        'subject=all-posts': ['p', 'a'],
+        'subject=community&id=foo': ['p', 'b'],
+        'subject=community&id=bar': ['p', 'c'],
+        'subject=community&id=baz': ['d'],
+        'subject=person&id=1': ['p', 'e']
       }
 
       expect(postsByQuery(state, action)).to.deep.equal(expectedState)

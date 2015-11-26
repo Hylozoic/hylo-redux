@@ -1,7 +1,7 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { prefetch } from 'react-fetcher'
-import { fetchPosts } from '../../actions'
+import { fetchPosts } from '../../actions/fetchPosts'
 import ConnectedPostList from '../ConnectedPostList'
 import { createCacheId } from '../../util/caching'
 const { func, object } = React.PropTypes

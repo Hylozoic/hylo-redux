@@ -3,10 +3,11 @@ import { contains, pairs } from 'lodash'
 import qs from 'querystring'
 
 import {
-  FETCH_POSTS,
   CREATE_POST,
   CLEAR_CACHE
 } from '../actions'
+
+import { FETCH_POSTS } from '../actions/fetchPosts'
 
 export default function (state = {}, action) {
   if (action.error) return state

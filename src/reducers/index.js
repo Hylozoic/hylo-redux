@@ -7,7 +7,6 @@ import postsByQuery from './postsByQuery'
 import {
   FETCH_COMMUNITY,
   FETCH_CURRENT_USER,
-  FETCH_POSTS,
   FETCH_PERSON,
   FETCH_COMMENTS,
   CREATE_COMMENT,
@@ -19,6 +18,8 @@ import {
   UPDATE_POST_EDITOR,
   CREATE_POST
 } from '../actions'
+
+import { FETCH_POSTS } from '../actions/fetchPosts'
 
 export default combineReducers({
   routing: (state = {path: '/'}, action) => {

@@ -1,7 +1,7 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import PostList from '../components/PostList'
-import { FETCH_POSTS } from '../actions'
+import { FETCH_POSTS } from '../actions/fetchPosts'
 import { debug } from '../util/logging'
 const { array, bool, func, number, string } = React.PropTypes
 

@@ -1,5 +1,5 @@
 import React from 'react'
-import { fetchPosts } from '../../actions'
+import { fetchPosts } from '../../actions/fetchPosts'
 import { connect } from 'react-redux'
 import { prefetch } from 'react-fetcher'
 import ConnectedPostList from '../../containers/ConnectedPostList'

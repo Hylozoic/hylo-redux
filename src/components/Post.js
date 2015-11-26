@@ -95,6 +95,8 @@ export default class Post extends React.Component {
               {spacer}updated {humanDate(updatedAt)}
             </span>}
             {spacer}
+            {post.votes} ♡
+            {spacer}
             <a onClick={this.toggleComments} href='#'>
               {post.numComments} comment{post.numComments === 1 ? '' : 's'}
             </a>

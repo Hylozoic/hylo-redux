@@ -452,9 +452,33 @@ ul.posts {
   }
 }
 
-.mentions {
-  .dropdown-menu {
-    display: block;
+.dropdown-menu li a {
+  cursor: pointer;
+}
+
+.mentions .dropdown-menu {
+  display: block;
+}
+
+.dropdown.active .dropdown-menu {
+  display: block;
+}
+
+.post-list-controls {
+  line-height: 34px;
+  margin-bottom: 15px;
+  text-align: right;
+
+  > * {
+    vertical-align: middle;
+  }
+  .search {
+    width: 40%;
+    display: inline-block;
+    margin-right: 5px;
+  }
+  .dropdown.type {
+    margin-right: 5px;
   }
 }
 

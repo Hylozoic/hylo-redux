@@ -4,13 +4,16 @@ import { connect } from 'react-redux'
 import { prefetch } from 'react-fetcher'
 import ConnectedPostList from '../../containers/ConnectedPostList'
 import PostEditor from '../../components/PostEditor'
+import PostListControls from '../../components/PostListControls'
 import { createCacheId } from '../../util/caching'
 const { func, object } = React.PropTypes
 
-const fetch = (id, opts = {}) => {
+const initialFetchOpts = {type: 'all+welcome', sort: 'recent'}
+
+const fetch = (id, opts = initialFetchOpts) => {
+  let { type, sort } = opts
   let subject = 'community'
-  let type = 'all+welcome'
-  let cacheId = createCacheId({subject, id, type})
+  let cacheId = createCacheId({subject, id, type, sort})
   return fetchPosts({subject, id, type, cacheId, limit: 20, ...opts})
 }
 
@@ -23,11 +26,29 @@ export default class CommunityPosts extends React.Component {
     community: object
   }
 
+  constructor (props) {
+    super(props)
+    this.state = initialFetchOpts
+  }
+
+  changeQuery = opts => {
+    let { dispatch, params } = this.props
+    dispatch(fetch(params.id, {...this.state, ...opts}))
+    this.setState(opts)
+  }
+
   render () {
     let { community, params: { id } } = this.props
-    let cacheId = createCacheId({subject: 'community', id, type: 'all+welcome'})
+    let { type, sort } = this.state
+    let cacheId = createCacheId({subject: 'community', id, type, sort})
+
     return <div>
       <PostEditor community={community}/>
+      <PostListControls onChange={this.changeQuery}
+        includeWelcome={true}
+        type={type}
+        sort={sort}
+        search=''/>
       <ConnectedPostList fetch={opts => fetch(id, opts)} id={cacheId}/>
     </div>
   }

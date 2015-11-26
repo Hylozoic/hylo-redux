@@ -8,11 +8,11 @@ const defaults = {
 
 const blankOrDefault = (value, key) => {
   let defaultValue = defaults[key]
-  return !value ||
-    defaultValue === value ||
-    Array.isArray(defaultValue) && contains(defaultValue, value)
+  return defaultValue === value ||
+    (!value && value !== 0) ||
+    (Array.isArray(defaultValue) && contains(defaultValue, value))
 }
 
 // TODO: sort output by key name
-export const createCacheId = (opts) =>
+export const cleanAndStringify = (opts) =>
   qs.stringify(omit(opts, blankOrDefault))

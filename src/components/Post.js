@@ -103,10 +103,12 @@ export default class Post extends React.Component {
           </div>
 
           <div className='meta'>
-            <div className={cx('tag', 'post-type', post.type)}>{post.type}</div>
-            {post.communities.map(c => <Link to={`/c/${c.slug}`} className='tag community-tag' key={c.id}>
-              {c.name}
-            </Link>)}
+            <ul className='tags'>
+              <li className={cx('tag', 'post-type', post.type)}>{post.type}</li>
+              {post.communities.map(c => <li key={c.id} className='tag'>
+                <Link to={`/c/${c.slug}`} key={c.id}>{c.name}</Link>
+              </li>)}
+            </ul>
           </div>
 
           {this.state.commentsExpanded && <div>

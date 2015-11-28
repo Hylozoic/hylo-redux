@@ -19,6 +19,20 @@ export default class AboutPerson extends React.Component {
         <h4>What I would like to do</h4>
         <p>{person.intention}</p>
       </section>
+      <section>
+        <h4>Skills</h4>
+        <ul className='tags'>
+          {person.skills.map(skill =>
+            <div className='tag' key={skill}>{skill}</div>)}
+        </ul>
+      </section>
+      <section>
+        <h4>Affiliations</h4>
+        <ul className='tags'>
+          {person.organizations.map(org =>
+            <div className='tag' key={org}>{org}</div>)}
+        </ul>
+      </section>
     </div>
   }
 }

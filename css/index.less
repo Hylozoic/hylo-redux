@@ -279,16 +279,15 @@ ul.posts {
       background-color: @mid-gray-bg;
     }
   }
-
-  .meta {
-    .tag {
-      margin-bottom: 5px;
-    }
-  }
 }
 
 .meta {
   .meta-text;
+}
+
+ul.tags {
+  .no-bullets;
+  margin-bottom: -5px;
 }
 
 .tag {
@@ -301,6 +300,7 @@ ul.posts {
   border-radius: 4px;
   padding: 0 5px;
   margin-right: 5px;
+  margin-bottom: 5px;
   vertical-align: middle;
   font-size: 13px;
 
@@ -541,6 +541,11 @@ ul.posts {
     border: 1px solid @light-gray-border;
     section {
       margin-bottom: 30px;
+      &:first-child {
+        h4 {
+          margin-top: 0;
+        }
+      }
       &:last-child {
         margin-bottom: 0;
       }

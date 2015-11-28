@@ -1,11 +1,13 @@
 import React from 'react'
 import { prefetch } from 'react-fetcher'
 import { connect } from 'react-redux'
+import { debounce } from 'lodash'
 import { fetchPeople, FETCH_PEOPLE } from '../../actions/fetchPeople'
 import { cleanAndStringify } from '../../util/caching'
 import { isAtBottom } from '../../util/scrolling'
 import A from '../../components/A'
 import { debug } from '../../util/logging'
+import { navigate } from '../../actions'
 const { array, bool, func, number, object } = React.PropTypes
 
 const subject = 'community'
@@ -60,20 +62,35 @@ export default class CommunityMembers extends React.Component {
     dispatch(fetch(params.id, {...location.query, offset}))
   }
 
+  updateQuery = debounce(opts => {
+    let { dispatch, location: { query, pathname } } = this.props
+    let newQuery = cleanAndStringify({...query, ...opts})
+    let newPath = `${pathname}${newQuery ? '?' + newQuery : ''}`
+    dispatch(navigate(newPath))
+  }, 500)
+
   render () {
-    let { pending, members, total } = this.props
+    let { pending, members, total, location: { query } } = this.props
+    let { search } = query
     debug(`members: ${members.length} / ${total || '??'}`)
+
     return <div className='members'>
-      {pending && <li className='loading'>Loading...</li>}
-      {members.map(person => <div key={person.id} className='member'>
-        <div key={person.id} className='member-card'>
-          <A to={`/u/${person.id}`}>
-            <div className='large-avatar' style={{backgroundImage: `url(${person.avatar_url})`}}/>
-          </A>
-          <br/>
-          <A className='name' to={`/u/${person.id}`}>{person.name}</A>
-        </div>
-      </div>)}
+      <input type='text' className='form-control search'
+        placeholder='Search'
+        defaultValue={search}
+        onChange={event => this.updateQuery({search: event.target.value})}/>
+      {pending && <div className='loading'>Loading...</div>}
+      <div className='member-cards'>
+        {members.map(person => <div key={person.id} className='member'>
+          <div key={person.id} className='member-card'>
+            <A to={`/u/${person.id}`}>
+              <div className='large-avatar' style={{backgroundImage: `url(${person.avatar_url})`}}/>
+            </A>
+            <br/>
+            <A className='name' to={`/u/${person.id}`}>{person.name}</A>
+          </div>
+        </div>)}
+      </div>
     </div>
   }
 }

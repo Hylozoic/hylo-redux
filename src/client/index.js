@@ -21,6 +21,11 @@ var prevLocation = null
 
 history.listen(location => {
   match({routes, location}, (error, redirectLocation, renderProps) => {
+    if (redirectLocation) {
+      history.replaceState({}, redirectLocation.pathname + redirectLocation.search)
+      return
+    }
+
     if (error) {
       console.error(error)
       return

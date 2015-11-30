@@ -15,7 +15,7 @@ export default class Comment extends React.Component {
     let person = comment.user
     let text = present(sanitize(comment.comment_text))
 
-    return <div className='comment'>
+    return <div className='comment' data-comment-id={comment.id}>
       <Avatar person={person}/>
       <div className='content'>
         <strong>{person.name}</strong>

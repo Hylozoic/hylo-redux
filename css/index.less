@@ -7,6 +7,7 @@
 body {
   background-color: @off-white;
   color: @off-black;
+  .base-text;
 }
 
 p {
@@ -193,6 +194,7 @@ nav {
   border-radius: @avatar-size-default;
   background-position: center;
   background-size: cover;
+  display: block;
 }
 
 .large-avatar {
@@ -211,7 +213,14 @@ ul.posts {
   border: 1px solid @light-gray-border;
   padding: 15px;
   margin-bottom: 15px;
-  .has-left-side-avatar;
+
+  .header {
+    .avatar {
+      float: left;
+      margin-right: 10px;
+    }
+    margin-bottom: 15px;
+  }
 
   .image {
     background-size: cover;
@@ -221,7 +230,12 @@ ul.posts {
     margin-top: @p-bottom-margin;
   }
 
+  .name {
+    .semibold;
+  }
+
   p.title {
+    .post-title-text;
     margin-bottom: 0;
   }
 

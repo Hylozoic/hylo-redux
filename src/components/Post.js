@@ -36,6 +36,7 @@ export default class Post extends React.Component {
   toggleComments = event => {
     event.stopPropagation()
     event.preventDefault()
+    this.expand()
 
     let { post, comments } = this.props
     if (!comments) this.props.dispatch(fetchComments(post.id))
@@ -57,67 +58,66 @@ export default class Post extends React.Component {
       title = `${person.name} joined ${post.communities[0].name}. Welcome them!`
     }
 
+    const now = new Date()
+    const createdAt = new Date(post.created_at)
+    const updatedAt = new Date(post.updated_at)
+    const shouldShowUpdatedAt = (now - updatedAt) < (now - createdAt) * 0.8
+
     if (expanded) {
       description = present(sanitize(this.props.post.description))
-      var now = new Date()
-      var createdAt = new Date(post.created_at)
-      var updatedAt = new Date(post.updated_at)
-      var shouldShowUpdatedAt = (now - updatedAt) < (now - createdAt) * 0.8
       var attachments = filter(post.media, m => m.type !== 'image')
     }
 
     return <div className={classes} onClick={this.expand}>
-      <Avatar person={person}/>
+      <div className='header'>
+        <Avatar person={person}/>
+        <span className='name'>{person.name}</span>
+        <div className='meta'>
+          {humanDate(createdAt)}
+          {shouldShowUpdatedAt && <span>
+            {spacer}updated {humanDate(updatedAt)}
+          </span>}
+          {spacer}
+          {post.votes} ♡
+          {spacer}
+          <a onClick={this.toggleComments} href='#'>
+            {post.numComments} comment{post.numComments === 1 ? '' : 's'}
+          </a>
+        </div>
+      </div>
 
-      <div className='content'>
-        <strong className='name'>{person.name}</strong>
-        <p className='title'>{title}</p>
+      <p className='title'>{title}</p>
 
-        {image && <div className='image' style={style}></div>}
+      {image && <div className='image' style={style}></div>}
 
-        {expanded && <div>
-          {image && <img src={image.url} className='full-image post-section'/>}
+      {expanded && <div>
+        {image && <img src={image.url} className='full-image post-section'/>}
 
-          {description && <div className='details post-section'
-            dangerouslySetInnerHTML={{__html: description}}/>}
+        {description && <div className='details post-section'
+          dangerouslySetInnerHTML={{__html: description}}/>}
 
-          {!isEmpty(attachments) && <div className='post-section'>
-            {attachments.map((file, i) =>
-              <a key={i} className='attachment' href={file.url} target='_blank' title={file.name}>
-                <img src={file.thumbnail_url}/>
-                {truncate(file.name, 30)}
-              </a>)}
-          </div>}
-
-          <div className='meta post-section'>
-            {humanDate(createdAt)}
-            {shouldShowUpdatedAt && <span>
-              {spacer}updated {humanDate(updatedAt)}
-            </span>}
-            {spacer}
-            {post.votes} ♡
-            {spacer}
-            <a onClick={this.toggleComments} href='#'>
-              {post.numComments} comment{post.numComments === 1 ? '' : 's'}
-            </a>
-          </div>
-
-          <div className='meta'>
-            <ul className='tags'>
-              <li className={cx('tag', 'post-type', post.type)}>{post.type}</li>
-              {post.communities.map(c => <li key={c.id} className='tag'>
-                <Link to={`/c/${c.slug}`} key={c.id}>{c.name}</Link>
-              </li>)}
-            </ul>
-          </div>
-
-          {this.state.commentsExpanded && <div>
-            {comments.map(c => <Comment comment={c} key={c.id}/>)}
-            <CommentForm onCreate={text => dispatch(createComment(post.id, text))}/>
-          </div>}
+        {!isEmpty(attachments) && <div className='post-section'>
+          {attachments.map((file, i) =>
+            <a key={i} className='attachment' href={file.url} target='_blank' title={file.name}>
+              <img src={file.thumbnail_url}/>
+              {truncate(file.name, 30)}
+            </a>)}
         </div>}
 
-      </div>
+        <div className='meta'>
+          <ul className='tags'>
+            <li className={cx('tag', 'post-type', post.type)}>{post.type}</li>
+            {post.communities.map(c => <li key={c.id} className='tag'>
+              <Link to={`/c/${c.slug}`} key={c.id}>{c.name}</Link>
+            </li>)}
+          </ul>
+        </div>
+
+        {this.state.commentsExpanded && <div>
+          {comments.map(c => <Comment comment={c} key={c.id}/>)}
+          <CommentForm onCreate={text => dispatch(createComment(post.id, text))}/>
+        </div>}
+      </div>}
     </div>
   }
 }

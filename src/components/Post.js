@@ -3,7 +3,7 @@ import { Link } from 'react-router'
 import { filter, find, isEmpty } from 'lodash'
 const { array, bool, func, object } = React.PropTypes
 import cx from 'classnames'
-import { humanDate, present, sanitize } from '../util/RichText'
+import { humanDate, present, sanitize, timeRange, timeRangeFull } from '../util/text'
 import truncate from 'html-truncate'
 import Avatar from './Avatar'
 import Comment from './Comment'
@@ -68,6 +68,14 @@ export default class Post extends React.Component {
       var attachments = filter(post.media, m => m.type !== 'image')
     }
 
+    let isEvent = post.type === 'event'
+    if (isEvent) {
+      let start = new Date(post.start_time)
+      let end = post.end_time && new Date(post.end_time)
+      var eventTime = timeRange(start, end)
+      var eventTimeFull = timeRangeFull(start, end)
+    }
+
     return <div className={classes} onClick={this.expand}>
       <div className='header'>
         <Avatar person={person}/>
@@ -87,6 +95,11 @@ export default class Post extends React.Component {
       </div>
 
       <p className='title'>{title}</p>
+
+      {isEvent && <p title={eventTimeFull} className='event-time'>
+        <i className='glyphicon glyphicon-time'></i>
+        {eventTime}
+      </p>}
 
       {image && <div className='image' style={style}></div>}
 

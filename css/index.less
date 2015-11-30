@@ -254,9 +254,19 @@ ul.posts {
     }
   }
 
+  .event-time {
+    margin-bottom: 0;
+    margin-top: @p-bottom-margin;
+  }
+
   &.expanded {
     border: 1px solid @dark-gray-border;
     p.title {
+      margin-bottom: @p-bottom-margin;
+    }
+
+    .event-time {
+      margin-top: 0;
       margin-bottom: @p-bottom-margin;
     }
 
@@ -292,6 +302,12 @@ ul.posts {
     &:hover {
       background-color: @mid-gray-bg;
     }
+  }
+}
+
+.event-time {
+  i {
+    margin-right: 5px;
   }
 }
 

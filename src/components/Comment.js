@@ -1,6 +1,6 @@
 import React from 'react'
 import Avatar from './Avatar'
-import {humanDate, sanitize, present} from '../util/RichText'
+import {humanDate, sanitize, present} from '../util/text'
 var { object } = React.PropTypes
 
 const spacer = <span>&nbsp;&nbsp;•&nbsp;&nbsp;</span>

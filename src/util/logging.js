@@ -8,7 +8,7 @@ const DEBUG = 'debug'
 const levels = [ERROR, WARN, INFO, DEBUG]
 
 function logAtLevel (level) {
-  if (levels.indexOf(logLevel) >= levels.indexOf(level)) {
+  if (levels.indexOf(logLevel) >= levels.indexOf(level) && typeof console !== 'undefined') {
     return console.log.bind(console)
   } else {
     return function noop () {}

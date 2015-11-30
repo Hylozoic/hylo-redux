@@ -12,6 +12,7 @@ import CommunityEvents from './containers/community/CommunityEvents'
 import AboutCommunity from './containers/community/AboutCommunity'
 import PersonPosts from './containers/person/PersonPosts'
 import AboutPerson from './containers/person/AboutPerson'
+import SinglePost from './containers/SinglePost'
 import { debug } from './util/logging'
 
 const requireLogin = store => (nextState, replaceState) => {
@@ -38,5 +39,6 @@ export default function makeRoutes (store) {
       <Route path='events' component={CommunityEvents}/>
       <Route path='about' component={AboutCommunity}/>
     </Route>
+    <Route path='p/:id' component={SinglePost}/>
   </Route>
 }

@@ -5,6 +5,7 @@ const { array, bool, func, object } = React.PropTypes
 import cx from 'classnames'
 import { humanDate, present, sanitize, timeRange, timeRangeFull } from '../util/text'
 import truncate from 'html-truncate'
+import A from './A'
 import Avatar from './Avatar'
 import Comment from './Comment'
 import CommentForm from './CommentForm'
@@ -19,13 +20,14 @@ export default class Post extends React.Component {
     post: object,
     onExpand: func,
     expanded: bool,
+    commentsExpanded: bool,
     comments: array,
     dispatch: func
   }
 
   constructor (props) {
     super(props)
-    this.state = {}
+    this.state = {commentsExpanded: props.commentsExpanded}
   }
 
   expand = () => {
@@ -81,7 +83,7 @@ export default class Post extends React.Component {
         <Avatar person={person}/>
         <span className='name'>{person.name}</span>
         <div className='meta'>
-          {humanDate(createdAt)}
+          <A to={`/p/${post.id}`}>{humanDate(createdAt)}</A>
           {shouldShowUpdatedAt && <span>
             {spacer}updated {humanDate(updatedAt)}
           </span>}

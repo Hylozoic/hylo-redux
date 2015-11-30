@@ -132,3 +132,12 @@ export function clearCache (bucket, id) {
     payload: {bucket, id}
   }
 }
+
+export const FETCH_POST = 'FETCH_POST'
+
+export function fetchPost (id) {
+  return {
+    type: FETCH_POST,
+    payload: {api: true, path: `/noo/post/${id}`}
+  }
+}

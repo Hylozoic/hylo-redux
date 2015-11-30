@@ -8,6 +8,7 @@ import { contains, uniq } from 'lodash'
 import {
   FETCH_COMMUNITY,
   FETCH_CURRENT_USER,
+  FETCH_POST,
   FETCH_PERSON,
   FETCH_COMMENTS,
   CREATE_COMMENT,
@@ -118,6 +119,7 @@ export default combineReducers({
         }, {})
         return {...state, ...posts}
       case CREATE_POST:
+      case FETCH_POST:
         return {...state, [payload.id]: payload}
     }
 

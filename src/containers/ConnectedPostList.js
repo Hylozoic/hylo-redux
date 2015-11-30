@@ -19,8 +19,8 @@ export const fetch = (subject, id, query = {}) => {
   return fetchPosts({subject, id, type, cacheId, limit: 20, ...query})
 }
 
-export const refetch = (opts, { dispatch, location: { query, pathname } }) => {
-  let newQuery = cleanAndStringify({...query, ...opts})
+export const refetch = (opts, { dispatch, location: { query, pathname } }, defaults) => {
+  let newQuery = cleanAndStringify({...query, ...opts}, defaults)
   let newPath = `${pathname}${newQuery ? '?' + newQuery : ''}`
   dispatch(navigate(newPath))
 }

@@ -1,12 +1,12 @@
 import qs from 'querystring'
 import { contains, omit } from 'lodash'
 
-const defaults = {
+const commonDefaults = {
   type: ['all+welcome', 'all'],
   sort: 'recent'
 }
 
-const blankOrDefault = (value, key) => {
+const blankOrDefault = (defaults = commonDefaults) => (value, key) => {
   let defaultValue = defaults[key]
   return defaultValue === value ||
     (!value && value !== 0) ||
@@ -14,5 +14,5 @@ const blankOrDefault = (value, key) => {
 }
 
 // TODO: sort output by key name
-export const cleanAndStringify = (opts) =>
-  qs.stringify(omit(opts, blankOrDefault))
+export const cleanAndStringify = (opts, defaults) =>
+  qs.stringify(omit(opts, blankOrDefault(defaults)))

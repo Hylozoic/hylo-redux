@@ -29,7 +29,18 @@ export default class RichTextEditor extends React.Component {
 
   constructor (props) {
     super(props)
-    this.editorId = uuid()
+
+    // this window check is a workaround for server rendering of a single-post
+    // page. if we call uuid() on the server it keeps a single count for all
+    // requests, but the client starts from 0 for each request.
+    //
+    // a different workaround would have to be implemented if we were to add
+    // a server-rendered page that had two or more editors on it.
+    if (typeof window !== 'undefined') {
+      this.editorId = uuid()
+    } else {
+      this.editorId = 'react-tinymce-0'
+    }
   }
 
   handleChange = event => {

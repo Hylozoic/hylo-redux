@@ -1,6 +1,6 @@
 import React from 'react'
 import { Link } from 'react-router'
-import { filter, find, isEmpty } from 'lodash'
+import { filter, find, isEmpty, pick } from 'lodash'
 const { array, bool, func, object } = React.PropTypes
 import cx from 'classnames'
 import { humanDate, present, sanitize, timeRange, timeRangeFull } from '../util/text'
@@ -47,12 +47,10 @@ export default class Post extends React.Component {
   }
 
   render () {
-    let { post, comments, expanded, dispatch, commentingDisabled } = this.props
-    if (!comments) comments = []
+    let { post, expanded } = this.props
     let image = find(post.media, m => m.type === 'image')
     var style = image ? {backgroundImage: `url(${image.url})`} : {}
     var classes = cx('post', post.type, {expanded: expanded, image: !!image})
-    var description
 
     var title = post.name
     var person = post.user
@@ -65,11 +63,6 @@ export default class Post extends React.Component {
     const createdAt = new Date(post.created_at)
     const updatedAt = new Date(post.updated_at)
     const shouldShowUpdatedAt = (now - updatedAt) < (now - createdAt) * 0.8
-
-    if (expanded) {
-      description = present(sanitize(this.props.post.description))
-      var attachments = filter(post.media, m => m.type !== 'image')
-    }
 
     let isEvent = post.type === 'event'
     if (isEvent) {
@@ -108,36 +101,50 @@ export default class Post extends React.Component {
       </p>}
 
       {image && <div className='image' style={style}></div>}
-
-      {expanded && <div>
-        {image && <img src={image.url} className='full-image post-section'/>}
-
-        {description && <div className='details post-section'
-          dangerouslySetInnerHTML={{__html: description}}/>}
-
-        {!isEmpty(attachments) && <div className='post-section'>
-          {attachments.map((file, i) =>
-            <a key={i} className='attachment' href={file.url} target='_blank' title={file.name}>
-              <img src={file.thumbnail_url}/>
-              {truncate(file.name, 30)}
-            </a>)}
-        </div>}
-
-        <div className='meta'>
-          <ul className='tags'>
-            <li className={cx('tag', 'post-type', post.type)}>{post.type}</li>
-            {post.communities.map(c => <li key={c.id} className='tag'>
-              <Link to={`/c/${c.slug}`} key={c.id}>{c.name}</Link>
-            </li>)}
-          </ul>
-        </div>
-
-        {this.state.commentsExpanded && <div>
-          {comments.map(c => <Comment comment={c} key={c.id}/>)}
-          {!commentingDisabled &&
-            <CommentForm onCreate={text => dispatch(createComment(post.id, text))}/>}
-        </div>}
-      </div>}
+      {expanded && <ExpandedPostDetails
+        onCommentCreate={text => this.props.dispatch(createComment(post.id, text))}
+        commentsExpanded={this.state.commentsExpanded}
+        {...{post, image}}
+        {...pick(this.props, 'comments', 'commentingDisabled')}/>}
     </div>
   }
+}
+
+const ExpandedPostDetails = props => {
+  let {
+    post, image, comments, commentsExpanded,
+    commentingDisabled, onCommentCreate
+  } = props
+  let description = present(sanitize(post.description))
+  let attachments = filter(post.media, m => m.type !== 'image')
+  if (!comments) comments = []
+
+  return <div>
+    {image && <img src={image.url} className='full-image post-section'/>}
+
+    {description && <div className='details post-section'
+      dangerouslySetInnerHTML={{__html: description}}/>}
+
+    {!isEmpty(attachments) && <div className='post-section'>
+      {attachments.map((file, i) =>
+        <a key={i} className='attachment' href={file.url} target='_blank' title={file.name}>
+          <img src={file.thumbnail_url}/>
+          {truncate(file.name, 30)}
+        </a>)}
+    </div>}
+
+    <div className='meta'>
+      <ul className='tags'>
+        <li className={cx('tag', 'post-type', post.type)}>{post.type}</li>
+        {post.communities.map(c => <li key={c.id} className='tag'>
+          <Link to={`/c/${c.slug}`} key={c.id}>{c.name}</Link>
+        </li>)}
+      </ul>
+    </div>
+
+    {commentsExpanded && <div>
+      {comments.map(c => <Comment comment={c} key={c.id}/>)}
+      {!commentingDisabled && <CommentForm onCreate={onCommentCreate}/>}
+    </div>}
+  </div>
 }

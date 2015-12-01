@@ -26,7 +26,7 @@ server.use((req, res, next) => {
 
   let headers = req.headers
   let method = request[req.method.toLowerCase()]
-  let upstreamReq = method(upstreamUrl, {headers})
+  let upstreamReq = method(upstreamUrl, {headers, followRedirect: false})
 
   req.pipe(upstreamReq)
   .on('error', err => console.error(magenta('✗ ') + red(err.message)))

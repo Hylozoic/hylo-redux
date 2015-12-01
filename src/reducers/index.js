@@ -13,6 +13,7 @@ import {
   FETCH_COMMENTS,
   CREATE_COMMENT,
   LOGIN,
+  SET_LOGIN_ERROR,
   LOGOUT,
   NAVIGATE,
   TYPEAHEAD,
@@ -47,9 +48,13 @@ export default combineReducers({
 
   login: (state = {}, action) => {
     let { type, payload, error } = action
-    if (type === LOGIN) {
-      if (error) return {error: payload.message}
-      return {success: true}
+    switch (type) {
+      case LOGIN:
+        if (error) return {error: payload.message}
+        return {success: true}
+      case SET_LOGIN_ERROR:
+        if (!payload) return {success: true}
+        return {error: payload}
     }
     return state
   },

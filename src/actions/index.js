@@ -11,6 +11,12 @@ export function login (email, password) {
   }
 }
 
+export const SET_LOGIN_ERROR = 'SET_LOGIN_ERROR'
+
+export function setLoginError (message) {
+  return {type: SET_LOGIN_ERROR, payload: message}
+}
+
 export const LOGOUT = 'LOGOUT'
 
 export function logout () {

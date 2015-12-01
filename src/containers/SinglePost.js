@@ -8,11 +8,11 @@ import { join } from 'bluebird'
 const { object } = React.PropTypes
 
 const SinglePost = props => {
-  let { post } = props
+  let { post, currentUser } = props
   if (!post) return <div className='loading'>Loading...</div>
 
   return <div>
-    <Post post={post} expanded={true} commentsExpanded={true}/>
+    <Post post={post} expanded={true} commentsExpanded={true} commentingDisabled={!currentUser}/>
   </div>
 }
 
@@ -25,5 +25,8 @@ export default compose(
     dispatch(fetchPost(params.id)),
     dispatch(fetchComments(params.id))
   )),
-  connect(({ posts }, { params }) => ({post: posts[params.id]}))
+  connect(({ posts, people }, { params }) => ({
+    post: posts[params.id],
+    currentUser: people.current
+  }))
 )(SinglePost)

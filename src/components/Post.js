@@ -22,7 +22,8 @@ export default class Post extends React.Component {
     expanded: bool,
     commentsExpanded: bool,
     comments: array,
-    dispatch: func
+    dispatch: func,
+    commentingDisabled: bool
   }
 
   constructor (props) {
@@ -46,7 +47,7 @@ export default class Post extends React.Component {
   }
 
   render () {
-    let { post, comments, expanded, dispatch } = this.props
+    let { post, comments, expanded, dispatch, commentingDisabled } = this.props
     if (!comments) comments = []
     let image = find(post.media, m => m.type === 'image')
     var style = image ? {backgroundImage: `url(${image.url})`} : {}
@@ -133,7 +134,8 @@ export default class Post extends React.Component {
 
         {this.state.commentsExpanded && <div>
           {comments.map(c => <Comment comment={c} key={c.id}/>)}
-          <CommentForm onCreate={text => dispatch(createComment(post.id, text))}/>
+          {!commentingDisabled &&
+            <CommentForm onCreate={text => dispatch(createComment(post.id, text))}/>}
         </div>}
       </div>}
     </div>

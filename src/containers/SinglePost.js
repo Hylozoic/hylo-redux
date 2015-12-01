@@ -8,8 +8,11 @@ import { join } from 'bluebird'
 const { object } = React.PropTypes
 
 const SinglePost = props => {
+  let { post } = props
+  if (!post) return <div className='loading'>Loading...</div>
+
   return <div>
-    <Post post={props.post} expanded={true} commentsExpanded={true}/>
+    <Post post={post} expanded={true} commentsExpanded={true}/>
   </div>
 }
 

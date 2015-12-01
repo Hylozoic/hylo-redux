@@ -14,7 +14,7 @@ import { fetchComments, createComment } from '../actions'
 
 const spacer = <span>&nbsp;&nbsp;•&nbsp;&nbsp;</span>
 
-@connect((state, props) => ({comments: state.commentsByPost[props.post.id]}))
+@connect((state, { post }) => ({comments: state.commentsByPost[post.id]}))
 export default class Post extends React.Component {
   static propTypes = {
     post: object,

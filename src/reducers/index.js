@@ -25,6 +25,13 @@ import { FETCH_POSTS } from '../actions/fetchPosts'
 import { FETCH_PEOPLE } from '../actions/fetchPeople'
 
 export default combineReducers({
+  errors: (state = {}, action) => {
+    let { error, type, payload, meta } = action
+    if (!error) return state
+
+    return {...state, [type]: {error, payload, meta}}
+  },
+
   routing: (state = {path: '/'}, action) => {
     if (action.error) return state
 

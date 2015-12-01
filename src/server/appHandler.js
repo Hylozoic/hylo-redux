@@ -10,12 +10,22 @@ import { match, RoutingContext } from 'react-router'
 import createHistory from 'history/lib/createMemoryHistory'
 import { syncReduxAndRouter } from 'redux-simple-router'
 import { getPrefetchedData } from 'react-fetcher'
-import { cyan } from 'chalk'
-import { info } from '../util/logging'
+import { cyan, red } from 'chalk'
+import { info, debug } from '../util/logging'
 import { fetchCurrentUser } from '../actions'
 import { localsForPrefetch } from '../util/universal'
+import { any, isEmpty, pairs } from 'lodash'
 
 const matchPromise = promisify(match, {multiArgs: true})
+
+const hasAPIErrors = ({ errors }) => {
+  return any(pairs(errors), ([key, { payload: { response } }]) => {
+    if (!response) return false
+    let { status, url } = response
+    debug(red(`${key} caused ${status} at ${url}`))
+    return true
+  })
+}
 
 export default function (req, res) {
   info(cyan(`${req.method} ${req.originalUrl}`))
@@ -42,9 +52,14 @@ export default function (req, res) {
     .then(html => '<!DOCTYPE html>\n' + html)
     .then(html => res.status(200).send(html))
   })
-  .catch(error => {
+  .catch(err => {
+    if (hasAPIErrors(store.getState())) {
+      res.redirect(302, `/login?next=${req.url}`)
+      return
+    }
+
     res.setHeader('Content-Type', 'text/plain')
-    res.status(500).send(error.stack)
+    res.status(500).send(err.stack)
   })
 }
 
@@ -64,9 +79,12 @@ function renderApp (res, renderProps, history, store) {
       </Provider>
     )
 
+    let state = store.getState()
+    if (!isEmpty(state.errors)) throw new Error('state has errors')
+
     return React.createElement(Html, {
       markup: markup,
-      state: `window.INITIAL_STATE=${JSON.stringify(store.getState())}`,
+      state: `window.INITIAL_STATE=${JSON.stringify(state)}`,
       cssBundle: config.cssBundle,
       jsBundle: config.jsBundle
     })

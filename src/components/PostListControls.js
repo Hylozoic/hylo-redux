@@ -1,5 +1,5 @@
 import React from 'react'
-import Dropdown from './Dropdown'
+import Select from './Select'
 import { debounce } from 'lodash'
 const { bool, func, string } = React.PropTypes
 
@@ -28,10 +28,10 @@ const PostListControls = props => {
       placeholder='Search' defaultValue={search}
       onChange={debounce(event => onChange({search: event.target.value}), 500)}/>
 
-    <Dropdown className='type' choices={types} selected={selectedType}
+    <Select className='type' choices={types} selected={selectedType}
       onChange={t => onChange({type: t.id})}/>
 
-    <Dropdown choices={sorts} selected={selectedSort}
+    <Select choices={sorts} selected={selectedSort}
       onChange={s => onChange({sort: s.id})}/>
   </div>
 }

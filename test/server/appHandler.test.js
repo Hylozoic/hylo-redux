@@ -45,6 +45,7 @@ describe('appHandler', () => {
     beforeEach(() => {
       nock(HOST).get('/noo/user/me').reply(200, {id: 1, name: 'cat'})
       nock(HOST).get('/noo/community/house').reply(200, community)
+      nock(HOST).get('/noo/community/house/posts?offset=0&limit=20').reply(200, {posts: [], posts_total: 0})
     })
 
     it('loads a page that requires login', () => {

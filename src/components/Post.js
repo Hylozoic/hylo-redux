@@ -93,6 +93,9 @@ export default class Post extends React.Component {
           <a onClick={this.toggleComments} href='#'>
             {post.numComments} comment{post.numComments === 1 ? '' : 's'}
           </a>
+          {post.public && <span>
+            {spacer}Public
+          </span>}
         </div>
       </div>
 

@@ -44,14 +44,10 @@ export default class PostEditor extends React.Component {
     expanded: bool,
     dispatch: func,
     mentionChoices: array,
-    currentUser: object
+    currentUser: object,
+    public: bool
   }
 
-  // why don't we just use component-local state here?
-  // i'm not 100% confident in my decision to do otherwise, but the reasoning
-  // is that we need to reset state in response to the results of asynchronous
-  // actions; e.g. when a post is successfully created, we should clear and close
-  // the form. and only stores can respond to events.
   updateStore (data) {
     this.props.dispatch(updatePostEditor(data))
   }
@@ -76,6 +72,9 @@ export default class PostEditor extends React.Component {
   removeCommunity = community =>
     this.updateStore({communities: filter(this.props.communities, c => c.id !== community.id)})
 
+  togglePublic = () =>
+    this.updateStore({public: !this.props.public})
+
   validate () {
     if (!this.props.title) {
       window.alert('The title of a post cannot be blank.')
@@ -99,7 +98,8 @@ export default class PostEditor extends React.Component {
         type: type || 'chat',
         name: title,
         description: details,
-        communities: communities.map(c => c.id)
+        communities: communities.map(c => c.id),
+        public: this.props.public
       }))
     })
   }
@@ -143,7 +143,7 @@ export default class PostEditor extends React.Component {
 
       <input type='text' ref='title' className='title form-control'
         placeholder={placeholder}
-        onFocus={this.expand} value={title} onInput={this.setTitle}/>
+        onFocus={this.expand} value={title} onChange={this.setTitle}/>
 
       {expanded && <div>
         <h3>Details</h3>
@@ -160,6 +160,12 @@ export default class PostEditor extends React.Component {
           getChoices={this.findCommunities}
           onSelect={this.addCommunity}
           onRemove={this.removeCommunity}/>
+
+        <label>
+          <input type='checkbox' value={this.props.public} onChange={this.togglePublic}/>
+          &nbsp;
+          Make this post publicly visible
+        </label>
 
         <div className='right buttons'>
           <button onClick={this.cancel}>Cancel</button>

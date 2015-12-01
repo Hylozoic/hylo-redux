@@ -5,6 +5,7 @@ import { FETCH_POSTS, fetchPosts } from '../actions/fetchPosts'
 import { debug } from '../util/logging'
 import { cleanAndStringify } from '../util/caching'
 import { navigate } from '../actions'
+import { isEqual } from 'lodash'
 const { array, bool, func, number, object, string } = React.PropTypes
 
 const createCacheId = (subject, id, query = {}) => {
@@ -50,6 +51,10 @@ export class ConnectedPostList extends React.Component {
 
     let offset = posts.length
     dispatch(fetch(subject, id, {...query, offset}))
+  }
+
+  shouldComponentUpdate (nextProps) {
+    return !isEqual(this.props, nextProps)
   }
 
   render () {

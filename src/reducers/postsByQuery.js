@@ -26,7 +26,7 @@ export default function (state = {}, action) {
         let key = qs.parse(id)
 
         if ((key.subject === 'community' && contains(slugs, key.id)) ||
-        (key.subject === 'person' && key.id === post.user_id) ||
+        (key.subject === 'person' && key.id === post.user.id) ||
         key.subject === 'all-posts') {
           changedLists[id] = [post.id].concat(postIds)
         }

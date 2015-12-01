@@ -1,10 +1,18 @@
+/*
+
+N.B.: in the database, Post has columns called "name" and "description".
+Below, we use "title" and "details" instead for CSS and user-facing text,
+because they make more sense.
+
+*/
+
 import React from 'react'
 import { contains, curry, filter, startsWith } from 'lodash'
 import cx from 'classnames'
 import TagInput from './TagInput'
 import RichTextEditor from './RichTextEditor'
 import { connect } from 'react-redux'
-import { typeahead, updatePostEditor, createPost } from '../actions'
+import { typeahead, updatePostEditor, createPost, updatePost, cancelPostEdit } from '../actions'
 
 const { array, bool, func, object, string } = React.PropTypes
 
@@ -28,28 +36,43 @@ const postTypeData = {
   }
 }
 
-@connect((state, props) => ({
-  communities: props.community ? [props.community] : [],
-  mentionChoices: state.typeaheadMatches.post,
-  currentUser: state.people.current,
-  ...state.postEditor
-}))
+@connect((state, { community, post }) => {
+  let communities, context
+  if (post) {
+    communities = post.communities
+    context = post.id
+  } else {
+    communities = community ? [community] : []
+    context = 'new'
+  }
+
+  return {
+    communities,
+    mentionChoices: state.typeaheadMatches.post,
+    currentUser: state.people.current,
+    ...state.postsInProgress[context],
+    context
+  }
+})
 export default class PostEditor extends React.Component {
   static propTypes = {
-    title: string,
+    name: string,
     type: string,
-    details: string,
+    description: string,
     community: object,
     communities: array,
     expanded: bool,
     dispatch: func,
     mentionChoices: array,
     currentUser: object,
-    public: bool
+    public: bool,
+    post: object,
+    context: string.isRequired
   }
 
   updateStore (data) {
-    this.props.dispatch(updatePostEditor(data))
+    let { context, dispatch } = this.props
+    dispatch(updatePostEditor(data, context))
   }
 
   selectType = (type, event) =>
@@ -58,13 +81,19 @@ export default class PostEditor extends React.Component {
   expand = () =>
     this.props.expanded || this.updateStore({expanded: true})
 
-  cancel = () =>
-    this.updateStore({expanded: false})
+  cancel = () => {
+    let { dispatch, context, post } = this.props
+    if (context === 'default') {
+      this.updateStore({expanded: false})
+    } else {
+      dispatch(cancelPostEdit(post.id))
+    }
+  }
 
-  setTitle = event =>
-    this.updateStore({title: event.target.value})
+  setName = event =>
+    this.updateStore({name: event.target.value})
 
-  setDetails = event => this.updateStore({details: event.target.value})
+  setDescription = event => this.updateStore({description: event.target.value})
 
   addCommunity = community =>
     this.updateStore({communities: this.props.communities.concat(community)})
@@ -76,9 +105,9 @@ export default class PostEditor extends React.Component {
     this.updateStore({public: !this.props.public})
 
   validate () {
-    if (!this.props.title) {
+    if (!this.props.name) {
       window.alert('The title of a post cannot be blank.')
-      this.refs.title.focus()
+      this.refs.name.focus()
       return
     }
 
@@ -88,19 +117,24 @@ export default class PostEditor extends React.Component {
   save = () => {
     if (!this.validate()) return
 
-    // we use setTimeout here to avoid a race condition. the details field (tinymce)
+    // we use setTimeout here to avoid a race condition. the description field (tinymce)
     // may not fire its change event until it loses focus, so if we click Post
-    // immediately after typing in the details field, we have to wait for props
+    // immediately after typing in the description field, we have to wait for props
     // to update from the store
     setTimeout(() => {
-      let { dispatch, title, details, type, communities } = this.props
-      dispatch(createPost({
-        type: type || 'chat',
-        name: title,
-        description: details,
-        communities: communities.map(c => c.id),
-        public: this.props.public
-      }))
+      let { dispatch, name, description, type, communities, post, context } = this.props
+
+      if (!type) type = 'chat'
+      // TODO use ids instead of objects from the beginning
+      communities = communities.map(c => c.id)
+
+      let attrs = {type, name, description, communities, public: this.props.public}
+
+      if (post) {
+        dispatch(updatePost(post.id, attrs))
+      } else {
+        dispatch(createPost(attrs, context))
+      }
     })
   }
 
@@ -128,11 +162,12 @@ export default class PostEditor extends React.Component {
   }
 
   render () {
-    var { title, details, expanded, communities } = this.props
+    var { name, description, expanded, communities, post } = this.props
     var selectedType = this.props.type || 'chat'
     var placeholder = postTypeData[selectedType].placeholder
 
     return <div className={cx('post-editor', 'clearfix', {expanded: expanded})}>
+      {post && <h3>Editing "{name}"</h3>}
       <ul className='left post-types'>
         {postTypes.map(type => <li key={type}
           className={cx('post-type', type, {selected: type === selectedType})}
@@ -141,15 +176,15 @@ export default class PostEditor extends React.Component {
         </li>)}
       </ul>
 
-      <input type='text' ref='title' className='title form-control'
+      <input type='text' ref='name' className='title form-control'
         placeholder={placeholder}
-        onFocus={this.expand} value={title} onChange={this.setTitle}/>
+        onFocus={this.expand} value={name} onChange={this.setName}/>
 
       {expanded && <div>
         <h3>Details</h3>
         <RichTextEditor className='details'
-          content={details}
-          onChange={this.setDetails}
+          content={description}
+          onChange={this.setDescription}
           mentionTemplate={this.mentionTemplate}
           mentionTypeahead={this.mentionTypeahead}
           mentionChoices={this.props.mentionChoices}

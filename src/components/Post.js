@@ -9,12 +9,17 @@ import A from './A'
 import Avatar from './Avatar'
 import Comment from './Comment'
 import CommentForm from './CommentForm'
+import PostEditor from './PostEditor'
 import { connect } from 'react-redux'
-import { fetchComments, createComment } from '../actions'
+import { fetchComments, createComment, startPostEdit } from '../actions'
 
 const spacer = <span>&nbsp;&nbsp;•&nbsp;&nbsp;</span>
 
-@connect((state, { post }) => ({comments: state.commentsByPost[post.id]}))
+@connect(({ commentsByPost, people, postsInProgress }, { post }) => ({
+  comments: commentsByPost[post.id],
+  currentUser: people.current,
+  editing: !!postsInProgress[post.id]
+}))
 export default class Post extends React.Component {
   static propTypes = {
     post: object,
@@ -23,7 +28,9 @@ export default class Post extends React.Component {
     commentsExpanded: bool,
     comments: array,
     dispatch: func,
-    commentingDisabled: bool
+    commentingDisabled: bool,
+    currentUser: object,
+    editing: bool
   }
 
   constructor (props) {
@@ -46,8 +53,15 @@ export default class Post extends React.Component {
     this.setState({commentsExpanded: !this.state.commentsExpanded})
   }
 
+  edit = () => {
+    let { dispatch, post } = this.props
+    dispatch(startPostEdit(post))
+  }
+
   render () {
-    let { post, expanded } = this.props
+    let { post, expanded, currentUser, editing } = this.props
+    if (editing) return this.renderEdit()
+
     let image = find(post.media, m => m.type === 'image')
     var style = image ? {backgroundImage: `url(${image.url})`} : {}
     var classes = cx('post', post.type, {expanded: expanded, image: !!image})
@@ -72,9 +86,19 @@ export default class Post extends React.Component {
       var eventTimeFull = timeRangeFull(start, end)
     }
 
+    let canEdit = (currentUser && currentUser.id === person.id)
+
     return <div className={classes} onClick={this.expand}>
       <div className='header'>
         <Avatar person={person}/>
+
+        <Dropdown toggleContent={<i className='icon-down'></i>}>
+          {canEdit && <li><a onClick={this.edit}>Edit</a></li>}
+          <li>
+            <a onClick={() => window.alert('TODO')}>Report objectionable content</a>
+          </li>
+        </Dropdown>
+
         <span className='name'>{person.name}</span>
         <div className='meta'>
           <A to={`/p/${post.id}`}>{humanDate(createdAt)}</A>
@@ -106,6 +130,38 @@ export default class Post extends React.Component {
         commentsExpanded={this.state.commentsExpanded}
         {...{post, image}}
         {...pick(this.props, 'comments', 'commentingDisabled')}/>}
+    </div>
+  }
+
+  renderEdit () {
+    let { post } = this.props
+    return <PostEditor post={post} expanded={true}/>
+  }
+}
+
+class Dropdown extends React.Component {
+  constructor (props) {
+    super(props)
+    this.state = {}
+  }
+
+  static propTypes = {
+    children: array,
+    toggleContent: object
+  }
+
+  toggleActive = event => {
+    this.setState({active: !this.state.active})
+    event.stopPropagation()
+    event.preventDefault()
+  }
+
+  render () {
+    return <div className={cx('dropdown', 'post-menu', {active: this.state.active})}>
+      <a className='dropdown-toggle' onClick={this.toggleActive}>{this.props.toggleContent}</a>
+      <ul className='dropdown-menu dropdown-menu-right'>
+        {this.props.children}
+      </ul>
     </div>
   }
 }

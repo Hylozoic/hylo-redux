@@ -19,7 +19,10 @@ import {
   TYPEAHEAD,
   CANCEL_TYPEAHEAD,
   UPDATE_POST_EDITOR,
-  CREATE_POST
+  CREATE_POST,
+  UPDATE_POST,
+  START_POST_EDIT,
+  CANCEL_POST_EDIT
 } from '../actions'
 
 import { FETCH_POSTS } from '../actions/fetchPosts'
@@ -122,7 +125,7 @@ export default combineReducers({
   posts: (state = {}, action) => {
     if (action.error) return state
 
-    let { type, payload } = action
+    let { type, payload, meta } = action
     switch (type) {
       case FETCH_POSTS:
         let posts = payload.posts.reduce((m, p) => {
@@ -133,6 +136,9 @@ export default combineReducers({
       case CREATE_POST:
       case FETCH_POST:
         return {...state, [payload.id]: payload}
+      case UPDATE_POST:
+        let { post } = meta
+        return {...state, [post.id]: post}
     }
 
     return state
@@ -196,15 +202,29 @@ export default combineReducers({
     return state
   },
 
-  postEditor: (state = {}, action) => {
+  postsInProgress: (state = {default: {}}, action) => {
     if (action.error) return state
 
-    let { type, payload } = action
+    let { type, payload, meta } = action
+    let { context } = meta || {}
     switch (type) {
       case UPDATE_POST_EDITOR:
-        return {...state, ...payload}
+        return {
+          ...state,
+          [context]: {...state[context], ...payload}
+        }
       case CREATE_POST:
-        return {}
+      case UPDATE_POST:
+      case CANCEL_POST_EDIT:
+        return {
+          ...state,
+          [context]: null
+        }
+      case START_POST_EDIT:
+        return {
+          ...state,
+          [payload.id]: payload
+        }
     }
 
     return state

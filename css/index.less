@@ -315,6 +315,16 @@ ul.posts {
     }
   }
 
+  .post-menu {
+    float: right;
+    .meta-text;
+    cursor: pointer;
+    > a:hover {
+      text-decoration: none;
+      color: @off-black;
+    }
+  }
+
   &.expanded {
     border: 1px solid @dark-gray-border;
     p.title {
@@ -506,6 +516,10 @@ ul.tags {
 
   label {
     font-weight: normal;
+  }
+
+  > h3:first-child {
+    margin-top: 0;
   }
 }
 

@@ -1,5 +1,5 @@
 import cleanAndStringify from '../util/caching'
-import { omit } from 'lodash'
+import { omit, pick } from 'lodash'
 
 export const LOGIN = 'LOGIN'
 
@@ -114,19 +114,21 @@ export function typeahead (opts) {
 
 export const UPDATE_POST_EDITOR = 'UPDATE_POST_EDITOR'
 
-export function updatePostEditor (payload) {
+export function updatePostEditor (payload, context) {
   return {
     type: UPDATE_POST_EDITOR,
-    payload
+    payload,
+    meta: {context}
   }
 }
 
 export const CREATE_POST = 'CREATE_POST'
 
-export function createPost (params) {
+export function createPost (params, context) {
   return {
     type: CREATE_POST,
-    payload: {api: true, params, path: '/noo/post', method: 'POST'}
+    payload: {api: true, params, path: '/noo/post', method: 'POST'},
+    meta: {context}
   }
 }
 
@@ -145,5 +147,29 @@ export function fetchPost (id) {
   return {
     type: FETCH_POST,
     payload: {api: true, path: `/noo/post/${id}`}
+  }
+}
+
+export const START_POST_EDIT = 'START_POST_EDIT'
+
+export function startPostEdit (post) {
+  let fields = ['id', 'name', 'description', 'communities', 'public']
+  let payload = pick(post, fields)
+  return {type: START_POST_EDIT, payload}
+}
+
+export const CANCEL_POST_EDIT = 'CANCEL_POST_EDIT'
+
+export function cancelPostEdit (id) {
+  return {type: CANCEL_POST_EDIT, meta: {context: id}}
+}
+
+export const UPDATE_POST = 'UPDATE_POST'
+
+export function updatePost (id, params) {
+  return {
+    type: UPDATE_POST,
+    payload: {api: true, params, path: `/noo/post/${id}`, method: 'POST'},
+    meta: {context: id}
   }
 }

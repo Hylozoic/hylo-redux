@@ -57,7 +57,7 @@ describe('postsByQuery', () => {
     it('prepends the post to caches', () => {
       let post = {
         id: 'p',
-        user_id: '1',
+        user: {id: '1'},
         communities: [{slug: 'foo'}, {slug: 'bar'}]
       }
 

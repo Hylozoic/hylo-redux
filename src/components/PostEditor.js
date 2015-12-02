@@ -36,14 +36,16 @@ const postTypeData = {
   }
 }
 
+const NEW_POST_CONTEXT = 'new'
+
 @connect((state, { community, post }) => {
   let communities, context
   if (post) {
-    communities = post.communities
+    communities = post.communities.map(id => state.communities[id])
     context = post.id
   } else {
     communities = community ? [community] : []
-    context = 'new'
+    context = NEW_POST_CONTEXT
   }
 
   return {
@@ -83,7 +85,7 @@ export default class PostEditor extends React.Component {
 
   cancel = () => {
     let { dispatch, context, post } = this.props
-    if (context === 'default') {
+    if (context === NEW_POST_CONTEXT) {
       this.updateStore({expanded: false})
     } else {
       dispatch(cancelPostEdit(post.id))
@@ -123,12 +125,13 @@ export default class PostEditor extends React.Component {
     // to update from the store
     setTimeout(() => {
       let { dispatch, name, description, type, communities, post, context } = this.props
-
-      if (!type) type = 'chat'
-      // TODO use ids instead of objects from the beginning
-      communities = communities.map(c => c.id)
-
-      let attrs = {type, name, description, communities, public: this.props.public}
+      let attrs = {
+        type: type || 'chat',
+        name,
+        description,
+        communities: communities.map(c => c.id),
+        public: this.props.public
+      }
 
       if (post) {
         dispatch(updatePost(post.id, attrs))
@@ -141,10 +144,10 @@ export default class PostEditor extends React.Component {
   findCommunities = term => {
     if (!term) return
 
-    let { currentUser } = this.props
+    let { currentUser, communities } = this.props
     var match = c =>
       startsWith(c.name.toLowerCase(), term.toLowerCase()) &&
-      !contains((this.props.communities || []).map(x => x.id), c.id)
+      !contains((communities || []).map(x => x.id), c.id)
 
     return filter(currentUser.memberships.map(m => m.community), match)
   }

@@ -15,15 +15,18 @@ export default class CommunityProfile extends React.Component {
 
   render () {
     var { community } = this.props
-    if (!community) return <div>Loading...</div>
 
-    let { slug } = community
+    // we might have partial data for a community already; if this component
+    // renders without banner_url, it'll cause a request to an invalid url
+    if (!community || !community.banner_url) return <div>Loading...</div>
+
+    let { slug, banner_url, avatar_url, name } = community
 
     return <div id='community'>
       <div className='banner'>
-        <div className='background' style={{backgroundImage: `url(${community.banner_url})`}}/>
-        <div className='logo' style={{backgroundImage: `url(${community.avatar_url})`}}/>
-        <h2>{community.name}</h2>
+        <div className='background' style={{backgroundImage: `url(${banner_url})`}}/>
+        <div className='logo' style={{backgroundImage: `url(${avatar_url})`}}/>
+        <h2>{name}</h2>
         <ul className='tabs'>
           <li><IndexA to={`/c/${slug}`}>Posts</IndexA></li>
           <li><A to={`/c/${slug}/events`}>Events</A></li>

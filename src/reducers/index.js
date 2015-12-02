@@ -3,12 +3,12 @@ import { routeReducer } from 'redux-simple-router'
 import { debug } from '../util/logging'
 import { appendUniq } from './util'
 import postsByQuery from './postsByQuery'
+import posts from './posts'
+import communities from './communities'
 import { contains, uniq } from 'lodash'
 
 import {
-  FETCH_COMMUNITY,
   FETCH_CURRENT_USER,
-  FETCH_POST,
   FETCH_PERSON,
   FETCH_COMMENTS,
   CREATE_COMMENT,
@@ -106,44 +106,6 @@ export default combineReducers({
     return state
   },
 
-  communities: (state = {}, action) => {
-    if (action.error) return state
-
-    switch (action.type) {
-      case FETCH_COMMUNITY:
-        let community = action.payload
-        debug('caching community:', community.slug)
-        return {
-          ...state,
-          [community.slug]: community
-        }
-    }
-
-    return state
-  },
-
-  posts: (state = {}, action) => {
-    if (action.error) return state
-
-    let { type, payload, meta } = action
-    switch (type) {
-      case FETCH_POSTS:
-        let posts = payload.posts.reduce((m, p) => {
-          m[p.id] = p
-          return m
-        }, {})
-        return {...state, ...posts}
-      case CREATE_POST:
-      case FETCH_POST:
-        return {...state, [payload.id]: payload}
-      case UPDATE_POST:
-        let { post } = meta
-        return {...state, [post.id]: post}
-    }
-
-    return state
-  },
-
   totalPostsByQuery: (state = {}, action) => {
     if (action.error) return state
 
@@ -155,6 +117,8 @@ export default combineReducers({
     return state
   },
 
+  communities,
+  posts,
   postsByQuery,
 
   pending: (state = {}, action) => {

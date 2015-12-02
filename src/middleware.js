@@ -1,5 +1,5 @@
 import { inspect } from 'util'
-import { omit } from 'lodash'
+import { has, omit } from 'lodash'
 import { fetchJSON } from './util/api'
 import { debug } from './util/logging'
 import { blue } from 'chalk'
@@ -8,18 +8,20 @@ import { blue } from 'chalk'
 export function cacheMiddleware (store) {
   return next => action => {
     let { cache } = action.meta || {}
-    let { bucket, id, array, limit, offset } = cache || {}
+    let { bucket, id, array, limit, offset, requiredProp } = cache || {}
     if (!bucket) return next(action)
+    let state = store.getState()
+    if (!state[bucket]) return next(action)
 
     if (array) {
-      let hit = store.getState()[bucket][id]
+      let hit = state[bucket][id]
       if (hit && hit.length > offset) {
         debug(`cache hit: ${bucket}[${id}][${offset}] + ${limit}`)
         return
       }
     } else {
-      let hit = store.getState()[bucket][id]
-      if (hit) {
+      let hit = state[bucket][id]
+      if (hit && !requiredProp || has(hit, requiredProp)) {
         debug(`cache hit: ${bucket}[${id}]`)
         return
       }

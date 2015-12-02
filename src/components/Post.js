@@ -1,6 +1,6 @@
 import React from 'react'
 import { Link } from 'react-router'
-import { filter, find, isEmpty, pick } from 'lodash'
+import { filter, find, isEmpty } from 'lodash'
 const { array, bool, func, object } = React.PropTypes
 import cx from 'classnames'
 import { humanDate, present, sanitize, timeRange, timeRangeFull } from '../util/text'
@@ -15,10 +15,11 @@ import { fetchComments, createComment, startPostEdit } from '../actions'
 
 const spacer = <span>&nbsp;&nbsp;•&nbsp;&nbsp;</span>
 
-@connect(({ commentsByPost, people, postsInProgress }, { post }) => ({
+@connect(({ commentsByPost, people, postsInProgress, communities }, { post }) => ({
   comments: commentsByPost[post.id],
   currentUser: people.current,
-  editing: !!postsInProgress[post.id]
+  editing: !!postsInProgress[post.id],
+  communities: post.communities.map(id => find(communities, c => c.id === id))
 }))
 export default class Post extends React.Component {
   static propTypes = {
@@ -26,6 +27,7 @@ export default class Post extends React.Component {
     onExpand: func,
     expanded: bool,
     commentsExpanded: bool,
+    communities: array,
     comments: array,
     dispatch: func,
     commentingDisabled: bool,
@@ -59,7 +61,7 @@ export default class Post extends React.Component {
   }
 
   render () {
-    let { post, expanded, currentUser, editing } = this.props
+    let { post, communities, expanded, currentUser, editing } = this.props
     if (editing) return this.renderEdit()
 
     let image = find(post.media, m => m.type === 'image')
@@ -70,7 +72,7 @@ export default class Post extends React.Component {
     var person = post.user
     if (post.type === 'welcome') {
       person = post.relatedUsers[0]
-      title = `${person.name} joined ${post.communities[0].name}. Welcome them!`
+      title = `${person.name} joined ${communities[0].name}. Welcome them!`
     }
 
     const now = new Date()
@@ -128,8 +130,7 @@ export default class Post extends React.Component {
       {expanded && <ExpandedPostDetails
         onCommentCreate={text => this.props.dispatch(createComment(post.id, text))}
         commentsExpanded={this.state.commentsExpanded}
-        {...{post, image}}
-        {...pick(this.props, 'comments', 'commentingDisabled')}/>}
+        {...{image}} {...this.props}/>}
     </div>
   }
 
@@ -169,7 +170,7 @@ class Dropdown extends React.Component {
 const ExpandedPostDetails = props => {
   let {
     post, image, comments, commentsExpanded,
-    commentingDisabled, onCommentCreate
+    commentingDisabled, onCommentCreate, communities
   } = props
   let description = present(sanitize(post.description))
   let attachments = filter(post.media, m => m.type !== 'image')
@@ -192,7 +193,7 @@ const ExpandedPostDetails = props => {
     <div className='meta'>
       <ul className='tags'>
         <li className={cx('tag', 'post-type', post.type)}>{post.type}</li>
-        {post.communities.map(c => <li key={c.id} className='tag'>
+        {communities.map(c => <li key={c.id} className='tag'>
           <Link to={`/c/${c.slug}`} key={c.id}>{c.name}</Link>
         </li>)}
       </ul>

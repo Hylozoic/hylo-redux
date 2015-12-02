@@ -1,4 +1,4 @@
-import cleanAndStringify from '../util/caching'
+import { cleanAndStringify } from '../util/caching'
 import { omit, pick } from 'lodash'
 
 export const LOGIN = 'LOGIN'

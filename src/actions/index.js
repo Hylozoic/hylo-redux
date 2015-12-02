@@ -170,6 +170,6 @@ export function updatePost (id, params) {
   return {
     type: UPDATE_POST,
     payload: {api: true, params, path: `/noo/post/${id}`, method: 'POST'},
-    meta: {context: id}
+    meta: {context: id, params}
   }
 }

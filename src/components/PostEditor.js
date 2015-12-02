@@ -7,7 +7,7 @@ because they make more sense.
 */
 
 import React from 'react'
-import { contains, curry, filter, startsWith } from 'lodash'
+import { contains, curry, filter, find, startsWith } from 'lodash'
 import cx from 'classnames'
 import TagInput from './TagInput'
 import RichTextEditor from './RichTextEditor'
@@ -41,10 +41,9 @@ const NEW_POST_CONTEXT = 'new'
 @connect((state, { community, post }) => {
   let communities, context
   if (post) {
-    communities = post.communities.map(id => state.communities[id])
     context = post.id
   } else {
-    communities = community ? [community] : []
+    communities = community ? [community.id] : []
     context = NEW_POST_CONTEXT
   }
 
@@ -98,10 +97,10 @@ export default class PostEditor extends React.Component {
   setDescription = event => this.updateStore({description: event.target.value})
 
   addCommunity = community =>
-    this.updateStore({communities: this.props.communities.concat(community)})
+    this.updateStore({communities: this.props.communities.concat(community.id)})
 
   removeCommunity = community =>
-    this.updateStore({communities: filter(this.props.communities, c => c.id !== community.id)})
+    this.updateStore({communities: filter(this.props.communities, cid => cid !== community.id)})
 
   togglePublic = () =>
     this.updateStore({public: !this.props.public})
@@ -125,18 +124,17 @@ export default class PostEditor extends React.Component {
     // to update from the store
     setTimeout(() => {
       let { dispatch, name, description, type, communities, post, context } = this.props
-      let attrs = {
+
+      let params = {
+        name, description, communities,
         type: type || 'chat',
-        name,
-        description,
-        communities: communities.map(c => c.id),
         public: this.props.public
       }
 
       if (post) {
-        dispatch(updatePost(post.id, attrs))
+        dispatch(updatePost(post.id, params))
       } else {
-        dispatch(createPost(attrs, context))
+        dispatch(createPost(params, context))
       }
     })
   }
@@ -147,7 +145,7 @@ export default class PostEditor extends React.Component {
     let { currentUser, communities } = this.props
     var match = c =>
       startsWith(c.name.toLowerCase(), term.toLowerCase()) &&
-      !contains((communities || []).map(x => x.id), c.id)
+      !contains(communities, c.id)
 
     return filter(currentUser.memberships.map(m => m.community), match)
   }
@@ -194,7 +192,7 @@ export default class PostEditor extends React.Component {
           mentionSelector='[data-user-id]'/>
 
         <h3>Communities</h3>
-        <TagInput tags={communities}
+        <CommunityTagInput ids={communities}
           getChoices={this.findCommunities}
           onSelect={this.addCommunity}
           onRemove={this.removeCommunity}/>
@@ -211,5 +209,20 @@ export default class PostEditor extends React.Component {
         </div>
       </div>}
     </div>
+  }
+}
+
+@connect(({ communities }, { ids }) => ({
+  communities: ids.map(id => find(communities, c => c.id === id))
+}))
+class CommunityTagInput extends React.Component {
+  static propTypes = {
+    ids: array,
+    communities: array
+  }
+
+  render () {
+    let { communities, ...otherProps } = this.props
+    return <TagInput tags={communities} {...otherProps}/>
   }
 }

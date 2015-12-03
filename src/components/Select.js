@@ -3,7 +3,7 @@ import KeyControlledList from './KeyControlledList'
 import cx from 'classnames'
 const { array, func, object, string } = React.PropTypes
 
-export default class Dropdown extends React.Component {
+export default class Select extends React.Component {
   static propTypes = {
     choices: array.isRequired,
     onChange: func.isRequired,

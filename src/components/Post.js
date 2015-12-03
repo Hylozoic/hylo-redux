@@ -7,6 +7,7 @@ import { humanDate, present, sanitize, timeRange, timeRangeFull } from '../util/
 import truncate from 'html-truncate'
 import A from './A'
 import Avatar from './Avatar'
+import Dropdown from './Dropdown'
 import Comment from './Comment'
 import CommentForm from './CommentForm'
 import PostEditor from './PostEditor'
@@ -94,7 +95,9 @@ export default class Post extends React.Component {
       <div className='header'>
         <Avatar person={person}/>
 
-        <Dropdown toggleContent={<i className='icon-down'></i>}>
+        <Dropdown className='post-menu' alignRight={true} toggleChildren={
+          <i className='icon-down'></i>
+        }>
           {canEdit && <li><a onClick={this.edit}>Edit</a></li>}
           <li>
             <a onClick={() => window.alert('TODO')}>Report objectionable content</a>
@@ -137,33 +140,6 @@ export default class Post extends React.Component {
   renderEdit () {
     let { post } = this.props
     return <PostEditor post={post} expanded={true}/>
-  }
-}
-
-class Dropdown extends React.Component {
-  constructor (props) {
-    super(props)
-    this.state = {}
-  }
-
-  static propTypes = {
-    children: array,
-    toggleContent: object
-  }
-
-  toggleActive = event => {
-    this.setState({active: !this.state.active})
-    event.stopPropagation()
-    event.preventDefault()
-  }
-
-  render () {
-    return <div className={cx('dropdown', 'post-menu', {active: this.state.active})}>
-      <a className='dropdown-toggle' onClick={this.toggleActive}>{this.props.toggleContent}</a>
-      <ul className='dropdown-menu dropdown-menu-right'>
-        {this.props.children}
-      </ul>
-    </div>
   }
 }
 

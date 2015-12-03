@@ -126,6 +126,11 @@ export default class Post extends React.Component {
         {eventTime}
       </p>}
 
+      {post.location && <p title='location' className='post-location'>
+        <i className='glyphicon glyphicon-map-marker'></i>
+        {post.location}
+      </p>}
+
       {image && <div className='image' style={style}></div>}
       {expanded && <ExpandedPostDetails
         onCommentCreate={text => this.props.dispatch(createComment(post.id, text))}

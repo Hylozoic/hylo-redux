@@ -315,6 +315,15 @@ ul.posts {
     }
   }
 
+  .post-location {
+    margin-bottom: 0;
+    margin-top: @p-bottom-margin;
+    i {
+      position: relative;
+      top: 2px;
+    }
+  }
+
   .post-menu {
     float: right;
     .meta-text;
@@ -332,6 +341,11 @@ ul.posts {
     }
 
     .event-time {
+      margin-top: 0;
+      margin-bottom: @p-bottom-margin;
+    }
+
+    .post-location {
       margin-top: 0;
       margin-bottom: @p-bottom-margin;
     }
@@ -372,6 +386,12 @@ ul.posts {
 }
 
 .event-time {
+  i {
+    margin-right: 5px;
+  }
+}
+
+.post-location {
   i {
     margin-right: 5px;
   }

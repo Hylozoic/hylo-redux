@@ -50,7 +50,7 @@ export default class CommentForm extends React.Component {
         mentionTypeahead={this.mentionTypeahead}
         mentionChoices={this.props.mentionChoices}
         mentionSelector='[data-user-id]'/>
-      <input type='submit' value='Send'/>
+      <input type='submit' value='Comment'/>
     </form>
   }
 }

@@ -60,6 +60,7 @@ export default class PostEditor extends React.Component {
     name: string,
     type: string,
     description: string,
+    location: string,
     community: object,
     communities: array,
     expanded: bool,
@@ -96,6 +97,8 @@ export default class PostEditor extends React.Component {
 
   setDescription = event => this.updateStore({description: event.target.value})
 
+  setLocation = event => this.updateStore({location: event.target.value})
+
   addCommunity = community =>
     this.updateStore({communities: this.props.communities.concat(community.id)})
 
@@ -123,10 +126,10 @@ export default class PostEditor extends React.Component {
     // immediately after typing in the description field, we have to wait for props
     // to update from the store
     setTimeout(() => {
-      let { dispatch, name, description, type, communities, post, context } = this.props
+      let { dispatch, name, description, type, location, communities, post, context } = this.props
 
       let params = {
-        name, description, communities,
+        name, description, communities, location,
         type: type || 'chat',
         public: this.props.public
       }
@@ -167,6 +170,10 @@ export default class PostEditor extends React.Component {
     var selectedType = this.props.type || 'chat'
     var placeholder = postTypeData[selectedType].placeholder
 
+    let isEvent = post.type === 'event'
+
+    console.log("Rendering Editor, Post: ", post)
+
     return <div className={cx('post-editor', 'clearfix', {expanded: expanded})}>
       {post && <h3>Editing "{name}"</h3>}
       <ul className='left post-types'>
@@ -190,6 +197,15 @@ export default class PostEditor extends React.Component {
           mentionTypeahead={this.mentionTypeahead}
           mentionChoices={this.props.mentionChoices}
           mentionSelector='[data-user-id]'/>
+
+        {isEvent && <div className='input-row'>
+          <label>
+            <p>Location</p>
+            <input type='text' ref='location' className='location'
+              value={post.location}
+              onChange={this.setLocation}/>
+          </label>
+        </div>}
 
         <h3>Communities</h3>
         <CommunityTagInput ids={communities}

@@ -1,4 +1,6 @@
-const findImage = media => media.find(m => m.type === 'image')
+import { find } from 'lodash'
+
+const findImage = media => find(media, m => m.type === 'image')
 
 // this looks at the difference in a post's media relations (images and
 // other attachments) between when they were last saved and as they are now,

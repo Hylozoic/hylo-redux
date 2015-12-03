@@ -11,7 +11,7 @@ import { UPLOAD_IMAGE } from '../actions/uploadImage'
 
 const stateWithNewImage = (state, context, url) => {
   let post = state[context]
-  let media = post.media.filter(m => m.type !== 'image')
+  let media = (post.media || []).filter(m => m.type !== 'image')
   if (url) media = media.concat({type: 'image', url})
   return {
     ...state,

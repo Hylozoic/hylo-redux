@@ -141,7 +141,7 @@ export default class PostEditor extends React.Component {
         name, description, communities,
         type: type || 'chat',
         public: this.props.public,
-        ...attachmentParams(post.media, media)
+        ...attachmentParams(post && post.media, media)
       }
 
       if (post) {

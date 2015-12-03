@@ -15,6 +15,7 @@ import RichTextEditor from './RichTextEditor'
 import { connect } from 'react-redux'
 import { typeahead, updatePostEditor, createPost, updatePost, cancelPostEdit } from '../actions'
 import { uploadImage, UPLOAD_IMAGE } from '../actions/uploadImage'
+import { uploadDoc, UPLOAD_DOC } from '../actions/uploadDoc'
 const { array, bool, func, object, string } = React.PropTypes
 
 const postTypes = ['chat', 'request', 'offer', 'intention', 'event']
@@ -54,7 +55,8 @@ const NEW_POST_CONTEXT = 'new'
     currentUser: state.people.current,
     ...state.postsInProgress[context],
     context,
-    imagePending: state.pending[UPLOAD_IMAGE]
+    imagePending: state.pending[UPLOAD_IMAGE],
+    docPending: state.pending[UPLOAD_DOC]
   }
 })
 export default class PostEditor extends React.Component {
@@ -66,6 +68,7 @@ export default class PostEditor extends React.Component {
     post: object,
     context: string.isRequired,
     imagePending: bool,
+    docPending: bool,
     // post attributes below -- maybe nest these?
     name: string,
     type: string,
@@ -187,6 +190,11 @@ export default class PostEditor extends React.Component {
     this.updateStore({imageUrl: null, imageRemoved: true})
   }
 
+  attachDoc = () => {
+    let { dispatch, context } = this.props
+    dispatch(uploadDoc(context))
+  }
+
   render () {
     let {
       name, description, expanded, communities, post,
@@ -256,7 +264,7 @@ export default class PostEditor extends React.Component {
               : <button onClick={this.attachImage}>
                   Attach Image
                 </button>}
-          <button>Attach File</button>
+          <button onClick={this.attachDoc}>Attach File</button>
         </div>
       </div>}
     </div>

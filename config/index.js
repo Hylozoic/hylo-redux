@@ -11,7 +11,7 @@ var minIfProduction = function (filename) {
   return `${process.env.ASSET_HOST}/${x.slice(0, i).join('.')}.min.${x[i]}`
 }
 
-const conf = {
+const config = {
   environment: environment,
   port: process.env.PORT || 9000,
   upstreamHost: process.env.UPSTREAM_HOST || 'http://localhost:3001',
@@ -26,13 +26,17 @@ const conf = {
     secret: process.env.AWS_SECRET_ACCESS_KEY,
     bucket: process.env.AWS_S3_BUCKET,
     host: process.env.AWS_S3_HOST
+  },
+  google: {
+    key: process.env.GOOGLE_BROWSER_KEY,
+    clientId: process.env.GOOGLE_CLIENT_ID
   }
 }
 
 // don't expose secret info to client
 if (typeof window !== 'undefined') {
-  delete conf.s3.accessKey
-  delete conf.s3.secret
+  delete config.s3.accessKey
+  delete config.s3.secret
 }
 
-export default conf
+export default config

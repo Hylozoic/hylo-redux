@@ -10,10 +10,11 @@ import React from 'react'
 import { contains, curry, filter, find, startsWith } from 'lodash'
 import cx from 'classnames'
 import TagInput from './TagInput'
+import Dropdown from './Dropdown'
 import RichTextEditor from './RichTextEditor'
 import { connect } from 'react-redux'
 import { typeahead, updatePostEditor, createPost, updatePost, cancelPostEdit } from '../actions'
-
+import { uploadImage, UPLOAD_IMAGE } from '../actions/uploadImage'
 const { array, bool, func, object, string } = React.PropTypes
 
 const postTypes = ['chat', 'request', 'offer', 'intention', 'event']
@@ -52,24 +53,29 @@ const NEW_POST_CONTEXT = 'new'
     mentionChoices: state.typeaheadMatches.post,
     currentUser: state.people.current,
     ...state.postsInProgress[context],
-    context
+    context,
+    imagePending: state.pending[UPLOAD_IMAGE]
   }
 })
 export default class PostEditor extends React.Component {
   static propTypes = {
+    expanded: bool,
+    dispatch: func,
+    mentionChoices: array,
+    currentUser: object,
+    post: object,
+    context: string.isRequired,
+    imagePending: bool,
+    // post attributes below -- maybe nest these?
     name: string,
     type: string,
     description: string,
     location: string,
     community: object,
     communities: array,
-    expanded: bool,
-    dispatch: func,
-    mentionChoices: array,
-    currentUser: object,
-    public: bool,
-    post: object,
-    context: string.isRequired
+    imageUrl: string,
+    imageRemoved: bool,
+    public: bool
   }
 
   updateStore (data) {
@@ -126,12 +132,17 @@ export default class PostEditor extends React.Component {
     // immediately after typing in the description field, we have to wait for props
     // to update from the store
     setTimeout(() => {
-      let { dispatch, name, description, type, location, communities, post, context } = this.props
+      let {
+        dispatch, context, post,
+        name, description, type, location, communities, imageUrl, imageRemoved
+      } = this.props
 
       let params = {
         name, description, communities, location,
         type: type || 'chat',
-        public: this.props.public
+        public: this.props.public,
+        imageUrl,
+        imageRemoved
       }
 
       if (post) {
@@ -165,15 +176,35 @@ export default class PostEditor extends React.Component {
     }
   }
 
+  attachImage = () => {
+    let { currentUser, context, dispatch } = this.props
+
+    dispatch(uploadImage({
+      context,
+      path: `user/${currentUser.id}/seeds`,
+      convert: {width: 800, format: 'jpg', fit: 'max', rotate: 'exif'}
+    }))
+  }
+
+  removeImage = () => {
+    this.updateStore({imageUrl: null, imageRemoved: true})
+  }
+
   render () {
-    var { name, description, location, expanded, communities, post } = this.props
+    let {
+      name, description, location, expanded, communities, post,
+      imageUrl, imageRemoved, imagePending
+    } = this.props
+
     var selectedType = this.props.type || 'chat'
     var placeholder = postTypeData[selectedType].placeholder
+    let image = post && find(post.media, m => m.type === 'image')
+    if (image && !imageUrl && !imageRemoved) imageUrl = image.url
 
     let isEvent = this.props.type === 'event'
 
     return <div className={cx('post-editor', 'clearfix', {expanded: expanded})}>
-      {post && <h3>Editing "{name}"</h3>}
+      {post && <h3>Editing Post</h3>}
       <ul className='left post-types'>
         {postTypes.map(type => <li key={type}
           className={cx('post-type', type, {selected: type === selectedType})}
@@ -211,21 +242,44 @@ export default class PostEditor extends React.Component {
           onSelect={this.addCommunity}
           onRemove={this.removeCommunity}/>
 
-        <label>
+        <label className='visibility'>
           <input type='checkbox' value={this.props.public} onChange={this.togglePublic}/>
           &nbsp;
           Make this post publicly visible
         </label>
 
-        <div className='right buttons'>
-          <button onClick={this.cancel}>Cancel</button>
-          <button className='btn-primary' onClick={this.save}>Post</button>
+        <div className='buttons'>
+          <div className='right'>
+            <button onClick={this.cancel}>Cancel</button>
+            <button className='btn-primary' onClick={this.save}>
+              {post ? 'Save Changes' : 'Post'}
+            </button>
+          </div>
+          {imagePending
+            ? <button disabled>Please wait...</button>
+            : imageUrl
+              ? <Dropdown className='change-image' toggleChildren={
+                  <span>
+                    Change Image
+                    <img src={imageUrl} className='image-thumbnail'/>
+                  </span>
+                }>
+                  <li><a onClick={this.removeImage}>Remove Image</a></li>
+                  <li><a onClick={this.attachImage}>Attach Another</a></li>
+                </Dropdown>
+
+              : <button onClick={this.attachImage}>
+                  Attach Image
+                </button>}
+          <button>Attach File</button>
         </div>
       </div>}
     </div>
   }
 }
 
+// post.communities is a list of ids, but the tag input needs
+// names and icons as well, so this component does the mapping
 @connect(({ communities }, { ids }) => ({
   communities: ids.map(id => find(communities, c => c.id === id))
 }))

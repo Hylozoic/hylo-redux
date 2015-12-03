@@ -171,8 +171,15 @@ nav {
 
 .right {
   float: right;
-  &.buttons {
+}
+
+.buttons {
+  button, a {
+    margin-right: 5px;
+  }
+  .right {
     button, a {
+      margin-right: 0;
       margin-left: 5px;
     }
   }
@@ -518,12 +525,6 @@ ul.tags {
     }
   }
 
-  &.expanded {
-    input.title {
-      margin-bottom: @p-bottom-margin;
-    }
-  }
-
   .details {
     iframe {
       height: 22vh !important;
@@ -537,7 +538,7 @@ ul.tags {
     }
   }
 
-  .tag-list {
+  &.expanded input.title, .tag-list, .visibility {
     margin-bottom: @p-bottom-margin;
   }
 
@@ -547,6 +548,25 @@ ul.tags {
 
   > h3:first-child {
     margin-top: 0;
+  }
+
+  .change-image {
+    .btn;
+    .btn-default;
+    height: 34px;
+    line-height: 32px;
+    padding: 0 9px 0 12px;
+    margin-right: 5px;
+
+    > a {
+      text-decoration: none;
+    }
+
+    img {
+      margin-left: 8px;
+      height: 24px;
+      vertical-align: middle;
+    }
   }
 }
 

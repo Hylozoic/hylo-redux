@@ -11,7 +11,7 @@ var minIfProduction = function (filename) {
   return `${process.env.ASSET_HOST}/${x.slice(0, i).join('.')}.min.${x[i]}`
 }
 
-var conf = {
+const conf = {
   environment: environment,
   port: process.env.PORT || 9000,
   upstreamHost: process.env.UPSTREAM_HOST || 'http://localhost:3001',
@@ -19,7 +19,20 @@ var conf = {
   assetHost: process.env.ASSET_HOST || '',
   cssBundle: minIfProduction('index.css'),
   jsBundle: minIfProduction('index.js'),
-  logLevel: process.env.LOG_LEVEL
+  logLevel: process.env.LOG_LEVEL,
+  filepickerKey: process.env.FILEPICKER_API_KEY,
+  s3: {
+    accessKey: process.env.AWS_ACCESS_KEY_ID,
+    secret: process.env.AWS_SECRET_ACCESS_KEY,
+    bucket: process.env.AWS_S3_BUCKET,
+    host: process.env.AWS_S3_HOST
+  }
+}
+
+// don't expose secret info to client
+if (typeof window !== 'undefined') {
+  delete conf.s3.accessKey
+  delete conf.s3.secret
 }
 
 export default conf

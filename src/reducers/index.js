@@ -25,8 +25,10 @@ import {
   CANCEL_POST_EDIT
 } from '../actions'
 
+// TODO maybe all the constants should be in one file
 import { FETCH_POSTS } from '../actions/fetchPosts'
 import { FETCH_PEOPLE } from '../actions/fetchPeople'
+import { UPLOAD_IMAGE } from '../actions/uploadImage'
 
 export default combineReducers({
   errors: (state = {}, action) => {
@@ -131,6 +133,7 @@ export default combineReducers({
 
     return toggle(FETCH_POSTS) ||
       toggle(FETCH_PEOPLE) ||
+      toggle(UPLOAD_IMAGE) ||
       state
   },
 
@@ -188,6 +191,11 @@ export default combineReducers({
         return {
           ...state,
           [payload.id]: payload
+        }
+      case UPLOAD_IMAGE:
+        return {
+          ...state,
+          [context]: {...state[context], imageUrl: payload}
         }
     }
 

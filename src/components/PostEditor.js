@@ -166,13 +166,11 @@ export default class PostEditor extends React.Component {
   }
 
   render () {
-    var { name, description, expanded, communities, post } = this.props
+    var { name, description, location, expanded, communities, post } = this.props
     var selectedType = this.props.type || 'chat'
     var placeholder = postTypeData[selectedType].placeholder
 
-    let isEvent = post.type === 'event'
-
-    console.log("Rendering Editor, Post: ", post)
+    let isEvent = this.props.type === 'event'
 
     return <div className={cx('post-editor', 'clearfix', {expanded: expanded})}>
       {post && <h3>Editing "{name}"</h3>}
@@ -200,9 +198,9 @@ export default class PostEditor extends React.Component {
 
         {isEvent && <div className='input-row'>
           <label>
-            <p>Location</p>
-            <input type='text' ref='location' className='location'
-              value={post.location}
+            <p>Location (Optional)</p>
+            <input type='text' ref='location' className='location form-control'
+              value={location}
               onChange={this.setLocation}/>
           </label>
         </div>}

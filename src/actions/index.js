@@ -153,7 +153,7 @@ export function fetchPost (id) {
 export const START_POST_EDIT = 'START_POST_EDIT'
 
 export function startPostEdit (post) {
-  let fields = ['id', 'name', 'description', 'communities', 'public']
+  let fields = ['id', 'name', 'description', 'location', 'communities', 'public']
   let payload = pick(post, fields)
   return {type: START_POST_EDIT, payload}
 }

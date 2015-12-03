@@ -13,9 +13,10 @@ import TagInput from './TagInput'
 import Dropdown from './Dropdown'
 import RichTextEditor from './RichTextEditor'
 import { connect } from 'react-redux'
-import { typeahead, updatePostEditor, createPost, updatePost, cancelPostEdit } from '../actions'
+import { typeahead, updatePostEditor, createPost, updatePost, cancelPostEdit, removeImage } from '../actions'
 import { uploadImage, UPLOAD_IMAGE } from '../actions/uploadImage'
 import { uploadDoc, UPLOAD_DOC } from '../actions/uploadDoc'
+import { attachmentParams } from '../util/shims'
 const { array, bool, func, object, string } = React.PropTypes
 
 const postTypes = ['chat', 'request', 'offer', 'intention', 'event']
@@ -75,9 +76,8 @@ export default class PostEditor extends React.Component {
     description: string,
     community: object,
     communities: array,
-    imageUrl: string,
-    imageRemoved: bool,
-    public: bool
+    public: bool,
+    media: array
   }
 
   updateStore (data) {
@@ -134,15 +134,14 @@ export default class PostEditor extends React.Component {
     setTimeout(() => {
       let {
         dispatch, context, post,
-        name, description, type, communities, imageUrl, imageRemoved
+        name, description, type, communities, media
       } = this.props
 
       let params = {
         name, description, communities,
         type: type || 'chat',
         public: this.props.public,
-        imageUrl,
-        imageRemoved
+        ...attachmentParams(post.media, media)
       }
 
       if (post) {
@@ -187,7 +186,8 @@ export default class PostEditor extends React.Component {
   }
 
   removeImage = () => {
-    this.updateStore({imageUrl: null, imageRemoved: true})
+    let { context, dispatch } = this.props
+    dispatch(removeImage(context))
   }
 
   attachDoc = () => {
@@ -197,13 +197,11 @@ export default class PostEditor extends React.Component {
 
   render () {
     let {
-      name, description, expanded, communities, post,
-      imageUrl, imageRemoved, imagePending
+      name, description, expanded, communities, post, imagePending, media
     } = this.props
     var selectedType = this.props.type || 'chat'
     var placeholder = postTypeData[selectedType].placeholder
-    let image = post && find(post.media, m => m.type === 'image')
-    if (image && !imageUrl && !imageRemoved) imageUrl = image.url
+    let image = find(media, m => m.type === 'image')
 
     return <div className={cx('post-editor', 'clearfix', {expanded: expanded})}>
       {post && <h3>Editing Post</h3>}
@@ -248,13 +246,14 @@ export default class PostEditor extends React.Component {
               {post ? 'Save Changes' : 'Post'}
             </button>
           </div>
+
           {imagePending
             ? <button disabled>Please wait...</button>
-            : imageUrl
+            : image
               ? <Dropdown className='change-image' toggleChildren={
                   <span>
                     Change Image
-                    <img src={imageUrl} className='image-thumbnail'/>
+                    <img src={image.url} className='image-thumbnail'/>
                   </span>
                 }>
                   <li><a onClick={this.removeImage}>Remove Image</a></li>
@@ -264,7 +263,8 @@ export default class PostEditor extends React.Component {
               : <button onClick={this.attachImage}>
                   Attach Image
                 </button>}
-          <button onClick={this.attachDoc}>Attach File</button>
+
+          <button onClick={this.attachDoc}>Attach File with Google Drive</button>
         </div>
       </div>}
     </div>

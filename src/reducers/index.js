@@ -2,10 +2,11 @@ import { combineReducers } from 'redux'
 import { routeReducer } from 'redux-simple-router'
 import { debug } from '../util/logging'
 import { appendUniq } from './util'
+import { contains, uniq } from 'lodash'
+import postsInProgress from './postsInProgress'
 import postsByQuery from './postsByQuery'
 import posts from './posts'
 import communities from './communities'
-import { contains, uniq } from 'lodash'
 
 import {
   FETCH_CURRENT_USER,
@@ -17,12 +18,7 @@ import {
   LOGOUT,
   NAVIGATE,
   TYPEAHEAD,
-  CANCEL_TYPEAHEAD,
-  UPDATE_POST_EDITOR,
-  CREATE_POST,
-  UPDATE_POST,
-  START_POST_EDIT,
-  CANCEL_POST_EDIT
+  CANCEL_TYPEAHEAD
 } from '../actions'
 
 // TODO maybe all the constants should be in one file
@@ -122,6 +118,7 @@ export default combineReducers({
   communities,
   posts,
   postsByQuery,
+  postsInProgress,
 
   pending: (state = {}, action) => {
     let { type } = action
@@ -164,39 +161,6 @@ export default combineReducers({
         return {...state, [context]: payload}
       case CANCEL_TYPEAHEAD:
         return {...state, [context]: []}
-    }
-
-    return state
-  },
-
-  postsInProgress: (state = {default: {}}, action) => {
-    if (action.error) return state
-
-    let { type, payload, meta } = action
-    let { context } = meta || {}
-    switch (type) {
-      case UPDATE_POST_EDITOR:
-        return {
-          ...state,
-          [context]: {...state[context], ...payload}
-        }
-      case CREATE_POST:
-      case UPDATE_POST:
-      case CANCEL_POST_EDIT:
-        return {
-          ...state,
-          [context]: null
-        }
-      case START_POST_EDIT:
-        return {
-          ...state,
-          [payload.id]: payload
-        }
-      case UPLOAD_IMAGE:
-        return {
-          ...state,
-          [context]: {...state[context], imageUrl: payload}
-        }
     }
 
     return state

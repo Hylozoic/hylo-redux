@@ -35,3 +35,5 @@ gulp.task('watch', function () {
 
 gulp.task('default', ['watch-js', 'serve', 'watch'])
 gulp.task('upload', ['bundle-dist-js', 'bundle-dist-css'], require('./tasks/upload'))
+
+process.once('SIGINT', () => process.exit(0))

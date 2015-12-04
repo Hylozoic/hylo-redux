@@ -2,7 +2,8 @@
   "private": true,
   "scripts": {
     "start": "./node_modules/.bin/gulp",
-    "test": "./node_modules/.bin/babel-node ./node_modules/.bin/_mocha"
+    "test": "./node_modules/.bin/babel-node ./node_modules/.bin/_mocha",
+    "autotest": "./node_modules/.bin/gulp autotest"
   },
   "standard": {
     "parser": "babel-eslint",

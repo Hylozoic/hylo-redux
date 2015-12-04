@@ -323,7 +323,7 @@ export default class PostEditor extends React.Component {
 // post.communities is a list of ids, but the tag input needs
 // names and icons as well, so this component does the mapping
 @connect(({ communities }, { ids }) => ({
-  communities: ids.map(id => find(communities, c => c.id === id))
+  communities: (ids || []).map(id => find(communities, c => c.id === id))
 }))
 class CommunityTagInput extends React.Component {
   static propTypes = {

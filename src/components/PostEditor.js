@@ -74,6 +74,7 @@ export default class PostEditor extends React.Component {
     name: string,
     type: string,
     description: string,
+    location: string,
     community: object,
     communities: array,
     public: bool,
@@ -105,6 +106,8 @@ export default class PostEditor extends React.Component {
 
   setDescription = event => this.updateStore({description: event.target.value})
 
+  setLocation = event => this.updateStore({location: event.target.value})
+
   addCommunity = community =>
     this.updateStore({communities: this.props.communities.concat(community.id)})
 
@@ -134,11 +137,11 @@ export default class PostEditor extends React.Component {
     setTimeout(() => {
       let {
         dispatch, context, post,
-        name, description, type, communities, media
+        name, description, type, location, communities, media
       } = this.props
 
       let params = {
-        name, description, communities,
+        name, description, communities, location,
         type: type || 'chat',
         public: this.props.public,
         ...attachmentParams(post && post.media, media)
@@ -197,11 +200,14 @@ export default class PostEditor extends React.Component {
 
   render () {
     let {
-      name, description, expanded, communities, post, imagePending, media
+      name, description, location, expanded, communities, post, imagePending, media
     } = this.props
+
     var selectedType = this.props.type || 'chat'
     var placeholder = postTypeData[selectedType].placeholder
     let image = find(media, m => m.type === 'image')
+
+    let isEvent = this.props.type === 'event'
 
     return <div className={cx('post-editor', 'clearfix', {expanded: expanded})}>
       {post && <h3>Editing Post</h3>}
@@ -227,7 +233,16 @@ export default class PostEditor extends React.Component {
           mentionChoices={this.props.mentionChoices}
           mentionSelector='[data-user-id]'/>
 
-        <h3>Communities</h3>
+        {isEvent && <div className='input-row'>
+          <label>
+            <p>Location (Optional)</p>
+            <input type='text' ref='location' className='location form-control'
+              value={location}
+              onChange={this.setLocation}/>
+          </label>
+        </div>}
+
+        <h3 className='communities-header'>Communities</h3>
         <CommunityTagInput ids={communities}
           getChoices={this.findCommunities}
           onSelect={this.addCommunity}

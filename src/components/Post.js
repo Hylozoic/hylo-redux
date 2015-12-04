@@ -216,11 +216,11 @@ const ExpandedPostDetails = props => {
       {post.responders.length > 0 && <div className='responses'>
 
         <Dropdown className='responses-dropdown' toggleChildren={<span>See Responses</span>}>
-          {responderList.map(personOrHeader => <li key={personOrHeader.id}>
+          {responderList.map(personOrHeader => <li key={personOrHeader.id} className={personOrHeader.header ? 'header' : ''}>
             {personOrHeader.header
             ? <span className='header'>{personOrHeader.header}</span>
-            : <span>
-              <Avatar person={personOrHeader} /> <Link to={`/u/${personOrHeader.id}`}><span>{personOrHeader.name}</span></Link>
+            : <span className='person'>
+              <Avatar person={personOrHeader} /> <Link className='person' to={`/u/${personOrHeader.id}`}><span>{personOrHeader.name}</span></Link>
             </span>}
           </li>)}
         </Dropdown>

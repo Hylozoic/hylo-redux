@@ -35,7 +35,7 @@ const changeEventResponse = (post, response, user) => {
   var meInResponders = findWhere(post.responders, {id: user.id})
   var responders = without(post.responders, meInResponders)
 
-  if (meInResponders.response !== response) {
+  if (!meInResponders || meInResponders.response !== response) {
     responders.push({id: user.id, name: user.name, avatar_url: user.avatar_url, response: response})
   }
   return Object.assign({}, post, { responders: responders })
@@ -62,8 +62,7 @@ export default function (state = {}, action) {
     case CHANGE_EVENT_RESPONSE_PENDING:
       context = meta.context
       post = state[context]
-      var response = meta.response
-      var user = meta.user
+      var { response, user } = meta
       return {...state, [context]: changeEventResponse(post, response, user)}
     case CHANGE_EVENT_RESPONSE:
       return state

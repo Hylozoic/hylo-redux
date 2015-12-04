@@ -7,16 +7,20 @@ because they make more sense.
 */
 
 import React from 'react'
-import { contains, curry, filter, find, startsWith } from 'lodash'
+import { contains, filter, find, isEmpty, startsWith } from 'lodash'
 import cx from 'classnames'
 import TagInput from './TagInput'
 import Dropdown from './Dropdown'
 import RichTextEditor from './RichTextEditor'
 import { connect } from 'react-redux'
-import { typeahead, updatePostEditor, createPost, updatePost, cancelPostEdit, removeImage } from '../actions'
+import {
+  typeahead, updatePostEditor, createPost, updatePost, cancelPostEdit,
+  removeImage, removeDoc
+} from '../actions'
 import { uploadImage, UPLOAD_IMAGE } from '../actions/uploadImage'
 import { uploadDoc, UPLOAD_DOC } from '../actions/uploadDoc'
 import { attachmentParams } from '../util/shims'
+import truncate from 'html-truncate'
 const { array, bool, func, object, string } = React.PropTypes
 
 const postTypes = ['chat', 'request', 'offer', 'intention', 'event']
@@ -42,20 +46,18 @@ const postTypeData = {
 const NEW_POST_CONTEXT = 'new'
 
 @connect((state, { community, post }) => {
-  let communities, context
-  if (post) {
-    context = post.id
-  } else {
-    communities = community ? [community.id] : []
-    context = NEW_POST_CONTEXT
-  }
+  let context = post ? post.id : NEW_POST_CONTEXT
+  let postInProgress = state.postsInProgress[context] || {}
+
+  // FIXME: this one attribute in postInProgress isn't actually a post attribute
+  let { expanded } = postInProgress
 
   return {
-    communities,
+    context,
+    postInProgress,
+    expanded,
     mentionChoices: state.typeaheadMatches.post,
     currentUser: state.people.current,
-    ...state.postsInProgress[context],
-    context,
     imagePending: state.pending[UPLOAD_IMAGE],
     docPending: state.pending[UPLOAD_DOC]
   }
@@ -70,14 +72,8 @@ export default class PostEditor extends React.Component {
     context: string.isRequired,
     imagePending: bool,
     docPending: bool,
-    // post attributes below -- maybe nest these?
-    name: string,
-    type: string,
-    description: string,
-    community: object,
-    communities: array,
-    public: bool,
-    media: array
+    postInProgress: object,
+    community: object
   }
 
   updateStore (data) {
@@ -88,8 +84,14 @@ export default class PostEditor extends React.Component {
   selectType = (type, event) =>
     this.updateStore({type: type})
 
-  expand = () =>
-    this.props.expanded || this.updateStore({expanded: true})
+  expand = () => {
+    if (this.props.expanded) return
+    this.updateStore({expanded: true})
+
+    // initialize the communities list when opening the editor in a community
+    let { community, postInProgress: { communities } } = this.props
+    if (community && isEmpty(communities)) this.addCommunity(community)
+  }
 
   cancel = () => {
     let { dispatch, context, post } = this.props
@@ -105,19 +107,30 @@ export default class PostEditor extends React.Component {
 
   setDescription = event => this.updateStore({description: event.target.value})
 
-  addCommunity = community =>
-    this.updateStore({communities: this.props.communities.concat(community.id)})
+  addCommunity = community => {
+    let { communities } = this.props.postInProgress
+    this.updateStore({communities: (communities || []).concat(community.id)})
+  }
 
-  removeCommunity = community =>
-    this.updateStore({communities: filter(this.props.communities, cid => cid !== community.id)})
+  removeCommunity = community => {
+    let { communities } = this.props.postInProgress
+    this.updateStore({communities: filter(communities, cid => cid !== community.id)})
+  }
 
   togglePublic = () =>
-    this.updateStore({public: !this.props.public})
+    this.updateStore({public: !this.props.postInProgress.public})
 
   validate () {
-    if (!this.props.name) {
+    let { postInProgress } = this.props
+
+    if (!postInProgress.name) {
       window.alert('The title of a post cannot be blank.')
       this.refs.name.focus()
+      return
+    }
+
+    if (isEmpty(postInProgress.communities)) {
+      window.alert('Please pick at least one community.')
       return
     }
 
@@ -132,16 +145,16 @@ export default class PostEditor extends React.Component {
     // immediately after typing in the description field, we have to wait for props
     // to update from the store
     setTimeout(() => {
-      let {
-        dispatch, context, post,
-        name, description, type, communities, media
-      } = this.props
+      let { dispatch, context, post, postInProgress } = this.props
+
+      postInProgress = {
+        ...postInProgress,
+        type: postInProgress.type || 'chat'
+      }
 
       let params = {
-        name, description, communities,
-        type: type || 'chat',
-        public: this.props.public,
-        ...attachmentParams(post && post.media, media)
+        ...postInProgress,
+        ...attachmentParams(post && post.media, postInProgress.media)
       }
 
       if (post) {
@@ -155,7 +168,7 @@ export default class PostEditor extends React.Component {
   findCommunities = term => {
     if (!term) return
 
-    let { currentUser, communities } = this.props
+    let { currentUser, postInProgress: { communities } } = this.props
     var match = c =>
       startsWith(c.name.toLowerCase(), term.toLowerCase()) &&
       !contains(communities, c.id)
@@ -195,26 +208,31 @@ export default class PostEditor extends React.Component {
     dispatch(uploadDoc(context))
   }
 
+  removeDoc = doc => {
+    let { dispatch, context } = this.props
+    dispatch(removeDoc(doc, context))
+  }
+
   render () {
-    let {
-      name, description, expanded, communities, post, imagePending, media
-    } = this.props
-    var selectedType = this.props.type || 'chat'
-    var placeholder = postTypeData[selectedType].placeholder
+    let { expanded, imagePending, post, postInProgress } = this.props
+    let { name, description, communities, media, type } = postInProgress
+    if (!type) type = 'chat'
+
     let image = find(media, m => m.type === 'image')
+    let docs = filter(media, m => m.type === 'gdoc')
 
     return <div className={cx('post-editor', 'clearfix', {expanded: expanded})}>
       {post && <h3>Editing Post</h3>}
       <ul className='left post-types'>
-        {postTypes.map(type => <li key={type}
-          className={cx('post-type', type, {selected: type === selectedType})}
-          onClick={curry(this.selectType)(type)}>
-          {type}
+        {postTypes.map(t => <li key={t}
+          className={cx('post-type', t, {selected: t === type})}
+          onClick={() => this.selectType(t)}>
+          {t}
         </li>)}
       </ul>
 
       <input type='text' ref='name' className='title form-control'
-        placeholder={placeholder}
+        placeholder={postTypeData[type].placeholder}
         onFocus={this.expand} value={name} onChange={this.setName}/>
 
       {expanded && <div>
@@ -234,7 +252,7 @@ export default class PostEditor extends React.Component {
           onRemove={this.removeCommunity}/>
 
         <label className='visibility'>
-          <input type='checkbox' value={this.props.public} onChange={this.togglePublic}/>
+          <input type='checkbox' value={postInProgress.public} onChange={this.togglePublic}/>
           &nbsp;
           Make this post publicly visible
         </label>
@@ -250,10 +268,10 @@ export default class PostEditor extends React.Component {
           {imagePending
             ? <button disabled>Please wait...</button>
             : image
-              ? <Dropdown className='change-image' toggleChildren={
+              ? <Dropdown className='button change-image' toggleChildren={
                   <span>
-                    Change Image
                     <img src={image.url} className='image-thumbnail'/>
+                    Change Image <span className='caret'></span>
                   </span>
                 }>
                   <li><a onClick={this.removeImage}>Remove Image</a></li>
@@ -264,7 +282,25 @@ export default class PostEditor extends React.Component {
                   Attach Image
                 </button>}
 
-          <button onClick={this.attachDoc}>Attach File with Google Drive</button>
+          {!isEmpty(docs)
+            ? <Dropdown className='button change-docs' toggleChildren={
+                <span>
+                  Attachments ({docs.length}) <span className='caret'></span>
+                </span>
+              }>
+                {docs.map(doc => <li key={doc.url}>
+                  <a target='_blank' href={doc.url}>
+                    <img src={doc.thumbnail_url}/>
+                    {truncate(doc.name, 40)}
+                  </a>
+                  <a className='remove' onClick={() => this.removeDoc(doc)}>&times;</a>
+                </li>)}
+                <li role='separator' className='divider'></li>
+                <li><a onClick={this.attachDoc}>Attach Another</a></li>
+              </Dropdown>
+            : <button onClick={this.attachDoc}>
+                Attach File with Google Drive
+              </button>}
         </div>
       </div>}
     </div>

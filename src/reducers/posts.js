@@ -1,6 +1,6 @@
 import { FETCH_POSTS } from '../actions/fetchPosts'
 import { CREATE_POST, FETCH_POST, UPDATE_POST } from '../actions'
-import { filter, omit } from 'lodash'
+import { omit } from 'lodash'
 
 const normalize = post => ({
   ...post,
@@ -8,25 +8,10 @@ const normalize = post => ({
 })
 
 const normalizeUpdate = (post, params) => {
-  let { imageUrl, imageRemoved } = params
-  let media = post.media || []
-
-  if (imageRemoved) {
-    return {
-      ...post,
-      ...omit(params, 'imageRemoved', 'imageUrl'),
-      media: filter(media, m => m.type !== 'image')
-    }
-  } else if (imageUrl) {
-    let image = {type: 'image', url: imageUrl}
-    return {
-      ...post,
-      ...omit(params, 'imageUrl'),
-      media: media.filter(m => m.type !== 'image').concat(image)
-    }
+  return {
+    ...post,
+    ...omit(params, 'imageUrl', 'imageRemoved', 'docs', 'removedDocs')
   }
-
-  return {...post, ...params}
 }
 
 export default function (state = {}, action) {

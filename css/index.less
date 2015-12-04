@@ -523,22 +523,31 @@ ul.tags {
     margin-top: 0;
   }
 
-  .change-image {
+  .dropdown.button {
     .btn;
     .btn-default;
     height: 34px;
     line-height: 32px;
     padding: 0 9px 0 12px;
     margin-right: 5px;
-
     > a {
       text-decoration: none;
     }
+  }
 
+  .change-image {
+    padding-right: 35px !important;
+    a {
+      overflow: hidden;
+    }
     img {
-      margin-left: 8px;
-      height: 24px;
+      position: absolute;
+      top: 2px;
+      right: 2px;
+      height: 28px;
       vertical-align: middle;
+      border: 1px solid @light-gray-border;
+      border-radius: @border-radius-base;
     }
   }
 }
@@ -584,8 +593,35 @@ ul.tags {
   }
 }
 
-.dropdown-menu li a {
-  cursor: pointer;
+.dropdown-menu > li {
+  position: relative;
+
+  > a {
+    cursor: pointer;
+
+    &.remove {
+      float: right;
+      position: absolute;
+      top: 1px;
+      right: -4px;
+      font-size: 18px;
+      padding: 0 4px;
+      line-height: 26px;
+      height: 26px;
+      width: 19px;
+      &:hover {
+        font-weight: bold;
+        color: red;
+        background-color: transparent;
+      }
+    }
+
+    img {
+      margin-right: 5px;
+      position: relative;
+      top: -2px;
+    }
+  }
 }
 
 .mentions .dropdown-menu {

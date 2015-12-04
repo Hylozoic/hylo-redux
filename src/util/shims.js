@@ -1,6 +1,7 @@
-import { find } from 'lodash'
+import { contains, filter, find } from 'lodash'
 
 const findImage = media => find(media, m => m.type === 'image')
+const filterDocs = media => filter(media, m => m.type === 'gdoc')
 
 // this looks at the difference in a post's media relations (images and
 // other attachments) between when they were last saved and as they are now,
@@ -13,12 +14,22 @@ const findImage = media => find(media, m => m.type === 'image')
 // also supports optimistic updating.
 export const attachmentParams = (prevMedia, media) => {
   let params = {}
+
   let prevImage = findImage(prevMedia)
   let image = findImage(media)
+
   if (image && (!prevImage || image.url !== prevImage.url)) {
     params.imageUrl = image.url
   } else if (prevImage && !image) {
     params.imageRemoved = true
   }
+
+  let prevDocs = filterDocs(prevMedia)
+  let docs = filterDocs(media)
+  let urls = docs.map(d => d.url)
+
+  params.docs = docs
+  params.removedDocs = filter(prevDocs, d => !contains(urls, d.url))
+
   return params
 }

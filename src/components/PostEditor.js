@@ -17,11 +17,11 @@ import {
   typeahead, updatePostEditor, createPost, updatePost, cancelPostEdit,
   removeImage, removeDoc
 } from '../actions'
-import { uploadImage, UPLOAD_IMAGE } from '../actions/uploadImage'
+import { uploadImage } from '../actions/uploadImage'
 import { uploadDoc } from '../actions/uploadDoc'
 import { attachmentParams } from '../util/shims'
 import truncate from 'html-truncate'
-import { CREATE_POST, UPDATE_POST } from '../actions'
+import { CREATE_POST, UPDATE_POST, UPLOAD_IMAGE } from '../actions'
 import { personTemplate } from '../util/mentions'
 const { array, bool, func, object, string } = React.PropTypes
 

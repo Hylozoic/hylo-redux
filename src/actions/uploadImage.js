@@ -1,6 +1,5 @@
 import { upload } from '../client/filepicker'
-
-export const UPLOAD_IMAGE = 'UPLOAD_IMAGE'
+import { UPLOAD_IMAGE } from './index'
 
 export function uploadImage (opts) {
   let { context, path, convert } = opts

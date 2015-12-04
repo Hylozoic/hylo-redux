@@ -1,17 +1,16 @@
 import { uniq } from 'lodash'
 
 import {
-  UPDATE_POST_EDITOR,
-  CREATE_POST,
-  UPDATE_POST,
-  START_POST_EDIT,
   CANCEL_POST_EDIT,
-  REMOVE_IMAGE
+  CREATE_POST,
+  REMOVE_DOC,
+  REMOVE_IMAGE,
+  START_POST_EDIT,
+  UPDATE_POST_EDITOR,
+  UPDATE_POST,
+  UPLOAD_DOC,
+  UPLOAD_IMAGE
 } from '../actions'
-
-import { UPLOAD_IMAGE } from '../actions/uploadImage'
-import { UPLOAD_DOC } from '../actions/uploadDoc'
-import { REMOVE_DOC } from '../actions'
 
 const stateWithImage = (state, context, url) => {
   let post = state[context]

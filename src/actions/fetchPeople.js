@@ -1,6 +1,5 @@
 import { cleanAndStringify } from '../util/caching'
-
-export const FETCH_PEOPLE = 'FETCH_PEOPLE'
+import { FETCH_PEOPLE } from './index'
 
 export function fetchPeople (opts) {
   let { subject, id, limit, offset, search, cacheId } = opts

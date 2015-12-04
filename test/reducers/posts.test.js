@@ -1,7 +1,6 @@
 require('../support')
 import posts from '../../src/reducers/posts'
-import { FETCH_POSTS } from '../../src/actions/fetchPosts'
-import { UPDATE_POST } from '../../src/actions'
+import { FETCH_POSTS, UPDATE_POST } from '../../src/actions'
 
 describe('posts', () => {
   describe('on FETCH_POSTS', () => {

@@ -1,6 +1,5 @@
 import { init } from '../client/GooglePicker'
-
-export const UPLOAD_DOC = 'UPLOAD_DOC'
+import { UPLOAD_DOC } from './index'
 
 const normalize = ({ url, name, iconUrl }) =>
   ({url, name, thumbnail_url: iconUrl, type: 'gdoc'})

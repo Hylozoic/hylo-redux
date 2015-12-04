@@ -3,10 +3,9 @@ import qs from 'querystring'
 
 import {
   CREATE_POST,
-  CLEAR_CACHE
+  CLEAR_CACHE,
+  FETCH_POSTS
 } from '../actions'
-
-import { FETCH_POSTS } from '../actions/fetchPosts'
 
 export default function (state = {}, action) {
   if (action.error) return state

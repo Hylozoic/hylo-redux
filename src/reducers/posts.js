@@ -1,5 +1,4 @@
-import { FETCH_POSTS } from '../actions/fetchPosts'
-import { CREATE_POST, FETCH_POST, UPDATE_POST } from '../actions'
+import { CREATE_POST, FETCH_POST, FETCH_POSTS, UPDATE_POST } from '../actions'
 import { omit } from 'lodash'
 
 const normalize = post => ({

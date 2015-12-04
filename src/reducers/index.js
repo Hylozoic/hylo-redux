@@ -9,24 +9,22 @@ import posts from './posts'
 import communities from './communities'
 
 import {
-  FETCH_CURRENT_USER,
-  FETCH_PERSON,
-  FETCH_COMMENTS,
+  CANCEL_TYPEAHEAD,
   CREATE_COMMENT,
+  CREATE_POST,
+  FETCH_COMMENTS,
+  FETCH_CURRENT_USER,
+  FETCH_PEOPLE,
+  FETCH_PERSON,
+  FETCH_POSTS,
   LOGIN,
-  SET_LOGIN_ERROR,
   LOGOUT,
   NAVIGATE,
+  SET_LOGIN_ERROR,
   TYPEAHEAD,
-  CANCEL_TYPEAHEAD,
-  CREATE_POST,
-  UPDATE_POST
+  UPDATE_POST,
+  UPLOAD_IMAGE
 } from '../actions'
-
-// TODO maybe all the constants should be in one file
-import { FETCH_POSTS } from '../actions/fetchPosts'
-import { FETCH_PEOPLE } from '../actions/fetchPeople'
-import { UPLOAD_IMAGE } from '../actions/uploadImage'
 
 export default combineReducers({
   errors: (state = {}, action) => {

@@ -1,7 +1,6 @@
 require('../support')
 import communities from '../../src/reducers/communities'
-import { FETCH_POSTS } from '../../src/actions/fetchPosts'
-import { FETCH_POST, FETCH_CURRENT_USER } from '../../src/actions'
+import { FETCH_POST, FETCH_POSTS, FETCH_CURRENT_USER } from '../../src/actions'
 
 const post1 = {
   id: 'a',

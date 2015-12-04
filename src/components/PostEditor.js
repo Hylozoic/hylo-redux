@@ -112,6 +112,8 @@ export default class PostEditor extends React.Component {
     this.updateStore({communities: (communities || []).concat(community.id)})
   }
 
+  setLocation = event => this.updateStore({location: event.target.value})
+
   removeCommunity = community => {
     let { communities } = this.props.postInProgress
     this.updateStore({communities: filter(communities, cid => cid !== community.id)})
@@ -215,11 +217,13 @@ export default class PostEditor extends React.Component {
 
   render () {
     let { expanded, imagePending, post, postInProgress } = this.props
-    let { name, description, communities, media, type } = postInProgress
+    let { name, description, communities, media, type, location } = postInProgress
     if (!type) type = 'chat'
 
     let image = find(media, m => m.type === 'image')
     let docs = filter(media, m => m.type === 'gdoc')
+
+    let isEvent = type === 'event'
 
     return <div className={cx('post-editor', 'clearfix', {expanded: expanded})}>
       {post && <h3>Editing Post</h3>}
@@ -245,7 +249,16 @@ export default class PostEditor extends React.Component {
           mentionChoices={this.props.mentionChoices}
           mentionSelector='[data-user-id]'/>
 
-        <h3>Communities</h3>
+        {isEvent && <div className='input-row'>
+          <label>
+            <p>Location (Optional)</p>
+            <input type='text' ref='location' className='location form-control'
+              value={location}
+              onChange={this.setLocation}/>
+          </label>
+        </div>}
+
+        <h3 className='communities-header'>Communities</h3>
         <CommunityTagInput ids={communities}
           getChoices={this.findCommunities}
           onSelect={this.addCommunity}

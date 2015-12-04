@@ -4,11 +4,11 @@ import { UPLOAD_DOC } from './index'
 const normalize = ({ url, name, iconUrl }) =>
   ({url, name, thumbnail_url: iconUrl, type: 'gdoc'})
 
-export function uploadDoc (context) {
+export function uploadDoc (id) {
   let payload = new Promise((resolve, reject) => {
     init({onPick: doc => resolve(normalize(doc))})
     .then(picker => picker.setVisible(true))
   })
 
-  return {type: UPLOAD_DOC, payload, meta: {context}}
+  return {type: UPLOAD_DOC, payload, meta: {id}}
 }

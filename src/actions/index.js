@@ -103,29 +103,28 @@ export function createComment (postId, text) {
   }
 }
 
-export function typeahead (text, context) {
-  if (!text) return {type: CANCEL_TYPEAHEAD, meta: {context}}
+export function typeahead (text, id) {
+  if (!text) return {type: CANCEL_TYPEAHEAD, meta: {id}}
 
   return {
     type: TYPEAHEAD,
     payload: {api: true, path: `/noo/autocomplete?${cleanAndStringify({q: text})}`},
-    meta: {context}
+    meta: {id}
   }
 }
 
-export function updatePostEditor (payload, context) {
+export function updatePostEditor (payload, id) {
   return {
     type: UPDATE_POST_EDITOR,
     payload,
-    meta: {context}
+    meta: {id}
   }
 }
 
-export function createPost (params, context) {
+export function createPost (params) {
   return {
     type: CREATE_POST,
-    payload: {api: true, params, path: '/noo/post', method: 'POST'},
-    meta: {context}
+    payload: {api: true, params, path: '/noo/post', method: 'POST'}
   }
 }
 
@@ -150,28 +149,28 @@ export function startPostEdit (post) {
 }
 
 export function cancelPostEdit (id) {
-  return {type: CANCEL_POST_EDIT, meta: {context: id}}
+  return {type: CANCEL_POST_EDIT, meta: {id}}
 }
 
 export function updatePost (id, params) {
   return {
     type: UPDATE_POST,
     payload: {api: true, params, path: `/noo/post/${id}`, method: 'POST'},
-    meta: {context: id, params}
+    meta: {id, params}
   }
 }
 
-export function removeImage (context) {
+export function removeImage (id) {
   return {
     type: REMOVE_IMAGE,
-    meta: {context}
+    meta: {id}
   }
 }
 
-export function removeDoc (payload, context) {
+export function removeDoc (payload, id) {
   return {
     type: REMOVE_DOC,
     payload,
-    meta: {context}
+    meta: {id}
   }
 }

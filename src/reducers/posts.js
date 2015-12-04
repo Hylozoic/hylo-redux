@@ -28,9 +28,9 @@ export default function (state = {}, action) {
     case FETCH_POST:
       return {...state, [payload.id]: normalize(payload)}
     case UPDATE_POST:
-      let { params, context } = meta
-      let post = state[context]
-      return {...state, [context]: normalizeUpdate(post, params)}
+      let { params, id } = meta
+      let post = state[id]
+      return {...state, [id]: normalizeUpdate(post, params)}
   }
 
   return state

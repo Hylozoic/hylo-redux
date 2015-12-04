@@ -45,17 +45,17 @@ const postTypeData = {
   }
 }
 
-const NEW_POST_CONTEXT = 'new'
+const NEW_POST_PLACEHOLDER_ID = 'new'
 
 @connect((state, { community, post }) => {
-  let context = post ? post.id : NEW_POST_CONTEXT
-  let postInProgress = state.postsInProgress[context] || {}
+  let id = post ? post.id : NEW_POST_PLACEHOLDER_ID
+  let postInProgress = state.postsInProgress[id] || {}
 
   // FIXME: this one attribute in postInProgress isn't actually a post attribute
   let { expanded } = postInProgress
 
   return {
-    context,
+    id,
     postInProgress,
     expanded,
     mentionChoices: state.typeaheadMatches.post,
@@ -70,15 +70,15 @@ export default class PostEditor extends React.Component {
     mentionChoices: array,
     currentUser: object,
     post: object,
-    context: string.isRequired,
+    id: string.isRequired,
     postInProgress: object,
     community: object,
     saving: bool
   }
 
   updateStore (data) {
-    let { context, dispatch } = this.props
-    dispatch(updatePostEditor(data, context))
+    let { id, dispatch } = this.props
+    dispatch(updatePostEditor(data, id))
   }
 
   selectType = (type, event) =>
@@ -94,8 +94,8 @@ export default class PostEditor extends React.Component {
   }
 
   cancel = () => {
-    let { dispatch, context, post } = this.props
-    if (context === NEW_POST_CONTEXT) {
+    let { dispatch, id, post } = this.props
+    if (id === NEW_POST_PLACEHOLDER_ID) {
       this.updateStore({expanded: false})
     } else {
       dispatch(cancelPostEdit(post.id))
@@ -147,7 +147,7 @@ export default class PostEditor extends React.Component {
     // immediately after typing in the description field, we have to wait for props
     // to update from the store
     setTimeout(() => {
-      let { dispatch, context, post, postInProgress } = this.props
+      let { dispatch, post, postInProgress } = this.props
 
       postInProgress = {
         ...postInProgress,
@@ -162,7 +162,7 @@ export default class PostEditor extends React.Component {
       if (post) {
         dispatch(updatePost(post.id, params))
       } else {
-        dispatch(createPost(params, context))
+        dispatch(createPost(params))
       }
     })
   }
@@ -236,7 +236,7 @@ export default class PostEditor extends React.Component {
             </button>
           </div>
 
-          <AttachmentButtons context={this.props.context} media={postInProgress.media}
+          <AttachmentButtons id={this.props.id} media={postInProgress.media}
             path={`user/${this.props.currentUser.id}/seeds`}/>
         </div>
       </div>}
@@ -249,34 +249,34 @@ class AttachmentButtons extends React.Component {
   static propTypes = {
     imagePending: bool,
     dispatch: func,
-    context: string,
+    id: string,
     media: array,
     path: string
   }
 
   attachImage = () => {
-    let { context, dispatch, path } = this.props
+    let { id, dispatch, path } = this.props
 
     dispatch(uploadImage({
-      context,
+      id,
       path,
       convert: {width: 800, format: 'jpg', fit: 'max', rotate: 'exif'}
     }))
   }
 
   removeImage = () => {
-    let { context, dispatch } = this.props
-    dispatch(removeImage(context))
+    let { id, dispatch } = this.props
+    dispatch(removeImage(id))
   }
 
   attachDoc = () => {
-    let { dispatch, context } = this.props
-    dispatch(uploadDoc(context))
+    let { id, dispatch } = this.props
+    dispatch(uploadDoc(id))
   }
 
   removeDoc = doc => {
-    let { dispatch, context } = this.props
-    dispatch(removeDoc(doc, context))
+    let { id, dispatch } = this.props
+    dispatch(removeDoc(doc, id))
   }
 
   render () {

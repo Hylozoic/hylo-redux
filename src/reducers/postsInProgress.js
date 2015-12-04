@@ -12,31 +12,33 @@ import {
   UPLOAD_IMAGE
 } from '../actions'
 
-const stateWithImage = (state, context, url) => {
-  let post = state[context]
+import { NEW_POST_PLACEHOLDER_ID } from '../components/PostEditor'
+
+const stateWithImage = (state, id, url) => {
+  let post = state[id]
   let media = (post.media || []).filter(m => m.type !== 'image')
   if (url) media = media.concat({type: 'image', url})
   return {
     ...state,
-    [context]: {...post, media}
+    [id]: {...post, media}
   }
 }
 
-const stateWithDoc = (state, context, doc) => {
-  let post = state[context]
+const stateWithDoc = (state, id, doc) => {
+  let post = state[id]
   let media = uniq((post.media || []).concat([doc]), m => m.url)
   return {
     ...state,
-    [context]: {...post, media}
+    [id]: {...post, media}
   }
 }
 
-const stateWithoutDoc = (state, context, doc) => {
-  let post = state[context]
+const stateWithoutDoc = (state, id, doc) => {
+  let post = state[id]
   let media = (post.media || []).filter(m => m.url !== doc.url)
   return {
     ...state,
-    [context]: {...post, media}
+    [id]: {...post, media}
   }
 }
 
@@ -44,27 +46,28 @@ export default function (state = {}, action) {
   if (action.error) return state
 
   let { type, payload, meta } = action
-  let { context } = meta || {}
+  let { id } = meta || {}
   switch (type) {
     case UPDATE_POST_EDITOR:
       return {
         ...state,
-        [context]: {...state[context], ...payload}
+        [id]: {...state[id], ...payload}
       }
     case CREATE_POST:
+      return {...state, [NEW_POST_PLACEHOLDER_ID]: null}
     case UPDATE_POST:
     case CANCEL_POST_EDIT:
-      return {...state, [context]: null}
+      return {...state, [id]: null}
     case START_POST_EDIT:
       return {...state, [payload.id]: {...payload, expanded: true}}
     case UPLOAD_IMAGE:
-      return stateWithImage(state, context, payload)
+      return stateWithImage(state, id, payload)
     case REMOVE_IMAGE:
-      return stateWithImage(state, context, null)
+      return stateWithImage(state, id, null)
     case UPLOAD_DOC:
-      return stateWithDoc(state, context, payload)
+      return stateWithDoc(state, id, payload)
     case REMOVE_DOC:
-      return stateWithoutDoc(state, context, payload)
+      return stateWithoutDoc(state, id, payload)
   }
 
   return state

@@ -157,12 +157,12 @@ export default combineReducers({
     let { error, type } = action
     if (error || !contains([TYPEAHEAD, CANCEL_TYPEAHEAD], type)) return state
 
-    let { payload, meta: { context } } = action
+    let { payload, meta: { id } } = action
     switch (type) {
       case TYPEAHEAD:
-        return {...state, [context]: payload}
+        return {...state, [id]: payload}
       case CANCEL_TYPEAHEAD:
-        return {...state, [context]: []}
+        return {...state, [id]: []}
     }
 
     return state

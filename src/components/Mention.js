@@ -3,7 +3,7 @@
 import React from 'react'
 import {isEmpty} from 'lodash'
 import KeyControlledList from './KeyControlledList'
-import MentionController from './MentionController'
+import MentionController from '../client/MentionController'
 var {array, bool, func, string} = React.PropTypes
 
 export default class Mention extends React.Component {

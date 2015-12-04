@@ -54,7 +54,12 @@ describe('posts', () => {
         type: UPDATE_POST,
         meta: {
           context: 'a',
-          params: {imageUrl: 'http://new.com/new.png'}
+          params: {
+            media: [
+              {type: 'gdoc', url: 'http://bar.com/doc.txt'},
+              {type: 'image', url: 'http://new.com/new.png'}
+            ]
+          }
         }
       }
 
@@ -88,7 +93,7 @@ describe('posts', () => {
         type: UPDATE_POST,
         meta: {
           context: 'a',
-          params: {imageUrl: 'http://new.com/new.png', imageRemoved: true}
+          params: {media: [{type: 'gdoc', url: 'http://bar.com/doc.txt'}]}
         }
       }
 
@@ -121,7 +126,7 @@ describe('posts', () => {
         type: UPDATE_POST,
         meta: {
           context: 'a',
-          params: {imageUrl: 'http://new.com/new.png'}
+          params: {media: [{type: 'image', url: 'http://new.com/new.png'}]}
         }
       }
 

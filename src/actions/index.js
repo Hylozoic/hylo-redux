@@ -1,5 +1,5 @@
 import { cleanAndStringify } from '../util/caching'
-import { cloneDeep, omit, pick } from 'lodash'
+import { cloneDeep, pick } from 'lodash'
 
 export const LOGIN = 'LOGIN'
 
@@ -99,15 +99,12 @@ export function createComment (postId, text) {
 export const TYPEAHEAD = 'TYPEAHEAD'
 export const CANCEL_TYPEAHEAD = 'CANCEL_TYPEAHEAD'
 
-export function typeahead (opts) {
-  let { cancel, context } = opts
-  if (cancel) return {type: CANCEL_TYPEAHEAD, meta: {context}}
-
-  let querystring = cleanAndStringify({...omit(opts, 'text'), q: opts.text})
+export function typeahead (text, context) {
+  if (!text) return {type: CANCEL_TYPEAHEAD, meta: {context}}
 
   return {
     type: TYPEAHEAD,
-    payload: {api: true, path: `/noo/autocomplete?${querystring}`},
+    payload: {api: true, path: `/noo/autocomplete?${cleanAndStringify({q: text})}`},
     meta: {context}
   }
 }

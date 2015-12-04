@@ -18,9 +18,11 @@ import {
   removeImage, removeDoc
 } from '../actions'
 import { uploadImage, UPLOAD_IMAGE } from '../actions/uploadImage'
-import { uploadDoc, UPLOAD_DOC } from '../actions/uploadDoc'
+import { uploadDoc } from '../actions/uploadDoc'
 import { attachmentParams } from '../util/shims'
 import truncate from 'html-truncate'
+import { CREATE_POST, UPDATE_POST } from '../actions'
+import { personTemplate } from '../util/mentions'
 const { array, bool, func, object, string } = React.PropTypes
 
 const postTypes = ['chat', 'request', 'offer', 'intention', 'event']
@@ -58,8 +60,7 @@ const NEW_POST_CONTEXT = 'new'
     expanded,
     mentionChoices: state.typeaheadMatches.post,
     currentUser: state.people.current,
-    imagePending: state.pending[UPLOAD_IMAGE],
-    docPending: state.pending[UPLOAD_DOC]
+    saving: state.pending[CREATE_POST] || state.pending[UPDATE_POST]
   }
 })
 export default class PostEditor extends React.Component {
@@ -70,10 +71,9 @@ export default class PostEditor extends React.Component {
     currentUser: object,
     post: object,
     context: string.isRequired,
-    imagePending: bool,
-    docPending: bool,
     postInProgress: object,
-    community: object
+    community: object,
+    saving: bool
   }
 
   updateStore (data) {
@@ -178,54 +178,12 @@ export default class PostEditor extends React.Component {
     return filter(currentUser.memberships.map(m => m.community), match)
   }
 
-  mentionTemplate = person => {
-    return <a data-user-id={person.id} href={'/u/' + person.id}>{person.name}</a>
-  }
-
-  mentionTypeahead = text => {
-    if (text) {
-      this.props.dispatch(typeahead({text: text, context: 'post'}))
-    } else {
-      this.props.dispatch(typeahead({cancel: true, context: 'post'}))
-    }
-  }
-
-  attachImage = () => {
-    let { currentUser, context, dispatch } = this.props
-
-    dispatch(uploadImage({
-      context,
-      path: `user/${currentUser.id}/seeds`,
-      convert: {width: 800, format: 'jpg', fit: 'max', rotate: 'exif'}
-    }))
-  }
-
-  removeImage = () => {
-    let { context, dispatch } = this.props
-    dispatch(removeImage(context))
-  }
-
-  attachDoc = () => {
-    let { dispatch, context } = this.props
-    dispatch(uploadDoc(context))
-  }
-
-  removeDoc = doc => {
-    let { dispatch, context } = this.props
-    dispatch(removeDoc(doc, context))
-  }
-
   render () {
-    let { expanded, imagePending, post, postInProgress } = this.props
-    let { name, description, communities, media, type, location } = postInProgress
+    let { expanded, post, postInProgress, dispatch } = this.props
+    let { name, description, communities, type, location } = postInProgress
     if (!type) type = 'chat'
 
-    let image = find(media, m => m.type === 'image')
-    let docs = filter(media, m => m.type === 'gdoc')
-
-    let isEvent = type === 'event'
-
-    return <div className={cx('post-editor', 'clearfix', {expanded: expanded})}>
+    return <div className={cx('post-editor', 'clearfix', {expanded})}>
       {post && <h3>Editing Post</h3>}
       <ul className='left post-types'>
         {postTypes.map(t => <li key={t}
@@ -244,12 +202,12 @@ export default class PostEditor extends React.Component {
         <RichTextEditor className='details'
           content={description}
           onChange={this.setDescription}
-          mentionTemplate={this.mentionTemplate}
-          mentionTypeahead={this.mentionTypeahead}
+          mentionTemplate={personTemplate}
+          mentionTypeahead={text => dispatch(typeahead(text, 'post'))}
           mentionChoices={this.props.mentionChoices}
           mentionSelector='[data-user-id]'/>
 
-        {isEvent && <div className='input-row'>
+        {type === 'event' && <div className='input-row'>
           <label>
             <p>Location (Optional)</p>
             <input type='text' ref='location' className='location form-control'
@@ -273,49 +231,96 @@ export default class PostEditor extends React.Component {
         <div className='buttons'>
           <div className='right'>
             <button onClick={this.cancel}>Cancel</button>
-            <button className='btn-primary' onClick={this.save}>
+            <button className='btn-primary' onClick={this.save} disabled={this.props.saving}>
               {post ? 'Save Changes' : 'Post'}
             </button>
           </div>
 
-          {imagePending
-            ? <button disabled>Please wait...</button>
-            : image
-              ? <Dropdown className='button change-image' toggleChildren={
-                  <span>
-                    <img src={image.url} className='image-thumbnail'/>
-                    Change Image <span className='caret'></span>
-                  </span>
-                }>
-                  <li><a onClick={this.removeImage}>Remove Image</a></li>
-                  <li><a onClick={this.attachImage}>Attach Another</a></li>
-                </Dropdown>
-
-              : <button onClick={this.attachImage}>
-                  Attach Image
-                </button>}
-
-          {!isEmpty(docs)
-            ? <Dropdown className='button change-docs' toggleChildren={
-                <span>
-                  Attachments ({docs.length}) <span className='caret'></span>
-                </span>
-              }>
-                {docs.map(doc => <li key={doc.url}>
-                  <a target='_blank' href={doc.url}>
-                    <img src={doc.thumbnail_url}/>
-                    {truncate(doc.name, 40)}
-                  </a>
-                  <a className='remove' onClick={() => this.removeDoc(doc)}>&times;</a>
-                </li>)}
-                <li role='separator' className='divider'></li>
-                <li><a onClick={this.attachDoc}>Attach Another</a></li>
-              </Dropdown>
-            : <button onClick={this.attachDoc}>
-                Attach File with Google Drive
-              </button>}
+          <AttachmentButtons context={this.props.context} media={postInProgress.media}
+            path={`user/${this.props.currentUser.id}/seeds`}/>
         </div>
       </div>}
+    </div>
+  }
+}
+
+@connect(state => ({imagePending: state.pending[UPLOAD_IMAGE]}))
+class AttachmentButtons extends React.Component {
+  static propTypes = {
+    imagePending: bool,
+    dispatch: func,
+    context: string,
+    media: array,
+    path: string
+  }
+
+  attachImage = () => {
+    let { context, dispatch, path } = this.props
+
+    dispatch(uploadImage({
+      context,
+      path,
+      convert: {width: 800, format: 'jpg', fit: 'max', rotate: 'exif'}
+    }))
+  }
+
+  removeImage = () => {
+    let { context, dispatch } = this.props
+    dispatch(removeImage(context))
+  }
+
+  attachDoc = () => {
+    let { dispatch, context } = this.props
+    dispatch(uploadDoc(context))
+  }
+
+  removeDoc = doc => {
+    let { dispatch, context } = this.props
+    dispatch(removeDoc(doc, context))
+  }
+
+  render () {
+    let { imagePending, media } = this.props
+    let image = find(media, m => m.type === 'image')
+    let docs = filter(media, m => m.type === 'gdoc')
+
+    return <div>
+      {imagePending
+        ? <button disabled>Please wait...</button>
+        : image
+          ? <Dropdown className='button change-image' toggleChildren={
+              <span>
+                <img src={image.url} className='image-thumbnail'/>
+                Change Image <span className='caret'></span>
+              </span>
+            }>
+              <li><a onClick={this.removeImage}>Remove Image</a></li>
+              <li><a onClick={this.attachImage}>Attach Another</a></li>
+            </Dropdown>
+
+          : <button onClick={this.attachImage}>
+              Attach Image
+            </button>}
+
+      {!isEmpty(docs)
+        ? <Dropdown className='button change-docs' toggleChildren={
+            <span>
+              Attachments ({docs.length}) <span className='caret'></span>
+            </span>
+          }>
+            {docs.map(doc => <li key={doc.url}>
+              <a target='_blank' href={doc.url}>
+                <img src={doc.thumbnail_url}/>
+                {truncate(doc.name, 40)}
+              </a>
+              <a className='remove' onClick={() => this.removeDoc(doc)}>&times;</a>
+            </li>)}
+            <li role='separator' className='divider'></li>
+            <li><a onClick={this.attachDoc}>Attach Another</a></li>
+          </Dropdown>
+        : <button onClick={this.attachDoc}>
+            Attach File with Google Drive
+          </button>}
     </div>
   }
 }

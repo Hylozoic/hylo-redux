@@ -18,7 +18,9 @@ import {
   LOGOUT,
   NAVIGATE,
   TYPEAHEAD,
-  CANCEL_TYPEAHEAD
+  CANCEL_TYPEAHEAD,
+  CREATE_POST,
+  UPDATE_POST
 } from '../actions'
 
 // TODO maybe all the constants should be in one file
@@ -131,6 +133,8 @@ export default combineReducers({
     return toggle(FETCH_POSTS) ||
       toggle(FETCH_PEOPLE) ||
       toggle(UPLOAD_IMAGE) ||
+      toggle(CREATE_POST) ||
+      toggle(UPDATE_POST) ||
       state
   },
 

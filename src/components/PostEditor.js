@@ -236,7 +236,7 @@ export default class PostEditor extends React.Component {
           </label>
         </div>}
 
-        <h3>Communities</h3>
+        <h3 className='communities-header'>Communities</h3>
         <CommunityTagInput ids={communities}
           getChoices={this.findCommunities}
           onSelect={this.addCommunity}

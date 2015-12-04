@@ -184,10 +184,12 @@ export function removeImage (context) {
 }
 
 export const CHANGE_EVENT_RESPONSE = 'CHANGE_EVENT_RESPONSE'
+export const CHANGE_EVENT_RESPONSE_PENDING = 'CHANGE_EVENT_RESPONSE_PENDING'
 
-export function changeEventResponse (id, response) {
+export function changeEventResponse (id, response, user) {
   return {
     type: CHANGE_EVENT_RESPONSE,
-    payload: {api: true, params: {response: response}, path: `/noo/post/${id}/respond`, method: 'POST'}
+    payload: {api: true, params: {response: response}, path: `/noo/post/${id}/respond`, method: 'POST'},
+    meta: {context: id, response: response, user: user}
   }
 }

@@ -1,6 +1,6 @@
 import React from 'react'
 import { Link } from 'react-router'
-import { filter, find, isEmpty, findWhere, without } from 'lodash'
+import { filter, find, isEmpty } from 'lodash'
 const { array, bool, func, object } = React.PropTypes
 import cx from 'classnames'
 import { humanDate, present, sanitize, timeRange, timeRangeFull } from '../util/text'
@@ -12,7 +12,7 @@ import Comment from './Comment'
 import CommentForm from './CommentForm'
 import PostEditor from './PostEditor'
 import { connect } from 'react-redux'
-import { fetchComments, createComment, startPostEdit } from '../actions'
+import { fetchComments, createComment, startPostEdit, changeEventResponse } from '../actions'
 
 const spacer = <span>&nbsp;&nbsp;•&nbsp;&nbsp;</span>
 
@@ -157,71 +157,31 @@ const ExpandedPostDetails = props => {
   let attachments = filter(post.media, m => m.type !== 'image')
   if (!comments) comments = []
 
-  var eventYeses = filter(post.responders, er => er.response === 'yes')
-  var eventMaybes = filter(post.responders, er => er.response === 'maybe')
-  var eventNos = filter(post.responders, er => er.response === 'no')
-  var userEventResponse = () => {
-    var responder = filter(post.responders, responder => responder.id === currentUser.id)[0]
-    if (responder) {
-      return responder.response
-    } else {
-      return ''
-    }
-  }
-
-  var eventResponse = userEventResponse()
-
-  // copied straight from the angular app
-  var rlResult = []
+  var yeses = filter(post.responders, er => er.response === 'yes')
+  var maybes = filter(post.responders, er => er.response === 'maybe')
+  var nos = filter(post.responders, er => er.response === 'no')
+  var eventResponse = (filter(post.responders, responder => responder.id === currentUser.id)[0] || {response: ''}).response
   var yesHeader = {header: 'Going', id: -1}
   var maybeHeader = {header: 'Maybe', id: -2}
   var noHeader = {header: 'Can\'t Go', id: -3}
-  var getResponderList = () => {
-    rlResult.length = 0
 
-    var yeses = eventYeses
-    var maybes = eventMaybes
-    var nos = eventNos
-
-    if (yeses.length > 0) {
-      rlResult.push(yesHeader)
-      rlResult = rlResult.concat(yeses)
-    }
-    if (maybes.length > 0) {
-      rlResult.push(maybeHeader)
-      rlResult = rlResult.concat(maybes)
-    }
-    if (nos.length > 0) {
-      rlResult.push(noHeader)
-      rlResult = rlResult.concat(nos)
-    }
-    return rlResult
+  var responderList = []
+  if (yeses.length > 0) {
+    responderList.push(yesHeader)
+    responderList = responderList.concat(yeses)
   }
-  var responderList = getResponderList()
+  if (maybes.length > 0) {
+    responderList.push(maybeHeader)
+    responderList = responderList.concat(maybes)
+  }
+  if (nos.length > 0) {
+    responderList.push(noHeader)
+    responderList = responderList.concat(nos)
+  }
 
-  var changeEventResponse = function (response) {
+  var eventResponseClicked = function (response) {
     return e => {
-      this.props.dispatch(changeEventResponse(post.id, response))
-      /*
-      var user = currentUser
-      if (!user) return
-
-      //Post.respond({id: post.id, response: response})
-
-      var meInResponders = findWhere(post.responders, {id: user.id})
-      post.responders = without(post.responders, meInResponders)
-
-      console.log('cER - ', response)
-
-      if (eventResponse === response) {
-        console.log('cER - MATCH', response)
-        eventResponse = ''
-      } else {
-        console.log('cER - MATCH', response)
-        eventResponse = response
-        post.responders.push({id: user.id, name: user.name, avatar_url: user.avatar_url, response: response})
-      }
-      */
+      props.dispatch(changeEventResponse(post.id, response, currentUser))
     }
   }
 
@@ -233,29 +193,29 @@ const ExpandedPostDetails = props => {
 
     {post.type === 'event' && <div className='rsvp-controls post-section'>
       <div className='btn-group buttons'>
-        <button type='button' onClick={changeEventResponse('yes')} className={'rsvp-yes btn btn-default ' + (eventResponse === 'yes' ? 'active' : '')}>
+        <button type='button' onClick={eventResponseClicked('yes')} className={'rsvp-yes btn btn-default ' + (eventResponse === 'yes' ? 'active' : '')}>
           Going
-          {eventYeses.length > 0
-          ? ' ' + eventYeses.length
+          {yeses.length > 0
+          ? ' (' + yeses.length + ')'
           : null}
         </button>
-        <button type='button' className={'rsvp-maybe btn btn-default ' + (eventResponse === 'maybe' ? 'active' : '')}>
+        <button type='button' onClick={eventResponseClicked('maybe')} className={'rsvp-maybe btn btn-default ' + (eventResponse === 'maybe' ? 'active' : '')}>
           Maybe
-          {eventMaybes.length > 0
-          ? ' (' + eventMaybes.length + ')'
+          {maybes.length > 0
+          ? ' (' + maybes.length + ')'
           : null}
         </button>
-        <button type='button' className={'rsvp-no btn btn-default ' + (eventResponse === 'no' ? 'active' : '')}>
+        <button type='button' onClick={eventResponseClicked('no')} className={'rsvp-no btn btn-default ' + (eventResponse === 'no' ? 'active' : '')}>
           {"Can't Go"}
-          {eventNos.length > 0
-          ? ' ' + eventNos.length
+          {nos.length > 0
+          ? ' (' + nos.length + ')'
           : null}
         </button>
       </div>
 
       {post.responders.length > 0 && <div className='responses'>
 
-        <Dropdown className='responses-dropdown' toggleChildren='See Responses'>
+        <Dropdown className='responses-dropdown' toggleChildren={<span>See Responses</span>}>
           {responderList.map(personOrHeader => <li key={personOrHeader.id}>
             {personOrHeader.header
             ? <span className='header'>{personOrHeader.header}</span>

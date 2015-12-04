@@ -1,6 +1,6 @@
 import React from 'react'
 import { Link } from 'react-router'
-import { filter, find, isEmpty } from 'lodash'
+import { filter, find, isEmpty, findWhere, without } from 'lodash'
 const { array, bool, func, object } = React.PropTypes
 import cx from 'classnames'
 import { humanDate, present, sanitize, timeRange, timeRangeFull } from '../util/text'
@@ -93,7 +93,7 @@ export default class Post extends React.Component {
 
     return <div className={classes} onClick={this.expand}>
       <div className='header'>
-        <Avatar person={person}/>
+        <Avatar person={person} />
 
         <Dropdown className='post-menu' alignRight={true} toggleChildren={
           <i className='icon-down'></i>
@@ -151,17 +151,121 @@ export default class Post extends React.Component {
 const ExpandedPostDetails = props => {
   let {
     post, image, comments, commentsExpanded,
-    commentingDisabled, onCommentCreate, communities
+    commentingDisabled, onCommentCreate, communities, currentUser
   } = props
   let description = present(sanitize(post.description))
   let attachments = filter(post.media, m => m.type !== 'image')
   if (!comments) comments = []
+
+  var eventYeses = filter(post.responders, er => er.response === 'yes')
+  var eventMaybes = filter(post.responders, er => er.response === 'maybe')
+  var eventNos = filter(post.responders, er => er.response === 'no')
+  var userEventResponse = () => {
+    var responder = filter(post.responders, responder => responder.id === currentUser.id)[0]
+    if (responder) {
+      return responder.response
+    } else {
+      return ''
+    }
+  }
+
+  var eventResponse = userEventResponse()
+
+  // copied straight from the angular app
+  var rlResult = []
+  var yesHeader = {header: 'Going', id: -1}
+  var maybeHeader = {header: 'Maybe', id: -2}
+  var noHeader = {header: 'Can\'t Go', id: -3}
+  var getResponderList = () => {
+    rlResult.length = 0
+
+    var yeses = eventYeses
+    var maybes = eventMaybes
+    var nos = eventNos
+
+    if (yeses.length > 0) {
+      rlResult.push(yesHeader)
+      rlResult = rlResult.concat(yeses)
+    }
+    if (maybes.length > 0) {
+      rlResult.push(maybeHeader)
+      rlResult = rlResult.concat(maybes)
+    }
+    if (nos.length > 0) {
+      rlResult.push(noHeader)
+      rlResult = rlResult.concat(nos)
+    }
+    return rlResult
+  }
+  var responderList = getResponderList()
+
+  var changeEventResponse = function (response) {
+    return e => {
+      this.props.dispatch(changeEventResponse(post.id, response))
+      /*
+      var user = currentUser
+      if (!user) return
+
+      //Post.respond({id: post.id, response: response})
+
+      var meInResponders = findWhere(post.responders, {id: user.id})
+      post.responders = without(post.responders, meInResponders)
+
+      console.log('cER - ', response)
+
+      if (eventResponse === response) {
+        console.log('cER - MATCH', response)
+        eventResponse = ''
+      } else {
+        console.log('cER - MATCH', response)
+        eventResponse = response
+        post.responders.push({id: user.id, name: user.name, avatar_url: user.avatar_url, response: response})
+      }
+      */
+    }
+  }
 
   return <div>
     {image && <img src={image.url} className='full-image post-section'/>}
 
     {description && <div className='details post-section'
       dangerouslySetInnerHTML={{__html: description}}/>}
+
+    {post.type === 'event' && <div className='rsvp-controls post-section'>
+      <div className='btn-group buttons'>
+        <button type='button' onClick={changeEventResponse('yes')} className={'rsvp-yes btn btn-default ' + (eventResponse === 'yes' ? 'active' : '')}>
+          Going
+          {eventYeses.length > 0
+          ? ' ' + eventYeses.length
+          : null}
+        </button>
+        <button type='button' className={'rsvp-maybe btn btn-default ' + (eventResponse === 'maybe' ? 'active' : '')}>
+          Maybe
+          {eventMaybes.length > 0
+          ? ' (' + eventMaybes.length + ')'
+          : null}
+        </button>
+        <button type='button' className={'rsvp-no btn btn-default ' + (eventResponse === 'no' ? 'active' : '')}>
+          {"Can't Go"}
+          {eventNos.length > 0
+          ? ' ' + eventNos.length
+          : null}
+        </button>
+      </div>
+
+      {post.responders.length > 0 && <div className='responses'>
+
+        <Dropdown className='responses-dropdown' toggleChildren='See Responses'>
+          {responderList.map(personOrHeader => <li key={personOrHeader.id}>
+            {personOrHeader.header
+            ? <span className='header'>{personOrHeader.header}</span>
+            : <span>
+              <Avatar person={personOrHeader} /> <Link to={`/u/${personOrHeader.id}`}><span>{personOrHeader.name}</span></Link>
+            </span>}
+          </li>)}
+        </Dropdown>
+      </div>}
+    </div>}
 
     {!isEmpty(attachments) && <div className='post-section'>
       {attachments.map((file, i) =>

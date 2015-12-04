@@ -1,8 +1,10 @@
 import { A } from './A'
 import React from 'react'
+import cx from 'classnames'
 
 const LeftNav = props => {
-  return <nav id='leftNav'>
+  let { open } = props
+  return <nav id='leftNav' className={cx({open})}>
     <ul>
       <A to='/all-posts'>All posts</A>
       <A to='/my-posts'>My posts</A>

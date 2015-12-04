@@ -7,6 +7,7 @@ import postsInProgress from './postsInProgress'
 import postsByQuery from './postsByQuery'
 import posts from './posts'
 import communities from './communities'
+import { UPDATE_PATH } from 'redux-simple-router'
 
 import {
   CANCEL_TYPEAHEAD,
@@ -21,12 +22,28 @@ import {
   LOGOUT,
   NAVIGATE,
   SET_LOGIN_ERROR,
+  TOGGLE_MAIN_MENU,
   TYPEAHEAD,
   UPDATE_POST,
   UPLOAD_IMAGE
 } from '../actions'
 
 export default combineReducers({
+  mainMenuOpened: (state = false, action) => {
+    let { error, type } = action
+    if (error) return state
+
+    switch (type) {
+      case TOGGLE_MAIN_MENU:
+        return !state
+      case NAVIGATE:
+      case UPDATE_PATH:
+        return false
+    }
+
+    return state
+  },
+
   errors: (state = {}, action) => {
     let { error, type, payload, meta } = action
     if (!error) return state

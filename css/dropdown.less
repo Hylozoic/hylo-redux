@@ -1,0 +1,38 @@
+.dropdown-menu > li {
+  position: relative;
+
+  > a {
+    cursor: pointer;
+
+    &.remove {
+      float: right;
+      position: absolute;
+      top: 1px;
+      right: -4px;
+      font-size: 18px;
+      padding: 0 4px;
+      line-height: 26px;
+      height: 26px;
+      width: 19px;
+      &:hover {
+        font-weight: bold;
+        color: red;
+        background-color: transparent;
+      }
+    }
+
+    img {
+      margin-right: 5px;
+      position: relative;
+      top: -2px;
+    }
+  }
+}
+
+.dropdown.active .dropdown-menu {
+  display: block;
+}
+
+a.dropdown-toggle {
+  text-decoration: none;
+}

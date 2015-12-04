@@ -1,22 +1,36 @@
 import React from 'react'
-import { IndexLink, Link } from 'react-router'
+import { A } from './A'
+import Dropdown from './Dropdown'
+import cx from 'classnames'
 
 const TopNav = (props) => {
-  let { currentUser, logout } = props
+  let { currentUser, logout, toggleMenu, mainMenuOpened } = props
   return <nav id='topNav' className='clearfix'>
     <ul className='left'>
       <li>
         <i className='icon-hylo-script'></i>
       </li>
-      <li><IndexLink to='/'>Home</IndexLink></li>
+      <li>
+        <a onClick={toggleMenu} className={cx({active: mainMenuOpened})}>
+          Menu <span className='caret'></span>
+        </a>
+      </li>
     </ul>
     {currentUser
     ? <ul className='right'>
-        <li><Link to={`/u/${currentUser.id}`}>{currentUser.name}</Link></li>
-        <li><a href='#' onClick={logout}>Log out</a></li>
+        <li>
+          <Dropdown alignRight={true} toggleChildren={
+            <span>
+              {currentUser.name} <span className='caret'></span>
+            </span>
+          }>
+            <li><A to={`/u/${currentUser.id}`}>My profile</A></li>
+            <li><a href='#' onClick={logout}>Log out</a></li>
+          </Dropdown>
+        </li>
       </ul>
     : <ul className='right'>
-        <li><Link to='/login'>Log in</Link></li>
+        <li><A to='/login'>Log in</A></li>
       </ul>}
   </nav>
 }

@@ -3,6 +3,7 @@
 @import 'type';
 @import 'icons';
 @import 'mixins';
+@import 'dropdown';
 
 body {
   background-color: @off-white;
@@ -39,19 +40,37 @@ nav {
   border-bottom: 2px solid @hylo-teal;
   padding: 15px 15px 5px;
   line-height: 36px;
-  li {
-    display: inline-block;
-    margin-right: 15px;
-  }
-  .right {
-    li {
-      margin-left: 15px;
-      margin-right: 0;
+  > ul {
+    > li {
+      display: inline-block;
+      margin-right: 15px;
+      &.visible-xs {
+        @media (max-width: @screen-xs-max) {
+          display: inline-block !important;
+        }
+      }
+    }
+
+    &.right {
+      > li {
+        margin-left: 15px;
+        margin-right: 0;
+      }
     }
   }
+
   a {
+    cursor: pointer;
     color: @off-black;
+
+    // FIXME this a workaround for the hover state not going away
+    // on touch devices -- probably fixable with whatever the React
+    // counterpart to ngTouch is
+    @media (max-width: @screen-xs-max) {
+      text-decoration: none;
+    }
   }
+
   .icon-hylo-script {
     font-size: 36px;
     vertical-align: middle;
@@ -90,6 +109,15 @@ nav {
     &:hover {
       background-color: #ddd;
     }
+  }
+
+  @media (max-width: @screen-xs-max) {
+    display: none;
+    &.open {
+      display: block;
+    }
+    border-bottom: 1px solid @light-gray-border;
+    margin-bottom: 15px;
   }
 }
 
@@ -287,6 +315,10 @@ ul.posts {
     width: 200px;
     height: 122.6px;
     margin-top: @p-bottom-margin;
+
+    @media (max-width: @screen-xs-max) {
+      width: 100%;
+    }
   }
 
   .name {
@@ -624,42 +656,7 @@ ul.tags {
   }
 }
 
-.dropdown-menu > li {
-  position: relative;
-
-  > a {
-    cursor: pointer;
-
-    &.remove {
-      float: right;
-      position: absolute;
-      top: 1px;
-      right: -4px;
-      font-size: 18px;
-      padding: 0 4px;
-      line-height: 26px;
-      height: 26px;
-      width: 19px;
-      &:hover {
-        font-weight: bold;
-        color: red;
-        background-color: transparent;
-      }
-    }
-
-    img {
-      margin-right: 5px;
-      position: relative;
-      top: -2px;
-    }
-  }
-}
-
 .mentions .dropdown-menu {
-  display: block;
-}
-
-.dropdown.active .dropdown-menu {
   display: block;
 }
 

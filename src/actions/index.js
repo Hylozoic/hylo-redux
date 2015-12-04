@@ -17,6 +17,7 @@ export const REMOVE_DOC = 'REMOVE_DOC'
 export const REMOVE_IMAGE = 'REMOVE_IMAGE'
 export const SET_LOGIN_ERROR = 'SET_LOGIN_ERROR'
 export const START_POST_EDIT = 'START_POST_EDIT'
+export const TOGGLE_MAIN_MENU = 'TOGGLE_MAIN_MENU'
 export const TYPEAHEAD = 'TYPEAHEAD'
 export const UPDATE_POST = 'UPDATE_POST'
 export const UPDATE_POST_EDITOR = 'UPDATE_POST_EDITOR'
@@ -173,4 +174,8 @@ export function removeDoc (payload, id) {
     payload,
     meta: {id}
   }
+}
+
+export function toggleMainMenu () {
+  return {type: TOGGLE_MAIN_MENU}
 }

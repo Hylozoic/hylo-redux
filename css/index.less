@@ -214,13 +214,19 @@ nav {
 }
 
 .banner {
-  padding: 45px 45px 15px;
+  padding: 45px 15px 15px;
   position: relative;
   width: 100%;
   color: white;
   margin-bottom: 15px;
   text-align: center;
   .shaded-background;
+  .mobile-full-bleed;
+
+  .mobile({
+    padding-left: 5px;
+    padding-right: 5px;
+  });
 
   .background {
     position: absolute;
@@ -260,8 +266,14 @@ nav {
     li {
       display: inline-block;
       margin: 0 5px;
+
+      .mobile({
+        margin: 0;
+      });
+
       a {
         .outlined-text(rgba(0, 0, 0, 0.7));
+        text-decoration: none;
         display: block;
         color: @off-white;
         padding: 0 5px 20px;
@@ -294,6 +306,15 @@ nav {
 
 ul.posts {
   .no-bullets;
+
+  .post {
+    .mobile-full-bleed;
+    .mobile({
+      border-left: none;
+      border-right: none;
+      border-bottom: none;
+    })
+  }
 }
 
 .post {
@@ -546,6 +567,7 @@ ul.tags {
   padding: 15px;
   background-color: @light-gray-bg;
   margin-bottom: 15px;
+  .mobile-full-bleed;
 
   .post-types {
     .no-bullets;

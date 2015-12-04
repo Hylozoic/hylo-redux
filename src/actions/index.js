@@ -1,5 +1,5 @@
 import { cleanAndStringify } from '../util/caching'
-import { omit, pick } from 'lodash'
+import { cloneDeep, omit, pick } from 'lodash'
 
 export const LOGIN = 'LOGIN'
 
@@ -153,8 +153,8 @@ export function fetchPost (id) {
 export const START_POST_EDIT = 'START_POST_EDIT'
 
 export function startPostEdit (post) {
-  let fields = ['id', 'name', 'description', 'location', 'communities', 'public']
-  let payload = pick(post, fields)
+  let fields = ['id', 'name', 'description', 'location', 'communities', 'public', 'media']
+  let payload = cloneDeep(pick(post, fields))
   return {type: START_POST_EDIT, payload}
 }
 
@@ -171,5 +171,14 @@ export function updatePost (id, params) {
     type: UPDATE_POST,
     payload: {api: true, params, path: `/noo/post/${id}`, method: 'POST'},
     meta: {context: id, params}
+  }
+}
+
+export const REMOVE_IMAGE = 'REMOVE_IMAGE'
+
+export function removeImage (context) {
+  return {
+    type: REMOVE_IMAGE,
+    meta: {context}
   }
 }

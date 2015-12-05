@@ -94,7 +94,7 @@ export default class Post extends React.Component {
 
     return <div className={classes} onClick={this.expand}>
       <div className='header'>
-        <Avatar person={person} />
+        <Avatar person={person}/>
 
         <Dropdown className='post-menu' alignRight={true} toggleChildren={
           <i className='icon-down'></i>

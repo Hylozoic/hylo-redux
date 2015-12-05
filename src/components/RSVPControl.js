@@ -50,21 +50,15 @@ export default class RSVPControl extends React.Component {
         <div className='btn-group buttons'>
           <button type='button' onClick={eventResponseClicked('yes')} className={'rsvp-yes btn btn-default ' + (eventResponse === 'yes' ? 'active' : '')}>
             Going
-            {yeses.length > 0
-            ? ' (' + yeses.length + ')'
-            : null}
+            {yeses.length > 0 && ` (${yeses.length})`}
           </button>
           <button type='button' onClick={eventResponseClicked('maybe')} className={'rsvp-maybe btn btn-default ' + (eventResponse === 'maybe' ? 'active' : '')}>
             Maybe
-            {maybes.length > 0
-            ? ' (' + maybes.length + ')'
-            : null}
+            {maybes.length > 0 && ` (${maybes.length})`}
           </button>
           <button type='button' onClick={eventResponseClicked('no')} className={'rsvp-no btn btn-default ' + (eventResponse === 'no' ? 'active' : '')}>
             {"Can't Go"}
-            {nos.length > 0
-            ? ' (' + nos.length + ')'
-            : null}
+            {nos.length > 0 && ` (${nos.length})`}
           </button>
         </div>
 
@@ -73,8 +67,8 @@ export default class RSVPControl extends React.Component {
           <Dropdown className='responses-dropdown' toggleChildren={<span>See Responses</span>}>
             {responderList.map(personOrHeader => <li key={personOrHeader.id} className={personOrHeader.header ? 'header' : ''}>
               {personOrHeader.header
-              ? <span className='header'>{personOrHeader.header}</span>
-              : <span className='person'>
+                ? <span className='header'>{personOrHeader.header}</span>
+                : <span className='person'>
                 <Avatar person={personOrHeader} /> <Link className='person' to={`/u/${personOrHeader.id}`}><span>{personOrHeader.name}</span></Link>
               </span>}
             </li>)}

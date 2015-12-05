@@ -1,5 +1,5 @@
-import { CREATE_POST, FETCH_POST, FETCH_POSTS, UPDATE_POST, CHANGE_EVENT_RESPONSE, CHANGE_EVENT_RESPONSE_PENDING } from '../actions'
-import { filter, omit, findWhere, without } from 'lodash'
+import { CREATE_POST, FETCH_POST, FETCH_POSTS, UPDATE_POST, CHANGE_EVENT_RESPONSE_PENDING } from '../actions'
+import { omit, findWhere, without } from 'lodash'
 
 const normalize = post => ({
   ...post,
@@ -22,7 +22,7 @@ const changeEventResponse = (post, response, user) => {
   if (!meInResponders || meInResponders.response !== response) {
     responders.push({id: user.id, name: user.name, avatar_url: user.avatar_url, response: response})
   }
-  return Object.assign({}, post, { responders: responders })
+  return {...post, ...{ responders }}
 }
 
 export default function (state = {}, action) {
@@ -48,9 +48,6 @@ export default function (state = {}, action) {
       post = state[id]
       var { response, user } = meta
       return {...state, [id]: changeEventResponse(post, response, user)}
-    case CHANGE_EVENT_RESPONSE:
-      return state
   }
-
   return state
 }

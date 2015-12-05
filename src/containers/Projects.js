@@ -1,11 +1,14 @@
 import React from 'react'
 import { prefetch } from 'react-fetcher'
 import { connect } from 'react-redux'
-import { compose } from 'redux'
+import { FETCH_PROJECTS } from '../actions'
 import { fetchProjects } from '../actions/fetchProjects'
 import { humanDate } from '../util/text'
 import Avatar from '../components/Avatar'
 const Masonry = require('../components/Masonry')(React)
+const { array, bool, func, number } = React.PropTypes
+import { throttle } from 'lodash'
+import { isAtBottom } from '../util/scrolling'
 
 const spacer = <span>&nbsp;&nbsp;•&nbsp;&nbsp;</span>
 
@@ -34,26 +37,53 @@ const ProjectCard = props => {
   </div>
 }
 
-const Projects = props => {
-  return <div>
-    <h2>Projects</h2>
-    <div className='project-card-container'>
-      <Masonry options={{transitionDuration: 0}}>
-        {props.projects.map(p => <div className='project-card-wrapper' key={p.id}>
-          <ProjectCard project={p}/>
-        </div>)}
-      </Masonry>
-    </div>
-  </div>
-}
-
+const subject = 'all'
 const cacheId = 'all'
 
-export default compose(
-  prefetch(({ dispatch }) => {
-    return dispatch(fetchProjects({subject: 'all', cacheId}))
-  }),
-  connect(({ projectsByQuery, projects }) => ({
-    projects: (projectsByQuery[cacheId] || []).map(id => projects[id])
-  }))
-)(Projects)
+@prefetch(({ dispatch }) => {
+  return dispatch(fetchProjects({subject, cacheId}))
+})
+@connect(({ projectsByQuery, totalProjectsByQuery, projects, pending }) => ({
+  projects: (projectsByQuery[cacheId] || []).map(id => projects[id]),
+  total: totalProjectsByQuery[cacheId],
+  pending: pending[FETCH_PROJECTS]
+}))
+export default class Projects extends React.Component {
+  static propTypes = {
+    projects: array,
+    dispatch: func,
+    total: number,
+    pending: bool
+  }
+
+  handleScrollEvents = throttle(event => {
+    event.preventDefault()
+    let { dispatch, projects, pending, total } = this.props
+    let offset = projects.length
+    if (isAtBottom(250) && !pending && offset < total) {
+      dispatch(fetchProjects({subject, offset, cacheId}))
+    }
+  }, 50)
+
+  componentDidMount () {
+    window.addEventListener('scroll', this.handleScrollEvents)
+  }
+
+  componentWillUnmount () {
+    window.removeEventListener('scroll', this.handleScrollEvents)
+  }
+
+  render () {
+    let { projects } = this.props
+    return <div>
+      <h2>Projects</h2>
+      <div className='project-card-container'>
+        <Masonry options={{transitionDuration: 0}}>
+          {projects.map(p => <div className='project-card-wrapper' key={p.id}>
+            <ProjectCard project={p}/>
+          </div>)}
+        </Masonry>
+      </div>
+    </div>
+  }
+}

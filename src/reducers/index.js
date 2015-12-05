@@ -20,6 +20,7 @@ import {
   FETCH_PEOPLE,
   FETCH_PERSON,
   FETCH_POSTS,
+  FETCH_PROJECTS,
   LOGIN,
   LOGOUT,
   NAVIGATE,
@@ -211,6 +212,17 @@ export default combineReducers({
     switch (type) {
       case FETCH_PEOPLE:
         return {...state, [meta.cache.id]: Number(payload.people_total)}
+    }
+    return state
+  },
+
+  totalProjectsByQuery: (state = {}, action) => {
+    if (action.error) return state
+
+    let { type, payload, meta } = action
+    switch (type) {
+      case FETCH_PROJECTS:
+        return {...state, [meta.cache.id]: Number(payload.projects_total)}
     }
     return state
   }

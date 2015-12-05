@@ -1,10 +1,9 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import PostList from '../components/PostList'
-import { FETCH_POSTS } from '../actions'
 import { fetchPosts } from '../actions/fetchPosts'
 import { debug } from '../util/logging'
-import { createCacheId, cleanAndStringify } from '../util/caching'
+import { createCacheId, cleanAndStringify, connectedListProps } from '../util/caching'
 import { navigate } from '../actions'
 import { isEqual } from 'lodash'
 const { array, bool, func, number, object, string } = React.PropTypes
@@ -21,14 +20,7 @@ export const refetch = (opts, { dispatch, location: { query, pathname } }, defau
   dispatch(navigate(newPath))
 }
 
-@connect(({ posts, postsByQuery, totalPostsByQuery, pending }, { subject, id, query }) => {
-  let cacheId = createCacheId(subject, id, query)
-  return {
-    posts: (postsByQuery[cacheId] || []).map(id => posts[id]),
-    total: totalPostsByQuery[cacheId],
-    pending: pending[FETCH_POSTS]
-  }
-})
+@connect((state, props) => connectedListProps(state, props, 'posts'))
 export class ConnectedPostList extends React.Component {
   static propTypes = {
     subject: string.isRequired,

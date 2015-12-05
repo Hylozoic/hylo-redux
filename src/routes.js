@@ -10,6 +10,7 @@ import CommunityProfile from './containers/CommunityProfile'
 import CommunityPosts from './containers/community/CommunityPosts'
 import CommunityMembers from './containers/community/CommunityMembers'
 import CommunityEvents from './containers/community/CommunityEvents'
+import CommunityProjects from './containers/community/CommunityProjects'
 import AboutCommunity from './containers/community/AboutCommunity'
 import PersonPosts from './containers/person/PersonPosts'
 import AboutPerson from './containers/person/AboutPerson'
@@ -39,6 +40,7 @@ export default function makeRoutes (store) {
       <IndexRoute component={CommunityPosts}/>
       <Route path='members' component={CommunityMembers}/>
       <Route path='events' component={CommunityEvents}/>
+      <Route path='projects' component={CommunityProjects}/>
       <Route path='about' component={AboutCommunity}/>
     </Route>
     <Route path='p/:id' component={SinglePost}/>

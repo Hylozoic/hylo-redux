@@ -30,7 +30,7 @@ export default class CommunityProfile extends React.Component {
         <ul className='tabs'>
           <li><IndexA to={`/c/${slug}`}>Posts</IndexA></li>
           <li><A to={`/c/${slug}/events`}>Events</A></li>
-          <li><a>Projects</a></li>
+          <li><A to={`/c/${slug}/projects`}>Projects</A></li>
           <li><A to={`/c/${slug}/members`}>Members</A></li>
           <li><A to={`/c/${slug}/about`}>About</A></li>
         </ul>

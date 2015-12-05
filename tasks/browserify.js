@@ -45,7 +45,7 @@ var watch = function () {
 
   b.on('update', update)
 
-  return update
+  return update()
 }
 
 var bundle = function () {

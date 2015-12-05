@@ -1,7 +1,6 @@
 import { flatten, uniq } from 'lodash'
 import { debug } from '../util/logging'
-import { FETCH_COMMUNITY, FETCH_POST, FETCH_CURRENT_USER } from '../actions'
-import { FETCH_POSTS } from '../actions/fetchPosts'
+import { FETCH_POSTS, FETCH_COMMUNITY, FETCH_POST, FETCH_CURRENT_USER } from '../actions'
 
 const update = (state, communities) => {
   // merge with existing data so that we don't replace a long list of

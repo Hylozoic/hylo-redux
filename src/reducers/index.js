@@ -7,26 +7,43 @@ import postsInProgress from './postsInProgress'
 import postsByQuery from './postsByQuery'
 import posts from './posts'
 import communities from './communities'
+import { UPDATE_PATH } from 'redux-simple-router'
 
 import {
-  FETCH_CURRENT_USER,
-  FETCH_PERSON,
-  FETCH_COMMENTS,
+  CANCEL_TYPEAHEAD,
   CREATE_COMMENT,
+  CREATE_POST,
+  FETCH_COMMENTS,
+  FETCH_CURRENT_USER,
+  FETCH_PEOPLE,
+  FETCH_PERSON,
+  FETCH_POSTS,
   LOGIN,
-  SET_LOGIN_ERROR,
   LOGOUT,
   NAVIGATE,
+  SET_LOGIN_ERROR,
+  TOGGLE_MAIN_MENU,
   TYPEAHEAD,
-  CANCEL_TYPEAHEAD
+  UPDATE_POST,
+  UPLOAD_IMAGE
 } from '../actions'
 
-// TODO maybe all the constants should be in one file
-import { FETCH_POSTS } from '../actions/fetchPosts'
-import { FETCH_PEOPLE } from '../actions/fetchPeople'
-import { UPLOAD_IMAGE } from '../actions/uploadImage'
-
 export default combineReducers({
+  mainMenuOpened: (state = false, action) => {
+    let { error, type } = action
+    if (error) return state
+
+    switch (type) {
+      case TOGGLE_MAIN_MENU:
+        return !state
+      case NAVIGATE:
+      case UPDATE_PATH:
+        return false
+    }
+
+    return state
+  },
+
   errors: (state = {}, action) => {
     let { error, type, payload, meta } = action
     if (!error) return state
@@ -131,6 +148,8 @@ export default combineReducers({
     return toggle(FETCH_POSTS) ||
       toggle(FETCH_PEOPLE) ||
       toggle(UPLOAD_IMAGE) ||
+      toggle(CREATE_POST) ||
+      toggle(UPDATE_POST) ||
       state
   },
 
@@ -155,12 +174,12 @@ export default combineReducers({
     let { error, type } = action
     if (error || !contains([TYPEAHEAD, CANCEL_TYPEAHEAD], type)) return state
 
-    let { payload, meta: { context } } = action
+    let { payload, meta: { id } } = action
     switch (type) {
       case TYPEAHEAD:
-        return {...state, [context]: payload}
+        return {...state, [id]: payload}
       case CANCEL_TYPEAHEAD:
-        return {...state, [context]: []}
+        return {...state, [id]: []}
     }
 
     return state

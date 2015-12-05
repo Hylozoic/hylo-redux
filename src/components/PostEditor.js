@@ -7,16 +7,22 @@ because they make more sense.
 */
 
 import React from 'react'
-import { contains, curry, filter, find, startsWith } from 'lodash'
+import { contains, filter, find, isEmpty, startsWith } from 'lodash'
 import cx from 'classnames'
 import TagInput from './TagInput'
 import Dropdown from './Dropdown'
 import RichTextEditor from './RichTextEditor'
 import { connect } from 'react-redux'
-import { typeahead, updatePostEditor, createPost, updatePost, cancelPostEdit, removeImage } from '../actions'
-import { uploadImage, UPLOAD_IMAGE } from '../actions/uploadImage'
-import { uploadDoc, UPLOAD_DOC } from '../actions/uploadDoc'
+import {
+  typeahead, updatePostEditor, createPost, updatePost, cancelPostEdit,
+  removeImage, removeDoc
+} from '../actions'
+import { uploadImage } from '../actions/uploadImage'
+import { uploadDoc } from '../actions/uploadDoc'
 import { attachmentParams } from '../util/shims'
+import truncate from 'html-truncate'
+import { CREATE_POST, UPDATE_POST, UPLOAD_IMAGE } from '../actions'
+import { personTemplate } from '../util/mentions'
 const { array, bool, func, object, string } = React.PropTypes
 
 const postTypes = ['chat', 'request', 'offer', 'intention', 'event']
@@ -39,25 +45,22 @@ const postTypeData = {
   }
 }
 
-const NEW_POST_CONTEXT = 'new'
+const NEW_POST_PLACEHOLDER_ID = 'new'
 
 @connect((state, { community, post }) => {
-  let communities, context
-  if (post) {
-    context = post.id
-  } else {
-    communities = community ? [community.id] : []
-    context = NEW_POST_CONTEXT
-  }
+  let id = post ? post.id : NEW_POST_PLACEHOLDER_ID
+  let postInProgress = state.postsInProgress[id] || {}
+
+  // FIXME: this one attribute in postInProgress isn't actually a post attribute
+  let { expanded } = postInProgress
 
   return {
-    communities,
+    id,
+    postInProgress,
+    expanded,
     mentionChoices: state.typeaheadMatches.post,
     currentUser: state.people.current,
-    ...state.postsInProgress[context],
-    context,
-    imagePending: state.pending[UPLOAD_IMAGE],
-    docPending: state.pending[UPLOAD_DOC]
+    saving: state.pending[CREATE_POST] || state.pending[UPDATE_POST]
   }
 })
 export default class PostEditor extends React.Component {
@@ -67,34 +70,32 @@ export default class PostEditor extends React.Component {
     mentionChoices: array,
     currentUser: object,
     post: object,
-    context: string.isRequired,
-    imagePending: bool,
-    docPending: bool,
-    // post attributes below -- maybe nest these?
-    name: string,
-    type: string,
-    description: string,
-    location: string,
+    id: string.isRequired,
+    postInProgress: object,
     community: object,
-    communities: array,
-    public: bool,
-    media: array
+    saving: bool
   }
 
   updateStore (data) {
-    let { context, dispatch } = this.props
-    dispatch(updatePostEditor(data, context))
+    let { id, dispatch } = this.props
+    dispatch(updatePostEditor(data, id))
   }
 
   selectType = (type, event) =>
     this.updateStore({type: type})
 
-  expand = () =>
-    this.props.expanded || this.updateStore({expanded: true})
+  expand = () => {
+    if (this.props.expanded) return
+    this.updateStore({expanded: true})
+
+    // initialize the communities list when opening the editor in a community
+    let { community, postInProgress: { communities } } = this.props
+    if (community && isEmpty(communities)) this.addCommunity(community)
+  }
 
   cancel = () => {
-    let { dispatch, context, post } = this.props
-    if (context === NEW_POST_CONTEXT) {
+    let { dispatch, id, post } = this.props
+    if (id === NEW_POST_PLACEHOLDER_ID) {
       this.updateStore({expanded: false})
     } else {
       dispatch(cancelPostEdit(post.id))
@@ -106,21 +107,32 @@ export default class PostEditor extends React.Component {
 
   setDescription = event => this.updateStore({description: event.target.value})
 
+  addCommunity = community => {
+    let { communities } = this.props.postInProgress
+    this.updateStore({communities: (communities || []).concat(community.id)})
+  }
+
   setLocation = event => this.updateStore({location: event.target.value})
 
-  addCommunity = community =>
-    this.updateStore({communities: this.props.communities.concat(community.id)})
-
-  removeCommunity = community =>
-    this.updateStore({communities: filter(this.props.communities, cid => cid !== community.id)})
+  removeCommunity = community => {
+    let { communities } = this.props.postInProgress
+    this.updateStore({communities: filter(communities, cid => cid !== community.id)})
+  }
 
   togglePublic = () =>
-    this.updateStore({public: !this.props.public})
+    this.updateStore({public: !this.props.postInProgress.public})
 
   validate () {
-    if (!this.props.name) {
+    let { postInProgress } = this.props
+
+    if (!postInProgress.name) {
       window.alert('The title of a post cannot be blank.')
       this.refs.name.focus()
+      return
+    }
+
+    if (isEmpty(postInProgress.communities)) {
+      window.alert('Please pick at least one community.')
       return
     }
 
@@ -135,22 +147,22 @@ export default class PostEditor extends React.Component {
     // immediately after typing in the description field, we have to wait for props
     // to update from the store
     setTimeout(() => {
-      let {
-        dispatch, context, post,
-        name, description, type, location, communities, media
-      } = this.props
+      let { dispatch, post, postInProgress } = this.props
+
+      postInProgress = {
+        ...postInProgress,
+        type: postInProgress.type || 'chat'
+      }
 
       let params = {
-        name, description, communities, location,
-        type: type || 'chat',
-        public: this.props.public,
-        ...attachmentParams(post && post.media, media)
+        ...postInProgress,
+        ...attachmentParams(post && post.media, postInProgress.media)
       }
 
       if (post) {
         dispatch(updatePost(post.id, params))
       } else {
-        dispatch(createPost(params, context))
+        dispatch(createPost(params))
       }
     })
   }
@@ -158,7 +170,7 @@ export default class PostEditor extends React.Component {
   findCommunities = term => {
     if (!term) return
 
-    let { currentUser, communities } = this.props
+    let { currentUser, postInProgress: { communities } } = this.props
     var match = c =>
       startsWith(c.name.toLowerCase(), term.toLowerCase()) &&
       !contains(communities, c.id)
@@ -166,61 +178,23 @@ export default class PostEditor extends React.Component {
     return filter(currentUser.memberships.map(m => m.community), match)
   }
 
-  mentionTemplate = person => {
-    return <a data-user-id={person.id} href={'/u/' + person.id}>{person.name}</a>
-  }
-
-  mentionTypeahead = text => {
-    if (text) {
-      this.props.dispatch(typeahead({text: text, context: 'post'}))
-    } else {
-      this.props.dispatch(typeahead({cancel: true, context: 'post'}))
-    }
-  }
-
-  attachImage = () => {
-    let { currentUser, context, dispatch } = this.props
-
-    dispatch(uploadImage({
-      context,
-      path: `user/${currentUser.id}/seeds`,
-      convert: {width: 800, format: 'jpg', fit: 'max', rotate: 'exif'}
-    }))
-  }
-
-  removeImage = () => {
-    let { context, dispatch } = this.props
-    dispatch(removeImage(context))
-  }
-
-  attachDoc = () => {
-    let { dispatch, context } = this.props
-    dispatch(uploadDoc(context))
-  }
-
   render () {
-    let {
-      name, description, location, expanded, communities, post, imagePending, media
-    } = this.props
+    let { expanded, post, postInProgress, dispatch } = this.props
+    let { name, description, communities, type, location } = postInProgress
+    if (!type) type = 'chat'
 
-    var selectedType = this.props.type || 'chat'
-    var placeholder = postTypeData[selectedType].placeholder
-    let image = find(media, m => m.type === 'image')
-
-    let isEvent = this.props.type === 'event'
-
-    return <div className={cx('post-editor', 'clearfix', {expanded: expanded})}>
+    return <div className={cx('post-editor', 'clearfix', {expanded})}>
       {post && <h3>Editing Post</h3>}
       <ul className='left post-types'>
-        {postTypes.map(type => <li key={type}
-          className={cx('post-type', type, {selected: type === selectedType})}
-          onClick={curry(this.selectType)(type)}>
-          {type}
+        {postTypes.map(t => <li key={t}
+          className={cx('post-type', t, {selected: t === type})}
+          onClick={() => this.selectType(t)}>
+          {t}
         </li>)}
       </ul>
 
       <input type='text' ref='name' className='title form-control'
-        placeholder={placeholder}
+        placeholder={postTypeData[type].placeholder}
         onFocus={this.expand} value={name} onChange={this.setName}/>
 
       {expanded && <div>
@@ -228,12 +202,12 @@ export default class PostEditor extends React.Component {
         <RichTextEditor className='details'
           content={description}
           onChange={this.setDescription}
-          mentionTemplate={this.mentionTemplate}
-          mentionTypeahead={this.mentionTypeahead}
+          mentionTemplate={personTemplate}
+          mentionTypeahead={text => dispatch(typeahead(text, 'post'))}
           mentionChoices={this.props.mentionChoices}
           mentionSelector='[data-user-id]'/>
 
-        {isEvent && <div className='input-row'>
+        {type === 'event' && <div className='input-row'>
           <label>
             <p>Location (Optional)</p>
             <input type='text' ref='location' className='location form-control'
@@ -249,7 +223,7 @@ export default class PostEditor extends React.Component {
           onRemove={this.removeCommunity}/>
 
         <label className='visibility'>
-          <input type='checkbox' value={this.props.public} onChange={this.togglePublic}/>
+          <input type='checkbox' value={postInProgress.public} onChange={this.togglePublic}/>
           &nbsp;
           Make this post publicly visible
         </label>
@@ -257,31 +231,96 @@ export default class PostEditor extends React.Component {
         <div className='buttons'>
           <div className='right'>
             <button onClick={this.cancel}>Cancel</button>
-            <button className='btn-primary' onClick={this.save}>
+            <button className='btn-primary' onClick={this.save} disabled={this.props.saving}>
               {post ? 'Save Changes' : 'Post'}
             </button>
           </div>
 
-          {imagePending
-            ? <button disabled>Please wait...</button>
-            : image
-              ? <Dropdown className='change-image' toggleChildren={
-                  <span>
-                    Change Image
-                    <img src={image.url} className='image-thumbnail'/>
-                  </span>
-                }>
-                  <li><a onClick={this.removeImage}>Remove Image</a></li>
-                  <li><a onClick={this.attachImage}>Attach Another</a></li>
-                </Dropdown>
-
-              : <button onClick={this.attachImage}>
-                  Attach Image
-                </button>}
-
-          <button onClick={this.attachDoc}>Attach File with Google Drive</button>
+          <AttachmentButtons id={this.props.id} media={postInProgress.media}
+            path={`user/${this.props.currentUser.id}/seeds`}/>
         </div>
       </div>}
+    </div>
+  }
+}
+
+@connect(state => ({imagePending: state.pending[UPLOAD_IMAGE]}))
+class AttachmentButtons extends React.Component {
+  static propTypes = {
+    imagePending: bool,
+    dispatch: func,
+    id: string,
+    media: array,
+    path: string
+  }
+
+  attachImage = () => {
+    let { id, dispatch, path } = this.props
+
+    dispatch(uploadImage({
+      id,
+      path,
+      convert: {width: 800, format: 'jpg', fit: 'max', rotate: 'exif'}
+    }))
+  }
+
+  removeImage = () => {
+    let { id, dispatch } = this.props
+    dispatch(removeImage(id))
+  }
+
+  attachDoc = () => {
+    let { id, dispatch } = this.props
+    dispatch(uploadDoc(id))
+  }
+
+  removeDoc = doc => {
+    let { id, dispatch } = this.props
+    dispatch(removeDoc(doc, id))
+  }
+
+  render () {
+    let { imagePending, media } = this.props
+    let image = find(media, m => m.type === 'image')
+    let docs = filter(media, m => m.type === 'gdoc')
+
+    return <div>
+      {imagePending
+        ? <button disabled>Please wait...</button>
+        : image
+          ? <Dropdown className='button change-image' toggleChildren={
+              <span>
+                <img src={image.url} className='image-thumbnail'/>
+                Change Image <span className='caret'></span>
+              </span>
+            }>
+              <li><a onClick={this.removeImage}>Remove Image</a></li>
+              <li><a onClick={this.attachImage}>Attach Another</a></li>
+            </Dropdown>
+
+          : <button onClick={this.attachImage}>
+              Attach Image
+            </button>}
+
+      {!isEmpty(docs)
+        ? <Dropdown className='button change-docs' toggleChildren={
+            <span>
+              Attachments ({docs.length}) <span className='caret'></span>
+            </span>
+          }>
+            {docs.map(doc => <li key={doc.url}>
+              <a target='_blank' href={doc.url}>
+                <img src={doc.thumbnail_url}/>
+                {truncate(doc.name, 40)}
+              </a>
+              <a className='remove' onClick={() => this.removeDoc(doc)}>&times;</a>
+            </li>)}
+            <li role='separator' className='divider'></li>
+            <li><a onClick={this.attachDoc}>Attach Another</a></li>
+          </Dropdown>
+        : <button onClick={this.attachDoc}>
+            Attach File with Google Drive
+          </button>}
     </div>
   }
 }
@@ -289,7 +328,7 @@ export default class PostEditor extends React.Component {
 // post.communities is a list of ids, but the tag input needs
 // names and icons as well, so this component does the mapping
 @connect(({ communities }, { ids }) => ({
-  communities: ids.map(id => find(communities, c => c.id === id))
+  communities: (ids || []).map(id => find(communities, c => c.id === id))
 }))
 class CommunityTagInput extends React.Component {
   static propTypes = {

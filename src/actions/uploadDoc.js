@@ -1,12 +1,14 @@
 import { init } from '../client/GooglePicker'
+import { UPLOAD_DOC } from './index'
 
-export const UPLOAD_DOC = 'UPLOAD_DOC'
+const normalize = ({ url, name, iconUrl }) =>
+  ({url, name, thumbnail_url: iconUrl, type: 'gdoc'})
 
-export function uploadDoc (context) {
+export function uploadDoc (id) {
   let payload = new Promise((resolve, reject) => {
-    init({onPick: resolve})
+    init({onPick: doc => resolve(normalize(doc))})
     .then(picker => picker.setVisible(true))
   })
 
-  return {type: UPLOAD_DOC, payload, meta: {context}}
+  return {type: UPLOAD_DOC, payload, meta: {id}}
 }

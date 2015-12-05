@@ -1,6 +1,5 @@
 import { cleanAndStringify } from '../util/caching'
-
-export const FETCH_POSTS = 'FETCH_POSTS'
+import { FETCH_POSTS } from './index'
 
 export function fetchPosts (opts) {
   let { subject, id, limit, offset, type, sort, search, filter, cacheId } = opts

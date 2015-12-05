@@ -170,7 +170,7 @@ const ExpandedPostDetails = props => {
       {attachments.map((file, i) =>
         <a key={i} className='attachment' href={file.url} target='_blank' title={file.name}>
           <img src={file.thumbnail_url}/>
-          {truncate(file.name, 30)}
+          {truncate(file.name, 40)}
         </a>)}
     </div>}
 

@@ -1,7 +1,6 @@
 require('../support')
 import posts from '../../src/reducers/posts'
-import { FETCH_POSTS } from '../../src/actions/fetchPosts'
-import { UPDATE_POST } from '../../src/actions'
+import { FETCH_POSTS, UPDATE_POST } from '../../src/actions'
 
 describe('posts', () => {
   describe('on FETCH_POSTS', () => {
@@ -31,7 +30,7 @@ describe('posts', () => {
       let action = {
         type: UPDATE_POST,
         meta: {
-          context: 'a',
+          id: 'a',
           params: {name: 'through the woods'}
         }
       }
@@ -53,8 +52,13 @@ describe('posts', () => {
       let action = {
         type: UPDATE_POST,
         meta: {
-          context: 'a',
-          params: {imageUrl: 'http://new.com/new.png'}
+          id: 'a',
+          params: {
+            media: [
+              {type: 'gdoc', url: 'http://bar.com/doc.txt'},
+              {type: 'image', url: 'http://new.com/new.png'}
+            ]
+          }
         }
       }
 
@@ -87,8 +91,8 @@ describe('posts', () => {
       let action = {
         type: UPDATE_POST,
         meta: {
-          context: 'a',
-          params: {imageUrl: 'http://new.com/new.png', imageRemoved: true}
+          id: 'a',
+          params: {media: [{type: 'gdoc', url: 'http://bar.com/doc.txt'}]}
         }
       }
 
@@ -120,8 +124,8 @@ describe('posts', () => {
       let action = {
         type: UPDATE_POST,
         meta: {
-          context: 'a',
-          params: {imageUrl: 'http://new.com/new.png'}
+          id: 'a',
+          params: {media: [{type: 'image', url: 'http://new.com/new.png'}]}
         }
       }
 

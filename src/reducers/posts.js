@@ -1,5 +1,4 @@
-import { FETCH_POSTS } from '../actions/fetchPosts'
-import { CREATE_POST, FETCH_POST, UPDATE_POST, CHANGE_EVENT_RESPONSE, CHANGE_EVENT_RESPONSE_PENDING } from '../actions'
+import { CREATE_POST, FETCH_POST, FETCH_POSTS, UPDATE_POST, CHANGE_EVENT_RESPONSE, CHANGE_EVENT_RESPONSE_PENDING } from '../actions'
 import { filter, omit, findWhere, without } from 'lodash'
 
 const normalize = post => ({
@@ -8,25 +7,10 @@ const normalize = post => ({
 })
 
 const normalizeUpdate = (post, params) => {
-  let { imageUrl, imageRemoved } = params
-  let media = post.media || []
-
-  if (imageRemoved) {
-    return {
-      ...post,
-      ...omit(params, 'imageRemoved', 'imageUrl'),
-      media: filter(media, m => m.type !== 'image')
-    }
-  } else if (imageUrl) {
-    let image = {type: 'image', url: imageUrl}
-    return {
-      ...post,
-      ...omit(params, 'imageUrl'),
-      media: media.filter(m => m.type !== 'image').concat(image)
-    }
+  return {
+    ...post,
+    ...omit(params, 'imageUrl', 'imageRemoved', 'docs', 'removedDocs')
   }
-
-  return {...post, ...params}
 }
 
 const changeEventResponse = (post, response, user) => {
@@ -56,14 +40,14 @@ export default function (state = {}, action) {
     case FETCH_POST:
       return {...state, [payload.id]: normalize(payload)}
     case UPDATE_POST:
-      var { params, context } = meta
-      var post = state[context]
-      return {...state, [context]: normalizeUpdate(post, params)}
+      let { params, id } = meta
+      let post = state[id]
+      return {...state, [id]: normalizeUpdate(post, params)}
     case CHANGE_EVENT_RESPONSE_PENDING:
-      context = meta.context
-      post = state[context]
+      id = meta.id
+      post = state[id]
       var { response, user } = meta
-      return {...state, [context]: changeEventResponse(post, response, user)}
+      return {...state, [id]: changeEventResponse(post, response, user)}
     case CHANGE_EVENT_RESPONSE:
       return state
   }

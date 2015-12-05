@@ -23,6 +23,9 @@
 .post-title-text() {
   .proxima-nova-regular;
   font-size: 17px;
+  .mobile({
+    font-size: 16px;
+  })
 }
 
 .post-type-text() {
@@ -30,6 +33,10 @@
   text-transform: uppercase;
   font-size: 13px;
   letter-spacing: 2.4px;
+  .mobile({
+    font-size: 11px;
+    letter-spacing: 1px;
+  })
 }
 
 .semibold() {
@@ -44,6 +51,14 @@
 .meta-text() {
   color: @gray-text;
   font-size: 13px;
+}
+
+h2 {
+  .proxima-nova-semibold;
+  font-size: 30px;
+  .mobile({
+    font-size: 22px;
+  })
 }
 
 h3 {

@@ -11,7 +11,7 @@ const TopNav = (props) => {
         <i className='icon-hylo-script'></i>
       </li>
       <li>
-        <a onClick={toggleMenu} className={cx({active: mainMenuOpened})}>
+        <a onClick={toggleMenu} className={cx('visible-xs', {active: mainMenuOpened})}>
           Menu <span className='caret'></span>
         </a>
       </li>

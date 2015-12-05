@@ -9,3 +9,17 @@ export function appendUniq (state, key, data) {
     [key]: uniq(existing.concat(data), (v, i) => v.id)
   }
 }
+
+export function addIdsToState (state, key, objects) {
+  return {
+    ...state,
+    [key]: uniq((state[key] || []).concat(objects.map(p => p.id)))
+  }
+}
+
+export function hashById (objects, transform) {
+  return objects.reduce((m, x) => {
+    m[x.id] = transform ? transform(x) : x
+    return m
+  }, {})
+}

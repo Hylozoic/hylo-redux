@@ -1,5 +1,6 @@
-import { contains, pairs, uniq } from 'lodash'
+import { contains, pairs } from 'lodash'
 import qs from 'querystring'
+import { addIdsToState } from './util'
 
 import {
   CREATE_POST,
@@ -13,11 +14,7 @@ export default function (state = {}, action) {
   let { type, payload, meta } = action
   switch (type) {
     case FETCH_POSTS:
-      let { cache } = meta
-      return {
-        ...state,
-        [cache.id]: uniq((state[cache.id] || []).concat(payload.posts.map(p => p.id)))
-      }
+      return addIdsToState(state, meta.cache.id, payload.posts)
     case CREATE_POST:
       let post = payload
       let slugs = post.communities.map(c => c.slug)

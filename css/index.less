@@ -255,7 +255,6 @@ nav {
   h2 {
     width: 100%;
     text-align: center;
-    .proxima-nova-semibold;
     .outlined-text(rgba(0, 0, 0, 0.7));
     margin-bottom: 20px;
   }
@@ -832,5 +831,58 @@ ul.tags {
         margin-bottom: 0;
       }
     }
+  }
+}
+
+.project-card-container {
+  margin-left: -7.5px;
+  margin-right: -7.5px;
+}
+
+.project-card-wrapper {
+  padding: 0 7.5px 15px;
+  width: 33.3%;
+  float: left;
+}
+
+.project-card {
+  border: 1px solid @light-gray-border;
+  border-radius: @border-radius-base;
+  margin: 0;
+
+  .image {
+    border-top-left-radius: @border-radius-base;
+    border-top-right-radius: @border-radius-base;
+    width: 100%;
+    .fluid-height(61.8%);
+    background-size: cover;
+    background-position: center;
+  }
+
+  .content {
+    padding: 15px 15px 10px;
+
+    h4 {
+      margin-top: 0;
+    }
+
+    .avatar {
+      float: left;
+      margin-right: 10px;
+    }
+
+    .name {
+      .semibold;
+    }
+  }
+
+  .image + .content {
+    padding-top: 6px;
+  }
+
+  .footer {
+    border-top: 1px solid @light-gray-border;
+    text-align: center;
+    padding: 8px 0;
   }
 }

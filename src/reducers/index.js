@@ -6,6 +6,8 @@ import { contains, uniq } from 'lodash'
 import postsInProgress from './postsInProgress'
 import postsByQuery from './postsByQuery'
 import posts from './posts'
+import projectsByQuery from './projectsByQuery'
+import projects from './projects'
 import communities from './communities'
 import { UPDATE_PATH } from 'redux-simple-router'
 
@@ -18,6 +20,7 @@ import {
   FETCH_PEOPLE,
   FETCH_PERSON,
   FETCH_POSTS,
+  FETCH_PROJECTS,
   LOGIN,
   LOGOUT,
   NAVIGATE,
@@ -136,6 +139,8 @@ export default combineReducers({
   posts,
   postsByQuery,
   postsInProgress,
+  projects,
+  projectsByQuery,
 
   pending: (state = {}, action) => {
     let { type } = action
@@ -150,6 +155,7 @@ export default combineReducers({
       toggle(UPLOAD_IMAGE) ||
       toggle(CREATE_POST) ||
       toggle(UPDATE_POST) ||
+      toggle(FETCH_PROJECTS) ||
       state
   },
 
@@ -207,6 +213,17 @@ export default combineReducers({
     switch (type) {
       case FETCH_PEOPLE:
         return {...state, [meta.cache.id]: Number(payload.people_total)}
+    }
+    return state
+  },
+
+  totalProjectsByQuery: (state = {}, action) => {
+    if (action.error) return state
+
+    let { type, payload, meta } = action
+    switch (type) {
+      case FETCH_PROJECTS:
+        return {...state, [meta.cache.id]: Number(payload.projects_total)}
     }
     return state
   }

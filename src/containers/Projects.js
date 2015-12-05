@@ -3,8 +3,7 @@ import { prefetch } from 'react-fetcher'
 import { connect } from 'react-redux'
 import { FETCH_PROJECTS } from '../actions'
 import { fetchProjects } from '../actions/fetchProjects'
-const Masonry = require('../components/Masonry')(React)
-import ProjectCard from '../components/ProjectCard'
+import ProjectCardContainer from '../components/ProjectCardContainer'
 const { array, bool, func, number } = React.PropTypes
 import { throttle } from 'lodash'
 import { isAtBottom } from '../util/scrolling'
@@ -49,13 +48,7 @@ export default class Projects extends React.Component {
     let { projects } = this.props
     return <div>
       <h2>Projects</h2>
-      <div className='project-card-container'>
-        <Masonry options={{transitionDuration: 0}}>
-          {projects.map(p => <div className='project-card-wrapper' key={p.id}>
-            <ProjectCard project={p}/>
-          </div>)}
-        </Masonry>
-      </div>
+      <ProjectCardContainer projects={projects}/>
     </div>
   }
 }

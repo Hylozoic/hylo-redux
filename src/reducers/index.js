@@ -155,6 +155,7 @@ export default combineReducers({
       toggle(UPLOAD_IMAGE) ||
       toggle(CREATE_POST) ||
       toggle(UPDATE_POST) ||
+      toggle(FETCH_PROJECTS) ||
       state
   },
 

@@ -5,6 +5,7 @@ import { compose } from 'redux'
 import { fetchProjects } from '../actions/fetchProjects'
 import { humanDate } from '../util/text'
 import Avatar from '../components/Avatar'
+const Masonry = require('../components/Masonry')(React)
 
 const spacer = <span>&nbsp;&nbsp;•&nbsp;&nbsp;</span>
 
@@ -37,9 +38,11 @@ const Projects = props => {
   return <div>
     <h2>Projects</h2>
     <div className='project-card-container'>
-      {props.projects.map(p => <div className='project-card-wrapper' key={p.id}>
-        <ProjectCard project={p}/>
-      </div>)}
+      <Masonry options={{transitionDuration: 0}}>
+        {props.projects.map(p => <div className='project-card-wrapper' key={p.id}>
+          <ProjectCard project={p}/>
+        </div>)}
+      </Masonry>
     </div>
   </div>
 }

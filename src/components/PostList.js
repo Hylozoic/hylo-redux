@@ -1,7 +1,6 @@
-import { throttle } from 'lodash'
-import { isAtBottom } from '../util/scrolling'
 import React from 'react'
 import Post from './Post'
+import ScrollListener from './ScrollListener'
 
 const { array, bool, func } = React.PropTypes
 
@@ -17,25 +16,12 @@ class PostList extends React.Component {
     this.state = {expanded: null}
   }
 
-  handleScrollEvents = throttle(event => {
-    event.preventDefault()
-    if (isAtBottom(250)) this.props.loadMore()
-  }, 50)
-
-  componentDidMount () {
-    window.addEventListener('scroll', this.handleScrollEvents)
-  }
-
-  componentWillUnmount () {
-    window.removeEventListener('scroll', this.handleScrollEvents)
-  }
-
   expand = (id) => {
     this.setState({expanded: id})
   }
 
   render () {
-    let { posts, pending } = this.props
+    let { posts, pending, loadMore } = this.props
 
     if (!pending && posts.length === 0) {
       return <div className='no-posts'>No results.</div>
@@ -46,6 +32,7 @@ class PostList extends React.Component {
       {posts.map(p => <li key={p.id}>
         <Post post={p} expanded={p.id === this.state.expanded} onExpand={this.expand}/>
       </li>)}
+      <ScrollListener onBottom={loadMore}/>
     </ul>
   }
 }

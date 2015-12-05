@@ -1,5 +1,6 @@
 import React from 'react'
 import { Link } from 'react-router'
+import cx from 'classnames'
 const { object, func } = React.PropTypes
 import { filter } from 'lodash'
 import Avatar from './Avatar'
@@ -48,15 +49,15 @@ export default class RSVPControl extends React.Component {
     return (
       <div className='rsvp-controls post-section'>
         <div className='btn-group buttons'>
-          <button type='button' onClick={eventResponseClicked('yes')} className={'rsvp-yes btn btn-default ' + (eventResponse === 'yes' ? 'active' : '')}>
+          <button type='button' onClick={eventResponseClicked('yes')} className={cx('rsvp-yes', 'btn', 'btn-default', {'active': eventResponse === 'yes'})}>
             Going
             {yeses.length > 0 && ` (${yeses.length})`}
           </button>
-          <button type='button' onClick={eventResponseClicked('maybe')} className={'rsvp-maybe btn btn-default ' + (eventResponse === 'maybe' ? 'active' : '')}>
+          <button type='button' onClick={eventResponseClicked('maybe')} className={cx('rsvp-maybe', 'btn', 'btn-default', {'active': eventResponse === 'maybe'})}>
             Maybe
             {maybes.length > 0 && ` (${maybes.length})`}
           </button>
-          <button type='button' onClick={eventResponseClicked('no')} className={'rsvp-no btn btn-default ' + (eventResponse === 'no' ? 'active' : '')}>
+          <button type='button' onClick={eventResponseClicked('no')} className={cx('rsvp-no', 'btn', 'btn-default', {'active': eventResponse === 'no'})}>
             {"Can't Go"}
             {nos.length > 0 && ` (${nos.length})`}
           </button>

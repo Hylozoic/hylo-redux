@@ -16,3 +16,9 @@ const blankOrDefault = (defaults = commonDefaults) => (value, key) => {
 // TODO: sort output by key name
 export const cleanAndStringify = (opts, defaults) =>
   qs.stringify(omit(opts, blankOrDefault(defaults)))
+
+export const createCacheId = (subject, id, query = {}) => {
+  let { type, sort, search, filter } = query
+  let cacheId = cleanAndStringify({subject, id, type, sort, search, filter})
+  return cacheId
+}

@@ -4,16 +4,10 @@ import PostList from '../components/PostList'
 import { FETCH_POSTS } from '../actions'
 import { fetchPosts } from '../actions/fetchPosts'
 import { debug } from '../util/logging'
-import { cleanAndStringify } from '../util/caching'
+import { createCacheId, cleanAndStringify } from '../util/caching'
 import { navigate } from '../actions'
 import { isEqual } from 'lodash'
 const { array, bool, func, number, object, string } = React.PropTypes
-
-const createCacheId = (subject, id, query = {}) => {
-  let { type, sort, search, filter } = query
-  let cacheId = cleanAndStringify({subject, id, type, sort, search, filter})
-  return cacheId
-}
 
 export const fetch = (subject, id, query = {}) => {
   let { type } = query

@@ -4,7 +4,7 @@ import { connect } from 'react-redux'
 import { debounce } from 'lodash'
 import { FETCH_PEOPLE } from '../../actions'
 import { fetchPeople } from '../../actions/fetchPeople'
-import { cleanAndStringify } from '../../util/caching'
+import { createCacheId, cleanAndStringify } from '../../util/caching'
 import A from '../../components/A'
 import ScrollListener from '../../components/ScrollListener'
 import { debug } from '../../util/logging'
@@ -12,11 +12,6 @@ import { navigate } from '../../actions'
 const { array, bool, func, number, object } = React.PropTypes
 
 const subject = 'community'
-
-const createCacheId = (subject, id, query = {}) => {
-  let { search } = query
-  return cleanAndStringify({subject, id, search})
-}
 
 const fetch = (id, query) => {
   let cacheId = createCacheId(subject, id, query)

@@ -4,9 +4,8 @@ import { connect } from 'react-redux'
 import { FETCH_PROJECTS } from '../actions'
 import { fetchProjects } from '../actions/fetchProjects'
 import ProjectCardContainer from '../components/ProjectCardContainer'
+import ScrollListener from '../components/ScrollListener'
 const { array, bool, func, number } = React.PropTypes
-import { throttle } from 'lodash'
-import { isAtBottom } from '../util/scrolling'
 
 const subject = 'all'
 const cacheId = 'all'
@@ -27,21 +26,12 @@ export default class Projects extends React.Component {
     pending: bool
   }
 
-  handleScrollEvents = throttle(event => {
-    event.preventDefault()
+  loadMore = () => {
     let { dispatch, projects, pending, total } = this.props
     let offset = projects.length
-    if (isAtBottom(250) && !pending && offset < total) {
+    if (!pending && offset < total) {
       dispatch(fetchProjects({subject, offset, cacheId}))
     }
-  }, 50)
-
-  componentDidMount () {
-    window.addEventListener('scroll', this.handleScrollEvents)
-  }
-
-  componentWillUnmount () {
-    window.removeEventListener('scroll', this.handleScrollEvents)
   }
 
   render () {
@@ -49,6 +39,7 @@ export default class Projects extends React.Component {
     return <div>
       <h2>Projects</h2>
       <ProjectCardContainer projects={projects}/>
+      <ScrollListener onBottom={this.loadMore}/>
     </div>
   }
 }

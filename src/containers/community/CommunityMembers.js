@@ -5,8 +5,8 @@ import { debounce } from 'lodash'
 import { FETCH_PEOPLE } from '../../actions'
 import { fetchPeople } from '../../actions/fetchPeople'
 import { cleanAndStringify } from '../../util/caching'
-import { isAtBottom } from '../../util/scrolling'
 import A from '../../components/A'
+import ScrollListener from '../../components/ScrollListener'
 import { debug } from '../../util/logging'
 import { navigate } from '../../actions'
 const { array, bool, func, number, object } = React.PropTypes
@@ -40,19 +40,6 @@ export default class CommunityMembers extends React.Component {
     total: number,
     params: object,
     location: object
-  }
-
-  componentDidMount () {
-    window.addEventListener('scroll', this.handleScrollEvents)
-  }
-
-  componentWillUnmount () {
-    window.removeEventListener('scroll', this.handleScrollEvents)
-  }
-
-  handleScrollEvents = event => {
-    event.preventDefault()
-    if (isAtBottom(250)) this.loadMore()
   }
 
   loadMore = () => {
@@ -92,6 +79,7 @@ export default class CommunityMembers extends React.Component {
           </div>
         </div>)}
       </div>
+      <ScrollListener onBottom={this.loadMore}/>
     </div>
   }
 }

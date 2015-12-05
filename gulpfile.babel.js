@@ -5,6 +5,7 @@ import config from './config'
 import browserify from './tasks/browserify'
 import less from './tasks/less'
 import { spawn } from 'child_process'
+import { debounce } from 'lodash'
 
 gulp.task('watch-js', () => browserify.watch())
 gulp.task('bundle-dist-js', browserify.bundle)
@@ -19,13 +20,11 @@ gulp.task('serve', function () {
   })
 })
 
-gulp.task('test', function () {
-  let cmd = 'env LOG_LEVEL=warn npm test -- -R progress'.split(' ')
-  spawn(cmd[0], cmd.slice(1, cmd.length), {stdio: 'inherit'})
-})
-
 gulp.task('autotest', function () {
-  gulp.watch(['src/**/*', 'test/**/*'], ['test'])
+  gulp.watch(['src/**/*', 'test/**/*'], debounce(function () {
+    let cmd = 'env LOG_LEVEL=warn npm test -- -R progress'.split(' ')
+    spawn(cmd[0], cmd.slice(1, cmd.length), {stdio: 'inherit'})
+  }, 500, true))
 })
 
 gulp.task('watch', function () {

@@ -1,5 +1,6 @@
 import { CREATE_POST, FETCH_POST, FETCH_POSTS, UPDATE_POST } from '../actions'
 import { omit } from 'lodash'
+import { hashById } from './util'
 
 const normalize = post => ({
   ...post,
@@ -19,11 +20,7 @@ export default function (state = {}, action) {
 
   switch (type) {
     case FETCH_POSTS:
-      let posts = payload.posts.reduce((m, p) => {
-        m[p.id] = normalize(p)
-        return m
-      }, {})
-      return {...state, ...posts}
+      return {...state, ...hashById(payload.posts, normalize)}
     case CREATE_POST:
     case FETCH_POST:
       return {...state, [payload.id]: normalize(payload)}

@@ -6,6 +6,8 @@ import { contains, uniq } from 'lodash'
 import postsInProgress from './postsInProgress'
 import postsByQuery from './postsByQuery'
 import posts from './posts'
+import projectsByQuery from './projectsByQuery'
+import projects from './projects'
 import communities from './communities'
 import { UPDATE_PATH } from 'redux-simple-router'
 
@@ -136,6 +138,8 @@ export default combineReducers({
   posts,
   postsByQuery,
   postsInProgress,
+  projects,
+  projectsByQuery,
 
   pending: (state = {}, action) => {
     let { type } = action

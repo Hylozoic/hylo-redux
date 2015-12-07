@@ -166,7 +166,7 @@ const ExpandedPostDetails = props => {
 
     {post.type === 'event' && <RSVPControl
       responders={post.responders}
-      currentResponse={(filter(post.responders, responder => responder.id === currentUser.id)[0] || {response: ''}).response}
+      currentResponse={(find(post.responders, responder => responder.id === currentUser.id) || {response: ''}).response}
       onPickResponse={choice => dispatch(changeEventResponse(post.id, choice, currentUser))} />}
 
     {!isEmpty(attachments) && <div className='post-section'>

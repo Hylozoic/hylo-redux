@@ -36,12 +36,12 @@ export default class ProjectProfile extends React.Component {
     }
 
     return <div id='project'>
-      <div className='header'>
+      <div className='project-header'>
         <div className='col-sm-12'>
           <h2>{project.title}</h2>
         </div>
 
-        <div className='main col-sm-8'>
+        <div className='col-sm-8'>
           <h4 className='intention'>Core Intention: {project.intention}</h4>
           {video_url
             ? <div className='visual'><Video url={video_url}/></div>
@@ -56,27 +56,38 @@ export default class ProjectProfile extends React.Component {
           <ul>
             <li>
               <Avatar person={user}/>
-              <span>
-                Created by&nbsp;
-                <strong><A to={`/u/${user.id}`}>{user.name}</A></strong>
-              </span>
+              <div>
+                Created by <A to={`/u/${user.id}`}>{user.name}</A>
+              </div>
             </li>
             <li>
               <img src={community.avatar_url} className='logo'/>
-              <span>
-                Based out of <strong><A to={`/c/${community.slug}`}>{community.name}</A></strong>
-              </span>
+              <div>
+                Based out of <A to={`/c/${community.slug}`}>{community.name}</A>
+              </div>
             </li>
           </ul>
         </div>
-
-        <ul className='tabs'>
-          <li><A to={`/project/${id}/${slug}`}>Posts</A></li>
-          <li><A to={`/project/${id}/${slug}/contributors`}>Contributors</A></li>
-        </ul>
       </div>
 
-      <div style={{border: '1px solid red'}}>{this.props.children}</div>
+      <ul className='tabs'>
+        <li>
+          <A to={`/project/${id}/${slug}`}>
+            <h3>Posts</h3>
+            <p>Communicate and share</p>
+          </A>
+        </li>
+        <li>
+          <A to={`/project/${id}/${slug}/contributors`}>
+            <h3>Contributors</h3>
+            <p>See who's involved</p>
+          </A>
+        </li>
+      </ul>
+
+      <div className='tab-content'>
+        {this.props.children}
+      </div>
     </div>
   }
 }

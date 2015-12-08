@@ -7,7 +7,7 @@ because they make more sense.
 */
 
 import React from 'react'
-import { contains, filter, find, isEmpty, startsWith } from 'lodash'
+import { contains, filter, find, isEmpty, omit, startsWith } from 'lodash'
 import cx from 'classnames'
 import TagInput from './TagInput'
 import Dropdown from './Dropdown'
@@ -47,8 +47,12 @@ const postTypeData = {
 
 const NEW_POST_PLACEHOLDER_ID = 'new'
 
-@connect((state, { community, post }) => {
-  let id = post ? post.id : NEW_POST_PLACEHOLDER_ID
+@connect((state, { community, post, project }) => {
+  let id = post
+    ? post.id
+    : project
+      ? `project-${project.id}-new`
+      : NEW_POST_PLACEHOLDER_ID
   let postInProgress = state.postsInProgress[id] || {}
 
   // FIXME: this one attribute in postInProgress isn't actually a post attribute
@@ -73,7 +77,8 @@ export default class PostEditor extends React.Component {
     id: string.isRequired,
     postInProgress: object,
     community: object,
-    saving: bool
+    saving: bool,
+    project: object
   }
 
   updateStore (data) {
@@ -94,12 +99,8 @@ export default class PostEditor extends React.Component {
   }
 
   cancel = () => {
-    let { dispatch, id, post } = this.props
-    if (id === NEW_POST_PLACEHOLDER_ID) {
-      this.updateStore({expanded: false})
-    } else {
-      dispatch(cancelPostEdit(post.id))
-    }
+    let { dispatch, id } = this.props
+    dispatch(cancelPostEdit(id))
   }
 
   setName = event =>
@@ -123,7 +124,7 @@ export default class PostEditor extends React.Component {
     this.updateStore({public: !this.props.postInProgress.public})
 
   validate () {
-    let { postInProgress } = this.props
+    let { postInProgress, project } = this.props
 
     if (!postInProgress.name) {
       window.alert('The title of a post cannot be blank.')
@@ -131,7 +132,7 @@ export default class PostEditor extends React.Component {
       return
     }
 
-    if (isEmpty(postInProgress.communities)) {
+    if (!project && isEmpty(postInProgress.communities)) {
       window.alert('Please pick at least one community.')
       return
     }
@@ -147,23 +148,20 @@ export default class PostEditor extends React.Component {
     // immediately after typing in the description field, we have to wait for props
     // to update from the store
     setTimeout(() => {
-      let { dispatch, post, postInProgress } = this.props
+      let { dispatch, post, postInProgress, project, id } = this.props
 
       postInProgress = {
-        ...postInProgress,
+        ...omit(postInProgress, 'expanded'),
         type: postInProgress.type || 'chat'
       }
 
       let params = {
         ...postInProgress,
-        ...attachmentParams(post && post.media, postInProgress.media)
+        ...attachmentParams(post && post.media, postInProgress.media),
+        projectId: project ? project.id : null
       }
 
-      if (post) {
-        dispatch(updatePost(post.id, params))
-      } else {
-        dispatch(createPost(params))
-      }
+      dispatch((post ? updatePost : createPost)(id, params))
     })
   }
 
@@ -179,7 +177,7 @@ export default class PostEditor extends React.Component {
   }
 
   render () {
-    let { expanded, post, postInProgress, dispatch } = this.props
+    let { expanded, post, postInProgress, dispatch, project } = this.props
     let { name, description, communities, type, location } = postInProgress
     if (!type) type = 'chat'
 
@@ -216,11 +214,13 @@ export default class PostEditor extends React.Component {
           </label>
         </div>}
 
-        <h3 className='communities-header'>Communities</h3>
-        <CommunityTagInput ids={communities}
-          getChoices={this.findCommunities}
-          onSelect={this.addCommunity}
-          onRemove={this.removeCommunity}/>
+        {!project && <div>
+          <h3 className='communities-header'>Communities</h3>
+          <CommunityTagInput ids={communities}
+            getChoices={this.findCommunities}
+            onSelect={this.addCommunity}
+            onRemove={this.removeCommunity}/>
+        </div>}
 
         <label className='visibility'>
           <input type='checkbox' value={postInProgress.public} onChange={this.togglePublic}/>

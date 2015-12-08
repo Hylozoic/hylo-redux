@@ -34,7 +34,7 @@
     linear-gradient(to bottom, @clear, @clear, @clear, @dark1, @dark3);
 }
 
-.has-bottom-triangle(@color: @off-white) {
+.has-bottom-triangle(@color: @off-white, @border-color: @off-white) {
   position: relative;
   &:after {
     content: '';
@@ -46,8 +46,8 @@
     height: @side-length * 2;
     margin-left: -@side-length;
     bottom: -@side-length;
-    border-top: 1px solid @color;
-    border-left: 1px solid @color;
+    border-top: 1px solid @border-color;
+    border-left: 1px solid @border-color;
     background-color: @color;
     transform: rotate(45deg);
     -webkit-transform: rotate(45deg);

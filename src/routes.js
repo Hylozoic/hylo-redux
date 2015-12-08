@@ -17,6 +17,7 @@ import AboutPerson from './containers/person/AboutPerson'
 import SinglePost from './containers/SinglePost'
 import ProjectProfile from './containers/project/ProjectProfile'
 import ProjectPosts from './containers/project/ProjectPosts'
+import ProjectContributors from './containers/project/ProjectContributors'
 import { debug } from './util/logging'
 
 export default function makeRoutes (store) {
@@ -48,6 +49,7 @@ export default function makeRoutes (store) {
     <Route path='p/:id' component={SinglePost}/>
     <Route path='project/:id/:slug' component={ProjectProfile}>
       <IndexRoute component={ProjectPosts}/>
+      <Route path='contributors' component={ProjectContributors}/>
     </Route>
   </Route>
 }

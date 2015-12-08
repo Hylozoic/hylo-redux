@@ -12,8 +12,6 @@ import {
   UPLOAD_IMAGE
 } from '../actions'
 
-import { NEW_POST_PLACEHOLDER_ID } from '../components/PostEditor'
-
 const stateWithImage = (state, id, url) => {
   let post = state[id]
   let media = (post.media || []).filter(m => m.type !== 'image')
@@ -54,7 +52,6 @@ export default function (state = {}, action) {
         [id]: {...state[id], ...payload}
       }
     case CREATE_POST:
-      return {...state, [NEW_POST_PLACEHOLDER_ID]: null}
     case UPDATE_POST:
     case CANCEL_POST_EDIT:
       return {...state, [id]: null}

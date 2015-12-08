@@ -124,10 +124,12 @@ export function updatePostEditor (payload, id) {
   }
 }
 
-export function createPost (params) {
+// id refers to the id of the editing context, e.g. 'project-5-new'
+export function createPost (id, params) {
   return {
     type: CREATE_POST,
-    payload: {api: true, params, path: '/noo/post', method: 'POST'}
+    payload: {api: true, params, path: '/noo/post', method: 'POST'},
+    meta: {id}
   }
 }
 

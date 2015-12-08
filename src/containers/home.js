@@ -2,12 +2,13 @@ import React from 'react'
 import { prefetch } from 'react-fetcher'
 import { compose } from 'redux'
 import { connect } from 'react-redux'
-import { fetch, refetch, ConnectedPostList } from './ConnectedPostList'
+import { fetch, ConnectedPostList } from './ConnectedPostList'
+import { refetch } from '../util/caching'
 import PostEditor from '../components/PostEditor'
 import PostListControls from '../components/PostListControls'
 
 const makeComponent = (subject, title, showEditor) => props => {
-  let { location: { query }, currentUser: { id } } = props
+  let { dispatch, location: { query }, currentUser: { id } } = props
   let { type, sort, search } = query
 
   return <div>
@@ -16,7 +17,7 @@ const makeComponent = (subject, title, showEditor) => props => {
         <h2>{title}</h2>
       </div>
       <div className='col-sm-6'>
-        <PostListControls onChange={opts => refetch(opts, props)}
+        <PostListControls onChange={opts => dispatch(refetch(opts, props.location))}
           type={type} sort={sort} search={search}/>
       </div>
     </div>

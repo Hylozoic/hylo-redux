@@ -1,7 +1,8 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { prefetch } from 'react-fetcher'
-import { fetch, refetch, ConnectedPostList } from '../ConnectedPostList'
+import { fetch, ConnectedPostList } from '../ConnectedPostList'
+import { refetch } from '../../util/caching'
 import PostListControls from '../../components/PostListControls'
 import { compose } from 'redux'
 const { func, object } = React.PropTypes
@@ -9,11 +10,11 @@ const { func, object } = React.PropTypes
 const subject = 'person'
 
 const PersonPosts = props => {
-  let { params: { id }, location: { query } } = props
+  let { dispatch, params: { id }, location: { query } } = props
   let { type, sort, search } = query
 
   return <div>
-    <PostListControls onChange={opts => refetch(opts, props)}
+    <PostListControls onChange={opts => dispatch(refetch(opts, props.location))}
       type={type} sort={sort} search={search}/>
     <ConnectedPostList {...{subject, id, query}}/>
   </div>

@@ -1,26 +1,18 @@
 import React from 'react'
 import { prefetch } from 'react-fetcher'
 import { connect } from 'react-redux'
-import { FETCH_PROJECTS } from '../../actions'
 import { fetchProjects } from '../../actions/fetchProjects'
 import ProjectCardContainer from '../../components/ProjectCardContainer'
 import ScrollListener from '../../components/ScrollListener'
-import { cleanAndStringify } from '../../util/caching'
+import { fetchWithCache, connectedListProps } from '../../util/caching'
 const { array, bool, func, number, object } = React.PropTypes
 
 const subject = 'community'
+const fetch = fetchWithCache(fetchProjects)
 
-@prefetch(({ dispatch, params: { id } }) => {
-  let cacheId = cleanAndStringify({subject, id})
-  return dispatch(fetchProjects({subject, id, cacheId}))
-})
-@connect(({ projectsByQuery, totalProjectsByQuery, projects, pending }, { params: { id } }) => {
-  let cacheId = cleanAndStringify({subject, id})
-  return {
-    projects: (projectsByQuery[cacheId] || []).map(id => projects[id]),
-    total: totalProjectsByQuery[cacheId],
-    pending: pending[FETCH_PROJECTS]
-  }
+@prefetch(({ dispatch, params: { id }, query }) => dispatch(fetch(subject, id, query)))
+@connect((state, { params: { id }, location: { query } }) => {
+  return connectedListProps(state, {subject, id, query}, 'projects')
 })
 export default class CommunityProjects extends React.Component {
   static propTypes = {
@@ -28,15 +20,15 @@ export default class CommunityProjects extends React.Component {
     dispatch: func,
     total: number,
     pending: bool,
-    params: object
+    params: object,
+    location: object
   }
 
   loadMore = () => {
-    let { dispatch, projects, pending, total, params: { id } } = this.props
+    let { projects, dispatch, total, pending, params: { id }, location: { query } } = this.props
     let offset = projects.length
     if (!pending && offset < total) {
-      let cacheId = cleanAndStringify({subject, id})
-      dispatch(fetchProjects({subject, id, offset, cacheId}))
+      dispatch(fetch(subject, id, {...query, offset}))
     }
   }
 

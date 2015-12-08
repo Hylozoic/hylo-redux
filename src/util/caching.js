@@ -1,6 +1,6 @@
 import qs from 'querystring'
 import { capitalize, contains, omit } from 'lodash'
-import { FETCH_POSTS } from '../actions'
+import { navigate, FETCH_POSTS, FETCH_PROJECTS, FETCH_PEOPLE } from '../actions'
 
 const commonDefaults = {
   type: ['all+welcome', 'all'],
@@ -18,7 +18,7 @@ const blankOrDefault = (defaults = commonDefaults) => (value, key) => {
 export const cleanAndStringify = (opts, defaults) =>
   qs.stringify(omit(opts, blankOrDefault(defaults)))
 
-export const createCacheId = (subject, id, query = {}) => {
+const createCacheId = (subject, id, query = {}) => {
   let { type, sort, search, filter } = query
   let cacheId = cleanAndStringify({subject, id, type, sort, search, filter})
   return cacheId
@@ -29,6 +29,12 @@ export const connectedListProps = (state, props, itemType) => {
   switch (itemType) {
     case 'posts':
       actionType = FETCH_POSTS
+      break
+    case 'projects':
+      actionType = FETCH_PROJECTS
+      break
+    case 'people':
+      actionType = FETCH_PEOPLE
       break
     default:
       throw new Error(`unknown item type: ${itemType}`)
@@ -44,4 +50,16 @@ export const connectedListProps = (state, props, itemType) => {
     total: state[itemCountKey][cacheId],
     pending: state.pending[actionType]
   }
+}
+
+export const fetchWithCache = action => (subject, id, query = {}) => {
+  let cacheId = createCacheId(subject, id, query)
+  return action({subject, id, limit: 20, ...query, cacheId})
+}
+
+export const refetch = (opts, location, defaults) => {
+  let { query, pathname } = location
+  let newQuery = cleanAndStringify({...query, ...opts}, defaults)
+  let newPath = `${pathname}${newQuery ? '?' + newQuery : ''}`
+  return navigate(newPath)
 }

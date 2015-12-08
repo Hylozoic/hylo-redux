@@ -1,45 +1,54 @@
 import React from 'react'
-import { prefetch } from 'react-fetcher'
 import { connect } from 'react-redux'
-import { FETCH_PROJECTS } from '../actions'
-import { fetchProjects } from '../actions/fetchProjects'
-import ProjectCardContainer from '../components/ProjectCardContainer'
-import ScrollListener from '../components/ScrollListener'
-const { array, bool, func, number } = React.PropTypes
+import { prefetch } from 'react-fetcher'
+import { debounce } from 'lodash'
+import { fetch, ConnectedProjectList } from './ConnectedProjectList'
+import { refetch } from '../util/caching'
+import Select from '../components/Select'
+const { func, object } = React.PropTypes
 
 const subject = 'all'
-const cacheId = 'all'
+const id = 'me' // just a placeholder; value isn't meaningful
 
-@prefetch(({ dispatch }) => {
-  return dispatch(fetchProjects({subject, cacheId}))
-})
-@connect(({ projectsByQuery, totalProjectsByQuery, projects, pending }) => ({
-  projects: (projectsByQuery[cacheId] || []).map(id => projects[id]),
-  total: totalProjectsByQuery[cacheId],
-  pending: pending[FETCH_PROJECTS]
-}))
+const projectTypes = [
+  {name: 'All projects', id: 'all'},
+  {name: 'Projects I started or joined', id: 'mine'}
+]
+
+@prefetch(({ dispatch, params, query }) => dispatch(fetch(subject, id, query)))
+@connect()
 export default class Projects extends React.Component {
   static propTypes = {
-    projects: array,
     dispatch: func,
-    total: number,
-    pending: bool
+    location: object
   }
 
-  loadMore = () => {
-    let { dispatch, projects, pending, total } = this.props
-    let offset = projects.length
-    if (!pending && offset < total) {
-      dispatch(fetchProjects({subject, offset, cacheId}))
-    }
+  changeQuery = opts => {
+    let { dispatch, location } = this.props
+    dispatch(refetch(opts, location))
   }
 
   render () {
-    let { projects } = this.props
+    let { location: { query } } = this.props
+    let { type, search } = query || {}
+    let selectedType = type ? projectTypes.find(t => t.id === type) : projectTypes[0]
+
     return <div>
-      <h2>Projects</h2>
-      <ProjectCardContainer projects={projects}/>
-      <ScrollListener onBottom={this.loadMore}/>
+      <div className='row'>
+        <div className='col-sm-6'>
+          <h2>Projects</h2>
+        </div>
+        <div className='col-sm-6 list-controls'>
+          <input type='text' className='form-control search'
+            placeholder='Search' defaultValue={search}
+            onChange={debounce(event => this.changeQuery({search: event.target.value}), 500)}/>
+
+          <Select className='type' choices={projectTypes} selected={selectedType}
+            onChange={t => this.changeQuery({type: t.id})} alignRight={true}/>
+        </div>
+      </div>
+
+      <ConnectedProjectList {...{subject, id, query}}/>
     </div>
   }
 }

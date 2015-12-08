@@ -2,7 +2,8 @@ import React from 'react'
 import { prefetch } from 'react-fetcher'
 import { connect } from 'react-redux'
 import { compose } from 'redux'
-import { fetch, refetch, ConnectedPostList } from '../../containers/ConnectedPostList'
+import { fetch, ConnectedPostList } from '../../containers/ConnectedPostList'
+import { refetch } from '../../util/caching'
 import cx from 'classnames'
 const { func, object } = React.PropTypes
 
@@ -14,8 +15,8 @@ const setDefaults = query => {
 }
 
 const CommunityEvents = props => {
-  let { params: { id }, location: { query } } = props
-  query = setDefaults(query)
+  let { params: { id }, location } = props
+  let query = setDefaults(query.location)
 
   let showingPast = query.filter !== 'future'
 
@@ -32,11 +33,11 @@ const CommunityEvents = props => {
       filter: 'future'
     }
 
-    refetch(setDefaults({filter}), props, querystringDefaults)
+    refetch(setDefaults({filter}), location, querystringDefaults)
   }
 
   return <div>
-    <div className='post-list-controls'>
+    <div className='list-controls'>
       <button className={cx({active: showingPast})} onClick={toggleShowPast}>
         Show past events
       </button>

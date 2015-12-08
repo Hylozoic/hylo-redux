@@ -2,34 +2,23 @@ import React from 'react'
 import { prefetch } from 'react-fetcher'
 import { connect } from 'react-redux'
 import { debounce } from 'lodash'
-import { FETCH_PEOPLE } from '../../actions'
 import { fetchPeople } from '../../actions/fetchPeople'
-import { createCacheId, cleanAndStringify } from '../../util/caching'
+import { fetchWithCache, connectedListProps, refetch } from '../../util/caching'
 import A from '../../components/A'
 import ScrollListener from '../../components/ScrollListener'
 import { debug } from '../../util/logging'
-import { navigate } from '../../actions'
 const { array, bool, func, number, object } = React.PropTypes
 
 const subject = 'community'
+const fetch = fetchWithCache(fetchPeople)
 
-const fetch = (id, query) => {
-  let cacheId = createCacheId(subject, id, query)
-  return fetchPeople({subject, id, cacheId, limit: 20, ...query})
-}
-
-@prefetch(({ dispatch, params: { id }, query }) => dispatch(fetch(id, query)))
-@connect(({ people, peopleByQuery, totalPeopleByQuery, pending }, { params, location }) => {
-  let cacheId = createCacheId(subject, params.id, location.query)
-  return {
-    members: (peopleByQuery[cacheId] || []).map(id => people[id]),
-    total: totalPeopleByQuery[cacheId],
-    pending: pending[FETCH_PEOPLE]
-  }
+@prefetch(({ dispatch, params: { id }, query }) => dispatch(fetch(subject, id, query)))
+@connect((state, { params: { id }, location: { query } }) => {
+  return connectedListProps(state, {subject, id, query}, 'people')
 })
 export default class CommunityMembers extends React.Component {
   static propTypes = {
-    members: array,
+    people: array,
     pending: bool,
     dispatch: func,
     total: number,
@@ -38,33 +27,31 @@ export default class CommunityMembers extends React.Component {
   }
 
   loadMore = () => {
-    let { members, dispatch, total, pending, params, location } = this.props
-    if (total && members.length >= total || pending) return
-
-    let offset = members.length
-    dispatch(fetch(params.id, {...location.query, offset}))
+    let { people, dispatch, total, pending, params: { id }, location: { query } } = this.props
+    let offset = people.length
+    if (!pending && offset < total) {
+      dispatch(fetch(subject, id, {...query, offset}))
+    }
   }
 
-  updateQuery = debounce(opts => {
-    let { dispatch, location: { query, pathname } } = this.props
-    let newQuery = cleanAndStringify({...query, ...opts})
-    let newPath = `${pathname}${newQuery ? '?' + newQuery : ''}`
-    dispatch(navigate(newPath))
-  }, 500)
+  updateQuery = opts => {
+    let { dispatch, location } = this.props
+    dispatch(refetch(opts, location))
+  }
 
   render () {
-    let { pending, members, total, location: { query } } = this.props
+    let { pending, people, total, location: { query } } = this.props
     let { search } = query
-    debug(`members: ${members.length} / ${total || '??'}`)
+    debug(`people: ${people.length || 0} / ${total || '??'}`)
 
     return <div className='members'>
       <input type='text' className='form-control search'
         placeholder='Search'
         defaultValue={search}
-        onChange={event => this.updateQuery({search: event.target.value})}/>
+        onChange={debounce(event => this.updateQuery({search: event.target.value}), 500)}/>
       {pending && <div className='loading'>Loading...</div>}
       <div className='member-cards'>
-        {members.map(person => <div key={person.id} className='member'>
+        {people.map(person => <div key={person.id} className='member'>
           <div key={person.id} className='member-card'>
             <A to={`/u/${person.id}`}>
               <div className='large-avatar' style={{backgroundImage: `url(${person.avatar_url})`}}/>

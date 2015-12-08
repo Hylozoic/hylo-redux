@@ -4,6 +4,7 @@ import ScrollListener from '../components/ScrollListener'
 import { connectedListProps, fetchWithCache } from '../util/caching'
 import { fetchProjects } from '../actions/fetchProjects'
 import { connect } from 'react-redux'
+import { isEmpty } from 'lodash'
 const { array, bool, func, number, object, string } = React.PropTypes
 
 export const fetch = fetchWithCache(fetchProjects)
@@ -29,8 +30,9 @@ export class ConnectedProjectList extends React.Component {
   }
 
   render () {
-    let { projects } = this.props
+    let { projects, pending } = this.props
     return <div>
+      {!pending && isEmpty(projects) && <div>No projects.</div>}
       <ProjectCardContainer projects={projects}/>
       <ScrollListener onBottom={this.loadMore}/>
     </div>

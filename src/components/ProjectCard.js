@@ -1,6 +1,7 @@
 import React from 'react'
 import { humanDate } from '../util/text'
 import Avatar from '../components/Avatar'
+import A from '../components/A'
 
 const spacer = <span>&nbsp;&nbsp;•&nbsp;&nbsp;</span>
 
@@ -9,11 +10,12 @@ const ProjectCard = props => {
   let image = project.image_url || project.thumbnail_url
   let person = project.user
   let { contributor_count, open_request_count, created_at, title, intention } = project
+  let projectUrl = `/project/${project.id}/${project.slug}`
 
   return <div className='project-card'>
-    {image && <div className='image' style={{backgroundImage: `url(${image})`}}></div>}
+    {image && <A to={projectUrl} className='image' style={{backgroundImage: `url(${image})`}}/>}
     <div className='content'>
-      <h4>{title}</h4>
+      <h4><A to={projectUrl}>{title}</A></h4>
       <p>{intention}</p>
       <Avatar person={person}/>
       <span className='name'>{person.name}</span>

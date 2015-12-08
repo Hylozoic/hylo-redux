@@ -10,6 +10,7 @@ export const FETCH_PEOPLE = 'FETCH_PEOPLE'
 export const FETCH_PERSON = 'FETCH_PERSON'
 export const FETCH_POST = 'FETCH_POST'
 export const FETCH_POSTS = 'FETCH_POSTS'
+export const FETCH_PROJECT = 'FETCH_PROJECT'
 export const FETCH_PROJECTS = 'FETCH_PROJECTS'
 export const LOGIN = 'LOGIN'
 export const LOGOUT = 'LOGOUT'
@@ -140,7 +141,8 @@ export function clearCache (bucket, id) {
 export function fetchPost (id) {
   return {
     type: FETCH_POST,
-    payload: {api: true, path: `/noo/post/${id}`}
+    payload: {api: true, path: `/noo/post/${id}`},
+    meta: {cache: {id, bucket: 'posts'}}
   }
 }
 
@@ -190,4 +192,12 @@ export function changeEventResponse (id, response, user) {
 
 export function toggleMainMenu () {
   return {type: TOGGLE_MAIN_MENU}
+}
+
+export function fetchProject (id) {
+  return {
+    type: FETCH_PROJECT,
+    payload: {api: true, path: `/noo/project/${id}`},
+    meta: {cache: {id, bucket: 'projects'}}
+  }
 }

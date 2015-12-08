@@ -1,4 +1,4 @@
-import { FETCH_PROJECTS } from '../actions'
+import { FETCH_PROJECT, FETCH_PROJECTS } from '../actions'
 import { hashById } from './util'
 
 export default function (state = {}, action) {
@@ -8,6 +8,8 @@ export default function (state = {}, action) {
   switch (type) {
     case FETCH_PROJECTS:
       return {...state, ...hashById(payload.projects)}
+    case FETCH_PROJECT:
+      return {...state, [payload.id]: payload}
   }
 
   return state

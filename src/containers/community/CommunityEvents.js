@@ -15,8 +15,8 @@ const setDefaults = query => {
 }
 
 const CommunityEvents = props => {
-  let { params: { id }, location } = props
-  let query = setDefaults(query.location)
+  let { params: { id }, location, dispatch } = props
+  let query = setDefaults(location.query)
 
   let showingPast = query.filter !== 'future'
 
@@ -33,7 +33,7 @@ const CommunityEvents = props => {
       filter: 'future'
     }
 
-    refetch(setDefaults({filter}), location, querystringDefaults)
+    dispatch(refetch(setDefaults({filter}), location, querystringDefaults))
   }
 
   return <div>

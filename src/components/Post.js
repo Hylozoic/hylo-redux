@@ -11,8 +11,9 @@ import Dropdown from './Dropdown'
 import Comment from './Comment'
 import CommentForm from './CommentForm'
 import PostEditor from './PostEditor'
+import RSVPControl from './RSVPControl'
 import { connect } from 'react-redux'
-import { fetchComments, createComment, startPostEdit } from '../actions'
+import { fetchComments, createComment, startPostEdit, changeEventResponse } from '../actions'
 
 const spacer = <span>&nbsp;&nbsp;•&nbsp;&nbsp;</span>
 
@@ -150,7 +151,7 @@ export default class Post extends React.Component {
 
 const ExpandedPostDetails = props => {
   let {
-    post, image, comments, commentsExpanded,
+    post, image, comments, commentsExpanded, currentUser, dispatch,
     commentingDisabled, onCommentCreate, communities
   } = props
   let description = present(sanitize(post.description))
@@ -162,6 +163,11 @@ const ExpandedPostDetails = props => {
 
     {description && <div className='details post-section'
       dangerouslySetInnerHTML={{__html: description}}/>}
+
+    {post.type === 'event' && <RSVPControl
+      responders={post.responders}
+      currentResponse={(find(post.responders, responder => responder.id === currentUser.id) || {response: ''}).response}
+      onPickResponse={choice => dispatch(changeEventResponse(post.id, choice, currentUser))} />}
 
     {!isEmpty(attachments) && <div className='post-section'>
       {attachments.map((file, i) =>

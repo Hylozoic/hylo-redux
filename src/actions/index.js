@@ -177,6 +177,17 @@ export function removeDoc (payload, id) {
   }
 }
 
+export const CHANGE_EVENT_RESPONSE = 'CHANGE_EVENT_RESPONSE'
+export const CHANGE_EVENT_RESPONSE_PENDING = 'CHANGE_EVENT_RESPONSE_PENDING'
+
+export function changeEventResponse (id, response, user) {
+  return {
+    type: CHANGE_EVENT_RESPONSE,
+    payload: {api: true, params: {response: response}, path: `/noo/post/${id}/respond`, method: 'POST'},
+    meta: {id: id, response: response, user: user}
+  }
+}
+
 export function toggleMainMenu () {
   return {type: TOGGLE_MAIN_MENU}
 }

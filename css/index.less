@@ -326,7 +326,7 @@ ul.posts {
       float: left;
       margin-right: 10px;
     }
-    margin-bottom: 15px;
+    margin-bottom: 6px;
   }
 
   .image {
@@ -415,6 +415,78 @@ ul.posts {
 
     .full-image {
       width: 100%;
+    }
+
+    .rsvp-controls {
+      padding-top: 15px;
+      padding-bottom: 10px;
+      border-top: 1px solid #ddd;
+      border-bottom: 1px solid #ddd;
+
+      .buttons {
+        margin-bottom: 10px;
+
+        button {
+          margin-right: 0px;
+
+          &.rsvp-yes {
+            width: 100px;
+          }
+          &.rsvp-maybe {
+            width: 103px;
+          }
+          &.rsvp-no {
+            width: 115px;
+          }
+        }
+      }
+
+      a.dropdown-toggle {
+        color: #388ECB;
+      }
+
+      .responses-dropdown {
+
+        ul.dropdown-menu {
+          padding-top: 0px;
+          margin-top: 0px;
+        }
+
+        li {
+          padding: 0px 15px;
+        }
+
+        li.header {
+          padding: 5px 15px;
+          border-top: 1px solid #d9d9d9;
+          border-bottom: 1px solid #d9d9d9;
+        }
+
+        span.header {
+          font-size: 18px;
+          text-align: center;
+          margin-bottom: 0px;
+          display: block;
+          width: 100%;
+        }
+
+        a.person {
+          margin-left: 6px;
+          position: relative;
+          top: 50%;
+          transform: translateY(-60%);
+          display: inline-block;
+        }
+
+        span.person {
+          height: 100%;
+        }
+
+        .avatar {
+          display: inline-block;
+        }
+      }
+
     }
 
     .post-section {

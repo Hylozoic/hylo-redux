@@ -1,5 +1,5 @@
-import { CREATE_POST, FETCH_POST, FETCH_POSTS, UPDATE_POST } from '../actions'
-import { omit } from 'lodash'
+import { CREATE_POST, FETCH_POST, FETCH_POSTS, UPDATE_POST, CHANGE_EVENT_RESPONSE_PENDING } from '../actions'
+import { omit, findWhere, without } from 'lodash'
 import { hashById } from './util'
 
 const normalize = post => ({
@@ -12,6 +12,18 @@ const normalizeUpdate = (post, params) => {
     ...post,
     ...omit(params, 'imageUrl', 'imageRemoved', 'docs', 'removedDocs')
   }
+}
+
+const changeEventResponse = (post, response, user) => {
+  if (!user) return
+
+  var meInResponders = findWhere(post.responders, {id: user.id})
+  var responders = without(post.responders, meInResponders)
+
+  if (!meInResponders || meInResponders.response !== response) {
+    responders.push({id: user.id, name: user.name, avatar_url: user.avatar_url, response: response})
+  }
+  return {...post, ...{ responders }}
 }
 
 export default function (state = {}, action) {
@@ -28,7 +40,11 @@ export default function (state = {}, action) {
       let { params, id } = meta
       let post = state[id]
       return {...state, [id]: normalizeUpdate(post, params)}
+    case CHANGE_EVENT_RESPONSE_PENDING:
+      id = meta.id
+      post = state[id]
+      var { response, user } = meta
+      return {...state, [id]: changeEventResponse(post, response, user)}
   }
-
   return state
 }

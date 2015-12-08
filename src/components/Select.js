@@ -1,14 +1,15 @@
 import React from 'react'
 import KeyControlledList from './KeyControlledList'
 import cx from 'classnames'
-const { array, func, object, string } = React.PropTypes
+const { array, bool, func, object, string } = React.PropTypes
 
 export default class Select extends React.Component {
   static propTypes = {
     choices: array.isRequired,
     onChange: func.isRequired,
     selected: object.isRequired,
-    className: string
+    className: string,
+    alignRight: bool
   }
 
   constructor (props) {
@@ -32,7 +33,7 @@ export default class Select extends React.Component {
   }
 
   render () {
-    let { choices, selected, className } = this.props
+    let { choices, selected, className, alignRight } = this.props
     let { active } = this.state
 
     return <div className={cx('btn-group dropdown', className, {active: active})}>
@@ -40,7 +41,7 @@ export default class Select extends React.Component {
         onClick={this.toggle} onKeyDown={this.handleKeys}>
         {selected.name} <span className='caret'></span>
       </button>
-      <KeyControlledList className='dropdown-menu'
+      <KeyControlledList className={cx('dropdown-menu', {'dropdown-menu-right': alignRight})}
         ref='list' items={choices} onChange={this.change}/>
     </div>
   }

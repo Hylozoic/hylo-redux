@@ -23,16 +23,16 @@ const PostListControls = props => {
   let selectedType = type ? types.find(t => t.id === type) : types[0]
   let selectedSort = sort ? sorts.find(s => s.id === sort) : sorts[0]
 
-  return <div className='post-list-controls'>
+  return <div className='list-controls'>
     <input type='text' className='form-control search'
       placeholder='Search' defaultValue={search}
       onChange={debounce(event => onChange({search: event.target.value}), 500)}/>
 
     <Select className='type' choices={types} selected={selectedType}
-      onChange={t => onChange({type: t.id})}/>
+      onChange={t => onChange({type: t.id})} alignRight={true}/>
 
     <Select choices={sorts} selected={selectedSort}
-      onChange={s => onChange({sort: s.id})}/>
+      onChange={s => onChange({sort: s.id})} alignRight={true}/>
   </div>
 }
 

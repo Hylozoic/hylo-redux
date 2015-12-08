@@ -7,7 +7,7 @@ import { fetchCurrentUser, updateUserSettings, updateUserSettingsEditor } from '
 
 @prefetch(({ dispatch, params: {id} }) => dispatch(fetchCurrentUser()))
 @connect(({ people }, props) => ({currentUser: people.current}))
-export default class PersonSettings extends React.Component {
+export default class UserSettings extends React.Component {
   static propTypes = {
     currentUser: object,
     dispatch: func
@@ -37,8 +37,8 @@ export default class PersonSettings extends React.Component {
     let { email } = currentUser
 
     return <div className={cx('person-settings', 'clearfix')}>
-      <p>Settings for {currentUser.name}</p>
-      <label>
+        <p>Settings for {currentUser.name}</p>
+        <label>
         <p>Email</p>
         <input type='text' ref='email' className='email form-control'
           value={email}

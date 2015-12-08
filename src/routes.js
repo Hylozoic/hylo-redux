@@ -15,7 +15,7 @@ import AboutCommunity from './containers/community/AboutCommunity'
 import CommunitySettings from './containers/community/CommunitySettings'
 import PersonPosts from './containers/person/PersonPosts'
 import AboutPerson from './containers/person/AboutPerson'
-import PersonSettings from './containers/person/PersonSettings'
+import UserSettings from './containers/user/UserSettings'
 import SinglePost from './containers/SinglePost'
 import { debug } from './util/logging'
 
@@ -30,7 +30,7 @@ export default function makeRoutes (store) {
   return <Route path='/' component={App}>
     <IndexRoute component={Home}/>
     <Route path='login' component={Login}/>
-    <Route path='settings' component={PersonSettings} onEnter={requireLogin}/>
+    <Route path='settings' component={UserSettings} onEnter={requireLogin}/>
     <Route path='all-posts' component={AllPosts} onEnter={requireLogin}/>
     <Route path='my-posts' component={MyPosts} onEnter={requireLogin}/>
     <Route path='followed-posts' component={FollowedPosts} onEnter={requireLogin}/>

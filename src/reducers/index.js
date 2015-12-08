@@ -29,8 +29,8 @@ import {
   TYPEAHEAD,
   UPDATE_POST,
   UPLOAD_IMAGE,
-  UPDATE_PERSON_SETTINGS_EDITOR,
-  UPDATE_PERSON_SETTINGS
+  UPDATE_USER_SETTINGS_EDITOR,
+  UPDATE_USER_SETTINGS
 } from '../actions'
 
 export default combineReducers({
@@ -121,12 +121,12 @@ export default combineReducers({
           return m
         }, {})
         return {...state, ...people}
-      case UPDATE_PERSON_SETTINGS_EDITOR:
+      case UPDATE_USER_SETTINGS_EDITOR:
         return {
           ...state,
           current: {...state.current, ...payload}
         }
-      case UPDATE_PERSON_SETTINGS:
+      case UPDATE_USER_SETTINGS:
         return {
           ...state,
           current: {...state.current, ...payload}

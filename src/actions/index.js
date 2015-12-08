@@ -26,8 +26,8 @@ export const UPLOAD_DOC = 'UPLOAD_DOC'
 export const UPLOAD_IMAGE = 'UPLOAD_IMAGE'
 export const CHANGE_EVENT_RESPONSE = 'CHANGE_EVENT_RESPONSE'
 export const CHANGE_EVENT_RESPONSE_PENDING = 'CHANGE_EVENT_RESPONSE_PENDING'
-export const UPDATE_PERSON_SETTINGS = 'UPDATE_PERSON_SETTINGS'
-export const UPDATE_PERSON_SETTINGS_EDITOR = 'UPDATE_PERSON_SETTINGS_EDITOR'
+export const UPDATE_USER_SETTINGS = 'UPDATE_USER_SETTINGS'
+export const UPDATE_USER_SETTINGS_EDITOR = 'UPDATE_USER_SETTINGS_EDITOR'
 
 import { cleanAndStringify } from '../util/caching'
 import { cloneDeep, pick } from 'lodash'
@@ -193,16 +193,16 @@ export function toggleMainMenu () {
   return {type: TOGGLE_MAIN_MENU}
 }
 
-export function updatePersonSettingsEditor (payload) {
+export function updateUserSettingsEditor (payload) {
   return {
-    type: UPDATE_PERSON_SETTINGS_EDITOR,
+    type: UPDATE_USER_SETTINGS_EDITOR,
     payload
   }
 }
 
-export function updatePersonSettings (params) {
+export function updateUserSettings (params) {
   return {
-    type: UPDATE_PERSON_SETTINGS,
+    type: UPDATE_USER_SETTINGS,
     payload: {api: true, params, path: `/noo/user/${params.id}`, method: 'POST'},
     meta: {params}
   }

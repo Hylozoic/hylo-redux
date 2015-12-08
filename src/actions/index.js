@@ -24,6 +24,10 @@ export const UPDATE_POST = 'UPDATE_POST'
 export const UPDATE_POST_EDITOR = 'UPDATE_POST_EDITOR'
 export const UPLOAD_DOC = 'UPLOAD_DOC'
 export const UPLOAD_IMAGE = 'UPLOAD_IMAGE'
+export const CHANGE_EVENT_RESPONSE = 'CHANGE_EVENT_RESPONSE'
+export const CHANGE_EVENT_RESPONSE_PENDING = 'CHANGE_EVENT_RESPONSE_PENDING'
+export const UPDATE_PERSON_SETTINGS = 'UPDATE_PERSON_SETTINGS'
+export const UPDATE_PERSON_SETTINGS_EDITOR = 'UPDATE_PERSON_SETTINGS_EDITOR'
 
 import { cleanAndStringify } from '../util/caching'
 import { cloneDeep, pick } from 'lodash'
@@ -177,9 +181,6 @@ export function removeDoc (payload, id) {
   }
 }
 
-export const CHANGE_EVENT_RESPONSE = 'CHANGE_EVENT_RESPONSE'
-export const CHANGE_EVENT_RESPONSE_PENDING = 'CHANGE_EVENT_RESPONSE_PENDING'
-
 export function changeEventResponse (id, response, user) {
   return {
     type: CHANGE_EVENT_RESPONSE,
@@ -190,4 +191,19 @@ export function changeEventResponse (id, response, user) {
 
 export function toggleMainMenu () {
   return {type: TOGGLE_MAIN_MENU}
+}
+
+export function updatePersonSettingsEditor (payload) {
+  return {
+    type: UPDATE_PERSON_SETTINGS_EDITOR,
+    payload
+  }
+}
+
+export function updatePersonSettings (params) {
+  return {
+    type: UPDATE_PERSON_SETTINGS,
+    payload: {api: true, params, path: `/noo/user/${params.id}`, method: 'POST'},
+    meta: {params}
+  }
 }

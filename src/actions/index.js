@@ -27,7 +27,6 @@ export const UPDATE_POST = 'UPDATE_POST'
 export const UPDATE_POST_EDITOR = 'UPDATE_POST_EDITOR'
 export const UPDATE_PROJECT = 'UPDATE_PROJECT'
 export const UPDATE_PROJECT_EDITOR = 'UPDATE_PROJECT_EDITOR'
-export const UPDATE_PROJECT_VIDEO = 'UPDATE_PROJECT_VIDEO'
 export const UPLOAD_DOC = 'UPLOAD_DOC'
 export const UPLOAD_IMAGE = 'UPLOAD_IMAGE'
 
@@ -225,7 +224,7 @@ export function updateProjectEditor (id, payload) {
 }
 
 export function updateProject (id, params) {
-  let shimmedParams = pick(params, 'title', 'intention', 'details', 'location')
+  let shimmedParams = pick(params, 'title', 'intention', 'details', 'location', 'visibility')
 
   // insert flattened media urls as expected by the API
   ;['video', 'image'].forEach(type => {
@@ -233,19 +232,13 @@ export function updateProject (id, params) {
     if (obj) shimmedParams[`${type}_url`] = obj.url
   })
 
+  if (params.community) shimmedParams.community_id = params.community.id
+
   // note that meta.params is the non-shimmed version, so updating the
   // project in the store is a simple merge
   return {
     type: UPDATE_PROJECT,
     payload: {api: true, params: shimmedParams, path: `/noo/project/${id}`, method: 'POST'},
     meta: {id, params}
-  }
-}
-
-export function updateProjectVideo (id, payload) {
-  return {
-    type: UPDATE_PROJECT_VIDEO,
-    payload,
-    meta: {id}
   }
 }

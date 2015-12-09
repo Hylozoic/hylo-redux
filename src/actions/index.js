@@ -3,6 +3,7 @@ export const CANCEL_TYPEAHEAD = 'CANCEL_TYPEAHEAD'
 export const CLEAR_CACHE = 'CLEAR_CACHE'
 export const CREATE_COMMENT = 'CREATE_COMMENT'
 export const CREATE_POST = 'CREATE_POST'
+export const CREATE_PROJECT = 'CREATE_PROJECT'
 export const FETCH_COMMENTS = 'FETCH_COMMENTS'
 export const FETCH_COMMUNITY = 'FETCH_COMMUNITY'
 export const FETCH_CURRENT_USER = 'FETCH_CURRENT_USER'
@@ -10,6 +11,7 @@ export const FETCH_PEOPLE = 'FETCH_PEOPLE'
 export const FETCH_PERSON = 'FETCH_PERSON'
 export const FETCH_POST = 'FETCH_POST'
 export const FETCH_POSTS = 'FETCH_POSTS'
+export const FETCH_PROJECT = 'FETCH_PROJECT'
 export const FETCH_PROJECTS = 'FETCH_PROJECTS'
 export const LOGIN = 'LOGIN'
 export const LOGOUT = 'LOGOUT'
@@ -18,10 +20,14 @@ export const REMOVE_DOC = 'REMOVE_DOC'
 export const REMOVE_IMAGE = 'REMOVE_IMAGE'
 export const SET_LOGIN_ERROR = 'SET_LOGIN_ERROR'
 export const START_POST_EDIT = 'START_POST_EDIT'
+export const START_PROJECT_EDIT = 'START_PROJECT_EDIT'
 export const TOGGLE_MAIN_MENU = 'TOGGLE_MAIN_MENU'
 export const TYPEAHEAD = 'TYPEAHEAD'
 export const UPDATE_POST = 'UPDATE_POST'
 export const UPDATE_POST_EDITOR = 'UPDATE_POST_EDITOR'
+export const UPDATE_PROJECT = 'UPDATE_PROJECT'
+export const UPDATE_PROJECT_EDITOR = 'UPDATE_PROJECT_EDITOR'
+export const UPDATE_PROJECT_VIDEO = 'UPDATE_PROJECT_VIDEO'
 export const UPLOAD_DOC = 'UPLOAD_DOC'
 export const UPLOAD_IMAGE = 'UPLOAD_IMAGE'
 export const CHANGE_EVENT_RESPONSE = 'CHANGE_EVENT_RESPONSE'
@@ -30,7 +36,7 @@ export const UPDATE_USER_SETTINGS = 'UPDATE_USER_SETTINGS'
 export const UPDATE_USER_SETTINGS_EDITOR = 'UPDATE_USER_SETTINGS_EDITOR'
 
 import { cleanAndStringify } from '../util/caching'
-import { cloneDeep, pick } from 'lodash'
+import { cloneDeep, find, pick } from 'lodash'
 
 // this is a client-only action
 export function login (email, password) {
@@ -127,10 +133,12 @@ export function updatePostEditor (payload, id) {
   }
 }
 
-export function createPost (params) {
+// id refers to the id of the editing context, e.g. 'project-5-new'
+export function createPost (id, params) {
   return {
     type: CREATE_POST,
-    payload: {api: true, params, path: '/noo/post', method: 'POST'}
+    payload: {api: true, params, path: '/noo/post', method: 'POST'},
+    meta: {id}
   }
 }
 
@@ -144,7 +152,8 @@ export function clearCache (bucket, id) {
 export function fetchPost (id) {
   return {
     type: FETCH_POST,
-    payload: {api: true, path: `/noo/post/${id}`}
+    payload: {api: true, path: `/noo/post/${id}`},
+    meta: {cache: {id, bucket: 'posts'}}
   }
 }
 
@@ -205,5 +214,54 @@ export function updateUserSettings (params, prevProps) {
     type: UPDATE_USER_SETTINGS,
     payload: {api: true, params, path: `/noo/user/${params.id}`, method: 'POST'},
     meta: {params, prevProps}
+  }
+}
+
+export function fetchProject (id) {
+  return {
+    type: FETCH_PROJECT,
+    payload: {api: true, path: `/noo/project/${id}`},
+    meta: {cache: {id, bucket: 'projects', requiredProp: 'details'}}
+  }
+}
+
+export function startProjectEdit (id) {
+  return {
+    type: START_PROJECT_EDIT,
+    meta: {id}
+  }
+}
+
+export function updateProjectEditor (id, payload) {
+  return {
+    type: UPDATE_PROJECT_EDITOR,
+    payload,
+    meta: {id}
+  }
+}
+
+export function updateProject (id, params) {
+  let shimmedParams = pick(params, 'title', 'intention', 'details', 'location')
+
+  // insert flattened media urls as expected by the API
+  ;['video', 'image'].forEach(type => {
+    let obj = find(params.media, m => m.type === type)
+    if (obj) shimmedParams[`${obj}_url`] = obj.url
+  })
+
+  // note that meta.params is the non-shimmed version, so updating the
+  // project in the store is a simple merge
+  return {
+    type: UPDATE_PROJECT,
+    payload: {api: true, params: shimmedParams, path: `/noo/project/${id}`, method: 'POST'},
+    meta: {id, params}
+  }
+}
+
+export function updateProjectVideo (id, payload) {
+  return {
+    type: UPDATE_PROJECT_VIDEO,
+    payload,
+    meta: {id}
   }
 }

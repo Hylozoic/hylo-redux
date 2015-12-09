@@ -17,10 +17,10 @@ import { fetchComments, createComment, startPostEdit, changeEventResponse } from
 
 const spacer = <span>&nbsp;&nbsp;•&nbsp;&nbsp;</span>
 
-@connect(({ commentsByPost, people, postsInProgress, communities }, { post }) => ({
+@connect(({ commentsByPost, people, postEdits, communities }, { post }) => ({
   comments: commentsByPost[post.id],
   currentUser: people.current,
-  editing: !!postsInProgress[post.id],
+  editing: !!postEdits[post.id],
   communities: post.communities.map(id => find(communities, c => c.id === id))
 }))
 export default class Post extends React.Component {

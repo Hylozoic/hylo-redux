@@ -3,6 +3,7 @@ import prettyDate from 'pretty-date'
 import truncate from 'html-truncate'
 import linkify from './linkify'
 import moment from 'moment-timezone'
+import marked from 'marked'
 
 export function sanitize (text) {
   if (!text) return ''
@@ -70,3 +71,11 @@ export function timeRangeFull (start, end) {
     return moment(start).format('LLLL') + ' to ' + moment(end).format('LLLL')
   }
 }
+
+marked.setOptions({
+  gfm: true,
+  breaks: true,
+  sanitize: true
+})
+
+export const markdown = marked

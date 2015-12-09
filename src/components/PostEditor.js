@@ -7,7 +7,7 @@ because they make more sense.
 */
 
 import React from 'react'
-import { contains, filter, find, isEmpty, startsWith } from 'lodash'
+import { contains, filter, find, isEmpty, omit, startsWith } from 'lodash'
 import cx from 'classnames'
 import TagInput from './TagInput'
 import Dropdown from './Dropdown'
@@ -47,16 +47,22 @@ const postTypeData = {
 
 const NEW_POST_PLACEHOLDER_ID = 'new'
 
-@connect((state, { community, post }) => {
-  let id = post ? post.id : NEW_POST_PLACEHOLDER_ID
-  let postInProgress = state.postsInProgress[id] || {}
+@connect((state, { community, post, project }) => {
+  let id = post
+    ? post.id
+    : project
+      ? `project-${project.id}-new`
+      : NEW_POST_PLACEHOLDER_ID
 
-  // FIXME: this one attribute in postInProgress isn't actually a post attribute
-  let { expanded } = postInProgress
+  // this object tracks the edits that are currently being made
+  let postEdit = state.postEdits[id] || {}
+
+  // FIXME: this one attribute in postEdit isn't actually a post attribute
+  let { expanded } = postEdit
 
   return {
     id,
-    postInProgress,
+    postEdit,
     expanded,
     mentionChoices: state.typeaheadMatches.post,
     currentUser: state.people.current,
@@ -71,9 +77,10 @@ export default class PostEditor extends React.Component {
     currentUser: object,
     post: object,
     id: string.isRequired,
-    postInProgress: object,
+    postEdit: object,
     community: object,
-    saving: bool
+    saving: bool,
+    project: object
   }
 
   updateStore (data) {
@@ -89,17 +96,13 @@ export default class PostEditor extends React.Component {
     this.updateStore({expanded: true})
 
     // initialize the communities list when opening the editor in a community
-    let { community, postInProgress: { communities } } = this.props
+    let { community, postEdit: { communities } } = this.props
     if (community && isEmpty(communities)) this.addCommunity(community)
   }
 
   cancel = () => {
-    let { dispatch, id, post } = this.props
-    if (id === NEW_POST_PLACEHOLDER_ID) {
-      this.updateStore({expanded: false})
-    } else {
-      dispatch(cancelPostEdit(post.id))
-    }
+    let { dispatch, id } = this.props
+    dispatch(cancelPostEdit(id))
   }
 
   setName = event =>
@@ -108,30 +111,30 @@ export default class PostEditor extends React.Component {
   setDescription = event => this.updateStore({description: event.target.value})
 
   addCommunity = community => {
-    let { communities } = this.props.postInProgress
+    let { communities } = this.props.postEdit
     this.updateStore({communities: (communities || []).concat(community.id)})
   }
 
   setLocation = event => this.updateStore({location: event.target.value})
 
   removeCommunity = community => {
-    let { communities } = this.props.postInProgress
+    let { communities } = this.props.postEdit
     this.updateStore({communities: filter(communities, cid => cid !== community.id)})
   }
 
   togglePublic = () =>
-    this.updateStore({public: !this.props.postInProgress.public})
+    this.updateStore({public: !this.props.postEdit.public})
 
   validate () {
-    let { postInProgress } = this.props
+    let { postEdit, project } = this.props
 
-    if (!postInProgress.name) {
+    if (!postEdit.name) {
       window.alert('The title of a post cannot be blank.')
       this.refs.name.focus()
       return
     }
 
-    if (isEmpty(postInProgress.communities)) {
+    if (!project && isEmpty(postEdit.communities)) {
       window.alert('Please pick at least one community.')
       return
     }
@@ -147,30 +150,27 @@ export default class PostEditor extends React.Component {
     // immediately after typing in the description field, we have to wait for props
     // to update from the store
     setTimeout(() => {
-      let { dispatch, post, postInProgress } = this.props
+      let { dispatch, post, postEdit, project, id } = this.props
 
-      postInProgress = {
-        ...postInProgress,
-        type: postInProgress.type || 'chat'
+      postEdit = {
+        ...omit(postEdit, 'expanded'),
+        type: postEdit.type || 'chat'
       }
 
       let params = {
-        ...postInProgress,
-        ...attachmentParams(post && post.media, postInProgress.media)
+        ...postEdit,
+        ...attachmentParams(post && post.media, postEdit.media),
+        projectId: project ? project.id : null
       }
 
-      if (post) {
-        dispatch(updatePost(post.id, params))
-      } else {
-        dispatch(createPost(params))
-      }
+      dispatch((post ? updatePost : createPost)(id, params))
     })
   }
 
   findCommunities = term => {
     if (!term) return
 
-    let { currentUser, postInProgress: { communities } } = this.props
+    let { currentUser, postEdit: { communities } } = this.props
     var match = c =>
       startsWith(c.name.toLowerCase(), term.toLowerCase()) &&
       !contains(communities, c.id)
@@ -179,8 +179,8 @@ export default class PostEditor extends React.Component {
   }
 
   render () {
-    let { expanded, post, postInProgress, dispatch } = this.props
-    let { name, description, communities, type, location } = postInProgress
+    let { expanded, post, postEdit, dispatch, project } = this.props
+    let { name, description, communities, type, location } = postEdit
     if (!type) type = 'chat'
 
     return <div className={cx('post-editor', 'clearfix', {expanded})}>
@@ -216,14 +216,16 @@ export default class PostEditor extends React.Component {
           </label>
         </div>}
 
-        <h3 className='communities-header'>Communities</h3>
-        <CommunityTagInput ids={communities}
-          getChoices={this.findCommunities}
-          onSelect={this.addCommunity}
-          onRemove={this.removeCommunity}/>
+        {!project && <div>
+          <h3 className='communities-header'>Communities</h3>
+          <CommunityTagInput ids={communities}
+            getChoices={this.findCommunities}
+            onSelect={this.addCommunity}
+            onRemove={this.removeCommunity}/>
+        </div>}
 
         <label className='visibility'>
-          <input type='checkbox' value={postInProgress.public} onChange={this.togglePublic}/>
+          <input type='checkbox' value={postEdit.public} onChange={this.togglePublic}/>
           &nbsp;
           Make this post publicly visible
         </label>
@@ -236,7 +238,7 @@ export default class PostEditor extends React.Component {
             </button>
           </div>
 
-          <AttachmentButtons id={this.props.id} media={postInProgress.media}
+          <AttachmentButtons id={this.props.id} media={postEdit.media}
             path={`user/${this.props.currentUser.id}/seeds`}/>
         </div>
       </div>}

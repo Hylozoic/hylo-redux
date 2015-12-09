@@ -24,7 +24,7 @@ class PostList extends React.Component {
     let { posts, pending, loadMore } = this.props
 
     if (!pending && posts.length === 0) {
-      return <div className='no-posts'>No results.</div>
+      return <div className='no-posts'>No posts to show.</div>
     }
 
     return <ul className='posts'>

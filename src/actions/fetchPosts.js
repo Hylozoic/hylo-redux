@@ -20,6 +20,9 @@ export function fetchPosts (opts) {
     case 'followed-posts':
       payload.path = `/noo/user/${id}/followed-posts`
       break
+    case 'project':
+      payload.path = `/noo/project/${id}/posts`
+      break
   }
 
   payload.path += '?' + querystring

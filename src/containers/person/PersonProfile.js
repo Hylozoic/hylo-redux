@@ -1,8 +1,8 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { prefetch } from 'react-fetcher'
-import { fetchPerson } from '../actions'
-import { A, IndexA } from '../components/A'
+import { fetchPerson } from '../../actions'
+import { A, IndexA } from '../../components/A'
 const { object } = React.PropTypes
 
 const defaultBanner = 'http://cdn.hylo.com/misc/default_user_banner.jpg'

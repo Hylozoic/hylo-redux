@@ -5,18 +5,22 @@ import Login from './containers/Login'
 import App from './containers/App'
 import { AllPosts, MyPosts, FollowedPosts } from './containers/home'
 import Projects from './containers/Projects'
-import PersonProfile from './containers/PersonProfile'
-import CommunityProfile from './containers/CommunityProfile'
+import CommunityProfile from './containers/community/CommunityProfile'
 import CommunityPosts from './containers/community/CommunityPosts'
 import CommunityMembers from './containers/community/CommunityMembers'
 import CommunityEvents from './containers/community/CommunityEvents'
 import CommunityProjects from './containers/community/CommunityProjects'
 import AboutCommunity from './containers/community/AboutCommunity'
 import CommunitySettings from './containers/community/CommunitySettings'
+import PersonProfile from './containers/person/PersonProfile'
 import PersonPosts from './containers/person/PersonPosts'
 import AboutPerson from './containers/person/AboutPerson'
 import UserSettings from './containers/user/UserSettings'
 import SinglePost from './containers/SinglePost'
+import ProjectProfile from './containers/project/ProjectProfile'
+import ProjectPosts from './containers/project/ProjectPosts'
+import ProjectContributors from './containers/project/ProjectContributors'
+import ProjectEditor from './containers/project/ProjectEditor'
 import { debug } from './util/logging'
 
 export default function makeRoutes (store) {
@@ -48,5 +52,10 @@ export default function makeRoutes (store) {
       <Route path='settings' component={CommunitySettings}/>
     </Route>
     <Route path='p/:id' component={SinglePost}/>
+    <Route path='project/edit/:id' component={ProjectEditor}/>
+    <Route path='project/:id/:slug' component={ProjectProfile}>
+      <IndexRoute component={ProjectPosts}/>
+      <Route path='contributors' component={ProjectContributors}/>
+    </Route>
   </Route>
 }

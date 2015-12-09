@@ -1,8 +1,8 @@
 import React from 'react'
-import { A, IndexA } from '../components/A'
+import { A, IndexA } from '../../components/A'
 import { connect } from 'react-redux'
 import { prefetch } from 'react-fetcher'
-import { fetchCommunity } from '../actions'
+import { fetchCommunity } from '../../actions'
 const { object } = React.PropTypes
 
 @prefetch(({dispatch, params: {id}}) => dispatch(fetchCommunity(id)))

@@ -64,5 +64,31 @@ describe('projectEdits', () => {
 
       expect(projectEdits(state, action)).to.deep.equal(expectedState)
     })
+
+    it('clears video', () => {
+      let action = {
+        type: UPDATE_PROJECT_EDITOR,
+        payload: {video: ''},
+        meta: {id: 'a'}
+      }
+
+      let state = {
+        a: {
+          title: 'foo',
+          media: [
+            {type: 'video', url: 'http://foo.com/foo.m4v'}
+          ]
+        }
+      }
+
+      let expectedState = {
+        a: {
+          title: 'foo',
+          media: []
+        }
+      }
+
+      expect(projectEdits(state, action)).to.deep.equal(expectedState)
+    })
   })
 })

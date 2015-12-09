@@ -5,6 +5,7 @@ import {
   UPLOAD_IMAGE
 } from '../actions'
 import { updateMedia } from './util'
+import { has } from 'lodash'
 
 export default function (state = {}, action) {
   if (action.error) return state
@@ -15,7 +16,7 @@ export default function (state = {}, action) {
     case CREATE_PROJECT:
       return {...state, [id]: null}
     case UPDATE_PROJECT_EDITOR:
-      if (payload.video) {
+      if (has(payload, 'video')) {
         return {
           ...state,
           [id]: updateMedia(state[id], 'video', payload.video)

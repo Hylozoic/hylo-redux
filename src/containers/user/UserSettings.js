@@ -10,7 +10,7 @@ import { fetchCurrentUser, updateUserSettings, updateUserSettingsEditor } from '
 export default class UserSettings extends React.Component {
   constructor (props) {
     super(props)
-    this.state = {editing: {}, edited: {}}
+    this.state = {editing: {}, edited: {}, errors: {}}
   }
 
   static propTypes = {
@@ -23,10 +23,30 @@ export default class UserSettings extends React.Component {
     dispatch(updateUserSettingsEditor(data))
   }
 
-  setEmail = event =>
-    this.setState({edited: {...this.state.edited, email: event.target.value}})
+  validate () {
+    console.log('validate')
+    let { errors } = this.state
+
+    if (errors.email) {
+      console.log('email errors')
+      window.alert('Please provide a valid email.')
+      this.refs.email.focus()
+      return
+    }
+
+    return true
+  }
+
+  setEmail = event => {
+    return this.setState({
+      edited: {...this.state.edited, email: event.target.value},
+      errors: {...this.state.errors, email: !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(event.target.value)}
+    })
+  }
 
   save = (field) => {
+    if (!this.validate()) return
+
     let { dispatch, currentUser } = this.props
     let { editing, edited } = this.state
     this.setState({editing: {...editing, [field]: false}})
@@ -48,7 +68,7 @@ export default class UserSettings extends React.Component {
 
   render () {
     let { currentUser } = this.props
-    let { editing, edited, expand1 } = this.state
+    let { editing, edited, errors, expand1 } = this.state
 
     return <div id='user'>
       <div className='settings'>
@@ -67,7 +87,7 @@ export default class UserSettings extends React.Component {
             </div>}
             {editing.email && <div className='half-column value'>
               <form name='emailForm'>
-                <div className={cx('form-group', {'has-error': false})}>
+                <div className={cx('form-group', {'has-error': errors.email})}>
                   <input type='text' ref='email' className='email form-control'
                     value={edited.email}
                     onChange={this.setEmail}/>

@@ -15,7 +15,7 @@ p {
   margin-bottom: @p-bottom-margin;
 }
 
-button, input[type=submit] {
+button, a.button, input[type=submit] {
   .btn;
   .btn-default;
 
@@ -906,10 +906,29 @@ ul.tags {
 }
 
 #project {
+  .draft-header {
+    background-color: @hylo-teal;
+    color: @off-white;
+    padding: 15px;
+    button {
+      float: right;
+      margin-left: 15px;
+      .clear-button;
+    }
+  }
+
   .project-header {
     background-color: @faint-gray-bg;
     padding: 15px 0;
     .clearfix;
+
+    .title-row {
+      h2 {
+        margin-top: 0;
+      }
+      border-bottom: 1px solid @light-gray-border;
+      margin-bottom: 15px;
+    }
 
     .meta {
       ul {
@@ -918,14 +937,20 @@ ul.tags {
 
       li {
         min-height: @avatar-size-default + 15px;
-        img, .avatar {
+        img, .avatar, .icon {
+          display: block;
           float: left;
           margin-right: 10px;
           width: @avatar-size-default;
           height: @avatar-size-default;
         }
+        .icon {
+          background-size: cover;
+          background-position: center;
+        }
         div {
           overflow: hidden;
+          padding-top: 1px;
         }
       }
     }

@@ -62,8 +62,8 @@ export default class UserSettings extends React.Component {
     let { dispatch, currentUser } = this.props
     let { editing, edited } = this.state
     this.setState({editing: {...editing, [field]: false}})
-    dispatch(updateUserSettingsEditor({...currentUser, ... edited}))
-    dispatch(updateUserSettings({...currentUser, ... edited}, {[field]: currentUser[field]}))
+    dispatch(updateUserSettingsEditor({...currentUser, ...edited}))
+    dispatch(updateUserSettings({...currentUser, ...edited}, {[field]: currentUser[field]}))
   }
 
   edit (field) {
@@ -79,7 +79,14 @@ export default class UserSettings extends React.Component {
   }
 
   toggle (field) {
-    console.log('Toggle ', field)
+    let { dispatch, currentUser } = this.props
+    var updatedUser = {...currentUser, ...{[field]: !currentUser[field]}}
+    dispatch(updateUserSettingsEditor(updatedUser))
+    dispatch(updateUserSettings(updatedUser, {[field]: currentUser[field]}))
+  }
+
+  toggleSettings (field) {
+
   }
 
   componentDidMount () {
@@ -156,7 +163,7 @@ export default class UserSettings extends React.Component {
               <div className='summary'>Check the circle to get updates on posts you create or follow. You can also change this for each post individually.</div>
             </div>
             <div className='half-column value'>
-              <input type='checkbox' value={currentUser.send_email_preference} onClick={() => this.toggle('send_email_preference')}/>
+              <input type='checkbox' checked={currentUser.send_email_preference} onClick={() => this.toggle('send_email_preference')}/>
             </div>
           </div>
 

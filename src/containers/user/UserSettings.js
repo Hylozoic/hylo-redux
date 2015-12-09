@@ -15,7 +15,8 @@ export default class UserSettings extends React.Component {
 
   static propTypes = {
     currentUser: object,
-    dispatch: func
+    dispatch: func,
+    location: object
   }
 
   updateStore (data) {
@@ -24,13 +25,17 @@ export default class UserSettings extends React.Component {
   }
 
   validate () {
-    console.log('validate')
     let { errors } = this.state
 
     if (errors.email) {
-      console.log('email errors')
       window.alert('Please provide a valid email.')
       this.refs.email.focus()
+      return
+    }
+
+    if (errors.password) {
+      window.alert('Please provide a valid password.')
+      this.refs.password.focus()
       return
     }
 
@@ -41,6 +46,13 @@ export default class UserSettings extends React.Component {
     return this.setState({
       edited: {...this.state.edited, email: event.target.value},
       errors: {...this.state.errors, email: !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(event.target.value)}
+    })
+  }
+
+  setPassword = event => {
+    return this.setState({
+      edited: {...this.state.edited, password: event.target.value},
+      errors: {...this.state.errors, password: !event.target.value}
     })
   }
 
@@ -64,6 +76,23 @@ export default class UserSettings extends React.Component {
   cancelEdit (field) {
     let { editing } = this.state
     this.setState({editing: {...editing, [field]: false}})
+  }
+
+  toggle (field) {
+    console.log('Toggle ', field)
+  }
+
+  componentDidMount () {
+    let { location: { query } } = this.props
+    let { expand } = query || {}
+    switch (expand) {
+      case 'password':
+        this.setState({expand1: true, editing: {password: true}})
+        break
+      case 'prompts':
+        this.setState({expand1: true})
+        break
+    }
   }
 
   render () {
@@ -99,6 +128,38 @@ export default class UserSettings extends React.Component {
               </div>
             </div>}
           </div>
+          <div className='setting-item'>
+            <div className='half-column'>
+              <label>Your Password</label>
+            </div>
+            {!editing.password && <div className='half-column value'>
+              <button type='button' onClick={() => this.edit('password')}>Change</button>
+            </div>}
+            {editing.password && <div className='half-column value'>
+              <form name='passwordForm'>
+                <div className={cx('form-group', {'has-error': errors.password})}>
+                <p className='help'>Enter a new password.</p>
+                  <input type='password' ref='password' className='password form-control'
+                    value={edited.password}
+                    onChange={this.setPassword}/>
+                  </div>
+              </form>
+              <div className='buttons'>
+                <button type='button' onClick={() => this.cancelEdit('password')}>Cancel</button>
+                <button type='button' className='btn-primary' onClick={() => this.save('password')}>Save</button>
+              </div>
+            </div>}
+          </div>
+          <div className='setting-item'>
+            <div className='half-column'>
+              <label>Receive email notifications?</label>
+              <div className='summary'>Check the circle to get updates on posts you create or follow. You can also change this for each post individually.</div>
+            </div>
+            <div className='half-column value'>
+              <input type='checkbox' value={currentUser.send_email_preference} onClick={() => this.toggle('send_email_preference')}/>
+            </div>
+          </div>
+
         </div>}
       </div>
     </div>

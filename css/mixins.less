@@ -98,3 +98,32 @@
     right: 0;
   }
 }
+
+.round-input {
+  -webkit-appearance: none;
+  border: 1px solid @button-border;
+  border-radius: 25px;
+  outline: none;
+  margin: 0;
+  display: inline-block;
+  position: relative;
+  .proxima-nova(100);
+}
+
+.round-checkbox() {
+  .round-input;
+  padding: 15px;
+
+  &:checked {
+
+    &:after {
+      font-family: @icon-font-family;
+      content: '\e62e';
+      font-size: 14px;
+      position: absolute;
+      top: 8px;
+      left: 7px;
+      color: @off-black;
+    }
+  }
+}

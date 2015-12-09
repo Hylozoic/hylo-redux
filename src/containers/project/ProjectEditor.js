@@ -13,7 +13,7 @@ import {
 } from '../../actions'
 import { uploadImage } from '../../actions/uploadImage'
 import ImageAttachmentButton from '../../components/ImageAttachmentButton'
-import { find } from 'lodash'
+import { find, isEmpty } from 'lodash'
 const { bool, func, object, string } = React.PropTypes
 
 @prefetch(({ dispatch, params: { id } }) => {
@@ -45,6 +45,17 @@ export default class ProjectEditor extends React.Component {
     pending: bool,
     imagePending: bool,
     currentUser: object
+  }
+
+  componentDidMount () {
+    let { dispatch, id, projectEdit } = this.props
+    let { media } = projectEdit || {}
+
+    if (!isEmpty(media)) {
+      // we have to initialize project media in the edit store; otherwise,
+      // the first video update will drop the image and vice versa
+      dispatch(updateProjectEditor(id, {media}))
+    }
   }
 
   update = field => event => {

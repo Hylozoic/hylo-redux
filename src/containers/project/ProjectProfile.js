@@ -65,8 +65,8 @@ export default class ProjectProfile extends React.Component {
         <div className='col-sm-8'>
           <h4 className='intention'>Core Intention: {project.intention}</h4>
           {video
-            ? <div className='visual'><Video url={video.url}/></div>
-          : image && <div className='visual' style={{backgroundImage: `url(${image.url})`}}/>}
+            ? <div className='video-wrapper'><Video url={video.url}/></div>
+          : image && <img src={image.url} className='full-image'/>}
           <div dangerouslySetInnerHTML={{__html: details}}/>
           {expandable && <a className='expand' onClick={() => this.setState({expanded: true})}>
             See More

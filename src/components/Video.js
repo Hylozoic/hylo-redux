@@ -40,7 +40,7 @@ function convert (url) {
 
 const Video = props => {
   let { url, width, height, className } = props
-  return <iframe className={cx('videoClass', className)}
+  return <iframe className={cx('video', className)}
     type='text/html'
     width={width} height={height}
     src={convert(url)}

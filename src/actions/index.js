@@ -171,10 +171,10 @@ export function updatePost (id, params) {
   }
 }
 
-export function removeImage (id) {
+export function removeImage (subject, id) {
   return {
     type: REMOVE_IMAGE,
-    meta: {id}
+    meta: {subject, id}
   }
 }
 
@@ -230,7 +230,7 @@ export function updateProject (id, params) {
   // insert flattened media urls as expected by the API
   ;['video', 'image'].forEach(type => {
     let obj = find(params.media, m => m.type === type)
-    if (obj) shimmedParams[`${obj}_url`] = obj.url
+    if (obj) shimmedParams[`${type}_url`] = obj.url
   })
 
   // note that meta.params is the non-shimmed version, so updating the

@@ -3,12 +3,16 @@ import { prefetch } from 'react-fetcher'
 import { connect } from 'react-redux'
 import {
   UPDATE_PROJECT,
+  UPLOAD_IMAGE,
   fetchProject,
   navigate,
+  removeImage,
   updateProjectEditor,
   updateProjectVideo,
   updateProject
 } from '../../actions'
+import { uploadImage } from '../../actions/uploadImage'
+import ImageAttachmentButton from '../../components/ImageAttachmentButton'
 import { find } from 'lodash'
 const { bool, func, object, string } = React.PropTypes
 
@@ -16,7 +20,7 @@ const { bool, func, object, string } = React.PropTypes
   if (id) return dispatch(fetchProject(id))
   // TODO
 })
-@connect(({ projects, projectEdits, pending }, { params: { id } }) => {
+@connect(({ projects, projectEdits, pending, people }, { params: { id } }) => {
   let project = projects[id]
 
   // copy the project when the edit starts -- don't need to save it
@@ -27,7 +31,9 @@ const { bool, func, object, string } = React.PropTypes
     id,
     project,
     projectEdit,
-    pending: pending[UPDATE_PROJECT]
+    pending: pending[UPDATE_PROJECT],
+    imagePending: pending[UPLOAD_IMAGE],
+    currentUser: people.current
   }
 })
 export default class ProjectEditor extends React.Component {
@@ -36,7 +42,9 @@ export default class ProjectEditor extends React.Component {
     projectEdit: object,
     dispatch: func,
     id: string,
-    pending: bool
+    pending: bool,
+    imagePending: bool,
+    currentUser: object
   }
 
   update = field => event => {
@@ -49,6 +57,20 @@ export default class ProjectEditor extends React.Component {
     dispatch(updateProjectVideo(id, event.target.value))
   }
 
+  attachImage = () => {
+    let { dispatch, id, currentUser } = this.props
+    dispatch(uploadImage({
+      id,
+      subject: 'project',
+      path: `user/${currentUser.id}/projects`
+    }))
+  }
+
+  removeImage = () => {
+    let { id, dispatch } = this.props
+    dispatch(removeImage('project', id))
+  }
+
   save = () => {
     let { dispatch, id, project, projectEdit } = this.props
 
@@ -59,8 +81,9 @@ export default class ProjectEditor extends React.Component {
   }
 
   render () {
-    let { project, projectEdit, pending } = this.props
+    let { project, projectEdit, pending, imagePending } = this.props
     let { title, intention, details, location, media } = projectEdit
+    let image = find(media, m => m.type === 'image')
     let video = find(media, m => m.type === 'video')
 
     return <div id='project-editor'>
@@ -106,6 +129,9 @@ export default class ProjectEditor extends React.Component {
           onChange={this.updateVideo}
           className='form-control video'
           placeholder='Add a link to YouTube or Vimeo'/>
+        <span> or </span>
+        <ImageAttachmentButton pending={imagePending} image={image}
+          add={this.attachImage} remove={this.removeImage}/>
       </section>
 
       <section>

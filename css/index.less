@@ -694,33 +694,21 @@ ul.tags {
   > h3:first-child {
     margin-top: 0;
   }
+}
 
-  .dropdown.button {
-    .btn;
-    .btn-default;
-    height: 34px;
-    line-height: 32px;
-    padding: 0 9px 0 12px;
-    margin-right: 5px;
-    > a {
-      text-decoration: none;
-    }
+.image-attachment-button {
+  padding-right: 35px !important;
+  a {
+    overflow: hidden;
   }
-
-  .change-image {
-    padding-right: 35px !important;
-    a {
-      overflow: hidden;
-    }
-    img {
-      position: absolute;
-      top: 2px;
-      right: 2px;
-      height: 28px;
-      vertical-align: middle;
-      border: 1px solid @light-gray-border;
-      border-radius: @border-radius-base;
-    }
+  img {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    height: 28px;
+    vertical-align: middle;
+    border: 1px solid @light-gray-border;
+    border-radius: @border-radius-base;
   }
 }
 
@@ -959,16 +947,20 @@ ul.tags {
       margin-top: 0;
     }
 
-    .visual {
+    .video-wrapper {
       width: 100%;
       .fluid-height(61.2%);
-      background-size: cover;
       margin-bottom: @p-bottom-margin;
       iframe {
         position: absolute;
         width: 100%;
         height: 100%;
       }
+    }
+
+    .full-image {
+      width: 100%;
+      margin-bottom: @p-bottom-margin;
     }
 
     .expand {
@@ -1036,5 +1028,6 @@ ul.tags {
   .video {
     width: 40%;
     display: inline-block;
+    vertical-align: middle;
   }
 }

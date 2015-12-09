@@ -86,7 +86,19 @@ export default class UserSettings extends React.Component {
   }
 
   toggleSettings (field) {
+    let { dispatch, currentUser } = this.props
+    var settings = {...currentUser.settings, ...{[field]: !currentUser.settings[field]}}
+    var updatedUser = {...currentUser, settings}
+    dispatch(updateUserSettingsEditor(updatedUser))
+    dispatch(updateUserSettings(updatedUser, {settings: currentUser.settings}))
+  }
 
+  setDigestFrequency = event => {
+    let { dispatch, currentUser } = this.props
+    var settings = {...currentUser.settings, ...{digest_frequency: event.target.value}}
+    var updatedUser = {...currentUser, settings}
+    dispatch(updateUserSettingsEditor(updatedUser))
+    dispatch(updateUserSettings(updatedUser, {settings: currentUser.settings}))
   }
 
   componentDidMount () {
@@ -163,7 +175,47 @@ export default class UserSettings extends React.Component {
               <div className='summary'>Check the circle to get updates on posts you create or follow. You can also change this for each post individually.</div>
             </div>
             <div className='half-column value'>
-              <input type='checkbox' checked={currentUser.send_email_preference} onClick={() => this.toggle('send_email_preference')}/>
+              <input type='checkbox' checked={currentUser.send_email_preference} onChange={() => this.toggle('send_email_preference')}/>
+            </div>
+          </div>
+          <div className='setting-item'>
+            <div className='half-column'>
+              <label>Receive email digests?</label>
+              <div className='summary'>Choose how frequently you would like to receive email about new activity in your communities.</div>
+            </div>
+            <div className='half-column value'>
+              <select value={currentUser.settings.digest_frequency} ref='digest_frequency' onChange={this.setDigestFrequency} >
+                <option value='daily'>Daily</option>
+                <option value='weekly'>Weekly</option>
+                <option value='never'>Never</option>
+              </select>
+            </div>
+          </div>
+          <div className='setting-item'>
+            <div className='half-column'>
+              <label>Receive email invitations to post?</label>
+              <div className='summary'>Check the circle to get a weekly email that lets you create posts without leaving your inbox.</div>
+            </div>
+            <div className='half-column value'>
+              <input type='checkbox' checked={currentUser.settings.receives_email_prompts} onChange={() => this.toggleSettings('receives_email_prompts')}/>
+            </div>
+          </div>
+          <div className='setting-item'>
+            <div className='half-column'>
+              <label>Get mobile notifications on post you are following?</label>
+              <div className='summary'>Check the circle to get mobile notifications on any posts you are following.</div>
+            </div>
+            <div className='half-column value'>
+              <input type='checkbox' checked={currentUser.push_follow_preference} onChange={() => this.toggle('push_follow_preference')}/>
+            </div>
+          </div>
+          <div className='setting-item'>
+            <div className='half-column'>
+              <label>Get mobile notifications on new posts?</label>
+              <div className='summary'>Check the circle to get mobile notifications on any new posts in your communities.</div>
+            </div>
+            <div className='half-column value'>
+              <input type='checkbox' checked={currentUser.push_new_post_preference} onChange={() => this.toggle('push_new_post_preference')}/>
             </div>
           </div>
 

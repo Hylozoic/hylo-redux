@@ -3,7 +3,7 @@ import { routeReducer } from 'redux-simple-router'
 import { debug } from '../util/logging'
 import { appendUniq } from './util'
 import { contains, uniq } from 'lodash'
-import postsInProgress from './postsInProgress'
+import postEdits from './postEdits'
 import postsByQuery from './postsByQuery'
 import posts from './posts'
 import projectsByQuery from './projectsByQuery'
@@ -138,7 +138,7 @@ export default combineReducers({
   communities,
   posts,
   postsByQuery,
-  postsInProgress,
+  postEdits,
   projects,
   projectsByQuery,
 

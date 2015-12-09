@@ -1,8 +1,8 @@
 require('../support')
-import postsInProgress from '../../src/reducers/postsInProgress'
+import postEdits from '../../src/reducers/postEdits'
 import { START_POST_EDIT } from '../../src/actions'
 
-describe('postsInProgress', () => {
+describe('postEdits', () => {
   describe('on START_POST_EDIT', () => {
     it('sets up post attributes and media', () => {
       let action = {
@@ -29,7 +29,7 @@ describe('postsInProgress', () => {
         }
       }
 
-      expect(postsInProgress(state, action)).to.deep.equal(expectedState)
+      expect(postEdits(state, action)).to.deep.equal(expectedState)
     })
   })
 })

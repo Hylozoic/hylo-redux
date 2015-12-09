@@ -53,7 +53,7 @@ const NEW_POST_PLACEHOLDER_ID = 'new'
     : project
       ? `project-${project.id}-new`
       : NEW_POST_PLACEHOLDER_ID
-  let postInProgress = state.postsInProgress[id] || {}
+  let postInProgress = state.postEdits[id] || {}
 
   // FIXME: this one attribute in postInProgress isn't actually a post attribute
   let { expanded } = postInProgress

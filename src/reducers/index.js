@@ -83,8 +83,16 @@ export default combineReducers({
   },
 
   people: (state = {}, action) => {
-    let { type, error, payload } = action
-    if (error) return state
+    let { type, error, payload, meta } = action
+    if (error) {
+      if (type === UPDATE_USER_SETTINGS) {
+        return {
+          ...state,
+          current: {...state.current, ...meta.prevProps}
+        }
+      }
+      return state
+    }
 
     if (type === LOGOUT) {
       let currentUser = state.current

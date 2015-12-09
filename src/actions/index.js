@@ -200,10 +200,10 @@ export function updateUserSettingsEditor (payload) {
   }
 }
 
-export function updateUserSettings (params) {
+export function updateUserSettings (params, prevProps) {
   return {
     type: UPDATE_USER_SETTINGS,
     payload: {api: true, params, path: `/noo/user/${params.id}`, method: 'POST'},
-    meta: {params}
+    meta: {params, prevProps}
   }
 }

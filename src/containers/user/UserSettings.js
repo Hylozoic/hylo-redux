@@ -8,6 +8,11 @@ import { fetchCurrentUser, updateUserSettings, updateUserSettingsEditor } from '
 @prefetch(({ dispatch, params: {id} }) => dispatch(fetchCurrentUser()))
 @connect(({ people }, props) => ({currentUser: people.current}))
 export default class UserSettings extends React.Component {
+  constructor (props) {
+    super(props)
+    this.state = {editing: {}, edited: {}}
+  }
+
   static propTypes = {
     currentUser: object,
     dispatch: func
@@ -19,38 +24,62 @@ export default class UserSettings extends React.Component {
   }
 
   setEmail = event =>
-    this.updateStore({email: event.target.value})
+    this.setState({edited: {...this.state.edited, email: event.target.value}})
 
-  save = () => {
+  save = (field) => {
     let { dispatch, currentUser } = this.props
-    dispatch(updateUserSettings(currentUser))
+    let { editing, edited } = this.state
+    this.setState({editing: {...editing, [field]: false}})
+    dispatch(updateUserSettingsEditor({...currentUser, ... edited}))
+    dispatch(updateUserSettings({...currentUser, ... edited}, {[field]: currentUser[field]}))
   }
 
-  cancel = () => {
+  edit (field) {
+    let { currentUser } = this.props
+    let { editing, edited } = this.state
+    edited[field] = currentUser[field]
+    this.setState({editing: {...editing, [field]: true}})
+  }
 
+  cancelEdit (field) {
+    let { editing } = this.state
+    this.setState({editing: {...editing, [field]: false}})
   }
 
   render () {
-    // let { currentUser, dispatch, params: { id }, location: { query } } = props
-    // let { type, sort, search } = query
     let { currentUser } = this.props
-    let { email } = currentUser
+    let { editing, edited, expand1 } = this.state
 
-    return <div className={cx('person-settings', 'clearfix')}>
-        <p>Settings for {currentUser.name}</p>
-        <label>
-        <p>Email</p>
-        <input type='text' ref='email' className='email form-control'
-          value={email}
-          onChange={this.setEmail}/>
-      </label>
-      <div className='buttons'>
-        <div className='right'>
-          <button onClick={this.cancel}>Cancel</button>
-          <button className='btn-primary' onClick={this.save}>
-            Save Changes
-          </button>
+    return <div id='user'>
+      <div className='settings'>
+        <div className='section-label' onClick={() => this.setState({expand1: !expand1})}>
+          Account
+          <i className={cx({'icon-down': expand1, 'icon-right': !expand1})}></i>
         </div>
+        {expand1 && <div className='section email'>
+          <div className='setting-item'>
+            <div className='half-column'>
+              <label>Your Email</label>
+              <p>{currentUser.email}</p>
+            </div>
+            {!editing.email && <div className='half-column value'>
+              <button type='button' onClick={() => this.edit('email')}>Change</button>
+            </div>}
+            {editing.email && <div className='half-column value'>
+              <form name='emailForm'>
+                <div className={cx('form-group', {'has-error': false})}>
+                  <input type='text' ref='email' className='email form-control'
+                    value={edited.email}
+                    onChange={this.setEmail}/>
+                  </div>
+              </form>
+              <div className='buttons'>
+                <button type='button' onClick={() => this.cancelEdit('email')}>Cancel</button>
+                <button type='button' className='btn-primary' onClick={() => this.save('email')}>Save</button>
+              </div>
+            </div>}
+          </div>
+        </div>}
       </div>
     </div>
   }

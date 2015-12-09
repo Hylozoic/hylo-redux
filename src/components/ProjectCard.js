@@ -1,5 +1,6 @@
 import React from 'react'
 import { humanDate } from '../util/text'
+import { find, pluck } from 'lodash'
 import Avatar from '../components/Avatar'
 import A from '../components/A'
 
@@ -7,7 +8,7 @@ const spacer = <span>&nbsp;&nbsp;•&nbsp;&nbsp;</span>
 
 const ProjectCard = props => {
   let { project } = props
-  let image = project.image_url || project.thumbnail_url
+  let image = find(pluck(project.media, 'thumbnail_url')) || find(pluck(project.media, 'url'))
   let person = project.user
   let { contributor_count, open_request_count, created_at, title, intention } = project
   let projectUrl = `/project/${project.id}/${project.slug}`

@@ -3,6 +3,7 @@ import { prefetch } from 'react-fetcher'
 import { connect } from 'react-redux'
 import { fetchProject } from '../../actions'
 import { markdown } from '../../util/text'
+import { find } from 'lodash'
 import truncate from 'html-truncate'
 import Avatar from '../../components/Avatar'
 import Video from '../../components/Video'
@@ -33,7 +34,9 @@ export default class ProjectProfile extends React.Component {
   render () {
     let { project, currentUser } = this.props
     if (!project) return <div>Loading...</div>
-    let { user, community, image_url, video_url, id, slug } = project
+    let { user, community, media, id, slug } = project
+    let video = find(media, m => m.type === 'video')
+    let image = find(media, m => m.type === 'image')
     let isPublic = project.visibility === 1
     let isPublished = !!project.published_at
     let canModerate = currentUser && currentUser.id === user.id
@@ -61,9 +64,9 @@ export default class ProjectProfile extends React.Component {
 
         <div className='col-sm-8'>
           <h4 className='intention'>Core Intention: {project.intention}</h4>
-          {video_url
-            ? <div className='visual'><Video url={video_url}/></div>
-            : image_url && <div className='visual' style={{backgroundImage: `url(${image_url})`}}/>}
+          {video
+            ? <div className='visual'><Video url={video.url}/></div>
+          : image && <div className='visual' style={{backgroundImage: `url(${image.url})`}}/>}
           <div dangerouslySetInnerHTML={{__html: details}}/>
           {expandable && <a className='expand' onClick={() => this.setState({expanded: true})}>
             See More

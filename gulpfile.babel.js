@@ -2,15 +2,17 @@ import gulp from 'gulp'
 import nodemon from 'gulp-nodemon'
 import livereload from 'gulp-livereload'
 import config from './config'
-import browserify from './tasks/browserify'
-import less from './tasks/less'
+import { watch, bundle } from './tasks/browserify'
+import { lessDev, lessDist } from './tasks/less'
 import { spawn } from 'child_process'
 import { debounce } from 'lodash'
+import upload from './tasks/upload'
+import rev from 'gulp-rev'
 
-gulp.task('watch-js', () => browserify.watch())
-gulp.task('bundle-dist-js', browserify.bundle)
-gulp.task('bundle-dev-css', less.dev)
-gulp.task('bundle-dist-css', less.dist)
+gulp.task('watch-js', watch)
+gulp.task('bundle-dist-js', bundle)
+gulp.task('bundle-dev-css', lessDev)
+gulp.task('bundle-dist-css', lessDist)
 
 gulp.task('serve', function () {
   nodemon({
@@ -32,7 +34,15 @@ gulp.task('watch', function () {
   gulp.watch('css/**/*.less', ['bundle-dev-css'])
 })
 
+gulp.task('dist-images', function () {
+  gulp.src('public/img/**/*', {base: 'public'})
+  .pipe(rev())
+  .pipe(gulp.dest('dist'))
+  .pipe(rev.manifest({base: 'dist', path: 'dist/manifest.json', merge: true}))
+  .pipe(gulp.dest('dist'))
+})
+
 gulp.task('default', ['watch-js', 'serve', 'watch'])
-gulp.task('upload', ['bundle-dist-js', 'bundle-dist-css'], require('./tasks/upload'))
+gulp.task('upload', ['bundle-dist-js', 'bundle-dist-css'], upload)
 
 process.once('SIGINT', () => process.exit(0))

@@ -10,6 +10,7 @@
     "global": [
       "before",
       "beforeEach",
+      "confirm",
       "describe",
       "expect",
       "it",

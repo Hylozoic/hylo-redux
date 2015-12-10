@@ -1,3 +1,4 @@
+import validator from 'validator'
 import React from 'react'
 import { connect } from 'react-redux'
 import { prefetch } from 'react-fetcher'
@@ -46,7 +47,7 @@ export default class UserSettings extends React.Component {
   setEmail = event => {
     return this.setState({
       edited: {...this.state.edited, email: event.target.value},
-      errors: {...this.state.errors, email: !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(event.target.value)}
+      errors: {...this.state.errors, email: !validator.isEmail(event.target.value)}
     })
   }
 

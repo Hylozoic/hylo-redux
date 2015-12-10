@@ -1,3 +1,4 @@
+const _PENDING = '_PENDING'
 export const CANCEL_POST_EDIT = 'CANCEL_POST_EDIT'
 export const CANCEL_TYPEAHEAD = 'CANCEL_TYPEAHEAD'
 export const CLEAR_CACHE = 'CLEAR_CACHE'
@@ -31,9 +32,11 @@ export const UPDATE_PROJECT_VIDEO = 'UPDATE_PROJECT_VIDEO'
 export const UPLOAD_DOC = 'UPLOAD_DOC'
 export const UPLOAD_IMAGE = 'UPLOAD_IMAGE'
 export const CHANGE_EVENT_RESPONSE = 'CHANGE_EVENT_RESPONSE'
-export const CHANGE_EVENT_RESPONSE_PENDING = 'CHANGE_EVENT_RESPONSE_PENDING'
+export const CHANGE_EVENT_RESPONSE_PENDING = CHANGE_EVENT_RESPONSE + _PENDING
 export const UPDATE_USER_SETTINGS = 'UPDATE_USER_SETTINGS'
 export const UPDATE_USER_SETTINGS_EDITOR = 'UPDATE_USER_SETTINGS_EDITOR'
+export const LEAVE_COMMUNITY = 'LEAVE_COMMUNITY'
+export const LEAVE_COMMUNITY_PENDING = LEAVE_COMMUNITY + _PENDING
 
 import { cleanAndStringify } from '../util/caching'
 import { cloneDeep, find, pick } from 'lodash'
@@ -263,5 +266,13 @@ export function updateProjectVideo (id, payload) {
     type: UPDATE_PROJECT_VIDEO,
     payload,
     meta: {id}
+  }
+}
+
+export function leaveCommunity (communityId) {
+  return {
+    type: LEAVE_COMMUNITY,
+    payload: {api: true, path: `/noo/membership/${communityId}`, method: 'DELETE'},
+    meta: {communityId: communityId}
   }
 }

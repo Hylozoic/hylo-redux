@@ -25,6 +25,7 @@ server.use((req, res, next) => {
   info(magenta(`${req.method} ${upstreamUrl}`))
 
   let headers = req.headers
+  request.delete = request.delete || request.del
   let method = request[req.method.toLowerCase()]
   let upstreamReq = method(upstreamUrl, {headers, followRedirect: false})
 

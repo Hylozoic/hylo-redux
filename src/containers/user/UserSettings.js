@@ -3,7 +3,13 @@ import { connect } from 'react-redux'
 import { prefetch } from 'react-fetcher'
 import cx from 'classnames'
 const { func, object } = React.PropTypes
-import { fetchCurrentUser, updateUserSettings, updateUserSettingsEditor } from '../../actions'
+import { fetchCurrentUser, updateUserSettings, updateUserSettingsEditor, leaveCommunity } from '../../actions'
+import A from '../../components/A'
+
+const formatDate = (date) => {
+  var dateObj = (typeof date === 'string' ? new Date(date) : date)
+  return `${dateObj.toLocaleString('en-us', { month: 'long' })} ${dateObj.getDate()}, ${dateObj.getFullYear()}`
+}
 
 @prefetch(({ dispatch, params: {id} }) => dispatch(fetchCurrentUser()))
 @connect(({ people }, props) => ({currentUser: people.current}))
@@ -101,6 +107,12 @@ export default class UserSettings extends React.Component {
     dispatch(updateUserSettings(updatedUser, {settings: currentUser.settings}))
   }
 
+  leaveCommunity (communityId) {
+    let { dispatch } = this.props
+    if (!confirm('Are you sure you want to leave this community?')) return
+    dispatch(leaveCommunity(communityId))
+  }
+
   componentDidMount () {
     let { location: { query } } = this.props
     let { expand } = query || {}
@@ -111,12 +123,15 @@ export default class UserSettings extends React.Component {
       case 'prompts':
         this.setState({expand1: true})
         break
+      default:
+        this.setState({expand2: true})
+        break
     }
   }
 
   render () {
     let { currentUser } = this.props
-    let { editing, edited, errors, expand1 } = this.state
+    let { editing, edited, errors, expand1, expand2, expand3 } = this.state
 
     return <div id='user'>
       <div className='settings'>
@@ -218,7 +233,38 @@ export default class UserSettings extends React.Component {
               <input type='checkbox' checked={currentUser.push_new_post_preference} onChange={() => this.toggle('push_new_post_preference')}/>
             </div>
           </div>
+        </div>}
+        <div className='section-label' onClick={() => this.setState({expand2: !expand2})}>
+          Communities
+          <i className={cx({'icon-down': expand2, 'icon-right': !expand2})}></i>
+        </div>
+        {expand2 && <div className='section communities'>
+          {currentUser.memberships.map(membership => <div className='setting-item' key={membership.id}>
+            <div className='half-column'>
+              <label><A to={`/c/${membership.community.slug}`}>{membership.community.name}</A></label>
+              <div className='summary'>Joined: { formatDate(membership.created_at) }</div>
+            </div>
+            <div className='half-column value'>
+              <button onClick={() => this.leaveCommunity(membership.community_id)}>Leave</button>
+            </div>
+          </div>)}
+          {currentUser.memberships.length === 0 && <div className='setting-item'>
+            <div className='full-column'>
+              <p>You do not belong to any communities yet. <a onClick={() => this.joinCommunity()}>Join a community</a></p>
+            </div>
+          </div>}
+        </div>}
 
+        <div className='section-label' onClick={() => this.setState({expand3: !expand3})}>
+          Payment Details
+          <i className={cx({'icon-down': expand3, 'icon-right': !expand3})}></i>
+        </div>
+        {expand3 && <div className='section payment'>
+          <div className='setting-item'>
+            <div className='full-column'>
+              <p>You do not belong to any communities that require a membership fee.</p>
+            </div>
+          </div>
         </div>}
       </div>
     </div>

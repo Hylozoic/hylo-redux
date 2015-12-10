@@ -2,7 +2,7 @@ import { combineReducers } from 'redux'
 import { routeReducer } from 'redux-simple-router'
 import { debug } from '../util/logging'
 import { appendUniq } from './util'
-import { contains, uniq } from 'lodash'
+import { contains, uniq, filter } from 'lodash'
 import postEdits from './postEdits'
 import postsByQuery from './postsByQuery'
 import posts from './posts'
@@ -31,7 +31,8 @@ import {
   UPDATE_POST,
   UPLOAD_IMAGE,
   UPDATE_USER_SETTINGS_EDITOR,
-  UPDATE_USER_SETTINGS
+  UPDATE_USER_SETTINGS,
+  LEAVE_COMMUNITY_PENDING
 } from '../actions'
 
 export default combineReducers({
@@ -107,6 +108,14 @@ export default combineReducers({
       }
     }
 
+    if (type === LEAVE_COMMUNITY_PENDING) {
+      let memberships = filter(state.current.memberships, m => m.community_id !== meta.communityId)
+      return {
+        ...state,
+        current: {...state.current, ...{memberships: memberships}}
+      }
+    }
+
     if (!payload) return state
 
     switch (type) {
@@ -136,6 +145,7 @@ export default combineReducers({
           current: {...state.current, ...payload}
         }
       case UPDATE_USER_SETTINGS:
+        debug('UPDATE USER SETTINGS: ', meta)
         return {
           ...state,
           current: {...state.current, ...payload}

@@ -7,6 +7,7 @@ import { lessDev, lessDist } from './tasks/less'
 import { spawn } from 'child_process'
 import { debounce } from 'lodash'
 import upload from './tasks/upload'
+import updateHeroku from './tasks/updateHeroku'
 import rev from 'gulp-rev'
 
 // make gulp respond to Ctrl-C
@@ -53,3 +54,4 @@ gulp.task('bundle-dist-js', bundle)
 gulp.task('bundle-dist-css', lessDist)
 gulp.task('build-dist', ['copy-dist-images', 'build-dist-js', 'build-dist-css'])
 gulp.task('upload', upload)
+gulp.task('updateHeroku', updateHeroku)

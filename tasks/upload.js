@@ -2,9 +2,10 @@ const AWS = require('aws-sdk')
 const fs = require('fs')
 const mime = require('mime')
 import { promisify } from 'bluebird'
-import config from '../config'
 import { walk } from 'walk'
+import { commitTag } from './util'
 
+const bucket = process.env.AWS_S3_BUCKET
 const readFile = promisify(fs.readFile)
 
 const upload = (path, destPath, put) => {
@@ -13,7 +14,7 @@ const upload = (path, destPath, put) => {
     Key: destPath,
     Body: body,
     ContentType: mime.lookup(path),
-    Bucket: config.s3.bucket,
+    Bucket: bucket,
     ACL: 'public-read'
   }))
 }
@@ -30,7 +31,12 @@ export default function () {
       let path = `${root}/${stats.name}`
       let destPath = path.replace(/^dist/, 'misc/lively')
 
-      head({Bucket: config.s3.bucket, Key: destPath})
+      // tag the manifest with the current commit
+      if (path.match(/manifest\.json/)) {
+        destPath = destPath.replace(/\.json$/, `-${commitTag()}.json`)
+      }
+
+      head({Bucket: bucket, Key: destPath})
       .then(() => {
         // do nothing if file exists
         console.log(`exists: ${destPath}`)

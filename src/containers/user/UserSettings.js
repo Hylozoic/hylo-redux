@@ -78,27 +78,29 @@ export default class UserSettings extends React.Component {
     this.setState({editing: {...editing, [field]: false}})
   }
 
-  toggle (field) {
+  setField (field, isInSettings, newValue) {
     let { dispatch, currentUser } = this.props
-    var updatedUser = {...currentUser, ...{[field]: !currentUser[field]}}
+    var oldValue
+    if (isInSettings) {
+      oldValue = currentUser.settings[field]
+    } else {
+      oldValue = currentUser[field]
+    }
+    if (!newValue) {
+      newValue = !oldValue
+    }
+    var userDiff
+    var prevProp
+    if (isInSettings) {
+      userDiff = {settings: {...currentUser.settings, ...{[field]: newValue}}}
+      prevProp = {settings: currentUser.settings}
+    } else {
+      userDiff = {[field]: newValue}
+      prevProp = {[field]: currentUser[field]}
+    }
+    var updatedUser = {...currentUser, ...userDiff}
     dispatch(updateUserSettingsEditor(updatedUser))
-    dispatch(updateUserSettings(updatedUser, {[field]: currentUser[field]}))
-  }
-
-  toggleSettings (field) {
-    let { dispatch, currentUser } = this.props
-    var settings = {...currentUser.settings, ...{[field]: !currentUser.settings[field]}}
-    var updatedUser = {...currentUser, settings}
-    dispatch(updateUserSettingsEditor(updatedUser))
-    dispatch(updateUserSettings(updatedUser, {settings: currentUser.settings}))
-  }
-
-  setDigestFrequency = event => {
-    let { dispatch, currentUser } = this.props
-    var settings = {...currentUser.settings, ...{digest_frequency: event.target.value}}
-    var updatedUser = {...currentUser, settings}
-    dispatch(updateUserSettingsEditor(updatedUser))
-    dispatch(updateUserSettings(updatedUser, {settings: currentUser.settings}))
+    dispatch(updateUserSettings(updatedUser, prevProp))
   }
 
   componentDidMount () {
@@ -175,7 +177,7 @@ export default class UserSettings extends React.Component {
               <div className='summary'>Check the circle to get updates on posts you create or follow. You can also change this for each post individually.</div>
             </div>
             <div className='half-column value'>
-              <input type='checkbox' checked={currentUser.send_email_preference} onChange={() => this.toggle('send_email_preference')}/>
+              <input type='checkbox' checked={currentUser.send_email_preference} onChange={() => this.setField('send_email_preference')}/>
             </div>
           </div>
           <div className='setting-item'>
@@ -184,7 +186,7 @@ export default class UserSettings extends React.Component {
               <div className='summary'>Choose how frequently you would like to receive email about new activity in your communities.</div>
             </div>
             <div className='half-column value'>
-              <select value={currentUser.settings.digest_frequency} ref='digest_frequency' onChange={this.setDigestFrequency} >
+              <select value={currentUser.settings.digest_frequency} ref='digest_frequency' onChange={event => this.setField('digest_frequency', true, event.target.value)} >
                 <option value='daily'>Daily</option>
                 <option value='weekly'>Weekly</option>
                 <option value='never'>Never</option>
@@ -197,7 +199,7 @@ export default class UserSettings extends React.Component {
               <div className='summary'>Check the circle to get a weekly email that lets you create posts without leaving your inbox.</div>
             </div>
             <div className='half-column value'>
-              <input type='checkbox' checked={currentUser.settings.receives_email_prompts} onChange={() => this.toggleSettings('receives_email_prompts')}/>
+              <input type='checkbox' checked={currentUser.settings.receives_email_prompts} onChange={() => this.setField('receives_email_prompts', true)}/>
             </div>
           </div>
           <div className='setting-item'>
@@ -206,7 +208,7 @@ export default class UserSettings extends React.Component {
               <div className='summary'>Check the circle to get mobile notifications on any posts you are following.</div>
             </div>
             <div className='half-column value'>
-              <input type='checkbox' checked={currentUser.push_follow_preference} onChange={() => this.toggle('push_follow_preference')}/>
+              <input type='checkbox' checked={currentUser.push_follow_preference} onChange={() => this.setField('push_follow_preference')}/>
             </div>
           </div>
           <div className='setting-item'>
@@ -215,7 +217,7 @@ export default class UserSettings extends React.Component {
               <div className='summary'>Check the circle to get mobile notifications on any new posts in your communities.</div>
             </div>
             <div className='half-column value'>
-              <input type='checkbox' checked={currentUser.push_new_post_preference} onChange={() => this.toggle('push_new_post_preference')}/>
+              <input type='checkbox' checked={currentUser.push_new_post_preference} onChange={() => this.setField('push_new_post_preference')}/>
             </div>
           </div>
 

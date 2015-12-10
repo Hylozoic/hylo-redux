@@ -1,4 +1,3 @@
-import config from '../../config'
 import React from 'react'
 import { renderToString, renderToStaticMarkup } from 'react-dom/server'
 import Html from '../containers/Html'
@@ -14,6 +13,7 @@ import { cyan, red } from 'chalk'
 import { info, debug } from '../util/logging'
 import { fetchCurrentUser } from '../actions'
 import { localsForPrefetch } from '../util/universal'
+import { getManifest } from '../util/assets'
 import { any, isEmpty, pairs } from 'lodash'
 
 const matchPromise = promisify(match, {multiArgs: true})
@@ -85,8 +85,7 @@ function renderApp (res, renderProps, history, store) {
     return React.createElement(Html, {
       markup: markup,
       state: `window.INITIAL_STATE=${JSON.stringify(state)}`,
-      cssBundle: config.cssBundle,
-      jsBundle: config.jsBundle
+      assetManifest: `window.ASSET_MANIFEST=${JSON.stringify(getManifest())}`
     })
   })
 }

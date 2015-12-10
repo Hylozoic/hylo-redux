@@ -4,6 +4,7 @@ import { magenta, red } from 'chalk'
 import request from 'request'
 import appHandler from './appHandler'
 import { info } from '../util/logging'
+import { setManifest } from '../util/assets'
 
 const server = express()
 server.use(express.static('public'))
@@ -36,7 +37,23 @@ server.use((req, res, next) => {
 
 server.use(appHandler)
 
-server.listen(config.port, function (err) {
-  if (err) throw err
-  info('listening on port ' + config.port)
-})
+const start = () => {
+  server.listen(config.port, function (err) {
+    if (err) throw err
+    info('listening on port ' + config.port)
+  })
+}
+
+if (config.useAssetManifest) {
+  let url = `${config.assetHost}/manifest-${config.sourceVersion}.json`
+  info(`using manifest: ${url}`)
+  request.get(url, {json: true}, (err, res) => {
+    if (err) throw err
+    if (res.statusCode !== 200) throw new Error(`${url} => ${res.statusCode}`)
+
+    setManifest(res.body)
+    start()
+  })
+} else {
+  start()
+}

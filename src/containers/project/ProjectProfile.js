@@ -8,6 +8,7 @@ import truncate from 'html-truncate'
 import Avatar from '../../components/Avatar'
 import Video from '../../components/Video'
 import A from '../../components/A'
+import { assetUrl } from '../../util/assets'
 const { object } = React.PropTypes
 
 @prefetch(({ dispatch, params: { id } }) => dispatch(fetchProject(id)))
@@ -89,7 +90,7 @@ export default class ProjectProfile extends React.Component {
             </li>
             {isPublic
               ? <li>
-                  <span className='icon' style={{backgroundImage: 'url(/img/projects/public.svg)'}}/>
+                  <span className='icon' style={{backgroundImage: `url(${assetUrl('/img/projects/public.svg')})`}}/>
                   <div>
                     <strong>Public Project</strong>
                     {isPublished
@@ -100,7 +101,7 @@ export default class ProjectProfile extends React.Component {
                   </div>
                 </li>
               : <li>
-                  <span className='icon' style={{backgroundImage: 'url(/img/projects/community.svg)'}}/>
+                  <span className='icon' style={{backgroundImage: `url(${assetUrl('/img/projects/community.svg')})`}}/>
                   <div>
                     <strong>Community Project</strong>
                     {isPublished

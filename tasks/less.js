@@ -6,8 +6,13 @@ import minify from 'gulp-minify-css'
 import rename from 'gulp-rename'
 import sourcemaps from 'gulp-sourcemaps'
 import notifier from 'node-notifier'
+import rev from 'gulp-rev'
+import rework from 'gulp-rework'
+import reworkUrl from 'rework-plugin-url'
+import config from '../config'
+import { readFileSync } from 'fs'
 
-var dev = function () {
+export function lessDev () {
   var task = gulp.src('css/index.less')
   .pipe(sourcemaps.init())
   .pipe(less())
@@ -28,17 +33,26 @@ var dev = function () {
     : task.pipe(livereload())
 }
 
-var dist = function () {
-  return gulp.src('src/index.less')
+export function lessDist () {
+  let manifest = JSON.parse(readFileSync('./dist/manifest.json').toString())
+
+  return gulp.src('css/index.less')
   .pipe(sourcemaps.init())
   .pipe(less())
+  .pipe(rework(reworkUrl(path => {
+    let newPath = manifest[path.replace(/^\//, '')]
+    if (newPath) {
+      let url = `${config.assetHost}/${newPath}`
+      console.log(`${path} => ${url}`)
+      return url
+    }
+    return path
+  })))
   .pipe(minify())
-  .pipe(rename('index.min.css'))
+  .pipe(rename('index.css'))
+  .pipe(rev())
   .pipe(sourcemaps.write('./'))
   .pipe(gulp.dest('dist'))
-}
-
-export default {
-  dev: dev,
-  dist: dist
+  .pipe(rev.manifest({base: 'dist', path: 'dist/manifest.json', merge: true}))
+  .pipe(gulp.dest('dist'))
 }

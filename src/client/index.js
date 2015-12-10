@@ -11,11 +11,13 @@ import { getPrefetchedData, getDeferredData } from 'react-fetcher'
 import { debug } from '../util/logging'
 import { localsForPrefetch } from '../util/universal'
 import { isEqual } from 'lodash'
+import { setManifest } from '../util/assets'
 
 const store = configureStore(window.INITIAL_STATE)
 const routes = makeRoutes(store)
 const history = createHistory()
 syncReduxAndRouter(history, store)
+setManifest(window.ASSET_MANIFEST)
 
 var prevLocation = null
 

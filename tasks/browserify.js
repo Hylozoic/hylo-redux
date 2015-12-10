@@ -20,13 +20,14 @@ import sourcemaps from 'gulp-sourcemaps'
 import _ from 'lodash'
 import streamify from 'gulp-streamify'
 import uglify from 'gulp-uglify'
+import rev from 'gulp-rev'
 
-var opts = {
+const opts = {
   entries: ['./src/client'],
   debug: true
 }
 
-var watch = function () {
+export function watch () {
   var b = watchify(browserify(_.assign({}, opts, watchify.args)))
   b.transform('babelify')
   b.transform('envify')
@@ -48,21 +49,19 @@ var watch = function () {
   return update()
 }
 
-var bundle = function () {
+export function bundle () {
   return browserify(opts)
   .transform('babelify')
   .transform('envify')
   .bundle()
   .on('error', gutil.log.bind(gutil, 'Browserify error'))
-  .pipe(source('index.min.js'))
+  .pipe(source('index.js'))
   .pipe(buffer())
   .pipe(sourcemaps.init({loadMaps: true}))
   .pipe(streamify(uglify()))
+  .pipe(rev())
   .pipe(sourcemaps.write('./'))
   .pipe(gulp.dest('dist'))
-}
-
-module.exports = {
-  watch: watch,
-  bundle: bundle
+  .pipe(rev.manifest({base: 'dist', path: 'dist/manifest.json', merge: true}))
+  .pipe(gulp.dest('dist'))
 }

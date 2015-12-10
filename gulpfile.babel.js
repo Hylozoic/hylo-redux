@@ -2,15 +2,20 @@ import gulp from 'gulp'
 import nodemon from 'gulp-nodemon'
 import livereload from 'gulp-livereload'
 import config from './config'
-import browserify from './tasks/browserify'
-import less from './tasks/less'
+import { watch, bundle } from './tasks/browserify'
+import { lessDev, lessDist } from './tasks/less'
 import { spawn } from 'child_process'
 import { debounce } from 'lodash'
+import upload from './tasks/upload'
+import updateHeroku from './tasks/updateHeroku'
+import rev from 'gulp-rev'
+import { exec } from 'shelljs'
 
-gulp.task('watch-js', () => browserify.watch())
-gulp.task('bundle-dist-js', browserify.bundle)
-gulp.task('bundle-dev-css', less.dev)
-gulp.task('bundle-dist-css', less.dist)
+// make gulp respond to Ctrl-C
+process.once('SIGINT', () => process.exit(0))
+
+gulp.task('watch-js', watch)
+gulp.task('build-dev-css', lessDev)
 
 gulp.task('serve', function () {
   nodemon({
@@ -29,10 +34,35 @@ gulp.task('autotest', function () {
 
 gulp.task('watch', function () {
   if (config.livereload) livereload.listen()
-  gulp.watch('css/**/*.less', ['bundle-dev-css'])
+  gulp.watch('css/**/*.less', ['build-dev-css'])
 })
 
 gulp.task('default', ['watch-js', 'serve', 'watch'])
-gulp.task('upload', ['bundle-dist-js', 'bundle-dist-css'], require('./tasks/upload'))
 
-process.once('SIGINT', () => process.exit(0))
+// ---------------------------------------------------------------------
+// deployment tasks
+// ---------------------------------------------------------------------
+
+gulp.task('clean-dist', function () {
+  return exec('rm -r dist', {silent: true})
+})
+
+gulp.task('copy-dist-images', function () {
+  return gulp.src('public/img/**/*', {base: 'public'})
+  .pipe(rev())
+  .pipe(gulp.dest('dist'))
+  .pipe(rev.manifest({base: 'dist', path: 'dist/manifest.json', merge: true}))
+  .pipe(gulp.dest('dist'))
+})
+
+gulp.task('build-dist-js', bundle)
+gulp.task('build-dist-css', ['copy-dist-images'], lessDist)
+gulp.task('build-dist', ['clean-dist', 'copy-dist-images', 'build-dist-js', 'build-dist-css'])
+
+// these are for testing individual steps
+gulp.task('upload', upload)
+gulp.task('updateHeroku', updateHeroku)
+
+// these are for enforcing the sequence of tasks
+gulp.task('deploy-1', ['build-dist'], upload)
+gulp.task('deploy', ['deploy-1'], updateHeroku)

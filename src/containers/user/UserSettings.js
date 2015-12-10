@@ -99,9 +99,14 @@ export default class UserSettings extends React.Component {
     this.updateSetting(setting, !this.props.currentUser.settings[setting])
   }
 
+  joinCommunity () {
+    var inviteCode = window.prompt('Enter the code that was given to you by your community manager.')
+    console.log(inviteCode)
+  }
+
   leaveCommunity (communityId) {
     let { dispatch } = this.props
-    if (!confirm('Are you sure you want to leave this community?')) return
+    if (!window.confirm('Are you sure you want to leave this community?')) return
     dispatch(leaveCommunity(communityId))
   }
 
@@ -242,7 +247,7 @@ export default class UserSettings extends React.Component {
           </div>)}
           {currentUser.memberships.length === 0 && <div className='setting-item'>
             <div className='full-column'>
-              <p>You do not belong to any communities yet. <a onClick={() => this.joinCommunity()}>Join a community</a></p>
+              <p>You do not belong to any communities yet.</p>
             </div>
           </div>}
         </div>}

@@ -9,7 +9,7 @@ Experimental version of the Hylo.com frontend, written with React and Redux.
 
 * client-side caching
   * more responsiveness and less network activity
-  
+
 * better management of complexity
   * as always: less coupling, more adaptability
 
@@ -24,10 +24,12 @@ LIVERELOAD=true
 PORT=9000
 UPSTREAM_HOST=http://localhost:3001
 LOG_LEVEL=debug
+HEROKU_API_TOKEN=anything
+HEROKU_APP_NAME=anything
 ```
 
 create a file named `.env.test` with the same contents, except with `LOG_LEVEL` changed to `warn`, to reduce noise when running tests.
 
-then it's just the usual: `npm install`, `npm start`, `npm test`. 
+then it's just the usual: `npm install`, `npm start`, `npm test`.
 
 it depends on a running instance of [hylo-node](https://github.com/Hylozoic/hylo-node), the location of which is set with `UPSTREAM_HOST`.

@@ -17,7 +17,7 @@ const formatDate = (date) => {
 export default class UserSettings extends React.Component {
   constructor (props) {
     super(props)
-    this.state = {editing: {}, edited: {}, errors: {}}
+    this.state = {editing: {}, edited: {}, errors: {}, expand: {}}
   }
 
   static propTypes = {
@@ -110,33 +110,38 @@ export default class UserSettings extends React.Component {
     dispatch(leaveCommunity(communityId))
   }
 
+  toggleSection (section, open) {
+    let { expand } = this.state
+    this.setState({expand: {...expand, [section]: open || !expand[section]}})
+  }
+
   componentDidMount () {
     let { location: { query } } = this.props
     let { expand } = query || {}
     switch (expand) {
       case 'password':
-        this.setState({expand1: true, editing: {password: true}})
+        this.toggleSection('account', true)
         break
       case 'prompts':
-        this.setState({expand1: true})
+        this.toggleSection('account', true)
         break
       default:
-        this.setState({expand2: true})
+        this.toggleSection('communities', true)
         break
     }
   }
 
   render () {
     let { currentUser } = this.props
-    let { editing, edited, errors, expand1, expand2, expand3 } = this.state
+    let { editing, edited, errors, expand } = this.state
 
     return <div id='user'>
       <div className='settings'>
-        <div className='section-label' onClick={() => this.setState({expand1: !expand1})}>
+        <div className='section-label' onClick={() => this.toggleSection('account')}>
           Account
-          <i className={cx({'icon-down': expand1, 'icon-right': !expand1})}></i>
+          <i className={cx({'icon-down': expand.account, 'icon-right': !expand.account})}></i>
         </div>
-        {expand1 && <div className='section email'>
+        {expand.account && <div className='section email'>
           <div className='setting-item'>
             <div className='half-column'>
               <label>Your Email</label>
@@ -231,11 +236,11 @@ export default class UserSettings extends React.Component {
             </div>
           </div>
         </div>}
-        <div className='section-label' onClick={() => this.setState({expand2: !expand2})}>
+        <div className='section-label' onClick={() => this.toggleSection('communities')}>
           Communities
-          <i className={cx({'icon-down': expand2, 'icon-right': !expand2})}></i>
+          <i className={cx({'icon-down': expand.communities, 'icon-right': !expand.communities})}></i>
         </div>
-        {expand2 && <div className='section communities'>
+        {expand.communities && <div className='section communities'>
           {currentUser.memberships.map(membership => <div className='setting-item' key={membership.id}>
             <div className='half-column'>
               <label><A to={`/c/${membership.community.slug}`}>{membership.community.name}</A></label>
@@ -252,11 +257,11 @@ export default class UserSettings extends React.Component {
           </div>}
         </div>}
 
-        <div className='section-label' onClick={() => this.setState({expand3: !expand3})}>
+        <div className='section-label' onClick={() => this.toggleSection('payment')}>
           Payment Details
-          <i className={cx({'icon-down': expand3, 'icon-right': !expand3})}></i>
+          <i className={cx({'icon-down': expand.payment, 'icon-right': !expand.payment})}></i>
         </div>
-        {expand3 && <div className='section payment'>
+        {expand.payment && <div className='section payment'>
           <div className='setting-item'>
             <div className='full-column'>
               <p>You do not belong to any communities that require a membership fee.</p>

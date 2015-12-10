@@ -153,7 +153,6 @@ export default combineReducers({
         }, {})
         return {...state, ...people}
       case UPDATE_USER_SETTINGS:
-        debug('UPDATE USER SETTINGS: ', meta)
         return {
           ...state,
           current: {...state.current, ...payload}

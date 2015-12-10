@@ -105,9 +105,9 @@ export default class UserSettings extends React.Component {
   }
 
   leaveCommunity (communityId) {
-    let { dispatch } = this.props
+    let { dispatch, currentUser } = this.props
     if (!window.confirm('Are you sure you want to leave this community?')) return
-    dispatch(leaveCommunity(communityId))
+    dispatch(leaveCommunity(communityId, currentUser))
   }
 
   toggleSection (section, open) {

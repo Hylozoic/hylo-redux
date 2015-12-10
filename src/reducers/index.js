@@ -32,6 +32,7 @@ import {
   UPLOAD_IMAGE,
   UPDATE_USER_SETTINGS,
   UPDATE_USER_SETTINGS_PENDING,
+  LEAVE_COMMUNITY,
   LEAVE_COMMUNITY_PENDING
 } from '../actions'
 
@@ -88,6 +89,12 @@ export default combineReducers({
     let { type, error, payload, meta } = action
     if (error) {
       if (type === UPDATE_USER_SETTINGS) {
+        return {
+          ...state,
+          current: {...state.current, ...meta.prevProps}
+        }
+      }
+      if (type === LEAVE_COMMUNITY) {
         return {
           ...state,
           current: {...state.current, ...meta.prevProps}

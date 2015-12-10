@@ -58,5 +58,11 @@ gulp.task('copy-dist-images', function () {
 gulp.task('build-dist-js', bundle)
 gulp.task('build-dist-css', ['copy-dist-images'], lessDist)
 gulp.task('build-dist', ['clean-dist', 'copy-dist-images', 'build-dist-js', 'build-dist-css'])
+
+// these are for testing individual steps
 gulp.task('upload', upload)
 gulp.task('updateHeroku', updateHeroku)
+
+// these are for enforcing the sequence of tasks
+gulp.task('deploy-1', ['build-dist'], upload)
+gulp.task('deploy', ['deploy-1'], updateHeroku)

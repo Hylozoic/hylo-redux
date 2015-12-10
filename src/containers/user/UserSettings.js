@@ -117,12 +117,13 @@ export default class UserSettings extends React.Component {
     switch (expand) {
       case 'password':
         this.toggleSection('account', true)
+        this.edit('password')
         break
       case 'prompts':
         this.toggleSection('account', true)
         break
       default:
-        this.toggleSection('communities', true)
+        this.toggleSection('account', true)
         break
     }
   }

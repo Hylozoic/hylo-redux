@@ -88,46 +88,45 @@ export default combineReducers({
   people: (state = {}, action) => {
     let { type, error, payload, meta } = action
     if (error) {
-      if (type === UPDATE_USER_SETTINGS) {
+      switch (type) {
+        case UPDATE_USER_SETTINGS:
+          return {
+            ...state,
+            current: {...state.current, ...meta.prevProps}
+          }
+        case LEAVE_COMMUNITY:
+          return {
+            ...state,
+            current: {...state.current, ...meta.prevProps}
+          }
+        default:
+          return state
+      }
+    }
+
+    // the cases where there isn't a payload
+    switch (type) {
+      case LOGOUT:
+        let currentUser = state.current
+        if (!currentUser) return state
+
+        debug('un-caching person:', currentUser.id)
         return {
           ...state,
-          current: {...state.current, ...meta.prevProps}
+          current: null,
+          [currentUser.id]: null
         }
-      }
-      if (type === LEAVE_COMMUNITY) {
+      case UPDATE_USER_SETTINGS_PENDING:
         return {
           ...state,
-          current: {...state.current, ...meta.prevProps}
+          current: {...state.current, ...meta.params}
         }
-      }
-      return state
-    }
-
-    if (type === LOGOUT) {
-      let currentUser = state.current
-      if (!currentUser) return state
-
-      debug('un-caching person:', currentUser.id)
-      return {
-        ...state,
-        current: null,
-        [currentUser.id]: null
-      }
-    }
-
-    if (type === UPDATE_USER_SETTINGS_PENDING) {
-      return {
-        ...state,
-        current: {...state.current, ...meta.params}
-      }
-    }
-
-    if (type === LEAVE_COMMUNITY_PENDING) {
-      let memberships = filter(state.current.memberships, m => m.community_id !== meta.communityId)
-      return {
-        ...state,
-        current: {...state.current, ...{memberships: memberships}}
-      }
+      case LEAVE_COMMUNITY_PENDING:
+        let memberships = filter(state.current.memberships, m => m.community_id !== meta.communityId)
+        return {
+          ...state,
+          current: {...state.current, ...{memberships: memberships}}
+        }
     }
 
     if (!payload) return state

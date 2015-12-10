@@ -9,7 +9,9 @@ if (!appName) throw new Error('HEROKU_APP_NAME is not set')
 
 export default function (done) {
   let client = new Heroku({token})
-  client.apps().configVars().update({
-    SOURCE_VERSION: commitTag()
+  let tag = commitTag()
+  console.log('setting SOURCE_VERSION to', tag)
+  client.apps(appName).configVars().update({
+    SOURCE_VERSION: tag
   }, () => done())
 }

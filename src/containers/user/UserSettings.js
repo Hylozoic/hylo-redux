@@ -6,11 +6,7 @@ import cx from 'classnames'
 const { func, object } = React.PropTypes
 import { fetchCurrentUser, updateUserSettings, leaveCommunity } from '../../actions'
 import A from '../../components/A'
-
-const formatDate = (date) => {
-  var dateObj = (typeof date === 'string' ? new Date(date) : date)
-  return `${dateObj.toLocaleString('en-us', { month: 'long' })} ${dateObj.getDate()}, ${dateObj.getFullYear()}`
-}
+import { formatDate } from '../../util/text'
 
 @prefetch(({ dispatch, params: {id} }) => dispatch(fetchCurrentUser()))
 @connect(({ people }, props) => ({currentUser: people.current}))

@@ -1,5 +1,4 @@
 import { uniq } from 'lodash'
-
 import {
   CANCEL_POST_EDIT,
   CREATE_POST,
@@ -11,32 +10,23 @@ import {
   UPLOAD_DOC,
   UPLOAD_IMAGE
 } from '../actions'
-
-const stateWithImage = (state, id, url) => {
-  let post = state[id]
-  let media = (post.media || []).filter(m => m.type !== 'image')
-  if (url) media = media.concat({type: 'image', url})
-  return {
-    ...state,
-    [id]: {...post, media}
-  }
-}
+import { updateMedia } from './util'
 
 const stateWithDoc = (state, id, doc) => {
-  let post = state[id]
-  let media = uniq((post.media || []).concat([doc]), m => m.url)
+  let obj = state[id]
+  let media = uniq((obj.media || []).concat([doc]), m => m.url)
   return {
     ...state,
-    [id]: {...post, media}
+    [id]: {...obj, media}
   }
 }
 
 const stateWithoutDoc = (state, id, doc) => {
-  let post = state[id]
-  let media = (post.media || []).filter(m => m.url !== doc.url)
+  let obj = state[id]
+  let media = (obj.media || []).filter(m => m.url !== doc.url)
   return {
     ...state,
-    [id]: {...post, media}
+    [id]: {...obj, media}
   }
 }
 
@@ -44,7 +34,7 @@ export default function (state = {}, action) {
   if (action.error) return state
 
   let { type, payload, meta } = action
-  let { id } = meta || {}
+  let { subject, id } = meta || {}
   switch (type) {
     case UPDATE_POST_EDITOR:
       return {
@@ -58,9 +48,14 @@ export default function (state = {}, action) {
     case START_POST_EDIT:
       return {...state, [payload.id]: {...payload, expanded: true}}
     case UPLOAD_IMAGE:
-      return stateWithImage(state, id, payload)
     case REMOVE_IMAGE:
-      return stateWithImage(state, id, null)
+      if (subject === 'post') {
+        return {
+          ...state,
+          [id]: updateMedia(state[id], 'image', payload)
+        }
+      }
+      break
     case UPLOAD_DOC:
       return stateWithDoc(state, id, payload)
     case REMOVE_DOC:

@@ -2,7 +2,7 @@ import React from 'react'
 import ProjectCardContainer from '../components/ProjectCardContainer'
 import ScrollListener from '../components/ScrollListener'
 import { connectedListProps, fetchWithCache } from '../util/caching'
-import { fetchProjects } from '../actions/fetchProjects'
+import { fetchProjects } from '../actions/project'
 import { connect } from 'react-redux'
 import { isEmpty } from 'lodash'
 const { array, bool, func, number, object, string } = React.PropTypes

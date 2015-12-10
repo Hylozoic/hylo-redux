@@ -28,7 +28,6 @@ export const UPDATE_POST = 'UPDATE_POST'
 export const UPDATE_POST_EDITOR = 'UPDATE_POST_EDITOR'
 export const UPDATE_PROJECT = 'UPDATE_PROJECT'
 export const UPDATE_PROJECT_EDITOR = 'UPDATE_PROJECT_EDITOR'
-export const UPDATE_PROJECT_VIDEO = 'UPDATE_PROJECT_VIDEO'
 export const UPLOAD_DOC = 'UPLOAD_DOC'
 export const UPLOAD_IMAGE = 'UPLOAD_IMAGE'
 export const CHANGE_EVENT_RESPONSE = 'CHANGE_EVENT_RESPONSE'
@@ -39,7 +38,7 @@ export const LEAVE_COMMUNITY = 'LEAVE_COMMUNITY'
 export const LEAVE_COMMUNITY_PENDING = LEAVE_COMMUNITY + _PENDING
 
 import { cleanAndStringify } from '../util/caching'
-import { cloneDeep, find, pick } from 'lodash'
+import { cloneDeep, pick } from 'lodash'
 
 // this is a client-only action
 export function login (email, password) {
@@ -178,10 +177,10 @@ export function updatePost (id, params) {
   }
 }
 
-export function removeImage (id) {
+export function removeImage (subject, id) {
   return {
     type: REMOVE_IMAGE,
-    meta: {id}
+    meta: {subject, id}
   }
 }
 
@@ -210,55 +209,6 @@ export function updateUserSettings (params, prevProps) {
     type: UPDATE_USER_SETTINGS,
     payload: {api: true, params, path: `/noo/user/${params.id}`, method: 'POST'},
     meta: {params, prevProps}
-  }
-}
-
-export function fetchProject (id) {
-  return {
-    type: FETCH_PROJECT,
-    payload: {api: true, path: `/noo/project/${id}`},
-    meta: {cache: {id, bucket: 'projects', requiredProp: 'details'}}
-  }
-}
-
-export function startProjectEdit (id) {
-  return {
-    type: START_PROJECT_EDIT,
-    meta: {id}
-  }
-}
-
-export function updateProjectEditor (id, payload) {
-  return {
-    type: UPDATE_PROJECT_EDITOR,
-    payload,
-    meta: {id}
-  }
-}
-
-export function updateProject (id, params) {
-  let shimmedParams = pick(params, 'title', 'intention', 'details', 'location')
-
-  // insert flattened media urls as expected by the API
-  ;['video', 'image'].forEach(type => {
-    let obj = find(params.media, m => m.type === type)
-    if (obj) shimmedParams[`${obj}_url`] = obj.url
-  })
-
-  // note that meta.params is the non-shimmed version, so updating the
-  // project in the store is a simple merge
-  return {
-    type: UPDATE_PROJECT,
-    payload: {api: true, params: shimmedParams, path: `/noo/project/${id}`, method: 'POST'},
-    meta: {id, params}
-  }
-}
-
-export function updateProjectVideo (id, payload) {
-  return {
-    type: UPDATE_PROJECT_VIDEO,
-    payload,
-    meta: {id}
   }
 }
 

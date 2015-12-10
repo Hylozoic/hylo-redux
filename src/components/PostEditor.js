@@ -11,6 +11,7 @@ import { contains, filter, find, isEmpty, omit, startsWith } from 'lodash'
 import cx from 'classnames'
 import TagInput from './TagInput'
 import Dropdown from './Dropdown'
+import ImageAttachmentButton from './ImageAttachmentButton'
 import RichTextEditor from './RichTextEditor'
 import { connect } from 'react-redux'
 import {
@@ -45,14 +46,12 @@ const postTypeData = {
   }
 }
 
-const NEW_POST_PLACEHOLDER_ID = 'new'
-
 @connect((state, { community, post, project }) => {
   let id = post
     ? post.id
     : project
       ? `project-${project.id}-new`
-      : NEW_POST_PLACEHOLDER_ID
+      : 'new'
 
   // this object tracks the edits that are currently being made
   let postEdit = state.postEdits[id] || {}
@@ -260,6 +259,7 @@ class AttachmentButtons extends React.Component {
     let { id, dispatch, path } = this.props
 
     dispatch(uploadImage({
+      subject: 'post',
       id,
       path,
       convert: {width: 800, format: 'jpg', fit: 'max', rotate: 'exif'}
@@ -268,7 +268,7 @@ class AttachmentButtons extends React.Component {
 
   removeImage = () => {
     let { id, dispatch } = this.props
-    dispatch(removeImage(id))
+    dispatch(removeImage('post', id))
   }
 
   attachDoc = () => {
@@ -287,22 +287,8 @@ class AttachmentButtons extends React.Component {
     let docs = filter(media, m => m.type === 'gdoc')
 
     return <div>
-      {imagePending
-        ? <button disabled>Please wait...</button>
-        : image
-          ? <Dropdown className='button change-image' toggleChildren={
-              <span>
-                <img src={image.url} className='image-thumbnail'/>
-                Change Image <span className='caret'></span>
-              </span>
-            }>
-              <li><a onClick={this.removeImage}>Remove Image</a></li>
-              <li><a onClick={this.attachImage}>Attach Another</a></li>
-            </Dropdown>
-
-          : <button onClick={this.attachImage}>
-              Attach Image
-            </button>}
+      <ImageAttachmentButton pending={imagePending} image={image}
+        add={this.attachImage} remove={this.removeImage}/>
 
       {!isEmpty(docs)
         ? <Dropdown className='button change-docs' toggleChildren={

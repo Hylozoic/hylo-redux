@@ -52,7 +52,8 @@ export default function makeRoutes (store) {
       <Route path='settings' component={CommunitySettings}/>
     </Route>
     <Route path='p/:id' component={SinglePost}/>
-    <Route path='project/edit/:id' component={ProjectEditor}/>
+    <Route path='project/new' component={ProjectEditor} onenter={requireLogin}/>
+    <Route path='project/edit/:id' component={ProjectEditor} onenter={requireLogin}/>
     <Route path='project/:id/:slug' component={ProjectProfile}>
       <IndexRoute component={ProjectPosts}/>
       <Route path='contributors' component={ProjectContributors}/>

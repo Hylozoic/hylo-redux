@@ -1,25 +1,42 @@
-import { CREATE_PROJECT, UPDATE_PROJECT_EDITOR, UPDATE_PROJECT_VIDEO } from '../actions'
-import { filter } from 'lodash'
-
-const updateVideo = (project, url) => {
-  let { media } = project || {}
-  media = filter(media, m => m.type !== 'video')
-  if (url) media.push({type: 'video', url})
-  return {...project, media}
-}
+import {
+  CREATE_PROJECT,
+  REMOVE_IMAGE,
+  UPDATE_PROJECT,
+  UPDATE_PROJECT_EDITOR,
+  UPLOAD_IMAGE
+} from '../actions'
+import { updateMedia } from './util'
+import { has } from 'lodash'
 
 export default function (state = {}, action) {
   if (action.error) return state
 
   let { type, payload, meta } = action
-  let { id } = meta || {}
+  let { subject, id } = meta || {}
   switch (type) {
-    case CREATE_PROJECT:
-      return {...state, [id]: null}
     case UPDATE_PROJECT_EDITOR:
+      if (has(payload, 'video')) {
+        return {
+          ...state,
+          [id]: updateMedia(state[id], 'video', payload.video)
+        }
+      }
       return {...state, [id]: {...state[id], ...payload}}
-    case UPDATE_PROJECT_VIDEO:
-      return {...state, [id]: updateVideo(state[id], payload)}
+    case UPLOAD_IMAGE:
+    case REMOVE_IMAGE:
+      if (subject === 'project') {
+        return {
+          ...state,
+          [id]: updateMedia(state[id], 'image', payload)
+        }
+      }
+      break
+    case CREATE_PROJECT:
+    case UPDATE_PROJECT:
+      return {
+        ...state,
+        [id]: {...state[id], ...payload, saved: true}
+      }
   }
 
   return state

@@ -216,6 +216,6 @@ export function leaveCommunity (communityId, prevProps) {
   return {
     type: LEAVE_COMMUNITY,
     payload: {api: true, path: `/noo/membership/${communityId}`, method: 'DELETE'},
-    meta: {communityId: communityId, prevProps}
+    meta: {communityId, prevProps}
   }
 }

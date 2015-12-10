@@ -34,7 +34,7 @@ export const UPLOAD_IMAGE = 'UPLOAD_IMAGE'
 export const CHANGE_EVENT_RESPONSE = 'CHANGE_EVENT_RESPONSE'
 export const CHANGE_EVENT_RESPONSE_PENDING = CHANGE_EVENT_RESPONSE + _PENDING
 export const UPDATE_USER_SETTINGS = 'UPDATE_USER_SETTINGS'
-export const UPDATE_USER_SETTINGS_EDITOR = 'UPDATE_USER_SETTINGS_EDITOR'
+export const UPDATE_USER_SETTINGS_PENDING = UPDATE_USER_SETTINGS + _PENDING
 export const LEAVE_COMMUNITY = 'LEAVE_COMMUNITY'
 export const LEAVE_COMMUNITY_PENDING = LEAVE_COMMUNITY + _PENDING
 
@@ -203,13 +203,6 @@ export function changeEventResponse (id, response, user) {
 
 export function toggleMainMenu () {
   return {type: TOGGLE_MAIN_MENU}
-}
-
-export function updateUserSettingsEditor (payload) {
-  return {
-    type: UPDATE_USER_SETTINGS_EDITOR,
-    payload
-  }
 }
 
 export function updateUserSettings (params, prevProps) {

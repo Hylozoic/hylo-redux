@@ -30,8 +30,8 @@ import {
   TYPEAHEAD,
   UPDATE_POST,
   UPLOAD_IMAGE,
-  UPDATE_USER_SETTINGS_EDITOR,
   UPDATE_USER_SETTINGS,
+  UPDATE_USER_SETTINGS_PENDING,
   LEAVE_COMMUNITY_PENDING
 } from '../actions'
 
@@ -108,6 +108,13 @@ export default combineReducers({
       }
     }
 
+    if (type === UPDATE_USER_SETTINGS_PENDING) {
+      return {
+        ...state,
+        current: {...state.current, ...meta.params}
+      }
+    }
+
     if (type === LEAVE_COMMUNITY_PENDING) {
       let memberships = filter(state.current.memberships, m => m.community_id !== meta.communityId)
       return {
@@ -139,11 +146,6 @@ export default combineReducers({
           return m
         }, {})
         return {...state, ...people}
-      case UPDATE_USER_SETTINGS_EDITOR:
-        return {
-          ...state,
-          current: {...state.current, ...payload}
-        }
       case UPDATE_USER_SETTINGS:
         debug('UPDATE USER SETTINGS: ', meta)
         return {

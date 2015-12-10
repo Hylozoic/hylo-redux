@@ -3,7 +3,7 @@ import { connect } from 'react-redux'
 import { prefetch } from 'react-fetcher'
 import cx from 'classnames'
 const { func, object } = React.PropTypes
-import { fetchCurrentUser, updateUserSettings, updateUserSettingsEditor, leaveCommunity } from '../../actions'
+import { fetchCurrentUser, updateUserSettings, leaveCommunity } from '../../actions'
 import A from '../../components/A'
 
 const formatDate = (date) => {
@@ -23,11 +23,6 @@ export default class UserSettings extends React.Component {
     currentUser: object,
     dispatch: func,
     location: object
-  }
-
-  updateStore (data) {
-    let { dispatch } = this.props
-    dispatch(updateUserSettingsEditor(data))
   }
 
   validate () {
@@ -68,7 +63,6 @@ export default class UserSettings extends React.Component {
     let { dispatch, currentUser } = this.props
     let { editing, edited } = this.state
     this.setState({editing: {...editing, [field]: false}})
-    dispatch(updateUserSettingsEditor({...currentUser, ...edited}))
     dispatch(updateUserSettings({...currentUser, ...edited}, {[field]: currentUser[field]}))
   }
 
@@ -87,7 +81,6 @@ export default class UserSettings extends React.Component {
   toggle (field) {
     let { dispatch, currentUser } = this.props
     var updatedUser = {...currentUser, ...{[field]: !currentUser[field]}}
-    dispatch(updateUserSettingsEditor(updatedUser))
     dispatch(updateUserSettings(updatedUser, {[field]: currentUser[field]}))
   }
 
@@ -95,7 +88,6 @@ export default class UserSettings extends React.Component {
     let { dispatch, currentUser } = this.props
     var settings = {...currentUser.settings, ...{[field]: !currentUser.settings[field]}}
     var updatedUser = {...currentUser, settings}
-    dispatch(updateUserSettingsEditor(updatedUser))
     dispatch(updateUserSettings(updatedUser, {settings: currentUser.settings}))
   }
 
@@ -103,7 +95,6 @@ export default class UserSettings extends React.Component {
     let { dispatch, currentUser } = this.props
     var settings = {...currentUser.settings, ...{digest_frequency: event.target.value}}
     var updatedUser = {...currentUser, settings}
-    dispatch(updateUserSettingsEditor(updatedUser))
     dispatch(updateUserSettings(updatedUser, {settings: currentUser.settings}))
   }
 

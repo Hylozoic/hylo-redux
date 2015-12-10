@@ -13,6 +13,7 @@ import { cyan, red } from 'chalk'
 import { info, debug } from '../util/logging'
 import { fetchCurrentUser } from '../actions'
 import { localsForPrefetch } from '../util/universal'
+import { getManifest } from '../util/assets'
 import { any, isEmpty, pairs } from 'lodash'
 
 const matchPromise = promisify(match, {multiArgs: true})
@@ -83,7 +84,8 @@ function renderApp (res, renderProps, history, store) {
 
     return React.createElement(Html, {
       markup: markup,
-      state: `window.INITIAL_STATE=${JSON.stringify(state)}`
+      state: `window.INITIAL_STATE=${JSON.stringify(state)}`,
+      assetManifest: `window.ASSET_MANIFEST=${JSON.stringify(getManifest())}`
     })
   })
 }

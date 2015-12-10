@@ -6,9 +6,12 @@ var manifest = {}
 
 export const setManifest = data => manifest = data
 
+export const getManifest = () => manifest
+
 export const assetUrl = path => {
   if (!useAssetManifest) return path
-  let newPath = manifest[path] || path
+  path = path.replace(/^\//, '')
+  let newPath = `${assetHost}/${manifest[path] || path}`
   debug(`assetUrl: ${path} => ${newPath}`)
-  return `${assetHost}/${newPath}`
+  return newPath
 }

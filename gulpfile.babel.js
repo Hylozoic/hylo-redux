@@ -9,10 +9,11 @@ import { debounce } from 'lodash'
 import upload from './tasks/upload'
 import rev from 'gulp-rev'
 
+// make gulp respond to Ctrl-C
+process.once('SIGINT', () => process.exit(0))
+
 gulp.task('watch-js', watch)
-gulp.task('bundle-dist-js', bundle)
-gulp.task('bundle-dev-css', lessDev)
-gulp.task('bundle-dist-css', lessDist)
+gulp.task('build-dev-css', lessDev)
 
 gulp.task('serve', function () {
   nodemon({
@@ -31,10 +32,16 @@ gulp.task('autotest', function () {
 
 gulp.task('watch', function () {
   if (config.livereload) livereload.listen()
-  gulp.watch('css/**/*.less', ['bundle-dev-css'])
+  gulp.watch('css/**/*.less', ['build-dev-css'])
 })
 
-gulp.task('dist-images', function () {
+gulp.task('default', ['watch-js', 'serve', 'watch'])
+
+// ---------------------------------------------------------------------
+// deployment tasks
+// ---------------------------------------------------------------------
+
+gulp.task('copy-dist-images', function () {
   gulp.src('public/img/**/*', {base: 'public'})
   .pipe(rev())
   .pipe(gulp.dest('dist'))
@@ -42,7 +49,7 @@ gulp.task('dist-images', function () {
   .pipe(gulp.dest('dist'))
 })
 
-gulp.task('default', ['watch-js', 'serve', 'watch'])
-gulp.task('upload', ['bundle-dist-js', 'bundle-dist-css'], upload)
-
-process.once('SIGINT', () => process.exit(0))
+gulp.task('bundle-dist-js', bundle)
+gulp.task('bundle-dist-css', lessDist)
+gulp.task('build-dist', ['copy-dist-images', 'build-dist-js', 'build-dist-css'])
+gulp.task('upload', upload)

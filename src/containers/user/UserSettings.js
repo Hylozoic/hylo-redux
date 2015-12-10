@@ -78,24 +78,24 @@ export default class UserSettings extends React.Component {
     this.setState({editing: {...editing, [field]: false}})
   }
 
-  toggle (field) {
+  update (field, value) {
     let { dispatch, currentUser } = this.props
-    var updatedUser = {...currentUser, ...{[field]: !currentUser[field]}}
+    var updatedUser = {...currentUser, [field]: value}
     dispatch(updateUserSettings(updatedUser, {[field]: currentUser[field]}))
   }
 
-  toggleSettings (field) {
-    let { dispatch, currentUser } = this.props
-    var settings = {...currentUser.settings, ...{[field]: !currentUser.settings[field]}}
-    var updatedUser = {...currentUser, settings}
-    dispatch(updateUserSettings(updatedUser, {settings: currentUser.settings}))
+  updateSetting (setting, value) {
+    let { currentUser } = this.props
+    let updatedSettings = {...currentUser.settings, [setting]: value}
+    this.update('settings', updatedSettings)
   }
 
-  setDigestFrequency = event => {
-    let { dispatch, currentUser } = this.props
-    var settings = {...currentUser.settings, ...{digest_frequency: event.target.value}}
-    var updatedUser = {...currentUser, settings}
-    dispatch(updateUserSettings(updatedUser, {settings: currentUser.settings}))
+  toggle (field) {
+    this.update(field, !this.props.currentUser[field])
+  }
+
+  toggleSetting (setting) {
+    this.updateSetting(setting, !this.props.currentUser.settings[setting])
   }
 
   leaveCommunity (communityId) {
@@ -190,7 +190,7 @@ export default class UserSettings extends React.Component {
               <div className='summary'>Choose how frequently you would like to receive email about new activity in your communities.</div>
             </div>
             <div className='half-column value'>
-              <select value={currentUser.settings.digest_frequency} ref='digest_frequency' onChange={this.setDigestFrequency} >
+              <select value={currentUser.settings.digest_frequency} ref='digest_frequency' onChange={event => this.updateSetting('digest_frequency', event.target.value)} >
                 <option value='daily'>Daily</option>
                 <option value='weekly'>Weekly</option>
                 <option value='never'>Never</option>
@@ -203,7 +203,7 @@ export default class UserSettings extends React.Component {
               <div className='summary'>Check the circle to get a weekly email that lets you create posts without leaving your inbox.</div>
             </div>
             <div className='half-column value'>
-              <input type='checkbox' checked={currentUser.settings.receives_email_prompts} onChange={() => this.toggleSettings('receives_email_prompts')}/>
+              <input type='checkbox' checked={currentUser.settings.receives_email_prompts} onChange={() => this.toggleSetting('receives_email_prompts')}/>
             </div>
           </div>
           <div className='setting-item'>

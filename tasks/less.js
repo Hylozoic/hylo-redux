@@ -7,6 +7,10 @@ import rename from 'gulp-rename'
 import sourcemaps from 'gulp-sourcemaps'
 import notifier from 'node-notifier'
 import rev from 'gulp-rev'
+import rework from 'gulp-rework'
+import reworkUrl from 'rework-plugin-url'
+import config from '../config'
+import { readFileSync } from 'fs'
 
 export function lessDev () {
   var task = gulp.src('css/index.less')
@@ -30,9 +34,20 @@ export function lessDev () {
 }
 
 export function lessDist () {
+  let manifest = JSON.parse(readFileSync('./dist/manifest.json').toString())
+
   return gulp.src('css/index.less')
   .pipe(sourcemaps.init())
   .pipe(less())
+  .pipe(rework(reworkUrl(path => {
+    let newPath = manifest[path.replace(/^\//, '')]
+    if (newPath) {
+      let url = `${config.assetHost}/${newPath}`
+      console.log(`${path} => ${url}`)
+      return url
+    }
+    return path
+  })))
   .pipe(minify())
   .pipe(rename('index.css'))
   .pipe(rev())

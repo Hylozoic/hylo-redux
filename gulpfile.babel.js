@@ -48,7 +48,7 @@ gulp.task('clean-dist', function () {
 })
 
 gulp.task('copy-dist-images', function () {
-  gulp.src('public/img/**/*', {base: 'public'})
+  return gulp.src('public/img/**/*', {base: 'public'})
   .pipe(rev())
   .pipe(gulp.dest('dist'))
   .pipe(rev.manifest({base: 'dist', path: 'dist/manifest.json', merge: true}))
@@ -56,7 +56,7 @@ gulp.task('copy-dist-images', function () {
 })
 
 gulp.task('build-dist-js', bundle)
-gulp.task('build-dist-css', lessDist)
+gulp.task('build-dist-css', ['copy-dist-images'], lessDist)
 gulp.task('build-dist', ['clean-dist', 'copy-dist-images', 'build-dist-js', 'build-dist-css'])
 gulp.task('upload', upload)
 gulp.task('updateHeroku', updateHeroku)

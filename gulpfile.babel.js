@@ -9,6 +9,7 @@ import { debounce } from 'lodash'
 import upload from './tasks/upload'
 import updateHeroku from './tasks/updateHeroku'
 import rev from 'gulp-rev'
+import { exec } from 'shelljs'
 
 // make gulp respond to Ctrl-C
 process.once('SIGINT', () => process.exit(0))
@@ -42,6 +43,10 @@ gulp.task('default', ['watch-js', 'serve', 'watch'])
 // deployment tasks
 // ---------------------------------------------------------------------
 
+gulp.task('clean-dist', function () {
+  return exec('rm -r dist', {silent: true})
+})
+
 gulp.task('copy-dist-images', function () {
   gulp.src('public/img/**/*', {base: 'public'})
   .pipe(rev())
@@ -50,8 +55,8 @@ gulp.task('copy-dist-images', function () {
   .pipe(gulp.dest('dist'))
 })
 
-gulp.task('bundle-dist-js', bundle)
-gulp.task('bundle-dist-css', lessDist)
-gulp.task('build-dist', ['copy-dist-images', 'build-dist-js', 'build-dist-css'])
+gulp.task('build-dist-js', bundle)
+gulp.task('build-dist-css', lessDist)
+gulp.task('build-dist', ['clean-dist', 'copy-dist-images', 'build-dist-js', 'build-dist-css'])
 gulp.task('upload', upload)
 gulp.task('updateHeroku', updateHeroku)

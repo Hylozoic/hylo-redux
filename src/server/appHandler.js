@@ -1,4 +1,3 @@
-import config from '../../config'
 import React from 'react'
 import { renderToString, renderToStaticMarkup } from 'react-dom/server'
 import Html from '../containers/Html'
@@ -84,9 +83,7 @@ function renderApp (res, renderProps, history, store) {
 
     return React.createElement(Html, {
       markup: markup,
-      state: `window.INITIAL_STATE=${JSON.stringify(state)}`,
-      cssBundle: config.cssBundle,
-      jsBundle: config.jsBundle
+      state: `window.INITIAL_STATE=${JSON.stringify(state)}`
     })
   })
 }

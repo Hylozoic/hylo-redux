@@ -55,7 +55,7 @@ export function bundle () {
   .transform('envify')
   .bundle()
   .on('error', gutil.log.bind(gutil, 'Browserify error'))
-  .pipe(source('index.min.js'))
+  .pipe(source('index.js'))
   .pipe(buffer())
   .pipe(sourcemaps.init({loadMaps: true}))
   .pipe(streamify(uglify()))

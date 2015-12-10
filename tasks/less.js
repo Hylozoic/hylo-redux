@@ -34,7 +34,7 @@ export function lessDist () {
   .pipe(sourcemaps.init())
   .pipe(less())
   .pipe(minify())
-  .pipe(rename('index.min.css'))
+  .pipe(rename('index.css'))
   .pipe(rev())
   .pipe(sourcemaps.write('./'))
   .pipe(gulp.dest('dist'))

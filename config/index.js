@@ -6,7 +6,7 @@ var environment = process.env.NODE_ENV || 'development'
 
 const config = {
   environment,
-  useAssetManifest: true,
+  useAssetManifest: environment === 'production',
   assetHost: process.env.ASSET_HOST || '',
   logLevel: process.env.LOG_LEVEL,
   sourceVersion: process.env.SOURCE_VERSION,

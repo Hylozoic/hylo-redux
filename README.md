@@ -24,6 +24,8 @@ LIVERELOAD=true
 PORT=9000
 UPSTREAM_HOST=http://localhost:3001
 LOG_LEVEL=debug
+
+# for deployment only:
 HEROKU_API_TOKEN=anything
 HEROKU_APP_NAME=anything
 ```

@@ -31,7 +31,7 @@ export const UPLOAD_DOC = 'UPLOAD_DOC'
 export const UPLOAD_IMAGE = 'UPLOAD_IMAGE'
 
 import { cleanAndStringify } from '../util/caching'
-import { cloneDeep, find, pick } from 'lodash'
+import { cloneDeep, pick } from 'lodash'
 
 // this is a client-only action
 export function login (email, password) {
@@ -198,47 +198,4 @@ export function changeEventResponse (id, response, user) {
 
 export function toggleMainMenu () {
   return {type: TOGGLE_MAIN_MENU}
-}
-
-export function fetchProject (id) {
-  return {
-    type: FETCH_PROJECT,
-    payload: {api: true, path: `/noo/project/${id}`},
-    meta: {cache: {id, bucket: 'projects', requiredProp: 'details'}}
-  }
-}
-
-export function startProjectEdit (id) {
-  return {
-    type: START_PROJECT_EDIT,
-    meta: {id}
-  }
-}
-
-export function updateProjectEditor (id, payload) {
-  return {
-    type: UPDATE_PROJECT_EDITOR,
-    payload,
-    meta: {id}
-  }
-}
-
-export function updateProject (id, params) {
-  let shimmedParams = pick(params, 'title', 'intention', 'details', 'location', 'visibility')
-
-  // insert flattened media urls as expected by the API
-  ;['video', 'image'].forEach(type => {
-    let obj = find(params.media, m => m.type === type)
-    if (obj) shimmedParams[`${type}_url`] = obj.url
-  })
-
-  if (params.community) shimmedParams.community_id = params.community.id
-
-  // note that meta.params is the non-shimmed version, so updating the
-  // project in the store is a simple merge
-  return {
-    type: UPDATE_PROJECT,
-    payload: {api: true, params: shimmedParams, path: `/noo/project/${id}`, method: 'POST'},
-    meta: {id, params}
-  }
 }

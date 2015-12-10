@@ -1,6 +1,7 @@
 import {
   CREATE_PROJECT,
   REMOVE_IMAGE,
+  UPDATE_PROJECT,
   UPDATE_PROJECT_EDITOR,
   UPLOAD_IMAGE
 } from '../actions'
@@ -13,8 +14,6 @@ export default function (state = {}, action) {
   let { type, payload, meta } = action
   let { subject, id } = meta || {}
   switch (type) {
-    case CREATE_PROJECT:
-      return {...state, [id]: null}
     case UPDATE_PROJECT_EDITOR:
       if (has(payload, 'video')) {
         return {
@@ -32,6 +31,12 @@ export default function (state = {}, action) {
         }
       }
       break
+    case CREATE_PROJECT:
+    case UPDATE_PROJECT:
+      return {
+        ...state,
+        [id]: {...state[id], ...payload, saved: true}
+      }
   }
 
   return state

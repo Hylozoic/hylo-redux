@@ -1,7 +1,7 @@
 import React from 'react'
 import { prefetch } from 'react-fetcher'
 import { connect } from 'react-redux'
-import { fetchProject } from '../../actions'
+import { fetchProject } from '../../actions/project'
 import { markdown } from '../../util/text'
 import { find } from 'lodash'
 import truncate from 'html-truncate'

@@ -1,19 +1,13 @@
 import React from 'react'
 import { prefetch } from 'react-fetcher'
 import { connect } from 'react-redux'
-import {
-  UPDATE_PROJECT,
-  UPLOAD_IMAGE,
-  fetchProject,
-  navigate,
-  removeImage,
-  updateProjectEditor,
-  updateProject
-} from '../../actions'
+import { UPDATE_PROJECT, UPLOAD_IMAGE, navigate, removeImage } from '../../actions'
+import { createProject, fetchProject, updateProject, updateProjectEditor } from '../../actions/project'
 import { uploadImage } from '../../actions/uploadImage'
 import ImageAttachmentButton from '../../components/ImageAttachmentButton'
 import Select from '../../components/Select'
 import { find, isEmpty } from 'lodash'
+import cx from 'classnames'
 const { bool, func, object, string } = React.PropTypes
 
 const visibilityOptions = [
@@ -21,16 +15,18 @@ const visibilityOptions = [
   {id: 1, name: 'Anyone'}
 ]
 
-@prefetch(({ dispatch, params: { id } }) => {
-  if (id) return dispatch(fetchProject(id))
-  // TODO
-})
+@prefetch(({ dispatch, params: { id } }) => id && dispatch(fetchProject(id)))
 @connect(({ projects, projectEdits, pending, people }, { params: { id } }) => {
+  if (!id) id = 'new'
   let project = projects[id]
+  let currentUser = people.current
 
   // copy the project when the edit starts -- don't need to save it
   // elsewhere in the store until something is actually changed
   let projectEdit = {...project, ...projectEdits[id]}
+  if (!projectEdit.community) {
+    projectEdit.community = currentUser.memberships[0].community
+  }
 
   return {
     id,
@@ -38,7 +34,7 @@ const visibilityOptions = [
     projectEdit,
     pending: pending[UPDATE_PROJECT],
     imagePending: pending[UPLOAD_IMAGE],
-    currentUser: people.current
+    currentUser
   }
 })
 export default class ProjectEditor extends React.Component {
@@ -87,10 +83,18 @@ export default class ProjectEditor extends React.Component {
   save = () => {
     let { dispatch, id, project, projectEdit } = this.props
 
-    if (id) {
+    if (project) {
       dispatch(updateProject(id, projectEdit))
       dispatch(navigate(`/project/${project.id}/${project.slug}`))
+    } else {
+      dispatch(createProject(id, projectEdit))
     }
+  }
+
+  componentDidUpdate () {
+    let { dispatch, projectEdit } = this.props
+    let { id, slug, saved } = projectEdit || {}
+    if (saved) dispatch(navigate(`/project/${id}/${slug}`))
   }
 
   render () {
@@ -99,13 +103,12 @@ export default class ProjectEditor extends React.Component {
     let image = find(media, m => m.type === 'image')
     let video = find(media, m => m.type === 'video')
     let communities = currentUser.memberships.map(m => m.community)
-    let selectedVisibility = visibilityOptions.find(o => o.id === visibility)
+    let selectedVisibility = visibilityOptions.find(o => o.id === visibility) || visibilityOptions[0]
+    let isPublished = !!(project && project.published_at)
 
     return <div id='project-editor'>
       <p className='intro'>
-        <button className='btn-primary right' onClick={this.save} disabled={pending}>
-          {project.published_at ? 'Update' : 'Save Draft'}
-        </button>
+        <SaveButton onClick={this.save} {...{isPublished, pending}} className='right'/>
         Everything amazing in the world begins with a story of what might be. Tell a story about what you want to create, and how it could become real. It doesn't have to be perfect; you can always return to edit it later.
       </p>
 
@@ -175,12 +178,16 @@ export default class ProjectEditor extends React.Component {
       </div>
 
       <div className='right'>
-        <button className='btn-primary' onClick={this.save} disabled={pending}>
-          {project.published_at ? 'Update' : 'Save Draft'}
-        </button>
+        <SaveButton onClick={this.save} {...{isPublished, pending}}/>
       </div>
     </div>
   }
+}
+
+const SaveButton = ({ onClick, isPublished, className, pending }) => {
+  return <button className={cx('btn-primary', className)} {...{onClick}} disabled={pending}>
+    {isPublished ? 'Update' : 'Save Draft'}
+  </button>
 }
 
 const Counter = ({value, max}) => {

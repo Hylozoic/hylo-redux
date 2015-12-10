@@ -46,14 +46,12 @@ const postTypeData = {
   }
 }
 
-const NEW_POST_PLACEHOLDER_ID = 'new'
-
 @connect((state, { community, post, project }) => {
   let id = post
     ? post.id
     : project
       ? `project-${project.id}-new`
-      : NEW_POST_PLACEHOLDER_ID
+      : 'new'
 
   // this object tracks the edits that are currently being made
   let postEdit = state.postEdits[id] || {}

@@ -1,5 +1,6 @@
 import React from 'react'
 import Select from './Select'
+import A from './A'
 import { debounce } from 'lodash'
 
 const projectTypes = [
@@ -12,10 +13,10 @@ const ProjectListControls = props => {
   let selectedType = type ? projectTypes.find(t => t.id === type) : projectTypes[0]
 
   return <div className='list-controls'>
-    <button>
+    <A className='button' to='/project/new'>
       <i className='icon-add-01'></i>
       New Project
-    </button>
+    </A>
     <input type='text' className='form-control search'
       placeholder='Search' defaultValue={search}
       onChange={debounce(event => onChange({search: event.target.value}), 500)}/>

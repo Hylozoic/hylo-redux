@@ -1,8 +1,8 @@
 import { combineReducers } from 'redux'
 import { routeReducer } from 'redux-simple-router'
-import { debug } from '../util/logging'
 import { appendUniq } from './util'
-import { contains, uniq, filter } from 'lodash'
+import { contains, uniq } from 'lodash'
+import people from './people'
 import postEdits from './postEdits'
 import postsByQuery from './postsByQuery'
 import posts from './posts'
@@ -17,9 +17,7 @@ import {
   CREATE_COMMENT,
   CREATE_POST,
   FETCH_COMMENTS,
-  FETCH_CURRENT_USER,
   FETCH_PEOPLE,
-  FETCH_PERSON,
   FETCH_POSTS,
   FETCH_PROJECTS,
   LOGIN,
@@ -29,11 +27,7 @@ import {
   TOGGLE_MAIN_MENU,
   TYPEAHEAD,
   UPDATE_POST,
-  UPLOAD_IMAGE,
-  UPDATE_USER_SETTINGS,
-  UPDATE_USER_SETTINGS_PENDING,
-  LEAVE_COMMUNITY,
-  LEAVE_COMMUNITY_PENDING
+  UPLOAD_IMAGE
 } from '../actions'
 
 export default combineReducers({
@@ -85,83 +79,6 @@ export default combineReducers({
     return state
   },
 
-  people: (state = {}, action) => {
-    let { type, error, payload, meta } = action
-    if (error) {
-      switch (type) {
-        case UPDATE_USER_SETTINGS:
-          return {
-            ...state,
-            current: {...state.current, ...meta.prevProps}
-          }
-        case LEAVE_COMMUNITY:
-          return {
-            ...state,
-            current: {...state.current, ...meta.prevProps}
-          }
-        default:
-          return state
-      }
-    }
-
-    // the cases where there isn't a payload
-    switch (type) {
-      case LOGOUT:
-        let currentUser = state.current
-        if (!currentUser) return state
-
-        debug('un-caching person:', currentUser.id)
-        return {
-          ...state,
-          current: null,
-          [currentUser.id]: null
-        }
-      case UPDATE_USER_SETTINGS_PENDING:
-        return {
-          ...state,
-          current: {...state.current, ...meta.params}
-        }
-      case LEAVE_COMMUNITY_PENDING:
-        let memberships = filter(state.current.memberships, m => m.community_id !== meta.communityId)
-        return {
-          ...state,
-          current: {...state.current, ...{memberships: memberships}}
-        }
-    }
-
-    if (!payload) return state
-
-    switch (type) {
-      case FETCH_PERSON:
-        debug('caching person:', payload.id)
-        return {
-          ...state,
-          [payload.id]: payload
-        }
-      case LOGIN:
-      case FETCH_CURRENT_USER:
-        debug('caching person:', payload.id)
-        return {
-          ...state,
-          [payload.id]: payload,
-          current: payload
-        }
-      case FETCH_PEOPLE:
-        let people = payload.people.reduce((m, p) => {
-          m[p.id] = p
-          return m
-        }, {})
-        return {...state, ...people}
-      case UPDATE_USER_SETTINGS:
-        return {
-          ...state,
-          current: {...state.current, ...payload}
-        }
-    }
-
-    return state
-  },
-
   totalPostsByQuery: (state = {}, action) => {
     if (action.error) return state
 
@@ -174,6 +91,7 @@ export default combineReducers({
   },
 
   communities,
+  people,
   posts,
   postsByQuery,
   postEdits,

@@ -1,6 +1,10 @@
-if (typeof window === 'undefined') require('dotenv').load({silent: true})
+import { parse } from 'url'
 
 const environment = process.env.NODE_ENV || 'development'
+
+if (typeof window === 'undefined' && environment === 'development') {
+  require('dotenv').load({silent: true})
+}
 
 const config = {
   environment,
@@ -20,8 +24,9 @@ const config = {
   }
 }
 
-export default config
 
 if (typeof window !== 'undefined') {
   window.__appConfig = config
 }
+
+export default config

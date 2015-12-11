@@ -29,7 +29,7 @@ export default function () {
   return new Promise((resolve, reject) => {
     walker.on('file', (root, stats, next) => {
       let path = `${root}/${stats.name}`
-      let destPath = path.replace(/^dist/, 'misc/lively')
+      let destPath = path.replace(/^dist/, process.env.ASSET_PATH)
 
       // tag the manifest with the current commit
       if (path.match(/manifest\.json/)) {

@@ -1,15 +1,15 @@
-import dotenv from 'dotenv'
-if (typeof window === 'undefined') dotenv.load()
+if (typeof window === 'undefined') require('dotenv').load()
 
-var environment = process.env.NODE_ENV || 'development'
+const environment = process.env.NODE_ENV || 'development'
 
 const config = {
   environment,
   useAssetManifest: environment === 'production',
   assetHost: process.env.ASSET_HOST || '',
+  assetPath: process.env.ASSET_PATH || '',
+  filepickerKey: process.env.FILEPICKER_API_KEY,
   logLevel: process.env.LOG_LEVEL,
   sourceVersion: process.env.SOURCE_VERSION,
-  filepickerKey: process.env.FILEPICKER_API_KEY,
   upstreamHost: process.env.UPSTREAM_HOST,
   s3: {
     bucket: process.env.AWS_S3_BUCKET,

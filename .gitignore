@@ -5,4 +5,5 @@ public/index.js.map
 public/index.css
 .env
 .env.test
+.env.deploy
 npm-debug.log

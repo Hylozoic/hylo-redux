@@ -7,6 +7,7 @@ import { spawn } from 'child_process'
 import { debounce } from 'lodash'
 import upload from './tasks/upload'
 import updateHeroku from './tasks/updateHeroku'
+import loadHerokuEnv from './tasks/loadHerokuEnv'
 import rev from 'gulp-rev'
 import { exec } from 'shelljs'
 import runSequence from 'run-sequence'
@@ -37,7 +38,7 @@ gulp.task('watch', function () {
   gulp.watch('css/**/*.less', ['build-dev-css'])
 })
 
-gulp.task('default', ['watch-js', 'serve', 'watch'])
+gulp.task('default', ['watchJ-js', 'serve', 'watch'])
 
 // ---------------------------------------------------------------------
 // deployment tasks
@@ -58,16 +59,18 @@ gulp.task('copy-dist-images', function () {
 // this depends upon copy-dist-images because it needs to read the manifest to
 // rewrite image urls in CSS
 gulp.task('build-dist-css', ['copy-dist-images'], lessDist)
+gulp.task('load-heroku-env', loadHerokuEnv)
 gulp.task('build-dist-js', bundle)
 gulp.task('upload', upload)
-gulp.task('updateHeroku', updateHeroku)
+gulp.task('update-heroku', updateHeroku)
 
 gulp.task('deploy', function (done) {
   runSequence(
     'clean-dist',
+    'load-heroku-env',
     ['build-dist-css', 'build-dist-js'],
-    'upload',
-    'updateHeroku',
+    // 'upload',
+    // 'update-heroku',
     done
   )
 })

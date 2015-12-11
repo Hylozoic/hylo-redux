@@ -1,4 +1,4 @@
-import { assetHost, useAssetManifest } from '../../config'
+import { assetHost, assetPath, useAssetManifest } from '../../config'
 import { debug } from './logging'
 
 // GASP! A SINGLETON!
@@ -11,7 +11,7 @@ export const getManifest = () => manifest
 export const assetUrl = path => {
   if (!useAssetManifest) return path
   path = path.replace(/^\//, '')
-  let newPath = `${assetHost}/${manifest[path] || path}`
+  let newPath = `${assetHost}/${assetPath}/${manifest[path] || path}`
   debug(`assetUrl: ${path} => ${newPath}`)
   return newPath
 }

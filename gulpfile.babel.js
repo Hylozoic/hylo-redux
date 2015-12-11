@@ -34,6 +34,7 @@ gulp.task('autotest', function () {
 })
 
 gulp.task('watch', function () {
+  require('dotenv').load({silent: true})
   if (process.env.LIVERELOAD) livereload.listen()
   gulp.watch('css/**/*.less', ['build-dev-css'])
 })

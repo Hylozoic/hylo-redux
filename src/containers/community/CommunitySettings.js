@@ -74,18 +74,30 @@ export default class CommunitySettings extends React.Component {
     this.attachImage(false)
   }
 
-  attachImage = (avatar) => {
+  avatarUploadSettings (community) {
+    return {
+      id: community.slug,
+      subject: 'community-avatar',
+      path: `community/${community.id}/avatar`,
+      convert: {width: 160, height: 160, fit: 'crop', rotate: 'exif'}
+    }
+  }
+
+  bannerUploadSettings (community) {
+    return {
+      id: community.slug,
+      subject: 'community-banner',
+      path: `community/${community.id}/banner`,
+      convert: {width: 1600, format: 'jpg', fit: 'max', rotate: 'exif'}
+    }
+  }
+
+  attachImage (avatar) {
     let { dispatch, community } = this.props
     if (avatar) {
-      dispatch(uploadImage({
-        id: community.slug,
-        subject: 'community-avatar',
-        path: `community/${community.id}/avatar`}))
+      dispatch(uploadImage(this.avatarUploadSettings(community)))
     } else {
-      dispatch(uploadImage({
-        id: community.slug,
-        subject: 'community-banner',
-        path: `community/${community.id}/banner`}))
+      dispatch(uploadImage(this.bannerUploadSettings(community)))
     }
   }
 
@@ -106,7 +118,7 @@ export default class CommunitySettings extends React.Component {
 
   render () {
     let { community } = this.props
-    let { avatar_url } = community
+    let { avatar_url, banner_url } = community
     let { editing, edited, errors, expand } = this.state
 
     return <div className='sections'>
@@ -169,6 +181,17 @@ export default class CommunitySettings extends React.Component {
           <div className='half-column value'>
             <div className='community-logo' style={{backgroundImage: `url(${avatar_url})`}}/>
             <button type='button' onClick={this.attachAvatarImage}>Change</button>
+          </div>
+        </div>
+
+        <div className='section-item'>
+          <div className='full-column'>
+            <label>Banner</label>
+            <p className='summary'>This image appears at the top of your community page. (Suggested size: 1400x500 pixels.)</p>
+            <div className='community-banner' style={{backgroundImage: `url(${banner_url})`}}></div>
+          </div>
+          <div className='full-column value'>
+            <button type='button' onClick={this.attachBannerImage}>Change</button>
           </div>
         </div>
 

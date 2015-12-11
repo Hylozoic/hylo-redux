@@ -24,6 +24,11 @@ const config = {
   }
 }
 
+let { upstreamHost } = config
+
+if (!upstreamHost || !parse(upstreamHost).protocol) {
+  throw new Error(`bad value for UPSTREAM_HOST: ${upstreamHost}`)
+}
 
 if (typeof window !== 'undefined') {
   window.__appConfig = config

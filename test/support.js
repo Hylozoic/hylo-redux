@@ -1,7 +1,9 @@
 import dotenv from 'dotenv'
+import chai from 'chai'
+process.env.NODE_ENV = 'test'
+
 dotenv.load({path: './.env.test', silent: true})
 
-import chai from 'chai'
 chai.use(require('chai-spies'))
 global.expect = chai.expect
 global.spy = chai.spy

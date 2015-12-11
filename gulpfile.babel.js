@@ -10,6 +10,7 @@ import upload from './tasks/upload'
 import updateHeroku from './tasks/updateHeroku'
 import rev from 'gulp-rev'
 import { exec } from 'shelljs'
+import runSequence from 'run-sequence'
 
 // make gulp respond to Ctrl-C
 process.once('SIGINT', () => process.exit(0))
@@ -55,14 +56,19 @@ gulp.task('copy-dist-images', function () {
   .pipe(gulp.dest('dist'))
 })
 
-gulp.task('build-dist-js', bundle)
+// this depends upon copy-dist-images because it needs to read the manifest to
+// rewrite image urls in CSS
 gulp.task('build-dist-css', ['copy-dist-images'], lessDist)
-gulp.task('build-dist', ['clean-dist', 'copy-dist-images', 'build-dist-js', 'build-dist-css'])
-
-// these are for testing individual steps
+gulp.task('build-dist-js', bundle)
 gulp.task('upload', upload)
 gulp.task('updateHeroku', updateHeroku)
 
-// these are for enforcing the sequence of tasks
-gulp.task('deploy-1', ['build-dist'], upload)
-gulp.task('deploy', ['deploy-1'], updateHeroku)
+gulp.task('deploy', function (done) {
+  runSequence(
+    'clean-dist',
+    ['build-dist-css', 'build-dist-js'],
+    'upload',
+    'updateHeroku',
+    done
+  )
+})

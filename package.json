@@ -7,7 +7,8 @@
   "scripts": {
     "start": "./node_modules/.bin/gulp",
     "test": "./node_modules/.bin/babel-node ./node_modules/.bin/_mocha",
-    "autotest": "./node_modules/.bin/gulp autotest"
+    "autotest": "./node_modules/.bin/gulp autotest",
+    "deploy": "./node_modules/.bin/gulp deploy"
   },
   "standard": {
     "parser": "babel-eslint",
@@ -84,6 +85,7 @@
     "node-notifier": "^4.3.1",
     "react-proxy": "^1.1.1",
     "rework-plugin-url": "^1.1.0",
+    "run-sequence": "^1.1.5",
     "shelljs": "^0.5.3",
     "vinyl-buffer": "^1.0.0",
     "vinyl-source-stream": "^1.1.0",

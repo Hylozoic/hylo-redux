@@ -1,4 +1,4 @@
-import { upstreamHost, useAssetManifest, assetHost, sourceVersion } from '../../config'
+import { upstreamHost, useAssetManifest, assetHost, assetPath, sourceVersion } from '../../config'
 import express from 'express'
 import { magenta, red } from 'chalk'
 import request from 'request'
@@ -54,7 +54,7 @@ const start = () => {
 }
 
 if (useAssetManifest) {
-  let url = `${assetHost}/manifest-${sourceVersion}.json`
+  let url = `${assetHost}/${assetPath}/manifest-${sourceVersion}.json`
   info(`using manifest: ${url}`)
   request.get(url, {json: true}, (err, res) => {
     if (err) throw err

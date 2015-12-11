@@ -3,6 +3,7 @@ import { humanDate } from '../util/text'
 import { find, pluck } from 'lodash'
 import Avatar from '../components/Avatar'
 import A from '../components/A'
+import { ProjectVisibility } from '../constants'
 
 const spacer = <span>&nbsp;&nbsp;•&nbsp;&nbsp;</span>
 
@@ -13,6 +14,7 @@ const ProjectCard = props => {
   let { contributor_count, open_request_count, created_at, title, intention } = project
   let projectUrl = `/project/${project.id}/${project.slug}`
   let isDraft = !project.published_at
+  let isPublic = !isDraft && project.visibility === ProjectVisibility.PUBLIC
 
   return <div className='project-card'>
     {image && <A to={projectUrl} className='image' style={{backgroundImage: `url(${image})`}}/>}
@@ -30,6 +32,7 @@ const ProjectCard = props => {
       {spacer}
       {open_request_count} request{open_request_count !== 1 && 's'}
       {isDraft && <span>{spacer}Draft</span>}
+      {isPublic && <span>{spacer}Public</span>}
     </div>
   </div>
 }

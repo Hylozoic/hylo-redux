@@ -9,6 +9,7 @@ import Avatar from '../../components/Avatar'
 import Video from '../../components/Video'
 import A from '../../components/A'
 import { assetUrl } from '../../util/assets'
+import { ProjectVisibility } from '../../constants'
 const { object } = React.PropTypes
 
 @prefetch(({ dispatch, params: { id } }) => dispatch(fetchProject(id)))
@@ -38,7 +39,7 @@ export default class ProjectProfile extends React.Component {
     let { user, community, media, id, slug } = project
     let video = find(media, m => m.type === 'video')
     let image = find(media, m => m.type === 'image')
-    let isPublic = project.visibility === 1
+    let isPublic = project.visibility === ProjectVisibility.PUBLIC
     let isPublished = !!project.published_at
     let canModerate = currentUser && currentUser.id === user.id
 

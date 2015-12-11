@@ -1,5 +1,5 @@
+import { upstreamHost, useAssetManifest, assetHost, sourceVersion } from '../../config'
 import express from 'express'
-import { upstreamHost, port, useAssetManifest, assetHost, sourceVersion } from '../../config'
 import { magenta, red } from 'chalk'
 import request from 'request'
 import appHandler from './appHandler'
@@ -7,6 +7,7 @@ import { info } from '../util/logging'
 import { setManifest } from '../util/assets'
 import { parse } from 'url'
 
+const port = process.env.PORT || 9000
 const upstreamHostname = parse(upstreamHost).hostname
 const fixHeaders = headers => ({...headers, host: upstreamHostname})
 

@@ -1,7 +1,6 @@
 import gulp from 'gulp'
 import nodemon from 'gulp-nodemon'
 import livereload from 'gulp-livereload'
-import config from './config'
 import { watch, bundle } from './tasks/browserify'
 import { lessDev, lessDist } from './tasks/less'
 import { spawn } from 'child_process'
@@ -34,7 +33,7 @@ gulp.task('autotest', function () {
 })
 
 gulp.task('watch', function () {
-  if (config.livereload) livereload.listen()
+  if (process.env.LIVERELOAD) livereload.listen()
   gulp.watch('css/**/*.less', ['build-dev-css'])
 })
 

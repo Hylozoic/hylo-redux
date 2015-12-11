@@ -1,0 +1,6 @@
+machine:
+  node:
+    version: 4.2.2
+dependencies:
+  pre:
+    - sudo npm install npm@3.3.12 -g

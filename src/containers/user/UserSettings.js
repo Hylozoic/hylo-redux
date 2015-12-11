@@ -215,7 +215,7 @@ export default class UserSettings extends React.Component {
         </div>
         <div className='section-item'>
           <div className='half-column'>
-            <label>Get mobile notifications on post you are following?</label>
+            <label>Get mobile notifications on posts you are following?</label>
             <div className='summary'>Check the circle to get mobile notifications on any posts you are following.</div>
           </div>
           <div className='half-column value'>

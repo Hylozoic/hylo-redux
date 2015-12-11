@@ -1,8 +1,9 @@
 import { parse } from 'url'
 
 const environment = process.env.NODE_ENV || 'development'
+const isServer = typeof window === 'undefined'
 
-if (typeof window === 'undefined' && environment === 'development') {
+if (isServer && environment === 'development') {
   require('dotenv').load({silent: true})
 }
 
@@ -30,8 +31,6 @@ if (!upstreamHost || !parse(upstreamHost).protocol) {
   throw new Error(`bad value for UPSTREAM_HOST: ${upstreamHost}`)
 }
 
-if (typeof window !== 'undefined') {
-  window.__appConfig = config
-}
+if (!isServer) window.__appConfig = config
 
 export default config

@@ -22,7 +22,7 @@ gulp.task('serve', function () {
   nodemon({
     script: './src/server',
     exec: './node_modules/.bin/babel-node',
-    ignore: ['public/**/*']
+    ignore: ['public/**/*', 'dist/**/*']
   })
 })
 

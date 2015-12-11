@@ -12,7 +12,8 @@ const keys = [
   'FILEPICKER_API_KEY',
   'GOOGLE_BROWSER_KEY',
   'GOOGLE_CLIENT_ID',
-  'LOG_LEVEL'
+  'LOG_LEVEL',
+  'UPSTREAM_HOST'
 ]
 
 export default function (done) {

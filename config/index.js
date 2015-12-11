@@ -9,7 +9,6 @@ const config = {
   assetPath: process.env.ASSET_PATH || '',
   filepickerKey: process.env.FILEPICKER_API_KEY,
   logLevel: process.env.LOG_LEVEL,
-  sourceVersion: process.env.SOURCE_VERSION,
   upstreamHost: process.env.UPSTREAM_HOST,
   s3: {
     bucket: process.env.AWS_S3_BUCKET,

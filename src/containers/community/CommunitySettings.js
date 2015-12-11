@@ -2,6 +2,7 @@ import React from 'react'
 import { connect } from 'react-redux'
 import cx from 'classnames'
 const { object, func } = React.PropTypes
+import { markdown } from '../../util/text'
 import { updateCommunitySettings } from '../../actions'
 
 @connect((state, { params }) => ({community: state.communities[params.id]}))
@@ -22,6 +23,12 @@ export default class CommunitySettings extends React.Component {
     return this.setState({
       edited: {...this.state.edited, name: event.target.value},
       errors: {...this.state.errors, name: !event.target.value}
+    })
+  }
+
+  setDescription = event => {
+    return this.setState({
+      edited: {...this.state.edited, description: event.target.value}
     })
   }
 
@@ -82,7 +89,7 @@ export default class CommunitySettings extends React.Component {
         Appearance
         <i className={cx({'icon-down': expand.appearance, 'icon-right': !expand.appearance})}></i>
       </div>
-      {expand.appearance && <div className='section name'>
+      {expand.appearance && <div className='section appearance'>
         <div className='section-item'>
           <div className='half-column'>
             <label>Name</label>
@@ -102,6 +109,28 @@ export default class CommunitySettings extends React.Component {
             <div className='buttons'>
               <button type='button' onClick={() => this.cancelEdit('name')}>Cancel</button>
               <button type='button' className='btn-primary' onClick={() => this.save('name')}>Save</button>
+            </div>
+          </div>}
+        </div>
+        <div className='section-item description'>
+          <div className='full-column'>
+            <label>Core Intention / About</label>
+          </div>
+          {!editing.description && <div className='full-column'>
+            <div className='description-value' dangerouslySetInnerHTML={{__html: markdown(community.description)}}></div>
+            <button type='button' onClick={() => this.edit('description')}>Change</button>
+          </div>}
+          {editing.description && <div className='full-column'>
+            <form name='nameForm'>
+              <div className={cx('form-group', {'has-error': errors.description})}>
+                <textarea className='form-control description'
+                  value={community.description}
+                  onChange={this.setDescription}/>
+                </div>
+            </form>
+            <div className='buttons'>
+              <button type='button' onClick={() => this.cancelEdit('description')}>Cancel</button>
+              <button type='button' className='btn-primary' onClick={() => this.save('description')}>Save</button>
             </div>
           </div>}
         </div>

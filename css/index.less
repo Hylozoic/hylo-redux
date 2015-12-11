@@ -917,9 +917,9 @@ ul.tags {
       .round-checkbox();
     }
 
-  .summary {
-    .meta-text
-  }
+    .summary {
+      .meta-text
+    }
 
   }
 
@@ -942,6 +942,21 @@ ul.tags {
   .value {
     text-align: right;
   }
+
+  .description-value {
+    text-align: left;
+    max-height: 50vh;
+    overflow: scroll;
+    border: 1px solid @light-gray-border;
+    border-radius: @border-radius-base;
+    padding: 6px 12px;
+    margin-bottom: 10px;
+  }
+
+  textarea.description {
+    min-height: 30vh;
+  }
+
 }
 
 #project {

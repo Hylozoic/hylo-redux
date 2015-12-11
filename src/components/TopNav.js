@@ -25,6 +25,7 @@ const TopNav = (props) => {
             </span>
           }>
             <li><A to={`/u/${currentUser.id}`}>My profile</A></li>
+            <li><A to={'/settings'}>Settings</A></li>
             <li><a href='#' onClick={logout}>Log out</a></li>
           </Dropdown>
         </li>

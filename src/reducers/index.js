@@ -1,8 +1,8 @@
 import { combineReducers } from 'redux'
 import { routeReducer } from 'redux-simple-router'
-import { debug } from '../util/logging'
 import { appendUniq } from './util'
 import { contains, uniq } from 'lodash'
+import people from './people'
 import postEdits from './postEdits'
 import postsByQuery from './postsByQuery'
 import posts from './posts'
@@ -17,9 +17,7 @@ import {
   CREATE_COMMENT,
   CREATE_POST,
   FETCH_COMMENTS,
-  FETCH_CURRENT_USER,
   FETCH_PEOPLE,
-  FETCH_PERSON,
   FETCH_POSTS,
   FETCH_PROJECTS,
   LOGIN,
@@ -81,50 +79,6 @@ export default combineReducers({
     return state
   },
 
-  people: (state = {}, action) => {
-    let { type, error, payload } = action
-    if (error) return state
-
-    if (type === LOGOUT) {
-      let currentUser = state.current
-      if (!currentUser) return state
-
-      debug('un-caching person:', currentUser.id)
-      return {
-        ...state,
-        current: null,
-        [currentUser.id]: null
-      }
-    }
-
-    if (!payload) return state
-
-    switch (type) {
-      case FETCH_PERSON:
-        debug('caching person:', payload.id)
-        return {
-          ...state,
-          [payload.id]: payload
-        }
-      case LOGIN:
-      case FETCH_CURRENT_USER:
-        debug('caching person:', payload.id)
-        return {
-          ...state,
-          [payload.id]: payload,
-          current: payload
-        }
-      case FETCH_PEOPLE:
-        let people = payload.people.reduce((m, p) => {
-          m[p.id] = p
-          return m
-        }, {})
-        return {...state, ...people}
-    }
-
-    return state
-  },
-
   totalPostsByQuery: (state = {}, action) => {
     if (action.error) return state
 
@@ -137,6 +91,7 @@ export default combineReducers({
   },
 
   communities,
+  people,
   posts,
   postsByQuery,
   postEdits,

@@ -72,6 +72,11 @@ export function timeRangeFull (start, end) {
   }
 }
 
+export function formatDate (date) {
+  var dateObj = (typeof date === 'string' ? new Date(date) : date)
+  return `${dateObj.toLocaleString('en-us', { month: 'long' })} ${dateObj.getDate()}, ${dateObj.getFullYear()}`
+}
+
 marked.setOptions({
   gfm: true,
   breaks: true,

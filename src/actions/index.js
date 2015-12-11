@@ -1,3 +1,4 @@
+const _PENDING = '_PENDING'
 export const CANCEL_POST_EDIT = 'CANCEL_POST_EDIT'
 export const CANCEL_TYPEAHEAD = 'CANCEL_TYPEAHEAD'
 export const CLEAR_CACHE = 'CLEAR_CACHE'
@@ -29,6 +30,12 @@ export const UPDATE_PROJECT = 'UPDATE_PROJECT'
 export const UPDATE_PROJECT_EDITOR = 'UPDATE_PROJECT_EDITOR'
 export const UPLOAD_DOC = 'UPLOAD_DOC'
 export const UPLOAD_IMAGE = 'UPLOAD_IMAGE'
+export const CHANGE_EVENT_RESPONSE = 'CHANGE_EVENT_RESPONSE'
+export const CHANGE_EVENT_RESPONSE_PENDING = CHANGE_EVENT_RESPONSE + _PENDING
+export const UPDATE_USER_SETTINGS = 'UPDATE_USER_SETTINGS'
+export const UPDATE_USER_SETTINGS_PENDING = UPDATE_USER_SETTINGS + _PENDING
+export const LEAVE_COMMUNITY = 'LEAVE_COMMUNITY'
+export const LEAVE_COMMUNITY_PENDING = LEAVE_COMMUNITY + _PENDING
 
 import { cleanAndStringify } from '../util/caching'
 import { cloneDeep, pick } from 'lodash'
@@ -185,9 +192,6 @@ export function removeDoc (payload, id) {
   }
 }
 
-export const CHANGE_EVENT_RESPONSE = 'CHANGE_EVENT_RESPONSE'
-export const CHANGE_EVENT_RESPONSE_PENDING = 'CHANGE_EVENT_RESPONSE_PENDING'
-
 export function changeEventResponse (id, response, user) {
   return {
     type: CHANGE_EVENT_RESPONSE,
@@ -198,4 +202,20 @@ export function changeEventResponse (id, response, user) {
 
 export function toggleMainMenu () {
   return {type: TOGGLE_MAIN_MENU}
+}
+
+export function updateUserSettings (params, prevProps) {
+  return {
+    type: UPDATE_USER_SETTINGS,
+    payload: {api: true, params, path: `/noo/user/${params.id}`, method: 'POST'},
+    meta: {params, prevProps}
+  }
+}
+
+export function leaveCommunity (communityId, prevProps) {
+  return {
+    type: LEAVE_COMMUNITY,
+    payload: {api: true, path: `/noo/membership/${communityId}`, method: 'DELETE'},
+    meta: {communityId, prevProps}
+  }
 }

@@ -33,6 +33,7 @@ server.use((req, res, next) => {
   let url = upstreamHost + req.originalUrl
   info(magenta(`${req.method} ${url}`))
 
+  request.delete = request.delete || request.del
   let method = request[req.method.toLowerCase()]
   let headers = fixHeaders(req.headers)
   let upstreamReq = method(url, {headers, followRedirect: false})

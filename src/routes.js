@@ -11,9 +11,11 @@ import CommunityMembers from './containers/community/CommunityMembers'
 import CommunityEvents from './containers/community/CommunityEvents'
 import CommunityProjects from './containers/community/CommunityProjects'
 import AboutCommunity from './containers/community/AboutCommunity'
+import CommunitySettings from './containers/community/CommunitySettings'
 import PersonProfile from './containers/person/PersonProfile'
 import PersonPosts from './containers/person/PersonPosts'
 import AboutPerson from './containers/person/AboutPerson'
+import UserSettings from './containers/user/UserSettings'
 import SinglePost from './containers/SinglePost'
 import ProjectProfile from './containers/project/ProjectProfile'
 import ProjectPosts from './containers/project/ProjectPosts'
@@ -32,6 +34,7 @@ export default function makeRoutes (store) {
   return <Route path='/' component={App}>
     <IndexRoute component={Home}/>
     <Route path='login' component={Login}/>
+    <Route path='settings' component={UserSettings} onEnter={requireLogin}/>
     <Route path='all-posts' component={AllPosts} onEnter={requireLogin}/>
     <Route path='my-posts' component={MyPosts} onEnter={requireLogin}/>
     <Route path='followed-posts' component={FollowedPosts} onEnter={requireLogin}/>
@@ -46,6 +49,7 @@ export default function makeRoutes (store) {
       <Route path='events' component={CommunityEvents}/>
       <Route path='projects' component={CommunityProjects}/>
       <Route path='about' component={AboutCommunity}/>
+      <Route path='settings' component={CommunitySettings}/>
     </Route>
     <Route path='p/:id' component={SinglePost}/>
     <Route path='project/new' component={ProjectEditor} onenter={requireLogin}/>

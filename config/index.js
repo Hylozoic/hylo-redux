@@ -11,6 +11,7 @@ const config = {
   logLevel: process.env.LOG_LEVEL,
   sourceVersion: process.env.SOURCE_VERSION,
   filepickerKey: process.env.FILEPICKER_API_KEY,
+  upstreamHost: process.env.UPSTREAM_HOST,
   s3: {
     bucket: process.env.AWS_S3_BUCKET,
     host: process.env.AWS_S3_HOST
@@ -29,7 +30,6 @@ if (typeof window === 'undefined') {
       secret: process.env.AWS_SECRET_ACCESS_KEY
     },
     port: process.env.PORT || 9000,
-    upstreamHost: process.env.UPSTREAM_HOST || 'http://localhost:3001',
     livereload: !!process.env.LIVERELOAD
   })
 }

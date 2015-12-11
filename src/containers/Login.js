@@ -2,6 +2,7 @@ import React from 'react'
 import qs from 'querystring'
 import { connect } from 'react-redux'
 import { login, navigate, fetchCurrentUser, setLoginError } from '../actions'
+import { upstreamHost } from '../../config'
 const { bool, func, object, string } = React.PropTypes
 
 let popup
@@ -25,7 +26,7 @@ function openPopup (service) {
   let top = document.documentElement.clientHeight / 2 - height / 2
 
   return window.open(
-    `/noo/login/${service}?returnDomain=${window.location.origin}`,
+    `${upstreamHost}/noo/login/${service}?returnDomain=${window.location.origin}`,
     `${service}Auth`,
     `width=${width}, height=${height}, left=${left}, top=${top}, titlebar=no, toolbar=no, menubar=no`
   )

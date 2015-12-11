@@ -1,6 +1,6 @@
 import { flatten, uniq } from 'lodash'
 import { debug } from '../util/logging'
-import { FETCH_POSTS, FETCH_COMMUNITY, FETCH_POST, FETCH_CURRENT_USER, UPDATE_COMMUNITY_SETTINGS, UPDATE_COMMUNITY_SETTINGS_PENDING } from '../actions'
+import { FETCH_POSTS, FETCH_COMMUNITY, FETCH_POST, FETCH_CURRENT_USER, UPLOAD_IMAGE, UPDATE_COMMUNITY_SETTINGS, UPDATE_COMMUNITY_SETTINGS_PENDING } from '../actions'
 
 const update = (state, communities) => {
   // merge with existing data so that we don't replace a long list of
@@ -46,6 +46,15 @@ export default function (state = {}, action) {
     case UPDATE_COMMUNITY_SETTINGS_PENDING:
       let updatedCommunity = [{...state[meta.slug], ...meta.params}]
       return update(state, updatedCommunity)
+    case UPLOAD_IMAGE:
+      if (meta.subject === 'community-avatar') {
+        let updatedCommunity = [{...state[meta.id], avatar_url: payload}]
+        return update(state, updatedCommunity)
+      } else if (meta.subject === 'community-banner') {
+        let updatedCommunity = [{...state[meta.id], banner_url: payload}]
+        return update(state, updatedCommunity)
+      }
+      break
   }
 
   return state

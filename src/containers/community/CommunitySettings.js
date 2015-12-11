@@ -4,6 +4,7 @@ import cx from 'classnames'
 const { object, func } = React.PropTypes
 import { markdown } from '../../util/text'
 import { updateCommunitySettings } from '../../actions'
+import { uploadImage } from '../../actions/uploadImage'
 
 @connect((state, { params }) => ({community: state.communities[params.id]}))
 export default class CommunitySettings extends React.Component {
@@ -65,6 +66,29 @@ export default class CommunitySettings extends React.Component {
     this.setState({editing: {...editing, [field]: false}})
   }
 
+  attachAvatarImage = () => {
+    this.attachImage(true)
+  }
+
+  attachBannerImage = () => {
+    this.attachImage(false)
+  }
+
+  attachImage = (avatar) => {
+    let { dispatch, community } = this.props
+    if (avatar) {
+      dispatch(uploadImage({
+        id: community.slug,
+        subject: 'community-avatar',
+        path: `community/${community.id}/avatar`}))
+    } else {
+      dispatch(uploadImage({
+        id: community.slug,
+        subject: 'community-banner',
+        path: `community/${community.id}/banner`}))
+    }
+  }
+
   toggleSection (section, open) {
     let { expand } = this.state
     this.setState({expand: {...expand, [section]: open || !expand[section]}})
@@ -82,6 +106,7 @@ export default class CommunitySettings extends React.Component {
 
   render () {
     let { community } = this.props
+    let { avatar_url } = community
     let { editing, edited, errors, expand } = this.state
 
     return <div className='sections'>
@@ -112,6 +137,7 @@ export default class CommunitySettings extends React.Component {
             </div>
           </div>}
         </div>
+
         <div className='section-item description'>
           <div className='full-column'>
             <label>Core Intention / About</label>
@@ -134,6 +160,18 @@ export default class CommunitySettings extends React.Component {
             </div>
           </div>}
         </div>
+
+        <div className='section-item icon'>
+          <div className='half-column'>
+            <label>Icon</label>
+            <p className='summary'>This image appears next to your community's name. (Tip: Try a transparent PNG image.)</p>
+          </div>
+          <div className='half-column value'>
+            <div className='community-logo' style={{backgroundImage: `url(${avatar_url})`}}/>
+            <button type='button' onClick={this.attachAvatarImage}>Change</button>
+          </div>
+        </div>
+
       </div>}
     </div>
   }

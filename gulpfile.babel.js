@@ -56,10 +56,11 @@ gulp.task('copy-dist-images', function () {
   .pipe(gulp.dest('dist'))
 })
 
-// this depends upon copy-dist-images because it needs to read the manifest to
-// rewrite image urls in CSS
-gulp.task('build-dist-css', ['copy-dist-images'], lessDist)
 gulp.task('load-heroku-env', loadHerokuEnv)
+
+// build-dist-css depends upon copy-dist-images because it needs to read
+// the manifest to rewrite image urls in CSS
+gulp.task('build-dist-css', ['copy-dist-images'], lessDist)
 gulp.task('build-dist-js', bundle)
 gulp.task('upload', upload)
 gulp.task('update-heroku', updateHeroku)
@@ -69,8 +70,8 @@ gulp.task('deploy', function (done) {
     'clean-dist',
     'load-heroku-env',
     ['build-dist-css', 'build-dist-js'],
-    // 'upload',
-    // 'update-heroku',
+    'upload',
+    'update-heroku',
     done
   )
 })

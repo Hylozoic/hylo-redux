@@ -2,6 +2,17 @@ import support from '../support'
 import appHandler from '../../src/server/appHandler'
 import nock from 'nock'
 import { HOST } from '../../src/util/api'
+import { inspect } from 'util'
+
+const checkError = res => {
+  if (res.error) {
+    if (res.error.payload) {
+      let output = inspect(res.error.payload, {depth: 3}).replace(/^/mg, '       ')
+      throw new Error(`state has errors:\n${output}`)
+    }
+    throw res.error
+  }
+}
 
 describe('appHandler', () => {
   let req, res
@@ -20,6 +31,7 @@ describe('appHandler', () => {
 
       return appHandler(req, res)
       .then(() => {
+        checkError(res)
         expect(res.status).to.have.been.called.with(200)
         expect(res.send).to.have.been.called
         expect(res.body).to.contain('<!DOCTYPE html>')
@@ -53,6 +65,7 @@ describe('appHandler', () => {
 
       return appHandler(req, res)
       .then(() => {
+        checkError(res)
         expect(res.status).to.have.been.called.with(200)
         expect(res.body).to.contain('House')
         expect(res.body).to.contain(bannerUrl)

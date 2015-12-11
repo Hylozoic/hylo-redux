@@ -53,6 +53,7 @@ export default function (req, res) {
     .then(html => res.status(200).send(html))
   })
   .catch(err => {
+    res.error = err
     if (hasAPIErrors(store.getState())) {
       res.redirect(302, `/login?next=${req.url}`)
       return
@@ -80,7 +81,11 @@ function renderApp (res, renderProps, history, store) {
     )
 
     let state = store.getState()
-    if (!isEmpty(state.errors)) throw new Error('state has errors')
+    if (!isEmpty(state.errors)) {
+      let error = new Error('state has errors')
+      error.payload = state.errors
+      throw error
+    }
 
     return React.createElement(Html, {
       markup: markup,

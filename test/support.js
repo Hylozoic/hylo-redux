@@ -1,5 +1,5 @@
 import dotenv from 'dotenv'
-dotenv.load({path: './.env.test'})
+dotenv.load({path: './.env.test', silent: true})
 
 import chai from 'chai'
 chai.use(require('chai-spies'))

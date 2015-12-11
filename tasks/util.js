@@ -7,7 +7,7 @@ export const commitTag = () => {
 }
 
 export const herokuConfig = () => {
-  require('dotenv').load({path: './.env.deploy'})
+  require('dotenv').load({path: './.env.deploy', silent: true})
 
   const token = process.env.HEROKU_API_TOKEN
   if (!token) throw new Error('HEROKU_API_TOKEN is not set')

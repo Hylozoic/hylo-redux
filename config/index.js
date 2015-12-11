@@ -1,4 +1,4 @@
-if (typeof window === 'undefined') require('dotenv').load()
+if (typeof window === 'undefined') require('dotenv').load({silent: true})
 
 const environment = process.env.NODE_ENV || 'development'
 

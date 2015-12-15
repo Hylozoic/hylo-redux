@@ -7,6 +7,7 @@ export const CREATE_POST = 'CREATE_POST'
 export const CREATE_PROJECT = 'CREATE_PROJECT'
 export const FETCH_COMMENTS = 'FETCH_COMMENTS'
 export const FETCH_COMMUNITY = 'FETCH_COMMUNITY'
+export const FETCH_COMMUNITY_SETTINGS = 'FETCH_COMMUNITY_SETTINGS'
 export const FETCH_CURRENT_USER = 'FETCH_CURRENT_USER'
 export const FETCH_PEOPLE = 'FETCH_PEOPLE'
 export const FETCH_PERSON = 'FETCH_PERSON'
@@ -86,6 +87,14 @@ export function fetchCommunity (id) {
     type: FETCH_COMMUNITY,
     payload: {api: true, path: `/noo/community/${id}`},
     meta: {cache: {bucket: 'communities', id, requiredProp: 'banner_url'}}
+  }
+}
+
+export function fetchCommunitySettings (id) {
+  return {
+    type: FETCH_COMMUNITY_SETTINGS,
+    payload: {api: true, path: `/noo/community/${id}/settings`},
+    meta: {cache: {bucket: 'communities', id, requiredProp: 'welcome_message'}}
   }
 }
 

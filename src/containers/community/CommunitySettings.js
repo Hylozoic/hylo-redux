@@ -158,6 +158,10 @@ export default class CommunitySettings extends React.Component {
     this.setState({expand: {...expand, [section]: open || !expand[section]}})
   }
 
+  removeModerator (id) {
+    window.alert('Removing Moderator with id: ' + id)
+  }
+
   componentDidMount () {
     let { location: { query } } = this.props
     let { expand } = query || {}
@@ -363,7 +367,11 @@ export default class CommunitySettings extends React.Component {
               edit or delete other members&#39; posts.
             </p>
 
-            {community.moderators.map(m => <p key={m.id}>{m.name}</p>)}
+            {community.moderators.map(moderator => <div className='moderator' key={moderator.id}>
+              <a><span className='avatar' style={{backgroundImage: `url(${moderator.avatar_url})`}}></span></a>
+              <a className='name'>{moderator.name}</a>
+              <a className='close' onClick={() => this.removeModerator(moderator.id)}>&times;</a>
+            </div>)}
 
           </div>
         </div>

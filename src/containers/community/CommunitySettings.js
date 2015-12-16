@@ -4,8 +4,9 @@ import { connect } from 'react-redux'
 import { prefetch } from 'react-fetcher'
 import cx from 'classnames'
 const { object, func } = React.PropTypes
+import { find } from 'lodash'
 import { markdown } from '../../util/text'
-import { updateCommunitySettings, fetchCommunitySettings, fetchCommunityModerators } from '../../actions'
+import { updateCommunitySettings, fetchCommunitySettings, fetchCommunityModerators, removeComunityModerator, typeahead } from '../../actions'
 import { uploadImage } from '../../actions/uploadImage'
 
 @prefetch(({dispatch, params: {id}}) =>
@@ -159,7 +160,13 @@ export default class CommunitySettings extends React.Component {
   }
 
   removeModerator (id) {
-    window.alert('Removing Moderator with id: ' + id)
+    let { dispatch, community } = this.props
+    let moderators = community.moderators
+    var moderator = find(moderators, m => m.id === id)
+    dispatch(typeahead('o', 11204))
+    if (window.confirm(`Are you sure you wish to remove ${moderator.name}\'s moderator powers?`)) {
+      dispatch(removeComunityModerator(community, id, { moderators }))
+    }
   }
 
   componentDidMount () {

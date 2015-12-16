@@ -41,6 +41,8 @@ export const LEAVE_COMMUNITY = 'LEAVE_COMMUNITY'
 export const LEAVE_COMMUNITY_PENDING = LEAVE_COMMUNITY + _PENDING
 export const UPDATE_COMMUNITY_SETTINGS = 'UPDATE_COMMUNITY_SETTINGS'
 export const UPDATE_COMMUNITY_SETTINGS_PENDING = UPDATE_COMMUNITY_SETTINGS + _PENDING
+export const REMOVE_COMMUNITY_MODERATOR = 'REMOVE_COMMUNITY_MODERATOR'
+export const REMOVE_COMMUNITY_MODERATOR_PENDING = REMOVE_COMMUNITY_MODERATOR + _PENDING
 
 import { cleanAndStringify } from '../util/caching'
 import { cloneDeep, pick } from 'lodash'
@@ -237,7 +239,7 @@ export function leaveCommunity (communityId, prevProps) {
   return {
     type: LEAVE_COMMUNITY,
     payload: {api: true, path: `/noo/membership/${communityId}`, method: 'DELETE'},
-    meta: {communityId: communityId, prevProps}
+    meta: {communityId, prevProps}
   }
 }
 
@@ -246,5 +248,13 @@ export function updateCommunitySettings (params, prevProps) {
     type: UPDATE_COMMUNITY_SETTINGS,
     payload: {api: true, params, path: `/noo/community/${params.id}`, method: 'POST'},
     meta: {slug: params.slug, params, prevProps}
+  }
+}
+
+export function removeComunityModerator (community, moderatorId, prevProps) {
+  return {
+    type: REMOVE_COMMUNITY_MODERATOR,
+    payload: {api: true, path: `/noo/community/${community.id}/moderator/${moderatorId}`, method: 'DELETE'},
+    meta: {slug: community.slug, moderatorId, prevProps}
   }
 }

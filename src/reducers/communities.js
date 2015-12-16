@@ -1,6 +1,6 @@
-import { flatten, uniq } from 'lodash'
+import { flatten, uniq, filter } from 'lodash'
 import { debug } from '../util/logging'
-import { FETCH_POSTS, FETCH_COMMUNITY, FETCH_COMMUNITY_SETTINGS, FETCH_COMMUNITY_MODERATORS, FETCH_POST, FETCH_CURRENT_USER, UPLOAD_IMAGE, UPDATE_COMMUNITY_SETTINGS, UPDATE_COMMUNITY_SETTINGS_PENDING } from '../actions'
+import { FETCH_POSTS, FETCH_COMMUNITY, FETCH_COMMUNITY_SETTINGS, FETCH_COMMUNITY_MODERATORS, FETCH_POST, FETCH_CURRENT_USER, UPLOAD_IMAGE, UPDATE_COMMUNITY_SETTINGS, UPDATE_COMMUNITY_SETTINGS_PENDING, REMOVE_COMMUNITY_MODERATOR, REMOVE_COMMUNITY_MODERATOR_PENDING } from '../actions'
 
 const update = (state, communities) => {
   // merge with existing data so that we don't replace a long list of
@@ -23,21 +23,28 @@ export default function (state = {}, action) {
           ...state,
           [meta.slug]: {...state[meta.slug], ...meta.prevProps}
         }
+      case REMOVE_COMMUNITY_MODERATOR:
+        return {
+          ...state,
+          [meta.slug]: {...state[meta.slug], ...meta.prevProps}
+        }
       default:
         return state
     }
   }
 
+  var community
+
   switch (type) {
     case FETCH_COMMUNITY:
     case FETCH_COMMUNITY_SETTINGS:
       let slug = payload.slug || meta.cache.id
-      var community = {...state[slug], ...payload}
+      community = {...state[slug], ...payload}
       debug('caching community:', community.slug)
       return {...state, [slug]: community}
     case FETCH_COMMUNITY_MODERATORS:
-      var comWithModerators = {...state[meta.cache.id], moderators: payload}
-      return {...state, [meta.cache.id]: comWithModerators}
+      community = {...state[meta.cache.id], moderators: payload}
+      return {...state, [meta.cache.id]: community}
     case FETCH_POSTS:
       let communities = uniq(flatten(payload.posts.map(p => p.communities)), c => c.id)
       return update(state, communities)
@@ -60,6 +67,10 @@ export default function (state = {}, action) {
         return update(state, updatedCommunity)
       }
       break
+    case REMOVE_COMMUNITY_MODERATOR_PENDING:
+      community = state[meta.slug]
+      let moderators = community.moderators
+      return {...state, [meta.slug]: {...community, moderators: filter(moderators, m => m.id !== meta.moderatorId)}}
   }
 
   return state

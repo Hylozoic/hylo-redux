@@ -307,6 +307,14 @@ ul.tabs {
   display: block;
 }
 
+.medium-avatar {
+  width: @avatar-size-medium;
+  height: @avatar-size-medium;
+  border-radius: @avatar-size-medium;
+  background-position: center;
+  background-size: cover;
+}
+
 .large-avatar {
   width: @avatar-size-large;
   height: @avatar-size-large;
@@ -943,6 +951,10 @@ ul.tags {
     text-align: right;
   }
 
+  .form-control {
+    margin-bottom: 10px;
+  }
+
   .description-value {
     text-align: left;
     max-height: 50vh;
@@ -950,7 +962,6 @@ ul.tags {
     border: 1px solid @light-gray-border;
     border-radius: @border-radius-base;
     padding: 6px 12px;
-    margin-bottom: 10px;
   }
 
   textarea.description {
@@ -974,6 +985,30 @@ ul.tags {
     background-position: center;
     margin-bottom: 5px;
   }
+
+  .welcome-message {
+    .leader {
+      float: left;
+      margin: 0 15px 15px 0;
+      text-align: center;
+      width: 70px;
+      .avatar {
+        .large-avatar;
+      }
+      .name {
+        .meta-text;
+        margin-top: 5px;
+      }
+    }
+
+    .buttons {
+      text-align: right;
+      button {
+        margin-right: 0px;
+      }
+    }
+  }
+
 
 }
 

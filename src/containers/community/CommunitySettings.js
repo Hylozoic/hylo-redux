@@ -1,11 +1,13 @@
 import React from 'react'
 import { connect } from 'react-redux'
+import { prefetch } from 'react-fetcher'
 import cx from 'classnames'
 const { object, func } = React.PropTypes
 import { markdown } from '../../util/text'
-import { updateCommunitySettings } from '../../actions'
+import { updateCommunitySettings, fetchCommunitySettings } from '../../actions'
 import { uploadImage } from '../../actions/uploadImage'
 
+@prefetch(({dispatch, params: {id}}) => dispatch(fetchCommunitySettings(id)))
 @connect((state, { params }) => ({community: state.communities[params.id]}))
 export default class CommunitySettings extends React.Component {
 
@@ -33,6 +35,29 @@ export default class CommunitySettings extends React.Component {
     })
   }
 
+  setWelcomeMessage = event => {
+    return this.setState({
+      edited: {...this.state.edited, welcome_message: event.target.value}
+    })
+  }
+
+  setLocation = event => {
+    return this.setState({
+      edited: {...this.state.edited, location: event.target.value}
+    })
+  }
+
+  setBetaAccessCode = event => {
+    let required = !event.target.value
+    let unique = event.target.value === 'unique'
+    let errors = required || unique ? {required: required, unique: unique} : {}
+
+    return this.setState({
+      edited: {...this.state.edited, beta_access_code: event.target.value},
+      errors: {...this.state.errors, beta_access_code: errors}
+    })
+  }
+
   validate () {
     let { errors } = this.state
 
@@ -47,7 +72,8 @@ export default class CommunitySettings extends React.Component {
 
   save = (field) => {
     if (!this.validate()) return
-
+    console.log('state', this.state)
+    console.log('field', field)
     let { dispatch, community } = this.props
     let { editing, edited } = this.state
     this.setState({editing: {...editing, [field]: false}})
@@ -101,6 +127,26 @@ export default class CommunitySettings extends React.Component {
     }
   }
 
+  update (field, value) {
+    let { dispatch, community } = this.props
+    var updatedCommunity = {...community, [field]: value}
+    dispatch(updateCommunitySettings(updatedCommunity, {[field]: community[field]}))
+  }
+
+  updateSetting (setting, value) {
+    let { community } = this.props
+    let updatedSettings = {...community.settings, [setting]: value}
+    this.update('settings', updatedSettings)
+  }
+
+  toggle (field) {
+    this.update(field, !this.props.community[field])
+  }
+
+  toggleSetting (setting) {
+    this.updateSetting(setting, !this.props.community.settings[setting])
+  }
+
   toggleSection (section, open) {
     let { expand } = this.state
     this.setState({expand: {...expand, [section]: open || !expand[section]}})
@@ -111,7 +157,7 @@ export default class CommunitySettings extends React.Component {
     let { expand } = query || {}
     switch (expand) {
       default:
-        this.toggleSection('appearance', true)
+        this.toggleSection('access', true)
         break
     }
   }
@@ -120,6 +166,9 @@ export default class CommunitySettings extends React.Component {
     let { community } = this.props
     let { avatar_url, banner_url } = community
     let { editing, edited, errors, expand } = this.state
+
+    let origin = 'https://www.hylo.com'
+    let join_url = origin + '/c/' + community.slug + '/join/' + community.beta_access_code
 
     return <div className='sections'>
       <div className='section-label' onClick={() => this.toggleSection('appearance')}>
@@ -162,7 +211,7 @@ export default class CommunitySettings extends React.Component {
             <form name='nameForm'>
               <div className={cx('form-group', {'has-error': errors.description})}>
                 <textarea className='form-control description'
-                  value={community.description}
+                  value={edited.description}
                   onChange={this.setDescription}/>
                 </div>
             </form>
@@ -195,7 +244,134 @@ export default class CommunitySettings extends React.Component {
           </div>
         </div>
 
+        <div className='section-item welcome-message'>
+          <div className='full-column'>
+            <label>Welcome message</label>
+            <p className='summary'>This text is shown on the first screen that a new member sees.</p>
+          </div>
+          {!editing.welcome_message && <div className='full-column'>
+            {community.welcome_message && <div className='leader'>
+              <div className='medium-avatar' style={{backgroundImage: `url(${community.leader.avatar_url})`}}></div>
+              <div className='name'>{community.leader.name}</div>
+            </div>}
+            <p>{community.welcome_message || '[Not set yet]'}</p>
+            <div className='buttons'><button type='button' onClick={() => this.edit('welcome_message')}>Change</button></div>
+          </div>}
+          {editing.welcome_message && <div className='full-column edit'>
+            <textarea className='form-control'
+              value={edited.welcome_message}
+              onChange={this.setWelcomeMessage}
+              rows='4'
+              placeholder='Enter a welcome message.'>
+            </textarea>
+            {edited.leader && <p className='summary'>{edited.leader.name}&#39;s image will be shown. Search for someone else:</p>}
+            {!edited.leader && <p className='summary'>Search by name for a community leader, whose image will be shown:</p>}
+            <input type='text' className='form-control' ng-model='selectedLeader'
+              typeahead='user.name for user in findMembers($viewValue)'
+              typeahead-min-length='2'
+              typeahead-template-url='/ui/shared/typeaheadUser.tpl.html'
+              typeahead-wait-ms='300'
+              typeahead-on-select='setLeader($item)'/>
+            <div className='buttons'>
+              <button type='button' onClick={() => this.cancelEdit('welcome_message', 'leader')}>Cancel</button>
+              <button type='button' onClick={() => this.save('welcome_message', 'leader')}>Save</button>
+            </div>
+          </div>}
+        </div>
+
+        <div className='section-item'>
+          <div className='half-column'>
+            <label>Location</label>
+            <p>{community.location || 'You haven\'t specified a location yet.'}</p>
+          </div>
+          {!editing.location && <div className='half-column value'>
+            <button type='button' onClick={() => this.edit('location')}>Change</button>
+          </div>}
+          {editing.location && <div className='half-column value'>
+            <form name='nameForm'>
+              <div className={cx('form-group', {'has-error': errors.location})}>
+                <input type='text' ref='location' className='location form-control'
+                  value={edited.location}
+                  onChange={this.setLocation}/>
+                </div>
+            </form>
+            <div className='buttons'>
+              <button type='button' onClick={() => this.cancelEdit('location')}>Cancel</button>
+              <button type='button' className='btn-primary' onClick={() => this.save('location')}>Save</button>
+            </div>
+          </div>}
+        </div>
       </div>}
+
+      <div className='section-label' onClick={() => this.toggleSection('access')}>
+        Access
+        <i className={cx({'icon-down': expand.access, 'icon-right': !expand.access})}></i>
+      </div>
+      {expand.access && <div className='section appearance'>
+        <div className='section-item'>
+          <div className='half-column'>
+            <label>Allow everyone to invite new members</label>
+            <p className='summary'>If this is disabled, only moderators may send invitations to new members.</p>
+          </div>
+          <div className='half-column value'>
+            <input type='checkbox' checked={community.settings.all_can_invite} onChange={() => this.toggleSetting('all_can_invite')}/>
+          </div>
+        </div>
+        <div className='section-item'>
+          <div className='half-column'>
+            <label>Invitation code</label>
+            <p>{community.beta_access_code || '&nbsp;'}</p>
+            <p className='summary'>This code can be given to people to allow them to join the community, instead of sending individual invitations by email.</p>
+          </div>
+          <div className='half-column'>
+            <label>Invitation code link</label>
+            <p><a href={join_url}>{join_url}</a></p>
+            <p className='summary'>You can copy this link for pasting in emails or embedding on your webpage
+  to pre-populate the invite code for new members to easily join.</p>
+          </div>
+          {!editing.beta_access_code && <div className='half-column value'>
+            <button type='button' onClick={() => this.edit('beta_access_code')}>Change</button>
+          </div>}
+          {editing.beta_access_code && <div className='half-column edit'>
+            <form>
+              <input name='beta_access_code' type='text' className='form-control' value={edited.beta_access_code} onChange={this.setBetaAccessCode} />
+            </form>
+            {errors.beta_access_code && errors.beta_access_code.required && <p className='summary error'>Please fill in a code.</p>}
+            {errors.beta_access_code && errors.beta_access_code.unique && <p className='summary error'>This code cannot be used; please choose another.</p>}
+            <button type='button' onClick={() => this.cancelEdit('beta_access_code')}>Cancel</button>
+            <button type='button' onClick={() => this.save('beta_access_code')}>Save</button>
+          </div>}
+        </div>
+      </div>}
+
+      <div className='section-label' onClick={() => this.toggleSection('moderators')}>
+        Moderators
+        <i className={cx({'icon-down': expand.moderators, 'icon-right': !expand.moderators})}></i>
+      </div>
+      {expand.moderators && <div className='section moderators'>
+        <div className='section-item'>
+          <div className='half-column'>
+            Moderators
+          </div>
+        </div>
+      </div>}
+
+      <div className='section-label' onClick={() => this.toggleSection('email')}>
+        Email
+        <i className={cx({'icon-down': expand.email, 'icon-right': !expand.email})}></i>
+      </div>
+      {expand.email && <div className='section email'>
+        <div className='section-item'>
+          <div className='half-column'>
+            <label>Send a weekly email inviting members to post?</label>
+            <p className='summary'>If this is checked, each week members will receive an email that they can reply to with their offers, requests and intentions.</p>
+          </div>
+          <div className='half-column value'>
+            <input type='checkbox' checked={community.settings.sends_email_prompts} onChange={() => this.toggleSetting('sends_email_prompts')}/>
+          </div>
+        </div>
+      </div>}
+
     </div>
   }
 }

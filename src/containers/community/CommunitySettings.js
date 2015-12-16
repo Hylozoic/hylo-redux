@@ -1,13 +1,19 @@
 import React from 'react'
+import Promise from 'bluebird'
 import { connect } from 'react-redux'
 import { prefetch } from 'react-fetcher'
 import cx from 'classnames'
 const { object, func } = React.PropTypes
 import { markdown } from '../../util/text'
-import { updateCommunitySettings, fetchCommunitySettings } from '../../actions'
+import { updateCommunitySettings, fetchCommunitySettings, fetchCommunityModerators } from '../../actions'
 import { uploadImage } from '../../actions/uploadImage'
 
-@prefetch(({dispatch, params: {id}}) => dispatch(fetchCommunitySettings(id)))
+@prefetch(({dispatch, params: {id}}) =>
+  Promise.join(
+    dispatch(fetchCommunitySettings(id)),
+    dispatch(fetchCommunityModerators(id))
+  )
+)
 @connect((state, { params }) => ({community: state.communities[params.id]}))
 export default class CommunitySettings extends React.Component {
 
@@ -157,7 +163,7 @@ export default class CommunitySettings extends React.Component {
     let { expand } = query || {}
     switch (expand) {
       default:
-        this.toggleSection('access', true)
+        this.toggleSection('moderators', true)
         break
     }
   }
@@ -350,8 +356,15 @@ export default class CommunitySettings extends React.Component {
       </div>
       {expand.moderators && <div className='section moderators'>
         <div className='section-item'>
-          <div className='half-column'>
-            Moderators
+          <div className='full-column'>
+            <p>
+              Moderators can&nbsp;
+              {community.settings.all_can_invite && <span>invite new members and </span>}
+              edit or delete other members&#39; posts.
+            </p>
+
+            {community.moderators.map(m => <p key={m.id}>{m.name}</p>)}
+
           </div>
         </div>
       </div>}

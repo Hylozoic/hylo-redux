@@ -45,6 +45,7 @@ export const ADD_COMMUNITY_MODERATOR = 'ADD_COMMUNITY_MODERATOR'
 export const ADD_COMMUNITY_MODERATOR_PENDING = ADD_COMMUNITY_MODERATOR + _PENDING
 export const REMOVE_COMMUNITY_MODERATOR = 'REMOVE_COMMUNITY_MODERATOR'
 export const REMOVE_COMMUNITY_MODERATOR_PENDING = REMOVE_COMMUNITY_MODERATOR + _PENDING
+export const VALIDATE_COMMUNITY_CODE = 'VALIDATE_COMMUNITY_CODE'
 
 import { cleanAndStringify } from '../util/caching'
 import { cloneDeep, pick } from 'lodash'
@@ -266,5 +267,13 @@ export function removeCommunityModerator (community, moderatorId, prevProps) {
     type: REMOVE_COMMUNITY_MODERATOR,
     payload: {api: true, path: `/noo/community/${community.id}/moderator/${moderatorId}`, method: 'DELETE'},
     meta: {slug: community.slug, moderatorId, prevProps}
+  }
+}
+
+export function validateCommunityCode (code, slug) {
+  return {
+    type: VALIDATE_COMMUNITY_CODE,
+    payload: {api: true, params: {column: 'beta_access_code', value: code, constraint: 'unique'}, path: `/noo/community/validate`, method: 'POST'},
+    meta: {code, slug}
   }
 }

@@ -6,7 +6,7 @@ import cx from 'classnames'
 const { object, func, array } = React.PropTypes
 import { find } from 'lodash'
 import { markdown } from '../../util/text'
-import { updateCommunitySettings, fetchCommunitySettings, fetchCommunityModerators, addCommunityModerator, removeCommunityModerator } from '../../actions'
+import { updateCommunitySettings, fetchCommunitySettings, fetchCommunityModerators, addCommunityModerator, removeCommunityModerator, validateCommunityCode } from '../../actions'
 import { uploadImage } from '../../actions/uploadImage'
 import PersonChooser from '../../components/PersonChooser'
 import { fetchPeople } from '../../actions/fetchPeople'
@@ -67,12 +67,17 @@ export default class CommunitySettings extends React.Component {
   }
 
   setBetaAccessCode = event => {
-    let required = !event.target.value
-    let unique = event.target.value === 'unique'
-    let errors = required || unique ? {required: required, unique: unique} : {}
+    let { dispatch, community } = this.props
+    let code = event.target.value
 
+    if (code && code !== community.beta_access_code) {
+      dispatch(validateCommunityCode(code, community.slug))
+    }
+
+    let empty = !code
+    let errors = empty ? {empty: empty} : {}
     return this.setState({
-      edited: {...this.state.edited, beta_access_code: event.target.value},
+      edited: {...this.state.edited, beta_access_code: code},
       errors: {...this.state.errors, beta_access_code: errors}
     })
   }
@@ -84,6 +89,19 @@ export default class CommunitySettings extends React.Component {
       window.alert('Please provide a community name.')
       this.refs.name.focus()
       return
+    }
+
+    if (errors.beta_access_code) {
+      if (errors.beta_access_code.not_unique) {
+        window.alert('This code cannot be used; please choose another.')
+        this.refs.beta_access_code.focus()
+        return
+      }
+      if (errors.beta_access_code.empty) {
+        window.alert('Please fill in a code.')
+        this.refs.beta_access_code.focus()
+        return
+      }
     }
 
     return true
@@ -217,16 +235,24 @@ export default class CommunitySettings extends React.Component {
     let { expand } = query || {}
     switch (expand) {
       default:
-        this.toggleSection('appearance', true)
+        this.toggleSection('access', true)
         break
     }
   }
 
   componentDidUpdate () {
     let { dispatch, community } = this.props
+    let { edited: { beta_access_code }, errors } = this.state
     let { triggerUpdate } = community
     if (triggerUpdate) {
       dispatch(updateCommunitySettings({...community, triggerUpdate: false}))
+    }
+    if (!(errors.beta_access_code && errors.beta_access_code.not_unique) &&
+      community.validation &&
+      community.validation.beta_access_code &&
+      !community.validation.beta_access_code.unique &&
+      community.validation.beta_access_code.code === beta_access_code) {
+      this.setState({errors: {...errors, beta_access_code: {not_unique: true}}})
     }
   }
 
@@ -398,10 +424,10 @@ export default class CommunitySettings extends React.Component {
           </div>}
           {editing.beta_access_code && <div className='half-column edit'>
             <form>
-              <input name='beta_access_code' type='text' className='form-control' value={edited.beta_access_code} onChange={this.setBetaAccessCode} />
+              <input name='beta_access_code' ref='beta_access_code' type='text' className='form-control' value={edited.beta_access_code} onChange={this.setBetaAccessCode} />
             </form>
-            {errors.beta_access_code && errors.beta_access_code.required && <p className='summary error'>Please fill in a code.</p>}
-            {errors.beta_access_code && errors.beta_access_code.unique && <p className='summary error'>This code cannot be used; please choose another.</p>}
+            {errors.beta_access_code && errors.beta_access_code.empty && <p className='summary error'>Please fill in a code.</p>}
+            {errors.beta_access_code && errors.beta_access_code.not_unique && <p className='summary error'>This code cannot be used; please choose another.</p>}
             <button type='button' onClick={() => this.cancelEdit('beta_access_code')}>Cancel</button>
             <button type='button' onClick={() => this.save('beta_access_code')}>Save</button>
           </div>}

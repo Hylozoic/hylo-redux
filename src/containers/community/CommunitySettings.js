@@ -89,26 +89,48 @@ export default class CommunitySettings extends React.Component {
     return true
   }
 
-  save = (field) => {
+  save = field => {
     if (!this.validate()) return
-    console.log('state', this.state)
-    console.log('field', field)
     let { dispatch, community } = this.props
     let { editing, edited } = this.state
     this.setState({editing: {...editing, [field]: false}})
     dispatch(updateCommunitySettings({...community, ...edited}, {[field]: community[field]}))
   }
 
-  edit (field) {
+  edit = field => {
     let { community } = this.props
     let { editing, edited } = this.state
-    edited[field] = community[field]
-    this.setState({editing: {...editing, [field]: true}})
+    this.setState({
+      editing: {...editing, [field]: true},
+      edited: {...edited, [field]: community[field]}
+    })
   }
 
-  cancelEdit (field) {
+  cancelEdit = field => {
     let { editing } = this.state
     this.setState({editing: {...editing, [field]: false}})
+  }
+
+  multiSave = (field1, field2) => {
+    if (!this.validate()) return
+    let { dispatch, community } = this.props
+    let { editing, edited } = this.state
+    this.setState({editing: {...editing, [field1]: false, [field2]: false}})
+    dispatch(updateCommunitySettings({...community, ...edited}, {[field1]: community[field1], [field2]: community[field2]}))
+  }
+
+  multiEdit = (field1, field2) => {
+    let { community } = this.props
+    let { editing, edited } = this.state
+    this.setState({
+      editing: {...editing, [field1]: true, [field2]: true},
+      edited: {...edited, [field1]: community[field1], [field2]: community[field2]}
+    })
+  }
+
+  multiCancelEdit = (field1, field2) => {
+    let { editing } = this.state
+    this.setState({editing: {...editing, [field1]: false, [field2]: false}})
   }
 
   attachAvatarImage = () => {
@@ -185,12 +207,17 @@ export default class CommunitySettings extends React.Component {
     }
   }
 
+  changeLeader = person => {
+    let { edited } = this.state
+    this.setState({edited: {...edited, leader: person}})
+  }
+
   componentDidMount () {
     let { location: { query } } = this.props
     let { expand } = query || {}
     switch (expand) {
       default:
-        this.toggleSection('moderators', true)
+        this.toggleSection('appearance', true)
         break
     }
   }
@@ -288,7 +315,7 @@ export default class CommunitySettings extends React.Component {
               <div className='name'>{community.leader.name}</div>
             </div>}
             <p>{community.welcome_message || '[Not set yet]'}</p>
-            <div className='buttons'><button type='button' onClick={() => this.edit('welcome_message')}>Change</button></div>
+            <div className='buttons'><button type='button' onClick={() => this.multiEdit('welcome_message', 'leader')}>Change</button></div>
           </div>}
           {editing.welcome_message && <div className='full-column edit'>
             <textarea className='form-control'
@@ -299,15 +326,11 @@ export default class CommunitySettings extends React.Component {
             </textarea>
             {edited.leader && <p className='summary'>{edited.leader.name}&#39;s image will be shown. Search for someone else:</p>}
             {!edited.leader && <p className='summary'>Search by name for a community leader, whose image will be shown:</p>}
-            <input type='text' className='form-control' ng-model='selectedLeader'
-              typeahead='user.name for user in findMembers($viewValue)'
-              typeahead-min-length='2'
-              typeahead-template-url='/ui/shared/typeaheadUser.tpl.html'
-              typeahead-wait-ms='300'
-              typeahead-on-select='setLeader($item)'/>
+            <PersonChooser choices={members}
+              onSelect={this.changeLeader}/>
             <div className='buttons'>
-              <button type='button' onClick={() => this.cancelEdit('welcome_message', 'leader')}>Cancel</button>
-              <button type='button' onClick={() => this.save('welcome_message', 'leader')}>Save</button>
+              <button type='button' onClick={() => this.multiCancelEdit('welcome_message', 'leader')}>Cancel</button>
+              <button type='button' onClick={() => this.multiSave('welcome_message', 'leader')}>Save</button>
             </div>
           </div>}
         </div>

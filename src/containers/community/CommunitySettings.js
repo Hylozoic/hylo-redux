@@ -6,7 +6,7 @@ import cx from 'classnames'
 const { object, func, array } = React.PropTypes
 import { find } from 'lodash'
 import { markdown } from '../../util/text'
-import { updateCommunitySettings, fetchCommunitySettings, fetchCommunityModerators, addCommunityModerator, removeComunityModerator } from '../../actions'
+import { updateCommunitySettings, fetchCommunitySettings, fetchCommunityModerators, addCommunityModerator, removeCommunityModerator } from '../../actions'
 import { uploadImage } from '../../actions/uploadImage'
 import PersonChooser from '../../components/PersonChooser'
 import { fetchPeople } from '../../actions/fetchPeople'
@@ -181,7 +181,7 @@ export default class CommunitySettings extends React.Component {
     let moderators = community.moderators
     var moderator = find(moderators, m => m.id === id)
     if (window.confirm(`Are you sure you wish to remove ${moderator.name}\'s moderator powers?`)) {
-      dispatch(removeComunityModerator(community, id, { moderators }))
+      dispatch(removeCommunityModerator(community, id, { moderators }))
     }
   }
 

@@ -261,7 +261,7 @@ export function addCommunityModerator (community, moderator, prevProps) {
   }
 }
 
-export function removeComunityModerator (community, moderatorId, prevProps) {
+export function removeCommunityModerator (community, moderatorId, prevProps) {
   return {
     type: REMOVE_COMMUNITY_MODERATOR,
     payload: {api: true, path: `/noo/community/${community.id}/moderator/${moderatorId}`, method: 'DELETE'},

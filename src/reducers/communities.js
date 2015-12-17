@@ -1,6 +1,6 @@
-import { flatten, uniq, filter } from 'lodash'
+import { flatten, uniq, filter, union } from 'lodash'
 import { debug } from '../util/logging'
-import { FETCH_POSTS, FETCH_COMMUNITY, FETCH_COMMUNITY_SETTINGS, FETCH_COMMUNITY_MODERATORS, FETCH_POST, FETCH_CURRENT_USER, UPLOAD_IMAGE, UPDATE_COMMUNITY_SETTINGS, UPDATE_COMMUNITY_SETTINGS_PENDING, REMOVE_COMMUNITY_MODERATOR, REMOVE_COMMUNITY_MODERATOR_PENDING } from '../actions'
+import { FETCH_POSTS, FETCH_COMMUNITY, FETCH_COMMUNITY_SETTINGS, FETCH_COMMUNITY_MODERATORS, FETCH_POST, FETCH_CURRENT_USER, UPLOAD_IMAGE, UPDATE_COMMUNITY_SETTINGS, UPDATE_COMMUNITY_SETTINGS_PENDING, ADD_COMMUNITY_MODERATOR, ADD_COMMUNITY_MODERATOR_PENDING, REMOVE_COMMUNITY_MODERATOR, REMOVE_COMMUNITY_MODERATOR_PENDING } from '../actions'
 
 const update = (state, communities) => {
   // merge with existing data so that we don't replace a long list of
@@ -19,10 +19,7 @@ export default function (state = {}, action) {
   if (error) {
     switch (type) {
       case UPDATE_COMMUNITY_SETTINGS:
-        return {
-          ...state,
-          [meta.slug]: {...state[meta.slug], ...meta.prevProps}
-        }
+      case ADD_COMMUNITY_MODERATOR:
       case REMOVE_COMMUNITY_MODERATOR:
         return {
           ...state,
@@ -33,7 +30,8 @@ export default function (state = {}, action) {
     }
   }
 
-  var community
+  let community
+  let moderators
 
   switch (type) {
     case FETCH_COMMUNITY:
@@ -67,9 +65,13 @@ export default function (state = {}, action) {
         return update(state, updatedCommunity)
       }
       break
+    case ADD_COMMUNITY_MODERATOR_PENDING:
+      community = state[meta.slug]
+      moderators = community.moderators
+      return {...state, [meta.slug]: {...community, moderators: union(moderators, [meta.moderator])}}
     case REMOVE_COMMUNITY_MODERATOR_PENDING:
       community = state[meta.slug]
-      let moderators = community.moderators
+      moderators = community.moderators
       return {...state, [meta.slug]: {...community, moderators: filter(moderators, m => m.id !== meta.moderatorId)}}
   }
 

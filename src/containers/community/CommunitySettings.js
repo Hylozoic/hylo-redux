@@ -3,19 +3,30 @@ import Promise from 'bluebird'
 import { connect } from 'react-redux'
 import { prefetch } from 'react-fetcher'
 import cx from 'classnames'
-const { object, func } = React.PropTypes
+const { object, func, array } = React.PropTypes
 import { find } from 'lodash'
 import { markdown } from '../../util/text'
-import { updateCommunitySettings, fetchCommunitySettings, fetchCommunityModerators, removeComunityModerator, typeahead } from '../../actions'
+import { updateCommunitySettings, fetchCommunitySettings, fetchCommunityModerators, addCommunityModerator, removeComunityModerator } from '../../actions'
 import { uploadImage } from '../../actions/uploadImage'
+import PersonChooser from '../../components/PersonChooser'
+import { fetchPeople } from '../../actions/fetchPeople'
+import { fetchWithCache, connectedListProps } from '../../util/caching'
+
+const subject = 'community'
+const query = ''
+const fetch = fetchWithCache(fetchPeople)
 
 @prefetch(({dispatch, params: {id}}) =>
   Promise.join(
     dispatch(fetchCommunitySettings(id)),
-    dispatch(fetchCommunityModerators(id))
+    dispatch(fetchCommunityModerators(id)),
+    dispatch(fetch(subject, id, query))
   )
 )
-@connect((state, { params }) => ({community: state.communities[params.id]}))
+@connect((state, { params: { id } }) => {
+  let con = connectedListProps(state, {subject, id, query}, 'people')
+  return {...con, community: state.communities[id]}
+})
 export default class CommunitySettings extends React.Component {
 
   constructor (props) {
@@ -26,7 +37,8 @@ export default class CommunitySettings extends React.Component {
   static propTypes = {
     community: object,
     dispatch: func,
-    location: object
+    location: object,
+    people: array
   }
 
   setName = event => {
@@ -159,11 +171,15 @@ export default class CommunitySettings extends React.Component {
     this.setState({expand: {...expand, [section]: open || !expand[section]}})
   }
 
+  addModerator = person => {
+    let { dispatch, community } = this.props
+    dispatch(addCommunityModerator(community, person, { moderators: community.moderators }))
+  }
+
   removeModerator (id) {
     let { dispatch, community } = this.props
     let moderators = community.moderators
     var moderator = find(moderators, m => m.id === id)
-    dispatch(typeahead('o', 11204))
     if (window.confirm(`Are you sure you wish to remove ${moderator.name}\'s moderator powers?`)) {
       dispatch(removeComunityModerator(community, id, { moderators }))
     }
@@ -183,7 +199,7 @@ export default class CommunitySettings extends React.Component {
     let { community } = this.props
     let { avatar_url, banner_url } = community
     let { editing, edited, errors, expand } = this.state
-
+    let members = this.props.people
     let origin = 'https://www.hylo.com'
     let join_url = origin + '/c/' + community.slug + '/join/' + community.beta_access_code
 
@@ -380,6 +396,9 @@ export default class CommunitySettings extends React.Component {
               <a className='close' onClick={() => this.removeModerator(moderator.id)}>&times;</a>
             </div>)}
 
+            <p>Search for members to grant moderator powers:</p>
+            <PersonChooser choices={members}
+              onSelect={this.addModerator}/>
           </div>
         </div>
       </div>}

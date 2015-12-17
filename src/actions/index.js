@@ -41,6 +41,8 @@ export const LEAVE_COMMUNITY = 'LEAVE_COMMUNITY'
 export const LEAVE_COMMUNITY_PENDING = LEAVE_COMMUNITY + _PENDING
 export const UPDATE_COMMUNITY_SETTINGS = 'UPDATE_COMMUNITY_SETTINGS'
 export const UPDATE_COMMUNITY_SETTINGS_PENDING = UPDATE_COMMUNITY_SETTINGS + _PENDING
+export const ADD_COMMUNITY_MODERATOR = 'ADD_COMMUNITY_MODERATOR'
+export const ADD_COMMUNITY_MODERATOR_PENDING = ADD_COMMUNITY_MODERATOR + _PENDING
 export const REMOVE_COMMUNITY_MODERATOR = 'REMOVE_COMMUNITY_MODERATOR'
 export const REMOVE_COMMUNITY_MODERATOR_PENDING = REMOVE_COMMUNITY_MODERATOR + _PENDING
 
@@ -248,6 +250,14 @@ export function updateCommunitySettings (params, prevProps) {
     type: UPDATE_COMMUNITY_SETTINGS,
     payload: {api: true, params, path: `/noo/community/${params.id}`, method: 'POST'},
     meta: {slug: params.slug, params, prevProps}
+  }
+}
+
+export function addCommunityModerator (community, moderator, prevProps) {
+  return {
+    type: ADD_COMMUNITY_MODERATOR,
+    payload: {api: true, params: {userId: moderator.id}, path: `/noo/community/${community.id}/moderators`, method: 'POST'},
+    meta: {slug: community.slug, moderator, prevProps}
   }
 }
 

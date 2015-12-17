@@ -58,10 +58,10 @@ export default function (state = {}, action) {
       return update(state, updatedCommunity)
     case UPLOAD_IMAGE:
       if (meta.subject === 'community-avatar') {
-        let updatedCommunity = [{...state[meta.id], avatar_url: payload}]
+        let updatedCommunity = [{...state[meta.id], avatar_url: payload, triggerUpdate: true}]
         return update(state, updatedCommunity)
       } else if (meta.subject === 'community-banner') {
-        let updatedCommunity = [{...state[meta.id], banner_url: payload}]
+        let updatedCommunity = [{...state[meta.id], banner_url: payload, triggerUpdate: true}]
         return update(state, updatedCommunity)
       }
       break

@@ -222,6 +222,14 @@ export default class CommunitySettings extends React.Component {
     }
   }
 
+  componentDidUpdate () {
+    let { dispatch, community } = this.props
+    let { triggerUpdate } = community
+    if (triggerUpdate) {
+      dispatch(updateCommunitySettings({...community, triggerUpdate: false}))
+    }
+  }
+
   render () {
     let { community } = this.props
     let { avatar_url, banner_url } = community

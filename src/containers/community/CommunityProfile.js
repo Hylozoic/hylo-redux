@@ -25,10 +25,10 @@ export default class CommunityProfile extends React.Component {
     return <div id='community'>
       <div className='banner'>
         <div className='background' style={{backgroundImage: `url(${banner_url})`}}/>
-        <div className='logo' style={{backgroundImage: `url(${avatar_url})`}}/>
         <div className='buttons'>
           <button onClick={() => window.location.href = `/c/${slug}/settings`}>Settings</button>
         </div>
+        <div className='logo' style={{backgroundImage: `url(${avatar_url})`}}/>
         <h2>{name}</h2>
         <ul className='tabs'>
           <li><IndexA to={`/c/${slug}`}>Posts</IndexA></li>

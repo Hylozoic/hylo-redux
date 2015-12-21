@@ -1,34 +1,43 @@
+import { upstreamHost, useAssetManifest, assetHost, assetPath } from '../../config'
 import express from 'express'
-import config from '../../config'
 import { magenta, red } from 'chalk'
 import request from 'request'
 import appHandler from './appHandler'
 import { info } from '../util/logging'
 import { setManifest } from '../util/assets'
+import { parse } from 'url'
+
+const port = process.env.PORT || 9000
+const upstreamHostname = parse(upstreamHost).hostname
+const fixHeaders = headers => ({...headers, host: upstreamHostname})
 
 const server = express()
 server.use(express.static('public'))
 server.use(express.static('dist'))
 
 server.post('/login', function (req, res) {
-  req.pipe(request.post(config.upstreamHost + '/noo/login?resp=user')).pipe(res)
+  let headers = fixHeaders(req.headers)
+  let url = `${upstreamHost}/noo/login?resp=user`
+  req.pipe(request.post(url, {headers})).pipe(res)
 })
 
 server.post('/logout', function (req, res) {
-  req.pipe(request.del(config.upstreamHost + '/noo/session')).pipe(res)
+  let headers = fixHeaders(req.headers)
+  let url = `${upstreamHost}/noo/session`
+  req.pipe(request.del(url, {headers})).pipe(res)
 })
 
 // api proxy
 server.use((req, res, next) => {
   if (!req.originalUrl.startsWith('/noo')) return next()
 
-  let upstreamUrl = config.upstreamHost + req.originalUrl
-  info(magenta(`${req.method} ${upstreamUrl}`))
+  let url = upstreamHost + req.originalUrl
+  info(magenta(`${req.method} ${url}`))
 
-  let headers = req.headers
   request.delete = request.delete || request.del
   let method = request[req.method.toLowerCase()]
-  let upstreamReq = method(upstreamUrl, {headers, followRedirect: false})
+  let headers = fixHeaders(req.headers)
+  let upstreamReq = method(url, {headers, followRedirect: false})
 
   req.pipe(upstreamReq)
   .on('error', err => console.error(magenta('✗ ') + red(err.message)))
@@ -38,14 +47,14 @@ server.use((req, res, next) => {
 server.use(appHandler)
 
 const start = () => {
-  server.listen(config.port, function (err) {
+  server.listen(port, function (err) {
     if (err) throw err
-    info('listening on port ' + config.port)
+    info('listening on port ' + port)
   })
 }
 
-if (config.useAssetManifest) {
-  let url = `${config.assetHost}/manifest-${config.sourceVersion}.json`
+if (useAssetManifest) {
+  let url = `${assetHost}/${assetPath}/manifest-${process.env.SOURCE_VERSION}.json`
   info(`using manifest: ${url}`)
   request.get(url, {json: true}, (err, res) => {
     if (err) throw err

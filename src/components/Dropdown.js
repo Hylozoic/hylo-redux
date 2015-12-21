@@ -17,8 +17,10 @@ export default class Dropdown extends React.Component {
 
   toggle = event => {
     this.setState({active: !this.state.active})
-    event.stopPropagation()
-    event.preventDefault()
+    if (event) {
+      event.stopPropagation()
+      event.preventDefault()
+    }
   }
 
   render () {
@@ -28,7 +30,8 @@ export default class Dropdown extends React.Component {
       <a className='dropdown-toggle' onClick={this.toggle}>
         {toggleChildren}
       </a>
-      <ul className={cx('dropdown-menu', {'dropdown-menu-right': alignRight})}>
+      <ul className={cx('dropdown-menu', {'dropdown-menu-right': alignRight})}
+        onClick={() => this.toggle()}>
         {children}
       </ul>
     </div>

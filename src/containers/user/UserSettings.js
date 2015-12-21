@@ -117,12 +117,13 @@ export default class UserSettings extends React.Component {
     switch (expand) {
       case 'password':
         this.toggleSection('account', true)
+        this.edit('password')
         break
       case 'prompts':
         this.toggleSection('account', true)
         break
       default:
-        this.toggleSection('communities', true)
+        this.toggleSection('account', true)
         break
     }
   }
@@ -214,7 +215,7 @@ export default class UserSettings extends React.Component {
         </div>
         <div className='section-item'>
           <div className='half-column'>
-            <label>Get mobile notifications on post you are following?</label>
+            <label>Get mobile notifications on posts you are following?</label>
             <div className='summary'>Check the circle to get mobile notifications on any posts you are following.</div>
           </div>
           <div className='half-column value'>

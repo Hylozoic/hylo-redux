@@ -7,7 +7,8 @@
   "scripts": {
     "start": "./node_modules/.bin/gulp",
     "test": "./node_modules/.bin/babel-node ./node_modules/.bin/_mocha",
-    "autotest": "./node_modules/.bin/gulp autotest"
+    "autotest": "./node_modules/.bin/gulp autotest",
+    "deploy": "./node_modules/.bin/gulp deploy"
   },
   "standard": {
     "parser": "babel-eslint",
@@ -40,6 +41,7 @@
     "imagesloaded": "^3.2.0",
     "isomorphic-fetch": "^2.2.0",
     "linkifyjs": "^2.0.0-beta.5",
+    "lodash": "^3.10.1",
     "marked": "^0.3.5",
     "masonry-layout": "^3.3.2",
     "moment-timezone": "^0.4.1",
@@ -84,6 +86,7 @@
     "node-notifier": "^4.3.1",
     "react-proxy": "^1.1.1",
     "rework-plugin-url": "^1.1.0",
+    "run-sequence": "^1.1.5",
     "shelljs": "^0.5.3",
     "vinyl-buffer": "^1.0.0",
     "vinyl-source-stream": "^1.1.0",

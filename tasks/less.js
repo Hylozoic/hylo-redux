@@ -9,7 +9,6 @@ import notifier from 'node-notifier'
 import rev from 'gulp-rev'
 import rework from 'gulp-rework'
 import reworkUrl from 'rework-plugin-url'
-import config from '../config'
 import { readFileSync } from 'fs'
 
 export function lessDev () {
@@ -42,7 +41,7 @@ export function lessDist () {
   .pipe(rework(reworkUrl(path => {
     let newPath = manifest[path.replace(/^\//, '')]
     if (newPath) {
-      let url = `${config.assetHost}/${newPath}`
+      let url = `${process.env.ASSET_HOST}/${process.env.ASSET_PATH}/${newPath}`
       console.log(`${path} => ${url}`)
       return url
     }

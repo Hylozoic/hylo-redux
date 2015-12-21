@@ -3,6 +3,7 @@ import { prefetch } from 'react-fetcher'
 import { connect } from 'react-redux'
 import { fetch, ConnectedPostList } from '../ConnectedPostList'
 import PostEditor from '../../components/PostEditor'
+import { contains } from 'lodash'
 const { object } = React.PropTypes
 
 const subject = 'project'
@@ -22,8 +23,12 @@ export default class ProjectPosts extends React.Component {
 
   render () {
     let { location: { query }, params: { id }, currentUser, project } = this.props
+    let { contributors, user } = project
+    let canPost = currentUser && user.id === currentUser.id ||
+    contains(contributors.map(c => c.id), currentUser.id)
+
     return <div>
-      {currentUser && <PostEditor project={project}/>}
+      {canPost && <PostEditor project={project}/>}
       <ConnectedPostList {...{subject, id, query}}/>
     </div>
   }

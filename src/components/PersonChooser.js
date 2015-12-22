@@ -1,23 +1,55 @@
 import React from 'react'
-import TagInput from './TagInput'
-import { filter } from 'lodash'
-var {array, func} = React.PropTypes
+import { connect } from 'react-redux'
+import { typeahead } from '../actions'
+import { isEmpty } from 'lodash'
+import KeyControlledList from './KeyControlledList'
+var {array, func, string} = React.PropTypes
 
+@connect((state, props) => ({ choices: state.typeaheadMatches[props.typeaheadId] }))
 export default class PersonChooser extends React.Component {
 
   static propTypes = {
-    choices: array,
-    onSelect: func
+    communityId: string,
+    typeaheadId: string,
+    onSelect: func,
+    dispatch: func,
+    choices: array
   }
 
-  getChoices = value => {
-    let { choices } = this.props
-    if (value.length < 2) return []
-    return filter(choices, person => person.name.substr(0, value.length).toLowerCase() === value.toLowerCase())
+  constructor (props) {
+    super(props)
+    this.state = {choices: []}
+  }
+
+  handleInput = event => {
+    var value = event.target.value
+    let { dispatch, typeaheadId, communityId } = this.props
+    dispatch(typeahead(value, typeaheadId, communityId))
+    this.setState({choices: this.props.choices})
+  }
+
+  handleKeys = event => {
+    if (this.refs.list) this.refs.list.handleKeys(event)
+  }
+
+  select = choice => {
+    let { onSelect } = this.props
+    onSelect(choice)
+    this.refs.input.value = ''
+    this.handleInput({target: {value: ''}})
   }
 
   render () {
-    let { onSelect } = this.props
-    return <TagInput tags={[]} getChoices={this.getChoices} onSelect={onSelect}/>
+    let { choices } = this.props
+    return <div className='tag-input' onClick={this.focus}>
+
+      <input ref='input' type='text' placeholder='Type...'
+        onChange={this.handleInput}
+        onKeyDown={this.handleKeys}/>
+
+      {!isEmpty(choices) && <div className='dropdown'>
+        <KeyControlledList className='dropdown-menu' ref='list' items={choices} onChange={this.select}/>
+      </div>}
+    </div>
   }
 }

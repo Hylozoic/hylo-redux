@@ -143,12 +143,19 @@ export function createComment (postId, text) {
   }
 }
 
-export function typeahead (text, id) {
+export function typeahead (text, id, communityId) {
   if (!text) return {type: CANCEL_TYPEAHEAD, meta: {id}}
+
+  var path
+  if (communityId) {
+    path = `/noo/autocomplete?communityId=${communityId}&type=people&${cleanAndStringify({q: text})}`
+  } else {
+    path = `/noo/autocomplete?${cleanAndStringify({q: text})}`
+  }
 
   return {
     type: TYPEAHEAD,
-    payload: {api: true, path: `/noo/autocomplete?${cleanAndStringify({q: text})}`},
+    payload: {api: true, path: path},
     meta: {id}
   }
 }

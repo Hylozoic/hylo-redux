@@ -9,24 +9,14 @@ import { markdown } from '../../util/text'
 import { updateCommunitySettings, fetchCommunitySettings, fetchCommunityModerators, addCommunityModerator, removeCommunityModerator, validateCommunityCode } from '../../actions'
 import { uploadImage } from '../../actions/uploadImage'
 import PersonChooser from '../../components/PersonChooser'
-import { fetchPeople } from '../../actions/fetchPeople'
-import { fetchWithCache, connectedListProps } from '../../util/caching'
-
-const subject = 'community'
-const query = ''
-const fetch = fetchWithCache(fetchPeople)
 
 @prefetch(({dispatch, params: {id}}) =>
   Promise.join(
     dispatch(fetchCommunitySettings(id)),
-    dispatch(fetchCommunityModerators(id)),
-    dispatch(fetch(subject, id, query))
+    dispatch(fetchCommunityModerators(id))
   )
 )
-@connect((state, { params: { id } }) => {
-  let con = connectedListProps(state, {subject, id, query}, 'people')
-  return {...con, community: state.communities[id]}
-})
+@connect((state, { params }) => ({community: state.communities[params.id]}))
 export default class CommunitySettings extends React.Component {
 
   constructor (props) {
@@ -235,7 +225,7 @@ export default class CommunitySettings extends React.Component {
     let { expand } = query || {}
     switch (expand) {
       default:
-        this.toggleSection('access', true)
+        this.toggleSection('moderators', true)
         break
     }
   }
@@ -260,7 +250,6 @@ export default class CommunitySettings extends React.Component {
     let { community } = this.props
     let { avatar_url, banner_url } = community
     let { editing, edited, errors, expand } = this.state
-    let members = this.props.people
     let origin = 'https://www.hylo.com'
     let join_url = origin + '/c/' + community.slug + '/join/' + community.beta_access_code
 
@@ -360,8 +349,10 @@ export default class CommunitySettings extends React.Component {
             </textarea>
             {edited.leader && <p className='summary'>{edited.leader.name}&#39;s image will be shown. Search for someone else:</p>}
             {!edited.leader && <p className='summary'>Search by name for a community leader, whose image will be shown:</p>}
-            <PersonChooser choices={members}
-              onSelect={this.changeLeader}/>
+            <PersonChooser
+              onSelect={this.changeLeader}
+              communityId={community.id}
+              typeaheadId='leader'/>
             <div className='buttons'>
               <button type='button' onClick={() => this.multiCancelEdit('welcome_message', 'leader')}>Cancel</button>
               <button type='button' onClick={() => this.multiSave('welcome_message', 'leader')}>Save</button>
@@ -454,8 +445,10 @@ export default class CommunitySettings extends React.Component {
             </div>)}
 
             <p>Search for members to grant moderator powers:</p>
-            <PersonChooser choices={members}
-              onSelect={this.addModerator}/>
+            <PersonChooser
+              onSelect={this.addModerator}
+              communityId={community.id}
+              typeaheadId='moderator'/>
           </div>
         </div>
       </div>}

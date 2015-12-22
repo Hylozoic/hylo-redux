@@ -2,6 +2,7 @@ import React from 'react'
 import { prefetch } from 'react-fetcher'
 import { connect } from 'react-redux'
 import { fetchProject } from '../../actions/project'
+import { joinProject } from '../../actions'
 import { markdown } from '../../util/text'
 import { contains, find } from 'lodash'
 import truncate from 'html-truncate'
@@ -10,7 +11,7 @@ import Video from '../../components/Video'
 import A from '../../components/A'
 import { assetUrl } from '../../util/assets'
 import { ProjectVisibility } from '../../constants'
-const { object } = React.PropTypes
+const { func, object } = React.PropTypes
 
 @prefetch(({ dispatch, params: { id } }) => dispatch(fetchProject(id)))
 @connect(({ projects, people }, { params: { id } }) => ({
@@ -21,7 +22,8 @@ export default class ProjectProfile extends React.Component {
   static propTypes = {
     project: object,
     children: object,
-    currentUser: object
+    currentUser: object,
+    dispatch: func
   }
 
   constructor (props) {
@@ -31,6 +33,15 @@ export default class ProjectProfile extends React.Component {
 
   publish = event => {
     window.alert('TODO')
+  }
+
+  join = () => {
+    let { project, currentUser, dispatch } = this.props
+    if (currentUser) {
+      dispatch(joinProject(project, currentUser))
+      return
+    }
+    window.alert('TODO - Not Logged in')
   }
 
   render () {
@@ -61,7 +72,7 @@ export default class ProjectProfile extends React.Component {
         <div className='col-sm-12 title-row'>
           <div className='right'>
             {canModerate && <A className='button' to={`/project/edit/${project.id}`}>Edit project</A>}
-            {!canPost && <A className='button' to={`/project/edit/${project.id}`}>Join project</A>}
+            {!canPost && <a className='button' onClick={this.join}>Join project</a>}
           </div>
           <h2>{project.title}</h2>
         </div>

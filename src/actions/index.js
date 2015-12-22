@@ -28,6 +28,8 @@ export const UPDATE_POST = 'UPDATE_POST'
 export const UPDATE_POST_EDITOR = 'UPDATE_POST_EDITOR'
 export const UPDATE_PROJECT = 'UPDATE_PROJECT'
 export const UPDATE_PROJECT_EDITOR = 'UPDATE_PROJECT_EDITOR'
+export const JOIN_PROJECT = 'JOIN_PROJECT'
+export const JOIN_PROJECT_PENDING = JOIN_PROJECT + _PENDING
 export const UPLOAD_DOC = 'UPLOAD_DOC'
 export const UPLOAD_IMAGE = 'UPLOAD_IMAGE'
 export const CHANGE_EVENT_RESPONSE = 'CHANGE_EVENT_RESPONSE'
@@ -217,5 +219,13 @@ export function leaveCommunity (communityId, prevProps) {
     type: LEAVE_COMMUNITY,
     payload: {api: true, path: `/noo/membership/${communityId}`, method: 'DELETE'},
     meta: {communityId, prevProps}
+  }
+}
+
+export function joinProject (project, currentUser) {
+  return {
+    type: JOIN_PROJECT,
+    payload: {api: true, path: `/noo/project/${project.id}/join`, method: 'POST'},
+    meta: {id: project.id, prevProps: project, currentUser}
   }
 }

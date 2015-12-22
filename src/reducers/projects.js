@@ -1,19 +1,35 @@
-import { FETCH_PROJECT, FETCH_PROJECTS, UPDATE_PROJECT } from '../actions'
+import { union } from 'lodash'
+import { FETCH_PROJECT, FETCH_PROJECTS, UPDATE_PROJECT, JOIN_PROJECT, JOIN_PROJECT_PENDING } from '../actions'
 import { hashById } from './util'
 
 export default function (state = {}, action) {
-  if (action.error) return state
+  let { type, payload, meta, error } = action
 
-  let { type, payload, meta } = action
-  let { id, params } = meta || {}
+  if (error) {
+    switch (type) {
+      case JOIN_PROJECT:
+        return {...state, [meta.id]: meta.prevProps}
+    }
+
+    return state
+  }
+
+  let { id, params, currentUser } = meta || {}
   switch (type) {
     case FETCH_PROJECTS:
       return {...state, ...hashById(payload.projects)}
     case FETCH_PROJECT:
-      console.log('FETCHED PROJECT', payload)
       return {...state, [payload.id]: payload}
     case UPDATE_PROJECT:
       return {...state, [id]: {...state[id], ...params}}
+    case JOIN_PROJECT_PENDING:
+      var contributors
+      if (currentUser) {
+        contributors = union(state[id].contributors, [currentUser])
+      } else {
+        contributors = state[id].contributors
+      }
+      return {...state, [id]: {...state[id], contributors: contributors}}
   }
 
   return state

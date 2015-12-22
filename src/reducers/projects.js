@@ -10,6 +10,7 @@ export default function (state = {}, action) {
     case FETCH_PROJECTS:
       return {...state, ...hashById(payload.projects)}
     case FETCH_PROJECT:
+      console.log('FETCHED PROJECT', payload)
       return {...state, [payload.id]: payload}
     case UPDATE_PROJECT:
       return {...state, [id]: {...state[id], ...params}}

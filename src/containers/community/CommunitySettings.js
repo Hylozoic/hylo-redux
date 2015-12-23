@@ -120,7 +120,7 @@ export default class CommunitySettings extends React.Component {
 
   cancelEdit = (...args) => {
     let { editing } = this.state
-    let newEditing = reduce(args, (m, field) => { m[field] = true; return m }, {})
+    let newEditing = reduce(args, (m, field) => { m[field] = false; return m }, {})
     this.setState({editing: {...editing, ...newEditing}})
   }
 

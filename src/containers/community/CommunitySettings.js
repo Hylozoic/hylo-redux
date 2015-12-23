@@ -165,7 +165,9 @@ export default class CommunitySettings extends React.Component {
     dispatch(updateCommunitySettings(updatedCommunity, {[field]: community[field]}))
   }
 
-  updateSetting (setting, value) {
+  // some settings are child attributes of the community object, and some are
+  // nested inside an attribute called "settings". yes, this is confusing.
+  updateNested (setting, value) {
     let { community } = this.props
     let updatedSettings = {...community.settings, [setting]: value}
     this.update('settings', updatedSettings)
@@ -175,8 +177,8 @@ export default class CommunitySettings extends React.Component {
     this.update(field, !this.props.community[field])
   }
 
-  toggleSetting (setting) {
-    this.updateSetting(setting, !this.props.community.settings[setting])
+  toggleNested (setting) {
+    this.updateNested(setting, !this.props.community.settings[setting])
   }
 
   toggleSection = (section, open) => {
@@ -369,7 +371,7 @@ export default class CommunitySettings extends React.Component {
             <p className='summary'>If this is disabled, only moderators may send invitations to new members.</p>
           </div>
           <div className='half-column value'>
-            <input type='checkbox' checked={community.settings.all_can_invite} onChange={() => this.toggleSetting('all_can_invite')}/>
+            <input type='checkbox' checked={community.settings.all_can_invite} onChange={() => this.toggleNested('all_can_invite')}/>
           </div>
         </div>
         <div className='section-item'>
@@ -431,7 +433,7 @@ export default class CommunitySettings extends React.Component {
             <p className='summary'>If this is checked, each week members will receive an email that they can reply to with their offers, requests and intentions.</p>
           </div>
           <div className='half-column value'>
-            <input type='checkbox' checked={community.settings.sends_email_prompts} onChange={() => this.toggleSetting('sends_email_prompts')}/>
+            <input type='checkbox' checked={community.settings.sends_email_prompts} onChange={() => this.toggleNested('sends_email_prompts')}/>
           </div>
         </div>
       </div>}

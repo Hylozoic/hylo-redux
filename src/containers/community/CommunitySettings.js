@@ -4,7 +4,7 @@ import { connect } from 'react-redux'
 import { prefetch } from 'react-fetcher'
 import cx from 'classnames'
 const { object, func, array } = React.PropTypes
-import { find } from 'lodash'
+import { find, reduce } from 'lodash'
 import { markdown } from '../../util/text'
 import { updateCommunitySettings, fetchCommunitySettings, fetchCommunityModerators, addCommunityModerator, removeCommunityModerator, validateCommunityCode } from '../../actions'
 import { uploadImage } from '../../actions/uploadImage'
@@ -97,48 +97,31 @@ export default class CommunitySettings extends React.Component {
     return true
   }
 
-  save = field => {
+  save = (...args) => {
     if (!this.validate()) return
     let { dispatch, community } = this.props
     let { editing, edited } = this.state
-    this.setState({editing: {...editing, [field]: false}})
-    dispatch(updateCommunitySettings({...community, ...edited}, {[field]: community[field]}))
+    let newEditing = reduce(args, (m, field) => { m[field] = false; return m }, {})
+    let oldSettings = reduce(args, (m, field) => { m[field] = community[field]; return m }, {})
+    this.setState({editing: {...editing, ...newEditing}})
+    dispatch(updateCommunitySettings({...community, ...edited}, oldSettings))
   }
 
-  edit = field => {
+  edit = (...args) => {
     let { community } = this.props
     let { editing, edited } = this.state
+    let newEditing = reduce(args, (m, field) => { m[field] = true; return m }, {})
+    let newEdited = reduce(args, (m, field) => { m[field] = community[field]; return m }, {})
     this.setState({
-      editing: {...editing, [field]: true},
-      edited: {...edited, [field]: community[field]}
+      editing: {...editing, ...newEditing},
+      edited: {...edited, ...newEdited}
     })
   }
 
-  cancelEdit = field => {
+  cancelEdit = (...args) => {
     let { editing } = this.state
-    this.setState({editing: {...editing, [field]: false}})
-  }
-
-  multiSave = (field1, field2) => {
-    if (!this.validate()) return
-    let { dispatch, community } = this.props
-    let { editing, edited } = this.state
-    this.setState({editing: {...editing, [field1]: false, [field2]: false}})
-    dispatch(updateCommunitySettings({...community, ...edited}, {[field1]: community[field1], [field2]: community[field2]}))
-  }
-
-  multiEdit = (field1, field2) => {
-    let { community } = this.props
-    let { editing, edited } = this.state
-    this.setState({
-      editing: {...editing, [field1]: true, [field2]: true},
-      edited: {...edited, [field1]: community[field1], [field2]: community[field2]}
-    })
-  }
-
-  multiCancelEdit = (field1, field2) => {
-    let { editing } = this.state
-    this.setState({editing: {...editing, [field1]: false, [field2]: false}})
+    let newEditing = reduce(args, (m, field) => { m[field] = true; return m }, {})
+    this.setState({editing: {...editing, ...newEditing}})
   }
 
   attachAvatarImage = () => {
@@ -332,7 +315,7 @@ export default class CommunitySettings extends React.Component {
               <div className='name'>{community.leader.name}</div>
             </div>}
             <p>{community.welcome_message || '[Not set yet]'}</p>
-            <div className='buttons'><button type='button' onClick={() => this.multiEdit('welcome_message', 'leader')}>Change</button></div>
+            <div className='buttons'><button type='button' onClick={() => this.edit('welcome_message', 'leader')}>Change</button></div>
           </div>}
           {editing.welcome_message && <div className='full-column edit'>
             <textarea className='form-control'
@@ -348,8 +331,8 @@ export default class CommunitySettings extends React.Component {
               communityId={community.id}
               typeaheadId='leader'/>
             <div className='buttons'>
-              <button type='button' onClick={() => this.multiCancelEdit('welcome_message', 'leader')}>Cancel</button>
-              <button type='button' onClick={() => this.multiSave('welcome_message', 'leader')}>Save</button>
+              <button type='button' onClick={() => this.cancelEdit('welcome_message', 'leader')}>Cancel</button>
+              <button type='button' onClick={() => this.save('welcome_message', 'leader')}>Save</button>
             </div>
           </div>}
         </div>
@@ -379,7 +362,7 @@ export default class CommunitySettings extends React.Component {
       </div>}
 
       <SectionLabel name='access' {...labelProps}>Access</SectionLabel>
-      {expand.access && <div className='section appearance'>
+      {expand.access && <div className='section access'>
         <div className='section-item'>
           <div className='half-column'>
             <label>Allow everyone to invite new members</label>

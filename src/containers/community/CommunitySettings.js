@@ -10,6 +10,20 @@ import { updateCommunitySettings, fetchCommunitySettings, fetchCommunityModerato
 import { uploadImage } from '../../actions/uploadImage'
 import PersonChooser from '../../components/PersonChooser'
 
+const avatarUploadSettings = community => ({
+  id: community.slug,
+  subject: 'community-avatar',
+  path: `community/${community.id}/avatar`,
+  convert: {width: 160, height: 160, fit: 'crop', rotate: 'exif'}
+})
+
+const bannerUploadSettings = community => ({
+  id: community.slug,
+  subject: 'community-banner',
+  path: `community/${community.id}/banner`,
+  convert: {width: 1600, format: 'jpg', fit: 'max', rotate: 'exif'}
+})
+
 @prefetch(({dispatch, params: {id}}) =>
   Promise.join(
     dispatch(fetchCommunitySettings(id)),
@@ -31,30 +45,19 @@ export default class CommunitySettings extends React.Component {
     people: array
   }
 
-  setName = event => {
-    return this.setState({
-      edited: {...this.state.edited, name: event.target.value},
-      errors: {...this.state.errors, name: !event.target.value}
+  setEditState = (field, value, errors) =>
+    this.setState({
+      edited: {...this.state.edited, [field]: value},
+      errors: {...this.state.errors, [field]: errors}
     })
-  }
 
-  setDescription = event => {
-    return this.setState({
-      edited: {...this.state.edited, description: event.target.value}
-    })
-  }
+  setName = event => this.setEditState('name', event.target.value, !event.target.value)
 
-  setWelcomeMessage = event => {
-    return this.setState({
-      edited: {...this.state.edited, welcome_message: event.target.value}
-    })
-  }
+  setDescription = event => this.setEditState('description', event.target.value)
 
-  setLocation = event => {
-    return this.setState({
-      edited: {...this.state.edited, location: event.target.value}
-    })
-  }
+  setWelcomeMessage = event => this.setEditState('welcome', event.target.value)
+
+  setLocation = event => this.setEditState('location', event.target.value)
 
   setBetaAccessCode = event => {
     let { dispatch, community } = this.props
@@ -66,10 +69,7 @@ export default class CommunitySettings extends React.Component {
 
     let empty = !code
     let errors = empty ? {empty: empty} : {}
-    return this.setState({
-      edited: {...this.state.edited, beta_access_code: code},
-      errors: {...this.state.errors, beta_access_code: errors}
-    })
+    return this.setEditState('beta_access_code', code, errors)
   }
 
   validate () {
@@ -124,38 +124,13 @@ export default class CommunitySettings extends React.Component {
     this.setState({editing: {...editing, ...newEditing}})
   }
 
-  attachAvatarImage = () => {
-    this.attachImage(true)
-  }
-
-  attachBannerImage = () => {
-    this.attachImage(false)
-  }
-
-  avatarUploadSettings (community) {
-    return {
-      id: community.slug,
-      subject: 'community-avatar',
-      path: `community/${community.id}/avatar`,
-      convert: {width: 160, height: 160, fit: 'crop', rotate: 'exif'}
-    }
-  }
-
-  bannerUploadSettings (community) {
-    return {
-      id: community.slug,
-      subject: 'community-banner',
-      path: `community/${community.id}/banner`,
-      convert: {width: 1600, format: 'jpg', fit: 'max', rotate: 'exif'}
-    }
-  }
-
-  attachImage (avatar) {
+  attachImage (type) {
     let { dispatch, community } = this.props
-    if (avatar) {
-      dispatch(uploadImage(this.avatarUploadSettings(community)))
-    } else {
-      dispatch(uploadImage(this.bannerUploadSettings(community)))
+    switch (type) {
+      case 'avatar':
+        return dispatch(uploadImage(avatarUploadSettings(community)))
+      case 'banner':
+        return dispatch(uploadImage(bannerUploadSettings(community)))
     }
   }
 
@@ -195,7 +170,7 @@ export default class CommunitySettings extends React.Component {
     let { dispatch, community } = this.props
     let moderators = community.moderators
     var moderator = find(moderators, m => m.id === id)
-    if (window.confirm(`Are you sure you wish to remove ${moderator.name}\'s moderator powers?`)) {
+    if (window.confirm(`Are you sure you wish to remove ${moderator.name}'s moderator powers?`)) {
       dispatch(removeCommunityModerator(community, id, { moderators }))
     }
   }
@@ -291,7 +266,7 @@ export default class CommunitySettings extends React.Component {
           </div>
           <div className='half-column value'>
             <div className='community-logo' style={{backgroundImage: `url(${avatar_url})`}}/>
-            <button type='button' onClick={this.attachAvatarImage}>Change</button>
+            <button type='button' onClick={() => this.attachImage('avatar')}>Change</button>
           </div>
         </div>
 
@@ -302,7 +277,7 @@ export default class CommunitySettings extends React.Component {
             <div className='community-banner' style={{backgroundImage: `url(${banner_url})`}}></div>
           </div>
           <div className='full-column value'>
-            <button type='button' onClick={this.attachBannerImage}>Change</button>
+            <button type='button' onClick={() => this.attachImage('banner')}>Change</button>
           </div>
         </div>
 

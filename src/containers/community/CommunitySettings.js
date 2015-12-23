@@ -218,45 +218,47 @@ export default class CommunitySettings extends React.Component {
             <label>Name</label>
             <p>{community.name}</p>
           </div>
-          {!editing.name && <div className='half-column value'>
-            <button type='button' onClick={() => this.edit('name')}>Change</button>
-          </div>}
-          {editing.name && <div className='half-column value'>
-            <form name='nameForm'>
-              <div className={cx('form-group', {'has-error': errors.name})}>
-                <input type='text' ref='name' className='name form-control'
-                  value={edited.name}
-                  onChange={this.setName}/>
+          {editing.name
+            ? <div className='half-column value'>
+                <form name='nameForm'>
+                  <div className={cx('form-group', {'has-error': errors.name})}>
+                    <input type='text' ref='name' className='name form-control'
+                      value={edited.name}
+                      onChange={this.setName}/>
+                    </div>
+                </form>
+                <div className='buttons'>
+                  <button type='button' onClick={() => this.cancelEdit('name')}>Cancel</button>
+                  <button type='button' className='btn-primary' onClick={() => this.save('name')}>Save</button>
                 </div>
-            </form>
-            <div className='buttons'>
-              <button type='button' onClick={() => this.cancelEdit('name')}>Cancel</button>
-              <button type='button' className='btn-primary' onClick={() => this.save('name')}>Save</button>
-            </div>
-          </div>}
+              </div>
+            : <div className='half-column value'>
+                <button type='button' onClick={() => this.edit('name')}>Change</button>
+              </div>}
         </div>
 
         <div className='section-item description'>
           <div className='full-column'>
             <label>Core Intention / About</label>
           </div>
-          {!editing.description && <div className='full-column'>
-            <div className='description-value' dangerouslySetInnerHTML={{__html: markdown(community.description)}}></div>
-            <button type='button' onClick={() => this.edit('description')}>Change</button>
-          </div>}
-          {editing.description && <div className='full-column'>
-            <form name='nameForm'>
-              <div className={cx('form-group', {'has-error': errors.description})}>
-                <textarea className='form-control description'
-                  value={edited.description}
-                  onChange={this.setDescription}/>
+          {editing.description
+            ? <div className='full-column'>
+                <form name='nameForm'>
+                  <div className={cx('form-group', {'has-error': errors.description})}>
+                    <textarea className='form-control description'
+                      value={edited.description}
+                      onChange={this.setDescription}/>
+                    </div>
+                </form>
+                <div className='buttons'>
+                  <button type='button' onClick={() => this.cancelEdit('description')}>Cancel</button>
+                  <button type='button' className='btn-primary' onClick={() => this.save('description')}>Save</button>
                 </div>
-            </form>
-            <div className='buttons'>
-              <button type='button' onClick={() => this.cancelEdit('description')}>Cancel</button>
-              <button type='button' className='btn-primary' onClick={() => this.save('description')}>Save</button>
-            </div>
-          </div>}
+              </div>
+            : <div className='full-column'>
+                <div className='description-value' dangerouslySetInnerHTML={{__html: markdown(community.description)}}></div>
+                <button type='button' onClick={() => this.edit('description')}>Change</button>
+              </div>}
         </div>
 
         <div className='section-item icon'>
@@ -286,32 +288,33 @@ export default class CommunitySettings extends React.Component {
             <label>Welcome message</label>
             <p className='summary'>This text is shown on the first screen that a new member sees.</p>
           </div>
-          {!editing.welcome_message && <div className='full-column'>
-            {community.welcome_message && <div className='leader'>
-              <div className='medium-avatar' style={{backgroundImage: `url(${community.leader.avatar_url})`}}></div>
-              <div className='name'>{community.leader.name}</div>
-            </div>}
-            <p>{community.welcome_message || '[Not set yet]'}</p>
-            <div className='buttons'><button type='button' onClick={() => this.edit('welcome_message', 'leader')}>Change</button></div>
-          </div>}
-          {editing.welcome_message && <div className='full-column edit'>
-            <textarea className='form-control'
-              value={edited.welcome_message}
-              onChange={this.setWelcomeMessage}
-              rows='4'
-              placeholder='Enter a welcome message.'>
-            </textarea>
-            {edited.leader && <p className='summary'>{edited.leader.name}&#39;s image will be shown. Search for someone else:</p>}
-            {!edited.leader && <p className='summary'>Search by name for a community leader, whose image will be shown:</p>}
-            <PersonChooser
-              onSelect={this.changeLeader}
-              communityId={community.id}
-              typeaheadId='leader'/>
-            <div className='buttons'>
-              <button type='button' onClick={() => this.cancelEdit('welcome_message', 'leader')}>Cancel</button>
-              <button type='button' onClick={() => this.save('welcome_message', 'leader')}>Save</button>
-            </div>
-          </div>}
+          {editing.welcome_message
+            ? <div className='full-column edit'>
+                <textarea className='form-control'
+                  value={edited.welcome_message}
+                  onChange={this.setWelcomeMessage}
+                  rows='4'
+                  placeholder='Enter a welcome message.'>
+                </textarea>
+                {edited.leader && <p className='summary'>{edited.leader.name}&#39;s image will be shown. Search for someone else:</p>}
+                {!edited.leader && <p className='summary'>Search by name for a community leader, whose image will be shown:</p>}
+                <PersonChooser
+                  onSelect={this.changeLeader}
+                  communityId={community.id}
+                  typeaheadId='leader'/>
+                <div className='buttons'>
+                  <button type='button' onClick={() => this.cancelEdit('welcome_message', 'leader')}>Cancel</button>
+                  <button type='button' onClick={() => this.save('welcome_message', 'leader')}>Save</button>
+                </div>
+              </div>
+            : <div className='full-column'>
+                {community.leader && <div className='leader'>
+                  <div className='medium-avatar' style={{backgroundImage: `url(${community.leader.avatar_url})`}}></div>
+                  <div className='name'>{community.leader.name}</div>
+                </div>}
+                <p>{community.welcome_message || '[Not set yet]'}</p>
+                <div className='buttons'><button type='button' onClick={() => this.edit('welcome_message', 'leader')}>Change</button></div>
+              </div>}
         </div>
 
         <div className='section-item'>
@@ -319,22 +322,23 @@ export default class CommunitySettings extends React.Component {
             <label>Location</label>
             <p>{community.location || 'You haven\'t specified a location yet.'}</p>
           </div>
-          {!editing.location && <div className='half-column value'>
-            <button type='button' onClick={() => this.edit('location')}>Change</button>
-          </div>}
-          {editing.location && <div className='half-column value'>
-            <form name='nameForm'>
-              <div className={cx('form-group', {'has-error': errors.location})}>
-                <input type='text' ref='location' className='location form-control'
-                  value={edited.location}
-                  onChange={this.setLocation}/>
+          {editing.location
+            ? <div className='half-column value'>
+                <form name='nameForm'>
+                  <div className={cx('form-group', {'has-error': errors.location})}>
+                    <input type='text' ref='location' className='location form-control'
+                      value={edited.location}
+                      onChange={this.setLocation}/>
+                    </div>
+                </form>
+                <div className='buttons'>
+                  <button type='button' onClick={() => this.cancelEdit('location')}>Cancel</button>
+                  <button type='button' className='btn-primary' onClick={() => this.save('location')}>Save</button>
                 </div>
-            </form>
-            <div className='buttons'>
-              <button type='button' onClick={() => this.cancelEdit('location')}>Cancel</button>
-              <button type='button' className='btn-primary' onClick={() => this.save('location')}>Save</button>
-            </div>
-          </div>}
+              </div>
+            : <div className='half-column value'>
+                <button type='button' onClick={() => this.edit('location')}>Change</button>
+              </div>}
         </div>
       </div>}
 
@@ -360,18 +364,19 @@ export default class CommunitySettings extends React.Component {
             <p><a href={join_url}>{join_url}</a></p>
             <p className='summary'>You can copy this link for pasting in emails or embedding on your webpage to pre-populate the invite code for new members to easily join.</p>
           </div>
-          {!editing.beta_access_code && <div className='half-column value'>
-            <button type='button' onClick={() => this.edit('beta_access_code')}>Change</button>
-          </div>}
-          {editing.beta_access_code && <div className='half-column edit'>
-            <form>
-              <input name='beta_access_code' ref='beta_access_code' type='text' className='form-control' value={edited.beta_access_code} onChange={this.setBetaAccessCode} />
-            </form>
-            {errors.beta_access_code && errors.beta_access_code.empty && <p className='summary error'>Please fill in a code.</p>}
-            {errors.beta_access_code && errors.beta_access_code.not_unique && <p className='summary error'>This code cannot be used; please choose another.</p>}
-            <button type='button' onClick={() => this.cancelEdit('beta_access_code')}>Cancel</button>
-            <button type='button' onClick={() => this.save('beta_access_code')}>Save</button>
-          </div>}
+          {editing.beta_access_code
+            ? <div className='half-column edit'>
+                <form>
+                  <input name='beta_access_code' ref='beta_access_code' type='text' className='form-control' value={edited.beta_access_code} onChange={this.setBetaAccessCode} />
+                </form>
+                {errors.beta_access_code && errors.beta_access_code.empty && <p className='summary error'>Please fill in a code.</p>}
+                {errors.beta_access_code && errors.beta_access_code.not_unique && <p className='summary error'>This code cannot be used; please choose another.</p>}
+                <button type='button' onClick={() => this.cancelEdit('beta_access_code')}>Cancel</button>
+                <button type='button' onClick={() => this.save('beta_access_code')}>Save</button>
+              </div>
+            : <div className='half-column value'>
+                <button type='button' onClick={() => this.edit('beta_access_code')}>Change</button>
+              </div>}
         </div>
       </div>}
 

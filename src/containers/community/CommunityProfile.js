@@ -32,8 +32,8 @@ export default class CommunityProfile extends React.Component {
     return <div id='community'>
       <div className='banner'>
         <div className='background' style={{backgroundImage: `url(${banner_url})`}}/>
-        <div className='buttons'>
-          {canModerate && <button onClick={() => window.location.href = `/c/${slug}/settings`}>Settings</button>}
+        <div className='corner'>
+          {canModerate && <A to={`/c/${slug}/settings`}>Settings</A>}
         </div>
         <div className='logo' style={{backgroundImage: `url(${avatar_url})`}}/>
         <h2>{name}</h2>

@@ -196,7 +196,7 @@ export default class CommunitySettings extends React.Component {
     this.updateSetting(setting, !this.props.community.settings[setting])
   }
 
-  toggleSection (section, open) {
+  toggleSection = (section, open) => {
     let { expand } = this.state
     this.setState({expand: {...expand, [section]: open || !expand[section]}})
   }
@@ -252,12 +252,10 @@ export default class CommunitySettings extends React.Component {
     let { editing, edited, errors, expand } = this.state
     let origin = 'https://www.hylo.com'
     let join_url = origin + '/c/' + community.slug + '/join/' + community.beta_access_code
+    let labelProps = {expand, toggle: this.toggleSection}
 
     return <div className='sections'>
-      <div className='section-label' onClick={() => this.toggleSection('appearance')}>
-        Appearance
-        <i className={cx({'icon-down': expand.appearance, 'icon-right': !expand.appearance})}></i>
-      </div>
+      <SectionLabel name='appearance' {...labelProps}>Appearance</SectionLabel>
       {expand.appearance && <div className='section appearance'>
         <div className='section-item'>
           <div className='half-column'>
@@ -384,10 +382,7 @@ export default class CommunitySettings extends React.Component {
         </div>
       </div>}
 
-      <div className='section-label' onClick={() => this.toggleSection('access')}>
-        Access
-        <i className={cx({'icon-down': expand.access, 'icon-right': !expand.access})}></i>
-      </div>
+      <SectionLabel name='access' {...labelProps}>Access</SectionLabel>
       {expand.access && <div className='section appearance'>
         <div className='section-item'>
           <div className='half-column'>
@@ -407,8 +402,7 @@ export default class CommunitySettings extends React.Component {
           <div className='half-column'>
             <label>Invitation code link</label>
             <p><a href={join_url}>{join_url}</a></p>
-            <p className='summary'>You can copy this link for pasting in emails or embedding on your webpage
-  to pre-populate the invite code for new members to easily join.</p>
+            <p className='summary'>You can copy this link for pasting in emails or embedding on your webpage to pre-populate the invite code for new members to easily join.</p>
           </div>
           {!editing.beta_access_code && <div className='half-column value'>
             <button type='button' onClick={() => this.edit('beta_access_code')}>Change</button>
@@ -425,10 +419,7 @@ export default class CommunitySettings extends React.Component {
         </div>
       </div>}
 
-      <div className='section-label' onClick={() => this.toggleSection('moderators')}>
-        Moderators
-        <i className={cx({'icon-down': expand.moderators, 'icon-right': !expand.moderators})}></i>
-      </div>
+      <SectionLabel name='moderators' {...labelProps}>Moderators</SectionLabel>
       {expand.moderators && <div className='section moderators'>
         <div className='section-item'>
           <div className='full-column'>
@@ -453,10 +444,7 @@ export default class CommunitySettings extends React.Component {
         </div>
       </div>}
 
-      <div className='section-label' onClick={() => this.toggleSection('email')}>
-        Email
-        <i className={cx({'icon-down': expand.email, 'icon-right': !expand.email})}></i>
-      </div>
+      <SectionLabel name='email' {...labelProps}>Email</SectionLabel>
       {expand.email && <div className='section email'>
         <div className='section-item'>
           <div className='half-column'>
@@ -471,4 +459,12 @@ export default class CommunitySettings extends React.Component {
 
     </div>
   }
+}
+
+const SectionLabel = ({name, children, expand, toggle}) => {
+  const expanded = expand[name]
+  return <div className='section-label' onClick={() => toggle(name)}>
+    {children}
+    <i className={cx({'icon-down': expanded, 'icon-right': !expanded})}></i>
+  </div>
 }

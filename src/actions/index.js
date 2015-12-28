@@ -7,6 +7,8 @@ export const CREATE_POST = 'CREATE_POST'
 export const CREATE_PROJECT = 'CREATE_PROJECT'
 export const FETCH_COMMENTS = 'FETCH_COMMENTS'
 export const FETCH_COMMUNITY = 'FETCH_COMMUNITY'
+export const FETCH_COMMUNITY_SETTINGS = 'FETCH_COMMUNITY_SETTINGS'
+export const FETCH_COMMUNITY_MODERATORS = 'FETCH_COMMUNITY_MODERATORS'
 export const FETCH_CURRENT_USER = 'FETCH_CURRENT_USER'
 export const FETCH_PEOPLE = 'FETCH_PEOPLE'
 export const FETCH_PERSON = 'FETCH_PERSON'
@@ -30,12 +32,20 @@ export const UPDATE_PROJECT = 'UPDATE_PROJECT'
 export const UPDATE_PROJECT_EDITOR = 'UPDATE_PROJECT_EDITOR'
 export const UPLOAD_DOC = 'UPLOAD_DOC'
 export const UPLOAD_IMAGE = 'UPLOAD_IMAGE'
+export const UPLOAD_IMAGE_PENDING = UPLOAD_IMAGE + _PENDING
 export const CHANGE_EVENT_RESPONSE = 'CHANGE_EVENT_RESPONSE'
 export const CHANGE_EVENT_RESPONSE_PENDING = CHANGE_EVENT_RESPONSE + _PENDING
 export const UPDATE_USER_SETTINGS = 'UPDATE_USER_SETTINGS'
 export const UPDATE_USER_SETTINGS_PENDING = UPDATE_USER_SETTINGS + _PENDING
 export const LEAVE_COMMUNITY = 'LEAVE_COMMUNITY'
 export const LEAVE_COMMUNITY_PENDING = LEAVE_COMMUNITY + _PENDING
+export const UPDATE_COMMUNITY_SETTINGS = 'UPDATE_COMMUNITY_SETTINGS'
+export const UPDATE_COMMUNITY_SETTINGS_PENDING = UPDATE_COMMUNITY_SETTINGS + _PENDING
+export const ADD_COMMUNITY_MODERATOR = 'ADD_COMMUNITY_MODERATOR'
+export const ADD_COMMUNITY_MODERATOR_PENDING = ADD_COMMUNITY_MODERATOR + _PENDING
+export const REMOVE_COMMUNITY_MODERATOR = 'REMOVE_COMMUNITY_MODERATOR'
+export const REMOVE_COMMUNITY_MODERATOR_PENDING = REMOVE_COMMUNITY_MODERATOR + _PENDING
+export const VALIDATE_COMMUNITY_CODE = 'VALIDATE_COMMUNITY_CODE'
 
 import { cleanAndStringify } from '../util/caching'
 import { cloneDeep, pick } from 'lodash'
@@ -86,6 +96,22 @@ export function fetchCommunity (id) {
   }
 }
 
+export function fetchCommunitySettings (id) {
+  return {
+    type: FETCH_COMMUNITY_SETTINGS,
+    payload: {api: true, path: `/noo/community/${id}/settings`},
+    meta: {cache: {bucket: 'communities', id, requiredProp: 'welcome_message'}}
+  }
+}
+
+export function fetchCommunityModerators (id) {
+  return {
+    type: FETCH_COMMUNITY_MODERATORS,
+    payload: {api: true, path: `/noo/community/${id}/moderators`},
+    meta: {cache: {bucket: 'communities', id, requiredProp: 'moderators'}}
+  }
+}
+
 export function navigate (path) {
   return {
     type: NAVIGATE,
@@ -117,12 +143,19 @@ export function createComment (postId, text) {
   }
 }
 
-export function typeahead (text, id) {
+export function typeahead (text, id, communityId) {
   if (!text) return {type: CANCEL_TYPEAHEAD, meta: {id}}
+
+  var path
+  if (communityId) {
+    path = `/noo/autocomplete?communityId=${communityId}&type=people&${cleanAndStringify({q: text})}`
+  } else {
+    path = `/noo/autocomplete?${cleanAndStringify({q: text})}`
+  }
 
   return {
     type: TYPEAHEAD,
-    payload: {api: true, path: `/noo/autocomplete?${cleanAndStringify({q: text})}`},
+    payload: {api: true, path: path},
     meta: {id}
   }
 }
@@ -217,5 +250,38 @@ export function leaveCommunity (communityId, prevProps) {
     type: LEAVE_COMMUNITY,
     payload: {api: true, path: `/noo/membership/${communityId}`, method: 'DELETE'},
     meta: {communityId, prevProps}
+  }
+}
+
+export function updateCommunitySettings (params, prevProps) {
+  if (params.leader.id) params.leader_id = params.leader.id
+  return {
+    type: UPDATE_COMMUNITY_SETTINGS,
+    payload: {api: true, params, path: `/noo/community/${params.id}`, method: 'POST'},
+    meta: {slug: params.slug, params, prevProps}
+  }
+}
+
+export function addCommunityModerator (community, moderator, prevProps) {
+  return {
+    type: ADD_COMMUNITY_MODERATOR,
+    payload: {api: true, params: {userId: moderator.id}, path: `/noo/community/${community.id}/moderators`, method: 'POST'},
+    meta: {slug: community.slug, moderator, prevProps}
+  }
+}
+
+export function removeCommunityModerator (community, moderatorId, prevProps) {
+  return {
+    type: REMOVE_COMMUNITY_MODERATOR,
+    payload: {api: true, path: `/noo/community/${community.id}/moderator/${moderatorId}`, method: 'DELETE'},
+    meta: {slug: community.slug, moderatorId, prevProps}
+  }
+}
+
+export function validateCommunityCode (code, slug) {
+  return {
+    type: VALIDATE_COMMUNITY_CODE,
+    payload: {api: true, params: {column: 'beta_access_code', value: code, constraint: 'unique'}, path: `/noo/community/validate`, method: 'POST'},
+    meta: {code, slug}
   }
 }

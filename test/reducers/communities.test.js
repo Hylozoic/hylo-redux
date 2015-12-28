@@ -1,6 +1,6 @@
 require('../support')
 import communities from '../../src/reducers/communities'
-import { FETCH_POST, FETCH_POSTS, FETCH_CURRENT_USER } from '../../src/actions'
+import { FETCH_POST, FETCH_POSTS, FETCH_CURRENT_USER, UPDATE_COMMUNITY_SETTINGS, ADD_COMMUNITY_MODERATOR, ADD_COMMUNITY_MODERATOR_PENDING, REMOVE_COMMUNITY_MODERATOR, REMOVE_COMMUNITY_MODERATOR_PENDING, UPDATE_COMMUNITY_SETTINGS_PENDING, UPLOAD_IMAGE } from '../../src/actions'
 
 const post1 = {
   id: 'a',
@@ -18,6 +18,13 @@ const post2 = {
     {id: 'c3', slug: 'c3'},
     {id: 'c4', slug: 'c4'}
   ]
+}
+
+const community1 = {
+  id: 'c1',
+  slug: 'c1',
+  name: 'Current Name',
+  moderators: []
 }
 
 describe('communities', () => {
@@ -90,6 +97,165 @@ describe('communities', () => {
         c3: {id: 'c3', slug: 'c3'},
         c4: {id: 'c4', slug: 'c4', hello: 'world'},
         c5: {id: 'c5', slug: 'c5'}
+      }
+
+      expect(communities(state, action)).to.deep.equal(expectedState)
+    })
+  })
+
+  describe('on UPDATE_COMMUNITY_SETTINGS with error', () => {
+    it('restores current community to previous state', () => {
+      let action = {
+        type: UPDATE_COMMUNITY_SETTINGS,
+        error: true,
+        meta: {prevProps: community1, slug: community1.slug}
+      }
+
+      let state = {
+        [community1.slug]: {...community1, name: 'New Name'}
+      }
+
+      let expectedState = {
+        [community1.slug]: community1
+      }
+
+      expect(communities(state, action)).to.deep.equal(expectedState)
+    })
+  })
+
+  describe('on ADD_COMMUNITY_MODERATOR with error', () => {
+    it('restores current community to previous state', () => {
+      let action = {
+        type: ADD_COMMUNITY_MODERATOR,
+        error: true,
+        meta: {prevProps: community1, slug: community1.slug}
+      }
+
+      let state = {
+        [community1.slug]: {...community1, name: 'Goal', moderators: [{name: 'Joe Mod'}]}
+      }
+
+      let expectedState = {
+        [community1.slug]: community1
+      }
+
+      expect(communities(state, action)).to.deep.equal(expectedState)
+    })
+  })
+
+  describe('on REMOVE_COMMUNITY_MODERATOR with error', () => {
+    it('restores current community to previous state', () => {
+      let prevCommunity = {...community1, moderators: [{name: 'Joe Mod'}]}
+
+      let action = {
+        type: REMOVE_COMMUNITY_MODERATOR,
+        error: true,
+        meta: {prevProps: prevCommunity, slug: community1.slug}
+      }
+
+      let state = {
+        [community1.slug]: community1
+      }
+
+      let expectedState = {
+        [community1.slug]: prevCommunity
+      }
+
+      expect(communities(state, action)).to.deep.equal(expectedState)
+    })
+  })
+
+  describe('on UPDATE_COMMUNITY_SETTINGS_PENDING', () => {
+    it('updates the community in the store', () => {
+      let action = {
+        type: UPDATE_COMMUNITY_SETTINGS_PENDING,
+        meta: {params: {name: 'New Name'}, slug: 'c1'}
+      }
+
+      let state = {
+        c1: community1
+      }
+
+      let expectedState = {
+        c1: {...community1, name: 'New Name'}
+      }
+
+      expect(communities(state, action)).to.deep.equal(expectedState)
+    })
+  })
+
+  describe('on ADD_COMMUNITY_MODERATOR_PENDING', () => {
+    it('updates the community in the store', () => {
+      let action = {
+        type: ADD_COMMUNITY_MODERATOR_PENDING,
+        meta: {moderator: {name: 'Joe Mod'}, slug: 'c1'}
+      }
+
+      let state = {
+        c1: community1
+      }
+
+      let expectedState = {
+        c1: {...community1, moderators: [{name: 'Joe Mod'}]}
+      }
+
+      expect(communities(state, action)).to.deep.equal(expectedState)
+    })
+  })
+
+  describe('on REMOVE_COMMUNITY_MODERATOR_PENDING', () => {
+    it('updates the community in the store', () => {
+      let action = {
+        type: REMOVE_COMMUNITY_MODERATOR_PENDING,
+        meta: {moderatorId: 2, slug: 'c1'}
+      }
+
+      let state = {
+        c1: {...community1, moderators: [{name: 'Joe Mod', id: 1}, {name: 'Sue Mod', id: 2}]}
+      }
+
+      let expectedState = {
+        c1: {...community1, moderators: [{name: 'Joe Mod', id: 1}]}
+      }
+
+      expect(communities(state, action)).to.deep.equal(expectedState)
+    })
+  })
+
+  describe('on UPLOAD_IMAGE with community-avatar', () => {
+    it('updates the community avatar_url and sets triggerUpdate in the store', () => {
+      let action = {
+        type: UPLOAD_IMAGE,
+        meta: {subject: 'community-avatar', id: 'c1'},
+        payload: 'http://foo.com/foo.gif'
+      }
+
+      let state = {
+        c1: community1
+      }
+
+      let expectedState = {
+        c1: {...community1, avatar_url: 'http://foo.com/foo.gif', triggerUpdate: true}
+      }
+
+      expect(communities(state, action)).to.deep.equal(expectedState)
+    })
+  })
+
+  describe('on UPLOAD_IMAGE with community-banner', () => {
+    it('updates the community banner_url and sets triggerUpdate in the store', () => {
+      let action = {
+        type: UPLOAD_IMAGE,
+        meta: {subject: 'community-banner', id: 'c1'},
+        payload: 'http://foo.com/foo.gif'
+      }
+
+      let state = {
+        c1: community1
+      }
+
+      let expectedState = {
+        c1: {...community1, banner_url: 'http://foo.com/foo.gif', triggerUpdate: true}
       }
 
       expect(communities(state, action)).to.deep.equal(expectedState)

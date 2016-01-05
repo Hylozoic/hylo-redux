@@ -8,6 +8,7 @@ import truncate from 'html-truncate'
 import A from './A'
 import Avatar from './Avatar'
 import Dropdown from './Dropdown'
+import ClickCatchingDiv from './ClickCatchingDiv'
 import Comment from './Comment'
 import CommentForm from './CommentForm'
 import PostEditor from './PostEditor'
@@ -161,7 +162,7 @@ const ExpandedPostDetails = props => {
   return <div>
     {image && <img src={image.url} className='full-image post-section'/>}
 
-    {description && <div className='details post-section'
+    {description && <ClickCatchingDiv className='details post-section'
       dangerouslySetInnerHTML={{__html: description}}/>}
 
     {post.type === 'event' && <RSVPControl

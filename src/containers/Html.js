@@ -6,9 +6,8 @@ class Html extends React.Component {
   static propTypes = {
     pageTitle: string,
     markup: string,
-    cssBundle: string,
-    jsBundle: string,
-    state: string
+    state: string,
+    assetManifest: string
   }
 
   render () {

@@ -1,13 +1,12 @@
-import config from '../../config'
 import React from 'react'
 import TinyMCE from 'react-tinymce'
 import cx from 'classnames'
 import Mention from './Mention'
 import uuid from 'react-tinymce/lib/helpers/uuid'
+import { assetUrl } from '../util/assets'
 const { array, func, string } = React.PropTypes
 
 const editorConfig = {
-  content_css: config.cssBundle,
   menubar: false,
   statusbar: false,
   plugins: ['paste', 'autolink', 'link'],
@@ -31,15 +30,15 @@ export default class RichTextEditor extends React.Component {
   constructor (props) {
     super(props)
 
-    // this window check is a workaround for server rendering of a single-post
-    // page. if we call uuid() on the server it keeps a single count for all
-    // requests, but the client starts from 0 for each request.
-    //
-    // a different workaround would have to be implemented if we were to add
-    // a server-rendered page that had two or more editors on it.
     if (typeof window !== 'undefined') {
       this.editorId = uuid()
+
+      // this needs to be set only on the client side.
+      editorConfig.content_css = assetUrl('/index.css')
     } else {
+      // do not use uuid() on the server, because it will keep a single count
+      // for all requests. this will break if we render a page on the server
+      // that has two or more editors on it.
       this.editorId = 'react-tinymce-0'
     }
   }

@@ -11,6 +11,10 @@ export function fetchPeople (opts) {
   switch (subject) {
     case 'community':
       payload.path = `/noo/community/${id}/members?${querystring}`
+      break
+    case 'project':
+      payload.path = `/noo/project/${id}/users-redux?${querystring}`
+      break
   }
 
   return {type: FETCH_PEOPLE, payload, meta: {cache}}

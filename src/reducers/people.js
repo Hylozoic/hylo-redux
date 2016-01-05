@@ -1,5 +1,5 @@
 import { filter } from 'lodash'
-import { debug, union } from '../util/logging'
+import { debug } from '../util/logging'
 import {
   LOGIN,
   LOGOUT,

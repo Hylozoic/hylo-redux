@@ -210,7 +210,7 @@ export default class CommunitySettings extends React.Component {
     let join_url = origin + '/c/' + community.slug + '/join/' + community.beta_access_code
     let labelProps = {expand, toggle: this.toggleSection}
 
-    return <div className='sections'>
+    return <div className='sections' id='community-settings'>
       <SectionLabel name='appearance' {...labelProps}>Appearance</SectionLabel>
       {expand.appearance && <div className='section appearance'>
         <div className='section-item'>

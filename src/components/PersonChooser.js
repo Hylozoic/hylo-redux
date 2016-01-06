@@ -41,13 +41,12 @@ export default class PersonChooser extends React.Component {
 
   render () {
     let { choices } = this.props
-    return <div className='tag-input' onClick={this.focus}>
-
-      <input ref='input' type='text' placeholder='Type...'
+    return <div className='chooser'>
+      <input className='form-control' ref='input' type='text' placeholder='Type...'
         onChange={this.handleInput}
         onKeyDown={this.handleKeys}/>
 
-      {!isEmpty(choices) && <div className='dropdown'>
+      {!isEmpty(choices) && <div className='dropdown active'>
         <KeyControlledList className='dropdown-menu' ref='list' items={choices} onChange={this.select}/>
       </div>}
     </div>

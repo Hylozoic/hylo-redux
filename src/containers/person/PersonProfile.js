@@ -5,7 +5,7 @@ import { fetchPerson } from '../../actions'
 import { A, IndexA } from '../../components/A'
 const { object } = React.PropTypes
 
-const defaultBanner = 'http://cdn.hylo.com/misc/default_user_banner.jpg'
+const defaultBanner = 'https://d3ngex8q79bk55.cloudfront.net/misc/default_user_banner.jpg'
 
 @prefetch(({ dispatch, params: {id} }) => dispatch(fetchPerson(id)))
 @connect((state, props) => ({person: state.people[props.params.id]}))

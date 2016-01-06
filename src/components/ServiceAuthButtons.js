@@ -1,4 +1,5 @@
 import React from 'react'
+import { connect } from 'react-redux'
 import { openPopup, setupPopupCallback } from '../util/auth'
 const { func } = React.PropTypes
 
@@ -7,6 +8,7 @@ const startAuth = service => event => {
   event.preventDefault()
 }
 
+@connect()
 export default class ServiceAuthButtons extends React.Component {
   static propTypes = {
     dispatch: func,

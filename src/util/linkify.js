@@ -11,10 +11,7 @@ var linkifyjsOptions = {
     return value
   },
   linkAttributes: function (value, type) {
-    if (type === 'hashtag') {
-      return {'data-search': value}
-    }
-    return value
+    if (type === 'hashtag') return {'data-search': value}
   }
 }
 

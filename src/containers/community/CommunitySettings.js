@@ -6,7 +6,14 @@ import cx from 'classnames'
 const { object, func, array } = React.PropTypes
 import { find, reduce } from 'lodash'
 import { markdown } from '../../util/text'
-import { updateCommunitySettings, fetchCommunitySettings, fetchCommunityModerators, addCommunityModerator, removeCommunityModerator, validateCommunityCode } from '../../actions'
+import {
+  updateCommunitySettings,
+  fetchCommunitySettings,
+  fetchCommunityModerators,
+  addCommunityModerator,
+  removeCommunityModerator,
+  validateCommunityCode
+} from '../../actions'
 import { uploadImage } from '../../actions/uploadImage'
 import PersonChooser from '../../components/PersonChooser'
 
@@ -206,9 +213,13 @@ export default class CommunitySettings extends React.Component {
     let { community } = this.props
     let { avatar_url, banner_url } = community
     let { editing, edited, errors, expand } = this.state
-    let origin = 'https://www.hylo.com'
-    let join_url = origin + '/c/' + community.slug + '/join/' + community.beta_access_code
     let labelProps = {expand, toggle: this.toggleSection}
+    let joinUrl
+
+    if (expand.access) {
+      let origin = typeof window !== 'undefined' ? window.location.origin : 'https://www.hylo.com'
+      joinUrl = `${origin}/c/${community.slug}/join/${community.beta_access_code}`
+    }
 
     return <div className='sections' id='community-settings'>
       <SectionLabel name='appearance' {...labelProps}>Appearance</SectionLabel>
@@ -361,7 +372,7 @@ export default class CommunitySettings extends React.Component {
           </div>
           <div className='half-column'>
             <label>Invitation code link</label>
-            <p><a href={join_url}>{join_url}</a></p>
+            <p><a href={joinUrl}>{joinUrl}</a></p>
             <p className='summary'>You can copy this link for pasting in emails or embedding on your webpage to pre-populate the invite code for new members to easily join.</p>
           </div>
           {editing.beta_access_code

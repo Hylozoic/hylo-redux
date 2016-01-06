@@ -132,7 +132,7 @@ export default class UserSettings extends React.Component {
     let { currentUser } = this.props
     let { editing, edited, errors, expand } = this.state
 
-    return <div className='sections'>
+    return <div className='form-sections'>
       <div className='section-label' onClick={() => this.toggleSection('account')}>
         Account
         <i className={cx({'icon-down': expand.account, 'icon-right': !expand.account})}></i>

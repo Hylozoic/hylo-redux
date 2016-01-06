@@ -221,7 +221,7 @@ export default class CommunitySettings extends React.Component {
       joinUrl = `${origin}/c/${community.slug}/join/${community.beta_access_code}`
     }
 
-    return <div className='sections' id='community-settings'>
+    return <div className='form-sections' id='community-settings'>
       <SectionLabel name='appearance' {...labelProps}>Appearance</SectionLabel>
       {expand.appearance && <div className='section appearance'>
         <div className='section-item'>

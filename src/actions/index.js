@@ -22,6 +22,8 @@ export const NAVIGATE = 'NAVIGATE'
 export const REMOVE_DOC = 'REMOVE_DOC'
 export const REMOVE_IMAGE = 'REMOVE_IMAGE'
 export const SET_LOGIN_ERROR = 'SET_LOGIN_ERROR'
+export const SET_SIGNUP_ERROR = 'SET_SIGNUP_ERROR'
+export const SIGNUP = 'SIGNUP'
 export const START_POST_EDIT = 'START_POST_EDIT'
 export const START_PROJECT_EDIT = 'START_PROJECT_EDIT'
 export const TOGGLE_MAIN_MENU = 'TOGGLE_MAIN_MENU'
@@ -67,6 +69,18 @@ export function logout () {
     type: LOGOUT,
     payload: {api: true, path: '/logout', method: 'post'}
   }
+}
+
+export function signup (name, email, password) {
+  let params = {name, email, password, resp: 'user', login: true}
+  return {
+    type: SIGNUP,
+    payload: {api: true, path: '/noo/user', params, method: 'post'}
+  }
+}
+
+export function setSignupError (message) {
+  return {type: SET_SIGNUP_ERROR, payload: message}
 }
 
 export function fetchPerson (id) {

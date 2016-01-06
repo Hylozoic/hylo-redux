@@ -24,6 +24,8 @@ import {
   LOGOUT,
   NAVIGATE,
   SET_LOGIN_ERROR,
+  SET_SIGNUP_ERROR,
+  SIGNUP,
   TOGGLE_MAIN_MENU,
   TYPEAHEAD,
   UPDATE_POST,
@@ -73,6 +75,19 @@ export default combineReducers({
         if (error) return {error: payload.message}
         return {success: true}
       case SET_LOGIN_ERROR:
+        if (!payload) return {success: true}
+        return {error: payload}
+    }
+    return state
+  },
+
+  signup: (state = {}, action) => {
+    let { type, payload, error } = action
+    switch (type) {
+      case SIGNUP:
+        if (error) return {error: payload.message}
+        return {success: true}
+      case SET_SIGNUP_ERROR:
         if (!payload) return {success: true}
         return {error: payload}
     }

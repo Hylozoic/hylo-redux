@@ -141,7 +141,8 @@ nav {
 .login-signup {
   .make-row;
   form {
-    .make-sm-column(6);
+    .make-sm-column(8);
+    .make-md-column(6);
   }
   label {
     margin-right: 5px;
@@ -178,6 +179,9 @@ nav {
       &:active {
         background-color: darken(#5b5b5b, 15%);
       }
+      .mobile({
+        background-position-x: 5px;
+      });
     }
 
     &.facebook {
@@ -187,6 +191,9 @@ nav {
       &:active {
         background-color: darken(#464b9a, 15%);
       }
+      .mobile({
+        background-position-x: left;
+      });
     }
 
     &.linkedin {
@@ -196,6 +203,9 @@ nav {
       &:active {
         background-color: darken(#4272b6, 15%);
       }
+      .mobile({
+        background-position-x: left;
+      });
     }
   }
 }

@@ -2,19 +2,24 @@ import React from 'react'
 import { A, IndexA } from '../../components/A'
 import { connect } from 'react-redux'
 import { prefetch } from 'react-fetcher'
+import { find } from 'lodash'
 import { fetchCommunity } from '../../actions'
 const { object } = React.PropTypes
 
 @prefetch(({dispatch, params: {id}}) => dispatch(fetchCommunity(id)))
-@connect((state, props) => ({community: state.communities[props.params.id]}))
+@connect((state, props) => ({
+  community: state.communities[props.params.id],
+  currentUser: state.people.current
+}))
 export default class CommunityProfile extends React.Component {
   static propTypes = {
     community: object,
+    currentUser: object,
     children: object
   }
 
   render () {
-    var { community } = this.props
+    var { community, currentUser } = this.props
 
     // we might have partial data for a community already; if this component
     // renders without banner_url, it'll cause a request to an invalid url
@@ -22,9 +27,14 @@ export default class CommunityProfile extends React.Component {
 
     let { slug, banner_url, avatar_url, name } = community
 
+    let canModerate = !!find(currentUser.memberships, m => m.community.id === community.id && m.role === 1)
+
     return <div id='community'>
       <div className='banner'>
         <div className='background' style={{backgroundImage: `url(${banner_url})`}}/>
+        <div className='corner'>
+          {canModerate && <A to={`/c/${slug}/settings`}>Settings</A>}
+        </div>
         <div className='logo' style={{backgroundImage: `url(${avatar_url})`}}/>
         <h2>{name}</h2>
         <ul className='tabs'>

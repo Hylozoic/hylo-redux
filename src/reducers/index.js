@@ -23,11 +23,17 @@ import {
   LOGIN,
   LOGOUT,
   NAVIGATE,
+  RESET_COMMUNITY_VALIDATION,
   SET_LOGIN_ERROR,
+  SET_SIGNUP_ERROR,
+  SIGNUP,
   TOGGLE_MAIN_MENU,
   TYPEAHEAD,
+  UPDATE_COMMUNITY_EDITOR,
   UPDATE_POST,
-  UPLOAD_IMAGE
+  UPLOAD_IMAGE,
+  VALIDATE_COMMUNITY_ATTRIBUTE,
+  VALIDATE_COMMUNITY_ATTRIBUTE_PENDING
 } from '../actions'
 
 export default combineReducers({
@@ -73,6 +79,19 @@ export default combineReducers({
         if (error) return {error: payload.message}
         return {success: true}
       case SET_LOGIN_ERROR:
+        if (!payload) return {success: true}
+        return {error: payload}
+    }
+    return state
+  },
+
+  signup: (state = {}, action) => {
+    let { type, payload, error } = action
+    switch (type) {
+      case SIGNUP:
+        if (error) return {error: payload.message}
+        return {success: true}
+      case SET_SIGNUP_ERROR:
         if (!payload) return {success: true}
         return {error: payload}
     }
@@ -182,6 +201,57 @@ export default combineReducers({
       case FETCH_PROJECTS:
         return {...state, [meta.cache.id]: Number(payload.projects_total)}
     }
+    return state
+  },
+
+  communityValidation: (state = {}, action) => {
+    let { type, payload, error, meta } = action
+    if (error) return state
+
+    switch (type) {
+      case VALIDATE_COMMUNITY_ATTRIBUTE_PENDING:
+        return {
+          ...state,
+          pending: {...state.pending, [meta.key]: true}
+        }
+      case VALIDATE_COMMUNITY_ATTRIBUTE:
+        return {
+          ...state,
+          [meta.key]: payload,
+          pending: {...state.pending, [meta.key]: false}
+        }
+      case RESET_COMMUNITY_VALIDATION:
+        return {...state, [meta.key]: null}
+    }
+
+    return state
+  },
+
+  communityEditor: (state = {}, action) => {
+    let { type, payload, meta, error } = action
+    if (error) return state
+
+    switch (type) {
+      case UPDATE_COMMUNITY_EDITOR:
+        return {
+          ...state,
+          [meta.subtree]: {...state[meta.subtree], ...payload}
+        }
+      case UPLOAD_IMAGE:
+        if (meta.id !== 'new') break
+        if (meta.subject === 'community-avatar') {
+          return {
+            ...state,
+            community: {...state.community, avatar_url: payload}
+          }
+        } else if (meta.subject === 'community-banner') {
+          return {
+            ...state,
+            community: {...state.community, banner_url: payload}
+          }
+        }
+    }
+
     return state
   }
 })

@@ -7,6 +7,7 @@ const { func, object } = React.PropTypes
 import { fetchCurrentUser, updateUserSettings, leaveCommunity } from '../../actions'
 import A from '../../components/A'
 import { formatDate } from '../../util/text'
+import { sortBy } from 'lodash'
 
 @prefetch(({ dispatch, params: {id} }) => dispatch(fetchCurrentUser()))
 @connect(({ people }, props) => ({currentUser: people.current}))
@@ -95,11 +96,6 @@ export default class UserSettings extends React.Component {
     this.updateSetting(setting, !this.props.currentUser.settings[setting])
   }
 
-  joinCommunity () {
-    var inviteCode = window.prompt('Enter the code that was given to you by your community manager.')
-    console.log(inviteCode)
-  }
-
   leaveCommunity (communityId) {
     let { dispatch, currentUser } = this.props
     if (!window.confirm('Are you sure you want to leave this community?')) return
@@ -122,17 +118,15 @@ export default class UserSettings extends React.Component {
       case 'prompts':
         this.toggleSection('account', true)
         break
-      default:
-        this.toggleSection('account', true)
-        break
     }
   }
 
   render () {
     let { currentUser } = this.props
+    let memberships = sortBy(currentUser.memberships, m => m.community.name)
     let { editing, edited, errors, expand } = this.state
 
-    return <div className='sections'>
+    return <div className='form-sections'>
       <div className='section-label' onClick={() => this.toggleSection('account')}>
         Account
         <i className={cx({'icon-down': expand.account, 'icon-right': !expand.account})}></i>
@@ -237,7 +231,7 @@ export default class UserSettings extends React.Component {
         <i className={cx({'icon-down': expand.communities, 'icon-right': !expand.communities})}></i>
       </div>
       {expand.communities && <div className='section communities'>
-        {currentUser.memberships.map(membership => <div className='section-item' key={membership.id}>
+        {memberships.map(membership => <div className='section-item' key={membership.id}>
           <div className='half-column'>
             <label><A to={`/c/${membership.community.slug}`}>{membership.community.name}</A></label>
             <div className='summary'>Joined: { formatDate(membership.created_at) }</div>
@@ -246,7 +240,7 @@ export default class UserSettings extends React.Component {
             <button onClick={() => this.leaveCommunity(membership.community_id)}>Leave</button>
           </div>
         </div>)}
-        {currentUser.memberships.length === 0 && <div className='section-item'>
+        {memberships.length === 0 && <div className='section-item'>
           <div className='full-column'>
             <p>You do not belong to any communities yet.</p>
           </div>

@@ -82,6 +82,11 @@ export default class PostEditor extends React.Component {
     project: object
   }
 
+  constructor (props) {
+    super(props)
+    this.state = {communityChoices: []}
+  }
+
   updateStore (data) {
     let { id, dispatch } = this.props
     dispatch(updatePostEditor(data, id))
@@ -166,20 +171,24 @@ export default class PostEditor extends React.Component {
     })
   }
 
-  findCommunities = term => {
-    if (!term) return
+  updateCommunityChoices = term => {
+    if (!term) {
+      this.setState({communityChoices: []})
+      return
+    }
 
     let { currentUser, postEdit: { communities } } = this.props
     var match = c =>
       startsWith(c.name.toLowerCase(), term.toLowerCase()) &&
       !contains(communities, c.id)
 
-    return filter(currentUser.memberships.map(m => m.community), match)
+    this.setState({communityChoices: filter(currentUser.memberships.map(m => m.community), match)})
   }
 
   render () {
     let { expanded, post, postEdit, dispatch, project } = this.props
     let { name, description, communities, type, location } = postEdit
+    let { communityChoices } = this.state
     if (!type) type = 'chat'
 
     return <div className={cx('post-editor', 'clearfix', {expanded})}>
@@ -218,7 +227,8 @@ export default class PostEditor extends React.Component {
         {!project && <div>
           <h3 className='communities-header'>Communities</h3>
           <CommunityTagInput ids={communities}
-            getChoices={this.findCommunities}
+            handleInput={this.updateCommunityChoices}
+            choices={communityChoices}
             onSelect={this.addCommunity}
             onRemove={this.removeCommunity}/>
         </div>}
@@ -321,7 +331,8 @@ class AttachmentButtons extends React.Component {
 class CommunityTagInput extends React.Component {
   static propTypes = {
     ids: array,
-    communities: array
+    communities: array,
+    choices: array
   }
 
   render () {

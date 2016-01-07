@@ -6,6 +6,7 @@ import {
   FETCH_PEOPLE,
   FETCH_CURRENT_USER,
   FETCH_PERSON,
+  SIGNUP,
   UPDATE_USER_SETTINGS,
   UPDATE_USER_SETTINGS_PENDING,
   LEAVE_COMMUNITY,
@@ -66,6 +67,7 @@ export default function (state = {}, action) {
         [payload.id]: payload
       }
     case LOGIN:
+    case SIGNUP:
     case FETCH_CURRENT_USER:
       debug('caching person:', payload.id)
       return {

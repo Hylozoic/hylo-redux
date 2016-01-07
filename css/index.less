@@ -138,10 +138,11 @@ nav {
   }
 }
 
-#login {
+.login-signup {
   .make-row;
   form {
-    .make-sm-column(6);
+    .make-sm-column(8);
+    .make-md-column(6);
   }
   label {
     margin-right: 5px;
@@ -178,6 +179,9 @@ nav {
       &:active {
         background-color: darken(#5b5b5b, 15%);
       }
+      .mobile({
+        background-position-x: 5px;
+      });
     }
 
     &.facebook {
@@ -187,6 +191,9 @@ nav {
       &:active {
         background-color: darken(#464b9a, 15%);
       }
+      .mobile({
+        background-position-x: left;
+      });
     }
 
     &.linkedin {
@@ -196,6 +203,9 @@ nav {
       &:active {
         background-color: darken(#4272b6, 15%);
       }
+      .mobile({
+        background-position-x: left;
+      });
     }
   }
 }
@@ -269,6 +279,20 @@ ul.tabs {
     z-index: -1;
   }
 
+  .corner {
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding: 15px;
+    a {
+      .outlined-text(rgba(0, 0, 0, 0.7));
+      color: @off-white;
+      &.active {
+        font-weight: bold;
+      }
+    }
+  }
+
   .logo {
     display: inline-block;
     width: @avatar-size-large;
@@ -305,6 +329,14 @@ ul.tabs {
   background-position: center;
   background-size: cover;
   display: block;
+}
+
+.medium-avatar {
+  width: @avatar-size-medium;
+  height: @avatar-size-medium;
+  border-radius: @avatar-size-medium;
+  background-position: center;
+  background-size: cover;
 }
 
 .large-avatar {
@@ -893,19 +925,26 @@ ul.tags {
   }
 }
 
-
-.sections {
+.form-sections {
+  .standard-form;
 
   .section-label {
     font-size: 24px;
-    padding: 15px 0;
+    .mobile({
+      font-size: 20px;
+    });
+    margin-top: 15px;
+    padding: 0 0 12px;
     border-bottom: 1px solid @light-gray-border;
     // color: #333;
 
     .icon-right, .icon-down {
       float: right;
-      margin-top: 13px;
       font-size: 12px;
+      margin-top: 11px;
+      .mobile({
+        margin-top: 9px;
+      });
     }
 
     .close-button {
@@ -926,7 +965,7 @@ ul.tags {
     }
 
     .summary {
-      .meta-text
+      .meta-text;
     }
   }
 
@@ -941,8 +980,109 @@ ul.tags {
   .half-column {
     .make-sm-column(6);
   }
+  .side-column {
+    .make-sm-column(3);
+    label {
+      padding-top: 4px;
+    }
+  }
+  .main-column {
+    .make-sm-column(9);
+  }
   .value {
     text-align: right;
+  }
+
+  .form-control {
+    margin-bottom: @p-bottom-margin;
+  }
+
+  .input-group {
+    .form-control {
+      margin-bottom: 0;
+    }
+    margin-bottom: @p-bottom-margin;
+  }
+
+  .description-value {
+    text-align: left;
+    max-height: 50vh;
+    overflow: scroll;
+    border: 1px solid @light-gray-border;
+    border-radius: @border-radius-base;
+    padding: 6px 12px;
+    margin-bottom: 10px;
+  }
+
+  textarea.description {
+    min-height: 30vh;
+  }
+
+  .footer .error {
+    margin-top: @p-bottom-margin;
+  }
+}
+
+.community-settings() {
+  .community-logo {
+    width: 60px;
+    height: 60px;
+    background-size: cover;
+    vertical-align: middle;
+    display: inline-block;
+    margin-right: 10px;
+  }
+
+  .community-banner {
+    display: block;
+    width: 100%;
+    .fluid-height(38.2%);
+    background-size: cover;
+    background-position: center;
+    margin-bottom: 5px;
+  }
+}
+
+#community-editor {
+  .community-settings;
+}
+
+#community-settings {
+  .community-settings;
+
+  .welcome-message {
+    .leader {
+      float: left;
+      margin: 0 15px 15px 0;
+      text-align: center;
+      width: 70px;
+      .avatar {
+        .large-avatar;
+      }
+      .name {
+        .meta-text;
+        margin-top: 5px;
+      }
+    }
+
+    .buttons {
+      text-align: right;
+      margin-top: 10px;
+      button {
+        margin-right: 0px;
+      }
+    }
+  }
+
+  .moderator {
+    .avatar {
+      margin-right: 15px;
+      display: inline-block;
+    }
+    .name {
+      vertical-align: text-bottom;
+      line-height: 43px;
+    }
   }
 }
 
@@ -1051,29 +1191,6 @@ ul.tags {
     }
   }
 
-}
-
-.standard-form() {
-  section {
-    margin-bottom: 30px;
-  }
-  .counter {
-    float: right;
-    padding-top: 4px;
-    .meta-text;
-  }
-  label {
-    .post-title-text;
-  }
-  textarea {
-    height: 20vh;
-  }
-  .help {
-    .meta-text;
-  }
-  textarea + .help {
-    margin-top: 5px;
-  }
 }
 
 #project-editor {

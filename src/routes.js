@@ -1,6 +1,7 @@
 import React from 'react'
 import { Route, IndexRoute } from 'react-router'
 import Home from './components/Home'
+import Signup from './containers/Signup'
 import Login from './containers/Login'
 import App from './containers/App'
 import { AllPosts, MyPosts, FollowedPosts } from './containers/home'
@@ -10,6 +11,7 @@ import CommunityPosts from './containers/community/CommunityPosts'
 import CommunityMembers from './containers/community/CommunityMembers'
 import CommunityEvents from './containers/community/CommunityEvents'
 import CommunityProjects from './containers/community/CommunityProjects'
+import CommunityEditor from './containers/community/CommunityEditor'
 import AboutCommunity from './containers/community/AboutCommunity'
 import CommunitySettings from './containers/community/CommunitySettings'
 import PersonProfile from './containers/person/PersonProfile'
@@ -34,6 +36,7 @@ export default function makeRoutes (store) {
 
   return <Route path='/' component={App}>
     <IndexRoute component={Home}/>
+    <Route path='signup' component={Signup}/>
     <Route path='login' component={Login}/>
     <Route path='settings' component={UserSettings} onEnter={requireLogin}/>
     <Route path='all-posts' component={AllPosts} onEnter={requireLogin}/>
@@ -44,6 +47,7 @@ export default function makeRoutes (store) {
       <IndexRoute component={PersonPosts}/>
       <Route path='about' component={AboutPerson}/>
     </Route>
+    <Route path='c/new' component={CommunityEditor} onEnter={requireLogin}/>
     <Route path='c/:id' component={CommunityProfile} onEnter={requireLogin}>
       <IndexRoute component={CommunityPosts}/>
       <Route path='members' component={CommunityMembers}/>

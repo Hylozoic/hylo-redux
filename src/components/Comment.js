@@ -1,5 +1,6 @@
 import React from 'react'
 import Avatar from './Avatar'
+import ClickCatchingDiv from './ClickCatchingDiv'
 import {humanDate, sanitize, present} from '../util/text'
 var { object } = React.PropTypes
 
@@ -23,7 +24,7 @@ export default class Comment extends React.Component {
           {spacer}
           {humanDate(comment.created_at)}
         </span>
-        <div className='text' dangerouslySetInnerHTML={{__html: text}}/>
+        <ClickCatchingDiv className='text' dangerouslySetInnerHTML={{__html: text}}/>
       </div>
     </div>
   }

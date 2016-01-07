@@ -972,12 +972,28 @@ ul.tags {
   .half-column {
     .make-sm-column(6);
   }
+  .side-column {
+    .make-sm-column(3);
+    label {
+      padding-top: 4px;
+    }
+  }
+  .main-column {
+    .make-sm-column(9);
+  }
   .value {
     text-align: right;
   }
 
   .form-control {
-    margin-bottom: 10px;
+    margin-bottom: @p-bottom-margin;
+  }
+
+  .input-group {
+    .form-control {
+      margin-bottom: 0;
+    }
+    margin-bottom: @p-bottom-margin;
   }
 
   .description-value {
@@ -992,6 +1008,10 @@ ul.tags {
 
   textarea.description {
     min-height: 30vh;
+  }
+
+  .footer .error {
+    margin-top: @p-bottom-margin;
   }
 }
 

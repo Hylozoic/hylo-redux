@@ -50,6 +50,7 @@ export const UPLOAD_DOC = 'UPLOAD_DOC'
 export const UPLOAD_IMAGE = 'UPLOAD_IMAGE'
 export const UPLOAD_IMAGE_PENDING = UPLOAD_IMAGE + _PENDING
 export const VALIDATE_COMMUNITY_ATTRIBUTE = 'VALIDATE_COMMUNITY_ATTRIBUTE'
+export const VALIDATE_COMMUNITY_ATTRIBUTE_PENDING = VALIDATE_COMMUNITY_ATTRIBUTE + _PENDING
 
 import { cleanAndStringify } from '../util/caching'
 import { cloneDeep, pick } from 'lodash'
@@ -306,5 +307,13 @@ export function resetCommunityValidation (key) {
   return {
     type: RESET_COMMUNITY_VALIDATION,
     meta: {key}
+  }
+}
+
+export function updateCommunityEditor (subtree, changes) {
+  return {
+    type: UPDATE_COMMUNITY_EDITOR,
+    payload: changes,
+    meta: {subtree}
   }
 }

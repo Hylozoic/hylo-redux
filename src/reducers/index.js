@@ -29,9 +29,11 @@ import {
   SIGNUP,
   TOGGLE_MAIN_MENU,
   TYPEAHEAD,
+  UPDATE_COMMUNITY_EDITOR,
   UPDATE_POST,
   UPLOAD_IMAGE,
-  VALIDATE_COMMUNITY_ATTRIBUTE
+  VALIDATE_COMMUNITY_ATTRIBUTE,
+  VALIDATE_COMMUNITY_ATTRIBUTE_PENDING
 } from '../actions'
 
 export default combineReducers({
@@ -207,10 +209,33 @@ export default combineReducers({
     if (error) return state
 
     switch (type) {
+      case VALIDATE_COMMUNITY_ATTRIBUTE_PENDING:
+        return {
+          ...state,
+          pending: {...state.pending, [meta.key]: true}
+        }
       case VALIDATE_COMMUNITY_ATTRIBUTE:
-        return {...state, [meta.key]: payload}
+        return {
+          ...state,
+          [meta.key]: payload,
+          pending: {...state.pending, [meta.key]: false}
+        }
       case RESET_COMMUNITY_VALIDATION:
         return {...state, [meta.key]: null}
+    }
+
+    return state
+  },
+
+  communityEditor: (state = {}, action) => {
+    let { type, payload, meta, error } = action
+    if (error) return state
+
+    if (type === UPDATE_COMMUNITY_EDITOR) {
+      return {
+        ...state,
+        [meta.subtree]: {...state[meta.subtree], ...payload}
+      }
     }
 
     return state

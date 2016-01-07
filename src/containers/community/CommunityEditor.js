@@ -2,6 +2,11 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { any, get, pairs } from 'lodash'
 import { updateCommunityEditor, resetCommunityValidation, validateCommunityAttribute } from '../../actions'
+import { uploadImage } from '../../actions/uploadImage'
+import {
+  communityAvatarUploadSettings,
+  communityBannerUploadSettings
+} from '../../constants'
 const { bool, func, object } = React.PropTypes
 
 const categories = {
@@ -21,12 +26,18 @@ const categories = {
 @connect(({communityEditor, communityValidation}) => {
   let validating = any(communityValidation.pending)
   let submitting = get(communityEditor, 'submission.started')
-  let errors = {...communityEditor.errors}
+  let { community, errors } = communityEditor
+
+  if (!errors) errors = {}
   errors.nameUsed = get(communityValidation, 'name.unique') === false
   errors.slugUsed = get(communityValidation, 'slug.unique') === false
   errors.codeUsed = get(communityValidation, 'beta_access_code.unique') === false
 
-  return {...communityEditor, errors, validating, submitting}
+  if (!community) community = {}
+  if (!community.banner_url) community.banner_url = 'https://d3ngex8q79bk55.cloudfront.net/misc/default_community_banner.jpg'
+  if (!community.avatar_url) community.avatar_url = 'https://d3ngex8q79bk55.cloudfront.net/misc/default_community_avatar.png'
+
+  return {community, errors, validating, submitting}
 })
 export default class CommunityEditor extends React.Component {
   static propTypes = {
@@ -126,6 +137,17 @@ export default class CommunityEditor extends React.Component {
     this.setError({categoryBlank: !value})
   }
 
+  attachImage (type) {
+    let { dispatch } = this.props
+    let community = {id: 'new', slug: 'new'}
+    switch (type) {
+      case 'avatar':
+        return dispatch(uploadImage(communityAvatarUploadSettings(community)))
+      case 'banner':
+        return dispatch(uploadImage(communityBannerUploadSettings(community)))
+    }
+  }
+
   validate () {
     this.validateName(this.refs.name.value)
     this.validateDescription(this.refs.description.value)
@@ -152,9 +174,7 @@ export default class CommunityEditor extends React.Component {
   }
 
   render () {
-    let { saving } = this.props
-    let community = this.props.community || {}
-    let errors = this.props.errors || {}
+    let { saving, community, errors } = this.props
 
     return <div id='community-editor' className='form-sections'>
       <h2>Create a community</h2>
@@ -244,11 +264,8 @@ export default class CommunityEditor extends React.Component {
             <label>Icon</label>
           </div>
           <div className='main-column'>
-            <div className='community-icon' back-img='community.avatar_url'></div>
-            <button ng-click='changeIcon()'>
-              <span ng-hide='uploading.avatar_url'>Change</span>
-              <span ng-show='uploading.avatar_url'>Please wait...</span>
-            </button>
+            <div className='community-logo' style={{backgroundImage: `url(${community.avatar_url})`}}></div>
+            <button onClick={() => this.attachImage('avatar')}>Change</button>
             <p className='help'>This image appears next to your community's name. (Tip: Try a transparent PNG image.)</p>
           </div>
         </div>
@@ -258,12 +275,11 @@ export default class CommunityEditor extends React.Component {
             <label>Banner</label>
           </div>
           <div className='main-column'>
-            <div className='banner' back-img='community.banner_url'></div>
-            <button ng-click='changeBanner()'>
-              <span ng-hide='uploading.banner_url'>Change</span>
-              <span ng-show='uploading.banner_url'>Please wait...</span>
-            </button>
-            <p className='help'>This image appears across the top of your community page. (Suggested size: 1400x500 pixels. <a href='http://cdn.hylo.com/misc/example_community_page.jpg' target='_blank'>See an example.</a>)</p>
+            <div className='community-banner' style={{backgroundImage: `url(${community.banner_url})`}}></div>
+            <button onClick={() => this.attachImage('banner')}>Change</button>
+            <p className='help'>
+              This image appears across the top of your community page. (Aspect ratio: roughly 3.3:1.)
+            </p>
           </div>
         </div>
       </div>

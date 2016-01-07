@@ -231,11 +231,25 @@ export default combineReducers({
     let { type, payload, meta, error } = action
     if (error) return state
 
-    if (type === UPDATE_COMMUNITY_EDITOR) {
-      return {
-        ...state,
-        [meta.subtree]: {...state[meta.subtree], ...payload}
-      }
+    switch (type) {
+      case UPDATE_COMMUNITY_EDITOR:
+        return {
+          ...state,
+          [meta.subtree]: {...state[meta.subtree], ...payload}
+        }
+      case UPLOAD_IMAGE:
+        if (meta.id !== 'new') break
+        if (meta.subject === 'community-avatar') {
+          return {
+            ...state,
+            community: {...state.community, avatar_url: payload}
+          }
+        } else if (meta.subject === 'community-banner') {
+          return {
+            ...state,
+            community: {...state.community, banner_url: payload}
+          }
+        }
     }
 
     return state

@@ -15,22 +15,12 @@ import {
   resetCommunityValidation,
   validateCommunityAttribute
 } from '../../actions'
+import {
+  communityAvatarUploadSettings,
+  communityBannerUploadSettings
+} from '../../constants'
 import { uploadImage } from '../../actions/uploadImage'
 import PersonChooser from '../../components/PersonChooser'
-
-const avatarUploadSettings = community => ({
-  id: community.slug,
-  subject: 'community-avatar',
-  path: `community/${community.id}/avatar`,
-  convert: {width: 160, height: 160, fit: 'crop', rotate: 'exif'}
-})
-
-const bannerUploadSettings = community => ({
-  id: community.slug,
-  subject: 'community-banner',
-  path: `community/${community.id}/banner`,
-  convert: {width: 1600, format: 'jpg', fit: 'max', rotate: 'exif'}
-})
 
 @prefetch(({dispatch, params: {id}}) =>
   Promise.join(
@@ -141,9 +131,9 @@ export default class CommunitySettings extends React.Component {
     let { dispatch, community } = this.props
     switch (type) {
       case 'avatar':
-        return dispatch(uploadImage(avatarUploadSettings(community)))
+        return dispatch(uploadImage(communityAvatarUploadSettings(community)))
       case 'banner':
-        return dispatch(uploadImage(bannerUploadSettings(community)))
+        return dispatch(uploadImage(communityBannerUploadSettings(community)))
     }
   }
 

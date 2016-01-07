@@ -71,6 +71,7 @@ export default function (state = {}, action) {
       let updatedCommunity = [{...state[meta.slug], ...meta.params}]
       return update(state, updatedCommunity)
     case UPLOAD_IMAGE:
+      if (meta.id === 'new') break
       if (meta.subject === 'community-avatar') {
         let updatedCommunity = [{...state[meta.id], avatar_url: payload, triggerUpdate: true}]
         return update(state, updatedCommunity)

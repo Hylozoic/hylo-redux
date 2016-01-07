@@ -20,6 +20,7 @@ import SinglePost from './containers/SinglePost'
 import ProjectProfile from './containers/project/ProjectProfile'
 import ProjectPosts from './containers/project/ProjectPosts'
 import ProjectContributors from './containers/project/ProjectContributors'
+import ProjectInvite from './containers/project/ProjectInvite'
 import ProjectEditor from './containers/project/ProjectEditor'
 import { debug } from './util/logging'
 
@@ -58,5 +59,6 @@ export default function makeRoutes (store) {
       <IndexRoute component={ProjectPosts}/>
       <Route path='contributors' component={ProjectContributors}/>
     </Route>
+    <Route path='project/:id/:slug/invite' component={ProjectInvite}/>
   </Route>
 }

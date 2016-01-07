@@ -50,7 +50,7 @@ export default class ProjectInvite extends React.Component {
     let subject = `Join my project "${project.title}" on Hylo`
     let message = `I would like your help on a project I'm starting:\n\n${project.title}\n${project.intention}\n\nYou can help make it happen!`
 
-    return <div className='project-invite sections'>
+    return <div className='project-invite form-sections'>
       <div className='section-label'>
         Invite Contributors
         <Link className='close-button' to='contributors'>x</Link>

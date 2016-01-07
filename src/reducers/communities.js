@@ -13,8 +13,7 @@ import {
   ADD_COMMUNITY_MODERATOR,
   ADD_COMMUNITY_MODERATOR_PENDING,
   REMOVE_COMMUNITY_MODERATOR,
-  REMOVE_COMMUNITY_MODERATOR_PENDING,
-  VALIDATE_COMMUNITY_CODE
+  REMOVE_COMMUNITY_MODERATOR_PENDING
 } from '../actions'
 
 const update = (state, communities) => {
@@ -88,9 +87,6 @@ export default function (state = {}, action) {
       community = state[meta.slug]
       moderators = community.moderators
       return {...state, [meta.slug]: {...community, moderators: filter(moderators, m => m.id !== meta.moderatorId)}}
-    case VALIDATE_COMMUNITY_CODE:
-      community = state[meta.slug]
-      return {...state, [meta.slug]: {...community, validation: {beta_access_code: {code: meta.code, unique: payload.unique}}}}
   }
   return state
 }

@@ -29,6 +29,7 @@ export const REMOVE_COMMUNITY_MODERATOR = 'REMOVE_COMMUNITY_MODERATOR'
 export const REMOVE_COMMUNITY_MODERATOR_PENDING = REMOVE_COMMUNITY_MODERATOR + _PENDING
 export const REMOVE_DOC = 'REMOVE_DOC'
 export const REMOVE_IMAGE = 'REMOVE_IMAGE'
+export const RESET_COMMUNITY_VALIDATION = 'RESET_COMMUNITY_VALIDATION'
 export const SET_LOGIN_ERROR = 'SET_LOGIN_ERROR'
 export const SET_SIGNUP_ERROR = 'SET_SIGNUP_ERROR'
 export const SIGNUP = 'SIGNUP'
@@ -36,6 +37,7 @@ export const START_POST_EDIT = 'START_POST_EDIT'
 export const START_PROJECT_EDIT = 'START_PROJECT_EDIT'
 export const TOGGLE_MAIN_MENU = 'TOGGLE_MAIN_MENU'
 export const TYPEAHEAD = 'TYPEAHEAD'
+export const UPDATE_COMMUNITY_EDITOR = 'UPDATE_COMMUNITY_EDITOR'
 export const UPDATE_COMMUNITY_SETTINGS = 'UPDATE_COMMUNITY_SETTINGS'
 export const UPDATE_COMMUNITY_SETTINGS_PENDING = UPDATE_COMMUNITY_SETTINGS + _PENDING
 export const UPDATE_POST = 'UPDATE_POST'
@@ -47,7 +49,7 @@ export const UPDATE_USER_SETTINGS_PENDING = UPDATE_USER_SETTINGS + _PENDING
 export const UPLOAD_DOC = 'UPLOAD_DOC'
 export const UPLOAD_IMAGE = 'UPLOAD_IMAGE'
 export const UPLOAD_IMAGE_PENDING = UPLOAD_IMAGE + _PENDING
-export const VALIDATE_COMMUNITY_CODE = 'VALIDATE_COMMUNITY_CODE'
+export const VALIDATE_COMMUNITY_ATTRIBUTE = 'VALIDATE_COMMUNITY_ATTRIBUTE'
 
 import { cleanAndStringify } from '../util/caching'
 import { cloneDeep, pick } from 'lodash'
@@ -292,10 +294,17 @@ export function removeCommunityModerator (community, moderatorId, prevProps) {
   }
 }
 
-export function validateCommunityCode (code, slug) {
+export function validateCommunityAttribute (key, value, constraint) {
   return {
-    type: VALIDATE_COMMUNITY_CODE,
-    payload: {api: true, params: {column: 'beta_access_code', value: code, constraint: 'unique'}, path: `/noo/community/validate`, method: 'POST'},
-    meta: {code, slug}
+    type: VALIDATE_COMMUNITY_ATTRIBUTE,
+    payload: {api: true, params: {column: key, value, constraint}, path: '/noo/community/validate', method: 'POST'},
+    meta: {key}
+  }
+}
+
+export function resetCommunityValidation (key) {
+  return {
+    type: RESET_COMMUNITY_VALIDATION,
+    meta: {key}
   }
 }

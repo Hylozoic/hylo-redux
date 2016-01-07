@@ -4,7 +4,7 @@ import { connect } from 'react-redux'
 import { prefetch } from 'react-fetcher'
 import cx from 'classnames'
 const { object, func, array } = React.PropTypes
-import { find, reduce } from 'lodash'
+import { find, get, reduce } from 'lodash'
 import { markdown } from '../../util/text'
 import {
   updateCommunitySettings,
@@ -12,7 +12,8 @@ import {
   fetchCommunityModerators,
   addCommunityModerator,
   removeCommunityModerator,
-  validateCommunityCode
+  resetCommunityValidation,
+  validateCommunityAttribute
 } from '../../actions'
 import { uploadImage } from '../../actions/uploadImage'
 import PersonChooser from '../../components/PersonChooser'
@@ -37,7 +38,10 @@ const bannerUploadSettings = community => ({
     dispatch(fetchCommunityModerators(id))
   )
 )
-@connect((state, { params }) => ({community: state.communities[params.id]}))
+@connect((state, { params }) => ({
+  community: state.communities[params.id],
+  validation: state.communityValidation
+}))
 export default class CommunitySettings extends React.Component {
 
   constructor (props) {
@@ -49,7 +53,8 @@ export default class CommunitySettings extends React.Component {
     community: object,
     dispatch: func,
     location: object,
-    people: array
+    people: array,
+    validation: object
   }
 
   setEditState = (field, value, errors) =>
@@ -71,11 +76,12 @@ export default class CommunitySettings extends React.Component {
     let code = event.target.value
 
     if (code && code !== community.beta_access_code) {
-      dispatch(validateCommunityCode(code, community.slug))
+      dispatch(validateCommunityAttribute('beta_access_code', code, 'unique'))
+    } else {
+      dispatch(resetCommunityValidation('beta_access_code'))
     }
 
-    let empty = !code
-    let errors = empty ? {empty: empty} : {}
+    let errors = !code ? {empty: true} : {}
     return this.setEditState('beta_access_code', code, errors)
   }
 
@@ -195,17 +201,8 @@ export default class CommunitySettings extends React.Component {
 
   componentDidUpdate () {
     let { dispatch, community } = this.props
-    let { edited: { beta_access_code }, errors } = this.state
-    let { triggerUpdate } = community
-    if (triggerUpdate) {
+    if (community.triggerUpdate) {
       dispatch(updateCommunitySettings({...community, triggerUpdate: false}))
-    }
-    if (!(errors.beta_access_code && errors.beta_access_code.not_unique) &&
-      community.validation &&
-      community.validation.beta_access_code &&
-      !community.validation.beta_access_code.unique &&
-      community.validation.beta_access_code.code === beta_access_code) {
-      this.setState({errors: {...errors, beta_access_code: {not_unique: true}}})
     }
   }
 
@@ -214,11 +211,13 @@ export default class CommunitySettings extends React.Component {
     let { avatar_url, banner_url } = community
     let { editing, edited, errors, expand } = this.state
     let labelProps = {expand, toggle: this.toggleSection}
-    let joinUrl
+    let joinUrl, codeNotUnique
 
     if (expand.access) {
       let origin = typeof window !== 'undefined' ? window.location.origin : 'https://www.hylo.com'
       joinUrl = `${origin}/c/${community.slug}/join/${community.beta_access_code}`
+
+      codeNotUnique = get(this.props.validation, 'beta_access_code.unique') === false
     }
 
     return <div className='form-sections' id='community-settings'>
@@ -380,8 +379,8 @@ export default class CommunitySettings extends React.Component {
                 <form>
                   <input name='beta_access_code' ref='beta_access_code' type='text' className='form-control' value={edited.beta_access_code} onChange={this.setBetaAccessCode} />
                 </form>
-                {errors.beta_access_code && errors.beta_access_code.empty && <p className='summary error'>Please fill in a code.</p>}
-                {errors.beta_access_code && errors.beta_access_code.not_unique && <p className='summary error'>This code cannot be used; please choose another.</p>}
+                {!!get(errors, 'beta_access_code.empty') && <p className='help error'>Please fill in a code.</p>}
+                {codeNotUnique && <p className='help error'>This code cannot be used; please choose another.</p>}
                 <button type='button' onClick={() => this.cancelEdit('beta_access_code')}>Cancel</button>
                 <button type='button' onClick={() => this.save('beta_access_code')}>Save</button>
               </div>

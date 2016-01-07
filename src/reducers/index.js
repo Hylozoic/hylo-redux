@@ -23,13 +23,15 @@ import {
   LOGIN,
   LOGOUT,
   NAVIGATE,
+  RESET_COMMUNITY_VALIDATION,
   SET_LOGIN_ERROR,
   SET_SIGNUP_ERROR,
   SIGNUP,
   TOGGLE_MAIN_MENU,
   TYPEAHEAD,
   UPDATE_POST,
-  UPLOAD_IMAGE
+  UPLOAD_IMAGE,
+  VALIDATE_COMMUNITY_ATTRIBUTE
 } from '../actions'
 
 export default combineReducers({
@@ -197,6 +199,20 @@ export default combineReducers({
       case FETCH_PROJECTS:
         return {...state, [meta.cache.id]: Number(payload.projects_total)}
     }
+    return state
+  },
+
+  communityValidation: (state = {}, action) => {
+    let { type, payload, error, meta } = action
+    if (error) return state
+
+    switch (type) {
+      case VALIDATE_COMMUNITY_ATTRIBUTE:
+        return {...state, [meta.key]: payload}
+      case RESET_COMMUNITY_VALIDATION:
+        return {...state, [meta.key]: null}
+    }
+
     return state
   }
 })

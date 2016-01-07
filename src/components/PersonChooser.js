@@ -24,7 +24,7 @@ export default class PersonChooser extends React.Component {
   handleInput = event => {
     var value = event.target.value
     let { dispatch, typeaheadId, communityId } = this.props
-    dispatch(typeahead(value, typeaheadId, communityId))
+    dispatch(typeahead(value, typeaheadId, { communityId, type: 'people' }))
     this.setState({choices: this.props.choices})
   }
 

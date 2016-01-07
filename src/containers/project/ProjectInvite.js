@@ -1,36 +1,52 @@
 import React from 'react'
-import { find } from 'lodash'
+import { filter, get } from 'lodash'
 import { prefetch } from 'react-fetcher'
 import { connect } from 'react-redux'
 import { fetchProject } from '../../actions/project'
 import { Link } from 'react-router'
-// import TagInput from './TagInput'
+import TagInput from '../../components/TagInput'
+import { typeahead, updateProjectInvite } from '../../actions'
 const { object, func, array } = React.PropTypes
 
+let typeaheadId = 'invitees'
+
 @prefetch(({ dispatch, params: { id } }) => dispatch(fetchProject(id)))
-@connect(({ projects, people }, { params: { id } }) => ({
+@connect(({ typeaheadMatches, projects, people, projectInvite }, { params: { id } }) => ({
   project: projects[id],
-  currentUser: people.current
+  currentUser: people.current,
+  peopleChoices: typeaheadMatches[typeaheadId] || [],
+  peopleChosen: get(projectInvite, id + '.peopleChosen', [])
 }))
-export default class ProjectContributors extends React.Component {
+export default class ProjectInvite extends React.Component {
   static propTypes = {
     project: object,
     dispatch: func,
-    people: array
+    peopleChosen: array,
+    peopleChoices: array
   }
 
-  addCommunity = community => {
-    let { communities } = this.props.postEdit
-    this.updateStore({communities: (communities || []).concat(community.id)})
+  updateStore (data) {
+    let { project: { id }, dispatch } = this.props
+    dispatch(updateProjectInvite(data, id))
   }
 
-  removeCommunity = community => {
-    let { communities } = this.props.postEdit
-    this.updateStore({communities: filter(communities, cid => cid !== community.id)})
+  addPerson = person => {
+    let { peopleChosen } = this.props
+    this.updateStore({peopleChosen: (peopleChosen || []).concat(person)})
+  }
+
+  removePerson = person => {
+    let { peopleChosen } = this.props
+    this.updateStore({peopleChosen: filter(peopleChosen, pc => pc.id !== person.id)})
+  }
+
+  updatePeopleChoices = term => {
+    let { dispatch } = this.props
+    dispatch(typeahead(term, typeaheadId, {type: 'people'}))
   }
 
   render () {
-    let { project, people } = this.props
+    let { project, peopleChoices, peopleChosen } = this.props
     let subject = `Join my project "${project.title}" on Hylo`
     let message = `I would like your help on a project I'm starting:\n\n${project.title}\n${project.intention}\n\nYou can help make it happen!`
 
@@ -55,28 +71,13 @@ export default class ProjectContributors extends React.Component {
       <div className='section-item'>
         <div className='full-column'>
           <label>Search for Hylo members to invite</label>
-          <PersonTagInput ids={people}
-            getChoices={this.findPeople}
-            onSelect={this.addPeople}
-            onRemove={this.removePeople}/>
+          <TagInput tags={peopleChosen}
+            choices={peopleChoices}
+            handleInput={this.updatePeopleChoices}
+            onSelect={this.addPerson}
+            onRemove={this.removePerson}/>
         </div>
       </div>
     </div>
   }
 }
-/*
-@connect(({ people }, { ids }) => ({
-  people: (ids || []).map(id => find(people, c => c.id === id))
-}))
-class PersonTagInput extends React.Component {
-  static propTypes = {
-    ids: array,
-    people: array
-  }
-
-  render () {
-    let { people, ...otherProps } = this.props
-    return <TagInput tags={people} {...otherProps}/>
-  }
-}
-*/

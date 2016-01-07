@@ -46,6 +46,7 @@ export const UPDATE_POST = 'UPDATE_POST'
 export const UPDATE_POST_EDITOR = 'UPDATE_POST_EDITOR'
 export const UPDATE_PROJECT = 'UPDATE_PROJECT'
 export const UPDATE_PROJECT_EDITOR = 'UPDATE_PROJECT_EDITOR'
+export const UPDATE_PROJECT_INVITE = 'UPDATE_PROJECT_INVITE'
 export const UPDATE_USER_SETTINGS = 'UPDATE_USER_SETTINGS'
 export const UPDATE_USER_SETTINGS_PENDING = UPDATE_USER_SETTINGS + _PENDING
 export const UPLOAD_DOC = 'UPLOAD_DOC'
@@ -162,15 +163,10 @@ export function createComment (postId, text) {
   }
 }
 
-export function typeahead (text, id, communityId) {
+export function typeahead (text, id, params) {
   if (!text) return {type: CANCEL_TYPEAHEAD, meta: {id}}
 
-  var path
-  if (communityId) {
-    path = `/noo/autocomplete?communityId=${communityId}&type=people&${cleanAndStringify({q: text})}`
-  } else {
-    path = `/noo/autocomplete?${cleanAndStringify({q: text})}`
-  }
+  let path = `/noo/autocomplete?${cleanAndStringify({...params, q: text})}`
 
   return {
     type: TYPEAHEAD,
@@ -325,5 +321,13 @@ export function updateCommunityEditor (subtree, changes) {
     type: UPDATE_COMMUNITY_EDITOR,
     payload: changes,
     meta: {subtree}
+  }
+}
+
+export function updateProjectInvite (payload, id) {
+  return {
+    type: UPDATE_PROJECT_INVITE,
+    payload,
+    meta: {id}
   }
 }

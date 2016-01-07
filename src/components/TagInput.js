@@ -14,11 +14,6 @@ export default class TagInput extends React.Component {
     onRemove: func
   }
 
-  handleInput = event => {
-    var value = event.target.value
-    this.props.handleInput(value)
-  }
-
   handleKeys = event => {
     if (this.refs.list) this.refs.list.handleKeys(event)
   }
@@ -50,7 +45,7 @@ export default class TagInput extends React.Component {
       </ul>
 
       <input ref='input' type='text' placeholder='Type...'
-        onChange={this.handleInput}
+        onChange={event => this.props.handleInput(event.target.value)}
         onKeyDown={this.handleKeys}/>
 
       {!isEmpty(choices) && <div className='dropdown'>

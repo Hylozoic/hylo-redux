@@ -84,7 +84,7 @@ export default class PostEditor extends React.Component {
 
   constructor (props) {
     super(props)
-    this.state = {communityChoices: []}
+    this.state = {communityChoiceTerm: ''}
   }
 
   updateStore (data) {
@@ -171,10 +171,13 @@ export default class PostEditor extends React.Component {
     })
   }
 
-  updateCommunityChoices = term => {
+  updateCommunityChoiceTerm = term => {
+    this.setState({communityChoiceTerm: term})
+  }
+
+  getCommunityChoices = term => {
     if (!term) {
-      this.setState({communityChoices: []})
-      return
+      return []
     }
 
     let { currentUser, postEdit: { communities } } = this.props
@@ -182,13 +185,15 @@ export default class PostEditor extends React.Component {
       startsWith(c.name.toLowerCase(), term.toLowerCase()) &&
       !contains(communities, c.id)
 
-    this.setState({communityChoices: filter(currentUser.memberships.map(m => m.community), match)})
+    return filter(currentUser.memberships.map(m => m.community), match)
   }
 
   render () {
     let { expanded, post, postEdit, dispatch, project } = this.props
     let { name, description, communities, type, location } = postEdit
-    let { communityChoices } = this.state
+    let { communityChoiceTerm } = this.state
+    let communityChoices = this.getCommunityChoices(communityChoiceTerm)
+
     if (!type) type = 'chat'
 
     return <div className={cx('post-editor', 'clearfix', {expanded})}>
@@ -227,7 +232,7 @@ export default class PostEditor extends React.Component {
         {!project && <div>
           <h3 className='communities-header'>Communities</h3>
           <CommunityTagInput ids={communities}
-            handleInput={this.updateCommunityChoices}
+            handleInput={this.updateCommunityChoiceTerm}
             choices={communityChoices}
             onSelect={this.addCommunity}
             onRemove={this.removeCommunity}/>

@@ -137,10 +137,10 @@ export default class UserSettings extends React.Component {
             <label>Your Email</label>
             <p>{currentUser.email}</p>
           </div>
-          {!editing.email && <div className='half-column value'>
+          {!editing.email && <div className='half-column right-align'>
             <button type='button' onClick={() => this.edit('email')}>Change</button>
           </div>}
-          {editing.email && <div className='half-column value'>
+          {editing.email && <div className='half-column right-align'>
             <form name='emailForm'>
               <div className={cx('form-group', {'has-error': errors.email})}>
                 <input type='text' ref='email' className='email form-control'
@@ -158,10 +158,10 @@ export default class UserSettings extends React.Component {
           <div className='half-column'>
             <label>Your Password</label>
           </div>
-          {!editing.password && <div className='half-column value'>
+          {!editing.password && <div className='half-column right-align'>
             <button type='button' onClick={() => this.edit('password')}>Change</button>
           </div>}
-          {editing.password && <div className='half-column value'>
+          {editing.password && <div className='half-column right-align'>
             <form name='passwordForm'>
               <div className={cx('form-group', {'has-error': errors.password})}>
               <p className='help'>Enter a new password.</p>
@@ -181,7 +181,7 @@ export default class UserSettings extends React.Component {
             <label>Receive email notifications?</label>
             <div className='summary'>Check the circle to get updates on posts you create or follow. You can also change this for each post individually.</div>
           </div>
-          <div className='half-column value'>
+          <div className='half-column right-align'>
             <input type='checkbox' checked={currentUser.send_email_preference} onChange={() => this.toggle('send_email_preference')}/>
           </div>
         </div>
@@ -190,7 +190,7 @@ export default class UserSettings extends React.Component {
             <label>Receive email digests?</label>
             <div className='summary'>Choose how frequently you would like to receive email about new activity in your communities.</div>
           </div>
-          <div className='half-column value'>
+          <div className='half-column right-align'>
             <select value={currentUser.settings.digest_frequency} ref='digest_frequency' onChange={event => this.updateSetting('digest_frequency', event.target.value)} >
               <option value='daily'>Daily</option>
               <option value='weekly'>Weekly</option>
@@ -203,7 +203,7 @@ export default class UserSettings extends React.Component {
             <label>Receive email invitations to post?</label>
             <div className='summary'>Check the circle to get a weekly email that lets you create posts without leaving your inbox.</div>
           </div>
-          <div className='half-column value'>
+          <div className='half-column right-align'>
             <input type='checkbox' checked={currentUser.settings.receives_email_prompts} onChange={() => this.toggleSetting('receives_email_prompts')}/>
           </div>
         </div>
@@ -212,7 +212,7 @@ export default class UserSettings extends React.Component {
             <label>Get mobile notifications on posts you are following?</label>
             <div className='summary'>Check the circle to get mobile notifications on any posts you are following.</div>
           </div>
-          <div className='half-column value'>
+          <div className='half-column right-align'>
             <input type='checkbox' checked={currentUser.push_follow_preference} onChange={() => this.toggle('push_follow_preference')}/>
           </div>
         </div>
@@ -221,7 +221,7 @@ export default class UserSettings extends React.Component {
             <label>Get mobile notifications on new posts?</label>
             <div className='summary'>Check the circle to get mobile notifications on any new posts in your communities.</div>
           </div>
-          <div className='half-column value'>
+          <div className='half-column right-align'>
             <input type='checkbox' checked={currentUser.push_new_post_preference} onChange={() => this.toggle('push_new_post_preference')}/>
           </div>
         </div>
@@ -236,7 +236,7 @@ export default class UserSettings extends React.Component {
             <label><A to={`/c/${membership.community.slug}`}>{membership.community.name}</A></label>
             <div className='summary'>Joined: { formatDate(membership.created_at) }</div>
           </div>
-          <div className='half-column value'>
+          <div className='half-column right-align'>
             <button onClick={() => this.leaveCommunity(membership.community_id)}>Leave</button>
           </div>
         </div>)}

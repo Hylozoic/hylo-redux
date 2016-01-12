@@ -20,6 +20,8 @@ export const FETCH_POST = 'FETCH_POST'
 export const FETCH_POSTS = 'FETCH_POSTS'
 export const FETCH_PROJECT = 'FETCH_PROJECT'
 export const FETCH_PROJECTS = 'FETCH_PROJECTS'
+export const JOIN_PROJECT = 'JOIN_PROJECT'
+export const JOIN_PROJECT_PENDING = JOIN_PROJECT + _PENDING
 export const LEAVE_COMMUNITY = 'LEAVE_COMMUNITY'
 export const LEAVE_COMMUNITY_PENDING = LEAVE_COMMUNITY + _PENDING
 export const LOGIN = 'LOGIN'
@@ -32,6 +34,8 @@ export const REMOVE_IMAGE = 'REMOVE_IMAGE'
 export const RESET_COMMUNITY_VALIDATION = 'RESET_COMMUNITY_VALIDATION'
 export const SET_LOGIN_ERROR = 'SET_LOGIN_ERROR'
 export const SET_SIGNUP_ERROR = 'SET_SIGNUP_ERROR'
+export const SEND_PROJECT_INVITE = 'SEND_PROJECT_INVITE'
+export const SEND_PROJECT_INVITE_PENDING = SEND_PROJECT_INVITE + _PENDING
 export const SIGNUP = 'SIGNUP'
 export const START_POST_EDIT = 'START_POST_EDIT'
 export const START_PROJECT_EDIT = 'START_PROJECT_EDIT'
@@ -44,6 +48,7 @@ export const UPDATE_POST = 'UPDATE_POST'
 export const UPDATE_POST_EDITOR = 'UPDATE_POST_EDITOR'
 export const UPDATE_PROJECT = 'UPDATE_PROJECT'
 export const UPDATE_PROJECT_EDITOR = 'UPDATE_PROJECT_EDITOR'
+export const UPDATE_PROJECT_INVITE = 'UPDATE_PROJECT_INVITE'
 export const UPDATE_USER_SETTINGS = 'UPDATE_USER_SETTINGS'
 export const UPDATE_USER_SETTINGS_PENDING = UPDATE_USER_SETTINGS + _PENDING
 export const UPLOAD_DOC = 'UPLOAD_DOC'
@@ -160,15 +165,10 @@ export function createComment (postId, text) {
   }
 }
 
-export function typeahead (text, id, communityId) {
+export function typeahead (text, id, params) {
   if (!text) return {type: CANCEL_TYPEAHEAD, meta: {id}}
 
-  var path
-  if (communityId) {
-    path = `/noo/autocomplete?communityId=${communityId}&type=people&${cleanAndStringify({q: text})}`
-  } else {
-    path = `/noo/autocomplete?${cleanAndStringify({q: text})}`
-  }
+  let path = `/noo/autocomplete?${cleanAndStringify({...params, q: text})}`
 
   return {
     type: TYPEAHEAD,
@@ -270,6 +270,14 @@ export function leaveCommunity (communityId, prevProps) {
   }
 }
 
+export function joinProject (project, currentUser) {
+  return {
+    type: JOIN_PROJECT,
+    payload: {api: true, path: `/noo/project/${project.id}/join`, method: 'POST'},
+    meta: {id: project.id, prevProps: project, currentUser}
+  }
+}
+
 export function updateCommunitySettings (params, prevProps) {
   if (params.leader.id) params.leader_id = params.leader.id
   return {
@@ -315,5 +323,21 @@ export function updateCommunityEditor (subtree, changes) {
     type: UPDATE_COMMUNITY_EDITOR,
     payload: changes,
     meta: {subtree}
+  }
+}
+
+export function updateProjectInvite (payload, id) {
+  return {
+    type: UPDATE_PROJECT_INVITE,
+    payload,
+    meta: {id}
+  }
+}
+
+export function sendProjectInvite (params, id) {
+  return {
+    type: SEND_PROJECT_INVITE,
+    payload: {api: true, params, path: `/noo/project/${id}/invite`, method: 'POST'},
+    meta: {id}
   }
 }

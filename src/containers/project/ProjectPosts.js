@@ -23,6 +23,7 @@ export default class ProjectPosts extends React.Component {
 
   render () {
     let { location: { query }, params: { id }, currentUser, project } = this.props
+
     let { contributors, user } = project
     let canPost = currentUser && user.id === currentUser.id ||
     contains(contributors.map(c => c.id), currentUser.id)

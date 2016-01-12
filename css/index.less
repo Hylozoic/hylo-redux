@@ -946,6 +946,14 @@ ul.tags {
         margin-top: 9px;
       });
     }
+
+    .close-button {
+      float: right;
+      &:hover {
+        text-decoration: none;
+      }
+    }
+
   }
 
   .section-item {
@@ -981,7 +989,7 @@ ul.tags {
   .main-column {
     .make-sm-column(9);
   }
-  .value {
+  .right-align {
     text-align: right;
   }
 
@@ -1174,6 +1182,18 @@ ul.tags {
 
   .tab-content {
     margin-top: 15px;
+
+    .invite-cta {
+      padding: 15px;
+      border: 1px solid #ccc;
+      background-color: #f6f6f6;
+      margin-bottom: 30px;
+      line-height: 32px;
+
+      .button {
+        float:right;
+      }
+    }
   }
 }
 
@@ -1191,5 +1211,65 @@ ul.tags {
     width: 40%;
     display: inline-block;
     vertical-align: middle;
+  }
+}
+
+.user-list-item {
+  border-bottom: 1px solid @light-gray-border;
+  padding: 15px;
+  margin-bottom: 15px;
+  min-height: 130px;
+
+  .moderator-label {
+    .meta-text;
+    position: relative;
+    top: 85px;
+    left: 8px;
+  }
+
+  .user-info {
+    .large-avatar {
+      float: left;
+      margin-right: 10px;
+    }
+    margin-bottom: 6px;
+
+    .name {
+      .proxima-nova-semibold;
+      font-size: 24px;
+      padding-right: 15px;
+      &, &:hover {
+        text-decoration: none;
+      }
+    }
+
+    .social-media-links {
+      display: inline-block;
+    }
+
+  }
+
+  .name {
+    .semibold;
+  }
+
+  .details {
+    .body-text;
+  }
+
+  .contributor-menu {
+    float: right;
+    .meta-text;
+    cursor: pointer;
+    > a:hover {
+      text-decoration: none;
+      color: @off-black;
+    }
+  }
+}
+
+.project-invite {
+  textarea {
+    min-height: 10em;
   }
 }

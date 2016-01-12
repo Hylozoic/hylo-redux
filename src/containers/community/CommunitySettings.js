@@ -219,7 +219,7 @@ export default class CommunitySettings extends React.Component {
             <p>{community.name}</p>
           </div>
           {editing.name
-            ? <div className='half-column value'>
+            ? <div className='half-column right-align'>
                 <form name='nameForm'>
                   <div className={cx('form-group', {'has-error': errors.name})}>
                     <input type='text' ref='name' className='name form-control'
@@ -232,7 +232,7 @@ export default class CommunitySettings extends React.Component {
                   <button type='button' className='btn-primary' onClick={() => this.save('name')}>Save</button>
                 </div>
               </div>
-            : <div className='half-column value'>
+            : <div className='half-column right-align'>
                 <button type='button' onClick={() => this.edit('name')}>Change</button>
               </div>}
         </div>
@@ -266,7 +266,7 @@ export default class CommunitySettings extends React.Component {
             <label>Icon</label>
             <p className='summary'>This image appears next to your community's name. (Tip: Try a transparent PNG image.)</p>
           </div>
-          <div className='half-column value'>
+          <div className='half-column right-align'>
             <div className='community-logo' style={{backgroundImage: `url(${avatar_url})`}}/>
             <button type='button' onClick={() => this.attachImage('avatar')}>Change</button>
           </div>
@@ -278,7 +278,7 @@ export default class CommunitySettings extends React.Component {
             <p className='summary'>This image appears at the top of your community page. (Suggested size: 1400x500 pixels.)</p>
             <div className='community-banner' style={{backgroundImage: `url(${banner_url})`}}></div>
           </div>
-          <div className='full-column value'>
+          <div className='full-column right-align'>
             <button type='button' onClick={() => this.attachImage('banner')}>Change</button>
           </div>
         </div>
@@ -323,7 +323,7 @@ export default class CommunitySettings extends React.Component {
             <p>{community.location || 'You haven\'t specified a location yet.'}</p>
           </div>
           {editing.location
-            ? <div className='half-column value'>
+            ? <div className='half-column right-align'>
                 <form name='nameForm'>
                   <div className={cx('form-group', {'has-error': errors.location})}>
                     <input type='text' ref='location' className='location form-control'
@@ -336,7 +336,7 @@ export default class CommunitySettings extends React.Component {
                   <button type='button' className='btn-primary' onClick={() => this.save('location')}>Save</button>
                 </div>
               </div>
-            : <div className='half-column value'>
+            : <div className='half-column right-align'>
                 <button type='button' onClick={() => this.edit('location')}>Change</button>
               </div>}
         </div>
@@ -349,7 +349,7 @@ export default class CommunitySettings extends React.Component {
             <label>Allow everyone to invite new members</label>
             <p className='summary'>If this is disabled, only moderators may send invitations to new members.</p>
           </div>
-          <div className='half-column value'>
+          <div className='half-column right-align'>
             <input type='checkbox' checked={community.settings.all_can_invite} onChange={() => this.toggleNested('all_can_invite')}/>
           </div>
         </div>
@@ -374,7 +374,7 @@ export default class CommunitySettings extends React.Component {
                 <button type='button' onClick={() => this.cancelEdit('beta_access_code')}>Cancel</button>
                 <button type='button' onClick={() => this.save('beta_access_code')}>Save</button>
               </div>
-            : <div className='half-column value'>
+            : <div className='half-column right-align'>
                 <button type='button' onClick={() => this.edit('beta_access_code')}>Change</button>
               </div>}
         </div>
@@ -412,7 +412,7 @@ export default class CommunitySettings extends React.Component {
             <label>Send a weekly email inviting members to post?</label>
             <p className='summary'>If this is checked, each week members will receive an email that they can reply to with their offers, requests and intentions.</p>
           </div>
-          <div className='half-column value'>
+          <div className='half-column right-align'>
             <input type='checkbox' checked={community.settings.sends_email_prompts} onChange={() => this.toggleNested('sends_email_prompts')}/>
           </div>
         </div>

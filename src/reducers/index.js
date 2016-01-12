@@ -31,6 +31,7 @@ import {
   TYPEAHEAD,
   UPDATE_COMMUNITY_EDITOR,
   UPDATE_POST,
+  UPDATE_PROJECT_INVITE,
   UPLOAD_IMAGE,
   VALIDATE_COMMUNITY_ATTRIBUTE,
   VALIDATE_COMMUNITY_ATTRIBUTE_PENDING
@@ -253,5 +254,21 @@ export default combineReducers({
     }
 
     return state
+  },
+
+  projectInvite: (state = {}, action) => {
+    let { type, payload, error, meta } = action
+    let { id } = meta || {}
+    if (error) return state
+    switch (type) {
+      case UPDATE_PROJECT_INVITE:
+        return {
+          ...state,
+          [id]: {...state[id], ...payload}
+        }
+    }
+
+    return state
   }
+
 })

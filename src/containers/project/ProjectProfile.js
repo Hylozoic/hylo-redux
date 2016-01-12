@@ -2,15 +2,16 @@ import React from 'react'
 import { prefetch } from 'react-fetcher'
 import { connect } from 'react-redux'
 import { fetchProject } from '../../actions/project'
+import { joinProject } from '../../actions'
 import { markdown } from '../../util/text'
-import { find } from 'lodash'
+import { contains, find } from 'lodash'
 import truncate from 'html-truncate'
 import Avatar from '../../components/Avatar'
 import Video from '../../components/Video'
-import A from '../../components/A'
+import { A, IndexA } from '../../components/A'
 import { assetUrl } from '../../util/assets'
 import { ProjectVisibility } from '../../constants'
-const { object } = React.PropTypes
+const { func, object } = React.PropTypes
 
 @prefetch(({ dispatch, params: { id } }) => dispatch(fetchProject(id)))
 @connect(({ projects, people }, { params: { id } }) => ({
@@ -21,7 +22,8 @@ export default class ProjectProfile extends React.Component {
   static propTypes = {
     project: object,
     children: object,
-    currentUser: object
+    currentUser: object,
+    dispatch: func
   }
 
   constructor (props) {
@@ -33,16 +35,26 @@ export default class ProjectProfile extends React.Component {
     window.alert('TODO')
   }
 
+  join = () => {
+    let { project, currentUser, dispatch } = this.props
+    if (currentUser) {
+      dispatch(joinProject(project, currentUser))
+      return
+    }
+    window.alert('TODO - Not Logged in')
+  }
+
   render () {
     let { project, currentUser } = this.props
     if (!project) return <div>Loading...</div>
+    let { contributors } = project
     let { user, community, media, id, slug } = project
     let video = find(media, m => m.type === 'video')
     let image = find(media, m => m.type === 'image')
     let isPublic = project.visibility === ProjectVisibility.PUBLIC
     let isPublished = !!project.published_at
     let canModerate = currentUser && currentUser.id === user.id
-
+    let canPost = canModerate || (currentUser && contains(contributors.map(c => c.id), currentUser.id))
     let details = markdown(project.details)
     let expandable
     if (!this.state.expanded) {
@@ -60,6 +72,7 @@ export default class ProjectProfile extends React.Component {
         <div className='col-sm-12 title-row'>
           <div className='right'>
             {canModerate && <A className='button' to={`/project/edit/${project.id}`}>Edit project</A>}
+            {!canPost && <a className='button' onClick={this.join}>Join project</a>}
           </div>
           <h2>{project.title}</h2>
         </div>
@@ -116,10 +129,10 @@ export default class ProjectProfile extends React.Component {
 
       <ul className='tabs'>
         <li>
-          <A to={`/project/${id}/${slug}`}>
+          <IndexA to={`/project/${id}/${slug}`}>
             <h3>Posts</h3>
             <p>Communicate and share</p>
-          </A>
+          </IndexA>
         </li>
         <li>
           <A to={`/project/${id}/${slug}/contributors`}>

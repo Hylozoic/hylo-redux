@@ -82,6 +82,11 @@ export default class PostEditor extends React.Component {
     project: object
   }
 
+  constructor (props) {
+    super(props)
+    this.state = {communityChoiceTerm: ''}
+  }
+
   updateStore (data) {
     let { id, dispatch } = this.props
     dispatch(updatePostEditor(data, id))
@@ -166,8 +171,14 @@ export default class PostEditor extends React.Component {
     })
   }
 
-  findCommunities = term => {
-    if (!term) return
+  updateCommunityChoiceTerm = term => {
+    this.setState({communityChoiceTerm: term})
+  }
+
+  getCommunityChoices = term => {
+    if (!term) {
+      return []
+    }
 
     let { currentUser, postEdit: { communities } } = this.props
     var match = c =>
@@ -180,6 +191,9 @@ export default class PostEditor extends React.Component {
   render () {
     let { expanded, post, postEdit, dispatch, project } = this.props
     let { name, description, communities, type, location } = postEdit
+    let { communityChoiceTerm } = this.state
+    let communityChoices = this.getCommunityChoices(communityChoiceTerm)
+
     if (!type) type = 'chat'
 
     return <div className={cx('post-editor', 'clearfix', {expanded})}>
@@ -218,7 +232,8 @@ export default class PostEditor extends React.Component {
         {!project && <div>
           <h3 className='communities-header'>Communities</h3>
           <CommunityTagInput ids={communities}
-            getChoices={this.findCommunities}
+            handleInput={this.updateCommunityChoiceTerm}
+            choices={communityChoices}
             onSelect={this.addCommunity}
             onRemove={this.removeCommunity}/>
         </div>}
@@ -321,7 +336,8 @@ class AttachmentButtons extends React.Component {
 class CommunityTagInput extends React.Component {
   static propTypes = {
     ids: array,
-    communities: array
+    communities: array,
+    choices: array
   }
 
   render () {

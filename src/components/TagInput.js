@@ -8,21 +8,10 @@ export default class TagInput extends React.Component {
   static propTypes = {
     tags: array,
     type: string,
-    getChoices: func,
+    choices: array,
+    handleInput: func,
     onSelect: func,
     onRemove: func
-  }
-
-  constructor (props) {
-    super(props)
-    this.state = {choices: []}
-  }
-
-  handleInput = event => {
-    var value = event.target.value
-    var choices = this.props.getChoices(value) || []
-
-    this.setState({choices: choices})
   }
 
   handleKeys = event => {
@@ -32,7 +21,7 @@ export default class TagInput extends React.Component {
   select = choice => {
     this.props.onSelect(choice)
     this.refs.input.value = ''
-    this.setState({choices: []})
+    this.props.handleInput('')
   }
 
   remove = (tag, event) => {
@@ -45,7 +34,7 @@ export default class TagInput extends React.Component {
   }
 
   render () {
-    var {choices} = this.state
+    let { choices } = this.props
     return <div className='tag-input' onClick={this.focus}>
       <ul>
         {this.props.tags.map(t => <li key={t.id} className='tag'>
@@ -56,7 +45,7 @@ export default class TagInput extends React.Component {
       </ul>
 
       <input ref='input' type='text' placeholder='Type...'
-        onChange={this.handleInput}
+        onChange={event => this.props.handleInput(event.target.value)}
         onKeyDown={this.handleKeys}/>
 
       {!isEmpty(choices) && <div className='dropdown'>

@@ -8,7 +8,7 @@ import { contains, find } from 'lodash'
 import truncate from 'html-truncate'
 import Avatar from '../../components/Avatar'
 import Video from '../../components/Video'
-import A from '../../components/A'
+import { A, IndexA } from '../../components/A'
 import { assetUrl } from '../../util/assets'
 import { ProjectVisibility } from '../../constants'
 const { func, object } = React.PropTypes
@@ -129,10 +129,10 @@ export default class ProjectProfile extends React.Component {
 
       <ul className='tabs'>
         <li>
-          <A to={`/project/${id}/${slug}`}>
+          <IndexA to={`/project/${id}/${slug}`}>
             <h3>Posts</h3>
             <p>Communicate and share</p>
-          </A>
+          </IndexA>
         </li>
         <li>
           <A to={`/project/${id}/${slug}/contributors`}>

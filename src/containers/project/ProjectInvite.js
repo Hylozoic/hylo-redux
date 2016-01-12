@@ -5,8 +5,8 @@ import { connect } from 'react-redux'
 import { fetchProject } from '../../actions/project'
 import { Link } from 'react-router'
 import TagInput from '../../components/TagInput'
-import { typeahead, updateProjectInvite } from '../../actions'
-const { object, func, array } = React.PropTypes
+import { typeahead, updateProjectInvite, sendProjectInvite, navigate } from '../../actions'
+const { object, func, array, bool } = React.PropTypes
 
 let typeaheadId = 'invitees'
 
@@ -22,7 +22,8 @@ export default class ProjectInvite extends React.Component {
     project: object,
     dispatch: func,
     peopleChosen: array,
-    peopleChoices: array
+    peopleChoices: array,
+    sending: bool
   }
 
   updateStore (data) {
@@ -45,8 +46,18 @@ export default class ProjectInvite extends React.Component {
     dispatch(typeahead(term, typeaheadId, {type: 'people'}))
   }
 
+  submit = () => {
+    let { dispatch, peopleChosen, project: { id, slug } } = this.props
+    let subject = this.refs.subject.value
+    let message = this.refs.message.value
+    let emails = this.refs.emails.value.split(',')
+    let users = peopleChosen.map(p => p.id)
+    dispatch(sendProjectInvite({emails, message, subject, users}, id))
+    dispatch(navigate(`/project/${id}/${slug}`))
+  }
+
   render () {
-    let { project, peopleChoices, peopleChosen } = this.props
+    let { project, peopleChoices, peopleChosen, sending } = this.props
     let subject = `Join my project "${project.title}" on Hylo`
     let message = `I would like your help on a project I'm starting:\n\n${project.title}\n${project.intention}\n\nYou can help make it happen!`
 
@@ -58,13 +69,13 @@ export default class ProjectInvite extends React.Component {
       <div className='section-item'>
         <div className='full-column'>
           <label>Subject</label>
-          <input type='text' className='form-control' defaultValue={subject}/>
+          <input type='text' ref='subject' className='form-control' defaultValue={subject}/>
         </div>
       </div>
       <div className='section-item'>
         <div className='full-column'>
           <label>Message</label>
-          <textarea className='form-control' defaultValue={message}/>
+          <textarea className='form-control' ref='message' defaultValue={message}/>
           <span className='summary'>The message will also contain a link to the project.</span>
         </div>
       </div>
@@ -77,6 +88,17 @@ export default class ProjectInvite extends React.Component {
             onSelect={this.addPerson}
             onRemove={this.removePerson}/>
         </div>
+      </div>
+      <div className='section-item'>
+        <div className='full-column'>
+          <label>Invite anyone else by email</label>
+          <input type='text' ref='emails' className='form-control' placeholder='Enter email address, separated by commas...'/>
+        </div>
+      </div>
+      <div className='section footer right-align'>
+        <button type='button' onClick={this.submit} disabled={sending}>
+          {sending ? 'Sending...' : 'Send invitations'}
+        </button>
       </div>
     </div>
   }

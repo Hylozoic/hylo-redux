@@ -34,6 +34,8 @@ export const REMOVE_IMAGE = 'REMOVE_IMAGE'
 export const RESET_COMMUNITY_VALIDATION = 'RESET_COMMUNITY_VALIDATION'
 export const SET_LOGIN_ERROR = 'SET_LOGIN_ERROR'
 export const SET_SIGNUP_ERROR = 'SET_SIGNUP_ERROR'
+export const SEND_PROJECT_INVITE = 'SEND_PROJECT_INVITE'
+export const SEND_PROJECT_INVITE_PENDING = SEND_PROJECT_INVITE + _PENDING
 export const SIGNUP = 'SIGNUP'
 export const START_POST_EDIT = 'START_POST_EDIT'
 export const START_PROJECT_EDIT = 'START_PROJECT_EDIT'
@@ -328,6 +330,14 @@ export function updateProjectInvite (payload, id) {
   return {
     type: UPDATE_PROJECT_INVITE,
     payload,
+    meta: {id}
+  }
+}
+
+export function sendProjectInvite (params, id) {
+  return {
+    type: SEND_PROJECT_INVITE,
+    payload: {api: true, params, path: `/noo/project/${id}/invite`, method: 'POST'},
     meta: {id}
   }
 }

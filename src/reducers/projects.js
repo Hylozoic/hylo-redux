@@ -1,4 +1,3 @@
-import { union } from 'lodash'
 import { FETCH_PROJECT, FETCH_PROJECTS, UPDATE_PROJECT, JOIN_PROJECT, JOIN_PROJECT_PENDING } from '../actions'
 import { hashById } from './util'
 
@@ -25,7 +24,7 @@ export default function (state = {}, action) {
     case JOIN_PROJECT_PENDING:
       var contributors
       if (currentUser) {
-        contributors = union(state[id].contributors, [currentUser])
+        contributors = [...state[id].contributors, currentUser]
       } else {
         contributors = state[id].contributors
       }

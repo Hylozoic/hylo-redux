@@ -41,6 +41,5 @@ export default class PersonListItem extends React.Component {
 
 const SocialMediaLinks = props => {
   return <div className='social-media-links'>
-    Social Media Links
   </div>
 }

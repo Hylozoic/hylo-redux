@@ -64,7 +64,6 @@ export default class ProjectInvite extends React.Component {
     return <div className='project-invite form-sections'>
       <div className='section-label'>
         Invite Contributors
-        <Link className='close-button' to='contributors'>x</Link>
       </div>
       <div className='section-item'>
         <div className='full-column'>

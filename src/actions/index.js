@@ -15,6 +15,7 @@ export const FETCH_COMMUNITY = 'FETCH_COMMUNITY'
 export const FETCH_COMMUNITY_MODERATORS = 'FETCH_COMMUNITY_MODERATORS'
 export const FETCH_COMMUNITY_SETTINGS = 'FETCH_COMMUNITY_SETTINGS'
 export const FETCH_CURRENT_USER = 'FETCH_CURRENT_USER'
+export const FETCH_ACTIVITY = 'FETCH_ACTIVITY'
 export const FETCH_PEOPLE = 'FETCH_PEOPLE'
 export const FETCH_PERSON = 'FETCH_PERSON'
 export const FETCH_POST = 'FETCH_POST'
@@ -347,5 +348,12 @@ export function createCommunity (params) {
   return {
     type: CREATE_COMMUNITY,
     payload: {api: true, params, path: '/noo/community', method: 'POST'}
+  }
+}
+
+export function fetchActivity (limit) {
+  return {
+    type: FETCH_ACTIVITY,
+    payload: {api: true, path: `/noo/activity?${cleanAndStringify({ limit })}`, method: 'GET'}
   }
 }

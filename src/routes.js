@@ -24,6 +24,7 @@ import ProjectPosts from './containers/project/ProjectPosts'
 import ProjectContributors from './containers/project/ProjectContributors'
 import ProjectInvite from './containers/project/ProjectInvite'
 import ProjectEditor from './containers/project/ProjectEditor'
+import Notifications from './containers/Notifications'
 import { debug } from './util/logging'
 
 export default function makeRoutes (store) {
@@ -43,6 +44,7 @@ export default function makeRoutes (store) {
     <Route path='my-posts' component={MyPosts} onEnter={requireLogin}/>
     <Route path='followed-posts' component={FollowedPosts} onEnter={requireLogin}/>
     <Route path='projects' component={Projects} onEnter={requireLogin}/>
+    <Route path='notifications' component={Notifications} onEnter={requireLogin}/>
     <Route path='u/:id' component={PersonProfile} onEnter={requireLogin}>
       <IndexRoute component={PersonPosts}/>
       <Route path='about' component={AboutPerson}/>

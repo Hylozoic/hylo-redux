@@ -1,5 +1,6 @@
 import { upstreamHost } from '../../config'
-import { fetchCurrentUser } from '../actions'
+import { fetchCurrentUser, navigate } from '../actions'
+import qs from 'querystring'
 
 let popup
 
@@ -37,6 +38,12 @@ export function setupPopupCallback (dispatch, errorAction) {
     } else {
       dispatch(errorAction(null))
       dispatch(fetchCurrentUser())
+      .then(action => {
+        if (action.error) return
+        let params = qs.parse(window.location.search.replace(/^\?/, ''))
+        let next = params.next || `/u/${action.payload.id}`
+        dispatch(navigate(next))
+      })
       popup.close()
     }
   }

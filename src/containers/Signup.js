@@ -5,13 +5,12 @@ import { Link } from 'react-router'
 import { navigate, signup, setSignupError } from '../actions'
 import ServiceAuthButtons from '../components/ServiceAuthButtons'
 import validator from 'validator'
-const { bool, func, object, string } = React.PropTypes
+const { func, object, string } = React.PropTypes
 
 @connect(({signup, people}) => ({...signup, currentUser: people.current}))
 export default class Signup extends React.Component {
   static propTypes = {
     dispatch: func,
-    success: bool,
     error: string,
     currentUser: object
   }
@@ -19,15 +18,6 @@ export default class Signup extends React.Component {
   constructor (props) {
     super(props)
     this.state = {}
-  }
-
-  componentDidUpdate () {
-    let { currentUser, success, dispatch } = this.props
-    if (success && currentUser) {
-      let params = qs.parse(window.location.search.replace(/^\?/, ''))
-      let next = params.next || `/u/${currentUser.id}`
-      dispatch(navigate(next))
-    }
   }
 
   validate () {
@@ -56,10 +46,18 @@ export default class Signup extends React.Component {
   submit = event => {
     event.preventDefault()
     if (!this.validate()) return
+
+    let { dispatch } = this.props
     let name = this.refs.name.value
     let email = this.refs.email.value
     let password = this.refs.password.value
-    this.props.dispatch(signup(name, email, password))
+    dispatch(signup(name, email, password))
+    .then(action => {
+      if (action.error) return
+      let params = qs.parse(window.location.search.replace(/^\?/, ''))
+      let next = params.next || `/u/${this.props.currentUser.id}`
+      dispatch(navigate(next))
+    })
   }
 
   render () {

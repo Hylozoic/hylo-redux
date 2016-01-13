@@ -79,10 +79,9 @@ export default combineReducers({
     switch (type) {
       case LOGIN:
         if (error) return {error: payload.message}
-        return {success: true}
+        break
       case SET_LOGIN_ERROR:
-        if (!payload) return {success: true}
-        return {error: payload}
+        if (payload) return {error: payload}
     }
     return state
   },
@@ -92,10 +91,9 @@ export default combineReducers({
     switch (type) {
       case SIGNUP:
         if (error) return {error: payload.message}
-        return {success: true}
+        break
       case SET_SIGNUP_ERROR:
-        if (!payload) return {success: true}
-        return {error: payload}
+        if (payload) return {error: payload}
     }
     return state
   },

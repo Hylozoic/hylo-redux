@@ -4,31 +4,29 @@ import { connect } from 'react-redux'
 import { login, navigate, setLoginError } from '../actions'
 import { Link } from 'react-router'
 import ServiceAuthButtons from '../components/ServiceAuthButtons'
-const { bool, func, object, string } = React.PropTypes
+const { func, object, string } = React.PropTypes
 
 @connect(({login, people}) => ({...login, currentUser: people.current}))
 export default class Login extends React.Component {
   static propTypes = {
     error: string,
-    success: bool,
     dispatch: func,
     currentUser: object
   }
 
   submit = event => {
+    let { dispatch } = this.props
     event.preventDefault()
     let email = this.refs.email.value
     let password = this.refs.password.value
-    this.props.dispatch(login(email, password))
-  }
 
-  componentDidUpdate () {
-    let { currentUser, success, dispatch } = this.props
-    if (success && currentUser) {
+    dispatch(login(email, password))
+    .then(action => {
+      if (action.error) return
       let params = qs.parse(window.location.search.replace(/^\?/, ''))
-      let next = params.next || `/u/${currentUser.id}`
+      let next = params.next || `/u/${this.props.currentUser.id}`
       dispatch(navigate(next))
-    }
+    })
   }
 
   render () {

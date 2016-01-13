@@ -4,7 +4,7 @@ import { prefetch } from 'react-fetcher'
 import { fetchActivity } from '../actions'
 
 @connect()
-@prefetch(({ dispatch, params, currentUser: { id } }) => dispatch(fetchActivity(50)))
+@prefetch(({ dispatch, params, currentUser: { id } }) => dispatch(fetchActivity(50, 0)))
 export default class Notifications extends React.Component {
   render () {
     return <div>

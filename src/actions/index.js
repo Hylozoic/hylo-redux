@@ -351,9 +351,9 @@ export function createCommunity (params) {
   }
 }
 
-export function fetchActivity (limit) {
+export function fetchActivity (limit, offset) {
   return {
     type: FETCH_ACTIVITY,
-    payload: {api: true, path: `/noo/activity?${cleanAndStringify({ limit })}`, method: 'GET'}
+    payload: {api: true, path: `/noo/activity?${cleanAndStringify({ limit, offset })}`, method: 'GET'}
   }
 }

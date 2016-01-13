@@ -17,6 +17,7 @@ import {
   CREATE_COMMENT,
   CREATE_COMMUNITY,
   CREATE_POST,
+  FETCH_ACTIVITY,
   FETCH_COMMENTS,
   FETCH_PEOPLE,
   FETCH_POSTS,
@@ -278,6 +279,22 @@ export default combineReducers({
         }
     }
 
+    return state
+  },
+
+  activity: (state = [], action) => {
+    let { type, payload, error } = action
+    if (error) return state
+    switch (type) {
+      case FETCH_ACTIVITY:
+        return {
+          ...state,
+          ...payload.reduce((acc, activity) => {
+            acc[activity.id] = activity
+            return acc
+          }, {})
+        }
+    }
     return state
   }
 

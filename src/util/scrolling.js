@@ -1,3 +1,7 @@
+function bottomScrollPosition () {
+  return document.body.scrollHeight - window.innerHeight
+}
+
 export function viewportTop () {
   if (window.pageYOffset) return window.pageYOffset
   return document.documentElement.clientHeight
@@ -6,7 +10,11 @@ export function viewportTop () {
 }
 
 export function isAtBottom (offset) {
-  return viewportTop() + window.innerHeight >= document.body.scrollHeight - offset
+  return viewportTop() >= bottomScrollPosition() - offset
+}
+
+export function scrollToBottom () {
+  return window.scrollTo(0, bottomScrollPosition())
 }
 
 export function changeViewportTop (delta) {

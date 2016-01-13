@@ -7,6 +7,7 @@ export const CHANGE_EVENT_RESPONSE = 'CHANGE_EVENT_RESPONSE'
 export const CHANGE_EVENT_RESPONSE_PENDING = CHANGE_EVENT_RESPONSE + _PENDING
 export const CLEAR_CACHE = 'CLEAR_CACHE'
 export const CREATE_COMMENT = 'CREATE_COMMENT'
+export const CREATE_COMMUNITY = 'CREATE_COMMUNITY'
 export const CREATE_POST = 'CREATE_POST'
 export const CREATE_PROJECT = 'CREATE_PROJECT'
 export const FETCH_COMMENTS = 'FETCH_COMMENTS'
@@ -339,5 +340,12 @@ export function sendProjectInvite (params, id) {
     type: SEND_PROJECT_INVITE,
     payload: {api: true, params, path: `/noo/project/${id}/invite`, method: 'POST'},
     meta: {id}
+  }
+}
+
+export function createCommunity (params) {
+  return {
+    type: CREATE_COMMUNITY,
+    payload: {api: true, params, path: '/noo/community', method: 'POST'}
   }
 }

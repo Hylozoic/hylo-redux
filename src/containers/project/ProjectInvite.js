@@ -3,7 +3,6 @@ import { filter, get } from 'lodash'
 import { prefetch } from 'react-fetcher'
 import { connect } from 'react-redux'
 import { fetchProject } from '../../actions/project'
-import { Link } from 'react-router'
 import TagInput from '../../components/TagInput'
 import { typeahead, updateProjectInvite, sendProjectInvite, navigate } from '../../actions'
 const { object, func, array, bool } = React.PropTypes

@@ -1,13 +1,24 @@
 import React from 'react'
 import { connect } from 'react-redux'
-import { any, get, pairs } from 'lodash'
-import { updateCommunityEditor, resetCommunityValidation, validateCommunityAttribute } from '../../actions'
+import { any, get, omit, pairs } from 'lodash'
+import {
+  CREATE_COMMUNITY,
+  createCommunity,
+  navigate,
+  resetCommunityValidation,
+  updateCommunityEditor,
+  validateCommunityAttribute
+} from '../../actions'
 import { uploadImage } from '../../actions/uploadImage'
 import {
   communityAvatarUploadSettings,
   communityBannerUploadSettings
 } from '../../constants'
+import { scrollToBottom } from '../../util/scrolling'
 const { bool, func, object } = React.PropTypes
+
+const defaultBanner = 'https://d3ngex8q79bk55.cloudfront.net/misc/default_community_banner.jpg'
+const defaultAvatar = 'https://d3ngex8q79bk55.cloudfront.net/misc/default_community_avatar.png'
 
 const categories = {
   'coworking': 'Co-working space',
@@ -23,10 +34,10 @@ const categories = {
   'other': 'Other'
 }
 
-@connect(({communityEditor, communityValidation}) => {
+@connect(({communityEditor, communityValidation, pending}) => {
   let validating = any(communityValidation.pending)
-  let submitting = get(communityEditor, 'submission.started')
   let { community, errors } = communityEditor
+  let saving = pending[CREATE_COMMUNITY]
 
   if (!errors) errors = {}
   errors.nameUsed = get(communityValidation, 'name.unique') === false
@@ -34,16 +45,15 @@ const categories = {
   errors.codeUsed = get(communityValidation, 'beta_access_code.unique') === false
 
   if (!community) community = {}
-  if (!community.banner_url) community.banner_url = 'https://d3ngex8q79bk55.cloudfront.net/misc/default_community_banner.jpg'
-  if (!community.avatar_url) community.avatar_url = 'https://d3ngex8q79bk55.cloudfront.net/misc/default_community_avatar.png'
+  if (!community.avatar_url) community.avatar_url = defaultAvatar
+  if (!community.banner_url) community.banner_url = defaultBanner
 
-  return {community, errors, validating, submitting}
+  return {community, errors, validating, saving}
 })
 export default class CommunityEditor extends React.Component {
   static propTypes = {
     saving: bool,
     validating: bool,
-    submitting: bool,
     errors: object,
     dispatch: func,
     community: object
@@ -73,7 +83,7 @@ export default class CommunityEditor extends React.Component {
     if (!value) {
       this.resetValidation('name')
     } else {
-      this.checkUnique('name', value)
+      return this.checkUnique('name', value)
     }
   }
 
@@ -107,7 +117,7 @@ export default class CommunityEditor extends React.Component {
     if (any(error)) {
       this.resetValidation('slug')
     } else {
-      this.checkUnique('slug', value)
+      return this.checkUnique('slug', value)
     }
   }
 
@@ -123,7 +133,7 @@ export default class CommunityEditor extends React.Component {
     if (!value) {
       this.resetValidation('beta_access_code')
     } else {
-      this.checkUnique('beta_access_code', value)
+      return this.checkUnique('beta_access_code', value)
     }
   }
 
@@ -135,6 +145,10 @@ export default class CommunityEditor extends React.Component {
 
   validateCategory (value) {
     this.setError({categoryBlank: !value})
+  }
+
+  setLocation = event => {
+    this.setValue('location', event.target.value)
   }
 
   attachImage (type) {
@@ -149,32 +163,34 @@ export default class CommunityEditor extends React.Component {
   }
 
   validate () {
-    this.validateName(this.refs.name.value)
-    this.validateDescription(this.refs.description.value)
-    this.validateSlug(this.refs.slug.value)
-    this.validateCode(this.refs.code.value)
-    this.validateCategory(this.refs.category.value)
+    let { community } = this.props
+    return Promise.all([
+      this.validateName(community.name),
+      this.validateDescription(community.description),
+      this.validateSlug(community.slug),
+      this.validateCode(community.beta_access_code),
+      this.validateCategory(community.category)
+    ])
   }
 
   submit = () => {
-    let { dispatch } = this.props
-    dispatch(updateCommunityEditor('submission', {started: true}))
-    this.validate()
-  }
+    let { validating, dispatch, community } = this.props
+    if (validating) return
 
-  componentDidUpdate () {
-    let { validating, submitting, errors, dispatch } = this.props
-    if (!validating && submitting) {
-      if (!any(errors)) {
-        console.log('SUBMIT!')
-      } else {
-        dispatch(updateCommunityEditor('submission', {started: false}))
-      }
-    }
+    this.validate().then(() => {
+      if (any(this.props.errors)) return scrollToBottom()
+
+      dispatch(createCommunity(community))
+      .then(() => {
+        if (any(this.props.errors)) return scrollToBottom()
+        dispatch(navigate(`/c/${community.slug}`))
+      })
+    })
   }
 
   render () {
-    let { saving, community, errors } = this.props
+    let { validating, saving, community, errors } = this.props
+    let disableSubmit = any(omit(errors, 'server')) || validating || saving
 
     return <div id='community-editor' className='form-sections'>
       <h2>Create a community</h2>
@@ -251,7 +267,7 @@ export default class CommunityEditor extends React.Component {
             <label>Location</label>
           </div>
           <div className='main-column'>
-            <input type='text' ref='location' className='form-control'
+            <input type='text' ref='location' className='form-control' onChange={this.setLocation}
               placeholder='Optionally, choose a location for your community' />
           </div>
         </div>
@@ -291,10 +307,12 @@ export default class CommunityEditor extends React.Component {
       <p>By creating this community you are agreeing to moderate posted content and report any objectionable content via the built-in reporting mechanisms.</p>
 
       <div className='section footer'>
-        <button type='button' onClick={this.submit} disabled={any(errors) || saving}>
-          {saving ? 'Please wait...' : 'Save'}
+        {any(errors) && <p className='help error'>
+          {errors.server || 'The information you provided has some errors; please see above.'}
+        </p>}
+        <button type='button' onClick={this.submit} disabled={disableSubmit}>
+          {validating || saving ? 'Please wait...' : 'Save'}
         </button>
-        {any(errors) && <p className='help error'>The information you provided has some errors; please see above.</p>}
       </div>
 
     </div>

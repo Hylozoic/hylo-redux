@@ -15,6 +15,7 @@ import { UPDATE_PATH } from 'redux-simple-router'
 import {
   CANCEL_TYPEAHEAD,
   CREATE_COMMENT,
+  CREATE_COMMUNITY,
   CREATE_POST,
   FETCH_COMMENTS,
   FETCH_PEOPLE,
@@ -133,6 +134,7 @@ export default combineReducers({
       toggle(CREATE_POST) ||
       toggle(UPDATE_POST) ||
       toggle(FETCH_PROJECTS) ||
+      toggle(CREATE_COMMUNITY) ||
       state
   },
 
@@ -230,7 +232,17 @@ export default combineReducers({
 
   communityEditor: (state = {}, action) => {
     let { type, payload, meta, error } = action
-    if (error) return state
+    if (error) {
+      switch (type) {
+        case CREATE_COMMUNITY:
+          return {
+            ...state,
+            errors: {...state.errors, server: `Server error: ${payload.message}`}
+          }
+        default:
+          return state
+      }
+    }
 
     switch (type) {
       case UPDATE_COMMUNITY_EDITOR:

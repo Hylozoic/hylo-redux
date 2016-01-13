@@ -1,6 +1,7 @@
 import { flatten, uniq, filter, union } from 'lodash'
 import { debug } from '../util/logging'
 import {
+  CREATE_COMMUNITY,
   FETCH_POSTS,
   FETCH_COMMUNITY,
   FETCH_COMMUNITY_SETTINGS,
@@ -88,6 +89,12 @@ export default function (state = {}, action) {
       community = state[meta.slug]
       moderators = community.moderators
       return {...state, [meta.slug]: {...community, moderators: filter(moderators, m => m.id !== meta.moderatorId)}}
+    case CREATE_COMMUNITY:
+      let community = payload.community
+      return {
+        ...state,
+        [community.slug]: community
+      }
   }
   return state
 }

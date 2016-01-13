@@ -1,6 +1,7 @@
 import { filter } from 'lodash'
 import { debug } from '../util/logging'
 import {
+  CREATE_COMMUNITY,
   LOGIN,
   LOGOUT,
   FETCH_PEOPLE,
@@ -53,7 +54,7 @@ export default function (state = {}, action) {
       let memberships = filter(state.current.memberships, m => m.community_id !== meta.communityId)
       return {
         ...state,
-        current: {...state.current, ...{memberships: memberships}}
+        current: {...state.current, memberships}
       }
   }
 
@@ -81,6 +82,11 @@ export default function (state = {}, action) {
         return m
       }, {})
       return {...state, ...people}
+    case CREATE_COMMUNITY:
+      return {
+        ...state,
+        current: {...state.current, memberships: [payload, ...state.current.memberships]}
+      }
   }
 
   return state

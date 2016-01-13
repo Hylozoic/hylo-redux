@@ -1,6 +1,16 @@
 require('../support')
 import communities from '../../src/reducers/communities'
-import { FETCH_POST, FETCH_POSTS, FETCH_CURRENT_USER, UPDATE_COMMUNITY_SETTINGS, ADD_COMMUNITY_MODERATOR, ADD_COMMUNITY_MODERATOR_PENDING, REMOVE_COMMUNITY_MODERATOR, REMOVE_COMMUNITY_MODERATOR_PENDING, UPDATE_COMMUNITY_SETTINGS_PENDING, UPLOAD_IMAGE } from '../../src/actions'
+import {
+  FETCH_POST,
+  FETCH_POSTS,
+  FETCH_CURRENT_USER,
+  UPDATE_COMMUNITY_SETTINGS,
+  ADD_COMMUNITY_MODERATOR,
+  ADD_COMMUNITY_MODERATOR_PENDING,
+  REMOVE_COMMUNITY_MODERATOR,
+  REMOVE_COMMUNITY_MODERATOR_PENDING,
+  UPDATE_COMMUNITY_SETTINGS_PENDING
+} from '../../src/actions'
 
 const post1 = {
   id: 'a',
@@ -216,46 +226,6 @@ describe('communities', () => {
 
       let expectedState = {
         c1: {...community1, moderators: [{name: 'Joe Mod', id: 1}]}
-      }
-
-      expect(communities(state, action)).to.deep.equal(expectedState)
-    })
-  })
-
-  describe('on UPLOAD_IMAGE with community-avatar', () => {
-    it('updates the community avatar_url and sets triggerUpdate in the store', () => {
-      let action = {
-        type: UPLOAD_IMAGE,
-        meta: {subject: 'community-avatar', id: 'c1'},
-        payload: 'http://foo.com/foo.gif'
-      }
-
-      let state = {
-        c1: community1
-      }
-
-      let expectedState = {
-        c1: {...community1, avatar_url: 'http://foo.com/foo.gif', triggerUpdate: true}
-      }
-
-      expect(communities(state, action)).to.deep.equal(expectedState)
-    })
-  })
-
-  describe('on UPLOAD_IMAGE with community-banner', () => {
-    it('updates the community banner_url and sets triggerUpdate in the store', () => {
-      let action = {
-        type: UPLOAD_IMAGE,
-        meta: {subject: 'community-banner', id: 'c1'},
-        payload: 'http://foo.com/foo.gif'
-      }
-
-      let state = {
-        c1: community1
-      }
-
-      let expectedState = {
-        c1: {...community1, banner_url: 'http://foo.com/foo.gif', triggerUpdate: true}
       }
 
       expect(communities(state, action)).to.deep.equal(expectedState)

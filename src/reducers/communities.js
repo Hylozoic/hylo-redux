@@ -8,7 +8,6 @@ import {
   FETCH_COMMUNITY_MODERATORS,
   FETCH_POST,
   FETCH_CURRENT_USER,
-  UPLOAD_IMAGE,
   UPDATE_COMMUNITY_SETTINGS,
   UPDATE_COMMUNITY_SETTINGS_PENDING,
   ADD_COMMUNITY_MODERATOR,
@@ -45,7 +44,6 @@ export default function (state = {}, action) {
     }
   }
 
-  let community
   let moderators
 
   switch (type) {
@@ -71,16 +69,6 @@ export default function (state = {}, action) {
     case UPDATE_COMMUNITY_SETTINGS_PENDING:
       let updatedCommunity = [{...state[meta.slug], ...meta.params}]
       return update(state, updatedCommunity)
-    case UPLOAD_IMAGE:
-      if (meta.id === 'new') break
-      if (meta.subject === 'community-avatar') {
-        let updatedCommunity = [{...state[meta.id], avatar_url: payload, triggerUpdate: true}]
-        return update(state, updatedCommunity)
-      } else if (meta.subject === 'community-banner') {
-        let updatedCommunity = [{...state[meta.id], banner_url: payload, triggerUpdate: true}]
-        return update(state, updatedCommunity)
-      }
-      break
     case ADD_COMMUNITY_MODERATOR_PENDING:
       community = state[meta.slug]
       moderators = community.moderators

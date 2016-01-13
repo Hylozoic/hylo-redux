@@ -129,12 +129,22 @@ export default class CommunitySettings extends React.Component {
 
   attachImage (type) {
     let { dispatch, community } = this.props
-    switch (type) {
-      case 'avatar':
-        return dispatch(uploadImage(communityAvatarUploadSettings(community)))
-      case 'banner':
-        return dispatch(uploadImage(communityBannerUploadSettings(community)))
-    }
+    ;(() => {
+      switch (type) {
+        case 'avatar_url':
+          return dispatch(uploadImage(communityAvatarUploadSettings(community)))
+        case 'banner_url':
+          return dispatch(uploadImage(communityBannerUploadSettings(community)))
+      }
+    })()
+    .then(action => {
+      let { error, payload } = action
+      if (error) return
+
+      let { id, slug } = community
+      let params = {id, slug, [type]: payload}
+      dispatch(updateCommunitySettings(params, {[type]: community[type]}))
+    })
   }
 
   update (field, value) {
@@ -187,13 +197,6 @@ export default class CommunitySettings extends React.Component {
     let { location: { query } } = this.props
     let { expand } = query || {}
     if (expand) this.toggleSection(expand, true)
-  }
-
-  componentDidUpdate () {
-    let { dispatch, community } = this.props
-    if (community.triggerUpdate) {
-      dispatch(updateCommunitySettings({...community, triggerUpdate: false}))
-    }
   }
 
   render () {
@@ -268,7 +271,7 @@ export default class CommunitySettings extends React.Component {
           </div>
           <div className='half-column right-align'>
             <div className='community-logo' style={{backgroundImage: `url(${avatar_url})`}}/>
-            <button type='button' onClick={() => this.attachImage('avatar')}>Change</button>
+            <button type='button' onClick={() => this.attachImage('avatar_url')}>Change</button>
           </div>
         </div>
 
@@ -279,7 +282,7 @@ export default class CommunitySettings extends React.Component {
             <div className='community-banner' style={{backgroundImage: `url(${banner_url})`}}></div>
           </div>
           <div className='full-column right-align'>
-            <button type='button' onClick={() => this.attachImage('banner')}>Change</button>
+            <button type='button' onClick={() => this.attachImage('banner_url')}>Change</button>
           </div>
         </div>
 

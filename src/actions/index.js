@@ -280,7 +280,7 @@ export function joinProject (project, currentUser) {
 }
 
 export function updateCommunitySettings (params, prevProps) {
-  if (params.leader.id) params.leader_id = params.leader.id
+  if (params.leader) params.leader_id = params.leader.id
   return {
     type: UPDATE_COMMUNITY_SETTINGS,
     payload: {api: true, params, path: `/noo/community/${params.id}`, method: 'POST'},

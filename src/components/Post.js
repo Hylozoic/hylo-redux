@@ -96,14 +96,15 @@ export default class Post extends React.Component {
     return <div className={classes} onClick={this.expand}>
       <div className='header'>
         <Avatar person={person}/>
-        <Dropdown className='post-menu' alignRight={true} toggleChildren={
-          <i className='icon-down'></i>
-        }>
-          {canEdit && <li><a onClick={this.edit}>Edit</a></li>}
-          <li>
-            <a onClick={() => window.alert('TODO')}>Report objectionable content</a>
-          </li>
-        </Dropdown>
+
+        {expanded && <Dropdown className='post-menu' alignRight={true} toggleChildren={
+            <i className='icon-down'></i>
+          }>
+            {canEdit && <li><a onClick={this.edit}>Edit</a></li>}
+            <li>
+              <a onClick={() => window.alert('TODO')}>Report objectionable content</a>
+            </li>
+          </Dropdown>}
 
         <span className='name'>{person.name}</span>
         <div className='meta'>

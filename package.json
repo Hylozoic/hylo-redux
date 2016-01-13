@@ -7,6 +7,7 @@
   "scripts": {
     "start": "./node_modules/.bin/gulp",
     "test": "./node_modules/.bin/babel-node ./node_modules/.bin/_mocha",
+    "cover": "./node_modules/.bin/babel-node ./node_modules/isparta/bin/isparta cover node_modules/.bin/_mocha",
     "autotest": "./node_modules/.bin/gulp autotest",
     "deploy": "./node_modules/.bin/gulp deploy"
   },
@@ -80,6 +81,7 @@
     "gulp-streamify": "^1.0.2",
     "gulp-uglify": "^1.5.1",
     "heroku-client": "^2.4.0",
+    "isparta": "^4.0.0",
     "livereactload": "^2.1.0",
     "mocha": "^2.3.4",
     "nock": "^3.1.1",

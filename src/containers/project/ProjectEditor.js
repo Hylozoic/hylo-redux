@@ -83,18 +83,23 @@ export default class ProjectEditor extends React.Component {
   save = () => {
     let { dispatch, id, project, projectEdit } = this.props
 
-    if (project) {
-      dispatch(updateProject(id, projectEdit))
-      dispatch(navigate(`/project/${project.id}/${project.slug}`))
-    } else {
-      dispatch(createProject(id, projectEdit))
-    }
+    ;(() => {
+      if (project) {
+        return dispatch(updateProject(id, projectEdit))
+      } else {
+        return dispatch(createProject(id, projectEdit))
+      }
+    })()
+    .then(action => {
+      let { id, slug } = action.payload
+      dispatch(navigate(`/project/${id}/${slug}`))
+    })
   }
 
-  componentDidUpdate () {
-    let { dispatch, projectEdit } = this.props
-    let { id, slug, saved } = projectEdit || {}
-    if (saved) dispatch(navigate(`/project/${id}/${slug}`))
+  unpublish = () => {
+    let { dispatch, project } = this.props
+    dispatch(updateProject(project.id, {unpublish: true}))
+    .then(() => dispatch(navigate(`/project/${project.id}/${project.slug}`)))
   }
 
   render () {
@@ -177,7 +182,8 @@ export default class ProjectEditor extends React.Component {
         </section>
       </div>
 
-      <div className='right'>
+      <div className='buttons right'>
+        {isPublished && <button onClick={this.unpublish}>Unpublish</button>}
         <SaveButton onClick={this.save} {...{isPublished, pending}}/>
       </div>
     </div>

@@ -57,7 +57,7 @@ export function updateProjectEditor (id, payload) {
 
 // transform params to match the expectations of the API
 const shim = params => {
-  let shimmed = pick(params, 'title', 'intention', 'details', 'location', 'visibility')
+  let shimmed = pick(params, 'title', 'intention', 'details', 'location', 'visibility', 'publish', 'unpublish')
 
   ;['video', 'image'].forEach(type => {
     let obj = find(params.media, m => m.type === type)
@@ -70,7 +70,8 @@ const shim = params => {
 
 export function updateProject (id, params) {
   // note that meta.params is the non-shimmed version, so updating the
-  // project in the store is a simple merge
+  // project in the store is a simple merge in almost all cases
+  // (see the projects reducer for an exception)
   return {
     type: UPDATE_PROJECT,
     payload: {api: true, params: shim(params), path: `/noo/project/${id}`, method: 'POST'},

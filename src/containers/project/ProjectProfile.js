@@ -2,7 +2,7 @@ import React from 'react'
 import qs from 'querystring'
 import { prefetch } from 'react-fetcher'
 import { connect } from 'react-redux'
-import { fetchProject, joinProject } from '../../actions/project'
+import { fetchProject, joinProject, updateProject } from '../../actions/project'
 import { navigate } from '../../actions'
 import { markdown } from '../../util/text'
 import { contains, find } from 'lodash'
@@ -33,8 +33,9 @@ export default class ProjectProfile extends React.Component {
     this.state = {}
   }
 
-  publish = event => {
-    window.alert('TODO')
+  publish = () => {
+    let { project, dispatch } = this.props
+    dispatch(updateProject(project.id, {publish: true}))
   }
 
   componentDidMount () {
@@ -88,7 +89,7 @@ export default class ProjectProfile extends React.Component {
       <div className='project-header'>
         <div className='col-sm-12 title-row'>
           <div className='right'>
-            {canModerate && <A className='button' to={`/project/edit/${project.id}`}>Edit project</A>}
+            {canModerate && <A className='button' to={`/project/${project.id}/edit`}>Edit project</A>}
             {!canPost && <a className='button' onClick={this.join}>Join project</a>}
           </div>
           <h2>{project.title}</h2>

@@ -20,6 +20,10 @@ export default function (state = {}, action) {
     case FETCH_PROJECT:
       return {...state, [payload.id]: payload}
     case UPDATE_PROJECT:
+      if (params.publish || params.unpublish) {
+        let { published_at } = payload
+        return {...state, [id]: {...state[id], published_at}}
+      }
       return {...state, [id]: {...state[id], ...params}}
     case JOIN_PROJECT_PENDING:
       var contributors
@@ -28,7 +32,7 @@ export default function (state = {}, action) {
       } else {
         contributors = state[id].contributors
       }
-      return {...state, [id]: {...state[id], contributors: contributors}}
+      return {...state, [id]: {...state[id], contributors}}
   }
 
   return state

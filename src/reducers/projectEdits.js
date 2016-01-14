@@ -35,7 +35,7 @@ export default function (state = {}, action) {
     case UPDATE_PROJECT:
       return {
         ...state,
-        [id]: {...state[id], ...payload, saved: true}
+        [id]: {...state[id], ...payload}
       }
   }
 

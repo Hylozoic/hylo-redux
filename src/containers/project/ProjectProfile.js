@@ -73,7 +73,7 @@ export default class ProjectProfile extends React.Component {
     let isPublished = !!project.published_at
     let canModerate = currentUser && currentUser.id === user.id
     let canPost = canModerate || (currentUser && contains(contributors.map(c => c.id), currentUser.id))
-    let details = markdown(project.details)
+    let details = project.details ? markdown(project.details) : ''
     let expandable
     if (!this.state.expanded) {
       let truncated = truncate(details, 300)

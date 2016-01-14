@@ -1,7 +1,7 @@
 import { combineReducers } from 'redux'
 import { routeReducer } from 'redux-simple-router'
 import { appendUniq } from './util'
-import { contains, uniq } from 'lodash'
+import { contains, uniq, mapValues } from 'lodash'
 import people from './people'
 import postEdits from './postEdits'
 import postsByQuery from './postsByQuery'
@@ -24,6 +24,7 @@ import {
   FETCH_PROJECTS,
   LOGIN,
   LOGOUT,
+  MARK_ALL_ACTIVITIES_READ_PENDING,
   NAVIGATE,
   RESET_COMMUNITY_VALIDATION,
   SET_LOGIN_ERROR,
@@ -294,6 +295,8 @@ export default combineReducers({
             return acc
           }, {})
         }
+      case MARK_ALL_ACTIVITIES_READ_PENDING:
+        return mapValues(state, activity => ({...activity, unread: false}))
     }
     return state
   },

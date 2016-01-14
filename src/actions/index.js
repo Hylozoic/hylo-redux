@@ -28,6 +28,8 @@ export const LEAVE_COMMUNITY = 'LEAVE_COMMUNITY'
 export const LEAVE_COMMUNITY_PENDING = LEAVE_COMMUNITY + _PENDING
 export const LOGIN = 'LOGIN'
 export const LOGOUT = 'LOGOUT'
+export const MARK_ALL_ACTIVITIES_READ = 'MARK_ALL_ACTIVITIES_READ'
+export const MARK_ALL_ACTIVITIES_READ_PENDING = MARK_ALL_ACTIVITIES_READ + _PENDING
 export const NAVIGATE = 'NAVIGATE'
 export const REMOVE_COMMUNITY_MODERATOR = 'REMOVE_COMMUNITY_MODERATOR'
 export const REMOVE_COMMUNITY_MODERATOR_PENDING = REMOVE_COMMUNITY_MODERATOR + _PENDING
@@ -355,5 +357,12 @@ export function fetchActivity (limit, offset) {
   return {
     type: FETCH_ACTIVITY,
     payload: {api: true, path: `/noo/activity?${cleanAndStringify({ limit, offset, paginate: true })}`, method: 'GET'}
+  }
+}
+
+export function markAllActivitiesRead () {
+  return {
+    type: MARK_ALL_ACTIVITIES_READ,
+    payload: {api: true, path: '/noo/activity/mark-all-read', method: 'POST'}
   }
 }

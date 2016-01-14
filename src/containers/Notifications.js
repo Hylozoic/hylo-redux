@@ -1,15 +1,16 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { prefetch } from 'react-fetcher'
-import { fetchActivity } from '../actions'
+import { fetchActivity, markAllActivitiesRead } from '../actions'
 import { values, sortBy } from 'lodash'
+import cx from 'classnames'
 import ScrollListener from '../components/ScrollListener'
 const { array, bool, func, number } = React.PropTypes
 
 @prefetch(({ dispatch }) => dispatch(fetchActivity(5, 0)))
 @connect(state => ({
   activities: sortBy(values(state.activities), ['created_at']).reverse(),
-  total: state.totalActivities
+  total: Number(state.totalActivities)
 }))
 export default class Notifications extends React.Component {
 
@@ -28,6 +29,11 @@ export default class Notifications extends React.Component {
     }
   }
 
+  markAllRead = () => {
+    let { dispatch } = this.props
+    dispatch(markAllActivitiesRead())
+  }
+
   render () {
     let { activities, total, pending } = this.props
 
@@ -37,8 +43,13 @@ export default class Notifications extends React.Component {
       <p>total: {total}</p>
       <p>pending: {pending}</p>
       <div className='activities'>
-        {activities.map(activity => <div key={activity.id} className='activity'>
-          <span>ID: {activity.id}</span>
+        <div className='buttons'>
+          <button onClick={this.markAllRead}>
+            Mark all as read
+          </button>
+        </div>
+        {activities.map(activity => <div key={activity.id} className={cx('activity', {'unread': activity.unread})}>
+          ID: {activity.id} <br />
         </div>)}
         <ScrollListener onBottom={this.loadMore}/>
       </div>

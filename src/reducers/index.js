@@ -282,7 +282,7 @@ export default combineReducers({
     return state
   },
 
-  activity: (state = [], action) => {
+  activities: (state = {}, action) => {
     let { type, payload, error } = action
     if (error) return state
     switch (type) {

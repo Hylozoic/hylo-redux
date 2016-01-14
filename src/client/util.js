@@ -1,3 +1,6 @@
+import qs from 'querystring'
+import { isEmpty } from 'lodash'
+
 export function isiOSApp () {
   return window.navigator.userAgent.indexOf('Hylo-App') > -1
 }
@@ -20,4 +23,8 @@ export function connectWebViewBridge (callback) {
       callback(window.WebViewJavascriptBridge)
     }, false)
   }
+}
+
+export function makeUrl (path, params) {
+  return `${path}${!isEmpty(params) && '?' + qs.stringify(params)}`
 }

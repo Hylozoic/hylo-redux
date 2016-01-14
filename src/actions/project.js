@@ -2,6 +2,7 @@ import {
   CREATE_PROJECT,
   FETCH_PROJECT,
   FETCH_PROJECTS,
+  JOIN_PROJECT,
   START_PROJECT_EDIT,
   UPDATE_PROJECT,
   UPDATE_PROJECT_EDITOR
@@ -82,5 +83,13 @@ export function createProject (id, params) {
     type: CREATE_PROJECT,
     payload: {api: true, params: shim(params), path: `/noo/project`, method: 'POST'},
     meta: {id}
+  }
+}
+
+export function joinProject (project, currentUser) {
+  return {
+    type: JOIN_PROJECT,
+    payload: {api: true, path: `/noo/project/${project.id}/join`, method: 'POST'},
+    meta: {id: project.id, prevProps: project, currentUser}
   }
 }

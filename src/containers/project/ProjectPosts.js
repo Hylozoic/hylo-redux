@@ -25,8 +25,10 @@ export default class ProjectPosts extends React.Component {
     let { location: { query }, params: { id }, currentUser, project } = this.props
 
     let { contributors, user } = project
-    let canPost = currentUser && user.id === currentUser.id ||
-    contains(contributors.map(c => c.id), currentUser.id)
+    let canPost = currentUser && (
+      user.id === currentUser.id ||
+      contains(contributors.map(c => c.id), currentUser.id)
+    )
 
     return <div>
       {canPost && <PostEditor project={project}/>}

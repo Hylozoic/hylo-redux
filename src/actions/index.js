@@ -271,14 +271,6 @@ export function leaveCommunity (communityId, prevProps) {
   }
 }
 
-export function joinProject (project, currentUser) {
-  return {
-    type: JOIN_PROJECT,
-    payload: {api: true, path: `/noo/project/${project.id}/join`, method: 'POST'},
-    meta: {id: project.id, prevProps: project, currentUser}
-  }
-}
-
 export function updateCommunitySettings (params, prevProps) {
   if (params.leader) params.leader_id = params.leader.id
   return {

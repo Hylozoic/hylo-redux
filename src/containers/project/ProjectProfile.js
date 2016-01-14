@@ -1,8 +1,9 @@
 import React from 'react'
+import qs from 'querystring'
 import { prefetch } from 'react-fetcher'
 import { connect } from 'react-redux'
-import { fetchProject } from '../../actions/project'
-import { joinProject } from '../../actions'
+import { fetchProject, joinProject } from '../../actions/project'
+import { navigate } from '../../actions'
 import { markdown } from '../../util/text'
 import { contains, find } from 'lodash'
 import truncate from 'html-truncate'
@@ -23,7 +24,8 @@ export default class ProjectProfile extends React.Component {
     project: object,
     children: object,
     currentUser: object,
-    dispatch: func
+    dispatch: func,
+    location: object
   }
 
   constructor (props) {
@@ -35,13 +37,28 @@ export default class ProjectProfile extends React.Component {
     window.alert('TODO')
   }
 
+  componentDidMount () {
+    let { location: { query }, dispatch, currentUser } = this.props
+    if (query.action === 'join-project') {
+      this.join()
+      if (currentUser) {
+        dispatch(navigate(window.location.pathname))
+      }
+    }
+  }
+
   join = () => {
     let { project, currentUser, dispatch } = this.props
     if (currentUser) {
       dispatch(joinProject(project, currentUser))
-      return
+    } else {
+      let params = {
+        next: window.location.pathname,
+        action: 'join-project',
+        id: project.id
+      }
+      dispatch(navigate(`/login?${qs.stringify(params)}`))
     }
-    window.alert('TODO - Not Logged in')
   }
 
   render () {

@@ -4,6 +4,7 @@ import {
   FETCH_PROJECTS,
   JOIN_PROJECT,
   START_PROJECT_EDIT,
+  TOGGLE_PROJECT_MODERATOR_ROLE,
   UPDATE_PROJECT,
   UPDATE_PROJECT_EDITOR
 } from './index'
@@ -92,5 +93,12 @@ export function joinProject (project, currentUser) {
     type: JOIN_PROJECT,
     payload: {api: true, path: `/noo/project/${project.id}/join`, method: 'POST'},
     meta: {id: project.id, prevProps: project, currentUser}
+  }
+}
+
+export function toggleProjectModeratorRole (projectId, userId) {
+  return {
+    type: TOGGLE_PROJECT_MODERATOR_ROLE,
+    payload: {api: true, path: `/noo/project/${projectId}/moderator/${userId}`, method: 'POST'}
   }
 }

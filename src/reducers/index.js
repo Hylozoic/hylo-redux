@@ -289,11 +289,21 @@ export default combineReducers({
       case FETCH_ACTIVITY:
         return {
           ...state,
-          ...payload.reduce((acc, activity) => {
+          ...payload.activities.reduce((acc, activity) => {
             acc[activity.id] = activity
             return acc
           }, {})
         }
+    }
+    return state
+  },
+
+  totalActivities: (state = 0, action) => {
+    let { type, payload, error } = action
+    if (error) return state
+    switch (type) {
+      case FETCH_ACTIVITY:
+        return payload.activities_total
     }
     return state
   }

@@ -3,10 +3,14 @@ import { connect } from 'react-redux'
 import { prefetch } from 'react-fetcher'
 import { fetchActivity } from '../actions'
 import { values, sortBy } from 'lodash'
+import ScrollListener from '../components/ScrollListener'
 const { array, bool, func, number } = React.PropTypes
 
 @prefetch(({ dispatch }) => dispatch(fetchActivity(5, 0)))
-@connect(state => ({ activities: sortBy(values(state.activities), ['created_at']).reverse() }))
+@connect(state => ({
+  activities: sortBy(values(state.activities), ['created_at']).reverse(),
+  total: state.totalActivities
+}))
 export default class Notifications extends React.Component {
 
   static propTypes = {
@@ -17,8 +21,7 @@ export default class Notifications extends React.Component {
   }
 
   loadMore = () => {
-    let { activities, dispatch, pending } = this.props
-    let total = 20
+    let { total, activities, dispatch, pending } = this.props
     let offset = activities.length
     if (!pending && offset < total) {
       dispatch(fetchActivity(5, offset))
@@ -37,6 +40,7 @@ export default class Notifications extends React.Component {
         {activities.map(activity => <div key={activity.id} className='activity'>
           <span>ID: {activity.id}</span>
         </div>)}
+        <ScrollListener onBottom={this.loadMore}/>
       </div>
     </div>
   }

@@ -13,6 +13,7 @@ import {
   LEAVE_COMMUNITY,
   LEAVE_COMMUNITY_PENDING
 } from '../actions'
+import { mergeList } from './util'
 
 export default function (state = {}, action) {
   let { type, error, payload, meta } = action
@@ -77,11 +78,7 @@ export default function (state = {}, action) {
         current: payload
       }
     case FETCH_PEOPLE:
-      let people = payload.people.reduce((m, p) => {
-        m[p.id] = p
-        return m
-      }, {})
-      return {...state, ...people}
+      return mergeList(state, payload.people, 'id')
     case CREATE_COMMUNITY:
       return {
         ...state,

@@ -1,7 +1,13 @@
 require('../support')
 import people from '../../src/reducers/people'
 import { slice, filter } from 'lodash'
-import { LEAVE_COMMUNITY, LEAVE_COMMUNITY_PENDING, UPDATE_USER_SETTINGS, UPDATE_USER_SETTINGS_PENDING } from '../../src/actions'
+import {
+  FETCH_PEOPLE,
+  LEAVE_COMMUNITY,
+  LEAVE_COMMUNITY_PENDING,
+  UPDATE_USER_SETTINGS,
+  UPDATE_USER_SETTINGS_PENDING
+} from '../../src/actions'
 
 const user1 = {
   name: 'Joe',
@@ -82,6 +88,29 @@ describe('people', () => {
 
       let expectedState = {
         current: {...user1, email: 'joe@bar.com'}
+      }
+
+      expect(people(state, action)).to.deep.equal(expectedState)
+    })
+  })
+
+  describe('on FETCH_PEOPLE', () => {
+    it('merges existing props with new ones', () => {
+      let action = {
+        type: FETCH_PEOPLE,
+        payload: {
+          people: [
+            {id: 'a', foo: 'b', bar: 'c'}
+          ]
+        }
+      }
+
+      let state = {
+        a: {id: 'a', foo: 'b', baz: 'd'}
+      }
+
+      let expectedState = {
+        a: {id: 'a', foo: 'b', bar: 'c', baz: 'd'}
       }
 
       expect(people(state, action)).to.deep.equal(expectedState)

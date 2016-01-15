@@ -486,7 +486,7 @@ ul.posts {
       }
 
       a.dropdown-toggle {
-        color: #388ECB;
+        color: @dark-blue;
       }
 
       .responses-dropdown {
@@ -1280,5 +1280,33 @@ ul.tags {
 .activities {
   .buttons {
     text-align: right;
+    margin: 15px 0px;
+  }
+
+  .activity {
+    border-bottom: 1px solid @light-gray-border;
+    padding: 15px;
+    margin-bottom: 15px;
+
+    &.unread {
+      background-color: fadeout(@dark-blue, 85%);
+    }
+
+    .avatar {
+      float: left;
+      margin-right: 15px;
+    }
+
+    .content {
+      .title {
+        padding: 7px 0px 15px 0px;
+      }
+
+      .body-text {
+        padding: 0px 15px 5px 15px
+      }
+
+      overflow: hidden;
+    }
   }
 }

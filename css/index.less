@@ -400,12 +400,23 @@ ul.posts {
 
   &.welcome {
     border: 1px solid transparent;
-    min-height: @avatar-size-default + 21px;
-    p.title {
-      margin-top: 8px;
+    padding: 0 15px;
+    .avatar {
+      float: left;
+      margin-right: 10px;
+    }
+    .header {
+      a.open-comments {
+        cursor: pointer;
+        text-decoration: underline;
+      }
     }
     .tag {
       display: none;
+    }
+    .comments-section {
+      .clearfix;
+      margin-top: @p-bottom-margin;
     }
   }
 

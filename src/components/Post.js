@@ -64,24 +64,16 @@ export default class Post extends React.Component {
   }
 
   render () {
-    let { post, communities, expanded, currentUser, editing } = this.props
+    let { post, expanded, currentUser, editing } = this.props
     if (editing) return this.renderEdit()
+    if (post.type === 'welcome') return this.renderWelcome()
 
     let image = find(post.media, m => m.type === 'image')
     var style = image ? {backgroundImage: `url(${image.url})`} : {}
     var classes = cx('post', post.type, {expanded: expanded, image: !!image})
 
-    var title = post.name
-    var person = post.user
-    if (post.type === 'welcome') {
-      person = post.relatedUsers[0]
-      title = `${person.name} joined ${communities[0].name}. Welcome them!`
-    }
-
-    const now = new Date()
-    const createdAt = new Date(post.created_at)
-    const updatedAt = new Date(post.updated_at)
-    const shouldShowUpdatedAt = (now - updatedAt) < (now - createdAt) * 0.8
+    let title = post.name
+    let person = post.user
 
     let isEvent = post.type === 'event'
     if (isEvent) {
@@ -107,21 +99,7 @@ export default class Post extends React.Component {
           </Dropdown>}
 
         <span className='name'>{person.name}</span>
-        <div className='meta'>
-          <A to={`/p/${post.id}`}>{humanDate(createdAt)}</A>
-          {shouldShowUpdatedAt && <span>
-            {spacer}updated {humanDate(updatedAt)}
-          </span>}
-          {spacer}
-          {post.votes} ♡
-          {spacer}
-          <a onClick={this.toggleComments} href='#'>
-            {post.numComments} comment{post.numComments === 1 ? '' : 's'}
-          </a>
-          {post.public && <span>
-            {spacer}Public
-          </span>}
-        </div>
+        <PostMeta post={post} toggleComments={this.toggleComments}/>
       </div>
 
       <p className='title'>{title}</p>
@@ -144,10 +122,50 @@ export default class Post extends React.Component {
     </div>
   }
 
+  renderWelcome () {
+    let { post, communities, expanded, dispatch } = this.props
+    let person = post.relatedUsers[0]
+    return <div className='post welcome'>
+      <Avatar person={person}/>
+      <div className='header'>
+        {person.name} joined {communities[0].name}.&ensp;
+        <a className='open-comments' onClick={this.toggleComments}>Welcome them!</a>
+        <PostMeta post={post} toggleComments={this.toggleComments}/>
+      </div>
+      {expanded && <ExpandedPostDetails
+        onCommentCreate={text => dispatch(createComment(post.id, text))}
+        commentsExpanded={this.state.commentsExpanded}
+        {...this.props}/>}
+    </div>
+  }
+
   renderEdit () {
     let { post } = this.props
     return <PostEditor post={post} expanded={true}/>
   }
+}
+
+const PostMeta = ({ post, toggleComments }) => {
+  const now = new Date()
+  const createdAt = new Date(post.created_at)
+  const updatedAt = new Date(post.updated_at)
+  const shouldShowUpdatedAt = (now - updatedAt) < (now - createdAt) * 0.8
+
+  return <div className='meta'>
+    <A to={`/p/${post.id}`}>{humanDate(createdAt)}</A>
+    {shouldShowUpdatedAt && <span>
+      {spacer}updated {humanDate(updatedAt)}
+    </span>}
+    {spacer}
+    {post.votes} ♡
+    {spacer}
+    <a onClick={toggleComments} href='#'>
+      {post.numComments} comment{post.numComments === 1 ? '' : 's'}
+    </a>
+    {post.public && <span>
+      {spacer}Public
+    </span>}
+  </div>
 }
 
 const ExpandedPostDetails = props => {
@@ -159,7 +177,7 @@ const ExpandedPostDetails = props => {
   let attachments = filter(post.media, m => m.type !== 'image')
   if (!comments) comments = []
 
-  return <div>
+  return <div className='post-details'>
     {image && <img src={image.url} className='full-image post-section'/>}
 
     {description && <ClickCatchingDiv className='details post-section'
@@ -187,7 +205,7 @@ const ExpandedPostDetails = props => {
       </ul>
     </div>
 
-    {commentsExpanded && <div>
+    {commentsExpanded && <div className='comments-section'>
       {comments.map(c => <Comment comment={c} key={c.id}/>)}
       {!commentingDisabled && <CommentForm onCreate={onCommentCreate}/>}
     </div>}

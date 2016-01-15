@@ -7,6 +7,7 @@ import { fetchWithCache, connectedListProps, refetch } from '../../util/caching'
 import A from '../../components/A'
 import ScrollListener from '../../components/ScrollListener'
 import { debug } from '../../util/logging'
+const Masonry = require('../../components/Masonry')(React)
 const { array, bool, func, number, object } = React.PropTypes
 
 const subject = 'community'
@@ -50,18 +51,28 @@ export default class CommunityMembers extends React.Component {
         defaultValue={search}
         onChange={debounce(event => this.updateQuery({search: event.target.value}), 500)}/>
       {pending && <div className='loading'>Loading...</div>}
-      <div className='member-cards'>
-        {people.map(person => <div key={person.id} className='member'>
-          <div key={person.id} className='member-card'>
-            <A to={`/u/${person.id}`}>
-              <div className='large-avatar' style={{backgroundImage: `url(${person.avatar_url})`}}/>
-            </A>
-            <br/>
-            <A className='name' to={`/u/${person.id}`}>{person.name}</A>
-          </div>
-        </div>)}
-      </div>
+      <PersonCards people={people}/>
       <ScrollListener onBottom={this.loadMore}/>
     </div>
   }
+}
+
+const PersonCards = ({ people }) => {
+  return <div className='person-cards masonry-container'>
+    <Masonry options={{transitionDuration: 0}}>
+      {people.map(person => <div key={person.id} className='masonry-item-wrapper'>
+        <PersonCard person={person}/>
+      </div>)}
+    </Masonry>
+  </div>
+}
+
+const PersonCard = ({ person }) => {
+  return <div className='person-card'>
+    <A to={`/u/${person.id}`}>
+      <div className='large-avatar' style={{backgroundImage: `url(${person.avatar_url})`}}/>
+    </A>
+    <br/>
+    <A className='name' to={`/u/${person.id}`}>{person.name}</A>
+  </div>
 }

@@ -849,27 +849,24 @@ ul.tags {
       margin-bottom: 15px;
     }
   }
+}
 
-  .member-cards {
-    .make-row;
-  }
+.person-cards {
+  .make-row;
+}
 
-  .member {
-    .make-xs-column(6);
-    .make-sm-column(3);
-  }
+.person-cards .masonry-item-wrapper {
+  width: 33.33%;
+}
 
-  .member-card {
+.person-card {
+  border: 1px solid @light-gray-border;
+  padding: 15px 0;
+  text-align: center;
+
+  .large-avatar {
+    display: inline-block;
     border: 1px solid @light-gray-border;
-    padding: 15px 0;
-    margin-bottom: 15px;
-    text-align: center;
-    height: 142px;
-
-    .large-avatar {
-      display: inline-block;
-      border: 1px solid @light-gray-border;
-    }
   }
 }
 

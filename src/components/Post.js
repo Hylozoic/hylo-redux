@@ -16,7 +16,7 @@ import RSVPControl from './RSVPControl'
 import { connect } from 'react-redux'
 import { fetchComments, createComment, startPostEdit, changeEventResponse } from '../actions'
 
-const spacer = <span>&nbsp;&nbsp;•&nbsp;&nbsp;</span>
+const spacer = <span>&nbsp; •&nbsp; </span>
 
 @connect(({ commentsByPost, people, postEdits, communities }, { post }) => ({
   comments: commentsByPost[post.id],
@@ -152,15 +152,15 @@ const PostMeta = ({ post, toggleComments }) => {
   const shouldShowUpdatedAt = (now - updatedAt) < (now - createdAt) * 0.8
 
   return <div className='meta'>
-    <A to={`/p/${post.id}`}>{humanDate(createdAt)}</A>
+    <A to={`/p/${post.id}`}>{humanDate(createdAt).replace(/ /g, String.fromCharCode(160))}</A>
     {shouldShowUpdatedAt && <span>
-      {spacer}updated {humanDate(updatedAt)}
+      {spacer}updated&nbsp;{humanDate(updatedAt).replace(/ /g, String.fromCharCode(160))}
     </span>}
     {spacer}
-    {post.votes} ♡
+    {post.votes}&nbsp;♡
     {spacer}
     <a onClick={toggleComments} href='#'>
-      {post.numComments} comment{post.numComments === 1 ? '' : 's'}
+      {post.numComments}&nbsp;comment{post.numComments === 1 ? '' : 's'}
     </a>
     {post.public && <span>
       {spacer}Public

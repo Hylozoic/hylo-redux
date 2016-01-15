@@ -356,6 +356,11 @@ ul.posts {
       border-left: none;
       border-right: none;
       border-bottom: none;
+      margin-bottom: 0;
+
+      &.welcome {
+        border-top: 1px solid @light-gray-border;
+      }
     })
   }
 }
@@ -418,6 +423,12 @@ ul.posts {
       .clearfix;
       margin-top: @p-bottom-margin;
     }
+
+    .mobile({
+      background: @faint-gray-bg;
+      padding: 15px 15px @p-bottom-margin;
+      margin-bottom: 0;
+    })
   }
 
   .event-time {

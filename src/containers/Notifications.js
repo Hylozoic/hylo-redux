@@ -1,14 +1,14 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { prefetch } from 'react-fetcher'
-import { fetchActivity, markAllActivitiesRead } from '../actions'
+import { fetchActivity, markActivityRead, markAllActivitiesRead, navigate, thank } from '../actions'
 import { values, sortBy, isEmpty, contains } from 'lodash'
 import cx from 'classnames'
 import ScrollListener from '../components/ScrollListener'
 import A from '../components/A'
 import truncate from 'html-truncate'
 import { present, humanDate } from '../util/text'
-const { array, bool, func, number } = React.PropTypes
+const { array, bool, func, number, object } = React.PropTypes
 
 @prefetch(({ dispatch }) => dispatch(fetchActivity(20, 0)))
 @connect(state => ({
@@ -21,7 +21,8 @@ export default class Notifications extends React.Component {
     activities: array,
     pending: bool,
     dispatch: func,
-    total: number
+    total: number,
+    currentUser: object
   }
 
   loadMore = () => {
@@ -38,11 +39,22 @@ export default class Notifications extends React.Component {
   }
 
   visit = activity => {
-    console.log('Visit: ', activity)
+    let { dispatch } = this.props
+    let path = `/p/${activity.post.id}`
+    if (activity.unread) {
+      dispatch(markActivityRead(activity.id))
+      .then(action => {
+        dispatch(navigate(path))
+      })
+    } else {
+      dispatch(navigate(path))
+    }
   }
 
   thank = activity => {
-    console.log('Thank: ', activity)
+    let { dispatch } = this.props
+    let {comment} = activity
+    dispatch(thank(comment.id, activity.id))
   }
 
   render () {
@@ -66,8 +78,6 @@ export default class Notifications extends React.Component {
 const Activity = props => {
   let { activity, visit, thank } = props
   let { actor, post, comment } = activity
-
-  console.log('ID -> ', activity.id)
 
   let bodyText = activity => {
     if (contains(['followAdd', 'follow', 'unfollow'], activity.action)) {
@@ -127,10 +137,10 @@ const Activity = props => {
           &nbsp;&nbsp;•&nbsp;&nbsp;
           <span>
             {isThanked
-            ? <a tooltip='click to take back your "Thank You"' tooltip-popup-delay='500' onClick={() => thank(comment)}>
+            ? <a tooltip='click to take back your "Thank You"' tooltip-popup-delay='500' onClick={() => thank(activity)}>
                   You thanked <span>{actorFirstName}</span>
                 </a>
-            : <a tooltip='click to give thanks for this comment' tooltip-popup-delay='500' onClick={() => thank(comment)}>Say "Thank you"</a>}
+            : <a tooltip='click to give thanks for this comment' tooltip-popup-delay='500' onClick={() => thank(activity)}>Say "Thank you"</a>}
             &nbsp;&nbsp;•&nbsp;&nbsp;
           </span>
           <a onClick={() => visit(activity)}>Reply</a>

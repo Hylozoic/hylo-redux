@@ -28,6 +28,8 @@ export const LEAVE_COMMUNITY = 'LEAVE_COMMUNITY'
 export const LEAVE_COMMUNITY_PENDING = LEAVE_COMMUNITY + _PENDING
 export const LOGIN = 'LOGIN'
 export const LOGOUT = 'LOGOUT'
+export const MARK_ACTIVITY_READ = 'MARK_ACTIVITY_READ'
+export const MARK_ACTIVITY_READ_PENDING = MARK_ACTIVITY_READ + _PENDING
 export const MARK_ALL_ACTIVITIES_READ = 'MARK_ALL_ACTIVITIES_READ'
 export const MARK_ALL_ACTIVITIES_READ_PENDING = MARK_ALL_ACTIVITIES_READ + _PENDING
 export const NAVIGATE = 'NAVIGATE'
@@ -43,6 +45,8 @@ export const SEND_PROJECT_INVITE_PENDING = SEND_PROJECT_INVITE + _PENDING
 export const SIGNUP = 'SIGNUP'
 export const START_POST_EDIT = 'START_POST_EDIT'
 export const START_PROJECT_EDIT = 'START_PROJECT_EDIT'
+export const THANK = 'THANK'
+export const THANK_PENDING = THANK + _PENDING
 export const TOGGLE_MAIN_MENU = 'TOGGLE_MAIN_MENU'
 export const TYPEAHEAD = 'TYPEAHEAD'
 export const UPDATE_COMMUNITY_EDITOR = 'UPDATE_COMMUNITY_EDITOR'
@@ -360,9 +364,25 @@ export function fetchActivity (limit, offset) {
   }
 }
 
+export function markActivityRead (activityId) {
+  return {
+    type: MARK_ACTIVITY_READ,
+    payload: {api: true, params: {unread: false}, path: `/noo/activity/${activityId}`, method: 'POST'},
+    meta: {activityId}
+  }
+}
+
 export function markAllActivitiesRead () {
   return {
     type: MARK_ALL_ACTIVITIES_READ,
     payload: {api: true, path: '/noo/activity/mark-all-read', method: 'POST'}
+  }
+}
+
+export function thank (commentId, activityId) {
+  return {
+    type: THANK,
+    payload: {api: true, params: {unread: false}, path: `/noo/comment/${commentId}/thank`, method: 'POST'},
+    meta: {commentId, activityId}
   }
 }

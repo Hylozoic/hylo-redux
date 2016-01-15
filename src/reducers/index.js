@@ -24,12 +24,14 @@ import {
   FETCH_PROJECTS,
   LOGIN,
   LOGOUT,
+  MARK_ACTIVITY_READ,
   MARK_ALL_ACTIVITIES_READ_PENDING,
   NAVIGATE,
   RESET_COMMUNITY_VALIDATION,
   SET_LOGIN_ERROR,
   SET_SIGNUP_ERROR,
   SIGNUP,
+  THANK_PENDING,
   TOGGLE_MAIN_MENU,
   TYPEAHEAD,
   UPDATE_COMMUNITY_EDITOR,
@@ -284,7 +286,7 @@ export default combineReducers({
   },
 
   activities: (state = {}, action) => {
-    let { type, payload, error } = action
+    let { type, payload, error, meta } = action
     if (error) return state
     switch (type) {
       case FETCH_ACTIVITY:
@@ -295,8 +297,25 @@ export default combineReducers({
             return acc
           }, {})
         }
+      case MARK_ACTIVITY_READ:
+        return {
+          ...state,
+          [meta.activityId]: {...state[meta.activityId], unread: false}
+        }
       case MARK_ALL_ACTIVITIES_READ_PENDING:
         return mapValues(state, activity => ({...activity, unread: false}))
+      case THANK_PENDING:
+        let { activityId } = meta
+        var updatedComment
+        if (state[activityId].comment.thanks[0]) {
+          updatedComment = {...state[activityId].comment, thanks: []}
+        } else {
+          updatedComment = {...state[activityId].comment, thanks: [{}]}
+        }
+        return {
+          ...state,
+          [meta.activityId]: {...state[meta.activityId], comment: updatedComment}
+        }
     }
     return state
   },

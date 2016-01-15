@@ -1,8 +1,9 @@
 import React from 'react'
+import qs from 'querystring'
 import { prefetch } from 'react-fetcher'
 import { connect } from 'react-redux'
-import { fetchProject } from '../../actions/project'
-import { joinProject } from '../../actions'
+import { fetchProject, joinProject, updateProject } from '../../actions/project'
+import { navigate } from '../../actions'
 import { markdown } from '../../util/text'
 import { contains, find } from 'lodash'
 import truncate from 'html-truncate'
@@ -23,7 +24,8 @@ export default class ProjectProfile extends React.Component {
     project: object,
     children: object,
     currentUser: object,
-    dispatch: func
+    dispatch: func,
+    location: object
   }
 
   constructor (props) {
@@ -31,17 +33,33 @@ export default class ProjectProfile extends React.Component {
     this.state = {}
   }
 
-  publish = event => {
-    window.alert('TODO')
+  publish = () => {
+    let { project, dispatch } = this.props
+    dispatch(updateProject(project.id, {publish: true}))
+  }
+
+  componentDidMount () {
+    let { location: { query }, dispatch, currentUser } = this.props
+    if (query.action === 'join-project') {
+      this.join()
+      if (currentUser) {
+        dispatch(navigate(window.location.pathname))
+      }
+    }
   }
 
   join = () => {
     let { project, currentUser, dispatch } = this.props
     if (currentUser) {
       dispatch(joinProject(project, currentUser))
-      return
+    } else {
+      let params = {
+        next: window.location.pathname,
+        action: 'join-project',
+        id: project.id
+      }
+      dispatch(navigate(`/login?${qs.stringify(params)}`))
     }
-    window.alert('TODO - Not Logged in')
   }
 
   render () {
@@ -55,7 +73,7 @@ export default class ProjectProfile extends React.Component {
     let isPublished = !!project.published_at
     let canModerate = currentUser && currentUser.id === user.id
     let canPost = canModerate || (currentUser && contains(contributors.map(c => c.id), currentUser.id))
-    let details = markdown(project.details)
+    let details = project.details ? markdown(project.details) : ''
     let expandable
     if (!this.state.expanded) {
       let truncated = truncate(details, 300)
@@ -71,7 +89,7 @@ export default class ProjectProfile extends React.Component {
       <div className='project-header'>
         <div className='col-sm-12 title-row'>
           <div className='right'>
-            {canModerate && <A className='button' to={`/project/edit/${project.id}`}>Edit project</A>}
+            {canModerate && <A className='button' to={`/project/${project.id}/edit`}>Edit project</A>}
             {!canPost && <a className='button' onClick={this.join}>Join project</a>}
           </div>
           <h2>{project.title}</h2>

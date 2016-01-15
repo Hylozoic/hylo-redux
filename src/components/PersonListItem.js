@@ -1,25 +1,25 @@
 import React from 'react'
-const { object } = React.PropTypes
+const { bool, object } = React.PropTypes
 import A from './A'
 import Dropdown from './Dropdown'
 
 export default class PersonListItem extends React.Component {
   static propTypes = {
-    person: object
+    person: object,
+    isModerator: bool,
+    viewerIsModerator: bool
   }
 
   render () {
-    let { person } = this.props
-    var isModerator = person.membership.role === 1
-    var canModerate = true
-    return <div className='user-list-item' onClick={this.expand}>
-      <div className='user-info'>
+    let { isModerator, person, viewerIsModerator } = this.props
+    return <div className='person-list-item' onClick={this.expand}>
+      <div className='person-info'>
         <A to={`/u/${person.id}`}>
           <div className='large-avatar' style={{backgroundImage: `url(${person.avatar_url})`}}>
             {isModerator && <span className='moderator-label'>moderator</span>}
           </div>
         </A>
-        {canModerate && <Dropdown className='contributor-menu' alignRight={true} toggleChildren={
+        {viewerIsModerator && <Dropdown className='contributor-menu' alignRight={true} toggleChildren={
           <i className='icon-down'></i>
         }>
           <li>
@@ -34,7 +34,7 @@ export default class PersonListItem extends React.Component {
         <SocialMediaLinks person={person} />
 
       </div>
-      {person.bio && <div className='details post-section'>{person.bio}</div>}
+      {person.bio && <div className='details'>{person.bio}</div>}
     </div>
   }
 }

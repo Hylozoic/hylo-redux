@@ -1,8 +1,9 @@
 import { combineReducers } from 'redux'
 import { routeReducer } from 'redux-simple-router'
 import { appendUniq } from './util'
-import { contains, uniq, mapValues } from 'lodash'
+import { contains, mapValues } from 'lodash'
 import people from './people'
+import peopleByQuery from './peopleByQuery'
 import postEdits from './postEdits'
 import postsByQuery from './postsByQuery'
 import posts from './posts'
@@ -115,6 +116,7 @@ export default combineReducers({
 
   communities,
   people,
+  peopleByQuery,
   posts,
   postsByQuery,
   postEdits,
@@ -169,21 +171,6 @@ export default combineReducers({
         return {...state, [id]: []}
     }
 
-    return state
-  },
-
-  peopleByQuery: (state = {}, action) => {
-    if (action.error) return state
-
-    let { type, payload, meta } = action
-    switch (type) {
-      case FETCH_PEOPLE:
-        let { cache } = meta
-        return {
-          ...state,
-          [cache.id]: uniq((state[cache.id] || []).concat(payload.people.map(p => p.id)))
-        }
-    }
     return state
   },
 

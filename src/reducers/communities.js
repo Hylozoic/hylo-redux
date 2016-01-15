@@ -15,18 +15,7 @@ import {
   REMOVE_COMMUNITY_MODERATOR,
   REMOVE_COMMUNITY_MODERATOR_PENDING
 } from '../actions'
-
-const update = (state, communities) => {
-  // merge with existing data so that we don't replace a long list of
-  // properties with a shorter one, but we do pick up recent changes
-  let mergedCommunities = communities.reduce((m, c) => {
-    let id = c.slug
-    m[id] = {...state[id], ...c}
-    return m
-  }, {})
-
-  return {...state, ...mergedCommunities}
-}
+import { mergeList } from './util'
 
 export default function (state = {}, action) {
   let { error, type, payload, meta } = action
@@ -58,17 +47,17 @@ export default function (state = {}, action) {
       return {...state, [meta.cache.id]: community}
     case FETCH_POSTS:
       let communities = uniq(flatten(payload.posts.map(p => p.communities)), c => c.id)
-      return update(state, communities)
+      return mergeList(state, communities, 'slug')
     case FETCH_POST:
-      return update(state, payload.communities)
+      return mergeList(state, payload.communities, 'slug')
     case FETCH_CURRENT_USER:
       if (payload && payload.memberships) {
-        return update(state, payload.memberships.map(m => m.community))
+        return mergeList(state, payload.memberships.map(m => m.community), 'slug')
       }
       break
     case UPDATE_COMMUNITY_SETTINGS_PENDING:
       let updatedCommunity = [{...state[meta.slug], ...meta.params}]
-      return update(state, updatedCommunity)
+      return mergeList(state, updatedCommunity, 'slug')
     case ADD_COMMUNITY_MODERATOR_PENDING:
       community = state[meta.slug]
       moderators = community.moderators

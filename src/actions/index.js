@@ -47,6 +47,7 @@ export const START_POST_EDIT = 'START_POST_EDIT'
 export const START_PROJECT_EDIT = 'START_PROJECT_EDIT'
 export const THANK = 'THANK'
 export const THANK_PENDING = THANK + _PENDING
+export const TOGGLE_PROJECT_MODERATOR_ROLE = 'TOGGLE_PROJECT_MODERATOR_ROLE'
 export const TOGGLE_MAIN_MENU = 'TOGGLE_MAIN_MENU'
 export const TYPEAHEAD = 'TYPEAHEAD'
 export const UPDATE_COMMUNITY_EDITOR = 'UPDATE_COMMUNITY_EDITOR'
@@ -275,14 +276,6 @@ export function leaveCommunity (communityId, prevProps) {
     type: LEAVE_COMMUNITY,
     payload: {api: true, path: `/noo/membership/${communityId}`, method: 'DELETE'},
     meta: {communityId, prevProps}
-  }
-}
-
-export function joinProject (project, currentUser) {
-  return {
-    type: JOIN_PROJECT,
-    payload: {api: true, path: `/noo/project/${project.id}/join`, method: 'POST'},
-    meta: {id: project.id, prevProps: project, currentUser}
   }
 }
 

@@ -2,7 +2,9 @@ import {
   CREATE_PROJECT,
   FETCH_PROJECT,
   FETCH_PROJECTS,
+  JOIN_PROJECT,
   START_PROJECT_EDIT,
+  TOGGLE_PROJECT_MODERATOR_ROLE,
   UPDATE_PROJECT,
   UPDATE_PROJECT_EDITOR
 } from './index'
@@ -56,7 +58,7 @@ export function updateProjectEditor (id, payload) {
 
 // transform params to match the expectations of the API
 const shim = params => {
-  let shimmed = pick(params, 'title', 'intention', 'details', 'location', 'visibility')
+  let shimmed = pick(params, 'title', 'intention', 'details', 'location', 'visibility', 'publish', 'unpublish')
 
   ;['video', 'image'].forEach(type => {
     let obj = find(params.media, m => m.type === type)
@@ -69,7 +71,8 @@ const shim = params => {
 
 export function updateProject (id, params) {
   // note that meta.params is the non-shimmed version, so updating the
-  // project in the store is a simple merge
+  // project in the store is a simple merge in almost all cases
+  // (see the projects reducer for an exception)
   return {
     type: UPDATE_PROJECT,
     payload: {api: true, params: shim(params), path: `/noo/project/${id}`, method: 'POST'},
@@ -82,5 +85,20 @@ export function createProject (id, params) {
     type: CREATE_PROJECT,
     payload: {api: true, params: shim(params), path: `/noo/project`, method: 'POST'},
     meta: {id}
+  }
+}
+
+export function joinProject (project, currentUser) {
+  return {
+    type: JOIN_PROJECT,
+    payload: {api: true, path: `/noo/project/${project.id}/join`, method: 'POST'},
+    meta: {id: project.id, prevProps: project, currentUser}
+  }
+}
+
+export function toggleProjectModeratorRole (projectId, userId) {
+  return {
+    type: TOGGLE_PROJECT_MODERATOR_ROLE,
+    payload: {api: true, path: `/noo/project/${projectId}/moderator/${userId}`, method: 'POST'}
   }
 }

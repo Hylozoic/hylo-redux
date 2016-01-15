@@ -7,10 +7,10 @@ import cx from 'classnames'
 import ScrollListener from '../components/ScrollListener'
 import A from '../components/A'
 import truncate from 'html-truncate'
-import { present } from '../util/text'
+import { present, humanDate } from '../util/text'
 const { array, bool, func, number } = React.PropTypes
 
-@prefetch(({ dispatch }) => dispatch(fetchActivity(5, 0)))
+@prefetch(({ dispatch }) => dispatch(fetchActivity(20, 0)))
 @connect(state => ({
   activities: sortBy(values(state.activities), ['created_at']).reverse(),
   total: Number(state.totalActivities)
@@ -28,7 +28,7 @@ export default class Notifications extends React.Component {
     let { total, activities, dispatch, pending } = this.props
     let offset = activities.length
     if (!pending && offset < total) {
-      dispatch(fetchActivity(5, offset))
+      dispatch(fetchActivity(20, offset))
     }
   }
 
@@ -46,13 +46,10 @@ export default class Notifications extends React.Component {
   }
 
   render () {
-    let { activities, total, pending } = this.props
+    let { activities } = this.props
 
     return <div>
       <h2>Notifications</h2>
-      <p>Activities length: {activities.length}</p>
-      <p>total: {total}</p>
-      <p>pending: {pending}</p>
       <div className='activities'>
         <div className='buttons'>
           <button onClick={this.markAllRead}>
@@ -68,7 +65,7 @@ export default class Notifications extends React.Component {
 
 const Activity = props => {
   let { activity, visit, thank } = props
-  let { actor, post } = activity
+  let { actor, post, comment } = activity
 
   console.log('ID -> ', activity.id)
 
@@ -104,9 +101,9 @@ const Activity = props => {
   ? `${post.relatedUsers[0].name}'s' welcoming post`
   : truncate(post.name, 140)
 
-  let timeAgo = '1 month ago'
-  let isThanked = false
-  let actorFirstName = 'Julio'
+  let timeAgo = humanDate(activity.created_at)
+  let isThanked = comment && comment.thanks && comment.thanks[0]
+  let actorFirstName = actor.name.split(' ')[0]
 
   return <div key={activity.id} className={cx('activity', {'unread': activity.unread})}>
     <div>
@@ -126,14 +123,14 @@ const Activity = props => {
 
       <div className='controls'>
         {timeAgo}
-        {!isEmpty(activity.comment) && <span>
+        {!isEmpty(comment) && <span>
           &nbsp;&nbsp;•&nbsp;&nbsp;
           <span>
             {isThanked
-            ? <a tooltip='click to take back your "Thank You"' tooltip-popup-delay='500' onClick={() => thank(activity.comment)}>
+            ? <a tooltip='click to take back your "Thank You"' tooltip-popup-delay='500' onClick={() => thank(comment)}>
                   You thanked <span>{actorFirstName}</span>
                 </a>
-            : <a tooltip='click to give thanks for this comment' tooltip-popup-delay='500' onClick={() => thank(activity.comment)}>Say "Thank you"</a>}
+            : <a tooltip='click to give thanks for this comment' tooltip-popup-delay='500' onClick={() => thank(comment)}>Say "Thank you"</a>}
             &nbsp;&nbsp;•&nbsp;&nbsp;
           </span>
           <a onClick={() => visit(activity)}>Reply</a>

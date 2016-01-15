@@ -891,18 +891,21 @@ ul.tags {
   }
 }
 
-.project-card-container {
+.masonry-container {
   margin-left: -7.5px;
   margin-right: -7.5px;
 }
 
-.project-card-wrapper {
+.masonry-item-wrapper {
   padding: 0 7.5px 15px;
-  width: 33.3%;
   .mobile({
-    width: 100%;
+    width: 100% !important;
   });
   float: left;
+}
+
+.project-card-container .masonry-item-wrapper {
+  width: 33.33%;
 }
 
 .project-card {
@@ -1254,7 +1257,7 @@ ul.tags {
   }
 
   .person-info {
-    .large-avatar {
+    .avatar {
       float: left;
       margin-right: 10px;
     }

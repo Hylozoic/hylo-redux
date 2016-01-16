@@ -77,12 +77,12 @@ export default class ProjectContributors extends React.Component {
 
       if (canModerate) {
         menus[person.id] = [
-          <li>
+          <li key='1'>
             <a onClick={() => this.toggleModerator(person.id)}>
               {personIsModerator ? 'Remove' : 'Grant'} moderator power
             </a>
           </li>,
-          <li>
+          <li key='2'>
             <a onClick={() => this.remove(person.id)}>
               Remove from project
             </a>

@@ -1,7 +1,7 @@
 import { combineReducers } from 'redux'
 import { routeReducer } from 'redux-simple-router'
 import { appendUniq } from './util'
-import { contains, mapValues } from 'lodash'
+import { contains, mapValues, find } from 'lodash'
 import people from './people'
 import peopleByQuery from './peopleByQuery'
 import postEdits from './postEdits'
@@ -154,6 +154,28 @@ export default combineReducers({
         break
       case CREATE_COMMENT:
         return appendUniq(state, meta.id, [payload])
+      case THANK_PENDING:
+        let { postId, commentId } = meta
+        let comments = state[postId]
+        if (!comments) {
+          return state
+        }
+        let comment = find(comments, c => c.id === commentId)
+        if (!comment) {
+          return state
+        }
+        var updatedThanks
+        if (comment.thanks && comment.thanks[0]) {
+          updatedThanks = []
+        } else {
+          updatedThanks = [{}]
+        }
+        let updatedComment = {...comment, thanks: updatedThanks}
+        let updatedComments = mapValues(comments, c => c.id === commentId ? updatedComment : c)
+        return {
+          ...state,
+          [postId]: updatedComments
+        }
     }
 
     return state

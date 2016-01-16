@@ -49,8 +49,7 @@ export default class Notifications extends React.Component {
 
   thank = activity => {
     let { dispatch } = this.props
-    let {comment} = activity
-    dispatch(thank(comment.id, activity.id))
+    dispatch(thank(activity))
   }
 
   render () {

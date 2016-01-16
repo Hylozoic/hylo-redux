@@ -372,10 +372,11 @@ export function markAllActivitiesRead () {
   }
 }
 
-export function thank (commentId, activityId) {
+export function thank (activity) {
+  let { comment, post } = activity
   return {
     type: THANK,
-    payload: {api: true, params: {unread: false}, path: `/noo/comment/${commentId}/thank`, method: 'POST'},
-    meta: {commentId, activityId}
+    payload: {api: true, params: {unread: false}, path: `/noo/comment/${comment.id}/thank`, method: 'POST'},
+    meta: {commentId: comment.id, activityId: activity.id, postId: post.id}
   }
 }

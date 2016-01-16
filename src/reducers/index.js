@@ -139,6 +139,7 @@ export default combineReducers({
       toggle(UPDATE_POST) ||
       toggle(FETCH_PROJECTS) ||
       toggle(CREATE_COMMUNITY) ||
+      toggle(FETCH_ACTIVITY) ||
       state
   },
 
@@ -294,37 +295,28 @@ export default combineReducers({
     return state
   },
 
-  activities: (state = {}, action) => {
+  activities: (state = [], action) => {
     let { type, payload, error, meta } = action
     if (error) return state
+    var activityId
     switch (type) {
       case FETCH_ACTIVITY:
-        return {
-          ...state,
-          ...payload.activities.reduce((acc, activity) => {
-            acc[activity.id] = activity
-            return acc
-          }, {})
-        }
+        return state.concat(payload.activities)
       case MARK_ACTIVITY_READ:
-        return {
-          ...state,
-          [meta.activityId]: {...state[meta.activityId], unread: false}
-        }
+        activityId = meta.activityId
+        return state.map(a => a.id === activityId ? {...a, unread: false} : a)
       case MARK_ALL_ACTIVITIES_READ_PENDING:
-        return mapValues(state, activity => ({...activity, unread: false}))
+        return state.map(a => ({...a, unread: false}))
       case THANK_PENDING:
-        let { activityId } = meta
+        activityId = meta.activityId
         var updatedComment
-        if (state[activityId].comment.thanks[0]) {
-          updatedComment = {...state[activityId].comment, thanks: []}
+        let activity = find(state, a => a.id === activityId)
+        if (activity.comment.thanks[0]) {
+          updatedComment = {...activity.comment, thanks: []}
         } else {
-          updatedComment = {...state[activityId].comment, thanks: [{}]}
+          updatedComment = {...activity.comment, thanks: [{}]}
         }
-        return {
-          ...state,
-          [meta.activityId]: {...state[meta.activityId], comment: updatedComment}
-        }
+        return state.map(a => a.id === activityId ? {...a, comment: updatedComment} : a)
     }
     return state
   },

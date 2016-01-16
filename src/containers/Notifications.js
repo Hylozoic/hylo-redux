@@ -1,8 +1,8 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { prefetch } from 'react-fetcher'
-import { fetchActivity, markActivityRead, markAllActivitiesRead, navigate, thank } from '../actions'
-import { values, sortBy, isEmpty, contains } from 'lodash'
+import { fetchActivity, FETCH_ACTIVITY, markActivityRead, markAllActivitiesRead, navigate, thank } from '../actions'
+import { values, isEmpty, contains } from 'lodash'
 import cx from 'classnames'
 import ScrollListener from '../components/ScrollListener'
 import A from '../components/A'
@@ -10,10 +10,11 @@ import truncate from 'html-truncate'
 import { present, humanDate } from '../util/text'
 const { array, bool, func, number, object } = React.PropTypes
 
-@prefetch(({ dispatch }) => dispatch(fetchActivity(20, 0)))
-@connect(state => ({
-  activities: sortBy(values(state.activities), ['created_at']).reverse(),
-  total: Number(state.totalActivities)
+@prefetch(({ dispatch }) => dispatch(fetchActivity(5, 0)))
+@connect(({ activities, totalActivities, pending }) => ({
+  activities: values(activities),
+  total: Number(totalActivities),
+  pending: pending[FETCH_ACTIVITY]
 }))
 export default class Notifications extends React.Component {
 
@@ -29,7 +30,7 @@ export default class Notifications extends React.Component {
     let { total, activities, dispatch, pending } = this.props
     let offset = activities.length
     if (!pending && offset < total) {
-      dispatch(fetchActivity(20, offset))
+      dispatch(fetchActivity(5, offset))
     }
   }
 

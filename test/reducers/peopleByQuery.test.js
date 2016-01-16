@@ -1,6 +1,6 @@
 require('../support')
 import peopleByQuery from '../../src/reducers/peopleByQuery'
-import { FETCH_PEOPLE, FETCH_PROJECT } from '../../src/actions'
+import { FETCH_PEOPLE, FETCH_PROJECT, REMOVE_PROJECT_CONTRIBUTOR } from '../../src/actions'
 
 describe('peopleByQuery', () => {
   it('stores project moderators when fetching contributors', () => {
@@ -47,6 +47,25 @@ describe('peopleByQuery', () => {
 
     let expectedState = {
       'subject=project-moderators&id=5': ['a', 'b']
+    }
+
+    expect(peopleByQuery(state, action)).to.deep.equal(expectedState)
+  })
+
+  it('removes a person from both contributor and moderator lists', () => {
+    let state = {
+      'subject=project&id=5': ['a', 'b', 'c'],
+      'subject=project-moderators&id=5': ['a', 'b']
+    }
+
+    let action = {
+      type: REMOVE_PROJECT_CONTRIBUTOR,
+      meta: {projectId: '5', userId: 'b'}
+    }
+
+    let expectedState = {
+      'subject=project&id=5': ['a', 'c'],
+      'subject=project-moderators&id=5': ['a']
     }
 
     expect(peopleByQuery(state, action)).to.deep.equal(expectedState)

@@ -1,22 +1,25 @@
-import { FETCH_PEOPLE, FETCH_PROJECT, TOGGLE_PROJECT_MODERATOR_ROLE } from '../actions'
-import { filter, get, uniq, without } from 'lodash'
+import {
+  FETCH_PEOPLE,
+  FETCH_PROJECT,
+  REMOVE_PROJECT_CONTRIBUTOR,
+  TOGGLE_PROJECT_MODERATOR_ROLE
+} from '../actions'
+import { compose, filter, get, partialRight, uniq, without } from 'lodash'
 import qs from 'querystring'
 import { ProjectMemberRole } from '../constants'
 
-const moderatorKey = id => {
-  return qs.stringify({subject: 'project-moderators', id})
-}
+const moderatorKey = id => qs.stringify({subject: 'project-moderators', id})
 
-const addModerators = (state, projectId, ...userIds) => {
-  let key = moderatorKey(projectId)
+const contributorKey = id => qs.stringify({subject: 'project', id})
+
+const addPeople = (state, key, ...userIds) => {
   return {
     ...state,
     [key]: [...(state[key] || []), ...userIds]
   }
 }
 
-const removeModerator = (state, projectId, userId) => {
-  let key = moderatorKey(projectId)
+const removePerson = (state, key, userId) => {
   return {
     ...state,
     [key]: without(state[key], userId)
@@ -34,7 +37,7 @@ const handlePeople = (state, key, people) => {
   if (subject === 'project') {
     let isModerator = p => get(p, 'membership.role') === ProjectMemberRole.MODERATOR
     let moderatorIds = filter(people, isModerator).map(p => p.id)
-    return addModerators(newState, id, ...moderatorIds)
+    return addPeople(newState, moderatorKey(id), ...moderatorIds)
   }
 
   return newState
@@ -44,6 +47,7 @@ export default function (state = {}, action) {
   if (action.error) return state
 
   let { type, payload, meta } = action
+  let { projectId, userId, role } = meta || {}
   switch (type) {
     case FETCH_PEOPLE:
       let { cache } = meta
@@ -58,12 +62,18 @@ export default function (state = {}, action) {
       }
       break
     case TOGGLE_PROJECT_MODERATOR_ROLE:
-      let { projectId, userId, role } = meta
       if (role === ProjectMemberRole.MODERATOR) {
-        return addModerators(state, projectId, userId)
+        return addPeople(state, moderatorKey(projectId), userId)
       } else {
-        return removeModerator(state, projectId, userId)
+        return removePerson(state, moderatorKey(projectId), userId)
       }
+      break
+    case REMOVE_PROJECT_CONTRIBUTOR:
+      return compose(
+        partialRight(removePerson, contributorKey(projectId), userId),
+        partialRight(removePerson, moderatorKey(projectId), userId)
+      )(state)
+
   }
   return state
 }

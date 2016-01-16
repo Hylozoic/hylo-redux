@@ -4,7 +4,7 @@ import { prefetch } from 'react-fetcher'
 import { connect } from 'react-redux'
 import { ProjectMemberRole } from '../../constants'
 import { fetchPeople } from '../../actions/fetchPeople'
-import { toggleProjectModeratorRole } from '../../actions/project'
+import { removeProjectContributor, toggleProjectModeratorRole } from '../../actions/project'
 import { fetchWithCache, connectedListProps } from '../../util/caching'
 import ScrollListener from '../../components/ScrollListener'
 import PersonCards from '../../components/PersonCards'
@@ -54,7 +54,8 @@ export default class ProjectContributors extends React.Component {
   }
 
   remove = personId => {
-    console.log(`remove person ${personId} from project`)
+    let { project, dispatch } = this.props
+    dispatch(removeProjectContributor(project.id, personId))
   }
 
   toggleModerator (personId) {

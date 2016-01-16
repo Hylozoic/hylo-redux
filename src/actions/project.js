@@ -96,9 +96,15 @@ export function joinProject (project, currentUser) {
   }
 }
 
-export function toggleProjectModeratorRole (projectId, userId) {
+export function toggleProjectModeratorRole (projectId, userId, role) {
   return {
     type: TOGGLE_PROJECT_MODERATOR_ROLE,
-    payload: {api: true, path: `/noo/project/${projectId}/moderator/${userId}`, method: 'POST'}
+    meta: {projectId, userId, role},
+    payload: {
+      api: true,
+      path: `/noo/project/${projectId}/moderator/${userId}`,
+      params: {role},
+      method: 'POST'
+    }
   }
 }

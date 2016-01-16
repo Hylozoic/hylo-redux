@@ -1,13 +1,16 @@
 import React from 'react'
+import { contains } from 'lodash'
 import { prefetch } from 'react-fetcher'
 import { connect } from 'react-redux'
+import { ProjectMemberRole } from '../../constants'
 import { fetchPeople } from '../../actions/fetchPeople'
+import { toggleProjectModeratorRole } from '../../actions/project'
 import { fetchWithCache, connectedListProps } from '../../util/caching'
-import PersonListItem from '../../components/PersonListItem'
+import ScrollListener from '../../components/ScrollListener'
+import PersonCards from '../../components/PersonCards'
 import A from '../../components/A'
 import qs from 'querystring'
-import { contains } from 'lodash'
-const { array, object } = React.PropTypes
+const { array, bool, func, number, object } = React.PropTypes
 
 const subject = 'project'
 const fetch = fetchWithCache(fetchPeople)
@@ -16,22 +19,76 @@ const fetch = fetchWithCache(fetchPeople)
 @connect((state, { params: { id }, location: { query } }) => {
   let moderators = state.peopleByQuery[qs.stringify({subject: 'project-moderators', id})]
 
+  let currentUser = state.people.current
+  let project = state.projects[id]
+  let key = qs.stringify({subject: 'project-moderators', id})
+  let canModerate = currentUser && (contains(state.peopleByQuery[key], currentUser.id) ||
+    project.user.id === currentUser.id)
+
   return {
     ...connectedListProps(state, {subject, id, query}, 'people'),
-    project: state.projects[id],
-    moderators
+    project,
+    moderators,
+    canModerate
   }
 })
 export default class ProjectContributors extends React.Component {
   static propTypes = {
     people: array,
     project: object,
-    moderators: array
+    moderators: array,
+    dispatch: func,
+    total: number,
+    pending: bool,
+    params: object,
+    location: object,
+    canModerate: bool
+  }
+
+  loadMore = () => {
+    let { people, dispatch, total, pending, params: { id }, location: { query } } = this.props
+    let offset = people.length
+    if (!pending && offset < total) {
+      dispatch(fetch(subject, id, {...query, offset}))
+    }
+  }
+
+  remove = personId => {
+    console.log(`remove person ${personId} from project`)
+  }
+
+  toggleModerator (personId) {
+    let { project, moderators, dispatch } = this.props
+    let role = contains(moderators, personId)
+      ? ProjectMemberRole.DEFAULT
+      : ProjectMemberRole.MODERATOR
+    dispatch(toggleProjectModeratorRole(project.id, personId, role))
   }
 
   render () {
-    let { people, project, moderators } = this.props
-    let canModerate = true // TODO
+    let { people, project, moderators, canModerate } = this.props
+
+    let menus = {}
+    let subtitles = {}
+    people.forEach(person => {
+      let personIsModerator = contains(moderators, person.id)
+      if (personIsModerator) subtitles[person.id] = 'moderator'
+
+      if (canModerate) {
+        menus[person.id] = [
+          <li>
+            <a onClick={() => this.toggleModerator(person.id)}>
+              {personIsModerator ? 'Remove' : 'Grant'} moderator power
+            </a>
+          </li>,
+          <li>
+            <a onClick={() => this.remove(person.id)}>
+              Remove from project
+            </a>
+          </li>
+        ]
+      }
+    })
 
     return <div>
       <div className='invite-cta'>
@@ -40,9 +97,8 @@ export default class ProjectContributors extends React.Component {
           + Invite contributors
         </A>}
       </div>
-      {people.map(person => <PersonListItem person={person} key={person.id}
-        isModerator={contains(moderators, person.id)}
-        viewerIsModerator={canModerate}/>)}
+      <PersonCards people={people} menus={menus} subtitles={subtitles}/>
+      <ScrollListener onBottom={this.loadMore}/>
     </div>
   }
 }

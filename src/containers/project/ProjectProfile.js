@@ -12,20 +12,26 @@ import Video from '../../components/Video'
 import { A, IndexA } from '../../components/A'
 import { assetUrl } from '../../util/assets'
 import { ProjectVisibility } from '../../constants'
-const { func, object } = React.PropTypes
+const { bool, func, object } = React.PropTypes
 
 @prefetch(({ dispatch, params: { id } }) => dispatch(fetchProject(id)))
-@connect(({ projects, people }, { params: { id } }) => ({
-  project: projects[id],
-  currentUser: people.current
-}))
+@connect(({ projects, people, peopleByQuery }, { params: { id } }) => {
+  let project = projects[id]
+  let currentUser = people.current
+  let key = qs.stringify({subject: 'project-moderators', id})
+  let canModerate = currentUser && (contains(peopleByQuery[key], currentUser.id) ||
+    project.user.id === currentUser.id)
+
+  return {project, currentUser, canModerate}
+})
 export default class ProjectProfile extends React.Component {
   static propTypes = {
     project: object,
     children: object,
     currentUser: object,
     dispatch: func,
-    location: object
+    location: object,
+    canModerate: bool
   }
 
   constructor (props) {
@@ -63,7 +69,7 @@ export default class ProjectProfile extends React.Component {
   }
 
   render () {
-    let { project, currentUser } = this.props
+    let { project, currentUser, canModerate } = this.props
     if (!project) return <div>Loading...</div>
     let { contributors } = project
     let { user, community, media, id, slug } = project
@@ -71,7 +77,6 @@ export default class ProjectProfile extends React.Component {
     let image = find(media, m => m.type === 'image')
     let isPublic = project.visibility === ProjectVisibility.PUBLIC
     let isPublished = !!project.published_at
-    let canModerate = currentUser && currentUser.id === user.id
     let canPost = canModerate || (currentUser && contains(contributors.map(c => c.id), currentUser.id))
     let details = project.details ? markdown(project.details) : ''
     let expandable
@@ -141,6 +146,9 @@ export default class ProjectProfile extends React.Component {
                       : <div>All members of {community.name} may view and join this project when it is published.</div>}
                   </div>
                 </li>}
+            {canModerate && <li>
+              You are a moderator
+            </li>}
           </ul>
         </div>
       </div>

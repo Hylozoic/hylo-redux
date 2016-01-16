@@ -43,12 +43,8 @@ export default class Notifications extends React.Component {
     let path = `/p/${activity.post.id}`
     if (activity.unread) {
       dispatch(markActivityRead(activity.id))
-      .then(action => {
-        dispatch(navigate(path))
-      })
-    } else {
-      dispatch(navigate(path))
     }
+    dispatch(navigate(path))
   }
 
   thank = activity => {

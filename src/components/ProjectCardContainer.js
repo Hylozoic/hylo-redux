@@ -1,5 +1,5 @@
 import React from 'react'
-const Masonry = require('../components/Masonry')(React)
+import Masonry from 'react-masonry-component'
 import ProjectCard from '../components/ProjectCard'
 
 const ProjectCardContainer = props => {

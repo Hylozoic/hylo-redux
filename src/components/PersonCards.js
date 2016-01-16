@@ -1,7 +1,7 @@
 import React from 'react'
 import A from '../components/A'
 import Dropdown from '../components/Dropdown'
-const Masonry = require('../components/Masonry')(React)
+import Masonry from 'react-masonry-component'
 
 const PersonCards = ({ people, menus, subtitles }) => {
   return <div className='person-cards masonry-container'>

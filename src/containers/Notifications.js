@@ -61,13 +61,19 @@ export default class Notifications extends React.Component {
     let { activities } = this.props
 
     return <div>
-      <h2>Notifications</h2>
-      <div className='activities'>
-        <div className='buttons'>
-          <button onClick={this.markAllRead}>
-            Mark all as read
-          </button>
+      <div className='row'>
+        <div className='col-sm-6'>
+          <h2>Notifications</h2>
         </div>
+        <div className='col-sm-6'>
+          <div className='list-controls'>
+            <button onClick={this.markAllRead}>
+              Mark all as read
+            </button>
+          </div>
+        </div>
+      </div>
+      <div className='activities'>
         {activities.map(activity => <Activity key={activity.id} activity={activity} visit={this.visit} thank={this.thank}/>)}
         <ScrollListener onBottom={this.loadMore}/>
       </div>

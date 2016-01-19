@@ -1,5 +1,4 @@
 import { uniq } from 'lodash'
-
 import {
   FETCH_COMMENTS,
   CREATE_COMMENT

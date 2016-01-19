@@ -1,6 +1,6 @@
 import { combineReducers } from 'redux'
 import { routeReducer } from 'redux-simple-router'
-import { contains, find } from 'lodash'
+import { contains, find, omit } from 'lodash'
 import comments from './comments'
 import commentsByPost from './commentsByPost'
 import people from './people'
@@ -260,10 +260,17 @@ export default combineReducers({
   activities: (state = [], action) => {
     let { type, payload, error, meta } = action
     if (error) return state
+    let normalize = activity => {
+      let comment = activity.comment
+      if (!comment) {
+        return activity
+      }
+      return {...omit(activity, 'comment'), comment_id: comment.id}
+    }
     var activityId
     switch (type) {
       case FETCH_ACTIVITY:
-        return state.concat(payload.activities)
+        return state.concat(payload.activities.map(normalize))
       case MARK_ACTIVITY_READ:
         activityId = meta.activityId
         return state.map(a => a.id === activityId ? {...a, unread: false} : a)

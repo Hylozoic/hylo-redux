@@ -2,7 +2,7 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { prefetch } from 'react-fetcher'
 import { fetchActivity, FETCH_ACTIVITY, markActivityRead, markAllActivitiesRead, navigate, thank } from '../actions'
-import { values, isEmpty, contains } from 'lodash'
+import { isEmpty, contains, filter } from 'lodash'
 import cx from 'classnames'
 import ScrollListener from '../components/ScrollListener'
 import A from '../components/A'
@@ -10,9 +10,10 @@ import truncate from 'html-truncate'
 import { present, humanDate } from '../util/text'
 const { array, bool, func, number, object } = React.PropTypes
 
-@prefetch(({ dispatch }) => dispatch(fetchActivity(5, 0)))
-@connect(({ activities, totalActivities, pending }) => ({
-  activities: values(activities),
+@prefetch(({ dispatch }) => dispatch(fetchActivity(20, 0)))
+@connect(({ comments, activities, totalActivities, pending }) => ({
+  activities: activities,
+  comments: filter(activities.map(a => a.comment_id)).reduce((acc, cid) => ({...acc, [cid]: comments[cid]}), {}),
   total: Number(totalActivities),
   pending: pending[FETCH_ACTIVITY]
 }))
@@ -20,6 +21,7 @@ export default class Notifications extends React.Component {
 
   static propTypes = {
     activities: array,
+    comments: object,
     pending: bool,
     dispatch: func,
     total: number,
@@ -30,7 +32,7 @@ export default class Notifications extends React.Component {
     let { total, activities, dispatch, pending } = this.props
     let offset = activities.length
     if (!pending && offset < total) {
-      dispatch(fetchActivity(5, offset))
+      dispatch(fetchActivity(20, offset))
     }
   }
 
@@ -54,7 +56,7 @@ export default class Notifications extends React.Component {
   }
 
   render () {
-    let { activities } = this.props
+    let { activities, comments } = this.props
 
     return <div>
       <div className='row'>
@@ -70,7 +72,13 @@ export default class Notifications extends React.Component {
         </div>
       </div>
       <div className='activities'>
-        {activities.map(activity => <Activity key={activity.id} activity={activity} visit={this.visit} thank={this.thank}/>)}
+        {activities.map(activity => {
+          let comment = comments[activity.comment_id]
+          if (comment) {
+            activity = {...activity, comment}
+          }
+          return <Activity key={activity.id} activity={activity} visit={this.visit} thank={this.thank}/>
+        })}
         <ScrollListener onBottom={this.loadMore}/>
       </div>
     </div>

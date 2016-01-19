@@ -1,5 +1,7 @@
 import { hashById } from './util'
+import { filter } from 'lodash'
 import {
+  FETCH_ACTIVITY,
   FETCH_COMMENTS,
   CREATE_COMMENT
 } from '../actions'
@@ -18,6 +20,12 @@ export default function (state = {}, action) {
   if (!payload) return state
 
   switch (type) {
+    case FETCH_ACTIVITY:
+      let comments = filter(payload.activities.map(a => a.comment))
+      return {
+        ...state,
+        ...hashById(comments)
+      }
     case FETCH_COMMENTS:
       return {
         ...state,

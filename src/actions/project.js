@@ -3,6 +3,7 @@ import {
   FETCH_PROJECT,
   FETCH_PROJECTS,
   JOIN_PROJECT,
+  REMOVE_PROJECT_CONTRIBUTOR,
   START_PROJECT_EDIT,
   TOGGLE_PROJECT_MODERATOR_ROLE,
   UPDATE_PROJECT,
@@ -96,9 +97,23 @@ export function joinProject (project, currentUser) {
   }
 }
 
-export function toggleProjectModeratorRole (projectId, userId) {
+export function toggleProjectModeratorRole (projectId, userId, role) {
   return {
     type: TOGGLE_PROJECT_MODERATOR_ROLE,
-    payload: {api: true, path: `/noo/project/${projectId}/moderator/${userId}`, method: 'POST'}
+    meta: {projectId, userId, role},
+    payload: {
+      api: true,
+      path: `/noo/project/${projectId}/moderator/${userId}`,
+      params: {role},
+      method: 'POST'
+    }
+  }
+}
+
+export function removeProjectContributor (projectId, userId) {
+  return {
+    type: REMOVE_PROJECT_CONTRIBUTOR,
+    payload: {api: true, path: `/noo/project/${projectId}/user/${userId}`, method: 'DELETE'},
+    meta: {projectId, userId}
   }
 }

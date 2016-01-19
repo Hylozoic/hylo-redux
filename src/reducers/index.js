@@ -1,7 +1,8 @@
 import { combineReducers } from 'redux'
 import { routeReducer } from 'redux-simple-router'
-import { appendUniq } from './util'
-import { contains, mapValues, find } from 'lodash'
+import { contains, find } from 'lodash'
+import comments from './comments'
+import commentsByPost from './commentsByPost'
 import people from './people'
 import peopleByQuery from './peopleByQuery'
 import postEdits from './postEdits'
@@ -15,11 +16,9 @@ import { UPDATE_PATH } from 'redux-simple-router'
 
 import {
   CANCEL_TYPEAHEAD,
-  CREATE_COMMENT,
   CREATE_COMMUNITY,
   CREATE_POST,
   FETCH_ACTIVITY,
-  FETCH_COMMENTS,
   FETCH_PEOPLE,
   FETCH_POSTS,
   FETCH_PROJECTS,
@@ -114,6 +113,8 @@ export default combineReducers({
     return state
   },
 
+  comments,
+  commentsByPost,
   communities,
   people,
   peopleByQuery,
@@ -141,45 +142,6 @@ export default combineReducers({
       toggle(CREATE_COMMUNITY) ||
       toggle(FETCH_ACTIVITY) ||
       state
-  },
-
-  commentsByPost: (state = {}, action) => {
-    if (action.error) return state
-
-    let { type, payload, meta } = action
-    switch (type) {
-      case FETCH_COMMENTS:
-        if (meta.subject === 'post') {
-          return appendUniq(state, meta.id, payload)
-        }
-        break
-      case CREATE_COMMENT:
-        return appendUniq(state, meta.id, [payload])
-      case THANK_PENDING:
-        let { postId, commentId } = meta
-        let comments = state[postId]
-        if (!comments) {
-          return state
-        }
-        let comment = find(comments, c => c.id === commentId)
-        if (!comment) {
-          return state
-        }
-        var updatedThanks
-        if (comment.thanks && comment.thanks[0]) {
-          updatedThanks = []
-        } else {
-          updatedThanks = [{}]
-        }
-        let updatedComment = {...comment, thanks: updatedThanks}
-        let updatedComments = mapValues(comments, c => c.id === commentId ? updatedComment : c)
-        return {
-          ...state,
-          [postId]: updatedComments
-        }
-    }
-
-    return state
   },
 
   typeaheadMatches: (state = {}, action) => {

@@ -40,7 +40,19 @@ export function present (text, opts) {
 
 export function humanDate (date, short) {
   var ret = prettyDate.format(typeof date === 'string' ? new Date(date) : date)
-  if (short) ret = ret.replace(' ago', '')
+  if (short) {
+    ret = ret.replace(' ago', '')
+  } else {
+    // this workaround prevents a "React attempted to use reuse markup" error
+    // which happens if the timestamp is less than 1 minute ago, because the
+    // server renders "N seconds ago", but by the time React is loaded on the
+    // client side, it's "N+1 seconds ago"
+    let match = ret.match(/(\d+) seconds? ago/)
+    if (match) {
+      if (Number(match[1]) >= 50) return '1 minute ago'
+      return 'just now'
+    }
+  }
   return ret
 }
 

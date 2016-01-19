@@ -18,7 +18,7 @@ export default function (state = {}, action) {
     case CREATE_POST:
       let post = payload
       let communityIds = post.communities.map(c => c.slug)
-      let projectIds = (post.projects || []).map(p => p.id)
+      let projectIds = (post.projects || []).map(p => p.id.toString())
 
       // find all lists that should contain this post id,
       // and prepend it to each of them

@@ -2,7 +2,7 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { prefetch } from 'react-fetcher'
 import { fetchActivity, FETCH_ACTIVITY, markActivityRead, markAllActivitiesRead, navigate, thank } from '../actions'
-import { isEmpty, contains, filter } from 'lodash'
+import { isEmpty, contains, filter, find } from 'lodash'
 import cx from 'classnames'
 import ScrollListener from '../components/ScrollListener'
 import A from '../components/A'
@@ -11,7 +11,8 @@ import { present, humanDate } from '../util/text'
 const { array, bool, func, number, object } = React.PropTypes
 
 @prefetch(({ dispatch }) => dispatch(fetchActivity(20, 0)))
-@connect(({ comments, activities, totalActivities, pending }) => ({
+@connect(({ people, comments, activities, totalActivities, pending }) => ({
+  currentUser: people.current,
   activities: activities,
   comments: filter(activities.map(a => a.comment_id)).reduce((acc, cid) => ({...acc, [cid]: comments[cid]}), {}),
   total: Number(totalActivities),
@@ -51,12 +52,12 @@ export default class Notifications extends React.Component {
   }
 
   thank = activity => {
-    let { dispatch } = this.props
-    dispatch(thank(activity))
+    let { dispatch, currentUser } = this.props
+    dispatch(thank(activity.comment_id, currentUser.id))
   }
 
   render () {
-    let { activities, comments } = this.props
+    let { activities, comments, currentUser } = this.props
 
     return <div>
       <div className='row'>
@@ -74,8 +75,9 @@ export default class Notifications extends React.Component {
       <div className='activities'>
         {activities.map(activity => {
           let comment = comments[activity.comment_id]
+          let isThanked = comment && comment.thanks && find(comment.thanks, t => t.thanked_by_id === currentUser.id)
           if (comment) {
-            activity = {...activity, comment}
+            activity = {...activity, comment, isThanked}
           }
           return <Activity key={activity.id} activity={activity} visit={this.visit} thank={this.thank}/>
         })}
@@ -122,7 +124,6 @@ const Activity = props => {
   : truncate(post.name, 140)
 
   let timeAgo = humanDate(activity.created_at)
-  let isThanked = comment && comment.thanks && comment.thanks[0]
   let actorFirstName = actor.name.split(' ')[0]
 
   return <div key={activity.id} className={cx('activity', {'unread': activity.unread})}>
@@ -146,7 +147,7 @@ const Activity = props => {
         {!isEmpty(comment) && <span>
           &nbsp;&nbsp;•&nbsp;&nbsp;
           <span>
-            {isThanked
+            {activity.isThanked
             ? <a tooltip='click to take back your "Thank You"' tooltip-popup-delay='500' onClick={() => thank(activity)}>
                   You thanked <span>{actorFirstName}</span>
                 </a>

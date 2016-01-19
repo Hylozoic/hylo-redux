@@ -1,6 +1,6 @@
 import { combineReducers } from 'redux'
 import { routeReducer } from 'redux-simple-router'
-import { contains, find, omit } from 'lodash'
+import { contains, omit } from 'lodash'
 import comments from './comments'
 import commentsByPost from './commentsByPost'
 import people from './people'
@@ -31,7 +31,6 @@ import {
   SET_LOGIN_ERROR,
   SET_SIGNUP_ERROR,
   SIGNUP,
-  THANK_PENDING,
   TOGGLE_MAIN_MENU,
   TYPEAHEAD,
   UPDATE_COMMUNITY_EDITOR,
@@ -276,16 +275,6 @@ export default combineReducers({
         return state.map(a => a.id === activityId ? {...a, unread: false} : a)
       case MARK_ALL_ACTIVITIES_READ_PENDING:
         return state.map(a => ({...a, unread: false}))
-      case THANK_PENDING:
-        activityId = meta.activityId
-        var updatedComment
-        let activity = find(state, a => a.id === activityId)
-        if (activity.comment.thanks[0]) {
-          updatedComment = {...activity.comment, thanks: []}
-        } else {
-          updatedComment = {...activity.comment, thanks: [{}]}
-        }
-        return state.map(a => a.id === activityId ? {...a, comment: updatedComment} : a)
     }
     return state
   },

@@ -1,8 +1,8 @@
 import { combineReducers } from 'redux'
 import { routeReducer } from 'redux-simple-router'
-import { appendUniq } from './util'
 import { contains } from 'lodash'
 import comments from './comments'
+import commentsByPost from './commentsByPost'
 import people from './people'
 import peopleByQuery from './peopleByQuery'
 import postEdits from './postEdits'
@@ -16,10 +16,8 @@ import { UPDATE_PATH } from 'redux-simple-router'
 
 import {
   CANCEL_TYPEAHEAD,
-  CREATE_COMMENT,
   CREATE_COMMUNITY,
   CREATE_POST,
-  FETCH_COMMENTS,
   FETCH_PEOPLE,
   FETCH_POSTS,
   FETCH_PROJECTS,
@@ -112,6 +110,7 @@ export default combineReducers({
   },
 
   comments,
+  commentsByPost,
   communities,
   people,
   peopleByQuery,
@@ -138,23 +137,6 @@ export default combineReducers({
       toggle(FETCH_PROJECTS) ||
       toggle(CREATE_COMMUNITY) ||
       state
-  },
-
-  commentsByPost: (state = {}, action) => {
-    if (action.error) return state
-
-    let { type, payload, meta } = action
-    switch (type) {
-      case FETCH_COMMENTS:
-        if (meta.subject === 'post') {
-          return appendUniq(state, meta.id, payload)
-        }
-        break
-      case CREATE_COMMENT:
-        return appendUniq(state, meta.id, [payload])
-    }
-
-    return state
   },
 
   typeaheadMatches: (state = {}, action) => {

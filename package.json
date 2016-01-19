@@ -82,7 +82,7 @@
     "gulp-streamify": "^1.0.2",
     "gulp-uglify": "^1.5.1",
     "heroku-client": "^2.4.0",
-    "isparta": "^4.0.0",
+    "isparta": "3.5.3",
     "livereactload": "^2.1.0",
     "mocha": "^2.3.4",
     "nock": "^3.1.1",

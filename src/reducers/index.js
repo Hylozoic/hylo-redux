@@ -2,6 +2,7 @@ import { combineReducers } from 'redux'
 import { routeReducer } from 'redux-simple-router'
 import { appendUniq } from './util'
 import { contains } from 'lodash'
+import comments from './comments'
 import people from './people'
 import peopleByQuery from './peopleByQuery'
 import postEdits from './postEdits'
@@ -110,6 +111,7 @@ export default combineReducers({
     return state
   },
 
+  comments,
   communities,
   people,
   peopleByQuery,

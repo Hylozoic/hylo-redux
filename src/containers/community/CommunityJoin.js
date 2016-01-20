@@ -6,7 +6,7 @@ import { joinCommunityWithCode, navigate, resetCommunityValidation, validateComm
 import cx from 'classnames'
 
 @connect(({communityValidation}) => ({
-  codeInvalid: get(communityValidation, 'beta_access_code.unique')
+  codeInvalid: !get(communityValidation, 'beta_access_code.exists')
 }))
 export default class CommunityJoin extends React.Component {
   static propTypes = {
@@ -27,7 +27,7 @@ export default class CommunityJoin extends React.Component {
       dispatch(resetCommunityValidation('beta_access_code'))
     } else {
       this.setState({codeEmpty: false})
-      dispatch(validateCommunityAttribute('beta_access_code', value, 'unique'))
+      dispatch(validateCommunityAttribute('beta_access_code', value, 'exists'))
     }
   }
 

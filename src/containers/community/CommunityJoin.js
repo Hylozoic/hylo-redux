@@ -10,7 +10,7 @@ import cx from 'classnames'
   if (errors[JOIN_COMMUNITY_WITH_CODE]) {
     error = 'We couldn\'t find that code, please check it and try again'
   }
-  let codeInvalid = false //!get(communityValidation, 'beta_access_code.exists')
+  let codeInvalid = !get(communityValidation, 'beta_access_code.exists')
   return {error, codeInvalid}
 })
 export default class CommunityJoin extends React.Component {

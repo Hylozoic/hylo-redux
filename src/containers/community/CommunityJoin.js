@@ -14,28 +14,20 @@ export default class CommunityJoin extends React.Component {
     codeInvalid: bool
   }
 
-  constructor (props) {
-    super(props)
-    this.state = {codeEmpty: true}
-  }
-
   codeChanged = event => {
     let { dispatch } = this.props
     let { value } = event.target
     if (isEmpty(value.trim())) {
-      this.setState({codeEmpty: true})
       dispatch(resetCommunityValidation('beta_access_code'))
     } else {
-      this.setState({codeEmpty: false})
       dispatch(validateCommunityAttribute('beta_access_code', value, 'exists'))
     }
   }
 
   submit = () => {
     let { dispatch, codeInvalid } = this.props
-    let { codeEmpty } = this.state
 
-    if (codeInvalid || codeEmpty) {
+    if (codeInvalid) {
       return
     }
     let code = this.refs.code.value
@@ -51,13 +43,12 @@ export default class CommunityJoin extends React.Component {
 
   render () {
     let { codeInvalid } = this.props
-    let { codeEmpty } = this.state
 
     return <div id='community-editor' className='form-sections'>
       <h2>Join a community</h2>
       <p>Enter the code that was given to you by your community manager.</p>
       <input type='text' ref='code' className='form-control' onChange={this.codeChanged}/>
-      <button className={cx({'disabled': codeInvalid || codeEmpty})} onClick={this.submit}>Join</button>
+      <button className={cx({'disabled': codeInvalid})} onClick={this.submit}>Join</button>
     </div>
   }
 }

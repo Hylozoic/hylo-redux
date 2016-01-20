@@ -1,7 +1,8 @@
 import { combineReducers } from 'redux'
 import { routeReducer } from 'redux-simple-router'
-import { appendUniq } from './util'
-import { contains } from 'lodash'
+import { contains, omit } from 'lodash'
+import comments from './comments'
+import commentsByPost from './commentsByPost'
 import people from './people'
 import peopleByQuery from './peopleByQuery'
 import postEdits from './postEdits'
@@ -15,15 +16,16 @@ import { UPDATE_PATH } from 'redux-simple-router'
 
 import {
   CANCEL_TYPEAHEAD,
-  CREATE_COMMENT,
   CREATE_COMMUNITY,
   CREATE_POST,
-  FETCH_COMMENTS,
+  FETCH_ACTIVITY,
   FETCH_PEOPLE,
   FETCH_POSTS,
   FETCH_PROJECTS,
   LOGIN,
   LOGOUT,
+  MARK_ACTIVITY_READ,
+  MARK_ALL_ACTIVITIES_READ_PENDING,
   NAVIGATE,
   RESET_COMMUNITY_VALIDATION,
   SET_LOGIN_ERROR,
@@ -110,6 +112,8 @@ export default combineReducers({
     return state
   },
 
+  comments,
+  commentsByPost,
   communities,
   people,
   peopleByQuery,
@@ -135,24 +139,8 @@ export default combineReducers({
       toggle(UPDATE_POST) ||
       toggle(FETCH_PROJECTS) ||
       toggle(CREATE_COMMUNITY) ||
+      toggle(FETCH_ACTIVITY) ||
       state
-  },
-
-  commentsByPost: (state = {}, action) => {
-    if (action.error) return state
-
-    let { type, payload, meta } = action
-    switch (type) {
-      case FETCH_COMMENTS:
-        if (meta.subject === 'post') {
-          return appendUniq(state, meta.id, payload)
-        }
-        break
-      case CREATE_COMMENT:
-        return appendUniq(state, meta.id, [payload])
-    }
-
-    return state
   },
 
   typeaheadMatches: (state = {}, action) => {
@@ -265,6 +253,39 @@ export default combineReducers({
         }
     }
 
+    return state
+  },
+
+  activities: (state = [], action) => {
+    let { type, payload, error, meta } = action
+    if (error) return state
+    let normalize = activity => {
+      let comment = activity.comment
+      if (!comment) {
+        return activity
+      }
+      return {...omit(activity, 'comment'), comment_id: comment.id}
+    }
+    var activityId
+    switch (type) {
+      case FETCH_ACTIVITY:
+        return state.concat(payload.activities.map(normalize))
+      case MARK_ACTIVITY_READ:
+        activityId = meta.activityId
+        return state.map(a => a.id === activityId ? {...a, unread: false} : a)
+      case MARK_ALL_ACTIVITIES_READ_PENDING:
+        return state.map(a => ({...a, unread: false}))
+    }
+    return state
+  },
+
+  totalActivities: (state = 0, action) => {
+    let { type, payload, error } = action
+    if (error) return state
+    switch (type) {
+      case FETCH_ACTIVITY:
+        return payload.activities_total
+    }
     return state
   }
 

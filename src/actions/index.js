@@ -15,6 +15,7 @@ export const FETCH_COMMUNITY = 'FETCH_COMMUNITY'
 export const FETCH_COMMUNITY_MODERATORS = 'FETCH_COMMUNITY_MODERATORS'
 export const FETCH_COMMUNITY_SETTINGS = 'FETCH_COMMUNITY_SETTINGS'
 export const FETCH_CURRENT_USER = 'FETCH_CURRENT_USER'
+export const FETCH_ACTIVITY = 'FETCH_ACTIVITY'
 export const FETCH_PEOPLE = 'FETCH_PEOPLE'
 export const FETCH_PERSON = 'FETCH_PERSON'
 export const FETCH_POST = 'FETCH_POST'
@@ -28,6 +29,10 @@ export const LEAVE_COMMUNITY = 'LEAVE_COMMUNITY'
 export const LEAVE_COMMUNITY_PENDING = LEAVE_COMMUNITY + _PENDING
 export const LOGIN = 'LOGIN'
 export const LOGOUT = 'LOGOUT'
+export const MARK_ACTIVITY_READ = 'MARK_ACTIVITY_READ'
+export const MARK_ACTIVITY_READ_PENDING = MARK_ACTIVITY_READ + _PENDING
+export const MARK_ALL_ACTIVITIES_READ = 'MARK_ALL_ACTIVITIES_READ'
+export const MARK_ALL_ACTIVITIES_READ_PENDING = MARK_ALL_ACTIVITIES_READ + _PENDING
 export const NAVIGATE = 'NAVIGATE'
 export const REMOVE_COMMUNITY_MODERATOR = 'REMOVE_COMMUNITY_MODERATOR'
 export const REMOVE_COMMUNITY_MODERATOR_PENDING = REMOVE_COMMUNITY_MODERATOR + _PENDING
@@ -42,6 +47,8 @@ export const SEND_PROJECT_INVITE_PENDING = SEND_PROJECT_INVITE + _PENDING
 export const SIGNUP = 'SIGNUP'
 export const START_POST_EDIT = 'START_POST_EDIT'
 export const START_PROJECT_EDIT = 'START_PROJECT_EDIT'
+export const THANK = 'THANK'
+export const THANK_PENDING = THANK + _PENDING
 export const TOGGLE_PROJECT_MODERATOR_ROLE = 'TOGGLE_PROJECT_MODERATOR_ROLE'
 export const TOGGLE_MAIN_MENU = 'TOGGLE_MAIN_MENU'
 export const TYPEAHEAD = 'TYPEAHEAD'
@@ -349,5 +356,35 @@ export function joinCommunityWithCode (code) {
   return {
     type: JOIN_COMMUNITY_WITH_CODE,
     payload: {api: true, params: {code}, path: '/noo/community/code', method: 'POST'}
+  }
+}
+
+export function fetchActivity (limit, offset) {
+  return {
+    type: FETCH_ACTIVITY,
+    payload: {api: true, path: `/noo/activity?${cleanAndStringify({ limit, offset, paginate: true })}`, method: 'GET'}
+  }
+}
+
+export function markActivityRead (activityId) {
+  return {
+    type: MARK_ACTIVITY_READ,
+    payload: {api: true, params: {unread: false}, path: `/noo/activity/${activityId}`, method: 'POST'},
+    meta: {activityId}
+  }
+}
+
+export function markAllActivitiesRead () {
+  return {
+    type: MARK_ALL_ACTIVITIES_READ,
+    payload: {api: true, path: '/noo/activity/mark-all-read', method: 'POST'}
+  }
+}
+
+export function thank (commentId, userId) {
+  return {
+    type: THANK,
+    payload: {api: true, params: {unread: false}, path: `/noo/comment/${commentId}/thank`, method: 'POST'},
+    meta: {commentId, userId}
   }
 }

@@ -17,6 +17,7 @@ const LeftNav = props => {
         </A>
       </li>)}
       <A to='/c/new'>Create a community</A>
+      <A to='/c/join'>Join a community</A>
     </ul>
   </nav>
 }

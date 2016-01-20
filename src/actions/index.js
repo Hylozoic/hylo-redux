@@ -21,6 +21,7 @@ export const FETCH_POST = 'FETCH_POST'
 export const FETCH_POSTS = 'FETCH_POSTS'
 export const FETCH_PROJECT = 'FETCH_PROJECT'
 export const FETCH_PROJECTS = 'FETCH_PROJECTS'
+export const JOIN_COMMUNITY_WITH_CODE = 'JOIN_COMMUNITY_WITH_CODE'
 export const JOIN_PROJECT = 'JOIN_PROJECT'
 export const JOIN_PROJECT_PENDING = JOIN_PROJECT + _PENDING
 export const LEAVE_COMMUNITY = 'LEAVE_COMMUNITY'
@@ -341,5 +342,12 @@ export function createCommunity (params) {
   return {
     type: CREATE_COMMUNITY,
     payload: {api: true, params, path: '/noo/community', method: 'POST'}
+  }
+}
+
+export function joinCommunityWithCode (code) {
+  return {
+    type: JOIN_COMMUNITY_WITH_CODE,
+    payload: {api: true, params: {code}, path: '/noo/community/code', method: 'POST'}
   }
 }

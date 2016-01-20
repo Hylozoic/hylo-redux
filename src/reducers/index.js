@@ -55,10 +55,6 @@ export default combineReducers({
     return state
   },
 
-  test: (state = {}, action) => {
-    return state
-  },
-
   errors: (state = {}, action) => {
     let { error, type, payload, meta } = action
     if (!error) return state

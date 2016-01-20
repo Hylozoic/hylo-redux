@@ -27,6 +27,7 @@ import {
   MARK_ACTIVITY_READ,
   MARK_ALL_ACTIVITIES_READ_PENDING,
   NAVIGATE,
+  RESET_ERROR,
   RESET_COMMUNITY_VALIDATION,
   SET_LOGIN_ERROR,
   SET_SIGNUP_ERROR,
@@ -59,6 +60,12 @@ export default combineReducers({
 
   errors: (state = {}, action) => {
     let { error, type, payload, meta } = action
+
+    switch (type) {
+      case RESET_ERROR:
+        return {...state, [meta.type]: null}
+    }
+
     if (!error) return state
 
     return {...state, [type]: {error, payload, meta}}

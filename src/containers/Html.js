@@ -7,11 +7,12 @@ class Html extends React.Component {
     pageTitle: string,
     markup: string,
     state: string,
-    assetManifest: string
+    assetManifest: string,
+    fbAsyncInit: string
   }
 
   render () {
-    let {pageTitle, markup, state, assetManifest} = this.props
+    let { pageTitle, markup, state, assetManifest, fbAsyncInit } = this.props
     return <html>
       <head>
         <title>{pageTitle}</title>
@@ -26,6 +27,7 @@ class Html extends React.Component {
         <script src='//cdnjs.cloudflare.com/ajax/libs/tinymce/4.2.8/tinymce.min.js'></script>
         <script dangerouslySetInnerHTML={{__html: state}}></script>
         <script dangerouslySetInnerHTML={{__html: assetManifest}}></script>
+        <script dangerouslySetInnerHTML={{__html: fbAsyncInit}}></script>
         <script src={assetUrl('/index.js')} defer></script>
       </body>
     </html>

@@ -22,6 +22,9 @@ const config = {
   google: {
     key: process.env.GOOGLE_BROWSER_KEY,
     clientId: process.env.GOOGLE_CLIENT_ID
+  },
+  facebook: {
+    appId: process.env.FACEBOOK_APP_ID
   }
 }
 

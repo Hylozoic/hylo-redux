@@ -15,7 +15,6 @@ import { fetchCurrentUser } from '../actions'
 import { localsForPrefetch } from '../util/universal'
 import { getManifest } from '../util/assets'
 import { any, isEmpty, pairs } from 'lodash'
-import fbAsyncInit from '../client/fbAsyncInit'
 
 const matchPromise = promisify(match, {multiArgs: true})
 
@@ -91,8 +90,7 @@ function renderApp (res, renderProps, history, store) {
     return React.createElement(Html, {
       markup: markup,
       state: `window.INITIAL_STATE=${JSON.stringify(state)}`,
-      assetManifest: `window.ASSET_MANIFEST=${JSON.stringify(getManifest())}`,
-      fbAsyncInit
+      assetManifest: `window.ASSET_MANIFEST=${JSON.stringify(getManifest())}`
     })
   })
 }

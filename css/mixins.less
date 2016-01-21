@@ -191,3 +191,15 @@
   }
 
 }
+
+.image-div(@size) {
+  background-position: center;
+  background-size: cover;
+  width: @size;
+  height: @size;
+}
+
+.round-image-div(@size) {
+  .image-div(@size);
+  border-radius: @size;
+}

@@ -47,9 +47,11 @@ export default function (state = {}, action) {
         [currentUser.id]: null
       }
     case UPDATE_USER_SETTINGS_PENDING:
+      let { params } = meta
       return {
         ...state,
-        current: {...state.current, ...meta.params}
+        current: {...state.current, ...params},
+        [params.id]: {...state[params.id], ...params}
       }
     case LEAVE_COMMUNITY_PENDING:
       let memberships = filter(state.current.memberships, m => m.community_id !== meta.communityId)

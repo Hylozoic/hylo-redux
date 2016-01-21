@@ -3,23 +3,31 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { prefetch } from 'react-fetcher'
 import cx from 'classnames'
-const { func, object } = React.PropTypes
-import { fetchCurrentUser, updateUserSettings, leaveCommunity, toggleUserSettingsSection } from '../../actions'
+const { func, object, string } = React.PropTypes
+import { UPLOAD_IMAGE, fetchCurrentUser, updateUserSettings, leaveCommunity, toggleUserSettingsSection } from '../../actions'
+import { uploadImage } from '../../actions/uploadImage'
 import A from '../../components/A'
 import { formatDate } from '../../util/text'
-import { sortBy } from 'lodash'
+import { get, sortBy } from 'lodash'
+import { userAvatarUploadSettings, userBannerUploadSettings } from '../../constants'
 
 @prefetch(({ dispatch, params: {id} }) => dispatch(fetchCurrentUser()))
-@connect(({ people, userSettingsEditor }, { location: { query } }) => {
+@connect(({ people, userSettingsEditor, pending }, { location: { query } }) => {
   let expand = userSettingsEditor ? {...userSettingsEditor.expand} : {}
   switch (query.expand) {
     case 'password':
     case 'prompts':
       expand.account = true
+      break
+    case undefined:
+      break
+    default:
+      expand[query.expand] = true
   }
 
   return {
     expand,
+    pending: get(pending, `${UPLOAD_IMAGE}.subject`),
     currentUser: people.current,
     ...userSettingsEditor
   }
@@ -34,7 +42,8 @@ export default class UserSettings extends React.Component {
     currentUser: object,
     dispatch: func,
     location: object,
-    expand: object
+    expand: object,
+    pending: string
   }
 
   validate () {
@@ -120,18 +129,81 @@ export default class UserSettings extends React.Component {
     this.props.dispatch(toggleUserSettingsSection(section))
   }
 
+  attachImage (type) {
+    let { dispatch, currentUser } = this.props
+    ;(() => {
+      switch (type) {
+        case 'avatar_url':
+          return dispatch(uploadImage(userAvatarUploadSettings(currentUser)))
+        case 'banner_url':
+          return dispatch(uploadImage(userBannerUploadSettings(currentUser)))
+      }
+    })()
+    .then(action => {
+      let { error, payload } = action
+      if (error) return
+      this.update(type, payload)
+    })
+  }
+
   render () {
-    let { currentUser, expand } = this.props
+    let { currentUser, expand, pending } = this.props
     let memberships = sortBy(currentUser.memberships, m => m.community.name)
     let { editing, edited, errors } = this.state
+    let { avatar_url, banner_url } = currentUser
 
-    return <div className='form-sections'>
-      <div className='section-label' onClick={() => this.toggleSection('account')}>
-        Account
-        <i className={cx({'icon-down': expand.account, 'icon-right': !expand.account})}></i>
+    const SectionLabel = ({ name, label }) => {
+      return <div className='section-label' onClick={() => this.toggleSection(name)}>
+        {label} <i className={cx({'icon-down': expand[name], 'icon-right': !expand[name]})}></i>
       </div>
-      {expand.account && <div className='section email'>
-        <div className='section-item'>
+    }
+
+    return <div id='user-settings' className='form-sections'>
+      <SectionLabel name='profile' label='Profile'/>
+      {expand.profile && <Section className='profile'>
+        <Item>
+          <div className='half-column'>
+            <label>Profile image</label>
+          </div>
+          <div className='half-column right-align'>
+            <div className='medium-avatar' style={{backgroundImage: `url(${avatar_url})`}}/>
+            <button type='button' onClick={() => this.attachImage('avatar_url')}
+              disabled={pending === 'user-avatar'}>
+              {pending === 'user-avatar' ? 'Please wait...' : 'Change'}
+            </button>
+          </div>
+        </Item>
+        <Item>
+          <div className='full-column'>
+            <label>Banner</label>
+            <div className='banner' style={{backgroundImage: `url(${banner_url})`}}></div>
+          </div>
+          <div className='full-column right-align'>
+            <button type='button' onClick={() => this.attachImage('banner_url')}
+              disabled={pending === 'user-banner'}>
+              {pending === 'user-banner' ? 'Please wait...' : 'Change'}
+            </button>
+          </div>
+        </Item>
+        <Item>
+          <div className='half-column'>
+            <label>About me</label>
+          </div>
+        </Item>
+        <Item>
+          <div className='half-column'>
+            <label>What I'm doing</label>
+          </div>
+        </Item>
+        <Item>
+          <div className='half-column'>
+            <label>What I'd like to do</label>
+          </div>
+        </Item>
+      </Section>}
+      <SectionLabel name='account' label='Account'/>
+      {expand.account && <Section className='email'>
+        <Item>
           <div className='half-column'>
             <label>Your Email</label>
             <p>{currentUser.email}</p>
@@ -152,8 +224,8 @@ export default class UserSettings extends React.Component {
               <button type='button' className='btn-primary' onClick={() => this.save('email')}>Save</button>
             </div>
           </div>}
-        </div>
-        <div className='section-item'>
+        </Item>
+        <Item>
           <div className='half-column'>
             <label>Your Password</label>
           </div>
@@ -174,8 +246,8 @@ export default class UserSettings extends React.Component {
               <button type='button' className='btn-primary' onClick={() => this.save('password')}>Save</button>
             </div>
           </div>}
-        </div>
-        <div className='section-item'>
+        </Item>
+        <Item>
           <div className='half-column'>
             <label>Receive email notifications?</label>
             <div className='summary'>Check the circle to get updates on posts you create or follow. You can also change this for each post individually.</div>
@@ -183,8 +255,8 @@ export default class UserSettings extends React.Component {
           <div className='half-column right-align'>
             <input type='checkbox' checked={currentUser.send_email_preference} onChange={() => this.toggle('send_email_preference')}/>
           </div>
-        </div>
-        <div className='section-item'>
+        </Item>
+        <Item>
           <div className='half-column'>
             <label>Receive email digests?</label>
             <div className='summary'>Choose how frequently you would like to receive email about new activity in your communities.</div>
@@ -196,8 +268,8 @@ export default class UserSettings extends React.Component {
               <option value='never'>Never</option>
             </select>
           </div>
-        </div>
-        <div className='section-item'>
+        </Item>
+        <Item>
           <div className='half-column'>
             <label>Receive email invitations to post?</label>
             <div className='summary'>Check the circle to get a weekly email that lets you create posts without leaving your inbox.</div>
@@ -205,8 +277,8 @@ export default class UserSettings extends React.Component {
           <div className='half-column right-align'>
             <input type='checkbox' checked={currentUser.settings.receives_email_prompts} onChange={() => this.toggleSetting('receives_email_prompts')}/>
           </div>
-        </div>
-        <div className='section-item'>
+        </Item>
+        <Item>
           <div className='half-column'>
             <label>Get mobile notifications on posts you are following?</label>
             <div className='summary'>Check the circle to get mobile notifications on any posts you are following.</div>
@@ -214,8 +286,8 @@ export default class UserSettings extends React.Component {
           <div className='half-column right-align'>
             <input type='checkbox' checked={currentUser.push_follow_preference} onChange={() => this.toggle('push_follow_preference')}/>
           </div>
-        </div>
-        <div className='section-item'>
+        </Item>
+        <Item>
           <div className='half-column'>
             <label>Get mobile notifications on new posts?</label>
             <div className='summary'>Check the circle to get mobile notifications on any new posts in your communities.</div>
@@ -223,14 +295,11 @@ export default class UserSettings extends React.Component {
           <div className='half-column right-align'>
             <input type='checkbox' checked={currentUser.push_new_post_preference} onChange={() => this.toggle('push_new_post_preference')}/>
           </div>
-        </div>
-      </div>}
-      <div className='section-label' onClick={() => this.toggleSection('communities')}>
-        Communities
-        <i className={cx({'icon-down': expand.communities, 'icon-right': !expand.communities})}></i>
-      </div>
-      {expand.communities && <div className='section communities'>
-        {memberships.map(membership => <div className='section-item' key={membership.id}>
+        </Item>
+      </Section>}
+      <SectionLabel name='communities' label='Communities'/>
+      {expand.communities && <Section className='communities'>
+        {memberships.map(membership => <Item key={membership.id}>
           <div className='half-column'>
             <label><A to={`/c/${membership.community.slug}`}>{membership.community.name}</A></label>
             <div className='summary'>Joined: { formatDate(membership.created_at) }</div>
@@ -238,24 +307,27 @@ export default class UserSettings extends React.Component {
           <div className='half-column right-align'>
             <button onClick={() => this.leaveCommunity(membership.community_id)}>Leave</button>
           </div>
-        </div>)}
-        {memberships.length === 0 && <div className='section-item'>
+        </Item>)}
+        {memberships.length === 0 && <Item>
           <div className='full-column'>
             <p>You do not belong to any communities yet.</p>
           </div>
-        </div>}
-      </div>}
-      <div className='section-label' onClick={() => this.toggleSection('payment')}>
-        Payment Details
-        <i className={cx({'icon-down': expand.payment, 'icon-right': !expand.payment})}></i>
-      </div>
-      {expand.payment && <div className='section payment'>
-        <div className='section-item'>
+        </Item>}
+      </Section>}
+      <SectionLabel name='payment' label='Payment Details'/>
+      {expand.payment && <Section className='payment'>
+        <Item>
           <div className='full-column'>
             <p>You do not belong to any communities that require a membership fee.</p>
           </div>
-        </div>
-      </div>}
+        </Item>
+      </Section>}
     </div>
   }
 }
+
+const Section = ({className, children}) =>
+  <div className={cx('section', className)}>{children}</div>
+
+const Item = ({className, children}) =>
+  <div className={cx('section-item', className)}>{children}</div>

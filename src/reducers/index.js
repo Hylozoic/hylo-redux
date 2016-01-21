@@ -1,6 +1,5 @@
 import { combineReducers } from 'redux'
 import { routeReducer } from 'redux-simple-router'
-import { appendUniq } from './util'
 import { contains, get, omit } from 'lodash'
 import comments from './comments'
 import commentsByPost from './commentsByPost'
@@ -127,16 +126,18 @@ export default combineReducers({
   projectEdits,
 
   pending: (state = {}, action) => {
-    let { type } = action
+    let { type, meta } = action
 
-    let toggle = targetType => {
+    let toggle = (targetType, useMeta) => {
       if (type === targetType) return {...state, [targetType]: false}
-      if (type === targetType + '_PENDING') return {...state, [targetType]: true}
+      if (type === targetType + '_PENDING') {
+        return {...state, [targetType]: (useMeta && meta ? meta : true)}
+      }
     }
 
     return toggle(FETCH_POSTS) ||
       toggle(FETCH_PEOPLE) ||
-      toggle(UPLOAD_IMAGE) ||
+      toggle(UPLOAD_IMAGE, true) ||
       toggle(CREATE_POST) ||
       toggle(UPDATE_POST) ||
       toggle(FETCH_PROJECTS) ||

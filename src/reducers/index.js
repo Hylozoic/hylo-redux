@@ -1,7 +1,7 @@
 import { combineReducers } from 'redux'
 import { routeReducer } from 'redux-simple-router'
 import { appendUniq } from './util'
-import { contains } from 'lodash'
+import { contains, get } from 'lodash'
 import people from './people'
 import peopleByQuery from './peopleByQuery'
 import postEdits from './postEdits'
@@ -30,6 +30,7 @@ import {
   SET_SIGNUP_ERROR,
   SIGNUP,
   TOGGLE_MAIN_MENU,
+  TOGGLE_USER_SETTINGS_SECTION,
   TYPEAHEAD,
   UPDATE_COMMUNITY_EDITOR,
   UPDATE_POST,
@@ -262,6 +263,21 @@ export default combineReducers({
         return {
           ...state,
           [id]: {...state[id], ...payload}
+        }
+    }
+
+    return state
+  },
+
+  userSettingsEditor: (state = {}, action) => {
+    let { type, payload, error } = action
+    if (error) return state
+
+    switch (type) {
+      case TOGGLE_USER_SETTINGS_SECTION:
+        return {
+          ...state,
+          expand: {...state.expand, [payload]: !get(state.expand, payload)}
         }
     }
 

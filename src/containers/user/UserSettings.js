@@ -4,23 +4,37 @@ import { connect } from 'react-redux'
 import { prefetch } from 'react-fetcher'
 import cx from 'classnames'
 const { func, object } = React.PropTypes
-import { fetchCurrentUser, updateUserSettings, leaveCommunity } from '../../actions'
+import { fetchCurrentUser, updateUserSettings, leaveCommunity, toggleUserSettingsSection } from '../../actions'
 import A from '../../components/A'
 import { formatDate } from '../../util/text'
 import { sortBy } from 'lodash'
 
 @prefetch(({ dispatch, params: {id} }) => dispatch(fetchCurrentUser()))
-@connect(({ people }, props) => ({currentUser: people.current}))
+@connect(({ people, userSettingsEditor }, { location: { query } }) => {
+  let expand = userSettingsEditor ? {...userSettingsEditor.expand} : {}
+  switch (query.expand) {
+    case 'password':
+    case 'prompts':
+      expand.account = true
+  }
+
+  return {
+    expand,
+    currentUser: people.current,
+    ...userSettingsEditor
+  }
+})
 export default class UserSettings extends React.Component {
   constructor (props) {
     super(props)
-    this.state = {editing: {}, edited: {}, errors: {}, expand: {}}
+    this.state = {editing: {}, edited: {}, errors: {}}
   }
 
   static propTypes = {
     currentUser: object,
     dispatch: func,
-    location: object
+    location: object,
+    expand: object
   }
 
   validate () {
@@ -102,29 +116,14 @@ export default class UserSettings extends React.Component {
     dispatch(leaveCommunity(communityId, currentUser))
   }
 
-  toggleSection (section, open) {
-    let { expand } = this.state
-    this.setState({expand: {...expand, [section]: open || !expand[section]}})
-  }
-
-  componentDidMount () {
-    let { location: { query } } = this.props
-    let { expand } = query || {}
-    switch (expand) {
-      case 'password':
-        this.toggleSection('account', true)
-        this.edit('password')
-        break
-      case 'prompts':
-        this.toggleSection('account', true)
-        break
-    }
+  toggleSection (section) {
+    this.props.dispatch(toggleUserSettingsSection(section))
   }
 
   render () {
-    let { currentUser } = this.props
+    let { currentUser, expand } = this.props
     let memberships = sortBy(currentUser.memberships, m => m.community.name)
-    let { editing, edited, errors, expand } = this.state
+    let { editing, edited, errors } = this.state
 
     return <div className='form-sections'>
       <div className='section-label' onClick={() => this.toggleSection('account')}>

@@ -2,7 +2,14 @@ import React from 'react'
 import { connect } from 'react-redux'
 const { func, bool, string } = React.PropTypes
 import { get, isEmpty } from 'lodash'
-import { JOIN_COMMUNITY_WITH_CODE, resetError, joinCommunityWithCode, navigate, resetCommunityValidation, validateCommunityAttribute } from '../../actions'
+import {
+  JOIN_COMMUNITY_WITH_CODE,
+  resetError,
+  joinCommunityWithCode,
+  navigate,
+  resetCommunityValidation,
+  validateCommunityAttribute }
+from '../../actions'
 import cx from 'classnames'
 
 @connect(({communityValidation, errors}) => {
@@ -21,9 +28,11 @@ export default class CommunityJoin extends React.Component {
   }
 
   codeChanged = event => {
-    let { dispatch } = this.props
+    let { dispatch, error } = this.props
     let { value } = event.target
-    dispatch(resetError(JOIN_COMMUNITY_WITH_CODE))
+    if (error) {
+      dispatch(resetError(JOIN_COMMUNITY_WITH_CODE))
+    }
     if (isEmpty(value.trim())) {
       dispatch(resetCommunityValidation('beta_access_code'))
     } else {
@@ -34,17 +43,11 @@ export default class CommunityJoin extends React.Component {
   submit = () => {
     let { dispatch, codeInvalid } = this.props
 
-    if (codeInvalid) {
-      return
-    }
+    if (codeInvalid) return
+
     let code = this.refs.code.value
     dispatch(joinCommunityWithCode(code))
-    .then(action => {
-      if (action.error) {
-        return
-      }
-      dispatch(navigate(`/c/${action.payload.community.slug}`))
-    })
+    .then(({ error, payload }) => error || dispatch(navigate(`/c/${payload.community.slug}`)))
   }
 
   render () {

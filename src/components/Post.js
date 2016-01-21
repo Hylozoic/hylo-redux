@@ -196,6 +196,14 @@ const ExpandedPostDetails = props => {
         </a>)}
     </div>}
 
+    {post.public && <div className='meta'>
+      <Dropdown
+        toggleChildren={<p>Share</p>}>
+          <li><a>Facebook</a></li>
+          <li><a>Twitter</a></li>
+      </Dropdown>
+    </div>}
+
     <div className='meta'>
       <ul className='tags'>
         <li className={cx('tag', 'post-type', post.type)}>{post.type}</li>

@@ -17,6 +17,7 @@ const LeftNav = props => {
         </A>
       </li>)}
       <A to='/c/new'>Create a community</A>
+      <A to='/notifications'>Notifications</A>
     </ul>
   </nav>
 }

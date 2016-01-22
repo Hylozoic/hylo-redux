@@ -8,7 +8,7 @@ import { UPLOAD_IMAGE, fetchCurrentUser, updateUserSettings, leaveCommunity, tog
 import { uploadImage } from '../../actions/uploadImage'
 import A from '../../components/A'
 import { formatDate } from '../../util/text'
-import { get, sortBy } from 'lodash'
+import { debounce, get, sortBy } from 'lodash'
 import { userAvatarUploadSettings, userBannerUploadSettings } from '../../constants'
 
 @prefetch(({ dispatch, params: {id} }) => dispatch(fetchCurrentUser()))
@@ -105,6 +105,8 @@ export default class UserSettings extends React.Component {
     dispatch(updateUserSettings(updatedUser, {[field]: currentUser[field]}))
   }
 
+  delayedUpdate = debounce((field, value) => this.update(field, value), 500)
+
   updateSetting (setting, value) {
     let { currentUser } = this.props
     let updatedSettings = {...currentUser.settings, [setting]: value}
@@ -146,11 +148,21 @@ export default class UserSettings extends React.Component {
     })
   }
 
+  // we want to debounce server updating but not UI updating
+  updateTyped = field => event => {
+    let { value } = event.target
+    let { editing } = this.state
+    this.setState({editing: {...editing, [field]: value}})
+    this.delayedUpdate(field, value)
+  }
+
   render () {
     let { currentUser, expand, pending } = this.props
     let memberships = sortBy(currentUser.memberships, m => m.community.name)
     let { editing, edited, errors } = this.state
     let { avatar_url, banner_url } = currentUser
+
+    let { bio, work, intention } = {...currentUser, ...editing}
 
     const SectionLabel = ({ name, label }) => {
       return <div className='section-label' onClick={() => this.toggleSection(name)}>
@@ -186,18 +198,21 @@ export default class UserSettings extends React.Component {
           </div>
         </Item>
         <Item>
-          <div className='half-column'>
+          <div className='full-column'>
             <label>About me</label>
+            <textarea className='form-control short' value={bio} onChange={this.updateTyped('bio')}></textarea>
           </div>
         </Item>
         <Item>
-          <div className='half-column'>
+          <div className='full-column'>
             <label>What I'm doing</label>
+            <textarea className='form-control short' value={work} onChange={this.updateTyped('work')}></textarea>
           </div>
         </Item>
         <Item>
-          <div className='half-column'>
+          <div className='full-column'>
             <label>What I'd like to do</label>
+            <textarea className='form-control short' value={intention} onChange={this.updateTyped('intention')}></textarea>
           </div>
         </Item>
       </Section>}

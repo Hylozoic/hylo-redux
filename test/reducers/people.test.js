@@ -10,6 +10,7 @@ import {
 } from '../../src/actions'
 
 const user1 = {
+  id: 'j',
   name: 'Joe',
   email: 'joe@foo.com',
   memberships: [{community_id: 1}, {community_id: 2}, {community_id: 3}]
@@ -79,15 +80,17 @@ describe('people', () => {
     it('updates the current user', () => {
       let action = {
         type: UPDATE_USER_SETTINGS_PENDING,
-        meta: {params: {email: 'joe@bar.com'}}
+        meta: {params: {email: 'joe@bar.com', id: user1.id}}
       }
 
       let state = {
-        current: user1
+        current: user1,
+        [user1.id]: user1
       }
 
       let expectedState = {
-        current: {...user1, email: 'joe@bar.com'}
+        current: {...user1, email: 'joe@bar.com'},
+        [user1.id]: {...user1, email: 'joe@bar.com'}
       }
 
       expect(people(state, action)).to.deep.equal(expectedState)

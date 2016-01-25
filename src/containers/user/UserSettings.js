@@ -11,27 +11,26 @@ import { formatDate } from '../../util/text'
 import { debounce, get, sortBy } from 'lodash'
 import { userAvatarUploadSettings, userBannerUploadSettings } from '../../constants'
 
-@prefetch(({ dispatch, params: {id} }) => dispatch(fetchCurrentUser()))
-@connect(({ people, userSettingsEditor, pending }, { location: { query } }) => {
-  let expand = userSettingsEditor ? {...userSettingsEditor.expand} : {}
+@prefetch(({ dispatch, params: { id }, query }) => {
+  let actions = [dispatch(fetchCurrentUser())]
   switch (query.expand) {
     case 'password':
     case 'prompts':
-      expand.account = true
+      actions.push(dispatch(toggleUserSettingsSection('account')))
       break
     case undefined:
       break
     default:
-      expand[query.expand] = true
+      actions.push(dispatch(toggleUserSettingsSection(query.expand)))
   }
-
-  return {
-    expand,
-    pending: get(pending, `${UPLOAD_IMAGE}.subject`),
-    currentUser: people.current,
-    ...userSettingsEditor
-  }
+  return Promise.all(actions)
 })
+@connect(({ people, userSettingsEditor, pending }) => ({
+  pending: get(pending, `${UPLOAD_IMAGE}.subject`),
+  currentUser: people.current,
+  expand: {},
+  ...userSettingsEditor
+}))
 export default class UserSettings extends React.Component {
   constructor (props) {
     super(props)

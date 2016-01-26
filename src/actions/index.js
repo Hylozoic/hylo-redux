@@ -23,6 +23,7 @@ export const FETCH_POST = 'FETCH_POST'
 export const FETCH_POSTS = 'FETCH_POSTS'
 export const FETCH_PROJECT = 'FETCH_PROJECT'
 export const FETCH_PROJECTS = 'FETCH_PROJECTS'
+export const JOIN_COMMUNITY_WITH_CODE = 'JOIN_COMMUNITY_WITH_CODE'
 export const JOIN_PROJECT = 'JOIN_PROJECT'
 export const JOIN_PROJECT_PENDING = JOIN_PROJECT + _PENDING
 export const LEAVE_COMMUNITY = 'LEAVE_COMMUNITY'
@@ -40,6 +41,7 @@ export const REMOVE_DOC = 'REMOVE_DOC'
 export const REMOVE_IMAGE = 'REMOVE_IMAGE'
 export const REMOVE_PROJECT_CONTRIBUTOR = 'REMOVE_PROJECT_CONTRIBUTOR'
 export const RESET_COMMUNITY_VALIDATION = 'RESET_COMMUNITY_VALIDATION'
+export const RESET_ERROR = 'RESET_ERROR'
 export const SET_LOGIN_ERROR = 'SET_LOGIN_ERROR'
 export const SET_SIGNUP_ERROR = 'SET_SIGNUP_ERROR'
 export const SEND_PROJECT_INVITE = 'SEND_PROJECT_INVITE'
@@ -352,6 +354,13 @@ export function createCommunity (params) {
   }
 }
 
+export function joinCommunityWithCode (code) {
+  return {
+    type: JOIN_COMMUNITY_WITH_CODE,
+    payload: {api: true, params: {code}, path: '/noo/community/code', method: 'POST'}
+  }
+}
+
 export function toggleUserSettingsSection (sectionName, forceOpen) {
   return {
     type: TOGGLE_USER_SETTINGS_SECTION,
@@ -387,5 +396,12 @@ export function thank (commentId, userId) {
     type: THANK,
     payload: {api: true, params: {unread: false}, path: `/noo/comment/${commentId}/thank`, method: 'POST'},
     meta: {commentId, userId}
+  }
+}
+
+export function resetError (type) {
+  return {
+    type: RESET_ERROR,
+    meta: {type}
   }
 }

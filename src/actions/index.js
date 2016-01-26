@@ -352,10 +352,11 @@ export function createCommunity (params) {
   }
 }
 
-export function toggleUserSettingsSection (sectionName) {
+export function toggleUserSettingsSection (sectionName, forceOpen) {
   return {
     type: TOGGLE_USER_SETTINGS_SECTION,
-    payload: sectionName
+    payload: sectionName,
+    meta: {forceOpen}
   }
 }
 

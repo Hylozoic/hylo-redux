@@ -16,12 +16,12 @@ import { userAvatarUploadSettings, userBannerUploadSettings } from '../../consta
   switch (query.expand) {
     case 'password':
     case 'prompts':
-      actions.push(dispatch(toggleUserSettingsSection('account')))
+      actions.push(dispatch(toggleUserSettingsSection('account', true)))
       break
     case undefined:
       break
     default:
-      actions.push(dispatch(toggleUserSettingsSection(query.expand)))
+      actions.push(dispatch(toggleUserSettingsSection(query.expand, true)))
   }
   return Promise.all(actions)
 })

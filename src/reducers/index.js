@@ -260,14 +260,14 @@ export default combineReducers({
   },
 
   userSettingsEditor: (state = {}, action) => {
-    let { type, payload, error } = action
+    let { type, payload, error, meta } = action
     if (error) return state
 
     switch (type) {
       case TOGGLE_USER_SETTINGS_SECTION:
         return {
           ...state,
-          expand: {...state.expand, [payload]: !get(state.expand, payload)}
+          expand: {...state.expand, [payload]: meta.forceOpen || !get(state.expand, payload)}
         }
     }
     return state

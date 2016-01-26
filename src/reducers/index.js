@@ -1,6 +1,6 @@
 import { combineReducers } from 'redux'
 import { routeReducer } from 'redux-simple-router'
-import { contains, omit } from 'lodash'
+import { contains, get, omit } from 'lodash'
 import comments from './comments'
 import commentsByPost from './commentsByPost'
 import people from './people'
@@ -33,6 +33,7 @@ import {
   SET_SIGNUP_ERROR,
   SIGNUP,
   TOGGLE_MAIN_MENU,
+  TOGGLE_USER_SETTINGS_SECTION,
   TYPEAHEAD,
   UPDATE_COMMUNITY_EDITOR,
   UPDATE_POST,
@@ -132,16 +133,18 @@ export default combineReducers({
   projectEdits,
 
   pending: (state = {}, action) => {
-    let { type } = action
+    let { type, meta } = action
 
-    let toggle = targetType => {
+    let toggle = (targetType, useMeta) => {
       if (type === targetType) return {...state, [targetType]: false}
-      if (type === targetType + '_PENDING') return {...state, [targetType]: true}
+      if (type === targetType + '_PENDING') {
+        return {...state, [targetType]: (useMeta && meta ? meta : true)}
+      }
     }
 
     return toggle(FETCH_POSTS) ||
       toggle(FETCH_PEOPLE) ||
-      toggle(UPLOAD_IMAGE) ||
+      toggle(UPLOAD_IMAGE, true) ||
       toggle(CREATE_POST) ||
       toggle(UPDATE_POST) ||
       toggle(FETCH_PROJECTS) ||
@@ -260,6 +263,20 @@ export default combineReducers({
         }
     }
 
+    return state
+  },
+
+  userSettingsEditor: (state = {}, action) => {
+    let { type, payload, error, meta } = action
+    if (error) return state
+
+    switch (type) {
+      case TOGGLE_USER_SETTINGS_SECTION:
+        return {
+          ...state,
+          expand: {...state.expand, [payload]: meta.forceOpen || !get(state.expand, payload)}
+        }
+    }
     return state
   },
 

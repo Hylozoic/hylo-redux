@@ -18,7 +18,7 @@ const { func, object, string } = React.PropTypes
 @connect(({ signup, people, projects }, { location: { query } }) => ({
   ...signup,
   currentUser: people.current,
-  project: query.action === 'join-project' && projects[query.id]
+  project: query.action === 'join-project' ? projects[query.id] : null
 }))
 export default class Signup extends React.Component {
   static propTypes = {

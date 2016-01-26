@@ -72,4 +72,26 @@ describe('appHandler', () => {
       })
     })
   })
+
+  describe('on the user settings page', () => {
+    beforeEach(() => {
+      let user = {
+        id: 1,
+        name: 'cat',
+        email: 'cat@house.com',
+        settings: {}
+      }
+      nock(HOST).get('/noo/user/me').reply(200, user)
+    })
+
+    it('starts with the specified section expanded', () => {
+      req = support.mocks.request('/settings?expand=password')
+      return appHandler(req, res)
+      .then(() => {
+        checkError(res)
+        expect(res.status).to.have.been.called.with(200)
+        expect(res.body).to.contain('cat@house.com')
+      })
+    })
+  })
 })

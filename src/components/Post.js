@@ -19,7 +19,7 @@ import { fetchComments, createComment, startPostEdit, changeEventResponse } from
 const spacer = <span>&nbsp; •&nbsp; </span>
 
 @connect(({ comments, commentsByPost, people, postEdits, communities }, { post }) => ({
-  comments: (commentsByPost[post.id] || []).map(id => comments[id]),
+  comments: commentsByPost[post.id] ? commentsByPost[post.id].map(id => comments[id]) : null,
   currentUser: people.current,
   editing: !!postEdits[post.id],
   communities: post.communities.map(id => find(communities, c => c.id === id))

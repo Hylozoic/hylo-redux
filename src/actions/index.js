@@ -10,6 +10,7 @@ export const CREATE_COMMENT = 'CREATE_COMMENT'
 export const CREATE_COMMUNITY = 'CREATE_COMMUNITY'
 export const CREATE_POST = 'CREATE_POST'
 export const CREATE_PROJECT = 'CREATE_PROJECT'
+export const TOGGLE_USER_SETTINGS_SECTION = 'TOGGLE_USER_SETTINGS_SECTION'
 export const FETCH_COMMENTS = 'FETCH_COMMENTS'
 export const FETCH_COMMUNITY = 'FETCH_COMMUNITY'
 export const FETCH_COMMUNITY_MODERATORS = 'FETCH_COMMUNITY_MODERATORS'
@@ -357,6 +358,14 @@ export function joinCommunityWithCode (code) {
   return {
     type: JOIN_COMMUNITY_WITH_CODE,
     payload: {api: true, params: {code}, path: '/noo/community/code', method: 'POST'}
+  }
+}
+
+export function toggleUserSettingsSection (sectionName, forceOpen) {
+  return {
+    type: TOGGLE_USER_SETTINGS_SECTION,
+    payload: sectionName,
+    meta: {forceOpen}
   }
 }
 

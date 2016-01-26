@@ -1,7 +1,7 @@
 import React from 'react'
 import { curry, isEmpty } from 'lodash'
 import KeyControlledList from './KeyControlledList'
-var {array, string, func} = React.PropTypes
+var {array, bool, string, func} = React.PropTypes
 
 export default class TagInput extends React.Component {
 
@@ -11,17 +11,36 @@ export default class TagInput extends React.Component {
     choices: array,
     handleInput: func,
     onSelect: func,
-    onRemove: func
+    onRemove: func,
+    allowNewTags: bool
+  }
+
+  resetInput () {
+    this.refs.input.value = ''
+    this.props.handleInput('')
   }
 
   handleKeys = event => {
-    if (this.refs.list) this.refs.list.handleKeys(event)
+    let { allowNewTags, onSelect, handleInput } = this.props
+
+    if (this.refs.list) {
+      this.refs.list.handleKeys(event)
+
+      // if the current input brings up search results, but you wish to enter
+      // the tag as-is rather than choosing a search result, you can press
+      // Escape to clear the results, then press Enter to select what you've
+      // typed
+      if (allowNewTags && event.which === 27) handleInput('')
+    } else if (allowNewTags && event.which === 13) {
+      let { value } = event.target
+      onSelect({id: value, name: value})
+      this.resetInput()
+    }
   }
 
   select = choice => {
     this.props.onSelect(choice)
-    this.refs.input.value = ''
-    this.props.handleInput('')
+    this.resetInput()
   }
 
   remove = (tag, event) => {
@@ -34,11 +53,13 @@ export default class TagInput extends React.Component {
   }
 
   render () {
-    let { choices } = this.props
+    let { choices, tags } = this.props
+    if (!tags) tags = []
+
     return <div className='tag-input' onClick={this.focus}>
       <ul>
-        {this.props.tags.map(t => <li key={t.id} className='tag'>
-          <div className='icon' style={{backgroundImage: `url(${t.avatar_url})`}}/>
+        {tags.map(t => <li key={t.id} className='tag'>
+          {t.avatar_url && <div className='icon' style={{backgroundImage: `url(${t.avatar_url})`}}/>}
           {t.name}
           <a onClick={curry(this.remove)(t)} className='remove'>&times;</a>
         </li>)}

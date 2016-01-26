@@ -4,11 +4,19 @@ import { connect } from 'react-redux'
 import { prefetch } from 'react-fetcher'
 import cx from 'classnames'
 const { func, object, string } = React.PropTypes
-import { UPLOAD_IMAGE, fetchCurrentUser, updateUserSettings, leaveCommunity, toggleUserSettingsSection } from '../../actions'
+import {
+  UPLOAD_IMAGE,
+  fetchCurrentUser,
+  updateUserSettings,
+  leaveCommunity,
+  toggleUserSettingsSection,
+  typeahead
+ } from '../../actions'
 import { uploadImage } from '../../actions/uploadImage'
 import A from '../../components/A'
 import { formatDate } from '../../util/text'
 import { debounce, get, sortBy } from 'lodash'
+import TagInput from '../../components/TagInput'
 import { userAvatarUploadSettings, userBannerUploadSettings } from '../../constants'
 
 @prefetch(({ dispatch, params: { id }, query }) => {
@@ -155,6 +163,16 @@ export default class UserSettings extends React.Component {
     this.delayedUpdate(field, value)
   }
 
+  addListItem = type => item => {
+    let list = this.props.currentUser[type]
+    this.update(type, list.concat(item.name))
+  }
+
+  removeListItem = type => item => {
+    let list = this.props.currentUser[type]
+    this.update(type, list.filter(x => x !== item.name))
+  }
+
   render () {
     let { currentUser, expand, pending } = this.props
     let memberships = sortBy(currentUser.memberships, m => m.community.name)
@@ -162,6 +180,8 @@ export default class UserSettings extends React.Component {
     let { avatar_url, banner_url } = currentUser
 
     let { bio, work, intention } = {...currentUser, ...editing}
+    let skills = (currentUser.skills || []).map(x => ({id: x, name: x}))
+    let orgs = (currentUser.organizations || []).map(x => ({id: x, name: x}))
 
     const SectionLabel = ({ name, label }) => {
       return <div className='section-label' onClick={() => this.toggleSection(name)}>
@@ -199,22 +219,42 @@ export default class UserSettings extends React.Component {
         <Item>
           <div className='full-column'>
             <label>About me</label>
-            <textarea className='form-control short' value={bio} onChange={this.updateTyped('bio')}></textarea>
+            <textarea className='form-control short' value={bio}
+              onChange={this.updateTyped('bio')}></textarea>
           </div>
         </Item>
         <Item>
           <div className='full-column'>
             <label>What I'm doing</label>
-            <textarea className='form-control short' value={work} onChange={this.updateTyped('work')}></textarea>
+            <textarea className='form-control short' value={work}
+              onChange={this.updateTyped('work')}></textarea>
           </div>
         </Item>
         <Item>
           <div className='full-column'>
             <label>What I'd like to do</label>
-            <textarea className='form-control short' value={intention} onChange={this.updateTyped('intention')}></textarea>
+            <textarea className='form-control short' value={intention}
+              onChange={this.updateTyped('intention')}></textarea>
+          </div>
+        </Item>
+        <Item>
+          <div className='full-column'>
+            <label>Skills</label>
+            <ListItemTagInput type='skills' tags={skills}
+              onSelect={this.addListItem('skills')}
+              onRemove={this.removeListItem('skills')}/>
+          </div>
+        </Item>
+        <Item>
+          <div className='full-column'>
+            <label>Affiliations</label>
+            <ListItemTagInput type='organizations' tags={orgs}
+              onSelect={this.addListItem('organizations')}
+              onRemove={this.removeListItem('organizations')}/>
           </div>
         </Item>
       </Section>}
+
       <SectionLabel name='account' label='Account'/>
       {expand.account && <Section className='email'>
         <Item>
@@ -311,6 +351,7 @@ export default class UserSettings extends React.Component {
           </div>
         </Item>
       </Section>}
+
       <SectionLabel name='communities' label='Communities'/>
       {expand.communities && <Section className='communities'>
         {memberships.map(membership => <Item key={membership.id}>
@@ -328,6 +369,7 @@ export default class UserSettings extends React.Component {
           </div>
         </Item>}
       </Section>}
+
       <SectionLabel name='payment' label='Payment Details'/>
       {expand.payment && <Section className='payment'>
         <Item>
@@ -345,3 +387,12 @@ const Section = ({className, children}) =>
 
 const Item = ({className, children}) =>
   <div className={cx('section-item', className)}>{children}</div>
+
+const ListItemTagInput = connect(
+  ({ typeaheadMatches }, { type }) => ({matches: get(typeaheadMatches, type)})
+)(({ dispatch, tags, matches, onSelect, onRemove, type }) => {
+  return <TagInput choices={matches}
+    allowNewTags={true}
+    handleInput={value => dispatch(typeahead(value, type, {type}))}
+    {...{onSelect, onRemove, tags}}/>
+})

@@ -106,7 +106,7 @@ export default class UserSettings extends React.Component {
     this.setState({editing: {...editing, [field]: false}})
   }
 
-  update (field, value) {
+  update = (field, value) => {
     let { dispatch, currentUser } = this.props
     var updatedUser = {...currentUser, [field]: value}
     dispatch(updateUserSettings(updatedUser, {[field]: currentUser[field]}))
@@ -134,10 +134,6 @@ export default class UserSettings extends React.Component {
     dispatch(leaveCommunity(communityId, currentUser))
   }
 
-  toggleSection (section) {
-    this.props.dispatch(toggleUserSettingsSection(section))
-  }
-
   attachImage (type) {
     let { dispatch, currentUser } = this.props
     ;(() => {
@@ -163,34 +159,15 @@ export default class UserSettings extends React.Component {
     this.delayedUpdate(field, value)
   }
 
-  addListItem = type => item => {
-    let list = this.props.currentUser[type]
-    this.update(type, list.concat(item.name))
-  }
-
-  removeListItem = type => item => {
-    let list = this.props.currentUser[type]
-    this.update(type, list.filter(x => x !== item.name))
-  }
-
   render () {
-    let { currentUser, expand, pending } = this.props
+    let { currentUser, expand, pending, dispatch } = this.props
     let memberships = sortBy(currentUser.memberships, m => m.community.name)
     let { editing, edited, errors } = this.state
     let { avatar_url, banner_url } = currentUser
-
     let { bio, work, intention } = {...currentUser, ...editing}
-    let skills = (currentUser.skills || []).map(x => ({id: x, name: x}))
-    let orgs = (currentUser.organizations || []).map(x => ({id: x, name: x}))
-
-    const SectionLabel = ({ name, label }) => {
-      return <div className='section-label' onClick={() => this.toggleSection(name)}>
-        {label} <i className={cx({'icon-down': expand[name], 'icon-right': !expand[name]})}></i>
-      </div>
-    }
 
     return <div id='user-settings' className='form-sections'>
-      <SectionLabel name='profile' label='Profile'/>
+      <SectionLabel name='profile' label='Profile' {...{dispatch, expand}}/>
       {expand.profile && <Section className='profile'>
         <Item>
           <div className='half-column'>
@@ -240,22 +217,18 @@ export default class UserSettings extends React.Component {
         <Item>
           <div className='full-column'>
             <label>Skills</label>
-            <ListItemTagInput type='skills' tags={skills}
-              onSelect={this.addListItem('skills')}
-              onRemove={this.removeListItem('skills')}/>
+            <ListItemTagInput type='skills' person={currentUser} update={this.update}/>
           </div>
         </Item>
         <Item>
           <div className='full-column'>
             <label>Affiliations</label>
-            <ListItemTagInput type='organizations' tags={orgs}
-              onSelect={this.addListItem('organizations')}
-              onRemove={this.removeListItem('organizations')}/>
+            <ListItemTagInput type='organizations' person={currentUser} update={this.update}/>
           </div>
         </Item>
       </Section>}
 
-      <SectionLabel name='account' label='Account'/>
+      <SectionLabel name='account' label='Account' {...{dispatch, expand}}/>
       {expand.account && <Section className='email'>
         <Item>
           <div className='half-column'>
@@ -352,7 +325,7 @@ export default class UserSettings extends React.Component {
         </Item>
       </Section>}
 
-      <SectionLabel name='communities' label='Communities'/>
+      <SectionLabel name='communities' label='Communities' {...{dispatch, expand}}/>
       {expand.communities && <Section className='communities'>
         {memberships.map(membership => <Item key={membership.id}>
           <div className='half-column'>
@@ -370,7 +343,7 @@ export default class UserSettings extends React.Component {
         </Item>}
       </Section>}
 
-      <SectionLabel name='payment' label='Payment Details'/>
+      <SectionLabel name='payment' label='Payment Details' {...{dispatch, expand}}/>
       {expand.payment && <Section className='payment'>
         <Item>
           <div className='full-column'>
@@ -382,6 +355,13 @@ export default class UserSettings extends React.Component {
   }
 }
 
+const SectionLabel = ({ name, label, dispatch, expand }) => {
+  return <div className='section-label'
+    onClick={() => dispatch(toggleUserSettingsSection(name))}>
+    {label} <i className={cx({'icon-down': expand[name], 'icon-right': !expand[name]})}></i>
+  </div>
+}
+
 const Section = ({className, children}) =>
   <div className={cx('section', className)}>{children}</div>
 
@@ -390,9 +370,17 @@ const Item = ({className, children}) =>
 
 const ListItemTagInput = connect(
   ({ typeaheadMatches }, { type }) => ({matches: get(typeaheadMatches, type)})
-)(({ dispatch, tags, matches, onSelect, onRemove, type }) => {
-  return <TagInput choices={matches}
+)(({ dispatch, matches, type, person, update }) => {
+  let list = person[type] || []
+  let tags = list.map(x => ({id: x, name: x}))
+  let add = item => update(type, list.concat(item.name))
+  let remove = item => update(type, list.filter(x => x !== item.name))
+
+  return <TagInput
+    choices={matches}
+    tags={tags}
     allowNewTags={true}
     handleInput={value => dispatch(typeahead(value, type, {type}))}
-    {...{onSelect, onRemove, tags}}/>
+    onSelect={add}
+    onRemove={remove}/>
 })

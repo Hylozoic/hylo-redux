@@ -18,7 +18,8 @@ export function configureStore (initialState, req) {
   ])
 
   const store = compose(
-    applyMiddleware(...middleware)
+    applyMiddleware(...middleware),
+    !isServer && typeof window.devToolsExtension !== 'undefined' ? window.devToolsExtension() : f => f
   )(createStore)(rootReducer, initialState)
 
   if (module.onReload) {

@@ -13,6 +13,7 @@ import Comment from './Comment'
 import CommentForm from './CommentForm'
 import PostEditor from './PostEditor'
 import RSVPControl from './RSVPControl'
+import SocialSharing from './SocialSharing'
 import { connect } from 'react-redux'
 import { fetchComments, createComment, startPostEdit, changeEventResponse } from '../actions'
 
@@ -168,14 +169,6 @@ const PostMeta = ({ post, toggleComments }) => {
   </div>
 }
 
-let share = href => {
-  console.log('Sharing', href)
-  FB.ui({
-    method: 'share',
-    href: href
-  }, function (response) {})
-}
-
 const ExpandedPostDetails = props => {
   let {
     post, image, comments, commentsExpanded, currentUser, dispatch,
@@ -183,15 +176,6 @@ const ExpandedPostDetails = props => {
   } = props
   let description = present(sanitize(post.description))
   let attachments = filter(post.media, m => m.type !== 'image')
-
-  let origin = typeof window !== 'undefined' ? window.location.origin : 'https://www.hylo.com'
-  let postUrl = `${origin}/p/${post.id}`
-  var twitterText = post.name
-  let max = 100
-  if (twitterText.length > max) {
-    twitterText = twitterText.substring(0, max - 3) + '...'
-  }
-  twitterText + ' via Hylo:'
 
   if (!comments) comments = []
 
@@ -215,11 +199,7 @@ const ExpandedPostDetails = props => {
     </div>}
 
     {post.public && <div className='meta'>
-      <Dropdown
-        toggleChildren={<p>Share</p>}>
-          <li><a onClick={() => share(postUrl)}>Facebook</a></li>
-          <li><a href={`https://twitter.com/intent/tweet?text=${twitterText}&url=${postUrl}`}>Twitter</a></li>
-      </Dropdown>
+      <SocialSharing toggleChildren={<p>Share</p>} url={`/p/${post.id}`} text={post.name} />
     </div>}
 
     <div className='meta'>

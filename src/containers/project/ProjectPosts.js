@@ -4,7 +4,7 @@ import { connect } from 'react-redux'
 import { fetch, ConnectedPostList } from '../ConnectedPostList'
 import PostEditor from '../../components/PostEditor'
 import { contains } from 'lodash'
-const { object } = React.PropTypes
+const { object, string } = React.PropTypes
 
 const subject = 'project'
 
@@ -19,6 +19,16 @@ export default class ProjectPosts extends React.Component {
     location: object,
     params: object,
     currentUser: object
+  }
+
+  static childContextTypes = {
+    postDisplayMode: string
+  }
+
+  getChildContext () {
+    return {
+      postDisplayMode: 'project'
+    }
   }
 
   render () {

@@ -70,3 +70,5 @@ export default function makeRoutes (store) {
     <Route path='project/:id/:slug/invite' component={ProjectInvite}/>
   </Route>
 }
+
+export const projectUrl = project => `/project/${project.id}/${project.slug}`

@@ -1,9 +1,10 @@
 import React from 'react'
 import { Link } from 'react-router'
-import { filter, find, isEmpty } from 'lodash'
-const { array, bool, func, object } = React.PropTypes
+import { filter, find, get, isEmpty } from 'lodash'
+import { projectUrl } from '../routes'
+const { array, bool, func, object, string } = React.PropTypes
 import cx from 'classnames'
-import { humanDate, present, sanitize, timeRange, timeRangeFull } from '../util/text'
+import { humanDate, nonbreaking, present, sanitize, timeRange, timeRangeFull } from '../util/text'
 import truncate from 'html-truncate'
 import A from './A'
 import Avatar from './Avatar'
@@ -36,6 +37,10 @@ export default class Post extends React.Component {
     commentingDisabled: bool,
     currentUser: object,
     editing: bool
+  }
+
+  static contextTypes = {
+    postDisplayMode: string
   }
 
   constructor (props) {
@@ -145,16 +150,20 @@ export default class Post extends React.Component {
   }
 }
 
-const PostMeta = ({ post, toggleComments }) => {
+const PostMeta = ({ post, toggleComments }, { postDisplayMode }) => {
   const now = new Date()
   const createdAt = new Date(post.created_at)
   const updatedAt = new Date(post.updated_at)
   const shouldShowUpdatedAt = (now - updatedAt) < (now - createdAt) * 0.8
+  let project = postDisplayMode !== 'project' && get(post, 'projects.0')
 
   return <div className='meta'>
-    <A to={`/p/${post.id}`}>{humanDate(createdAt).replace(/ /g, String.fromCharCode(160))}</A>
+    <A to={`/p/${post.id}`}>{nonbreaking(humanDate(createdAt))}</A>
+    {project && <span>
+      &nbsp;for <A to={projectUrl(project)}>"{truncate(project.title, 60)}"</A>
+    </span>}
     {shouldShowUpdatedAt && <span>
-      {spacer}updated&nbsp;{humanDate(updatedAt).replace(/ /g, String.fromCharCode(160))}
+      {spacer}updated&nbsp;{nonbreaking(humanDate(updatedAt))}
     </span>}
     {spacer}
     {post.votes}&nbsp;♡

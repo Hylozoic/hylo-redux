@@ -17,6 +17,8 @@ const { bool, func, object } = React.PropTypes
 @prefetch(({ dispatch, params: { id } }) => dispatch(fetchProject(id)))
 @connect(({ projects, people, peopleByQuery }, { params: { id } }) => {
   let project = projects[id]
+  if (!project) return {}
+
   let currentUser = people.current
   let key = qs.stringify({subject: 'project-moderators', id})
   let canModerate = currentUser && (contains(peopleByQuery[key], currentUser.id) ||

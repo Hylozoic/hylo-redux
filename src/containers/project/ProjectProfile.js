@@ -10,6 +10,7 @@ import truncate from 'html-truncate'
 import Avatar from '../../components/Avatar'
 import Video from '../../components/Video'
 import { A, IndexA } from '../../components/A'
+import SocialSharing from '../../components/SocialSharing'
 import { assetUrl } from '../../util/assets'
 import { ProjectVisibility } from '../../constants'
 const { bool, func, object } = React.PropTypes
@@ -94,6 +95,7 @@ export default class ProjectProfile extends React.Component {
       <div className='project-header'>
         <div className='col-sm-12 title-row'>
           <div className='right'>
+            {isPublic && <SocialSharing toggleChildren={<a className='button'>Share</a>} url={`/project/${project.id}/${project.slug}`} text={project.title} />}
             {canModerate && <A className='button' to={`/project/${project.id}/edit`}>Edit project</A>}
             {!canPost && <a className='button' onClick={this.join}>Join project</a>}
           </div>

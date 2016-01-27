@@ -2,7 +2,7 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { prefetch } from 'react-fetcher'
 import { fetchActivity, FETCH_ACTIVITY, markActivityRead, markAllActivitiesRead, navigate, thank } from '../actions'
-import { isEmpty, contains, filter, find } from 'lodash'
+import { isEmpty, contains, filter, find, get } from 'lodash'
 import cx from 'classnames'
 import ScrollListener from '../components/ScrollListener'
 import A from '../components/A'
@@ -75,7 +75,7 @@ export default class Notifications extends React.Component {
       <div className='activities'>
         {activities.map(activity => {
           let comment = comments[activity.comment_id]
-          let isThanked = comment && comment.thanks && find(comment.thanks, t => t.thanked_by_id === currentUser.id)
+          let isThanked = comment && find(comment.thanks, t => t.thanked_by_id === currentUser.id)
           if (comment) {
             activity = {...activity, comment, isThanked}
           }
@@ -95,7 +95,7 @@ const Activity = props => {
     if (contains(['followAdd', 'follow', 'unfollow'], activity.action)) {
       return ''
     }
-    let text = activity.comment.comment_text || activity.post.description
+    let text = get(activity, 'comment.comment_text') || get(activity, 'post.description')
     return present(text, {communityId: activity.post.communities[0].id, maxlength: 200})
   }(activity)
 

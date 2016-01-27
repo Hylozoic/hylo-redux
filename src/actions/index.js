@@ -369,10 +369,12 @@ export function toggleUserSettingsSection (sectionName, forceOpen) {
   }
 }
 
-export function fetchActivity (limit, offset) {
+export function fetchActivity (offset = 0) {
+  let limit = 20
+  let query = cleanAndStringify({limit, offset, paginate: true})
   return {
     type: FETCH_ACTIVITY,
-    payload: {api: true, path: `/noo/activity?${cleanAndStringify({ limit, offset, paginate: true })}`, method: 'GET'}
+    payload: {api: true, path: `/noo/activity?${query}`, method: 'GET'}
   }
 }
 

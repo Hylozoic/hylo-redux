@@ -168,6 +168,14 @@ const PostMeta = ({ post, toggleComments }) => {
   </div>
 }
 
+let share = href => {
+  console.log('Sharing', href)
+  FB.ui({
+    method: 'share',
+    href: href
+  }, function (response) {})
+}
+
 const ExpandedPostDetails = props => {
   let {
     post, image, comments, commentsExpanded, currentUser, dispatch,
@@ -175,6 +183,10 @@ const ExpandedPostDetails = props => {
   } = props
   let description = present(sanitize(post.description))
   let attachments = filter(post.media, m => m.type !== 'image')
+
+  let origin = typeof window !== 'undefined' ? window.location.origin : 'https://www.hylo.com'
+  let postUrl = `${origin}/p/${post.id}`
+
   if (!comments) comments = []
 
   return <div className='post-details'>
@@ -199,7 +211,7 @@ const ExpandedPostDetails = props => {
     {post.public && <div className='meta'>
       <Dropdown
         toggleChildren={<p>Share</p>}>
-          <li><a>Facebook</a></li>
+          <li><a onClick={() => share(postUrl)}>Facebook</a></li>
           <li><a>Twitter</a></li>
       </Dropdown>
     </div>}

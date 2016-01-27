@@ -2,16 +2,17 @@ import { filter } from 'lodash'
 import { debug } from '../util/logging'
 import {
   CREATE_COMMUNITY,
+  FETCH_CURRENT_USER,
+  FETCH_PEOPLE,
+  FETCH_PERSON,
+  JOIN_COMMUNITY_WITH_CODE,
+  LEAVE_COMMUNITY_PENDING,
+  LEAVE_COMMUNITY,
   LOGIN,
   LOGOUT,
-  FETCH_PEOPLE,
-  FETCH_CURRENT_USER,
-  FETCH_PERSON,
   SIGNUP,
-  UPDATE_USER_SETTINGS,
   UPDATE_USER_SETTINGS_PENDING,
-  LEAVE_COMMUNITY,
-  LEAVE_COMMUNITY_PENDING
+  UPDATE_USER_SETTINGS
 } from '../actions'
 import { mergeList } from './util'
 
@@ -82,6 +83,7 @@ export default function (state = {}, action) {
     case FETCH_PEOPLE:
       return mergeList(state, payload.people, 'id')
     case CREATE_COMMUNITY:
+    case JOIN_COMMUNITY_WITH_CODE:
       return {
         ...state,
         current: {...state.current, memberships: [payload, ...state.current.memberships]}

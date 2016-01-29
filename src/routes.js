@@ -13,6 +13,7 @@ import CommunityEvents from './containers/community/CommunityEvents'
 import CommunityProjects from './containers/community/CommunityProjects'
 import CommunityEditor from './containers/community/CommunityEditor'
 import CommunityJoin from './containers/community/CommunityJoin'
+import CommunityJoinLinkHandler from './containers/community/CommunityJoinLinkHandler'
 import AboutCommunity from './containers/community/AboutCommunity'
 import CommunitySettings from './containers/community/CommunitySettings'
 import PersonProfile from './containers/person/PersonProfile'
@@ -27,12 +28,21 @@ import ProjectInvite from './containers/project/ProjectInvite'
 import ProjectEditor from './containers/project/ProjectEditor'
 import Notifications from './containers/Notifications'
 import { debug } from './util/logging'
+import { makeUrl } from './client/util'
 
 export default function makeRoutes (store) {
-  const requireLogin = (nextState, replaceState) => {
+  const requireLogin = (options = {}) => (nextState, replaceState) => {
+    let { startAtSignup, addParams } = options
     if (!store.getState().people.current) {
-      debug('redirecting to login')
-      replaceState({}, `/login?next=${nextState.location.pathname}`)
+      let start = startAtSignup ? 'signup' : 'login'
+      debug(`redirecting to ${start}`)
+
+      let params = {
+        next: nextState.location.pathname,
+        ...(addParams ? addParams(nextState) : null)
+      }
+
+      replaceState({}, makeUrl(`/${start}`, params))
     }
   }
 
@@ -40,19 +50,26 @@ export default function makeRoutes (store) {
     <IndexRoute component={Home}/>
     <Route path='signup' component={Signup}/>
     <Route path='login' component={Login}/>
-    <Route path='settings' component={UserSettings} onEnter={requireLogin}/>
-    <Route path='all-posts' component={AllPosts} onEnter={requireLogin}/>
-    <Route path='my-posts' component={MyPosts} onEnter={requireLogin}/>
-    <Route path='followed-posts' component={FollowedPosts} onEnter={requireLogin}/>
-    <Route path='projects' component={Projects} onEnter={requireLogin}/>
-    <Route path='notifications' component={Notifications} onEnter={requireLogin}/>
-    <Route path='u/:id' component={PersonProfile} onEnter={requireLogin}>
+    <Route path='settings' component={UserSettings} onEnter={requireLogin()}/>
+    <Route path='all-posts' component={AllPosts} onEnter={requireLogin()}/>
+    <Route path='my-posts' component={MyPosts} onEnter={requireLogin()}/>
+    <Route path='followed-posts' component={FollowedPosts} onEnter={requireLogin()}/>
+    <Route path='projects' component={Projects} onEnter={requireLogin()}/>
+    <Route path='notifications' component={Notifications} onEnter={requireLogin()}/>
+    <Route path='u/:id' component={PersonProfile} onEnter={requireLogin()}>
       <IndexRoute component={PersonPosts}/>
       <Route path='about' component={AboutPerson}/>
     </Route>
-    <Route path='c/new' component={CommunityEditor} onEnter={requireLogin}/>
-    <Route path='c/join' component={CommunityJoin} onEnter={requireLogin}/>
-    <Route path='c/:id' component={CommunityProfile} onEnter={requireLogin}>
+    <Route path='c/new' component={CommunityEditor} onEnter={requireLogin()}/>
+    <Route path='c/join' component={CommunityJoin} onEnter={requireLogin()}/>
+
+    <Route path='c/:id/join/:code' component={CommunityJoinLinkHandler}
+      onEnter={requireLogin({
+        startAtSignup: true,
+        addParams: ({ params: { id } }) => ({id, action: 'join-community'})
+      })}/>
+
+    <Route path='c/:id' component={CommunityProfile} onEnter={requireLogin()}>
       <IndexRoute component={CommunityPosts}/>
       <Route path='members' component={CommunityMembers}/>
       <Route path='events' component={CommunityEvents}/>
@@ -61,8 +78,8 @@ export default function makeRoutes (store) {
       <Route path='settings' component={CommunitySettings}/>
     </Route>
     <Route path='p/:id' component={SinglePost}/>
-    <Route path='project/new' component={ProjectEditor} onenter={requireLogin}/>
-    <Route path='project/:id/edit' component={ProjectEditor} onenter={requireLogin}/>
+    <Route path='project/new' component={ProjectEditor} onenter={requireLogin()}/>
+    <Route path='project/:id/edit' component={ProjectEditor} onenter={requireLogin()}/>
     <Route path='project/:id/:slug' component={ProjectProfile}>
       <IndexRoute component={ProjectPosts}/>
       <Route path='contributors' component={ProjectContributors}/>

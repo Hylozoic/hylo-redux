@@ -45,7 +45,7 @@ describe('appHandler', () => {
 
       return appHandler(req, res)
       .then(() => {
-        expect(res.redirect).to.have.been.called.with(302, '/login?next=/c/foo')
+        expect(res.redirect).to.have.been.called.with(302, '/login?next=%2Fc%2Ffoo')
       })
     })
   })

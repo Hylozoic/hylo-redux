@@ -31,6 +31,7 @@ const TopNav = (props) => {
         </li>
       </ul>
     : <ul className='right'>
+        <li><A to='/signup'>Sign up</A></li>
         <li><A to='/login'>Log in</A></li>
       </ul>}
   </nav>

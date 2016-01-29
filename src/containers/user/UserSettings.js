@@ -6,7 +6,6 @@ import cx from 'classnames'
 const { func, object, string } = React.PropTypes
 import {
   UPLOAD_IMAGE,
-  fetchCurrentUser,
   updateUserSettings,
   leaveCommunity,
   toggleUserSettingsSection,
@@ -20,18 +19,15 @@ import TagInput from '../../components/TagInput'
 import { userAvatarUploadSettings, userBannerUploadSettings } from '../../constants'
 
 @prefetch(({ dispatch, params: { id }, query }) => {
-  let actions = [dispatch(fetchCurrentUser())]
   switch (query.expand) {
     case 'password':
     case 'prompts':
-      actions.push(dispatch(toggleUserSettingsSection('account', true)))
-      break
+      return dispatch(toggleUserSettingsSection('account', true))
     case undefined:
       break
     default:
-      actions.push(dispatch(toggleUserSettingsSection(query.expand, true)))
+      return dispatch(toggleUserSettingsSection(query.expand, true))
   }
-  return Promise.all(actions)
 })
 @connect(({ people, userSettingsEditor, pending }) => ({
   pending: get(pending, `${UPLOAD_IMAGE}.subject`),

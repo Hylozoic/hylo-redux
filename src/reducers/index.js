@@ -287,6 +287,10 @@ export default combineReducers({
         return payload.activities_total
     }
     return state
+  },
+
+  metaTags: (state = {}, action) => {
+    return state
   }
 
 })

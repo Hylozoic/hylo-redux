@@ -1,8 +1,10 @@
 import support from '../support'
-import appHandler from '../../src/server/appHandler'
 import nock from 'nock'
-import { HOST } from '../../src/util/api'
 import { inspect } from 'util'
+import { get } from 'lodash'
+import appHandler from '../../src/server/appHandler'
+import { FETCH_CURRENT_USER } from '../../src/actions'
+import { HOST } from '../../src/util/api'
 
 const checkError = res => {
   if (res.error) {
@@ -19,6 +21,23 @@ describe('appHandler', () => {
 
   beforeEach(() => {
     res = support.mocks.response()
+  })
+
+  describe('with a failed API request', () => {
+    beforeEach(() => {
+      nock(HOST).get('/noo/user/me').reply(500, 'Oh noes')
+    })
+
+    it('sets the error property of the response', () => {
+      req = support.mocks.request('/')
+
+      return appHandler(req, res)
+      .then(() => {
+        let error = get(res.errors, FETCH_CURRENT_USER)
+        expect(error).to.exist
+        expect(error.payload.message).to.equal('Oh noes')
+      })
+    })
   })
 
   describe('with an anonymous visitor', () => {

@@ -18,7 +18,7 @@ import { any, isEmpty, pairs } from 'lodash'
 
 const matchPromise = promisify(match, {multiArgs: true})
 
-const hasAPIErrors = ({ errors }) => {
+const checkAPIErrors = ({ errors }) => {
   return any(pairs(errors), ([key, { payload: { response } }]) => {
     if (!response) return false
     let { status, url } = response
@@ -49,16 +49,17 @@ export default function (req, res) {
 
     return renderApp(res, renderProps, history, store)
     .then(renderToStaticMarkup)
-    .then(html => '<!DOCTYPE html>\n' + html)
-    .then(html => res.status(200).send(html))
+    .then(html => res.status(200).send(`<!DOCTYPE html>\n${html}`))
+    .then(() => {
+      let state = store.getState()
+      checkAPIErrors(state)
+      if (!isEmpty(state.errors)) {
+        res.errors = state.errors
+      }
+    })
   })
   .catch(err => {
-    res.error = err
-    if (hasAPIErrors(store.getState())) {
-      res.redirect(302, `/login?next=${req.url}`)
-      return
-    }
-
+    res.errors = [err]
     res.setHeader('Content-Type', 'text/plain')
     res.status(500).send(err.stack)
   })
@@ -80,16 +81,9 @@ function renderApp (res, renderProps, history, store) {
       </Provider>
     )
 
-    let state = store.getState()
-    if (!isEmpty(state.errors)) {
-      let error = new Error('state has errors')
-      error.payload = state.errors
-      throw error
-    }
-
     return React.createElement(Html, {
       markup: markup,
-      state: `window.INITIAL_STATE=${JSON.stringify(state)}`,
+      state: `window.INITIAL_STATE=${JSON.stringify(store.getState())}`,
       assetManifest: `window.ASSET_MANIFEST=${JSON.stringify(getManifest())}`
     })
   })

@@ -13,6 +13,7 @@ export const CREATE_PROJECT = 'CREATE_PROJECT'
 export const TOGGLE_USER_SETTINGS_SECTION = 'TOGGLE_USER_SETTINGS_SECTION'
 export const FETCH_COMMENTS = 'FETCH_COMMENTS'
 export const FETCH_COMMUNITY = 'FETCH_COMMUNITY'
+export const FETCH_COMMUNITY_FOR_INVITATION = 'FETCH_COMMUNITY_FOR_INVITATION'
 export const FETCH_COMMUNITY_MODERATORS = 'FETCH_COMMUNITY_MODERATORS'
 export const FETCH_COMMUNITY_SETTINGS = 'FETCH_COMMUNITY_SETTINGS'
 export const FETCH_CURRENT_USER = 'FETCH_CURRENT_USER'
@@ -67,6 +68,7 @@ export const UPDATE_USER_SETTINGS_PENDING = UPDATE_USER_SETTINGS + _PENDING
 export const UPLOAD_DOC = 'UPLOAD_DOC'
 export const UPLOAD_IMAGE = 'UPLOAD_IMAGE'
 export const UPLOAD_IMAGE_PENDING = UPLOAD_IMAGE + _PENDING
+export const USE_INVITATION = 'USE_INVITATION'
 export const VALIDATE_COMMUNITY_ATTRIBUTE = 'VALIDATE_COMMUNITY_ATTRIBUTE'
 export const VALIDATE_COMMUNITY_ATTRIBUTE_PENDING = VALIDATE_COMMUNITY_ATTRIBUTE + _PENDING
 
@@ -405,5 +407,21 @@ export function resetError (type) {
   return {
     type: RESET_ERROR,
     meta: {type}
+  }
+}
+
+export function fetchCommunityForInvitation (token) {
+  return {
+    type: FETCH_COMMUNITY_FOR_INVITATION,
+    payload: {api: true, path: `/noo/invitation/${token}`},
+    meta: {token}
+  }
+}
+
+export function useInvitation (token) {
+  return {
+    type: USE_INVITATION,
+    payload: {api: true, path: `/noo/invitation/${token}`, method: 'POST'},
+    meta: {token}
   }
 }

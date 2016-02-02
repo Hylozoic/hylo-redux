@@ -12,7 +12,8 @@ import {
   LOGOUT,
   SIGNUP,
   UPDATE_USER_SETTINGS_PENDING,
-  UPDATE_USER_SETTINGS
+  UPDATE_USER_SETTINGS,
+  USE_INVITATION
 } from '../actions'
 import { mergeList } from './util'
 
@@ -84,6 +85,7 @@ export default function (state = {}, action) {
       return mergeList(state, payload.people, 'id')
     case CREATE_COMMUNITY:
     case JOIN_COMMUNITY_WITH_CODE:
+    case USE_INVITATION:
       return {
         ...state,
         current: {...state.current, memberships: [payload, ...state.current.memberships]}

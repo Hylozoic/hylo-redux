@@ -14,6 +14,7 @@ import CommunityProjects from './containers/community/CommunityProjects'
 import CommunityEditor from './containers/community/CommunityEditor'
 import CommunityJoin from './containers/community/CommunityJoin'
 import CommunityJoinLinkHandler from './containers/community/CommunityJoinLinkHandler'
+import InvitationHandler from './containers/community/InvitationHandler'
 import AboutCommunity from './containers/community/AboutCommunity'
 import CommunitySettings from './containers/community/CommunitySettings'
 import PersonProfile from './containers/person/PersonProfile'
@@ -62,6 +63,12 @@ export default function makeRoutes (store) {
     </Route>
     <Route path='c/new' component={CommunityEditor} onEnter={requireLogin()}/>
     <Route path='c/join' component={CommunityJoin} onEnter={requireLogin()}/>
+
+    <Route path='h/use-invitation' component={InvitationHandler}
+      onEnter={requireLogin({
+        startAtSignup: true,
+        addParams: ({ location: { query: { token } } }) => ({token, action: 'use-invitation'})
+      })}/>
 
     <Route path='c/:id/join/:code' component={CommunityJoinLinkHandler}
       onEnter={requireLogin({

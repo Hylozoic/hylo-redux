@@ -1,9 +1,16 @@
 import React from 'react'
 import { prefetch } from 'react-fetcher'
-import { pick } from 'lodash'
+import { get, pick } from 'lodash'
 import { makeUrl } from '../client/util'
 import { connect } from 'react-redux'
-import { fetchCommunity, login, navigate, setLoginError } from '../actions'
+import {
+  FETCH_COMMUNITY_FOR_INVITATION,
+  fetchCommunity,
+  fetchCommunityForInvitation,
+  login,
+  navigate,
+  setLoginError
+} from '../actions'
 import { fetchProject } from '../actions/project'
 import { Link } from 'react-router'
 import ServiceAuthButtons from '../components/ServiceAuthButtons'
@@ -17,24 +24,58 @@ export const prefetchForNext = prefetch(({ query, dispatch }) => {
       return dispatch(fetchProject(query.id))
     case 'join-community':
       return dispatch(fetchCommunity(query.id))
+    case 'use-invitation':
+      return dispatch(fetchCommunityForInvitation(query.token))
   }
 })
 
 export const connectForNext = section =>
   connect((state, { location: { query } }) => {
-    let { action, id } = query || {}
+    let { action, token, id } = query || {}
+    let project, community, actionError
+
+    switch (action) {
+      case 'join-project':
+        project = state.projects[id]
+        break
+      case 'join-community':
+        community = state.communities[id]
+        break
+      case 'use-invitation':
+        community = state.communities[token]
+        actionError = get(state.errors[FETCH_COMMUNITY_FOR_INVITATION], 'payload.response.body')
+        switch (actionError) {
+          case 'used token':
+            actionError = 'This invitation link has already been used.'
+            break
+          case 'bad token':
+            actionError = 'This invitation link is not valid.'
+            break
+        }
+        break
+    }
+
     return {
       ...state[section],
       currentUser: state.people.current,
-      project: action === 'join-project' ? state.projects[id] : null,
-      community: action === 'join-community' ? state.communities[id] : null
+      project,
+      community,
+      actionError
     }
   })
 
 export const goToNext = (currentUser, query) => {
-  let next = query.next || `/u/${currentUser.id}`
-  let url = makeUrl(next, {action: query.action})
-  return navigate(url)
+  let { next, action, token } = query
+  if (!next) next = `/u/${currentUser.id}`
+  let params
+  switch (action) {
+    case 'use-invitation':
+      params = {token}
+      break
+    default:
+      params = {action}
+  }
+  return navigate(makeUrl(next, params))
 }
 
 @prefetchForNext
@@ -46,7 +87,11 @@ export default class Login extends React.Component {
     dispatch: func,
     currentUser: object,
     project: object,
-    community: object
+    community: object,
+
+    // this is set when something is wrong with the data for the project,
+    // community, etc. that should be loaded after login
+    actionError: string
   }
 
   submit = event => {
@@ -60,13 +105,14 @@ export default class Login extends React.Component {
   }
 
   render () {
-    let { error, location: { query }, project, community } = this.props
+    let { error, actionError, location: { query }, project, community } = this.props
 
     return <div id='login' className='login-signup'>
       <form onSubmit={this.submit}>
         <h2>Log in</h2>
         {project && <p>To join the project "{project.title}"</p>}
         {community && <p>To join {community.name}</p>}
+        {actionError && <div className='alert alert-danger'>{actionError}</div>}
         {error && <div className='alert alert-danger'>{error}</div>}
 
         <ServiceAuthButtons errorAction={setLoginError}/>
@@ -82,7 +128,7 @@ export default class Login extends React.Component {
         <div className='form-group'>
           <input type='submit' value='Go'/>
         </div>
-        Or <Link to={makeUrl('/signup', pick(query, 'next', 'action', 'id'))}>sign up</Link>
+        Or <Link to={makeUrl('/signup', pick(query, 'next', 'action', 'id', 'token'))}>sign up</Link>
       </form>
     </div>
   }

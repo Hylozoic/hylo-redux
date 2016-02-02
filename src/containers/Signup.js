@@ -17,7 +17,11 @@ export default class Signup extends React.Component {
     error: string,
     currentUser: object,
     project: object,
-    community: object
+    community: object,
+
+    // this is set when something is wrong with the data for the project,
+    // community, etc. that should be loaded after login
+    actionError: string
   }
 
   constructor (props) {
@@ -72,13 +76,14 @@ export default class Signup extends React.Component {
       }
     }
 
-    let { location: { query }, project, community } = this.props
+    let { actionError, location: { query }, project, community } = this.props
 
     return <div id='signup' className='login-signup'>
       <form onSubmit={this.submit}>
         <h2>Sign up</h2>
         {project && <p>To join the project "{project.title}"</p>}
         {community && <p>To join {community.name}</p>}
+        {actionError && <div className='alert alert-danger'>{actionError}</div>}
         {error && <div className='alert alert-danger'>{error}</div>}
 
         <ServiceAuthButtons errorAction={setSignupError}/>
@@ -98,7 +103,7 @@ export default class Signup extends React.Component {
         <div className='form-group'>
           <input type='submit' value='Go'/>
         </div>
-        Or <Link to={makeUrl('/login', pick(query, 'next', 'action', 'id'))}>log in</Link>
+        Or <Link to={makeUrl('/login', pick(query, 'next', 'action', 'id', 'token'))}>log in</Link>
       </form>
     </div>
   }

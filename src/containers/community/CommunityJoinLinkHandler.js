@@ -1,7 +1,7 @@
 import React from 'react'
 import { prefetch } from 'react-fetcher'
 import { connect } from 'react-redux'
-import { any } from 'lodash'
+import { any, get } from 'lodash'
 import {
   JOIN_COMMUNITY_WITH_CODE,
   joinCommunityWithCode,
@@ -13,7 +13,7 @@ const { func, object, string } = React.PropTypes
   return dispatch(joinCommunityWithCode(code))
 })
 @connect(({ errors, people }) => ({
-  codeError: errors[JOIN_COMMUNITY_WITH_CODE],
+  codeError: get(errors[JOIN_COMMUNITY_WITH_CODE], 'payload.response.body'),
   currentUser: people.current
 }))
 export default class CommunityJoinLinkHandler extends React.Component {

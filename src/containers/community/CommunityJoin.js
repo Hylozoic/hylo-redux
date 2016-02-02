@@ -15,7 +15,7 @@ import cx from 'classnames'
 @connect(({communityValidation, errors}) => {
   var error
   if (errors[JOIN_COMMUNITY_WITH_CODE]) {
-    error = 'We couldn\'t find that code, please check it and try again'
+    error = "We didn't recognize that code; please check that you entered it correctly and try again."
   }
   let codeInvalid = !get(communityValidation, 'beta_access_code.exists')
   return {error, codeInvalid}

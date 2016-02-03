@@ -62,7 +62,7 @@ export default combineReducers({
     return state
   },
 
-  failures: (state = {}, action) => {
+  errors: (state = {}, action) => {
     let { error, type, payload, meta } = action
 
     switch (type) {
@@ -225,7 +225,7 @@ export default combineReducers({
         case CREATE_COMMUNITY:
           return {
             ...state,
-            failures: {...state.failures, server: `Server error: ${payload.message}`}
+            errors: {...state.errors, server: `Server error: ${payload.message}`}
           }
         default:
           return state

@@ -2,7 +2,6 @@ import React from 'react'
 import Dropdown from './Dropdown'
 
 let share = href => {
-  console.log('Sharing', href)
   FB.ui({
     method: 'share',
     href: href

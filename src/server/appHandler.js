@@ -87,7 +87,7 @@ function renderApp (res, renderProps, history, store) {
       markup: markup,
       state: `window.INITIAL_STATE=${JSON.stringify(state)}`,
       assetManifest: `window.ASSET_MANIFEST=${JSON.stringify(getManifest())}`,
-      metaTags: state['metaTags']
+      metaTags: state.metaTags
     })
   })
 }

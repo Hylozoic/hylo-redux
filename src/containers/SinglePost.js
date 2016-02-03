@@ -35,11 +35,11 @@ export default compose(
           'og:description': truncate(striptags(post.description || ''), 140)
         }
         if (media[0]) {
-          metaTags = {...metaTags, ...{
+          metaTags = {...metaTags,
             'og:image': media[0].url,
             'og:image:width': media[0].width,
             'og:image:height': media[0].height
-          }}
+          }
         }
         return dispatch(setMetaTags(metaTags))
       }

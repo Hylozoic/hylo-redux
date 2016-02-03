@@ -165,6 +165,7 @@ const PostMeta = ({ post, toggleComments }) => {
     </a>
     {post.public && <span>
       {spacer}Public
+      {spacer}<SocialSharing className='share-post' toggleChildren={<span>Share</span>} alignRight='true' url={`/p/${post.id}`} text={post.name} />
     </span>}
   </div>
 }
@@ -196,10 +197,6 @@ const ExpandedPostDetails = props => {
           <img src={file.thumbnail_url}/>
           {truncate(file.name, 40)}
         </a>)}
-    </div>}
-
-    {post.public && <div className='meta'>
-      <SocialSharing toggleChildren={<p>Share</p>} url={`/p/${post.id}`} text={post.name} />
     </div>}
 
     <div className='meta'>

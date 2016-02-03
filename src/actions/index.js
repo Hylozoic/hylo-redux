@@ -374,13 +374,16 @@ export function toggleUserSettingsSection (sectionName, forceOpen) {
   }
 }
 
-export function fetchActivity (offset = 0) {
+export function fetchActivity (offset = 0, resetCount) {
   let limit = 20
-  let query = cleanAndStringify({limit, offset, paginate: true})
+  let query = cleanAndStringify({limit, offset, paginate: true, resetCount})
   return {
     type: FETCH_ACTIVITY,
     payload: {api: true, path: `/noo/activity?${query}`, method: 'GET'},
-    meta: {cache: {bucket: 'activities', limit, offset, array: true}}
+    meta: {
+      cache: {bucket: 'activities', limit, offset, array: true},
+      resetCount
+    }
   }
 }
 

@@ -12,7 +12,7 @@ import { present, humanDate } from '../util/text'
 const { array, bool, func, number, object } = React.PropTypes
 
 const Notifications = compose(
-  prefetch(({ dispatch }) => dispatch(fetchActivity())),
+  prefetch(({ dispatch }) => dispatch(fetchActivity(0, true))),
   connect(({ people, comments, activities, totalActivities, pending }) => ({
     currentUser: people.current,
     activities,

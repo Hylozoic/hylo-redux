@@ -2,6 +2,7 @@ import { filter } from 'lodash'
 import { debug } from '../util/logging'
 import {
   CREATE_COMMUNITY,
+  FETCH_ACTIVITY,
   FETCH_CURRENT_USER,
   FETCH_PEOPLE,
   FETCH_PERSON,
@@ -90,6 +91,14 @@ export default function (state = {}, action) {
         ...state,
         current: {...state.current, memberships: [payload, ...state.current.memberships]}
       }
+    case FETCH_ACTIVITY:
+      if (meta.resetCount) {
+        return {
+          ...state,
+          current: {...state.current, new_notification_count: 0}
+        }
+      }
+      break
   }
 
   return state

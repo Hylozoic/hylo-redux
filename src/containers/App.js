@@ -3,7 +3,7 @@ import { connect } from 'react-redux'
 import TopNav from '../components/TopNav'
 import LeftNav from '../components/LeftNav'
 import { logout, toggleMainMenu } from '../actions'
-import { sortBy } from 'lodash'
+import { get, sortBy } from 'lodash'
 const { bool, func, number, object } = React.PropTypes
 
 const lastViewed = m => -Date.parse(m.last_viewed_at || '2001-01-01')
@@ -27,6 +27,8 @@ export default class App extends React.Component {
       ? sortBy(currentUser.memberships, lastViewed).map(m => m.community)
       : []
 
+    let unreadCount = get(currentUser, 'new_notification_count') || 0
+
     return <div>
       <div className='row'>
         <TopNav currentUser={currentUser}
@@ -35,7 +37,7 @@ export default class App extends React.Component {
           logout={() => dispatch(logout())}/>
       </div>
       <div className='row' id='mainRow'>
-        <LeftNav communities={communities} open={mainMenuOpened}/>
+        <LeftNav communities={communities} open={mainMenuOpened} unreadCount={unreadCount}/>
         <div id='main'>
           {this.props.children}
         </div>

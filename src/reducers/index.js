@@ -1,6 +1,6 @@
 import { combineReducers } from 'redux'
 import { routeReducer } from 'redux-simple-router'
-import { contains, get, omit } from 'lodash'
+import { any, contains, get, omit, partition } from 'lodash'
 import comments from './comments'
 import commentsByPost from './commentsByPost'
 import people from './people'
@@ -19,6 +19,7 @@ import {
   CREATE_COMMUNITY,
   CREATE_POST,
   FETCH_ACTIVITY,
+  FETCH_INVITATIONS,
   FETCH_PEOPLE,
   FETCH_POSTS,
   FETCH_PROJECTS,
@@ -29,6 +30,7 @@ import {
   NAVIGATE,
   RESET_ERROR,
   RESET_COMMUNITY_VALIDATION,
+  SEND_COMMUNITY_INVITATION,
   SET_LOGIN_ERROR,
   SET_META_TAGS,
   SET_SIGNUP_ERROR,
@@ -37,6 +39,7 @@ import {
   TOGGLE_USER_SETTINGS_SECTION,
   TYPEAHEAD,
   UPDATE_COMMUNITY_EDITOR,
+  UPDATE_INVITATION_EDITOR,
   UPDATE_POST,
   UPDATE_PROJECT_INVITE,
   UPLOAD_IMAGE,
@@ -151,6 +154,8 @@ export default combineReducers({
       toggle(FETCH_PROJECTS) ||
       toggle(CREATE_COMMUNITY) ||
       toggle(FETCH_ACTIVITY) ||
+      toggle(SEND_COMMUNITY_INVITATION) ||
+      toggle(FETCH_INVITATIONS) ||
       state
   },
 
@@ -320,6 +325,56 @@ export default combineReducers({
       return payload
     }
 
+    return state
+  },
+
+  invitations: (state = {}, action) => {
+    let { type, payload, error, meta } = action
+    if (error) return state
+
+    switch (type) {
+      case FETCH_INVITATIONS:
+        let { communityId, reset } = meta
+        if (reset) return {...state, [communityId]: payload.items}
+        return {
+          ...state,
+          [communityId]: [...(state[communityId] || []), ...payload.items]
+        }
+    }
+
+    return state
+  },
+
+  totalInvitations: (state = {}, action) => {
+    let { type, payload, error, meta } = action
+    if (error) return state
+
+    switch (type) {
+      case FETCH_INVITATIONS:
+        return {...state, [meta.communityId]: payload.total}
+    }
+
+    return state
+  },
+
+  invitationEditor: (state = {}, action) => {
+    let { type, payload, error } = action
+    if (error) return state
+    switch (type) {
+      case UPDATE_INVITATION_EDITOR:
+        return {...state, [payload.field]: payload.value}
+      case SEND_COMMUNITY_INVITATION:
+        let { results } = payload
+        let [ failures, successes ] = partition(results, r => r.error)
+        let success, error
+        if (successes.length > 0) {
+          success = `Sent invitations to ${successes.length} people.`
+        }
+        if (any(failures)) {
+          error = failures.map(r => `Couldn't send to ${r.email}: ${r.error}.`).join(' ')
+        }
+        return {...state, success, error}
+    }
     return state
   }
 

@@ -18,6 +18,7 @@ export const FETCH_COMMUNITY_MODERATORS = 'FETCH_COMMUNITY_MODERATORS'
 export const FETCH_COMMUNITY_SETTINGS = 'FETCH_COMMUNITY_SETTINGS'
 export const FETCH_CURRENT_USER = 'FETCH_CURRENT_USER'
 export const FETCH_ACTIVITY = 'FETCH_ACTIVITY'
+export const FETCH_INVITATIONS = 'FETCH_INVITATIONS'
 export const FETCH_PEOPLE = 'FETCH_PEOPLE'
 export const FETCH_PERSON = 'FETCH_PERSON'
 export const FETCH_POST = 'FETCH_POST'
@@ -43,6 +44,7 @@ export const REMOVE_IMAGE = 'REMOVE_IMAGE'
 export const REMOVE_PROJECT_CONTRIBUTOR = 'REMOVE_PROJECT_CONTRIBUTOR'
 export const RESET_COMMUNITY_VALIDATION = 'RESET_COMMUNITY_VALIDATION'
 export const RESET_ERROR = 'RESET_ERROR'
+export const SEND_COMMUNITY_INVITATION = 'SEND_COMMUNITY_INVITATION'
 export const SEND_PROJECT_INVITE = 'SEND_PROJECT_INVITE'
 export const SEND_PROJECT_INVITE_PENDING = SEND_PROJECT_INVITE + _PENDING
 export const SET_LOGIN_ERROR = 'SET_LOGIN_ERROR'
@@ -57,6 +59,7 @@ export const TOGGLE_PROJECT_MODERATOR_ROLE = 'TOGGLE_PROJECT_MODERATOR_ROLE'
 export const TOGGLE_MAIN_MENU = 'TOGGLE_MAIN_MENU'
 export const TYPEAHEAD = 'TYPEAHEAD'
 export const UPDATE_COMMUNITY_EDITOR = 'UPDATE_COMMUNITY_EDITOR'
+export const UPDATE_INVITATION_EDITOR = 'UPDATE_INVITATION_EDITOR'
 export const UPDATE_COMMUNITY_SETTINGS = 'UPDATE_COMMUNITY_SETTINGS'
 export const UPDATE_COMMUNITY_SETTINGS_PENDING = UPDATE_COMMUNITY_SETTINGS + _PENDING
 export const UPDATE_POST = 'UPDATE_POST'
@@ -431,5 +434,28 @@ export function useInvitation (token) {
     type: USE_INVITATION,
     payload: {api: true, path: `/noo/invitation/${token}`, method: 'POST'},
     meta: {token}
+  }
+}
+
+export function fetchInvitations (communityId, offset = 0, reset) {
+  return {
+    type: FETCH_INVITATIONS,
+    payload: {api: true, path: `/noo/community/${communityId}/invitations?offset=${offset}`},
+    meta: {communityId, reset}
+  }
+}
+
+export function updateInvitationEditor (field, value) {
+  return {
+    type: UPDATE_INVITATION_EDITOR,
+    payload: {field, value}
+  }
+}
+
+export function sendCommunityInvitation (communityId, params) {
+  params.emails = params.emails.join(',')
+  return {
+    type: SEND_COMMUNITY_INVITATION,
+    payload: {api: true, path: `/noo/community/${communityId}/invite`, params, method: 'POST'}
   }
 }

@@ -1,20 +1,25 @@
 import React from 'react'
 import { prefetch } from 'react-fetcher'
 import { connect } from 'react-redux'
-import { debounce } from 'lodash'
+import { debounce, get } from 'lodash'
 import { fetchPeople } from '../../actions/fetchPeople'
 import { fetchWithCache, connectedListProps, refetch } from '../../util/caching'
 import ScrollListener from '../../components/ScrollListener'
 import PersonCards from '../../components/PersonCards'
-import { debug } from '../../util/logging'
+import A from '../../components/A'
 const { array, bool, func, number, object } = React.PropTypes
+import { CommunityMemberRole } from '../../constants'
 
 const subject = 'community'
 const fetch = fetchWithCache(fetchPeople)
 
 @prefetch(({ dispatch, params: { id }, query }) => dispatch(fetch(subject, id, query)))
 @connect((state, { params: { id }, location: { query } }) => {
-  return connectedListProps(state, {subject, id, query}, 'people')
+  return {
+    ...connectedListProps(state, {subject, id, query}, 'people'),
+    community: state.communities[id],
+    currentUser: state.people.current
+  }
 })
 export default class CommunityMembers extends React.Component {
   static propTypes = {
@@ -23,7 +28,9 @@ export default class CommunityMembers extends React.Component {
     dispatch: func,
     total: number,
     params: object,
-    location: object
+    location: object,
+    community: object,
+    currentUser: object
   }
 
   loadMore = () => {
@@ -40,15 +47,22 @@ export default class CommunityMembers extends React.Component {
   }
 
   render () {
-    let { pending, people, total, location: { query } } = this.props
+    let { pending, people, location: { query }, community, currentUser } = this.props
+    if (!currentUser) return <div>Loading...</div>
     let { search } = query
-    debug(`people: ${people.length || 0} / ${total || '??'}`)
+
+    let membership = currentUser.memberships.find(m => m.community.id === community.id)
+    let canModerate = get(membership, 'role') === CommunityMemberRole.MODERATOR
+    let canInvite = canModerate || community.settings.all_can_invite
 
     return <div className='members'>
-      <input type='text' className='form-control search'
-        placeholder='Search'
-        defaultValue={search}
-        onChange={debounce(event => this.updateQuery({search: event.target.value}), 500)}/>
+      <div className='list-controls'>
+        {canInvite && <A className='button' to={`/c/${community.slug}/invite`}>Invite members</A>}
+        <input type='text' className='form-control search'
+          placeholder='Search'
+          defaultValue={search}
+          onChange={debounce(event => this.updateQuery({search: event.target.value}), 500)}/>
+      </div>
       {pending && <div className='loading'>Loading...</div>}
       <PersonCards people={people}/>
       <ScrollListener onBottom={this.loadMore}/>

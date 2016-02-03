@@ -12,6 +12,7 @@ import CommunityMembers from './containers/community/CommunityMembers'
 import CommunityEvents from './containers/community/CommunityEvents'
 import CommunityProjects from './containers/community/CommunityProjects'
 import CommunityEditor from './containers/community/CommunityEditor'
+import CommunityInvitations from './containers/community/CommunityInvitations'
 import CommunityJoin from './containers/community/CommunityJoin'
 import CommunityJoinLinkHandler from './containers/community/CommunityJoinLinkHandler'
 import InvitationHandler from './containers/community/InvitationHandler'
@@ -83,6 +84,7 @@ export default function makeRoutes (store) {
       <Route path='projects' component={CommunityProjects}/>
       <Route path='about' component={AboutCommunity}/>
       <Route path='settings' component={CommunitySettings}/>
+      <Route path='invite' component={CommunityInvitations}/>
     </Route>
     <Route path='p/:id' component={SinglePost}/>
     <Route path='project/new' component={ProjectEditor} onenter={requireLogin()}/>

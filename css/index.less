@@ -836,10 +836,6 @@ ul.tags {
     > ul {
       .no-bullets;
     }
-
-    .search {
-      margin-bottom: 15px;
-    }
   }
 }
 
@@ -997,20 +993,24 @@ ul.tags {
   .section-item {
     .make-row;
     padding: 15px 0px;
+  }
 
-    input[type=checkbox] {
-      .round-checkbox();
+  .section {
+    &.single-column {
+      padding: 15px 0;
     }
 
-    .summary {
-      .meta-text;
-    }
 
-    .medium-logo, .medium-avatar {
-      vertical-align: middle;
-      display: inline-block;
-      margin-right: 10px;
-    }
+  }
+
+  .summary {
+    .meta-text;
+  }
+
+  .medium-logo, .medium-avatar {
+    vertical-align: middle;
+    display: inline-block;
+    margin-right: 10px;
   }
 
   label {
@@ -1288,5 +1288,29 @@ ul.tags {
     display: inline-block;
     vertical-align: middle;
     margin-right: 10px;
+  }
+}
+
+.sent-invitations {
+  table {
+    width: 100%;
+  }
+  th, td {
+    padding: 5px 7.5px;
+  }
+  tr.even td {
+    background-color: @faint-gray-bg;
+  }
+  .avatar {
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: 5px;
+  }
+  .unused {
+    height: @avatar-size-default;
+  }
+
+  .footer {
+    margin-top: 15px;
   }
 }

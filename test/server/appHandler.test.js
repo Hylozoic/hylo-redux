@@ -1,8 +1,10 @@
 import support from '../support'
-import appHandler from '../../src/server/appHandler'
 import nock from 'nock'
-import { HOST } from '../../src/util/api'
 import { inspect } from 'util'
+import { get } from 'lodash'
+import appHandler from '../../src/server/appHandler'
+import { FETCH_CURRENT_USER } from '../../src/actions'
+import { HOST } from '../../src/util/api'
 
 const checkError = res => {
   if (res.error) {
@@ -19,6 +21,23 @@ describe('appHandler', () => {
 
   beforeEach(() => {
     res = support.mocks.response()
+  })
+
+  describe('with a failed API request', () => {
+    beforeEach(() => {
+      nock(HOST).get('/noo/user/me').reply(500, 'Oh noes')
+    })
+
+    it('sets the error property of the response', () => {
+      req = support.mocks.request('/')
+
+      return appHandler(req, res)
+      .then(() => {
+        let error = get(res.errors, FETCH_CURRENT_USER)
+        expect(error).to.exist
+        expect(error.payload.message).to.equal('Oh noes')
+      })
+    })
   })
 
   describe('with an anonymous visitor', () => {
@@ -45,7 +64,7 @@ describe('appHandler', () => {
 
       return appHandler(req, res)
       .then(() => {
-        expect(res.redirect).to.have.been.called.with(302, '/login?next=/c/foo')
+        expect(res.redirect).to.have.been.called.with(302, '/login?next=%2Fc%2Ffoo')
       })
     })
   })
@@ -69,6 +88,28 @@ describe('appHandler', () => {
         expect(res.status).to.have.been.called.with(200)
         expect(res.body).to.contain('House')
         expect(res.body).to.contain(bannerUrl)
+      })
+    })
+  })
+
+  describe('on the user settings page', () => {
+    beforeEach(() => {
+      let user = {
+        id: 1,
+        name: 'cat',
+        email: 'cat@house.com',
+        settings: {}
+      }
+      nock(HOST).get('/noo/user/me').reply(200, user)
+    })
+
+    it('starts with the specified section expanded', () => {
+      req = support.mocks.request('/settings?expand=password')
+      return appHandler(req, res)
+      .then(() => {
+        checkError(res)
+        expect(res.status).to.have.been.called.with(200)
+        expect(res.body).to.contain('cat@house.com')
       })
     })
   })

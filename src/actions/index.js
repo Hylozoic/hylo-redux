@@ -10,8 +10,10 @@ export const CREATE_COMMENT = 'CREATE_COMMENT'
 export const CREATE_COMMUNITY = 'CREATE_COMMUNITY'
 export const CREATE_POST = 'CREATE_POST'
 export const CREATE_PROJECT = 'CREATE_PROJECT'
+export const TOGGLE_USER_SETTINGS_SECTION = 'TOGGLE_USER_SETTINGS_SECTION'
 export const FETCH_COMMENTS = 'FETCH_COMMENTS'
 export const FETCH_COMMUNITY = 'FETCH_COMMUNITY'
+export const FETCH_COMMUNITY_FOR_INVITATION = 'FETCH_COMMUNITY_FOR_INVITATION'
 export const FETCH_COMMUNITY_MODERATORS = 'FETCH_COMMUNITY_MODERATORS'
 export const FETCH_COMMUNITY_SETTINGS = 'FETCH_COMMUNITY_SETTINGS'
 export const FETCH_CURRENT_USER = 'FETCH_CURRENT_USER'
@@ -22,6 +24,7 @@ export const FETCH_POST = 'FETCH_POST'
 export const FETCH_POSTS = 'FETCH_POSTS'
 export const FETCH_PROJECT = 'FETCH_PROJECT'
 export const FETCH_PROJECTS = 'FETCH_PROJECTS'
+export const JOIN_COMMUNITY_WITH_CODE = 'JOIN_COMMUNITY_WITH_CODE'
 export const JOIN_PROJECT = 'JOIN_PROJECT'
 export const JOIN_PROJECT_PENDING = JOIN_PROJECT + _PENDING
 export const LEAVE_COMMUNITY = 'LEAVE_COMMUNITY'
@@ -39,6 +42,7 @@ export const REMOVE_DOC = 'REMOVE_DOC'
 export const REMOVE_IMAGE = 'REMOVE_IMAGE'
 export const REMOVE_PROJECT_CONTRIBUTOR = 'REMOVE_PROJECT_CONTRIBUTOR'
 export const RESET_COMMUNITY_VALIDATION = 'RESET_COMMUNITY_VALIDATION'
+export const RESET_ERROR = 'RESET_ERROR'
 export const SEND_PROJECT_INVITE = 'SEND_PROJECT_INVITE'
 export const SEND_PROJECT_INVITE_PENDING = SEND_PROJECT_INVITE + _PENDING
 export const SET_LOGIN_ERROR = 'SET_LOGIN_ERROR'
@@ -65,6 +69,7 @@ export const UPDATE_USER_SETTINGS_PENDING = UPDATE_USER_SETTINGS + _PENDING
 export const UPLOAD_DOC = 'UPLOAD_DOC'
 export const UPLOAD_IMAGE = 'UPLOAD_IMAGE'
 export const UPLOAD_IMAGE_PENDING = UPLOAD_IMAGE + _PENDING
+export const USE_INVITATION = 'USE_INVITATION'
 export const VALIDATE_COMMUNITY_ATTRIBUTE = 'VALIDATE_COMMUNITY_ATTRIBUTE'
 export const VALIDATE_COMMUNITY_ATTRIBUTE_PENDING = VALIDATE_COMMUNITY_ATTRIBUTE + _PENDING
 
@@ -352,10 +357,27 @@ export function createCommunity (params) {
   }
 }
 
-export function fetchActivity (limit, offset) {
+export function joinCommunityWithCode (code) {
+  return {
+    type: JOIN_COMMUNITY_WITH_CODE,
+    payload: {api: true, params: {code}, path: '/noo/community/code', method: 'POST'}
+  }
+}
+
+export function toggleUserSettingsSection (sectionName, forceOpen) {
+  return {
+    type: TOGGLE_USER_SETTINGS_SECTION,
+    payload: sectionName,
+    meta: {forceOpen}
+  }
+}
+
+export function fetchActivity (offset = 0) {
+  let limit = 20
+  let query = cleanAndStringify({limit, offset, paginate: true})
   return {
     type: FETCH_ACTIVITY,
-    payload: {api: true, path: `/noo/activity?${cleanAndStringify({ limit, offset, paginate: true })}`, method: 'GET'}
+    payload: {api: true, path: `/noo/activity?${query}`, method: 'GET'}
   }
 }
 
@@ -386,5 +408,28 @@ export function setMetaTags (metaTags) {
   return {
     type: SET_META_TAGS,
     payload: metaTags
+  }
+}
+
+export function resetError (type) {
+  return {
+    type: RESET_ERROR,
+    meta: {type}
+  }
+}
+
+export function fetchCommunityForInvitation (token) {
+  return {
+    type: FETCH_COMMUNITY_FOR_INVITATION,
+    payload: {api: true, path: `/noo/invitation/${token}`},
+    meta: {token}
+  }
+}
+
+export function useInvitation (token) {
+  return {
+    type: USE_INVITATION,
+    payload: {api: true, path: `/noo/invitation/${token}`, method: 'POST'},
+    meta: {token}
   }
 }

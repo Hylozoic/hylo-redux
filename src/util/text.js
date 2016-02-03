@@ -96,3 +96,7 @@ marked.setOptions({
 })
 
 export const markdown = marked
+
+export function nonbreaking (str) {
+  return str.replace(/ /g, String.fromCharCode(160))
+}

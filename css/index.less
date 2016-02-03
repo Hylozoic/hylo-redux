@@ -323,28 +323,20 @@ ul.tabs {
 }
 
 .avatar {
-  width: @avatar-size-default;
-  height: @avatar-size-default;
-  border-radius: @avatar-size-default;
-  background-position: center;
-  background-size: cover;
+  .round-image-div(@avatar-size-default);
   display: block;
 }
 
+.medium-logo {
+  .image-div(@avatar-size-medium);
+}
+
 .medium-avatar {
-  width: @avatar-size-medium;
-  height: @avatar-size-medium;
-  border-radius: @avatar-size-medium;
-  background-position: center;
-  background-size: cover;
+  .round-image-div(@avatar-size-medium);
 }
 
 .large-avatar {
-  width: @avatar-size-large;
-  height: @avatar-size-large;
-  border-radius: @avatar-size-large;
-  background-position: center;
-  background-size: cover;
+  .round-image-div(@avatar-size-large);
 }
 
 ul.posts {
@@ -1017,6 +1009,12 @@ ul.tags {
     .summary {
       .meta-text;
     }
+
+    .medium-logo, .medium-avatar {
+      vertical-align: middle;
+      display: inline-block;
+      margin-right: 10px;
+    }
   }
 
   label {
@@ -1064,6 +1062,15 @@ ul.tags {
     margin-bottom: 10px;
   }
 
+  .banner {
+    display: block;
+    width: 100%;
+    .fluid-height(38.2%);
+    background-size: cover;
+    background-position: center;
+    margin-bottom: 5px;
+  }
+
   textarea.description {
     min-height: 30vh;
   }
@@ -1073,32 +1080,7 @@ ul.tags {
   }
 }
 
-.community-settings() {
-  .community-logo {
-    width: 60px;
-    height: 60px;
-    background-size: cover;
-    vertical-align: middle;
-    display: inline-block;
-    margin-right: 10px;
-  }
-
-  .community-banner {
-    display: block;
-    width: 100%;
-    .fluid-height(38.2%);
-    background-size: cover;
-    background-position: center;
-    margin-bottom: 5px;
-  }
-}
-
-#community-editor {
-  .community-settings;
-}
-
 #community-settings {
-  .community-settings;
 
   .welcome-message {
     .leader {
@@ -1303,10 +1285,22 @@ ul.tags {
       }
 
       .body-text {
-        padding: 0px 15px 5px 15px
+        padding: 0px 15px 5px 15px;
       }
 
       overflow: hidden;
     }
+
+    a {
+      cursor: pointer;
+    }
+  }
+}
+
+#user-settings {
+  .medium-avatar {
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: 10px;
   }
 }

@@ -32,6 +32,15 @@ export default {
         })
       }
       return res
+    },
+    redux: {
+      store: function (state) {
+        return {
+          subscribe: () => {},
+          dispatch: () => {},
+          getState: () => ({...state})
+        }
+      }
     }
   }
 }

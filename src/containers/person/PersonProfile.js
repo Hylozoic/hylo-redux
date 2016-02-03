@@ -8,22 +8,31 @@ const { object } = React.PropTypes
 const defaultBanner = 'https://d3ngex8q79bk55.cloudfront.net/misc/default_user_banner.jpg'
 
 @prefetch(({ dispatch, params: {id} }) => dispatch(fetchPerson(id)))
-@connect((state, props) => ({person: state.people[props.params.id]}))
+@connect(({ people }, props) => ({
+  person: people[props.params.id],
+  currentUser: people.current
+}))
 export default class PersonProfile extends React.Component {
   static propTypes = {
     params: object,
     person: object,
-    children: object
+    children: object,
+    currentUser: object
   }
 
   render () {
-    let person = this.props.person
+    let { person, currentUser } = this.props
     if (!person) return <div>Loading...</div>
 
     let bannerUrl = person.banner_url || defaultBanner
+    let isSelf = currentUser && person.id === currentUser.id
+
     return <div id='person'>
       <div className='banner'>
         <div className='background' style={{backgroundImage: `url(${bannerUrl})`}}/>
+        <div className='corner'>
+          {isSelf && <A to={`/settings?expand=profile`}>Edit profile</A>}
+        </div>
         <div className='logo person' style={{backgroundImage: `url(${person.avatar_url})`}}/>
         <h2>{person.name}</h2>
         <ul className='tabs'>

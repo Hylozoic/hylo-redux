@@ -17,3 +17,17 @@ export const communityBannerUploadSettings = community => ({
   path: `community/${community.id}/banner`,
   convert: {width: 1600, format: 'jpg', fit: 'max', rotate: 'exif'}
 })
+
+export const userAvatarUploadSettings = user => ({
+  id: user.id,
+  subject: 'user-avatar',
+  path: `user/${user.id}/avatar`,
+  convert: {width: 200, height: 200, fit: 'crop', rotate: 'exif'}
+})
+
+export const userBannerUploadSettings = user => ({
+  id: user.id,
+  subject: 'user-banner',
+  path: `user/${user.id}/banner`,
+  convert: {width: 1600, format: 'jpg', fit: 'max', rotate: 'exif'}
+})

@@ -23,6 +23,28 @@ describe('posts', () => {
 
       expect(posts(state, action)).to.deep.equal(expectedState)
     })
+
+    it('merges with existing post data', () => {
+      let action = {
+        type: FETCH_POSTS,
+        payload: {
+          posts: [{id: 'a', name: 'hi', communities: []}]
+        },
+        meta: {
+          cache: {id: 'foo'}
+        }
+      }
+
+      let state = {
+        a: {id: 'a', description: 'hello'}
+      }
+
+      let expectedState = {
+        a: {id: 'a', name: 'hi', description: 'hello', communities: []}
+      }
+
+      expect(posts(state, action)).to.deep.equal(expectedState)
+    })
   })
 
   describe('on UPDATE_POST', () => {

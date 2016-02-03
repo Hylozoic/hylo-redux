@@ -280,7 +280,7 @@ export default class CommunityEditor extends React.Component {
             <label>Icon</label>
           </div>
           <div className='main-column'>
-            <div className='community-logo' style={{backgroundImage: `url(${community.avatar_url})`}}></div>
+            <div className='medium-logo' style={{backgroundImage: `url(${community.avatar_url})`}}></div>
             <button onClick={() => this.attachImage('avatar')}>Change</button>
             <p className='help'>This image appears next to your community's name. (Tip: Try a transparent PNG image.)</p>
           </div>
@@ -291,7 +291,7 @@ export default class CommunityEditor extends React.Component {
             <label>Banner</label>
           </div>
           <div className='main-column'>
-            <div className='community-banner' style={{backgroundImage: `url(${community.banner_url})`}}></div>
+            <div className='banner' style={{backgroundImage: `url(${community.banner_url})`}}></div>
             <button onClick={() => this.attachImage('banner')}>Change</button>
             <p className='help'>
               This image appears across the top of your community page. (Aspect ratio: roughly 3.3:1.)

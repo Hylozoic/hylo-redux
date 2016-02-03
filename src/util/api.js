@@ -17,12 +17,12 @@ export const fetchJSON = (path, params, options = {}) => {
     body: JSON.stringify(params)
   })
   .then(resp => {
-    if (resp.status === 200) return resp
-    return resp.text().then(text => {
-      let error = new Error(text)
-      error.response = resp
+    let { status, statusText, url } = resp
+    if (status === 200) return resp.json()
+    return resp.text().then(body => {
+      let error = new Error(body)
+      error.response = {status, statusText, url, body}
       throw error
     })
   })
-  .then(resp => resp.json())
 }

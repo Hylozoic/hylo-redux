@@ -2,16 +2,18 @@ import { filter } from 'lodash'
 import { debug } from '../util/logging'
 import {
   CREATE_COMMUNITY,
+  FETCH_CURRENT_USER,
+  FETCH_PEOPLE,
+  FETCH_PERSON,
+  JOIN_COMMUNITY_WITH_CODE,
+  LEAVE_COMMUNITY_PENDING,
+  LEAVE_COMMUNITY,
   LOGIN,
   LOGOUT,
-  FETCH_PEOPLE,
-  FETCH_CURRENT_USER,
-  FETCH_PERSON,
   SIGNUP,
-  UPDATE_USER_SETTINGS,
   UPDATE_USER_SETTINGS_PENDING,
-  LEAVE_COMMUNITY,
-  LEAVE_COMMUNITY_PENDING
+  UPDATE_USER_SETTINGS,
+  USE_INVITATION
 } from '../actions'
 import { mergeList } from './util'
 
@@ -47,9 +49,11 @@ export default function (state = {}, action) {
         [currentUser.id]: null
       }
     case UPDATE_USER_SETTINGS_PENDING:
+      let { params } = meta
       return {
         ...state,
-        current: {...state.current, ...meta.params}
+        current: {...state.current, ...params},
+        [params.id]: {...state[params.id], ...params}
       }
     case LEAVE_COMMUNITY_PENDING:
       let memberships = filter(state.current.memberships, m => m.community_id !== meta.communityId)
@@ -80,6 +84,8 @@ export default function (state = {}, action) {
     case FETCH_PEOPLE:
       return mergeList(state, payload.people, 'id')
     case CREATE_COMMUNITY:
+    case JOIN_COMMUNITY_WITH_CODE:
+    case USE_INVITATION:
       return {
         ...state,
         current: {...state.current, memberships: [payload, ...state.current.memberships]}

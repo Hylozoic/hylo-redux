@@ -4,6 +4,7 @@ import {
   CREATE_COMMUNITY,
   FETCH_POSTS,
   FETCH_COMMUNITY,
+  FETCH_COMMUNITY_FOR_INVITATION,
   FETCH_COMMUNITY_SETTINGS,
   FETCH_COMMUNITY_MODERATORS,
   FETCH_POST,
@@ -13,7 +14,8 @@ import {
   ADD_COMMUNITY_MODERATOR,
   ADD_COMMUNITY_MODERATOR_PENDING,
   REMOVE_COMMUNITY_MODERATOR,
-  REMOVE_COMMUNITY_MODERATOR_PENDING
+  REMOVE_COMMUNITY_MODERATOR_PENDING,
+  USE_INVITATION
 } from '../actions'
 import { mergeList } from './util'
 
@@ -42,6 +44,10 @@ export default function (state = {}, action) {
       community = {...state[slug], ...payload}
       debug('caching community:', community.slug)
       return {...state, [slug]: community}
+    case FETCH_COMMUNITY_FOR_INVITATION:
+      return {...state, [meta.token]: payload}
+    case USE_INVITATION:
+      return {...state, [meta.token]: payload.community}
     case FETCH_COMMUNITY_MODERATORS:
       community = {...state[meta.cache.id], moderators: payload}
       return {...state, [meta.cache.id]: community}

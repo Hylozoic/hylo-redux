@@ -4,6 +4,7 @@ import { find, pluck } from 'lodash'
 import Avatar from '../components/Avatar'
 import A from '../components/A'
 import { ProjectVisibility } from '../constants'
+import { projectUrl } from '../routes'
 
 const spacer = <span>&nbsp;&nbsp;•&nbsp;&nbsp;</span>
 
@@ -12,14 +13,14 @@ const ProjectCard = props => {
   let image = find(pluck(project.media, 'thumbnail_url')) || find(pluck(project.media, 'url'))
   let person = project.user
   let { contributor_count, open_request_count, created_at, title, intention } = project
-  let projectUrl = `/project/${project.id}/${project.slug}`
   let isDraft = !project.published_at
   let isPublic = !isDraft && project.visibility === ProjectVisibility.PUBLIC
+  let url = projectUrl(project)
 
   return <div className='project-card'>
-    {image && <A to={projectUrl} className='image' style={{backgroundImage: `url(${image})`}}/>}
+    {image && <A to={url} className='image' style={{backgroundImage: `url(${image})`}}/>}
     <div className='content'>
-      <h4><A to={projectUrl}>{title}</A></h4>
+      <h4><A to={url}>{title}</A></h4>
       <p>{intention}</p>
       <Avatar person={person}/>
       <A className='name' to={`/u/${person.id}`}>{person.name}</A>

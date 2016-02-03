@@ -1,6 +1,6 @@
 import { CREATE_POST, FETCH_POST, FETCH_POSTS, UPDATE_POST, CHANGE_EVENT_RESPONSE_PENDING } from '../actions'
 import { omit, findWhere, without } from 'lodash'
-import { hashById } from './util'
+import { mergeList } from './util'
 
 const normalize = post => ({
   ...post,
@@ -32,7 +32,7 @@ export default function (state = {}, action) {
 
   switch (type) {
     case FETCH_POSTS:
-      return {...state, ...hashById(payload.posts, normalize)}
+      return mergeList(state, payload.posts.map(normalize), 'id')
     case CREATE_POST:
     case FETCH_POST:
       return {...state, [payload.id]: normalize(payload)}

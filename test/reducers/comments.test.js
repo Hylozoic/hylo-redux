@@ -56,7 +56,7 @@ describe('comments', () => {
     it('extracts comments and appends to state', () => {
       let action = {
         type: FETCH_ACTIVITY,
-        payload: { activities: [
+        payload: {items: [
           {id: '20', comment: {id: '2', comment_text: 'bar'}},
           {id: '30', comment: {id: '3', comment_text: 'baz'}},
           {id: '40'}

@@ -298,7 +298,7 @@ export default combineReducers({
     var activityId
     switch (type) {
       case FETCH_ACTIVITY:
-        return state.concat(payload.activities.map(normalize))
+        return state.concat(payload.items.map(normalize))
       case MARK_ACTIVITY_READ:
         activityId = meta.activityId
         return state.map(a => a.id === activityId ? {...a, unread: false} : a)
@@ -313,7 +313,7 @@ export default combineReducers({
     if (error) return state
     switch (type) {
       case FETCH_ACTIVITY:
-        return payload.activities_total
+        return payload.total
     }
     return state
   },

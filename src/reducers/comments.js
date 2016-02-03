@@ -31,7 +31,7 @@ export default function (state = {}, action) {
 
   switch (type) {
     case FETCH_ACTIVITY:
-      let comments = filter(payload.activities.map(a => a.comment))
+      let comments = filter(payload.items.map(a => a.comment))
       return {
         ...state,
         ...hashById(comments)

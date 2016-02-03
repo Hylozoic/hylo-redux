@@ -10,6 +10,7 @@ const LeftNav = props => {
       <A to='/my-posts'>My posts</A>
       <A to='/followed-posts'>Followed posts</A>
       <A to='/projects'>Projects</A>
+      <A to='/notifications'>Notifications</A>
       {props.communities.map((c, i) => <li key={i}>
         <A to={`/c/${c.slug}`}>
           <img src={c.avatar_url}/>
@@ -18,7 +19,6 @@ const LeftNav = props => {
       </li>)}
       <A to='/c/new'>Create a community</A>
       <A to='/c/join'>Join a community</A>
-      <A to='/notifications'>Notifications</A>
     </ul>
   </nav>
 }

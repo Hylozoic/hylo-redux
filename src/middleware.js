@@ -13,14 +13,14 @@ export function cacheMiddleware (store) {
     let state = store.getState()
     if (!state[bucket]) return next(action)
 
+    let hit = id ? state[bucket][id] : state[bucket]
+
     if (array) {
-      let hit = state[bucket][id]
       if (hit && hit.length > offset) {
         debug(`cache hit: ${bucket}[${id}][${offset}] + ${limit}`)
         return
       }
     } else {
-      let hit = state[bucket][id]
       if (hit && !requiredProp || has(hit, requiredProp)) {
         debug(`cache hit: ${bucket}[${id}]`)
         return

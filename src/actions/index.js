@@ -379,7 +379,8 @@ export function fetchActivity (offset = 0) {
   let query = cleanAndStringify({limit, offset, paginate: true})
   return {
     type: FETCH_ACTIVITY,
-    payload: {api: true, path: `/noo/activity?${query}`, method: 'GET'}
+    payload: {api: true, path: `/noo/activity?${query}`, method: 'GET'},
+    meta: {cache: {bucket: 'activities', limit, offset, array: true}}
   }
 }
 

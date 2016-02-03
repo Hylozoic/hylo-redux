@@ -15,7 +15,7 @@ const Notifications = compose(
   prefetch(({ dispatch }) => dispatch(fetchActivity())),
   connect(({ people, comments, activities, totalActivities, pending }) => ({
     currentUser: people.current,
-    activities: activities,
+    activities,
     comments: filter(activities.map(a => a.comment_id)).reduce((acc, cid) => ({...acc, [cid]: comments[cid]}), {}),
     total: Number(totalActivities),
     pending: pending[FETCH_ACTIVITY]

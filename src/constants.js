@@ -3,7 +3,6 @@
 
 export const ProjectVisibility = {COMMUNITY: 0, PUBLIC: 1}
 export const ProjectMemberRole = {DEFAULT: 0, MODERATOR: 1}
-export const CommunityMemberRole = {DEFAULT: 0, MODERATOR: 1}
 
 export const communityAvatarUploadSettings = community => ({
   id: community.slug,

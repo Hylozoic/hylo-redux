@@ -1,14 +1,14 @@
 import React from 'react'
 import { prefetch } from 'react-fetcher'
 import { connect } from 'react-redux'
-import { debounce, get } from 'lodash'
+import { debounce } from 'lodash'
 import { fetchPeople } from '../../actions/fetchPeople'
 import { fetchWithCache, connectedListProps, refetch } from '../../util/caching'
 import ScrollListener from '../../components/ScrollListener'
 import PersonCards from '../../components/PersonCards'
 import A from '../../components/A'
 const { array, bool, func, number, object } = React.PropTypes
-import { CommunityMemberRole } from '../../constants'
+import { canInvite } from '../../models/currentUser'
 
 const subject = 'community'
 const fetch = fetchWithCache(fetchPeople)
@@ -51,13 +51,11 @@ export default class CommunityMembers extends React.Component {
     if (!currentUser) return <div>Loading...</div>
     let { search } = query
 
-    let membership = currentUser.memberships.find(m => m.community.id === community.id)
-    let canModerate = get(membership, 'role') === CommunityMemberRole.MODERATOR
-    let canInvite = canModerate || community.settings.all_can_invite
-
     return <div className='members'>
       <div className='list-controls'>
-        {canInvite && <A className='button' to={`/c/${community.slug}/invite`}>Invite members</A>}
+        {canInvite(currentUser, community) && <A className='button' to={`/c/${community.slug}/invite`}>
+          Invite members
+        </A>}
         <input type='text' className='form-control search'
           placeholder='Search'
           defaultValue={search}

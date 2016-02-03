@@ -18,6 +18,7 @@ import ScrollListener from '../../components/ScrollListener'
 import validator from 'validator'
 import { any, compact, get, isEmpty } from 'lodash'
 import cx from 'classnames'
+import { canInvite } from '../../models/currentUser'
 
 const defaultSubject = name =>
   `Join ${name} on Hylo`
@@ -41,13 +42,19 @@ const CommunityInvitations = compose(
     dispatch(fetchCommunitySettings(id)),
     dispatch(fetchInvitations(id))
   ])),
-  connect(({ communities, invitationEditor, pending }, { params: { id } }) => ({
+  connect(({ people, communities, invitationEditor, pending }, { params: { id } }) => ({
     community: communities[id],
     invitationEditor,
-    pending: pending[SEND_COMMUNITY_INVITATION]
+    pending: pending[SEND_COMMUNITY_INVITATION],
+    currentUser: people.current
   }))
 )(props => {
-  let { community, dispatch, invitationEditor, params: { id }, pending } = props
+  let { currentUser, community, dispatch, invitationEditor, params: { id }, pending } = props
+  if (!canInvite(currentUser, community)) {
+    return <div>
+      You don't have permission to view this page. <a href='javascript:history.go(-1)'>Back</a>
+    </div>
+  }
   let invitationUrl = `https://www.hylo.com/c/${community.slug}/join/${community.beta_access_code}`
   let { subject, message, recipients, moderator, error, success } = invitationEditor
   if (subject === undefined) subject = defaultSubject(community.name)

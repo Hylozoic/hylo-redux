@@ -1,5 +1,4 @@
 import React from 'react'
-import Promise from 'bluebird'
 import { connect } from 'react-redux'
 import { prefetch } from 'react-fetcher'
 import cx from 'classnames'
@@ -23,10 +22,10 @@ import { uploadImage } from '../../actions/uploadImage'
 import PersonChooser from '../../components/PersonChooser'
 
 @prefetch(({dispatch, params: {id}}) =>
-  Promise.join(
+  Promise.all([
     dispatch(fetchCommunitySettings(id)),
     dispatch(fetchCommunityModerators(id))
-  )
+  ])
 )
 @connect((state, { params }) => ({
   community: state.communities[params.id],

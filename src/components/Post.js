@@ -14,7 +14,7 @@ import Comment from './Comment'
 import CommentForm from './CommentForm'
 import PostEditor from './PostEditor'
 import RSVPControl from './RSVPControl'
-import SocialSharing from './SocialSharing'
+import SharingDropdown from './SharingDropdown'
 import { connect } from 'react-redux'
 import { fetchComments, createComment, startPostEdit, changeEventResponse } from '../actions'
 
@@ -174,7 +174,7 @@ const PostMeta = ({ post, toggleComments }, { postDisplayMode }) => {
     </a>
     {post.public && <span>
       {spacer}Public
-      {spacer}<SocialSharing className='share-post' toggleChildren={<span>Share</span>} alignRight='true' url={`/p/${post.id}`} text={post.name} />
+      {spacer}<SharingDropdown className='share-post' toggleChildren={<span>Share</span>} alignRight='true' url={`/p/${post.id}`} text={post.name} />
     </span>}
   </div>
 }

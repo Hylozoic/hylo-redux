@@ -8,7 +8,7 @@ let share = href => {
   }, function (response) {})
 }
 
-export const SocialSharing = props => {
+export const SharingDropdown = props => {
   let { url, text, ...otherProps } = props
   let origin = typeof window !== 'undefined' ? window.location.origin : 'https://www.hylo.com'
   let absoluteUrl = `${origin}/${url}`
@@ -24,4 +24,4 @@ export const SocialSharing = props => {
   </Dropdown>
 }
 
-export default SocialSharing
+export default SharingDropdown

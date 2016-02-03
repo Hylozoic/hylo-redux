@@ -8,12 +8,12 @@ import { navigate } from '../../actions'
 import { markdown } from '../../util/text'
 import { contains, find } from 'lodash'
 import truncate from 'html-truncate'
-import striptags from 'striptags'
 import Avatar from '../../components/Avatar'
 import Video from '../../components/Video'
 import { A, IndexA } from '../../components/A'
 import SharingDropdown from '../../components/SharingDropdown'
 import { assetUrl } from '../../util/assets'
+import { ogMetaTags } from '../../util'
 import { ProjectVisibility } from '../../constants'
 const { bool, func, object } = React.PropTypes
 
@@ -22,20 +22,7 @@ const { bool, func, object } = React.PropTypes
   .then(action => {
     let payload = action.payload
     if (payload && !payload.api) {
-      let project = payload
-      let { media } = project
-      var metaTags = {
-        'og:title': project.title,
-        'og:description': truncate(striptags(project.details || ''), 140)
-      }
-      if (media[0]) {
-        metaTags = {...metaTags, ...{
-          'og:image': media[0].url,
-          'og:image:width': media[0].width,
-          'og:image:height': media[0].height
-        }}
-      }
-      return dispatch(setMetaTags(metaTags))
+      return dispatch(setMetaTags(ogMetaTags(payload.title, payload.details, payload.media[0])))
     }
   }))
 @connect(({ projects, people, peopleByQuery }, { params: { id } }) => {

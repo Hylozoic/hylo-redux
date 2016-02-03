@@ -4,9 +4,8 @@ import { prefetch } from 'react-fetcher'
 import { connect } from 'react-redux'
 import { compose } from 'redux'
 import { fetchComments, fetchPost, setMetaTags } from '../actions'
+import { ogMetaTags } from '../util'
 import { join } from 'bluebird'
-import truncate from 'html-truncate'
-import striptags from 'striptags'
 const { object } = React.PropTypes
 
 const SinglePost = props => {
@@ -28,20 +27,7 @@ export default compose(
     .then(action => {
       let payload = action.payload
       if (payload && !payload.api) {
-        let post = payload
-        let { media } = post
-        var metaTags = {
-          'og:title': post.name,
-          'og:description': truncate(striptags(post.description || ''), 140)
-        }
-        if (media[0]) {
-          metaTags = {...metaTags,
-            'og:image': media[0].url,
-            'og:image:width': media[0].width,
-            'og:image:height': media[0].height
-          }
-        }
-        return dispatch(setMetaTags(metaTags))
+        return dispatch(setMetaTags(ogMetaTags(payload.name, payload.description, payload.media[0])))
       }
     }),
     dispatch(fetchComments(params.id))

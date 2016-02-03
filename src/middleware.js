@@ -17,13 +17,13 @@ export function cacheMiddleware (store) {
       let hit = state[bucket][id]
       if (hit && hit.length > offset) {
         debug(`cache hit: ${bucket}[${id}][${offset}] + ${limit}`)
-        return
+        return Promise.resolve(action)
       }
     } else {
       let hit = state[bucket][id]
       if (hit && !requiredProp || has(hit, requiredProp)) {
         debug(`cache hit: ${bucket}[${id}]`)
-        return
+        return Promise.resolve(action)
       }
     }
 

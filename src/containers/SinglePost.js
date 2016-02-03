@@ -26,20 +26,23 @@ export default compose(
   prefetch(({ dispatch, params }) => join(
     dispatch(fetchPost(params.id))
     .then(action => {
-      let post = action.payload
-      let { media } = post
-      var metaTags = {
-        'og:title': post.name,
-        'og:description': truncate(striptags(post.description || ''), 140)
+      let payload = action.payload
+      if (payload && !payload.api) {
+        let post = payload
+        let { media } = post
+        var metaTags = {
+          'og:title': post.name,
+          'og:description': truncate(striptags(post.description || ''), 140)
+        }
+        if (media[0]) {
+          metaTags = {...metaTags, ...{
+            'og:image': media[0].url,
+            'og:image:width': media[0].width,
+            'og:image:height': media[0].height
+          }}
+        }
+        return dispatch(setMetaTags(metaTags))
       }
-      if (media[0]) {
-        metaTags = {...metaTags, ...{
-          'og:image': media[0].url,
-          'og:image:width': media[0].width,
-          'og:image:height': media[0].height
-        }}
-      }
-      return dispatch(setMetaTags(metaTags))
     }),
     dispatch(fetchComments(params.id))
   )),

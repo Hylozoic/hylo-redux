@@ -5,6 +5,7 @@ import { get } from 'lodash'
 import appHandler from '../../src/server/appHandler'
 import { FETCH_CURRENT_USER } from '../../src/actions'
 import { HOST } from '../../src/util/api'
+import cheerio from 'cheerio'
 
 const checkError = res => {
   if (res.error) {
@@ -110,6 +111,99 @@ describe('appHandler', () => {
         checkError(res)
         expect(res.status).to.have.been.called.with(200)
         expect(res.body).to.contain('cat@house.com')
+      })
+    })
+  })
+
+  describe('on single post page', () => {
+    beforeEach(() => {
+      let post = {
+        id: 1,
+        name: 'A test post',
+        description: 'The description body',
+        media: [{
+          type: 'image',
+          url: 'http://foo.com/bar.jog',
+          width: 99,
+          height: 101
+        }],
+        communities: [],
+        user: {name: ''},
+        created_at: new Date()
+      }
+      nock(HOST).get('/noo/post/1').reply(200, post)
+    })
+
+    it('displays the post', () => {
+      req = support.mocks.request('/p/1')
+      return appHandler(req, res)
+      .then(() => {
+        checkError(res)
+        expect(res.status).to.have.been.called.with(200)
+        expect(res.body).to.contain('A test post')
+      })
+    })
+
+    it('sets the metatags', () => {
+      req = support.mocks.request('/p/1')
+      return appHandler(req, res)
+      .then(() => {
+        checkError(res)
+        expect(res.status).to.have.been.called.with(200)
+
+        var $ = cheerio.load(res.body)
+        expect($('meta[property="og:title"]').attr('content')).to.equal('A test post')
+        expect($('meta[property="og:description"]').attr('content')).to.equal('The description body')
+        expect($('meta[property="og:image"]').attr('content')).to.equal('http://foo.com/bar.jog')
+        expect($('meta[property="og:image:width"]').attr('content')).to.equal('99')
+        expect($('meta[property="og:image:height"]').attr('content')).to.equal('101')
+      })
+    })
+  })
+
+  describe('on project profile page', () => {
+    beforeEach(() => {
+      let project = {
+        id: 1,
+        title: 'A test project',
+        details: 'The project details',
+        media: [{
+          type: 'image',
+          url: 'http://foo.com/bar.jog',
+          width: 99,
+          height: 101
+        }],
+        slug: 'slug',
+        community: {name: '', avatar_url: ''},
+        user: {name: ''},
+        created_at: new Date()
+      }
+      nock(HOST).get('/noo/project/1').reply(200, project)
+    })
+
+    it('displays the project', () => {
+      req = support.mocks.request('/project/1/slug')
+      return appHandler(req, res)
+      .then(() => {
+        checkError(res)
+        expect(res.status).to.have.been.called.with(200)
+        expect(res.body).to.contain('A test project')
+      })
+    })
+
+    it('sets the metatags', () => {
+      req = support.mocks.request('/project/1/slug')
+      return appHandler(req, res)
+      .then(() => {
+        checkError(res)
+        expect(res.status).to.have.been.called.with(200)
+
+        var $ = cheerio.load(res.body)
+        expect($('meta[property="og:title"]').attr('content')).to.equal('A test project')
+        expect($('meta[property="og:description"]').attr('content')).to.equal('The project details')
+        expect($('meta[property="og:image"]').attr('content')).to.equal('http://foo.com/bar.jog')
+        expect($('meta[property="og:image:width"]').attr('content')).to.equal('99')
+        expect($('meta[property="og:image:height"]').attr('content')).to.equal('101')
       })
     })
   })

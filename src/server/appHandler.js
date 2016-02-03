@@ -81,10 +81,13 @@ function renderApp (res, renderProps, history, store) {
       </Provider>
     )
 
+    let state = store.getState()
+
     return React.createElement(Html, {
       markup: markup,
-      state: `window.INITIAL_STATE=${JSON.stringify(store.getState())}`,
-      assetManifest: `window.ASSET_MANIFEST=${JSON.stringify(getManifest())}`
+      state: `window.INITIAL_STATE=${JSON.stringify(state)}`,
+      assetManifest: `window.ASSET_MANIFEST=${JSON.stringify(getManifest())}`,
+      metaTags: state.metaTags
     })
   })
 }

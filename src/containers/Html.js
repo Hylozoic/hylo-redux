@@ -23,7 +23,7 @@ class Html extends React.Component {
         <script type='text/javascript'>{`try{Typekit.load();}catch(e){}`}</script>
         <script type='text/javascript' async src='https://platform.twitter.com/widgets.js'></script>
         <meta name='viewport' content='width=device-width, initial-scale=1.0, user-scalable=no'/>
-        {map(metaTags, (val, key) => <meta property={key} content={val} />)}
+        {map(metaTags, (val, key) => <meta property={key} content={val} key={key} />)}
       </head>
       <body>
         <div id='app' dangerouslySetInnerHTML={{__html: markup}}></div>

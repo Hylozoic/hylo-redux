@@ -39,10 +39,11 @@ export const REMOVE_DOC = 'REMOVE_DOC'
 export const REMOVE_IMAGE = 'REMOVE_IMAGE'
 export const REMOVE_PROJECT_CONTRIBUTOR = 'REMOVE_PROJECT_CONTRIBUTOR'
 export const RESET_COMMUNITY_VALIDATION = 'RESET_COMMUNITY_VALIDATION'
-export const SET_LOGIN_ERROR = 'SET_LOGIN_ERROR'
-export const SET_SIGNUP_ERROR = 'SET_SIGNUP_ERROR'
 export const SEND_PROJECT_INVITE = 'SEND_PROJECT_INVITE'
 export const SEND_PROJECT_INVITE_PENDING = SEND_PROJECT_INVITE + _PENDING
+export const SET_LOGIN_ERROR = 'SET_LOGIN_ERROR'
+export const SET_META_TAGS = 'SET_META_TAGS'
+export const SET_SIGNUP_ERROR = 'SET_SIGNUP_ERROR'
 export const SIGNUP = 'SIGNUP'
 export const START_POST_EDIT = 'START_POST_EDIT'
 export const START_PROJECT_EDIT = 'START_PROJECT_EDIT'
@@ -378,5 +379,12 @@ export function thank (commentId, userId) {
     type: THANK,
     payload: {api: true, params: {unread: false}, path: `/noo/comment/${commentId}/thank`, method: 'POST'},
     meta: {commentId, userId}
+  }
+}
+
+export function setMetaTags (metaTags) {
+  return {
+    type: SET_META_TAGS,
+    payload: metaTags
   }
 }

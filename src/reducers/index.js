@@ -29,6 +29,7 @@ import {
   NAVIGATE,
   RESET_COMMUNITY_VALIDATION,
   SET_LOGIN_ERROR,
+  SET_META_TAGS,
   SET_SIGNUP_ERROR,
   SIGNUP,
   TOGGLE_MAIN_MENU,
@@ -290,6 +291,11 @@ export default combineReducers({
   },
 
   metaTags: (state = {}, action) => {
+    let { type, payload } = action
+    if (type === SET_META_TAGS) {
+      return payload
+    }
+
     return state
   }
 

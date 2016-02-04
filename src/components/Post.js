@@ -16,7 +16,7 @@ import PostEditor from './PostEditor'
 import RSVPControl from './RSVPControl'
 import SharingDropdown from './SharingDropdown'
 import { connect } from 'react-redux'
-import { fetchComments, createComment, startPostEdit, changeEventResponse } from '../actions'
+import { fetchComments, createComment, startPostEdit, changeEventResponse, voteOnPost } from '../actions'
 
 const spacer = <span>&nbsp; •&nbsp; </span>
 
@@ -64,6 +64,11 @@ export default class Post extends React.Component {
     this.setState({commentsExpanded: !this.state.commentsExpanded})
   }
 
+  vote = () => {
+    let { dispatch, post } = this.props
+    dispatch(voteOnPost(post))
+  }
+
   edit = () => {
     let { dispatch, post } = this.props
     dispatch(startPostEdit(post))
@@ -105,7 +110,7 @@ export default class Post extends React.Component {
           </Dropdown>}
 
         <span className='name'>{person.name}</span>
-        <PostMeta post={post} toggleComments={this.toggleComments}/>
+        <PostMeta post={post} toggleComments={this.toggleComments} vote={this.vote}/>
       </div>
 
       <p className='title'>{title}</p>
@@ -151,7 +156,7 @@ export default class Post extends React.Component {
   }
 }
 
-const PostMeta = ({ post, toggleComments }, { postDisplayMode }) => {
+const PostMeta = ({ post, toggleComments, vote }, { postDisplayMode }) => {
   const now = new Date()
   const createdAt = new Date(post.created_at)
   const updatedAt = new Date(post.updated_at)
@@ -167,7 +172,7 @@ const PostMeta = ({ post, toggleComments }, { postDisplayMode }) => {
       {spacer}updated&nbsp;{nonbreaking(humanDate(updatedAt))}
     </span>}
     {spacer}
-    {post.votes}&nbsp;♡
+    <a onClick={vote} className='vote'>{post.votes}&nbsp;<i className={post.myVote ? 'icon-heart-new-selected' : 'icon-heart-new'}></i></a>
     {spacer}
     <a onClick={toggleComments} href='#'>
       {post.numComments}&nbsp;comment{post.numComments === 1 ? '' : 's'}

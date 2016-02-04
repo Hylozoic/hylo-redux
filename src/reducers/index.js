@@ -28,9 +28,12 @@ import {
   MARK_ACTIVITY_READ,
   MARK_ALL_ACTIVITIES_READ_PENDING,
   NAVIGATE,
+  NOTIFY,
+  REMOVE_NOTIFICATION,
   RESET_ERROR,
   RESET_COMMUNITY_VALIDATION,
   SEND_COMMUNITY_INVITATION,
+  SEND_PROJECT_INVITE,
   SET_LOGIN_ERROR,
   SET_META_TAGS,
   SET_SIGNUP_ERROR,
@@ -156,6 +159,7 @@ export default combineReducers({
       toggle(FETCH_ACTIVITY) ||
       toggle(SEND_COMMUNITY_INVITATION) ||
       toggle(FETCH_INVITATIONS) ||
+      toggle(SEND_PROJECT_INVITE) ||
       state
   },
 
@@ -375,6 +379,19 @@ export default combineReducers({
         }
         return {...state, success, error}
     }
+    return state
+  },
+
+  notifierMessages: (state = [], action) => {
+    let { type, payload, error } = action
+    if (error) return state
+    switch (type) {
+      case NOTIFY:
+        return [payload, ...state]
+      case REMOVE_NOTIFICATION:
+        return state.filter(n => n.id !== payload)
+    }
+
     return state
   }
 

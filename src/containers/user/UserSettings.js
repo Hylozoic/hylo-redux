@@ -160,7 +160,7 @@ export default class UserSettings extends React.Component {
     let memberships = sortBy(currentUser.memberships, m => m.community.name)
     let { editing, edited, errors } = this.state
     let { avatar_url, banner_url } = currentUser
-    let { bio, work, intention } = {...currentUser, ...editing}
+    let { bio, work, intention, extra_info } = {...currentUser, ...editing}
 
     return <div id='user-settings' className='form-sections'>
       <SectionLabel name='profile' label='Profile' {...{dispatch, expand}}/>
@@ -220,6 +220,16 @@ export default class UserSettings extends React.Component {
           <div className='full-column'>
             <label>Affiliations</label>
             <ListItemTagInput type='organizations' person={currentUser} update={this.update}/>
+          </div>
+        </Item>
+        <Item>
+          <div className='full-column'>
+            <label>Other information</label>
+            <textarea className='form-control' value={extra_info}
+              onChange={this.updateTyped('extra_info')}></textarea>
+            <span className='meta'>
+              <a href='http://cdn.hylo.com/misc/markdown.html' target='_blank'>Markdown</a> is supported.
+            </span>
           </div>
         </Item>
       </Section>}

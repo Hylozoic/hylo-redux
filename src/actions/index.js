@@ -37,10 +37,12 @@ export const MARK_ACTIVITY_READ_PENDING = MARK_ACTIVITY_READ + _PENDING
 export const MARK_ALL_ACTIVITIES_READ = 'MARK_ALL_ACTIVITIES_READ'
 export const MARK_ALL_ACTIVITIES_READ_PENDING = MARK_ALL_ACTIVITIES_READ + _PENDING
 export const NAVIGATE = 'NAVIGATE'
+export const NOTIFY = 'NOTIFY'
 export const REMOVE_COMMUNITY_MODERATOR = 'REMOVE_COMMUNITY_MODERATOR'
 export const REMOVE_COMMUNITY_MODERATOR_PENDING = REMOVE_COMMUNITY_MODERATOR + _PENDING
 export const REMOVE_DOC = 'REMOVE_DOC'
 export const REMOVE_IMAGE = 'REMOVE_IMAGE'
+export const REMOVE_NOTIFICATION = 'REMOVE_NOTIFICATION'
 export const REMOVE_PROJECT_CONTRIBUTOR = 'REMOVE_PROJECT_CONTRIBUTOR'
 export const RESET_COMMUNITY_VALIDATION = 'RESET_COMMUNITY_VALIDATION'
 export const RESET_ERROR = 'RESET_ERROR'
@@ -377,13 +379,16 @@ export function toggleUserSettingsSection (sectionName, forceOpen) {
   }
 }
 
-export function fetchActivity (offset = 0) {
+export function fetchActivity (offset = 0, resetCount) {
   let limit = 20
-  let query = cleanAndStringify({limit, offset, paginate: true})
+  let query = cleanAndStringify({limit, offset, paginate: true, resetCount})
   return {
     type: FETCH_ACTIVITY,
     payload: {api: true, path: `/noo/activity?${query}`, method: 'GET'},
-    meta: {cache: {bucket: 'activities', limit, offset, array: true}}
+    meta: {
+      cache: {bucket: 'activities', limit, offset, array: true},
+      resetCount
+    }
   }
 }
 
@@ -468,5 +473,25 @@ export function voteOnPost (post) {
     type: VOTE_ON_POST,
     payload: {api: true, path: `/noo/post/${post.id}/vote`, method: 'POST'},
     meta: {id: post.id, prevProps: post}
+  }
+}
+
+export function notify (text, opts) {
+  return {
+    type: NOTIFY,
+    payload: {
+      id: Date.now(),
+      text,
+      type: 'info',
+      maxage: 5000,
+      ...opts
+    }
+  }
+}
+
+export function removeNotification (id) {
+  return {
+    type: REMOVE_NOTIFICATION,
+    payload: id
   }
 }

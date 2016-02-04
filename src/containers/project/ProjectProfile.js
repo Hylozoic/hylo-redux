@@ -3,8 +3,7 @@ import qs from 'querystring'
 import { prefetch } from 'react-fetcher'
 import { connect } from 'react-redux'
 import { fetchProject, joinProject, updateProject } from '../../actions/project'
-import { setMetaTags } from '../../actions'
-import { navigate } from '../../actions'
+import { navigate, notify, setMetaTags } from '../../actions'
 import { markdown } from '../../util/text'
 import { contains, find } from 'lodash'
 import truncate from 'html-truncate'
@@ -70,6 +69,7 @@ export default class ProjectProfile extends React.Component {
     let { project, currentUser, dispatch } = this.props
     if (currentUser) {
       dispatch(joinProject(project, currentUser))
+      .then(({ error }) => error || dispatch(notify('You joined the project.', {type: 'success'})))
     } else {
       let params = {
         next: window.location.pathname,

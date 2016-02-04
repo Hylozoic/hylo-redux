@@ -1,1 +1,1 @@
-web: ./node_modules/.bin/babel-node ./src/server
+web: npm run es5

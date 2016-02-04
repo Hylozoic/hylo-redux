@@ -2,19 +2,27 @@ import React from 'react'
 import { filter, get } from 'lodash'
 import { prefetch } from 'react-fetcher'
 import { connect } from 'react-redux'
+import { notify } from '../../actions'
 import { fetchProject } from '../../actions/project'
 import TagInput from '../../components/TagInput'
-import { typeahead, updateProjectInvite, sendProjectInvite, navigate } from '../../actions'
+import {
+  SEND_PROJECT_INVITE,
+  typeahead,
+  updateProjectInvite,
+  sendProjectInvite,
+  navigate
+} from '../../actions'
 const { object, func, array, bool } = React.PropTypes
 
 let typeaheadId = 'invitees'
 
 @prefetch(({ dispatch, params: { id } }) => dispatch(fetchProject(id)))
-@connect(({ typeaheadMatches, projects, people, projectInvite }, { params: { id } }) => ({
+@connect(({ typeaheadMatches, projects, people, projectInvite, pending }, { params: { id } }) => ({
   project: projects[id],
   currentUser: people.current,
   peopleChoices: typeaheadMatches[typeaheadId] || [],
-  peopleChosen: get(projectInvite, id + '.peopleChosen', [])
+  peopleChosen: get(projectInvite, id + '.peopleChosen', []),
+  sending: pending[SEND_PROJECT_INVITE]
 }))
 export default class ProjectInvite extends React.Component {
   static propTypes = {
@@ -52,7 +60,10 @@ export default class ProjectInvite extends React.Component {
     let emails = this.refs.emails.value.split(',')
     let users = peopleChosen.map(p => p.id)
     dispatch(sendProjectInvite({emails, message, subject, users}, id))
-    dispatch(navigate(`/project/${id}/${slug}`))
+    .then(({ error }) => error || Promise.all([
+      dispatch(navigate(`/project/${id}/${slug}`)),
+      dispatch(notify(`Sent invitations to ${emails.length + users.length} people.`, {type: 'success'}))
+    ]))
   }
 
   render () {

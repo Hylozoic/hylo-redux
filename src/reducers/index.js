@@ -33,6 +33,7 @@ import {
   RESET_ERROR,
   RESET_COMMUNITY_VALIDATION,
   SEND_COMMUNITY_INVITATION,
+  SEND_PROJECT_INVITE,
   SET_LOGIN_ERROR,
   SET_SIGNUP_ERROR,
   SIGNUP,
@@ -157,6 +158,7 @@ export default combineReducers({
       toggle(FETCH_ACTIVITY) ||
       toggle(SEND_COMMUNITY_INVITATION) ||
       toggle(FETCH_INVITATIONS) ||
+      toggle(SEND_PROJECT_INVITE) ||
       state
   },
 

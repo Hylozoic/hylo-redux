@@ -1,7 +1,7 @@
 import { join } from 'path'
 import qs from 'querystring'
 import { isiOSApp, isAndroidApp, connectWebViewBridge } from './util'
-import { s3, filepickerKey } from '../../config'
+import { s3, filepickerKey } from '../config'
 
 // order matters, except for CONVERT, which toggles the crop UI
 const services = [

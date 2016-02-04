@@ -1,4 +1,4 @@
-import { upstreamHost } from '../../config'
+import { upstreamHost } from '../config'
 import { fetchCurrentUser, navigate } from '../actions'
 import qs from 'querystring'
 

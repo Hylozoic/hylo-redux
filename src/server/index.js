@@ -1,4 +1,4 @@
-import { upstreamHost, useAssetManifest, assetHost, assetPath } from '../../config'
+import { upstreamHost, useAssetManifest, assetHost, assetPath } from '../config'
 import express from 'express'
 import { magenta, red } from 'chalk'
 import request from 'request'

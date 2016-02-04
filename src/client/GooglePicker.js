@@ -1,6 +1,6 @@
 /*global google, gapi */
 
-import config from '../../config'
+import config from '../config'
 const { key, clientId } = config.google
 
 var oauthToken, appId, pickerApiLoaded

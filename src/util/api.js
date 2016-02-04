@@ -1,4 +1,4 @@
-import { upstreamHost } from '../../config'
+import { upstreamHost } from '../config'
 import fetch from 'isomorphic-fetch'
 
 export const HOST = typeof window === 'undefined'

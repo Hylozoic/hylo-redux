@@ -1,4 +1,4 @@
-import { assetHost, assetPath, useAssetManifest } from '../../config'
+import { assetHost, assetPath, useAssetManifest } from '../config'
 import { debug } from './logging'
 
 // GASP! A SINGLETON!

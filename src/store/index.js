@@ -24,8 +24,8 @@ export function configureStore (initialState, req) {
 
   if (module.onReload) {
     module.onReload(() => {
-      const nextRootReducer = require('../reducers/index')
-      store.replaceReducer(nextRootReducer)
+      const nextReducer = require('../reducers/index')
+      store.replaceReducer(nextReducer.default || nextReducer)
       return true
     })
   }

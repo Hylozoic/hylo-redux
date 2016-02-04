@@ -1,6 +1,6 @@
 import React from 'react'
 import { Link } from 'react-router'
-import { filter, find, get, isEmpty } from 'lodash'
+import { filter, find, get, isEmpty, findWhere, first, last, without } from 'lodash'
 import { projectUrl } from '../routes'
 const { array, bool, func, object, string } = React.PropTypes
 import cx from 'classnames'
@@ -200,6 +200,8 @@ const ExpandedPostDetails = props => {
       currentResponse={(find(post.responders, responder => responder.id === currentUser.id) || {response: ''}).response}
       onPickResponse={choice => dispatch(changeEventResponse(post.id, choice, currentUser))} />}
 
+    <Followers post={post} currentUser={currentUser} />
+
     {!isEmpty(attachments) && <div className='post-section'>
       {attachments.map((file, i) =>
         <a key={i} className='attachment' href={file.url} target='_blank' title={file.name}>
@@ -222,4 +224,48 @@ const ExpandedPostDetails = props => {
       {!commentingDisabled && <CommentForm onCreate={onCommentCreate}/>}
     </div>}
   </div>
+}
+
+const Followers = props => {
+  let { post, currentUser } = props
+  let { followers } = post
+
+  let onlyAuthorIsFollowing = followers.length === 1 && first(followers).id === post.user.id
+
+  let meInFollowers = (currentUser && findWhere(followers, {id: currentUser.id}))
+
+  var followersNotMe
+
+  if (meInFollowers) {
+    followersNotMe = without(followers, meInFollowers)
+  } else {
+    followersNotMe = followers
+  }
+
+  let firstTwoFollowersNotMe = followersNotMe.slice(0, 2)
+
+  if (followers.length > 0 && !onlyAuthorIsFollowing) {
+    return <div className='meta followers'>
+
+      {meInFollowers && <span>You</span>}
+      {meInFollowers && followersNotMe.length > 1 && ', '}
+      {meInFollowers && followersNotMe.length === 1 && ' and '}
+      {followersNotMe.slice(0, 2).map(f => {
+        let isLast = f.id === last(firstTwoFollowersNotMe)
+        return <a key={f.id} href={`/u/${f.id}`}>
+          {f.name}
+          {!isLast && followersNotMe.length > 2 && ', '}
+          {!isLast && followersNotMe.length === 2 && ' and '}
+        </a>
+      })}
+      {followersNotMe.length > 2 && ' and '}
+      {followersNotMe.length > 2 && <Dropdown className='followers-dropdown' toggleChildren={<span>{followersNotMe.length - 2} other{followersNotMe.length > 3 ? 's' : ''}</span>}>
+        {followersNotMe.slice(2).map(f => <li key={f.id}>{f.name}</li>)}
+      </Dropdown>}
+      {meInFollowers || followersNotMe.length > 1 ? ' are' : ' is'} following this.
+
+    </div>
+  } else {
+    return <span />
+  }
 }

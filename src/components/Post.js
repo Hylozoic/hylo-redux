@@ -260,7 +260,11 @@ const Followers = props => {
       })}
       {followersNotMe.length > 2 && ' and '}
       {followersNotMe.length > 2 && <Dropdown className='followers-dropdown' toggleChildren={<span>{followersNotMe.length - 2} other{followersNotMe.length > 3 ? 's' : ''}</span>}>
-        {followersNotMe.slice(2).map(f => <li key={f.id}>{f.name}</li>)}
+        {followersNotMe.slice(2).map(f => <li key={f.id}>
+          <span className='person'>
+            <Avatar person={f} /> <Link className='person' to={`/u/${f.id}`}><span>{f.name}</span></Link>
+          </span>
+        </li>)}
       </Dropdown>}
       {meInFollowers || followersNotMe.length > 1 ? ' are' : ' is'} following this.
 

@@ -174,7 +174,7 @@ const PostMeta = ({ post, toggleComments }, { postDisplayMode }) => {
     </a>
     {post.public && <span>
       {spacer}Public
-      {spacer}<SharingDropdown className='share-post' toggleChildren={<span>Share</span>} alignRight='true' url={`/p/${post.id}`} text={post.name} />
+      {spacer}<SharingDropdown className='share-post' toggleChildren={<span>Share</span>} alignRight={true} url={`/p/${post.id}`} text={post.name} />
     </span>}
   </div>
 }

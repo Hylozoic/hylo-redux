@@ -12,6 +12,7 @@ import { debug } from '../util/logging'
 import { localsForPrefetch } from '../util/universal'
 import { isEqual } from 'lodash'
 import { setManifest } from '../util/assets'
+import fbAsyncInit from './fbAsyncInit'
 
 const store = configureStore(window.INITIAL_STATE)
 const routes = makeRoutes(store)
@@ -58,6 +59,8 @@ history.listen(location => {
     .then(() => prevLocation = location)
   })
 })
+
+fbAsyncInit()
 
 const component = (
   <Provider store={store}>

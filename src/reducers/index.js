@@ -35,6 +35,7 @@ import {
   SEND_COMMUNITY_INVITATION,
   SEND_PROJECT_INVITE,
   SET_LOGIN_ERROR,
+  SET_META_TAGS,
   SET_SIGNUP_ERROR,
   SIGNUP,
   TOGGLE_MAIN_MENU,
@@ -319,6 +320,15 @@ export default combineReducers({
       case FETCH_ACTIVITY:
         return payload.total
     }
+    return state
+  },
+
+  metaTags: (state = {}, action) => {
+    let { type, payload } = action
+    if (type === SET_META_TAGS) {
+      return payload
+    }
+
     return state
   },
 

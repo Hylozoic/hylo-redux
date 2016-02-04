@@ -3,18 +3,27 @@ import qs from 'querystring'
 import { prefetch } from 'react-fetcher'
 import { connect } from 'react-redux'
 import { fetchProject, joinProject, updateProject } from '../../actions/project'
-import { navigate, notify } from '../../actions'
+import { navigate, notify, setMetaTags } from '../../actions'
 import { markdown } from '../../util/text'
 import { contains, find } from 'lodash'
 import truncate from 'html-truncate'
 import Avatar from '../../components/Avatar'
 import Video from '../../components/Video'
 import { A, IndexA } from '../../components/A'
+import SharingDropdown from '../../components/SharingDropdown'
 import { assetUrl } from '../../util/assets'
+import { ogMetaTags } from '../../util'
 import { ProjectVisibility } from '../../constants'
 const { bool, func, object } = React.PropTypes
 
-@prefetch(({ dispatch, params: { id } }) => dispatch(fetchProject(id)))
+@prefetch(({ dispatch, params: { id } }) =>
+  dispatch(fetchProject(id))
+  .then(action => {
+    let payload = action.payload
+    if (payload && !payload.api) {
+      return dispatch(setMetaTags(ogMetaTags(payload.title, payload.details, payload.media[0])))
+    }
+  }))
 @connect(({ projects, people, peopleByQuery }, { params: { id } }) => {
   let project = projects[id]
   if (!project) return {}
@@ -97,6 +106,7 @@ export default class ProjectProfile extends React.Component {
       <div className='project-header'>
         <div className='col-sm-12 title-row'>
           <div className='right'>
+            {isPublic && <SharingDropdown toggleChildren={<a className='button'>Share</a>} className='share-project' url={`/project/${project.id}/${project.slug}`} text={project.title} />}
             {canModerate && <A className='button' to={`/project/${project.id}/edit`}>Edit project</A>}
             {!canPost && <a className='button' onClick={this.join}>Join project</a>}
           </div>

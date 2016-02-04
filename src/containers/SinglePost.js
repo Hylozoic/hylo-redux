@@ -3,7 +3,8 @@ import Post from '../components/Post'
 import { prefetch } from 'react-fetcher'
 import { connect } from 'react-redux'
 import { compose } from 'redux'
-import { fetchComments, fetchPost } from '../actions'
+import { fetchComments, fetchPost, setMetaTags } from '../actions'
+import { ogMetaTags } from '../util'
 import { join } from 'bluebird'
 const { object } = React.PropTypes
 
@@ -22,7 +23,13 @@ SinglePost.propTypes = {
 
 export default compose(
   prefetch(({ dispatch, params }) => join(
-    dispatch(fetchPost(params.id)),
+    dispatch(fetchPost(params.id))
+    .then(action => {
+      let payload = action.payload
+      if (payload && !payload.api) {
+        return dispatch(setMetaTags(ogMetaTags(payload.name, payload.description, payload.media[0])))
+      }
+    }),
     dispatch(fetchComments(params.id))
   )),
   connect(({ posts, people }, { params }) => ({

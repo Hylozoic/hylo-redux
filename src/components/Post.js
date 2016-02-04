@@ -14,6 +14,7 @@ import Comment from './Comment'
 import CommentForm from './CommentForm'
 import PostEditor from './PostEditor'
 import RSVPControl from './RSVPControl'
+import SharingDropdown from './SharingDropdown'
 import { connect } from 'react-redux'
 import { fetchComments, createComment, startPostEdit, changeEventResponse } from '../actions'
 
@@ -173,6 +174,7 @@ const PostMeta = ({ post, toggleComments }, { postDisplayMode }) => {
     </a>
     {post.public && <span>
       {spacer}Public
+      {spacer}<SharingDropdown className='share-post' toggleChildren={<span>Share</span>} alignRight='true' url={`/p/${post.id}`} text={post.name} />
     </span>}
   </div>
 }
@@ -184,6 +186,7 @@ const ExpandedPostDetails = props => {
   } = props
   let description = present(sanitize(post.description))
   let attachments = filter(post.media, m => m.type !== 'image')
+
   if (!comments) comments = []
 
   return <div className='post-details'>

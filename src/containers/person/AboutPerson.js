@@ -2,13 +2,24 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { markdown } from '../../util/text'
 
+const LinkButton = ({ href, icon }) =>
+  <a className='button' href={href} target='_blank'><i className={`icon-${icon}`}></i></a>
+
 const AboutPerson = connect(
   (state, { params }) => ({person: state.people[params.id]})
 )(({ person }) => {
+  let { facebook_url, twitter_name, linkedin_url } = person
+  let hasSocialMedia = !!(facebook_url || twitter_name || linkedin_url)
+
   return <div className='about'>
     <section>
       <h4>About me</h4>
       <p>{person.bio}</p>
+      {hasSocialMedia && <div className='social-media'>
+        {facebook_url && <LinkButton href={facebook_url} icon='facebook'/>}
+        {twitter_name && <LinkButton href={`https://twitter.com/${twitter_name}`} icon='twitter'/>}
+        {linkedin_url && <LinkButton href={linkedin_url} icon='linkedin'/>}
+      </div>}
     </section>
     <section>
       <h4>What I am doing</h4>

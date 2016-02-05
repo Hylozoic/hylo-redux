@@ -8,12 +8,12 @@ import { blue } from 'chalk'
 export function cacheMiddleware (store) {
   return next => action => {
     let { cache } = action.meta || {}
-    let { bucket, id, array, limit, offset, requiredProp } = cache || {}
+    let { bucket, id, array, limit, offset, requiredProp, refresh } = cache || {}
     if (!bucket) return next(action)
     let state = store.getState()
     if (!state[bucket]) return next(action)
 
-    let hit = id ? state[bucket][id] : state[bucket]
+    let hit = refresh ? null : (id ? state[bucket][id] : state[bucket])
 
     if (array) {
       if (hit && hit.length > offset) {

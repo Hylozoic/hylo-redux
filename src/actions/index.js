@@ -122,12 +122,12 @@ export function fetchPerson (id) {
   }
 }
 
-export function fetchCurrentUser () {
+export function fetchCurrentUser (refresh) {
   return {
     type: FETCH_CURRENT_USER,
     payload: {api: true, path: '/noo/user/me'},
     meta: {
-      cache: {bucket: 'people', id: 'current'},
+      cache: {bucket: 'people', id: 'current', refresh},
       then: resp => (resp.id ? resp : null)
     }
   }

@@ -2,9 +2,12 @@ import { upstreamHost } from '../config'
 import { fetchCurrentUser, navigate } from '../actions'
 import qs from 'querystring'
 
+export const LOGIN_CONTEXT = 'login'
+export const PROFILE_CONTEXT = 'profile'
+
 let popup
 
-export function openPopup (service) {
+export function openPopup (service, authContext) {
   var width, height
 
   if (service === 'google') {
@@ -22,8 +25,13 @@ export function openPopup (service) {
   let left = document.documentElement.clientWidth / 2 - width / 2
   let top = document.documentElement.clientHeight / 2 - height / 2
 
+  let params = {
+    returnDomain: window.location.origin,
+    authContext
+  }
+
   popup = window.open(
-    `${upstreamHost}/noo/login/${service}?returnDomain=${window.location.origin}`,
+    `${upstreamHost}/noo/login/${service}?${qs.stringify(params)}`,
     `${service}Auth`,
     `width=${width}, height=${height}, left=${left}, top=${top}, titlebar=no, toolbar=no, menubar=no`
   )
@@ -32,19 +40,26 @@ export function openPopup (service) {
 
 export function setupPopupCallback (dispatch, errorAction) {
   window.popupDone = opts => {
-    let { error } = opts
-    if (error) {
-      dispatch(errorAction(error))
-    } else {
-      dispatch(errorAction(null))
-      dispatch(fetchCurrentUser())
-      .then(action => {
-        if (action.error) return
-        let params = qs.parse(window.location.search.replace(/^\?/, ''))
-        let next = params.next || `/u/${action.payload.id}`
-        dispatch(navigate(next))
-      })
-      popup.close()
+    let { context, error } = opts
+    switch (context) {
+      case LOGIN_CONTEXT:
+        if (error) {
+          dispatch(errorAction(error))
+        } else {
+          dispatch(errorAction(null))
+          dispatch(fetchCurrentUser())
+          .then(action => {
+            if (action.error) return
+            let params = qs.parse(window.location.search.replace(/^\?/, ''))
+            let next = params.next || `/u/${action.payload.id}`
+            dispatch(navigate(next))
+          })
+          popup.close()
+        }
+        break
+      case PROFILE_CONTEXT:
+        dispatch(fetchCurrentUser(true))
+        popup.close()
     }
   }
 

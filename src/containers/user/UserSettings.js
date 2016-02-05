@@ -17,6 +17,7 @@ import { formatDate } from '../../util/text'
 import { debounce, get, sortBy } from 'lodash'
 import TagInput from '../../components/TagInput'
 import { userAvatarUploadSettings, userBannerUploadSettings } from '../../constants'
+import { openPopup, setupPopupCallback, PROFILE_CONTEXT } from '../../util/auth'
 
 @prefetch(({ dispatch, params: { id }, query }) => {
   switch (query.expand) {
@@ -47,6 +48,10 @@ export default class UserSettings extends React.Component {
     location: object,
     expand: object,
     pending: string
+  }
+
+  componentDidMount () {
+    if (!window.popupDone) setupPopupCallback(this.props.dispatch)
   }
 
   validate () {
@@ -108,7 +113,7 @@ export default class UserSettings extends React.Component {
     dispatch(updateUserSettings(updatedUser, {[field]: currentUser[field]}))
   }
 
-  delayedUpdate = debounce((field, value) => this.update(field, value), 500)
+  delayedUpdate = debounce((field, value) => this.update(field, value), 2000)
 
   updateSetting (setting, value) {
     let { currentUser } = this.props
@@ -160,7 +165,10 @@ export default class UserSettings extends React.Component {
     let memberships = sortBy(currentUser.memberships, m => m.community.name)
     let { editing, edited, errors } = this.state
     let { avatar_url, banner_url } = currentUser
-    let { bio, work, intention, extra_info } = {...currentUser, ...editing}
+    let {
+      bio, work, intention, extra_info,
+      facebook_url, twitter_name, linkedin_url
+    } = {...currentUser, ...editing}
 
     return <div id='user-settings' className='form-sections'>
       <SectionLabel name='profile' label='Profile' {...{dispatch, expand}}/>
@@ -174,6 +182,31 @@ export default class UserSettings extends React.Component {
             <button type='button' onClick={() => this.attachImage('avatar_url')}
               disabled={pending === 'user-avatar'}>
               {pending === 'user-avatar' ? 'Please wait...' : 'Change'}
+            </button>
+          </div>
+        </Item>
+        <Item className='social-media'>
+          <div className='full-column'>
+            <label>Social media links</label>
+          </div>
+          <div className='third-column'>
+            <h5>Facebook</h5>
+            {facebook_url && <LinkButton href={facebook_url} icon='facebook'/>}
+            <button onClick={() => openPopup('facebook', PROFILE_CONTEXT)}>
+              {facebook_url ? 'Change' : 'Connect'}
+            </button>
+          </div>
+          <div className='third-column'>
+            <h5>Twitter</h5>
+            {twitter_name && <LinkButton href={`https://twitter.com/${twitter_name}`} icon='twitter'/>}
+            <input type='text' className='form-control' value={twitter_name}
+              onChange={event => this.update('twitter_name', event.target.value)}/>
+          </div>
+          <div className='third-column'>
+            <h5>LinkedIn</h5>
+            {linkedin_url && <LinkButton href={linkedin_url} icon='linkedin'/>}
+            <button onClick={() => openPopup('linkedin', PROFILE_CONTEXT)}>
+              {linkedin_url ? 'Change' : 'Connect'}
             </button>
           </div>
         </Item>
@@ -390,3 +423,6 @@ const ListItemTagInput = connect(
     onSelect={add}
     onRemove={remove}/>
 })
+
+const LinkButton = ({ href, icon }) =>
+  <a className='button' href={href} target='_blank'><i className={`icon-${icon}`}></i></a>

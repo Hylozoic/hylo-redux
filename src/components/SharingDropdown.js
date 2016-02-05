@@ -1,5 +1,6 @@
 import React from 'react'
 import Dropdown from './Dropdown'
+import { host } from '../config'
 
 let share = href => {
   FB.ui({
@@ -10,7 +11,7 @@ let share = href => {
 
 export const SharingDropdown = props => {
   let { url, text, ...otherProps } = props
-  let origin = typeof window !== 'undefined' ? window.location.origin : 'https://www.hylo.com'
+  let origin = typeof window !== 'undefined' ? window.location.origin : host
   let absoluteUrl = `${origin}/${url}`
   var twitterText = text
   let max = 100

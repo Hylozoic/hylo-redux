@@ -15,6 +15,7 @@ const config = {
   filepickerKey: process.env.FILEPICKER_API_KEY,
   logLevel: process.env.LOG_LEVEL,
   upstreamHost: process.env.UPSTREAM_HOST,
+  host: process.env.HOST,
   s3: {
     bucket: process.env.AWS_S3_BUCKET,
     host: process.env.AWS_S3_HOST

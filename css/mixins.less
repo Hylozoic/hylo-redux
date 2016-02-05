@@ -77,6 +77,12 @@
   }
 }
 
+.non-mobile(@rules) {
+  @media (min-width: @screen-sm) {
+    @rules();
+  }
+}
+
 // set up a div whose height will always be $percent of its width
 // e.g. http://jsfiddle.net/B8FU8/2441/
 // via: http://stackoverflow.com/questions/5445491/height-equal-to-dynamic-width-css-fluid-layout

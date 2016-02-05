@@ -2,18 +2,19 @@ import { herokuConfig } from './util'
 import { extend, pick } from 'lodash'
 
 const keys = [
-  'NODE_ENV',
   'ASSET_HOST',
   'ASSET_PATH',
   'AWS_ACCESS_KEY_ID',
-  'AWS_SECRET_ACCESS_KEY',
   'AWS_S3_BUCKET',
   'AWS_S3_HOST',
+  'AWS_SECRET_ACCESS_KEY',
   'FACEBOOK_APP_ID',
   'FILEPICKER_API_KEY',
   'GOOGLE_BROWSER_KEY',
   'GOOGLE_CLIENT_ID',
   'LOG_LEVEL',
+  'NODE_ENV',
+  'SEGMENT_KEY',
   'UPSTREAM_HOST'
 ]
 

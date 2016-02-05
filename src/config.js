@@ -26,6 +26,9 @@ const config = {
   },
   facebook: {
     appId: process.env.FACEBOOK_APP_ID
+  },
+  segment: {
+    writeKey: process.env.SEGMENT_KEY
   }
 }
 

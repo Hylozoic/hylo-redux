@@ -1,6 +1,6 @@
 import React from 'react'
 import { Link } from 'react-router'
-import { filter, find, get, isEmpty, findWhere, first, last, without } from 'lodash'
+import { filter, find, get, isEmpty, findWhere, first, without } from 'lodash'
 import { projectUrl } from '../routes'
 const { array, bool, func, object, string } = React.PropTypes
 import cx from 'classnames'
@@ -236,42 +236,39 @@ const Followers = props => {
   let { followers } = post
 
   let onlyAuthorIsFollowing = followers.length === 1 && first(followers).id === post.user.id
-
   let meInFollowers = (currentUser && findWhere(followers, {id: currentUser.id}))
+  let otherFollowers = meInFollowers ? without(followers, meInFollowers) : followers
 
-  var followersNotMe
-
-  if (meInFollowers) {
-    followersNotMe = without(followers, meInFollowers)
-  } else {
-    followersNotMe = followers
-  }
-
-  let firstTwoFollowersNotMe = followersNotMe.slice(0, 2)
+  let numShown = 2
+  let num = otherFollowers.length
+  let hasHidden = num > numShown
+  let separator = threshold => num > threshold ? ', ' : (num === threshold ? ' and ' : '')
 
   if (followers.length > 0 && !onlyAuthorIsFollowing) {
     return <div className='meta followers'>
-
-      {meInFollowers && <span>You</span>}
-      {meInFollowers && followersNotMe.length > 1 && ', '}
-      {meInFollowers && followersNotMe.length === 1 && ' and '}
-      {followersNotMe.slice(0, 2).map(f => {
-        let isLast = f.id === last(firstTwoFollowersNotMe)
-        return <a key={f.id} href={`/u/${f.id}`}>
-          {f.name}
-          {!isLast && followersNotMe.length > 2 && ', '}
-          {!isLast && followersNotMe.length === 2 && ' and '}
+      {meInFollowers && <span>
+        You{separator(1)}
+      </span>}
+      {otherFollowers.slice(0, numShown).map((person, index) => {
+        let last = index === numShown - 1
+        return <a key={person.id} href={`/u/${person.id}`}>
+          {person.name}
+          {!last && separator(2)}
         </a>
       })}
-      {followersNotMe.length > 2 && ' and '}
-      {followersNotMe.length > 2 && <Dropdown className='followers-dropdown' toggleChildren={<span>{followersNotMe.length - 2} other{followersNotMe.length > 3 ? 's' : ''}</span>}>
-        {followersNotMe.slice(2).map(f => <li key={f.id}>
-          <span className='person'>
-            <Avatar person={f} /> <Link className='person' to={`/u/${f.id}`}><span>{f.name}</span></Link>
-          </span>
+      {hasHidden && ' and '}
+      {hasHidden && <Dropdown className='followers-dropdown'
+        toggleChildren={<span>
+          {num - numShown} other{num - numShown > 1 ? 's' : ''}
+        </span>}>
+        {otherFollowers.slice(numShown).map(f => <li key={f.id}>
+          <div>
+            <Avatar person={f}/>
+            <Link to={`/u/${f.id}`}>{f.name}</Link>
+          </div>
         </li>)}
       </Dropdown>}
-      {meInFollowers || followersNotMe.length > 1 ? ' are' : ' is'} following this.
+      &nbsp;{meInFollowers || num > 1 ? 'are' : 'is'} following this.
 
     </div>
   } else {

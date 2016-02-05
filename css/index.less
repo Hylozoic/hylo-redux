@@ -387,6 +387,8 @@ ul.posts {
   }
 
   .vote {
+    cursor: pointer;
+    
     i {
       color: @dark-blue;
       vertical-align: middle;
@@ -571,26 +573,15 @@ ul.posts {
         display: inline;
 
         li {
-          padding: 0px 15px;
+          padding: 6px 15px;
           min-width: 200px;
-        }
-
-        a.person {
-          margin-left: 6px;
-          position: relative;
-          top: 50%;
-          transform: translateY(-60%);
-          display: inline-block;
-        }
-
-        span.person {
-          height: 100%;
         }
 
         .avatar {
           display: inline-block;
+          vertical-align: middle;
+          margin-right: 5px;
         }
-
       }
 
     }

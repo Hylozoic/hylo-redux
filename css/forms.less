@@ -1,0 +1,177 @@
+
+.standard-form() {
+  section {
+    margin-bottom: 30px;
+  }
+
+  .counter {
+    float: right;
+    padding-top: 4px;
+    .meta-text;
+  }
+
+  label {
+    .post-title-text;
+  }
+
+  input[type=checkbox] {
+    .round-checkbox();
+  }
+
+  label {
+    input[type=checkbox] {
+      margin-right: 5px;
+    }
+
+    > * {
+      vertical-align: middle;
+    }
+  }
+
+  textarea {
+    height: 20vh;
+    &.short {
+      height: 5em;
+    }
+  }
+
+  .help {
+    .meta-text;
+  }
+
+  textarea + .help {
+    margin-top: 5px;
+  }
+
+  .chooser input[type="text"].form-control {
+    margin-bottom: 0;
+  }
+
+  .error {
+    color: @error-color;
+  }
+
+  .section-label {
+    cursor: pointer;
+  }
+}
+
+.form-sections {
+  .standard-form;
+
+  .section-label {
+    font-size: 24px;
+    .mobile({
+      font-size: 20px;
+    });
+    margin-top: 15px;
+    padding: 0 0 12px;
+    border-bottom: 1px solid @light-gray-border;
+    &:first-child {
+      margin-top: 0;
+    }
+
+    .icon-right, .icon-down {
+      float: right;
+      font-size: 12px;
+      margin-top: 11px;
+      .mobile({
+        margin-top: 9px;
+      });
+    }
+
+    .close-button {
+      float: right;
+      &:hover {
+        text-decoration: none;
+      }
+    }
+
+  }
+
+  .section-item {
+    .make-row;
+    padding: 15px 0px;
+  }
+
+  .section {
+    &.single-column {
+      padding: 15px 0;
+    }
+  }
+
+  .summary {
+    .meta-text;
+  }
+
+  .medium-logo, .medium-avatar {
+    vertical-align: middle;
+    display: inline-block;
+    margin-right: 10px;
+  }
+
+  label {
+    .post-title-text;
+    display: block;
+  }
+
+  .full-column {
+    .make-sm-column(12);
+  }
+  .half-column {
+    .make-sm-column(6);
+  }
+  .third-column {
+    .make-sm-column(4);
+  }
+  .side-column {
+    .make-sm-column(3);
+    label {
+      padding-top: 4px;
+    }
+  }
+  .main-column {
+    .make-sm-column(9);
+  }
+  .right-align {
+    text-align: right;
+  }
+
+  .form-control {
+    margin-bottom: @p-bottom-margin;
+  }
+
+  .input-group {
+    .form-control {
+      margin-bottom: 0;
+    }
+    margin-bottom: @p-bottom-margin;
+  }
+
+  .description-value {
+    text-align: left;
+    max-height: 50vh;
+    overflow: scroll;
+    border: 1px solid @light-gray-border;
+    border-radius: @border-radius-base;
+    padding: 6px 12px;
+    margin-bottom: 10px;
+  }
+
+  .banner {
+    display: block;
+    width: 100%;
+    .fluid-height(38.2%);
+    background-size: cover;
+    background-position: center;
+    margin-bottom: 5px;
+  }
+
+  textarea.description {
+    min-height: 30vh;
+  }
+
+  .footer .error {
+    margin-top: @p-bottom-margin;
+  }
+}

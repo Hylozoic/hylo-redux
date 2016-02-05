@@ -1,6 +1,6 @@
 import React from 'react'
 import { Link } from 'react-router'
-import { filter, find, get, isEmpty } from 'lodash'
+import { filter, find, get, isEmpty, findWhere, first, without } from 'lodash'
 import { projectUrl } from '../routes'
 const { array, bool, func, object, string } = React.PropTypes
 import cx from 'classnames'
@@ -16,7 +16,7 @@ import PostEditor from './PostEditor'
 import RSVPControl from './RSVPControl'
 import SharingDropdown from './SharingDropdown'
 import { connect } from 'react-redux'
-import { fetchComments, createComment, startPostEdit, changeEventResponse } from '../actions'
+import { fetchComments, createComment, startPostEdit, changeEventResponse, voteOnPost } from '../actions'
 
 const spacer = <span>&nbsp; •&nbsp; </span>
 
@@ -64,6 +64,11 @@ export default class Post extends React.Component {
     this.setState({commentsExpanded: !this.state.commentsExpanded})
   }
 
+  vote = () => {
+    let { dispatch, post } = this.props
+    dispatch(voteOnPost(post))
+  }
+
   edit = () => {
     let { dispatch, post } = this.props
     dispatch(startPostEdit(post))
@@ -105,7 +110,7 @@ export default class Post extends React.Component {
           </Dropdown>}
 
         <span className='name'>{person.name}</span>
-        <PostMeta post={post} toggleComments={this.toggleComments}/>
+        <PostMeta post={post} toggleComments={this.toggleComments} vote={this.vote}/>
       </div>
 
       <p className='title'>{title}</p>
@@ -151,7 +156,7 @@ export default class Post extends React.Component {
   }
 }
 
-const PostMeta = ({ post, toggleComments }, { postDisplayMode }) => {
+const PostMeta = ({ post, toggleComments, vote }, { postDisplayMode }) => {
   const now = new Date()
   const createdAt = new Date(post.created_at)
   const updatedAt = new Date(post.updated_at)
@@ -167,14 +172,14 @@ const PostMeta = ({ post, toggleComments }, { postDisplayMode }) => {
       {spacer}updated&nbsp;{nonbreaking(humanDate(updatedAt))}
     </span>}
     {spacer}
-    {post.votes}&nbsp;♡
+    <a onClick={vote} className='vote'>{post.votes}&nbsp;<i className={post.myVote ? 'icon-heart-new-selected' : 'icon-heart-new'}></i></a>
     {spacer}
     <a onClick={toggleComments} href='#'>
       {post.numComments}&nbsp;comment{post.numComments === 1 ? '' : 's'}
     </a>
     {post.public && <span>
       {spacer}Public
-      {spacer}<SharingDropdown className='share-post' toggleChildren={<span>Share</span>} alignRight='true' url={`/p/${post.id}`} text={post.name} />
+      {spacer}<SharingDropdown className='share-post' toggleChildren={<span>Share</span>} alignRight={true} url={`/p/${post.id}`} text={post.name} />
     </span>}
   </div>
 }
@@ -200,6 +205,8 @@ const ExpandedPostDetails = props => {
       currentResponse={(find(post.responders, responder => responder.id === currentUser.id) || {response: ''}).response}
       onPickResponse={choice => dispatch(changeEventResponse(post.id, choice, currentUser))} />}
 
+    <Followers post={post} currentUser={currentUser} />
+
     {!isEmpty(attachments) && <div className='post-section'>
       {attachments.map((file, i) =>
         <a key={i} className='attachment' href={file.url} target='_blank' title={file.name}>
@@ -222,4 +229,49 @@ const ExpandedPostDetails = props => {
       {!commentingDisabled && <CommentForm onCreate={onCommentCreate}/>}
     </div>}
   </div>
+}
+
+const Followers = props => {
+  let { post, currentUser } = props
+  let { followers } = post
+
+  let onlyAuthorIsFollowing = followers.length === 1 && first(followers).id === post.user.id
+  let meInFollowers = (currentUser && findWhere(followers, {id: currentUser.id}))
+  let otherFollowers = meInFollowers ? without(followers, meInFollowers) : followers
+
+  let numShown = 2
+  let num = otherFollowers.length
+  let hasHidden = num > numShown
+  let separator = threshold => num > threshold ? ', ' : (num === threshold ? ' and ' : '')
+
+  if (followers.length > 0 && !onlyAuthorIsFollowing) {
+    return <div className='meta followers'>
+      {meInFollowers && <span>
+        You{separator(1)}
+      </span>}
+      {otherFollowers.slice(0, numShown).map((person, index) => {
+        let last = index === numShown - 1
+        return <a key={person.id} href={`/u/${person.id}`}>
+          {person.name}
+          {!last && separator(2)}
+        </a>
+      })}
+      {hasHidden && ' and '}
+      {hasHidden && <Dropdown className='followers-dropdown'
+        toggleChildren={<span>
+          {num - numShown} other{num - numShown > 1 ? 's' : ''}
+        </span>}>
+        {otherFollowers.slice(numShown).map(f => <li key={f.id}>
+          <div>
+            <Avatar person={f}/>
+            <Link to={`/u/${f.id}`}>{f.name}</Link>
+          </div>
+        </li>)}
+      </Dropdown>}
+      &nbsp;{meInFollowers || num > 1 ? 'are' : 'is'} following this.
+
+    </div>
+  } else {
+    return <span />
+  }
 }

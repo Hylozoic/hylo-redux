@@ -77,6 +77,8 @@ export const UPLOAD_IMAGE_PENDING = UPLOAD_IMAGE + _PENDING
 export const USE_INVITATION = 'USE_INVITATION'
 export const VALIDATE_COMMUNITY_ATTRIBUTE = 'VALIDATE_COMMUNITY_ATTRIBUTE'
 export const VALIDATE_COMMUNITY_ATTRIBUTE_PENDING = VALIDATE_COMMUNITY_ATTRIBUTE + _PENDING
+export const VOTE_ON_POST = 'VOTE_ON_POST'
+export const VOTE_ON_POST_PENDING = VOTE_ON_POST + _PENDING
 
 import { cleanAndStringify } from '../util/caching'
 import { cloneDeep, pick } from 'lodash'
@@ -463,6 +465,14 @@ export function sendCommunityInvitation (communityId, params) {
   return {
     type: SEND_COMMUNITY_INVITATION,
     payload: {api: true, path: `/noo/community/${communityId}/invite`, params, method: 'POST'}
+  }
+}
+
+export function voteOnPost (post) {
+  return {
+    type: VOTE_ON_POST,
+    payload: {api: true, path: `/noo/post/${post.id}/vote`, method: 'POST'},
+    meta: {id: post.id, prevProps: post}
   }
 }
 

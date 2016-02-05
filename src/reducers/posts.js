@@ -1,4 +1,12 @@
-import { CREATE_POST, FETCH_POST, FETCH_POSTS, UPDATE_POST, CHANGE_EVENT_RESPONSE_PENDING } from '../actions'
+import {
+  CREATE_POST,
+  FETCH_POST,
+  FETCH_POSTS,
+  UPDATE_POST,
+  CHANGE_EVENT_RESPONSE_PENDING,
+  VOTE_ON_POST,
+  VOTE_ON_POST_PENDING
+} from '../actions'
 import { omit, findWhere, without } from 'lodash'
 import { mergeList } from './util'
 
@@ -28,7 +36,17 @@ const changeEventResponse = (post, response, user) => {
 
 export default function (state = {}, action) {
   let { error, type, payload, meta } = action
-  if (error) return state
+  if (error) {
+    switch (type) {
+      case VOTE_ON_POST:
+        return {
+          ...state,
+          [meta.id]: {...state[meta.id], ...meta.prevProps}
+        }
+      default:
+        return state
+    }
+  }
 
   switch (type) {
     case FETCH_POSTS:
@@ -45,6 +63,16 @@ export default function (state = {}, action) {
       post = state[id]
       var { response, user } = meta
       return {...state, [id]: changeEventResponse(post, response, user)}
+    case VOTE_ON_POST_PENDING:
+      id = meta.id
+      post = state[id]
+      var newPost
+      if (post.myVote) {
+        newPost = {...post, myVote: false, votes: post.votes - 1}
+      } else {
+        newPost = {...post, myVote: true, votes: post.votes + 1}
+      }
+      return {...state, [id]: newPost}
   }
   return state
 }

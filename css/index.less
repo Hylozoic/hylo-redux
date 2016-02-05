@@ -386,6 +386,22 @@ ul.posts {
     .semibold;
   }
 
+  .vote {
+    cursor: pointer;
+    
+    i {
+      color: @dark-blue;
+      vertical-align: middle;
+      position: relative;
+      top: -2px;
+    }
+
+    .icon-heart-new-selected {
+      color: #f8f;
+    }
+  }
+
+
   p.title {
     .post-title-text;
     margin-bottom: 0;
@@ -546,6 +562,25 @@ ul.posts {
 
         .avatar {
           display: inline-block;
+        }
+      }
+    }
+
+    .followers {
+      margin-bottom: 10px;
+
+      .followers-dropdown {
+        display: inline;
+
+        li {
+          padding: 6px 15px;
+          min-width: 200px;
+        }
+
+        .avatar {
+          display: inline-block;
+          vertical-align: middle;
+          margin-right: 5px;
         }
       }
 

@@ -128,6 +128,7 @@ describe('appHandler', () => {
           height: 101
         }],
         communities: [],
+        followers: [],
         user: {name: ''},
         created_at: new Date()
       }

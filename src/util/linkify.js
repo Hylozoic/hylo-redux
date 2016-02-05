@@ -25,7 +25,8 @@ export default function linkify (text) {
   var linkifiedHtml = function (node) {
     return node.contents().map((i, el) => {
       if (el.type === 'text') return linkifyString(el.data, linkifyjsOptions)
-      if (el.name === 'a') return $.html(el)
+      if (['a', 'br'].includes(el.name)) return $.html(el)
+
       var attrs = isEmpty(el.attribs)
         ? ''
         : ' ' + pairs(el.attribs).map(([k, v]) => `${k}='${v}'`).join(' ')

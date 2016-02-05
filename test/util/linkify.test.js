@@ -13,4 +13,10 @@ describe('linkify', () => {
 
     expect(linkify(source)).to.equal(expected)
   })
+
+  it('handles <br> tags correctly', () => {
+    let source = '<p>hi<br><br>ok</p>'
+    let expected = '<p>hi<br><br>ok</p>'
+    expect(linkify(source)).to.equal(expected)
+  })
 })

@@ -6,7 +6,7 @@ import {
 } from '../actions'
 import { compose, filter, get, partialRight, uniq, without } from 'lodash'
 import qs from 'querystring'
-import { ProjectMemberRole } from '../constants'
+import { MemberRole } from '../models/project'
 
 const moderatorKey = id => qs.stringify({subject: 'project-moderators', id})
 
@@ -35,7 +35,7 @@ const handlePeople = (state, key, people) => {
   // extract project moderators and save them separately
   let { subject, id } = qs.parse(key)
   if (subject === 'project') {
-    let isModerator = p => get(p, 'membership.role') === ProjectMemberRole.MODERATOR
+    let isModerator = p => get(p, 'membership.role') === MemberRole.MODERATOR
     let moderatorIds = filter(people, isModerator).map(p => p.id)
     return addPeople(newState, moderatorKey(id), ...moderatorIds)
   }
@@ -53,7 +53,7 @@ export default function (state = {}, action) {
       let { cache } = meta
       return handlePeople(state, cache.id, payload.people)
     case FETCH_PROJECT:
-      if (get(payload, 'membership.role') === ProjectMemberRole.MODERATOR) {
+      if (get(payload, 'membership.role') === MemberRole.MODERATOR) {
         let key = qs.stringify({subject: 'project-moderators', id: payload.id})
         return {
           ...state,
@@ -62,7 +62,7 @@ export default function (state = {}, action) {
       }
       break
     case TOGGLE_PROJECT_MODERATOR_ROLE:
-      if (role === ProjectMemberRole.MODERATOR) {
+      if (role === MemberRole.MODERATOR) {
         return addPeople(state, moderatorKey(projectId), userId)
       } else {
         return removePerson(state, moderatorKey(projectId), userId)

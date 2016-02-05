@@ -2,7 +2,7 @@ import React from 'react'
 import { contains } from 'lodash'
 import { prefetch } from 'react-fetcher'
 import { connect } from 'react-redux'
-import { ProjectMemberRole } from '../../constants'
+import { MemberRole } from '../../models/project'
 import { fetchPeople } from '../../actions/fetchPeople'
 import { removeProjectContributor, toggleProjectModeratorRole } from '../../actions/project'
 import { fetchWithCache, connectedListProps } from '../../util/caching'
@@ -61,8 +61,8 @@ export default class ProjectContributors extends React.Component {
   toggleModerator (personId) {
     let { project, moderators, dispatch } = this.props
     let role = contains(moderators, personId)
-      ? ProjectMemberRole.DEFAULT
-      : ProjectMemberRole.MODERATOR
+      ? MemberRole.DEFAULT
+      : MemberRole.MODERATOR
     dispatch(toggleProjectModeratorRole(project.id, personId, role))
   }
 

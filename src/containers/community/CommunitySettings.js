@@ -14,10 +14,7 @@ import {
   resetCommunityValidation,
   validateCommunityAttribute
 } from '../../actions'
-import {
-  communityAvatarUploadSettings,
-  communityBannerUploadSettings
-} from '../../constants'
+import { avatarUploadSettings, bannerUploadSettings } from '../../models/community'
 import { uploadImage } from '../../actions/uploadImage'
 import PersonChooser from '../../components/PersonChooser'
 
@@ -131,9 +128,9 @@ export default class CommunitySettings extends React.Component {
     ;(() => {
       switch (type) {
         case 'avatar_url':
-          return dispatch(uploadImage(communityAvatarUploadSettings(community)))
+          return dispatch(uploadImage(avatarUploadSettings(community)))
         case 'banner_url':
-          return dispatch(uploadImage(communityBannerUploadSettings(community)))
+          return dispatch(uploadImage(bannerUploadSettings(community)))
       }
     })()
     .then(action => {

@@ -16,7 +16,7 @@ import A from '../../components/A'
 import { formatDate } from '../../util/text'
 import { debounce, get, sortBy } from 'lodash'
 import TagInput from '../../components/TagInput'
-import { userAvatarUploadSettings, userBannerUploadSettings } from '../../constants'
+import { avatarUploadSettings, bannerUploadSettings } from '../../models/person'
 import { openPopup, setupPopupCallback, PROFILE_CONTEXT } from '../../util/auth'
 
 @prefetch(({ dispatch, params: { id }, query }) => {
@@ -140,9 +140,9 @@ export default class UserSettings extends React.Component {
     ;(() => {
       switch (type) {
         case 'avatar_url':
-          return dispatch(uploadImage(userAvatarUploadSettings(currentUser)))
+          return dispatch(uploadImage(avatarUploadSettings(currentUser)))
         case 'banner_url':
-          return dispatch(uploadImage(userBannerUploadSettings(currentUser)))
+          return dispatch(uploadImage(bannerUploadSettings(currentUser)))
       }
     })()
     .then(action => {

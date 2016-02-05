@@ -10,10 +10,7 @@ import {
   validateCommunityAttribute
 } from '../../actions'
 import { uploadImage } from '../../actions/uploadImage'
-import {
-  communityAvatarUploadSettings,
-  communityBannerUploadSettings
-} from '../../constants'
+import { avatarUploadSettings, bannerUploadSettings } from '../../models/community'
 import { scrollToBottom } from '../../util/scrolling'
 const { bool, func, object } = React.PropTypes
 
@@ -156,9 +153,9 @@ export default class CommunityEditor extends React.Component {
     let community = {id: 'new', slug: 'new'}
     switch (type) {
       case 'avatar':
-        return dispatch(uploadImage(communityAvatarUploadSettings(community)))
+        return dispatch(uploadImage(avatarUploadSettings(community)))
       case 'banner':
-        return dispatch(uploadImage(communityBannerUploadSettings(community)))
+        return dispatch(uploadImage(bannerUploadSettings(community)))
     }
   }
 

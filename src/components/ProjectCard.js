@@ -3,7 +3,7 @@ import { humanDate } from '../util/text'
 import { find, pluck } from 'lodash'
 import Avatar from '../components/Avatar'
 import A from '../components/A'
-import { ProjectVisibility } from '../constants'
+import { Visibility } from '../models/project'
 import { projectUrl } from '../routes'
 
 const spacer = <span>&nbsp;&nbsp;•&nbsp;&nbsp;</span>
@@ -14,7 +14,7 @@ const ProjectCard = props => {
   let person = project.user
   let { contributor_count, open_request_count, created_at, title, intention } = project
   let isDraft = !project.published_at
-  let isPublic = !isDraft && project.visibility === ProjectVisibility.PUBLIC
+  let isPublic = !isDraft && project.visibility === Visibility.PUBLIC
   let url = projectUrl(project)
 
   return <div className='project-card'>

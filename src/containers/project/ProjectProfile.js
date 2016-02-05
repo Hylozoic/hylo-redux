@@ -13,7 +13,7 @@ import { A, IndexA } from '../../components/A'
 import SharingDropdown from '../../components/SharingDropdown'
 import { assetUrl } from '../../util/assets'
 import { ogMetaTags } from '../../util'
-import { ProjectVisibility } from '../../constants'
+import { Visibility } from '../../models/project'
 const { bool, func, object } = React.PropTypes
 
 @prefetch(({ dispatch, params: { id } }) =>
@@ -87,7 +87,7 @@ export default class ProjectProfile extends React.Component {
     let { user, community, media, id, slug } = project
     let video = find(media, m => m.type === 'video')
     let image = find(media, m => m.type === 'image')
-    let isPublic = project.visibility === ProjectVisibility.PUBLIC
+    let isPublic = project.visibility === Visibility.PUBLIC
     let isPublished = !!project.published_at
     let canPost = canModerate || (currentUser && contains(contributors.map(c => c.id), currentUser.id))
     let details = project.details ? markdown(project.details) : ''

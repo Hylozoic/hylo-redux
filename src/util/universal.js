@@ -2,6 +2,7 @@ import qs from 'querystring'
 
 export const localsForPrefetch = ({ location, params }, store) => ({
   params,
+  store,
   path: location.pathname,
   dispatch: store.dispatch,
   currentUser: store.getState().people.current,

@@ -1,12 +1,17 @@
 import React from 'react'
 import { A, IndexA } from '../../components/A'
 import { connect } from 'react-redux'
-import { prefetch } from 'react-fetcher'
+import { prefetch, defer } from 'react-fetcher'
 import { find } from 'lodash'
 import { fetchCommunity } from '../../actions'
+import { trackEvent } from '../../actions/analytics'
 const { object } = React.PropTypes
 
-@prefetch(({dispatch, params: {id}}) => dispatch(fetchCommunity(id)))
+@prefetch(({ dispatch, params: { id } }) => dispatch(fetchCommunity(id)))
+@defer(({ dispatch, params: { id }, store }) => {
+  let community = store.getState().communities[id]
+  dispatch(trackEvent('Community: Load Community', {community}))
+})
 @connect((state, props) => ({
   community: state.communities[props.params.id],
   currentUser: state.people.current

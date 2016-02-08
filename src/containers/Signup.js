@@ -1,15 +1,18 @@
 import React from 'react'
 import { pick } from 'lodash'
+import { defer } from 'react-fetcher'
 import { makeUrl } from '../client/util'
 import { Link } from 'react-router'
 import { signup, setSignupError } from '../actions'
 import ServiceAuthButtons from '../components/ServiceAuthButtons'
 import validator from 'validator'
 import { prefetchForNext, connectForNext, goToNext } from './Login'
+import { STARTED_SIGNUP, trackEvent } from '../util/analytics'
 const { func, object, string } = React.PropTypes
 
 @prefetchForNext
 @connectForNext('signup')
+@defer(() => trackEvent(STARTED_SIGNUP))
 export default class Signup extends React.Component {
   static propTypes = {
     dispatch: func,

@@ -1,5 +1,5 @@
 import React from 'react'
-import { prefetch } from 'react-fetcher'
+import { defer, prefetch } from 'react-fetcher'
 import { get, pick } from 'lodash'
 import { makeUrl } from '../client/util'
 import { connect } from 'react-redux'
@@ -12,6 +12,7 @@ import {
   setLoginError
 } from '../actions'
 import { fetchProject } from '../actions/project'
+import { STARTED_LOGIN, trackEvent } from '../util/analytics'
 import { Link } from 'react-router'
 import ServiceAuthButtons from '../components/ServiceAuthButtons'
 const { func, object, string } = React.PropTypes
@@ -80,6 +81,7 @@ export const goToNext = (currentUser, query) => {
 
 @prefetchForNext
 @connectForNext('login')
+@defer(() => trackEvent(STARTED_LOGIN))
 export default class Login extends React.Component {
   static propTypes = {
     error: string,

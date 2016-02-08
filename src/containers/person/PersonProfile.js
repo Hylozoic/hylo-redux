@@ -1,13 +1,25 @@
 import React from 'react'
 import { connect } from 'react-redux'
-import { prefetch } from 'react-fetcher'
+import { prefetch, defer } from 'react-fetcher'
 import { fetchPerson } from '../../actions'
+import { get } from 'lodash'
+import { VIEWED_PERSON, VIEWED_SELF, trackEvent } from '../../util/analytics'
 import { A, IndexA } from '../../components/A'
 const { object } = React.PropTypes
 
 const defaultBanner = 'https://d3ngex8q79bk55.cloudfront.net/misc/default_user_banner.jpg'
 
-@prefetch(({ dispatch, params: {id} }) => dispatch(fetchPerson(id)))
+@prefetch(({ dispatch, params: { id } }) => dispatch(fetchPerson(id)))
+@defer(({ store, params: { id } }) => {
+  let state = store.getState()
+  let person = state.people[id]
+  let currentUser = state.people.current
+  if (get(currentUser, 'id') === person.id) {
+    return trackEvent(VIEWED_SELF)
+  } else {
+    return trackEvent(VIEWED_PERSON, {person})
+  }
+})
 @connect(({ people }, props) => ({
   person: people[props.params.id],
   currentUser: people.current

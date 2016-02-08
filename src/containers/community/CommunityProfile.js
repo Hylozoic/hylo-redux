@@ -4,13 +4,13 @@ import { connect } from 'react-redux'
 import { prefetch, defer } from 'react-fetcher'
 import { find } from 'lodash'
 import { fetchCommunity } from '../../actions'
-import { trackEvent } from '../../actions/analytics'
+import { VIEWED_COMMUNITY, trackEvent } from '../../util/analytics'
 const { object } = React.PropTypes
 
 @prefetch(({ dispatch, params: { id } }) => dispatch(fetchCommunity(id)))
-@defer(({ dispatch, params: { id }, store }) => {
+@defer(({ params: { id }, store }) => {
   let community = store.getState().communities[id]
-  dispatch(trackEvent('Community: Load Community', {community}))
+  return trackEvent(VIEWED_COMMUNITY, {community})
 })
 @connect((state, props) => ({
   community: state.communities[props.params.id],

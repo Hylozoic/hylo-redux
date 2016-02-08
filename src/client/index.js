@@ -63,17 +63,12 @@ history.listen(location => {
     identify(get(store.getState(), 'people.current'))
     window.analytics.page()
 
-    // don't prefetch for the first route after page load,
-    // because it's all been loaded on the server already
-    if (!prevLocation) {
-      prevLocation = location
-      return
-    }
-
     const components = renderProps.routes.map(r => r.component)
     const locals = localsForPrefetch(renderProps, store)
 
-    getPrefetchedData(components, locals)
+    // don't prefetch for the first route after page load, because it's all been
+    // loaded on the server already
+    Promise.resolve(prevLocation && getPrefetchedData(components, locals))
     .then(() => getDeferredData(components, locals))
     .then(() => prevLocation = location)
   })

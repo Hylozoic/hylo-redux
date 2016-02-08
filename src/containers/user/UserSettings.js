@@ -89,10 +89,9 @@ export default class UserSettings extends React.Component {
   save = (field) => {
     if (!this.validate()) return
 
-    let { dispatch, currentUser } = this.props
     let { editing, edited } = this.state
     this.setState({editing: {...editing, [field]: false}})
-    dispatch(updateUserSettings({...currentUser, ...edited}, {[field]: currentUser[field]}))
+    this.update(field, edited[field])
   }
 
   edit (field) {

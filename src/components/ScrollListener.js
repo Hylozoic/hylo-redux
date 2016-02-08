@@ -23,6 +23,6 @@ export default class ScrollListener extends React.Component {
   }
 
   render () {
-    return <span></span>
+    return null
   }
 }

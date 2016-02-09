@@ -60,9 +60,12 @@ const postTypeData = {
   // FIXME: this one attribute in postEdit isn't actually a post attribute
   let { expanded } = postEdit
 
+  if (!project && post) project = get(post, 'projects.0')
+
   return {
     id,
     postEdit,
+    project,
     expanded,
     mentionChoices: state.typeaheadMatches.post,
     currentUser: state.people.current,
@@ -177,7 +180,7 @@ export default class PostEditor extends React.Component {
         let community = {id: get(postEdit, 'communities.0')}
         trackEvent(post ? EDITED_POST : ADDED_POST, {
           post: {
-            id: post.id,
+            id: get(post, 'id'),
             type: postEdit.type
           },
           community,

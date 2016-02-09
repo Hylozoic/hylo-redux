@@ -20,7 +20,7 @@ import cx from 'classnames'
   let codeInvalid = !get(communityValidation, 'beta_access_code.exists')
   return {error, codeInvalid}
 })
-export default class CommunityJoin extends React.Component {
+export default class CommunityJoinForm extends React.Component {
   static propTypes = {
     dispatch: func,
     codeInvalid: bool,
@@ -47,7 +47,11 @@ export default class CommunityJoin extends React.Component {
 
     let code = this.refs.code.value
     dispatch(joinCommunityWithCode(code))
-    .then(({ error, payload }) => error || dispatch(navigate(`/c/${payload.community.slug}`)))
+    .then(({ error, payload }) => {
+      if (error) return
+      let { slug } = payload.community
+      dispatch(navigate(`/c/${slug}`))
+    })
   }
 
   render () {

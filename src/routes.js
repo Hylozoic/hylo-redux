@@ -13,7 +13,7 @@ import CommunityEvents from './containers/community/CommunityEvents'
 import CommunityProjects from './containers/community/CommunityProjects'
 import CommunityEditor from './containers/community/CommunityEditor'
 import CommunityInvitations from './containers/community/CommunityInvitations'
-import CommunityJoin from './containers/community/CommunityJoin'
+import CommunityJoinForm from './containers/community/CommunityJoinForm'
 import CommunityJoinLinkHandler from './containers/community/CommunityJoinLinkHandler'
 import InvitationHandler from './containers/community/InvitationHandler'
 import AboutCommunity from './containers/community/AboutCommunity'
@@ -63,7 +63,7 @@ export default function makeRoutes (store) {
       <Route path='about' component={AboutPerson}/>
     </Route>
     <Route path='c/new' component={CommunityEditor} onEnter={requireLogin()}/>
-    <Route path='c/join' component={CommunityJoin} onEnter={requireLogin()}/>
+    <Route path='c/join' component={CommunityJoinForm} onEnter={requireLogin()}/>
 
     <Route path='h/use-invitation' component={InvitationHandler}
       onEnter={requireLogin({

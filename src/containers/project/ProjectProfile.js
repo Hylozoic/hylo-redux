@@ -106,7 +106,7 @@ export default class ProjectProfile extends React.Component {
       <div className='project-header'>
         <div className='col-sm-12 title-row'>
           <div className='right'>
-            {isPublic && <SharingDropdown toggleChildren={<a className='button'>Share</a>} className='share-project' url={`/project/${project.id}/${project.slug}`} text={project.title} />}
+            {isPublic && <SharingDropdown toggleChildren={<button>Share</button>} className='share-project' url={`/project/${project.id}/${project.slug}`} text={project.title} />}
             {canModerate && <A className='button' to={`/project/${project.id}/edit`}>Edit project</A>}
             {!canPost && <a className='button' onClick={this.join}>Join project</a>}
           </div>

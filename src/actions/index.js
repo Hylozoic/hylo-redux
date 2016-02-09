@@ -10,6 +10,7 @@ export const CREATE_COMMENT = 'CREATE_COMMENT'
 export const CREATE_COMMUNITY = 'CREATE_COMMUNITY'
 export const CREATE_POST = 'CREATE_POST'
 export const CREATE_PROJECT = 'CREATE_PROJECT'
+export const CREATE_NETWORK = 'CREATE_NETWORK'
 export const TOGGLE_USER_SETTINGS_SECTION = 'TOGGLE_USER_SETTINGS_SECTION'
 export const FETCH_COMMENTS = 'FETCH_COMMENTS'
 export const FETCH_COMMUNITY = 'FETCH_COMMUNITY'
@@ -493,5 +494,12 @@ export function removeNotification (id) {
   return {
     type: REMOVE_NOTIFICATION,
     payload: id
+  }
+}
+
+export function createNetwork (params) {
+  return {
+    type: CREATE_NETWORK,
+    payload: {api: true, params, path: '/noo/network', method: 'POST'}
   }
 }

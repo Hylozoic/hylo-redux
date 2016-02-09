@@ -12,7 +12,6 @@ import Dropdown from './Dropdown'
 import ClickCatchingDiv from './ClickCatchingDiv'
 import Comment from './Comment'
 import CommentForm from './CommentForm'
-import PostEditor from './PostEditor'
 import RSVPControl from './RSVPControl'
 import SharingDropdown from './SharingDropdown'
 import { connect } from 'react-redux'
@@ -24,7 +23,6 @@ const spacer = <span>&nbsp; •&nbsp; </span>
 @connect(({ comments, commentsByPost, people, postEdits, communities }, { post }) => ({
   comments: commentsByPost[post.id] ? commentsByPost[post.id].map(id => comments[id]) : null,
   currentUser: people.current,
-  editing: !!postEdits[post.id],
   communities: post.communities.map(id => find(communities, c => c.id === id))
 }))
 export default class Post extends React.Component {
@@ -37,12 +35,7 @@ export default class Post extends React.Component {
     comments: array,
     dispatch: func,
     commentingDisabled: bool,
-    currentUser: object,
-    editing: bool
-  }
-
-  static contextTypes = {
-    postDisplayMode: string
+    currentUser: object
   }
 
   constructor (props) {
@@ -79,8 +72,7 @@ export default class Post extends React.Component {
   }
 
   render () {
-    let { post, expanded, currentUser, editing } = this.props
-    if (editing) return this.renderEdit()
+    let { post, expanded, currentUser } = this.props
     if (post.type === 'welcome') return this.renderWelcome()
 
     let image = find(post.media, m => m.type === 'image')
@@ -153,11 +145,6 @@ export default class Post extends React.Component {
         {...this.props}/>}
     </div>
   }
-
-  renderEdit () {
-    let { post } = this.props
-    return <PostEditor post={post} expanded={true}/>
-  }
 }
 
 const PostMeta = ({ post, toggleComments, vote }, { postDisplayMode }) => {
@@ -186,6 +173,10 @@ const PostMeta = ({ post, toggleComments, vote }, { postDisplayMode }) => {
       {spacer}<SharingDropdown className='share-post' toggleChildren={<span>Share</span>} alignRight={true} url={`/p/${post.id}`} text={post.name} />
     </span>}
   </div>
+}
+
+PostMeta.contextTypes = {
+  postDisplayMode: string
 }
 
 const ExpandedPostDetails = props => {

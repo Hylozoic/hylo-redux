@@ -2,14 +2,21 @@ import React from 'react'
 import Post from './Post'
 import ScrollListener from './ScrollListener'
 import { position, positionInViewport } from '../util/scrolling'
+import { includes } from 'lodash'
+import PostEditor from './PostEditor'
 
-const { array, bool, func } = React.PropTypes
+const { array, bool, func, object } = React.PropTypes
 
 class PostList extends React.Component {
   static propTypes = {
     posts: array,
     loadMore: func,
-    pending: bool
+    pending: bool,
+    editingPostIds: array
+  }
+
+  static contextTypes = {
+    project: object
   }
 
   constructor (props) {
@@ -40,7 +47,8 @@ class PostList extends React.Component {
   }
 
   render () {
-    let { posts, pending, loadMore } = this.props
+    let { posts, editingPostIds, pending, loadMore } = this.props
+    let { project } = this.context
 
     if (!pending && posts.length === 0) {
       return <div className='no-posts'>No posts to show.</div>
@@ -49,7 +57,9 @@ class PostList extends React.Component {
     return <ul className='posts'>
       {pending && <li className='loading'>Loading...</li>}
       {posts.map(p => <li key={p.id} ref={p.id}>
-        <Post post={p} expanded={p.id === this.state.expanded} onExpand={this.expand}/>
+        {includes(editingPostIds, p.id)
+          ? <PostEditor post={p} expanded={true} project={project}/>
+          : <Post post={p} expanded={p.id === this.state.expanded} onExpand={this.expand}/>}
       </li>)}
       <ScrollListener onBottom={loadMore}/>
     </ul>

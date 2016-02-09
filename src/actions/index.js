@@ -47,6 +47,7 @@ export const REMOVE_NOTIFICATION = 'REMOVE_NOTIFICATION'
 export const REMOVE_PROJECT_CONTRIBUTOR = 'REMOVE_PROJECT_CONTRIBUTOR'
 export const RESET_COMMUNITY_VALIDATION = 'RESET_COMMUNITY_VALIDATION'
 export const RESET_ERROR = 'RESET_ERROR'
+export const RESET_NETWORK_VALIDATION = 'RESET_NETWORK_VALIDATION'
 export const SEND_COMMUNITY_INVITATION = 'SEND_COMMUNITY_INVITATION'
 export const SEND_PROJECT_INVITE = 'SEND_PROJECT_INVITE'
 export const SEND_PROJECT_INVITE_PENDING = SEND_PROJECT_INVITE + _PENDING
@@ -65,6 +66,7 @@ export const UPDATE_COMMUNITY_EDITOR = 'UPDATE_COMMUNITY_EDITOR'
 export const UPDATE_INVITATION_EDITOR = 'UPDATE_INVITATION_EDITOR'
 export const UPDATE_COMMUNITY_SETTINGS = 'UPDATE_COMMUNITY_SETTINGS'
 export const UPDATE_COMMUNITY_SETTINGS_PENDING = UPDATE_COMMUNITY_SETTINGS + _PENDING
+export const UPDATE_NETWORK_EDITOR = 'UPDATE_NETWORK_EDITOR'
 export const UPDATE_POST = 'UPDATE_POST'
 export const UPDATE_POST_EDITOR = 'UPDATE_POST_EDITOR'
 export const UPDATE_PROJECT = 'UPDATE_PROJECT'
@@ -78,6 +80,7 @@ export const UPLOAD_IMAGE_PENDING = UPLOAD_IMAGE + _PENDING
 export const USE_INVITATION = 'USE_INVITATION'
 export const VALIDATE_COMMUNITY_ATTRIBUTE = 'VALIDATE_COMMUNITY_ATTRIBUTE'
 export const VALIDATE_COMMUNITY_ATTRIBUTE_PENDING = VALIDATE_COMMUNITY_ATTRIBUTE + _PENDING
+export const VALIDATE_NETWORK_ATTRIBUTE = 'VALIDATE_NETWORK_ATTRIBUTE'
 export const VOTE_ON_POST = 'VOTE_ON_POST'
 export const VOTE_ON_POST_PENDING = VOTE_ON_POST + _PENDING
 
@@ -500,6 +503,28 @@ export function removeNotification (id) {
 export function createNetwork (params) {
   return {
     type: CREATE_NETWORK,
-    payload: {api: true, params, path: '/noo/network', method: 'POST'}
+    payload: {api: true, params: {...params, communities: []}, path: '/noo/network', method: 'POST'}
+  }
+}
+
+export function validateNetworkAttribute (key, value, constraint) {
+  return {
+    type: VALIDATE_NETWORK_ATTRIBUTE,
+    meta: {key}
+  }
+}
+
+export function resetNetworkValidation (key) {
+  return {
+    type: RESET_NETWORK_VALIDATION,
+    meta: {key}
+  }
+}
+
+export function updateNetworkEditor (subtree, changes) {
+  return {
+    type: UPDATE_NETWORK_EDITOR,
+    payload: changes,
+    meta: {subtree}
   }
 }

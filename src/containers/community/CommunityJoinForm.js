@@ -47,11 +47,7 @@ export default class CommunityJoinForm extends React.Component {
 
     let code = this.refs.code.value
     dispatch(joinCommunityWithCode(code))
-    .then(({ error, payload }) => {
-      if (error) return
-      let { slug } = payload.community
-      dispatch(navigate(`/c/${slug}`))
-    })
+    .then(({ error, payload }) => error || dispatch(navigate(`/c/${payload.community.slug}`)))
   }
 
   render () {

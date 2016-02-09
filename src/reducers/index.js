@@ -1,6 +1,6 @@
 import { combineReducers } from 'redux'
 import { routeReducer } from 'redux-simple-router'
-import { any, contains, get, omit, partition } from 'lodash'
+import { some, get, includes, omit, partition } from 'lodash'
 import comments from './comments'
 import commentsByPost from './commentsByPost'
 import people from './people'
@@ -165,7 +165,7 @@ export default combineReducers({
 
   typeaheadMatches: (state = {}, action) => {
     let { error, type } = action
-    if (error || !contains([TYPEAHEAD, CANCEL_TYPEAHEAD], type)) return state
+    if (error || !includes([TYPEAHEAD, CANCEL_TYPEAHEAD], type)) return state
 
     let { payload, meta: { id } } = action
     switch (type) {
@@ -374,7 +374,7 @@ export default combineReducers({
         if (successes.length > 0) {
           success = `Sent invitations to ${successes.length} people.`
         }
-        if (any(failures)) {
+        if (some(failures)) {
           error = failures.map(r => `Couldn't send to ${r.email}: ${r.error}.`).join(' ')
         }
         return {...state, success, error}

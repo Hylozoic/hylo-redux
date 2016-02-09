@@ -1,5 +1,5 @@
 import qs from 'querystring'
-import { capitalize, contains, omit } from 'lodash'
+import { capitalize, includes, omitBy } from 'lodash'
 import { navigate, FETCH_POSTS, FETCH_PROJECTS, FETCH_PEOPLE } from '../actions'
 
 const commonDefaults = {
@@ -11,12 +11,12 @@ const blankOrDefault = (defaults = commonDefaults) => (value, key) => {
   let defaultValue = defaults[key]
   return defaultValue === value ||
     (!value && value !== 0) ||
-    (Array.isArray(defaultValue) && contains(defaultValue, value))
+    (Array.isArray(defaultValue) && includes(defaultValue, value))
 }
 
 // TODO: sort output by key name
 export const cleanAndStringify = (opts, defaults) =>
-  qs.stringify(omit(opts, blankOrDefault(defaults)))
+  qs.stringify(omitBy(opts, blankOrDefault(defaults)))
 
 const createCacheId = (subject, id, query = {}) => {
   let { type, sort, search, filter } = query

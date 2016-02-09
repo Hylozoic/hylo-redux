@@ -1,5 +1,5 @@
 import React from 'react'
-import { contains } from 'lodash'
+import { includes } from 'lodash'
 import { prefetch } from 'react-fetcher'
 import { connect } from 'react-redux'
 import { MemberRole } from '../../models/project'
@@ -22,7 +22,7 @@ const fetch = fetchWithCache(fetchPeople)
   let currentUser = state.people.current
   let project = state.projects[id]
   let key = qs.stringify({subject: 'project-moderators', id})
-  let canModerate = currentUser && (contains(state.peopleByQuery[key], currentUser.id) ||
+  let canModerate = currentUser && (includes(state.peopleByQuery[key], currentUser.id) ||
     project.user.id === currentUser.id)
 
   return {
@@ -60,7 +60,7 @@ export default class ProjectContributors extends React.Component {
 
   toggleModerator (personId) {
     let { project, moderators, dispatch } = this.props
-    let role = contains(moderators, personId)
+    let role = includes(moderators, personId)
       ? MemberRole.DEFAULT
       : MemberRole.MODERATOR
     dispatch(toggleProjectModeratorRole(project.id, personId, role))
@@ -72,7 +72,7 @@ export default class ProjectContributors extends React.Component {
     let menus = {}
     let subtitles = {}
     people.forEach(person => {
-      let personIsModerator = contains(moderators, person.id)
+      let personIsModerator = includes(moderators, person.id)
       if (personIsModerator) subtitles[person.id] = 'moderator'
 
       if (canModerate) {

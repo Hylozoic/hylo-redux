@@ -3,7 +3,7 @@ import { compose } from 'redux'
 import { connect } from 'react-redux'
 import { defer, prefetch } from 'react-fetcher'
 import { fetchActivity, FETCH_ACTIVITY, markActivityRead, markAllActivitiesRead, navigate, thank } from '../actions'
-import { contains, filter, find, get } from 'lodash'
+import { filter, find, get, includes } from 'lodash'
 import cx from 'classnames'
 import ScrollListener from '../components/ScrollListener'
 import Avatar from '../components/Avatar'
@@ -86,7 +86,7 @@ let actionText = (action, comment, post) => {
 }
 
 let bodyText = (action, comment, post) => {
-  if (contains(['followAdd', 'follow', 'unfollow'], action)) {
+  if (includes(['followAdd', 'follow', 'unfollow'], action)) {
     return ''
   }
   let text = get(comment, 'comment_text') || get(post, 'description')

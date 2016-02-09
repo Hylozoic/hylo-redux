@@ -9,7 +9,7 @@
 // https://github.com/Kindling/react-tinymce-mention/blob/master/LICENSE
 
 import { renderToStaticMarkup } from 'react-dom/server'
-import { contains, difference, isEmpty, values } from 'lodash'
+import { difference, includes, isEmpty, values } from 'lodash'
 import { debug } from '../util/logging'
 
 const keyMap = {
@@ -69,7 +69,7 @@ function shouldIgnoreWhileFetching (keyCode) {
     keyMap.DELETE
   ]
 
-  return contains(difference(values(keyMap), whiteList), keyCode)
+  return includes(difference(values(keyMap), whiteList), keyCode)
 }
 
 // insert a DOM node into the editor, using a placeholder node to ensure

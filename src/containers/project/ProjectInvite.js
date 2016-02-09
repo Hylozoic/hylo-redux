@@ -100,7 +100,7 @@ export default class ProjectInvite extends React.Component {
       </div>
       <div className='section-item'>
         <div className='full-column'>
-          <label>Invite anyone else by email</label>
+          <label>Invite someone else by email</label>
           <input type='text' ref='emails' className='form-control' placeholder='Enter email address, separated by commas...'/>
         </div>
       </div>

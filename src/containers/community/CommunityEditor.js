@@ -1,6 +1,6 @@
 import React from 'react'
 import { connect } from 'react-redux'
-import { any, get, omit, pairs } from 'lodash'
+import { some, get, omit, toPairs } from 'lodash'
 import {
   CREATE_COMMUNITY,
   createCommunity,
@@ -32,7 +32,7 @@ const categories = {
 }
 
 @connect(({communityEditor, communityValidation, pending}) => {
-  let validating = any(communityValidation.pending)
+  let validating = some(communityValidation.pending)
   let { community, errors } = communityEditor
   let saving = pending[CREATE_COMMUNITY]
 
@@ -111,7 +111,7 @@ export default class CommunityEditor extends React.Component {
 
     this.setError(error)
 
-    if (any(error)) {
+    if (some(error)) {
       this.resetValidation('slug')
     } else {
       return this.checkUnique('slug', value)
@@ -175,11 +175,11 @@ export default class CommunityEditor extends React.Component {
     if (validating) return
 
     this.validate().then(() => {
-      if (any(this.props.errors)) return scrollToBottom()
+      if (some(this.props.errors)) return scrollToBottom()
 
       dispatch(createCommunity(community))
       .then(() => {
-        if (any(this.props.errors)) return scrollToBottom()
+        if (some(this.props.errors)) return scrollToBottom()
         dispatch(navigate(`/c/${community.slug}`))
       })
     })
@@ -187,7 +187,7 @@ export default class CommunityEditor extends React.Component {
 
   render () {
     let { validating, saving, community, errors } = this.props
-    let disableSubmit = any(omit(errors, 'server')) || validating || saving
+    let disableSubmit = some(omit(errors, 'server')) || validating || saving
 
     return <div id='community-editor' className='form-sections'>
       <h2>Create a community</h2>
@@ -250,7 +250,7 @@ export default class CommunityEditor extends React.Component {
           <div className='main-column'>
             <select ref='category' className='form-control' onChange={this.setCategory}>
               <option value=''>Pick one:</option>
-              {pairs(categories).map(([value, label]) => <option key={value} value={value}>
+              {toPairs(categories).map(([value, label]) => <option key={value} value={value}>
                 {label}
               </option>)}
             </select>
@@ -304,7 +304,7 @@ export default class CommunityEditor extends React.Component {
       <p>By creating this community you are agreeing to moderate posted content and report any objectionable content via the built-in reporting mechanisms.</p>
 
       <div className='section footer'>
-        {any(errors) && <p className='help error'>
+        {some(errors) && <p className='help error'>
           {errors.server || 'The information you provided has some errors; please see above.'}
         </p>}
         <button type='button' onClick={this.submit} disabled={disableSubmit}>

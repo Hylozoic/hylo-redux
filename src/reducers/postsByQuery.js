@@ -1,4 +1,4 @@
-import { contains, pairs } from 'lodash'
+import { includes, toPairs } from 'lodash'
 import qs from 'querystring'
 import { addIdsToState } from './util'
 
@@ -22,12 +22,12 @@ export default function (state = {}, action) {
 
       // find all lists that should contain this post id,
       // and prepend it to each of them
-      let updatedPostLists = pairs(state).reduce((changedLists, [id, postIds]) => {
+      let updatedPostLists = toPairs(state).reduce((changedLists, [id, postIds]) => {
         let key = qs.parse(id)
 
-        if ((key.subject === 'community' && contains(communityIds, key.id)) ||
+        if ((key.subject === 'community' && includes(communityIds, key.id)) ||
         (key.subject === 'person' && key.id === post.user.id) ||
-        (key.subject === 'project' && contains(projectIds, key.id)) ||
+        (key.subject === 'project' && includes(projectIds, key.id)) ||
         key.subject === 'all-posts') {
           changedLists[id] = [post.id, ...postIds]
         }

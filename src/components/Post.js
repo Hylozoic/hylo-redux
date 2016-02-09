@@ -1,6 +1,6 @@
 import React from 'react'
 import { Link } from 'react-router'
-import { filter, find, get, isEmpty, findWhere, first, without } from 'lodash'
+import { filter, find, get, isEmpty, first, without } from 'lodash'
 import { projectUrl } from '../routes'
 const { array, bool, func, object, string } = React.PropTypes
 import cx from 'classnames'
@@ -240,7 +240,7 @@ const Followers = props => {
   let { followers } = post
 
   let onlyAuthorIsFollowing = followers.length === 1 && first(followers).id === post.user.id
-  let meInFollowers = (currentUser && findWhere(followers, {id: currentUser.id}))
+  let meInFollowers = (currentUser && find(followers, {id: currentUser.id}))
   let otherFollowers = meInFollowers ? without(followers, meInFollowers) : followers
 
   let numShown = 2

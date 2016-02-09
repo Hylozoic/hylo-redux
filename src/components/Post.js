@@ -16,6 +16,7 @@ import PostEditor from './PostEditor'
 import RSVPControl from './RSVPControl'
 import SharingDropdown from './SharingDropdown'
 import { connect } from 'react-redux'
+import { SHOWED_POST_COMMENTS, trackEvent } from '../util/analytics'
 import { fetchComments, createComment, startPostEdit, changeEventResponse, voteOnPost } from '../actions'
 
 const spacer = <span>&nbsp; •&nbsp; </span>
@@ -61,6 +62,9 @@ export default class Post extends React.Component {
 
     let { post, comments } = this.props
     if (!comments) this.props.dispatch(fetchComments(post.id))
+    if (!this.state.commentsExpanded) {
+      trackEvent(SHOWED_POST_COMMENTS, {post})
+    }
     this.setState({commentsExpanded: !this.state.commentsExpanded})
   }
 

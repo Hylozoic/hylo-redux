@@ -15,6 +15,7 @@ import { setManifest } from '../util/assets'
 import fbAsyncInit from './fbAsyncInit'
 import setupSegment from './segment'
 import { mostRecentCommunity } from '../models/person'
+import trackClickthrough from './clickthrough'
 
 const identify = person => {
   if (!person) return
@@ -75,6 +76,7 @@ history.listen(location => {
 })
 
 fbAsyncInit()
+trackClickthrough()
 
 const component = (
   <Provider store={store}>

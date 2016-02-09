@@ -1,7 +1,7 @@
 import React from 'react'
 import { compose } from 'redux'
 import { connect } from 'react-redux'
-import { prefetch } from 'react-fetcher'
+import { defer, prefetch } from 'react-fetcher'
 import { fetchActivity, FETCH_ACTIVITY, markActivityRead, markAllActivitiesRead, navigate, thank } from '../actions'
 import { contains, filter, find, get } from 'lodash'
 import cx from 'classnames'
@@ -9,6 +9,7 @@ import ScrollListener from '../components/ScrollListener'
 import Avatar from '../components/Avatar'
 import truncate from 'html-truncate'
 import { present, humanDate } from '../util/text'
+import { VIEWED_NOTIFICATIONS, trackEvent } from '../util/analytics'
 const { array, bool, func, number, object } = React.PropTypes
 
 const Notifications = compose(
@@ -19,7 +20,8 @@ const Notifications = compose(
     comments: filter(activities.map(a => a.comment_id)).reduce((acc, cid) => ({...acc, [cid]: comments[cid]}), {}),
     total: Number(totalActivities),
     pending: pending[FETCH_ACTIVITY]
-  }))
+  })),
+  defer(() => trackEvent(VIEWED_NOTIFICATIONS))
 )(({ activities, comments, currentUser, dispatch, total, pending }) => {
   let offset = activities.length
   let loadMore = !pending && offset < total

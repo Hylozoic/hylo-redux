@@ -14,10 +14,11 @@ import {
 import { uploadImage } from '../../actions/uploadImage'
 import A from '../../components/A'
 import { formatDate } from '../../util/text'
-import { debounce, get, sortBy } from 'lodash'
+import { debounce, get, sortBy, throttle } from 'lodash'
 import TagInput from '../../components/TagInput'
 import { avatarUploadSettings, bannerUploadSettings } from '../../models/person'
 import { openPopup, setupPopupCallback, PROFILE_CONTEXT } from '../../util/auth'
+import { EDITED_USER_SETTINGS, trackEvent } from '../../util/analytics'
 
 @prefetch(({ dispatch, params: { id }, query }) => {
   switch (query.expand) {
@@ -110,7 +111,12 @@ export default class UserSettings extends React.Component {
     let { dispatch, currentUser } = this.props
     var updatedUser = {...currentUser, [field]: value}
     dispatch(updateUserSettings(updatedUser, {[field]: currentUser[field]}))
+    this.trackEdit()
   }
+
+  // throttle edit events to once per minute, because updates can happen while a
+  // user is editing a text field, etc.
+  trackEdit = throttle(() => trackEvent(EDITED_USER_SETTINGS), 60000)
 
   delayedUpdate = debounce((field, value) => this.update(field, value), 2000)
 

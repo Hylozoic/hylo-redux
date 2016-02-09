@@ -1,5 +1,5 @@
 import qs from 'querystring'
-import { isEmpty, omit } from 'lodash'
+import { isEmpty, omitBy } from 'lodash'
 
 export function isiOSApp () {
   return window.navigator.userAgent.indexOf('Hylo-App') > -1
@@ -26,6 +26,6 @@ export function connectWebViewBridge (callback) {
 }
 
 export function makeUrl (path, params) {
-  params = omit(params, x => !x)
+  params = omitBy(params, x => !x)
   return `${path}${!isEmpty(params) ? '?' + qs.stringify(params) : ''}`
 }

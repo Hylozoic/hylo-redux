@@ -1,5 +1,5 @@
 import qs from 'querystring'
-import { any } from 'lodash'
+import { some } from 'lodash'
 import { CLICKTHROUGH, trackEvent } from '../util/analytics'
 
 export default function () {

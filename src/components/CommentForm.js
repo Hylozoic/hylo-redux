@@ -1,17 +1,18 @@
 import React from 'react'
 import RichTextEditor from './RichTextEditor'
 import { connect } from 'react-redux'
-import { typeahead } from '../actions'
+import { createComment, typeahead } from '../actions'
 import { personTemplate } from '../util/mentions'
-var { array, func } = React.PropTypes
+import { ADDED_COMMENT, trackEvent } from '../util/analytics'
+var { array, func, string } = React.PropTypes
 
 @connect(state => ({mentionChoices: state.typeaheadMatches.comment}))
 export default class CommentForm extends React.Component {
   static propTypes = {
-    onCreate: func,
     mentionChoices: array,
     mentionTypeahead: func,
-    dispatch: func
+    dispatch: func,
+    postId: string
   }
 
   constructor (props) {
@@ -24,8 +25,10 @@ export default class CommentForm extends React.Component {
   }
 
   submit = event => {
+    let { dispatch, postId } = this.props
     event.preventDefault()
-    this.props.onCreate(this.state.input)
+    dispatch(createComment(postId, this.state.input))
+    trackEvent(ADDED_COMMENT, {post: {id: postId}})
     this.setState({input: ''})
     this.refs.editor.setContent('')
   }

@@ -123,7 +123,6 @@ export default class Post extends React.Component {
 
       {image && <div className='image' style={style}></div>}
       {expanded && <ExpandedPostDetails
-        onCommentCreate={text => this.props.dispatch(createComment(post.id, text))}
         commentsExpanded={this.state.commentsExpanded}
         {...{image}} {...this.props}/>}
     </div>
@@ -182,7 +181,7 @@ PostMeta.contextTypes = {
 const ExpandedPostDetails = props => {
   let {
     post, image, comments, commentsExpanded, currentUser, dispatch,
-    commentingDisabled, onCommentCreate, communities
+    commentingDisabled, communities
   } = props
   let description = present(sanitize(post.description))
   let attachments = filter(post.media, m => m.type !== 'image')
@@ -221,7 +220,7 @@ const ExpandedPostDetails = props => {
 
     {commentsExpanded && <div className='comments-section'>
       {comments.map(c => <Comment comment={c} key={c.id}/>)}
-      {!commentingDisabled && <CommentForm onCreate={onCommentCreate}/>}
+      {!commentingDisabled && <CommentForm postId={post.id}/>}
     </div>}
   </div>
 }

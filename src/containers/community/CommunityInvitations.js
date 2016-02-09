@@ -19,6 +19,7 @@ import validator from 'validator'
 import { some, compact, get, isEmpty } from 'lodash'
 import cx from 'classnames'
 import { canInvite } from '../../models/currentUser'
+import { INVITED_COMMUNITY_MEMBERS, trackEvent } from '../../util/analytics'
 
 const defaultSubject = name =>
   `Join ${name} on Hylo`
@@ -81,7 +82,11 @@ const CommunityInvitations = compose(
     if (some(badEmails)) return setError(`These emails are invalid: ${badEmails.join(', ')}`)
 
     dispatch(sendCommunityInvitation(community.id, {subject, message, emails, moderator}))
-    .then(({ error }) => error || dispatch(fetchInvitations(id, 0, true)))
+    .then(({ error }) => {
+      if (error) return
+      dispatch(fetchInvitations(id, 0, true))
+      trackEvent(INVITED_COMMUNITY_MEMBERS, {community})
+    })
   }
 
   return <div className='form-sections'>

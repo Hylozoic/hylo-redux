@@ -12,6 +12,7 @@ import {
   sendProjectInvite,
   navigate
 } from '../../actions'
+import { INVITED_PROJECT_CONTRIBUTORS, trackEvent } from '../../util/analytics'
 const { object, func, array, bool } = React.PropTypes
 
 let typeaheadId = 'invitees'
@@ -54,16 +55,22 @@ export default class ProjectInvite extends React.Component {
   }
 
   submit = () => {
-    let { dispatch, peopleChosen, project: { id, slug } } = this.props
+    let { dispatch, peopleChosen, project } = this.props
     let subject = this.refs.subject.value
     let message = this.refs.message.value
     let emails = this.refs.emails.value.split(',')
     let users = peopleChosen.map(p => p.id)
-    dispatch(sendProjectInvite({emails, message, subject, users}, id))
-    .then(({ error }) => error || Promise.all([
-      dispatch(navigate(`/project/${id}/${slug}`)),
-      dispatch(notify(`Sent invitations to ${emails.length + users.length} people.`, {type: 'success'}))
-    ]))
+    dispatch(sendProjectInvite({emails, message, subject, users}, project.id))
+    .then(({ error }) => {
+      if (error) return
+      let { id, slug } = project
+      dispatch(navigate(`/project/${id}/${slug}`))
+      let c = emails.length + users.length
+      let pl = c > 1
+      let message = `Sent invitation${pl ? 's' : ''} to ${c} ${pl ? 'people' : 'person'}.`
+      dispatch(notify(message, {type: 'success'}))
+      trackEvent(INVITED_PROJECT_CONTRIBUTORS, {project})
+    })
   }
 
   render () {

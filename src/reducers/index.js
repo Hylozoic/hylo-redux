@@ -371,8 +371,10 @@ export default combineReducers({
         let { results } = payload
         let [ failures, successes ] = partition(results, r => r.error)
         let success, error
-        if (successes.length > 0) {
-          success = `Sent invitations to ${successes.length} people.`
+        let sl = successes.length
+        if (sl > 0) {
+          let pl = sl > 1
+          success = `Sent invitation${pl ? 's' : ''} to ${sl} ${pl ? 'people' : 'person'}.`
         }
         if (some(failures)) {
           error = failures.map(r => `Couldn't send to ${r.email}: ${r.error}.`).join(' ')

@@ -12,6 +12,7 @@ import {
 import { uploadImage } from '../../actions/uploadImage'
 import { avatarUploadSettings, bannerUploadSettings } from '../../models/community'
 import { scrollToBottom } from '../../util/scrolling'
+import { ADDED_COMMUNITY, trackEvent } from '../../util/analytics'
 const { bool, func, object } = React.PropTypes
 
 const defaultBanner = 'https://d3ngex8q79bk55.cloudfront.net/misc/default_community_banner.jpg'
@@ -179,8 +180,12 @@ export default class CommunityEditor extends React.Component {
 
       dispatch(createCommunity(community))
       .then(() => {
-        if (some(this.props.errors)) return scrollToBottom()
-        dispatch(navigate(`/c/${community.slug}`))
+        if (some(this.props.errors)) {
+          return scrollToBottom()
+        } else {
+          trackEvent(ADDED_COMMUNITY, {community})
+          dispatch(navigate(`/c/${community.slug}`))
+        }
       })
     })
   }

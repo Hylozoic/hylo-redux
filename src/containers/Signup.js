@@ -7,7 +7,7 @@ import { signup, setSignupError } from '../actions'
 import ServiceAuthButtons from '../components/ServiceAuthButtons'
 import validator from 'validator'
 import { prefetchForNext, connectForNext, goToNext } from './Login'
-import { STARTED_SIGNUP, trackEvent } from '../util/analytics'
+import { SIGNED_UP, STARTED_SIGNUP, trackEvent } from '../util/analytics'
 const { func, object, string } = React.PropTypes
 
 @prefetchForNext
@@ -59,12 +59,16 @@ export default class Signup extends React.Component {
     event.preventDefault()
     if (!this.validate()) return
 
-    let { dispatch, location: { query }, currentUser } = this.props
+    let { dispatch, location: { query } } = this.props
     let name = this.refs.name.value
     let email = this.refs.email.value
     let password = this.refs.password.value
     dispatch(signup(name, email, password))
-    .then(({ error }) => error || dispatch(goToNext(currentUser, query)))
+    .then(({ error }) => {
+      if (error) return
+      dispatch(goToNext(this.props.currentUser, query))
+      trackEvent(SIGNED_UP)
+    })
   }
 
   render () {

@@ -7,7 +7,7 @@ import {
   VOTE_ON_POST,
   VOTE_ON_POST_PENDING
 } from '../actions'
-import { omit, findWhere, without } from 'lodash'
+import { omit, find, without } from 'lodash'
 import { mergeList } from './util'
 
 const normalize = post => ({
@@ -25,7 +25,7 @@ const normalizeUpdate = (post, params) => {
 const changeEventResponse = (post, response, user) => {
   if (!user) return
 
-  var meInResponders = findWhere(post.responders, {id: user.id})
+  var meInResponders = find(post.responders, {id: user.id})
   var responders = without(post.responders, meInResponders)
 
   if (!meInResponders || meInResponders.response !== response) {

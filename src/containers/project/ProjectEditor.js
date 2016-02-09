@@ -8,6 +8,7 @@ import ImageAttachmentButton from '../../components/ImageAttachmentButton'
 import Select from '../../components/Select'
 import { find, isEmpty } from 'lodash'
 import cx from 'classnames'
+import { ADDED_PROJECT, EDITED_PROJECT, trackEvent } from '../../util/analytics'
 const { bool, func, object, string } = React.PropTypes
 
 const visibilityOptions = [
@@ -83,14 +84,9 @@ export default class ProjectEditor extends React.Component {
   save = () => {
     let { dispatch, id, project, projectEdit } = this.props
 
-    ;(() => {
-      if (project) {
-        return dispatch(updateProject(id, projectEdit))
-      } else {
-        return dispatch(createProject(id, projectEdit))
-      }
-    })()
+    return dispatch((project ? updateProject : createProject)(id, projectEdit))
     .then(action => {
+      trackEvent(project ? EDITED_PROJECT : ADDED_PROJECT, {project: projectEdit})
       let { id, slug } = action.payload
       dispatch(navigate(`/project/${id}/${slug}`))
     })

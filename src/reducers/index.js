@@ -1,6 +1,6 @@
 import { combineReducers } from 'redux'
 import { routeReducer } from 'redux-simple-router'
-import { any, contains, get, omit, partition } from 'lodash'
+import { some, get, includes, omit, partition } from 'lodash'
 import comments from './comments'
 import commentsByPost from './commentsByPost'
 import people from './people'
@@ -21,6 +21,7 @@ import {
   CREATE_NETWORK,
   FETCH_ACTIVITY,
   FETCH_INVITATIONS,
+  FETCH_ONBOARDING,
   FETCH_PEOPLE,
   FETCH_POSTS,
   FETCH_PROJECTS,
@@ -171,7 +172,7 @@ export default combineReducers({
 
   typeaheadMatches: (state = {}, action) => {
     let { error, type } = action
-    if (error || !contains([TYPEAHEAD, CANCEL_TYPEAHEAD], type)) return state
+    if (error || !includes([TYPEAHEAD, CANCEL_TYPEAHEAD], type)) return state
 
     let { payload, meta: { id } } = action
     switch (type) {
@@ -438,10 +439,12 @@ export default combineReducers({
         let { results } = payload
         let [ failures, successes ] = partition(results, r => r.error)
         let success, error
-        if (successes.length > 0) {
-          success = `Sent invitations to ${successes.length} people.`
+        let sl = successes.length
+        if (sl > 0) {
+          let pl = sl > 1
+          success = `Sent invitation${pl ? 's' : ''} to ${sl} ${pl ? 'people' : 'person'}.`
         }
-        if (any(failures)) {
+        if (some(failures)) {
           error = failures.map(r => `Couldn't send to ${r.email}: ${r.error}.`).join(' ')
         }
         return {...state, success, error}
@@ -459,6 +462,16 @@ export default combineReducers({
         return state.filter(n => n.id !== payload)
     }
 
+    return state
+  },
+
+  onboarding: (state = {}, action) => {
+    let { type, payload, error } = action
+    if (error) return state
+    switch (type) {
+      case FETCH_ONBOARDING:
+        return payload
+    }
     return state
   }
 

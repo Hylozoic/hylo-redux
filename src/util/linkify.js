@@ -1,7 +1,7 @@
 require('linkifyjs/plugins/hashtag')(require('linkifyjs'))
 import linkifyString from 'linkifyjs/string'
 import cheerio from 'cheerio'
-import { isEmpty, pairs } from 'lodash'
+import { isEmpty, toPairs } from 'lodash'
 
 var linkifyjsOptions = {
   formatHref: function (value, type) {
@@ -29,7 +29,7 @@ export default function linkify (text) {
 
       var attrs = isEmpty(el.attribs)
         ? ''
-        : ' ' + pairs(el.attribs).map(([k, v]) => `${k}='${v}'`).join(' ')
+        : ' ' + toPairs(el.attribs).map(([k, v]) => `${k}='${v}'`).join(' ')
 
       return `<${el.name}${attrs}>${linkifiedHtml($(el))}</${el.name}>`
     }).get().join('')

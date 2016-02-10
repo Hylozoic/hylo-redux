@@ -5,12 +5,16 @@ import { connect } from 'react-redux'
 import { compose } from 'redux'
 import { fetchComments, fetchPost, setMetaTags } from '../actions'
 import { ogMetaTags } from '../util'
-import { join } from 'bluebird'
+import PostEditor from '../components/PostEditor'
 const { object } = React.PropTypes
 
 const SinglePost = props => {
-  let { post, currentUser } = props
+  let { post, currentUser, editing } = props
   if (!post) return <div className='loading'>Loading...</div>
+
+  if (editing) {
+    return <PostEditor post={post} expanded={true}/>
+  }
 
   return <div>
     <Post post={post} expanded={true} commentsExpanded={true} commentingDisabled={!currentUser}/>
@@ -22,7 +26,7 @@ SinglePost.propTypes = {
 }
 
 export default compose(
-  prefetch(({ dispatch, params }) => join(
+  prefetch(({ dispatch, params }) => Promise.all([
     dispatch(fetchPost(params.id))
     .then(action => {
       let payload = action.payload
@@ -31,9 +35,10 @@ export default compose(
       }
     }),
     dispatch(fetchComments(params.id))
-  )),
-  connect(({ posts, people }, { params }) => ({
+  ])),
+  connect(({ posts, people, postEdits }, { params }) => ({
     post: posts[params.id],
-    currentUser: people.current
+    currentUser: people.current,
+    editing: postEdits[params.id]
   }))
 )(SinglePost)

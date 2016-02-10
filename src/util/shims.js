@@ -1,4 +1,4 @@
-import { contains, filter, find } from 'lodash'
+import { filter, find, includes } from 'lodash'
 
 const findImage = media => find(media, m => m.type === 'image')
 const filterDocs = media => filter(media, m => m.type === 'gdoc')
@@ -29,7 +29,7 @@ export const attachmentParams = (prevMedia, media) => {
   let urls = docs.map(d => d.url)
 
   params.docs = docs
-  params.removedDocs = filter(prevDocs, d => !contains(urls, d.url))
+  params.removedDocs = filter(prevDocs, d => !includes(urls, d.url))
 
   return params
 }

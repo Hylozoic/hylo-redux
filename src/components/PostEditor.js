@@ -7,7 +7,7 @@ because they make more sense.
 */
 
 import React from 'react'
-import { contains, filter, find, isEmpty, omit, startsWith } from 'lodash'
+import { filter, find, get, includes, isEmpty, omit, startsWith } from 'lodash'
 import cx from 'classnames'
 import CommunityTagInput from './CommunityTagInput'
 import Dropdown from './Dropdown'
@@ -24,6 +24,7 @@ import { attachmentParams } from '../util/shims'
 import truncate from 'html-truncate'
 import { CREATE_POST, UPDATE_POST, UPLOAD_IMAGE } from '../actions'
 import { personTemplate } from '../util/mentions'
+import { ADDED_POST, EDITED_POST, trackEvent } from '../util/analytics'
 const { array, bool, func, object, string } = React.PropTypes
 
 const postTypes = ['chat', 'request', 'offer', 'intention', 'event']
@@ -59,9 +60,12 @@ const postTypeData = {
   // FIXME: this one attribute in postEdit isn't actually a post attribute
   let { expanded } = postEdit
 
+  if (!project && post) project = get(post, 'projects.0')
+
   return {
     id,
     postEdit,
+    project,
     expanded,
     mentionChoices: state.typeaheadMatches.post,
     currentUser: state.people.current,
@@ -168,6 +172,21 @@ export default class PostEditor extends React.Component {
       }
 
       dispatch((post ? updatePost : createPost)(id, params))
+      .then(({ error }) => {
+        if (error) return
+        // FIXME ideally we would pass name and slug along as well, to make
+        // events more human-readable, but we're only passing around community
+        // ids in this component
+        let community = {id: get(postEdit, 'communities.0')}
+        trackEvent(post ? EDITED_POST : ADDED_POST, {
+          post: {
+            id: get(post, 'id'),
+            type: postEdit.type
+          },
+          community,
+          project
+        })
+      })
     })
   }
 
@@ -183,7 +202,7 @@ export default class PostEditor extends React.Component {
     let { currentUser, postEdit: { communities } } = this.props
     var match = c =>
       startsWith(c.name.toLowerCase(), term.toLowerCase()) &&
-      !contains(communities, c.id)
+      !includes(communities, c.id)
 
     return filter(currentUser.memberships.map(m => m.community), match)
   }

@@ -18,6 +18,7 @@ import CommunityJoinLinkHandler from './containers/community/CommunityJoinLinkHa
 import InvitationHandler from './containers/community/InvitationHandler'
 import AboutCommunity from './containers/community/AboutCommunity'
 import CommunitySettings from './containers/community/CommunitySettings'
+import Onboarding from './containers/Onboarding'
 import PersonProfile from './containers/person/PersonProfile'
 import PersonPosts from './containers/person/PersonPosts'
 import AboutPerson from './containers/person/AboutPerson'
@@ -85,6 +86,8 @@ export default function makeRoutes (store) {
         addParams: ({ params: { id } }) => ({id, action: 'join-community'})
       })}/>
 
+    <Route path='c/:id/onboarding' component={Onboarding} onEnter={requireLogin()}/>
+
     <Route path='c/:id' component={CommunityProfile} onEnter={requireLogin()}>
       <IndexRoute component={CommunityPosts}/>
       <Route path='members' component={CommunityMembers}/>
@@ -111,4 +114,8 @@ export default function makeRoutes (store) {
   </Route>
 }
 
-export const projectUrl = project => `/project/${project.id}/${project.slug}`
+export const projectUrl = project =>
+  `/project/${project.id}/${project.slug}`
+
+export const communityUrl = (community, params) =>
+  makeUrl(`/c/${community.slug}`, params)

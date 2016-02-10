@@ -16,9 +16,10 @@ import A from '../../components/A'
 import Avatar from '../../components/Avatar'
 import ScrollListener from '../../components/ScrollListener'
 import validator from 'validator'
-import { any, compact, get, isEmpty } from 'lodash'
+import { some, compact, get, isEmpty } from 'lodash'
 import cx from 'classnames'
 import { canInvite } from '../../models/currentUser'
+import { INVITED_COMMUNITY_MEMBERS, trackEvent } from '../../util/analytics'
 
 const defaultSubject = name =>
   `Join ${name} on Hylo`
@@ -78,10 +79,14 @@ const CommunityInvitations = compose(
     if (isEmpty(emails)) return setError('Enter at least one email address.')
 
     let badEmails = emails.filter(email => !validator.isEmail(email))
-    if (any(badEmails)) return setError(`These emails are invalid: ${badEmails.join(', ')}`)
+    if (some(badEmails)) return setError(`These emails are invalid: ${badEmails.join(', ')}`)
 
     dispatch(sendCommunityInvitation(community.id, {subject, message, emails, moderator}))
-    .then(({ error }) => error || dispatch(fetchInvitations(id, 0, true)))
+    .then(({ error }) => {
+      if (error) return
+      dispatch(fetchInvitations(id, 0, true))
+      trackEvent(INVITED_COMMUNITY_MEMBERS, {community})
+    })
   }
 
   return <div className='form-sections'>

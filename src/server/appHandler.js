@@ -14,12 +14,12 @@ import { info, debug } from '../util/logging'
 import { fetchCurrentUser } from '../actions'
 import { localsForPrefetch } from '../util/universal'
 import { getManifest } from '../util/assets'
-import { any, isEmpty, pairs } from 'lodash'
+import { some, isEmpty, toPairs } from 'lodash'
 
 const matchPromise = promisify(match, {multiArgs: true})
 
 const checkAPIErrors = ({ errors }) => {
-  return any(pairs(errors), ([key, { payload: { response } }]) => {
+  return some(toPairs(errors), ([key, { payload: { response } }]) => {
     if (!response) return false
     let { status, url } = response
     debug(red(`${key} caused ${status} at ${url}`))

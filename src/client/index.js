@@ -12,26 +12,10 @@ import { debug } from '../util/logging'
 import { localsForPrefetch } from '../util/universal'
 import { get, isEqual } from 'lodash'
 import { setManifest } from '../util/assets'
+import { identify } from '../util/analytics'
 import fbAsyncInit from './fbAsyncInit'
 import setupSegment from './segment'
-import { mostRecentCommunity } from '../models/person'
 import trackClickthrough from './clickthrough'
-
-const identify = person => {
-  if (!person) return
-
-  let { id, name, email, post_count, created_at } = person
-  let community = mostRecentCommunity(person)
-  let account = person.linkedAccounts[0]
-
-  window.analytics.identify(id, {
-    email, name, post_count, createdAt: created_at,
-    provider: get(account, 'provider_key'),
-    community_id: get(community, 'id'),
-    community_name: get(community, 'name'),
-    community_slug: get(community, 'slug')
-  })
-}
 
 const store = configureStore(window.INITIAL_STATE)
 const routes = makeRoutes(store)

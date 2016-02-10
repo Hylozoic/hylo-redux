@@ -3,7 +3,7 @@ import { prefetch } from 'react-fetcher'
 import { connect } from 'react-redux'
 import { fetch, ConnectedPostList } from '../ConnectedPostList'
 import PostEditor from '../../components/PostEditor'
-import { contains } from 'lodash'
+import { includes } from 'lodash'
 const { object, string } = React.PropTypes
 
 const subject = 'project'
@@ -22,13 +22,13 @@ export default class ProjectPosts extends React.Component {
   }
 
   static childContextTypes = {
-    postDisplayMode: string
+    postDisplayMode: string,
+    project: object
   }
 
   getChildContext () {
-    return {
-      postDisplayMode: 'project'
-    }
+    let { project } = this.props
+    return {postDisplayMode: 'project', project}
   }
 
   render () {
@@ -37,7 +37,7 @@ export default class ProjectPosts extends React.Component {
     let { contributors, user } = project
     let canPost = currentUser && (
       user.id === currentUser.id ||
-      contains(contributors.map(c => c.id), currentUser.id)
+      includes(contributors.map(c => c.id), currentUser.id)
     )
 
     return <div>

@@ -1,6 +1,6 @@
 import React from 'react'
 import { Link } from 'react-router'
-import { filter, find, get, isEmpty, findWhere, first, without } from 'lodash'
+import { filter, find, get, isEmpty, first, without } from 'lodash'
 import { projectUrl } from '../routes'
 const { array, bool, func, object, string } = React.PropTypes
 import cx from 'classnames'
@@ -12,7 +12,6 @@ import Dropdown from './Dropdown'
 import ClickCatchingDiv from './ClickCatchingDiv'
 import Comment from './Comment'
 import CommentForm from './CommentForm'
-import PostEditor from './PostEditor'
 import RSVPControl from './RSVPControl'
 import SharingDropdown from './SharingDropdown'
 import { connect } from 'react-redux'
@@ -24,7 +23,6 @@ const spacer = <span>&nbsp; •&nbsp; </span>
 @connect(({ comments, commentsByPost, people, postEdits, communities }, { post }) => ({
   comments: commentsByPost[post.id] ? commentsByPost[post.id].map(id => comments[id]) : null,
   currentUser: people.current,
-  editing: !!postEdits[post.id],
   communities: post.communities.map(id => find(communities, c => c.id === id))
 }))
 export default class Post extends React.Component {
@@ -37,12 +35,7 @@ export default class Post extends React.Component {
     comments: array,
     dispatch: func,
     commentingDisabled: bool,
-    currentUser: object,
-    editing: bool
-  }
-
-  static contextTypes = {
-    postDisplayMode: string
+    currentUser: object
   }
 
   constructor (props) {
@@ -79,8 +72,7 @@ export default class Post extends React.Component {
   }
 
   render () {
-    let { post, expanded, currentUser, editing } = this.props
-    if (editing) return this.renderEdit()
+    let { post, expanded, currentUser } = this.props
     if (post.type === 'welcome') return this.renderWelcome()
 
     let image = find(post.media, m => m.type === 'image')
@@ -131,7 +123,6 @@ export default class Post extends React.Component {
 
       {image && <div className='image' style={style}></div>}
       {expanded && <ExpandedPostDetails
-        onCommentCreate={text => this.props.dispatch(createComment(post.id, text))}
         commentsExpanded={this.state.commentsExpanded}
         {...{image}} {...this.props}/>}
     </div>
@@ -152,11 +143,6 @@ export default class Post extends React.Component {
         commentsExpanded={this.state.commentsExpanded}
         {...this.props}/>}
     </div>
-  }
-
-  renderEdit () {
-    let { post } = this.props
-    return <PostEditor post={post} expanded={true}/>
   }
 }
 
@@ -188,10 +174,14 @@ const PostMeta = ({ post, toggleComments, vote }, { postDisplayMode }) => {
   </div>
 }
 
+PostMeta.contextTypes = {
+  postDisplayMode: string
+}
+
 const ExpandedPostDetails = props => {
   let {
     post, image, comments, commentsExpanded, currentUser, dispatch,
-    commentingDisabled, onCommentCreate, communities
+    commentingDisabled, communities
   } = props
   let description = present(sanitize(post.description))
   let attachments = filter(post.media, m => m.type !== 'image')
@@ -230,7 +220,7 @@ const ExpandedPostDetails = props => {
 
     {commentsExpanded && <div className='comments-section'>
       {comments.map(c => <Comment comment={c} key={c.id}/>)}
-      {!commentingDisabled && <CommentForm onCreate={onCommentCreate}/>}
+      {!commentingDisabled && <CommentForm postId={post.id}/>}
     </div>}
   </div>
 }
@@ -240,7 +230,7 @@ const Followers = props => {
   let { followers } = post
 
   let onlyAuthorIsFollowing = followers.length === 1 && first(followers).id === post.user.id
-  let meInFollowers = (currentUser && findWhere(followers, {id: currentUser.id}))
+  let meInFollowers = (currentUser && find(followers, {id: currentUser.id}))
   let otherFollowers = meInFollowers ? without(followers, meInFollowers) : followers
 
   let numShown = 2

@@ -9,7 +9,7 @@ export default class TagInput extends React.Component {
     tags: array,
     type: string,
     choices: array,
-    handleInput: func,
+    handleInput: func.isRequired,
     onSelect: func,
     onRemove: func,
     allowNewTags: bool

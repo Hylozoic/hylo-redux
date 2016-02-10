@@ -1,5 +1,5 @@
 import qs from 'querystring'
-import { any } from 'lodash'
+import { some } from 'lodash'
 import { CLICKTHROUGH, trackEvent } from '../util/analytics'
 
 export default function () {
@@ -12,6 +12,6 @@ export default function () {
   trackEvent(CLICKTHROUGH, {path, type: ctt, id: cti})
 
   // remove the params to prevent double-counting events on page reload
-  let search = any(otherParams) ? '?' + qs.stringify(otherParams) : ''
+  let search = some(otherParams) ? '?' + qs.stringify(otherParams) : ''
   window.history.replaceState({}, 'Hylo', path + search)
 }

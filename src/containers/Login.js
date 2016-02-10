@@ -12,7 +12,7 @@ import {
   setLoginError
 } from '../actions'
 import { fetchProject } from '../actions/project'
-import { STARTED_LOGIN, trackEvent } from '../util/analytics'
+import { LOGGED_IN, STARTED_LOGIN, trackEvent } from '../util/analytics'
 import { Link } from 'react-router'
 import ServiceAuthButtons from '../components/ServiceAuthButtons'
 const { func, object, string } = React.PropTypes
@@ -97,13 +97,17 @@ export default class Login extends React.Component {
   }
 
   submit = event => {
-    let { dispatch, location: { query }, currentUser } = this.props
+    let { dispatch, location: { query } } = this.props
     event.preventDefault()
     let email = this.refs.email.value
     let password = this.refs.password.value
 
     dispatch(login(email, password))
-    .then(({ error }) => error || dispatch(goToNext(currentUser, query)))
+    .then(({ error }) => {
+      if (error) return
+      dispatch(goToNext(this.props.currentUser, query))
+      trackEvent(LOGGED_IN)
+    })
   }
 
   render () {

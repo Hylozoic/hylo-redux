@@ -2,10 +2,13 @@ import React from 'react'
 import { A, IndexA } from '../../components/A'
 import { connect } from 'react-redux'
 import { prefetch, defer } from 'react-fetcher'
-import { find } from 'lodash'
-import { fetchCommunity } from '../../actions'
+import { find, get } from 'lodash'
+import { fetchCommunity, navigate, updateUserSettings } from '../../actions'
+import { locationWithoutParams } from '../../client/util'
 import { VIEWED_COMMUNITY, trackEvent } from '../../util/analytics'
-const { object } = React.PropTypes
+import { VelocityTransitionGroup } from 'velocity-react'
+import ListItemTagInput from '../../components/ListItemTagInput'
+const { func, object } = React.PropTypes
 
 @prefetch(({ dispatch, params: { id } }) => dispatch(fetchCommunity(id)))
 @defer(({ params: { id }, store }) => {
@@ -20,11 +23,13 @@ export default class CommunityProfile extends React.Component {
   static propTypes = {
     community: object,
     currentUser: object,
-    children: object
+    children: object,
+    location: object,
+    dispatch: func
   }
 
   render () {
-    var { community, currentUser } = this.props
+    let { community, currentUser, location, dispatch } = this.props
 
     // we might have partial data for a community already; if this component
     // renders without banner_url, it'll cause a request to an invalid url
@@ -35,6 +40,12 @@ export default class CommunityProfile extends React.Component {
     let canModerate = !!find(currentUser.memberships, m => m.community.id === community.id && m.role === 1)
 
     return <div id='community'>
+      <VelocityTransitionGroup enter={{animation: 'slideDown', duration: 800}}
+        leave={{animation: 'slideUp', duration: 800}}
+        runOnMount={true}>
+          {get(location, 'query.onboarding') &&
+            <OnboardingQuestions person={currentUser} dispatch={dispatch}/>}
+      </VelocityTransitionGroup>
       <div className='banner'>
         <div className='background' style={{backgroundImage: `url(${banner_url})`}}/>
         <div className='corner'>
@@ -53,4 +64,29 @@ export default class CommunityProfile extends React.Component {
       {this.props.children}
     </div>
   }
+}
+
+const OnboardingQuestions = ({ person, dispatch }) => {
+  let update = (field, value) =>
+    dispatch(updateUserSettings({...person, [field]: value}, {[field]: person[field]}))
+
+  let close = () => dispatch(navigate(locationWithoutParams('onboarding')))
+
+  return <div className='onboarding'>
+    <div className='header'>
+      <h3>Let's get started</h3>
+    </div>
+    <div className='content'>
+      <p>Tell us a little about yourself!</p>
+      <p>What <strong>groups or organizations</strong> are you part of?</p>
+      <ListItemTagInput person={person} type='organizations' update={update}/>
+      <br/>
+      <p>Are there any <strong>skills, passions, or hobbies</strong> you'd like to be known for in your community?</p>
+      <ListItemTagInput person={person} type='skills' update={update}/>
+      <p className='meta'>Type names, pressing Enter after each one. This information will be searchable and shown on your profile, helping other members discover opportunities to collaborate with you. You can change it later.</p>
+      <div className='align-right'>
+        <button onClick={close} className='btn-primary'>Done</button>
+      </div>
+    </div>
+  </div>
 }

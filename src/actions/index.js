@@ -20,6 +20,7 @@ export const FETCH_COMMUNITY_SETTINGS = 'FETCH_COMMUNITY_SETTINGS'
 export const FETCH_CURRENT_USER = 'FETCH_CURRENT_USER'
 export const FETCH_ACTIVITY = 'FETCH_ACTIVITY'
 export const FETCH_INVITATIONS = 'FETCH_INVITATIONS'
+export const FETCH_ONBOARDING = 'FETCH_ONBOARDING'
 export const FETCH_PEOPLE = 'FETCH_PEOPLE'
 export const FETCH_PERSON = 'FETCH_PERSON'
 export const FETCH_POST = 'FETCH_POST'
@@ -528,5 +529,13 @@ export function updateNetworkEditor (subtree, changes) {
     type: UPDATE_NETWORK_EDITOR,
     payload: changes,
     meta: {subtree}
+  }
+}
+
+export function fetchOnboarding (userId, communityId) {
+  let path = `/noo/user/${userId}/onboarding?communityId=${communityId}`
+  return {
+    type: FETCH_ONBOARDING,
+    payload: {api: true, path}
   }
 }

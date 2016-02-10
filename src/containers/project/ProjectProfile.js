@@ -5,7 +5,7 @@ import { connect } from 'react-redux'
 import { fetchProject, joinProject, updateProject } from '../../actions/project'
 import { navigate, notify, setMetaTags } from '../../actions'
 import { markdown } from '../../util/text'
-import { contains, find } from 'lodash'
+import { find, includes } from 'lodash'
 import truncate from 'html-truncate'
 import Avatar from '../../components/Avatar'
 import Video from '../../components/Video'
@@ -30,7 +30,7 @@ const { bool, func, object } = React.PropTypes
 
   let currentUser = people.current
   let key = qs.stringify({subject: 'project-moderators', id})
-  let canModerate = currentUser && (contains(peopleByQuery[key], currentUser.id) ||
+  let canModerate = currentUser && (includes(peopleByQuery[key], currentUser.id) ||
     project.user.id === currentUser.id)
 
   return {project, currentUser, canModerate}
@@ -89,7 +89,7 @@ export default class ProjectProfile extends React.Component {
     let image = find(media, m => m.type === 'image')
     let isPublic = project.visibility === Visibility.PUBLIC
     let isPublished = !!project.published_at
-    let canPost = canModerate || (currentUser && contains(contributors.map(c => c.id), currentUser.id))
+    let canPost = canModerate || (currentUser && includes(contributors.map(c => c.id), currentUser.id))
     let details = project.details ? markdown(project.details) : ''
     let expandable
     if (!this.state.expanded) {
@@ -106,7 +106,7 @@ export default class ProjectProfile extends React.Component {
       <div className='project-header'>
         <div className='col-sm-12 title-row'>
           <div className='right'>
-            {isPublic && <SharingDropdown toggleChildren={<a className='button'>Share</a>} className='share-project' url={`/project/${project.id}/${project.slug}`} text={project.title} />}
+            {isPublic && <SharingDropdown toggleChildren={<button>Share</button>} className='share-project' url={`/project/${project.id}/${project.slug}`} text={project.title} />}
             {canModerate && <A className='button' to={`/project/${project.id}/edit`}>Edit project</A>}
             {!canPost && <a className='button' onClick={this.join}>Join project</a>}
           </div>

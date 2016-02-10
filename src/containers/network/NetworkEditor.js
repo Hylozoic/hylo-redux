@@ -5,6 +5,7 @@ import {
   CREATE_NETWORK,
   createNetwork,
   navigate,
+  typeahead,
   resetNetworkValidation,
   updateNetworkEditor,
   validateNetworkAttribute
@@ -13,12 +14,14 @@ import { uploadImage } from '../../actions/uploadImage'
 import { avatarUploadSettings, bannerUploadSettings } from '../../models/network'
 import { scrollToBottom } from '../../util/scrolling'
 import CommunityTagInput from '../../components/CommunityTagInput'
-const { bool, func, object } = React.PropTypes
+const { bool, func, object, array } = React.PropTypes
 
 const defaultBanner = 'https://d3ngex8q79bk55.cloudfront.net/misc/default_community_banner.jpg'
 const defaultAvatar = 'https://d3ngex8q79bk55.cloudfront.net/misc/default_community_avatar.png'
 
-@connect(({people, networkEditor, networkValidation, pending}) => {
+let typeaheadId = 'network_communities'
+
+@connect(({people, networkEditor, networkValidation, pending, typeaheadMatches}) => {
   let validating = any(networkValidation.pending)
   let { network, errors } = networkEditor
   let saving = pending[CREATE_NETWORK]
@@ -32,7 +35,11 @@ const defaultAvatar = 'https://d3ngex8q79bk55.cloudfront.net/misc/default_commun
   if (!network.avatar_url) network.avatar_url = defaultAvatar
   if (!network.banner_url) network.banner_url = defaultBanner
 
-  return {network, errors, validating, saving, currentUser: people.current}
+  return {
+    network, errors, validating, saving,
+    currentUser: people.current,
+    communityChoices: typeaheadMatches[typeaheadId] || []
+  }
 })
 export default class NetworkEditor extends React.Component {
   static propTypes = {
@@ -41,12 +48,8 @@ export default class NetworkEditor extends React.Component {
     errors: object,
     dispatch: func,
     network: object,
-    currentUser: object
-  }
-
-  constructor (props) {
-    super(props)
-    this.state = {communityChoiceTerm: ''}
+    currentUser: object,
+    communityChoices: array
   }
 
   setValue = (key, value) => {
@@ -153,7 +156,8 @@ export default class NetworkEditor extends React.Component {
   }
 
   updateCommunityChoiceTerm = term => {
-    this.setState({communityChoiceTerm: term})
+    let { dispatch } = this.props
+    dispatch(typeahead(term, typeaheadId, {type: 'communities', moderated: true}))
   }
 
   getCommunityChoices = term => {
@@ -205,11 +209,9 @@ export default class NetworkEditor extends React.Component {
   }
 
   render () {
-    let { validating, saving, network, errors } = this.props
+    let { validating, saving, network, errors, communityChoices } = this.props
     let { communities } = network
     let disableSubmit = any(omit(errors, 'server')) || validating || saving
-    let { communityChoiceTerm } = this.state
-    let communityChoices = this.getCommunityChoices(communityChoiceTerm)
 
     return <div id='network-editor' className='form-sections'>
       <h2>Create a network</h2>

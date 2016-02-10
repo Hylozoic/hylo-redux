@@ -18,6 +18,7 @@ import {
   CANCEL_TYPEAHEAD,
   CREATE_COMMUNITY,
   CREATE_POST,
+  CREATE_NETWORK,
   FETCH_ACTIVITY,
   FETCH_INVITATIONS,
   FETCH_PEOPLE,
@@ -32,6 +33,7 @@ import {
   REMOVE_NOTIFICATION,
   RESET_ERROR,
   RESET_COMMUNITY_VALIDATION,
+  RESET_NETWORK_VALIDATION,
   SEND_COMMUNITY_INVITATION,
   SEND_PROJECT_INVITE,
   SET_LOGIN_ERROR,
@@ -42,12 +44,15 @@ import {
   TOGGLE_USER_SETTINGS_SECTION,
   TYPEAHEAD,
   UPDATE_COMMUNITY_EDITOR,
+  UPDATE_NETWORK_EDITOR,
   UPDATE_INVITATION_EDITOR,
   UPDATE_POST,
   UPDATE_PROJECT_INVITE,
   UPLOAD_IMAGE,
   VALIDATE_COMMUNITY_ATTRIBUTE,
-  VALIDATE_COMMUNITY_ATTRIBUTE_PENDING
+  VALIDATE_COMMUNITY_ATTRIBUTE_PENDING,
+  VALIDATE_NETWORK_ATTRIBUTE,
+  VALIDATE_NETWORK_ATTRIBUTE_PENDING
 } from '../actions'
 
 export default combineReducers({
@@ -156,6 +161,7 @@ export default combineReducers({
       toggle(UPDATE_POST) ||
       toggle(FETCH_PROJECTS) ||
       toggle(CREATE_COMMUNITY) ||
+      toggle(CREATE_NETWORK) ||
       toggle(FETCH_ACTIVITY) ||
       toggle(SEND_COMMUNITY_INVITATION) ||
       toggle(FETCH_INVITATIONS) ||
@@ -254,6 +260,67 @@ export default combineReducers({
           return {
             ...state,
             community: {...state.community, banner_url: payload}
+          }
+        }
+    }
+
+    return state
+  },
+
+  networkValidation: (state = {}, action) => {
+    let { type, payload, error, meta } = action
+    if (error) return state
+
+    switch (type) {
+      case VALIDATE_NETWORK_ATTRIBUTE_PENDING:
+        return {
+          ...state,
+          pending: {...state.pending, [meta.key]: true}
+        }
+      case VALIDATE_NETWORK_ATTRIBUTE:
+        return {
+          ...state,
+          [meta.key]: payload,
+          pending: {...state.pending, [meta.key]: false}
+        }
+      case RESET_NETWORK_VALIDATION:
+        return {...state, [meta.key]: null}
+    }
+
+    return state
+  },
+
+  networkEditor: (state = {}, action) => {
+    let { type, payload, meta, error } = action
+    if (error) {
+      switch (type) {
+        case CREATE_NETWORK:
+          return {
+            ...state,
+            errors: {...state.errors, server: `Server error: ${payload.message}`}
+          }
+        default:
+          return state
+      }
+    }
+
+    switch (type) {
+      case UPDATE_NETWORK_EDITOR:
+        return {
+          ...state,
+          [meta.subtree]: {...state[meta.subtree], ...payload}
+        }
+      case UPLOAD_IMAGE:
+        if (meta.id !== 'new') break
+        if (meta.subject === 'network-avatar') {
+          return {
+            ...state,
+            community: {...state.network, avatar_url: payload}
+          }
+        } else if (meta.subject === 'network-banner') {
+          return {
+            ...state,
+            community: {...state.network, banner_url: payload}
           }
         }
     }

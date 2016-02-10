@@ -20,6 +20,7 @@ import {
   CREATE_POST,
   FETCH_ACTIVITY,
   FETCH_INVITATIONS,
+  FETCH_ONBOARDING,
   FETCH_PEOPLE,
   FETCH_POSTS,
   FETCH_PROJECTS,
@@ -394,6 +395,16 @@ export default combineReducers({
         return state.filter(n => n.id !== payload)
     }
 
+    return state
+  },
+
+  onboarding: (state = {}, action) => {
+    let { type, payload, error } = action
+    if (error) return state
+    switch (type) {
+      case FETCH_ONBOARDING:
+        return payload
+    }
     return state
   }
 

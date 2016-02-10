@@ -219,6 +219,10 @@ nav {
   float: right;
 }
 
+.align-right {
+  text-align: right;
+}
+
 .buttons {
   button, a {
     margin-right: 5px;
@@ -877,6 +881,27 @@ ul.tags {
       .no-bullets;
     }
   }
+
+  .onboarding {
+    border: 1px solid @hylo-teal;
+    border-radius: @border-radius-base;
+    margin-bottom: 15px;
+    .header {
+      background-color: @hylo-teal;
+      padding: 15px;
+      color: white;
+      h3 {
+        margin: 0;
+      }
+    }
+    .content {
+      padding: 15px;
+    }
+
+    .tag-input {
+      margin-bottom: @p-bottom-margin;
+    }
+  }
 }
 
 .person-cards {
@@ -1284,5 +1309,57 @@ ul.tags {
   .close {
     margin-left: 5px;
     margin-bottom: 5px;
+  }
+}
+
+#onboarding-start {
+  .header {
+    text-align: center;
+    margin-bottom: 30px;
+    > * {
+      vertical-align: middle;
+    }
+    .operator {
+      font-size: 4em;
+      margin-right: 10px;
+    }
+    h2 {
+      margin-bottom: 30px;
+    }
+  }
+  .logo {
+    display: inline-block;
+    .image-div(120px);
+    margin-right: 10px;
+
+    &.hylo-logo {
+      background-image: url(/img/logotype-teal-transparent.png);
+      margin-right: 0;
+    }
+  }
+
+  h4 {
+    margin-bottom: 30px;
+  }
+
+  .leader-message {
+    border: 1px solid @light-gray-border;
+    border-radius: @border-radius-base;
+    padding: 10px;
+    margin-bottom: @p-bottom-margin;
+    .leader {
+      float: left;
+      display: inline-block;
+      text-align: center;
+      padding-top: 3px;
+      margin-right: 20px;
+      .medium-avatar {
+        display: block;
+        margin: 0 auto 5px;
+      }
+    }
+    .message {
+      overflow: visible;
+    }
   }
 }

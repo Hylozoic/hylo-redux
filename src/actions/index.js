@@ -511,6 +511,7 @@ export function createNetwork (params) {
 export function validateNetworkAttribute (key, value, constraint) {
   return {
     type: VALIDATE_NETWORK_ATTRIBUTE,
+    payload: {api: true, params: {column: key, value, constraint}, path: '/noo/network/validate', method: 'POST'},
     meta: {key}
   }
 }

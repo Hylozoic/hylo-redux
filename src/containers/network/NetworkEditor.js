@@ -1,6 +1,6 @@
 import React from 'react'
 import { connect } from 'react-redux'
-import { any, get, omit } from 'lodash'
+import { any, get, omit, filter, startsWith, contains, find } from 'lodash'
 import {
   CREATE_NETWORK,
   createNetwork,
@@ -12,12 +12,13 @@ import {
 import { uploadImage } from '../../actions/uploadImage'
 import { avatarUploadSettings, bannerUploadSettings } from '../../models/network'
 import { scrollToBottom } from '../../util/scrolling'
-const { bool, func, object } = React.PropTypes
+import TagInput from '../../components/TagInput'
+const { bool, func, object, array } = React.PropTypes
 
 const defaultBanner = 'https://d3ngex8q79bk55.cloudfront.net/misc/default_community_banner.jpg'
 const defaultAvatar = 'https://d3ngex8q79bk55.cloudfront.net/misc/default_community_avatar.png'
 
-@connect(({networkEditor, networkValidation, pending}) => {
+@connect(({people, networkEditor, networkValidation, pending}) => {
   let validating = any(networkValidation.pending)
   let { network, errors } = networkEditor
   let saving = pending[CREATE_NETWORK]
@@ -31,7 +32,7 @@ const defaultAvatar = 'https://d3ngex8q79bk55.cloudfront.net/misc/default_commun
   if (!network.avatar_url) network.avatar_url = defaultAvatar
   if (!network.banner_url) network.banner_url = defaultBanner
 
-  return {network, errors, validating, saving}
+  return {network, errors, validating, saving, currentUser: people.current}
 })
 export default class NetworkEditor extends React.Component {
   static propTypes = {
@@ -39,11 +40,18 @@ export default class NetworkEditor extends React.Component {
     validating: bool,
     errors: object,
     dispatch: func,
-    network: object
+    network: object,
+    currentUser: object
   }
 
-  setValue = (key, value) =>
-    this.props.dispatch(updateNetworkEditor('network', {[key]: value}))
+  constructor (props) {
+    super(props)
+    this.state = {communityChoiceTerm: ''}
+  }
+
+  setValue = (key, value) => {
+    return this.props.dispatch(updateNetworkEditor('network', {[key]: value}))
+  }
 
   setError = obj =>
     this.props.dispatch(updateNetworkEditor('errors', obj))
@@ -134,6 +142,33 @@ export default class NetworkEditor extends React.Component {
     this.setValue('location', event.target.value)
   }
 
+  addCommunity = community => {
+    let { communities } = this.props.network
+    this.setValue('communities', (communities || []).concat(community.id))
+  }
+
+  removeCommunity = community => {
+    let { communities } = this.props.network
+    this.setValue('communities', filter(communities, cid => cid !== community.id))
+  }
+
+  updateCommunityChoiceTerm = term => {
+    this.setState({communityChoiceTerm: term})
+  }
+
+  getCommunityChoices = term => {
+    if (!term) {
+      return []
+    }
+
+    let { currentUser, network: { communities } } = this.props
+    var match = c =>
+      startsWith(c.name.toLowerCase(), term.toLowerCase()) &&
+      !contains(communities, c.id)
+
+    return filter(currentUser.memberships.map(m => m.community), match)
+  }
+
   attachImage (type) {
     let { dispatch } = this.props
     let network = {id: 'new', slug: 'new'}
@@ -171,7 +206,10 @@ export default class NetworkEditor extends React.Component {
 
   render () {
     let { validating, saving, network, errors } = this.props
+    let { communities } = network
     let disableSubmit = any(omit(errors, 'server')) || validating || saving
+    let { communityChoiceTerm } = this.state
+    let communityChoices = this.getCommunityChoices(communityChoiceTerm)
 
     return <div id='network-editor' className='form-sections'>
       <h2>Create a network</h2>
@@ -243,6 +281,22 @@ export default class NetworkEditor extends React.Component {
         </div>
       </div>
 
+      <div className='section-label'>Communities</div>
+      <div className='section'>
+        <div className='section-item'>
+          <div className='side-column'>
+            <label>Communities</label>
+          </div>
+          <div className='main-column'>
+            <CommunityTagInput ids={communities}
+              handleInput={this.updateCommunityChoiceTerm}
+              choices={communityChoices}
+              onSelect={this.addCommunity}
+              onRemove={this.removeCommunity}/>
+          </div>
+        </div>
+      </div>
+
       <div className='section footer'>
         {any(errors) && <p className='help error'>
           {errors.server || 'The information you provided has some errors; please see above.'}
@@ -253,5 +307,23 @@ export default class NetworkEditor extends React.Component {
       </div>
 
     </div>
+  }
+}
+
+// network.communities is a list of ids, but the tag input needs
+// names and icons as well, so this component does the mapping
+@connect(({ communities }, { ids }) => ({
+  communities: (ids || []).map(id => find(communities, c => c.id === id))
+}))
+class CommunityTagInput extends React.Component {
+  static propTypes = {
+    ids: array,
+    communities: array,
+    choices: array
+  }
+
+  render () {
+    let { communities, ...otherProps } = this.props
+    return <TagInput tags={communities} {...otherProps}/>
   }
 }

@@ -504,7 +504,7 @@ export function removeNotification (id) {
 export function createNetwork (params) {
   return {
     type: CREATE_NETWORK,
-    payload: {api: true, params: {...params, communities: []}, path: '/noo/network', method: 'POST'}
+    payload: {api: true, params, path: '/noo/network', method: 'POST'}
   }
 }
 

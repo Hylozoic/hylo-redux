@@ -1,6 +1,6 @@
 import React from 'react'
 import { connect } from 'react-redux'
-import { any, get, omit, filter, startsWith, contains, find } from 'lodash'
+import { any, get, omit, filter, startsWith, contains } from 'lodash'
 import {
   CREATE_NETWORK,
   createNetwork,
@@ -12,8 +12,8 @@ import {
 import { uploadImage } from '../../actions/uploadImage'
 import { avatarUploadSettings, bannerUploadSettings } from '../../models/network'
 import { scrollToBottom } from '../../util/scrolling'
-import TagInput from '../../components/TagInput'
-const { bool, func, object, array } = React.PropTypes
+import CommunityTagInput from '../../components/CommunityTagInput'
+const { bool, func, object } = React.PropTypes
 
 const defaultBanner = 'https://d3ngex8q79bk55.cloudfront.net/misc/default_community_banner.jpg'
 const defaultAvatar = 'https://d3ngex8q79bk55.cloudfront.net/misc/default_community_avatar.png'
@@ -307,23 +307,5 @@ export default class NetworkEditor extends React.Component {
       </div>
 
     </div>
-  }
-}
-
-// network.communities is a list of ids, but the tag input needs
-// names and icons as well, so this component does the mapping
-@connect(({ communities }, { ids }) => ({
-  communities: (ids || []).map(id => find(communities, c => c.id === id))
-}))
-class CommunityTagInput extends React.Component {
-  static propTypes = {
-    ids: array,
-    communities: array,
-    choices: array
-  }
-
-  render () {
-    let { communities, ...otherProps } = this.props
-    return <TagInput tags={communities} {...otherProps}/>
   }
 }

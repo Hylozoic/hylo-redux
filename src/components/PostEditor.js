@@ -9,7 +9,7 @@ because they make more sense.
 import React from 'react'
 import { contains, filter, find, isEmpty, omit, startsWith } from 'lodash'
 import cx from 'classnames'
-import TagInput from './TagInput'
+import CommunityTagInput from './CommunityTagInput'
 import Dropdown from './Dropdown'
 import ImageAttachmentButton from './ImageAttachmentButton'
 import RichTextEditor from './RichTextEditor'
@@ -325,23 +325,5 @@ class AttachmentButtons extends React.Component {
             Attach File with Google Drive
           </button>}
     </div>
-  }
-}
-
-// post.communities is a list of ids, but the tag input needs
-// names and icons as well, so this component does the mapping
-@connect(({ communities }, { ids }) => ({
-  communities: (ids || []).map(id => find(communities, c => c.id === id))
-}))
-class CommunityTagInput extends React.Component {
-  static propTypes = {
-    ids: array,
-    communities: array,
-    choices: array
-  }
-
-  render () {
-    let { communities, ...otherProps } = this.props
-    return <TagInput tags={communities} {...otherProps}/>
   }
 }

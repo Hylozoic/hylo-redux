@@ -2,57 +2,57 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { any, get, omit } from 'lodash'
 import {
-  CREATE_COMMUNITY,
+  CREATE_NETWORK,
   createNetwork,
   navigate,
-  resetCommunityValidation,
-  updateCommunityEditor,
-  validateCommunityAttribute
+  resetNetworkValidation,
+  updateNetworkEditor,
+  validateNetworkAttribute
 } from '../../actions'
 import { uploadImage } from '../../actions/uploadImage'
-import { avatarUploadSettings, bannerUploadSettings } from '../../models/community'
+import { avatarUploadSettings, bannerUploadSettings } from '../../models/network'
 import { scrollToBottom } from '../../util/scrolling'
 const { bool, func, object } = React.PropTypes
 
 const defaultBanner = 'https://d3ngex8q79bk55.cloudfront.net/misc/default_community_banner.jpg'
 const defaultAvatar = 'https://d3ngex8q79bk55.cloudfront.net/misc/default_community_avatar.png'
 
-@connect(({communityEditor, communityValidation, pending}) => {
-  let validating = any(communityValidation.pending)
-  let { community, errors } = communityEditor
-  let saving = pending[CREATE_COMMUNITY]
+@connect(({networkEditor, networkValidation, pending}) => {
+  let validating = any(networkValidation.pending)
+  let { network, errors } = networkEditor
+  let saving = pending[CREATE_NETWORK]
 
   if (!errors) errors = {}
-  errors.nameUsed = get(communityValidation, 'name.unique') === false
-  errors.slugUsed = get(communityValidation, 'slug.unique') === false
-  errors.codeUsed = get(communityValidation, 'beta_access_code.unique') === false
+  errors.nameUsed = get(networkValidation, 'name.unique') === false
+  errors.slugUsed = get(networkValidation, 'slug.unique') === false
+  errors.codeUsed = get(networkValidation, 'beta_access_code.unique') === false
 
-  if (!community) community = {}
-  if (!community.avatar_url) community.avatar_url = defaultAvatar
-  if (!community.banner_url) community.banner_url = defaultBanner
+  if (!network) network = {}
+  if (!network.avatar_url) network.avatar_url = defaultAvatar
+  if (!network.banner_url) network.banner_url = defaultBanner
 
-  return {community, errors, validating, saving}
+  return {network, errors, validating, saving}
 })
-export default class CommunityEditor extends React.Component {
+export default class NetworkEditor extends React.Component {
   static propTypes = {
     saving: bool,
     validating: bool,
     errors: object,
     dispatch: func,
-    community: object
+    network: object
   }
 
   setValue = (key, value) =>
-    this.props.dispatch(updateCommunityEditor('community', {[key]: value}))
+    this.props.dispatch(updateNetworkEditor('network', {[key]: value}))
 
   setError = obj =>
-    this.props.dispatch(updateCommunityEditor('errors', obj))
+    this.props.dispatch(updateNetworkEditor('errors', obj))
 
   resetValidation = key =>
-    this.props.dispatch(resetCommunityValidation(key))
+    this.props.dispatch(resetNetworkValidation(key))
 
   checkUnique = (key, value) =>
-    this.props.dispatch(validateCommunityAttribute(key, value, 'unique'))
+    this.props.dispatch(validateNetworkAttribute(key, value, 'unique'))
 
   setName = event => {
     let { value } = event.target
@@ -136,43 +136,41 @@ export default class CommunityEditor extends React.Component {
 
   attachImage (type) {
     let { dispatch } = this.props
-    let community = {id: 'new', slug: 'new'}
+    let network = {id: 'new', slug: 'new'}
     switch (type) {
       case 'avatar':
-        return dispatch(uploadImage(avatarUploadSettings(community)))
+        return dispatch(uploadImage(avatarUploadSettings(network)))
       case 'banner':
-        return dispatch(uploadImage(bannerUploadSettings(community)))
+        return dispatch(uploadImage(bannerUploadSettings(network)))
     }
   }
 
   validate () {
-    let { community } = this.props
+    let { network } = this.props
     return Promise.all([
-      this.validateName(community.name),
-      this.validateDescription(community.description),
-      this.validateSlug(community.slug),
-      this.validateCode(community.beta_access_code),
-      this.validateCategory(community.category)
+      this.validateName(network.name),
+      this.validateDescription(network.description),
+      this.validateSlug(network.slug)
     ])
   }
 
   submit = () => {
-    let { validating, dispatch, community } = this.props
+    let { validating, dispatch, network } = this.props
     if (validating) return
 
     this.validate().then(() => {
       if (any(this.props.errors)) return scrollToBottom()
 
-      dispatch(createCommunity(community))
+      dispatch(createNetwork(network))
       .then(() => {
         if (any(this.props.errors)) return scrollToBottom()
-        dispatch(navigate(`/c/${community.slug}`))
+        dispatch(navigate(`/n/${network.slug}`))
       })
     })
   }
 
   render () {
-    let { validating, saving, community, errors } = this.props
+    let { validating, saving, network, errors } = this.props
     let disableSubmit = any(omit(errors, 'server')) || validating || saving
 
     return <div id='network-editor' className='form-sections'>
@@ -186,7 +184,7 @@ export default class CommunityEditor extends React.Component {
             <label>Network name</label>
           </div>
           <div className='main-column'>
-            <input type='text' ref='name' className='form-control' value={community.name} onChange={this.setName}/>
+            <input type='text' ref='name' className='form-control' value={network.name} onChange={this.setName}/>
             {errors.nameBlank && <p className='help error'>Please fill in this field.</p>}
             {errors.nameUsed && <p className='help error'>This name is already in use.</p>}
           </div>
@@ -208,9 +206,12 @@ export default class CommunityEditor extends React.Component {
           </div>
           <div className='main-column'>
             <div className='input-group'>
-              <div className='input-group-addon'>www.hylo.com/c/</div>
+              <div className='input-group-addon'>www.hylo.com/n/</div>
               <input ref='slug' className='form-control' onChange={this.setSlug}/>
             </div>
+            {errors.slugBlank && <p className='help error'>Please fill in this field.</p>}
+            {errors.slugInvalid && <p className='help error'>Use lowercase letters, numbers, and hyphens only.</p>}
+            {errors.slugUsed && <p className='help error'>This URL is already in use.</p>}
           </div>
         </div>
       </div>
@@ -222,9 +223,9 @@ export default class CommunityEditor extends React.Component {
             <label>Icon</label>
           </div>
           <div className='main-column'>
-            <div className='medium-logo' style={{backgroundImage: `url(${community.avatar_url})`}}></div>
+            <div className='medium-logo' style={{backgroundImage: `url(${network.avatar_url})`}}></div>
             <button onClick={() => this.attachImage('avatar')}>Change</button>
-            <p className='help'>This image appears next to your community's name. (Tip: Try a transparent PNG image.)</p>
+            <p className='help'>This image appears next to your networks's name. (Tip: Try a transparent PNG image.)</p>
           </div>
         </div>
 
@@ -233,10 +234,10 @@ export default class CommunityEditor extends React.Component {
             <label>Banner</label>
           </div>
           <div className='main-column'>
-            <div className='banner' style={{backgroundImage: `url(${community.banner_url})`}}></div>
+            <div className='banner' style={{backgroundImage: `url(${network.banner_url})`}}></div>
             <button onClick={() => this.attachImage('banner')}>Change</button>
             <p className='help'>
-              This image appears across the top of your community page. (Aspect ratio: roughly 3.3:1.)
+              This image appears across the top of your network page. (Aspect ratio: roughly 3.3:1.)
             </p>
           </div>
         </div>

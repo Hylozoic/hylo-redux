@@ -8,14 +8,13 @@ import {
   UPLOAD_IMAGE,
   updateUserSettings,
   leaveCommunity,
-  toggleUserSettingsSection,
-  typeahead
+  toggleUserSettingsSection
  } from '../../actions'
 import { uploadImage } from '../../actions/uploadImage'
 import A from '../../components/A'
 import { formatDate } from '../../util/text'
 import { debounce, get, sortBy, throttle } from 'lodash'
-import TagInput from '../../components/TagInput'
+import ListItemTagInput from '../../components/ListItemTagInput'
 import { avatarUploadSettings, bannerUploadSettings } from '../../models/person'
 import { openPopup, setupPopupCallback, PROFILE_CONTEXT } from '../../util/auth'
 import { EDITED_USER_SETTINGS, trackEvent } from '../../util/analytics'
@@ -411,23 +410,6 @@ const Section = ({className, children}) =>
 
 const Item = ({className, children}) =>
   <div className={cx('section-item', className)}>{children}</div>
-
-const ListItemTagInput = connect(
-  ({ typeaheadMatches }, { type }) => ({matches: get(typeaheadMatches, type)})
-)(({ dispatch, matches, type, person, update }) => {
-  let list = person[type] || []
-  let tags = list.map(x => ({id: x, name: x}))
-  let add = item => update(type, list.concat(item.name))
-  let remove = item => update(type, list.filter(x => x !== item.name))
-
-  return <TagInput
-    choices={matches}
-    tags={tags}
-    allowNewTags={true}
-    handleInput={value => dispatch(typeahead(value, type, {type}))}
-    onSelect={add}
-    onRemove={remove}/>
-})
 
 const LinkButton = ({ href, icon }) =>
   <a className='button' href={href} target='_blank'><i className={`icon-${icon}`}></i></a>

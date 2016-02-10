@@ -1,6 +1,6 @@
 import React from 'react'
 import { connect } from 'react-redux'
-import { any, get, omit, filter, startsWith, contains } from 'lodash'
+import { some, get, omit, filter, startsWith, contains } from 'lodash'
 import {
   CREATE_NETWORK,
   createNetwork,
@@ -22,7 +22,7 @@ const defaultAvatar = 'https://d3ngex8q79bk55.cloudfront.net/misc/default_commun
 let typeaheadId = 'network_communities'
 
 @connect(({people, networkEditor, networkValidation, pending, typeaheadMatches}) => {
-  let validating = any(networkValidation.pending)
+  let validating = some(networkValidation.pending)
   let { network, errors } = networkEditor
   let saving = pending[CREATE_NETWORK]
 
@@ -108,7 +108,7 @@ export default class NetworkEditor extends React.Component {
 
     this.setError(error)
 
-    if (any(error)) {
+    if (some(error)) {
       this.resetValidation('slug')
     } else {
       return this.checkUnique('slug', value)
@@ -198,11 +198,11 @@ export default class NetworkEditor extends React.Component {
     if (validating) return
 
     this.validate().then(() => {
-      if (any(this.props.errors)) return scrollToBottom()
+      if (some(this.props.errors)) return scrollToBottom()
 
       dispatch(createNetwork(network))
       .then(() => {
-        if (any(this.props.errors)) return scrollToBottom()
+        if (some(this.props.errors)) return scrollToBottom()
         dispatch(navigate(`/n/${network.slug}`))
       })
     })
@@ -211,7 +211,7 @@ export default class NetworkEditor extends React.Component {
   render () {
     let { validating, saving, network, errors, communityChoices } = this.props
     let { communities } = network
-    let disableSubmit = any(omit(errors, 'server')) || validating || saving
+    let disableSubmit = some(omit(errors, 'server')) || validating || saving
 
     return <div id='network-editor' className='form-sections'>
       <h2>Create a network</h2>
@@ -300,7 +300,7 @@ export default class NetworkEditor extends React.Component {
       </div>
 
       <div className='section footer'>
-        {any(errors) && <p className='help error'>
+        {some(errors) && <p className='help error'>
           {errors.server || 'The information you provided has some errors; please see above.'}
         </p>}
         <button type='button' onClick={this.submit} disabled={disableSubmit}>

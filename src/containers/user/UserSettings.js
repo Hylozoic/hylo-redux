@@ -195,20 +195,20 @@ export default class UserSettings extends React.Component {
           </div>
           <div className='third-column'>
             <h5>Facebook</h5>
-            {facebook_url && <LinkButton href={facebook_url} icon='facebook'/>}
+            <LinkButton disabled={!facebook_url} href={facebook_url} icon='facebook'/>
             <button onClick={() => openPopup('facebook', PROFILE_CONTEXT)}>
               {facebook_url ? 'Change' : 'Connect'}
             </button>
           </div>
           <div className='third-column'>
             <h5>Twitter</h5>
-            {twitter_name && <LinkButton href={`https://twitter.com/${twitter_name}`} icon='twitter'/>}
+            <LinkButton disabled={!twitter_name} href={`https://twitter.com/${twitter_name}`} icon='twitter'/>
             <input type='text' className='form-control' value={twitter_name}
-              onChange={event => this.update('twitter_name', event.target.value)}/>
+              onChange={this.updateTyped('twitter_name')}/>
           </div>
           <div className='third-column'>
             <h5>LinkedIn</h5>
-            {linkedin_url && <LinkButton href={linkedin_url} icon='linkedin'/>}
+            <LinkButton disabled={!linkedin_url} href={linkedin_url} icon='linkedin'/>
             <button onClick={() => openPopup('linkedin', PROFILE_CONTEXT)}>
               {linkedin_url ? 'Change' : 'Connect'}
             </button>
@@ -411,5 +411,5 @@ const Section = ({className, children}) =>
 const Item = ({className, children}) =>
   <div className={cx('section-item', className)}>{children}</div>
 
-const LinkButton = ({ href, icon }) =>
-  <a className='button' href={href} target='_blank'><i className={`icon-${icon}`}></i></a>
+const LinkButton = ({ href, icon, ...props }) =>
+  <a {...props} className='button' href={href} target='_blank'><i className={`icon-${icon}`}></i></a>

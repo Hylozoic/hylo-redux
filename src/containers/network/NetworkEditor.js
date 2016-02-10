@@ -166,7 +166,7 @@ export default class NetworkEditor extends React.Component {
       startsWith(c.name.toLowerCase(), term.toLowerCase()) &&
       !contains(communities, c.id)
 
-    return filter(currentUser.memberships.map(m => m.community), match)
+    return filter(filter(currentUser.memberships, m => m.role === 1).map(m => m.community), match)
   }
 
   attachImage (type) {

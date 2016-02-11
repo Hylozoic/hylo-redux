@@ -32,7 +32,7 @@ import ProjectEditor from './containers/project/ProjectEditor'
 import NetworkProfile from './containers/network/NetworkProfile'
 import NetworkPosts from './containers/network/NetworkPosts'
 import NetworkMembers from './containers/network/NetworkMembers'
-import NetworkAbout from './containers/network/NetworkAbout'
+import AboutNetwork from './containers/network/AboutNetwork'
 import NetworkCommunities from './containers/network/NetworkCommunities'
 import NetworkEditor from './containers/network/NetworkEditor'
 import Notifications from './containers/Notifications'
@@ -109,7 +109,7 @@ export default function makeRoutes (store) {
         <IndexRoute component={NetworkPosts}/>
         <Route path='communities' component={NetworkCommunities}/>
         <Route path='members' component={NetworkMembers}/>
-        <Route path='about' component={NetworkAbout}/>
+        <Route path='about' component={AboutNetwork}/>
       </Route>
   </Route>
 }

@@ -58,8 +58,9 @@ export const START_POST_EDIT = 'START_POST_EDIT'
 export const START_PROJECT_EDIT = 'START_PROJECT_EDIT'
 export const THANK = 'THANK'
 export const THANK_PENDING = THANK + _PENDING
-export const TOGGLE_PROJECT_MODERATOR_ROLE = 'TOGGLE_PROJECT_MODERATOR_ROLE'
 export const TOGGLE_MAIN_MENU = 'TOGGLE_MAIN_MENU'
+export const TOGGLE_PROJECT_MODERATOR_ROLE = 'TOGGLE_PROJECT_MODERATOR_ROLE'
+export const TOGGLE_SHOW_ALL_COMMUNITIES = 'TOGGLE_SHOW_ALL_COMMUNITIES'
 export const TYPEAHEAD = 'TYPEAHEAD'
 export const UPDATE_COMMUNITY_EDITOR = 'UPDATE_COMMUNITY_EDITOR'
 export const UPDATE_INVITATION_EDITOR = 'UPDATE_INVITATION_EDITOR'
@@ -503,4 +504,8 @@ export function fetchOnboarding (userId, communityId) {
     type: FETCH_ONBOARDING,
     payload: {api: true, path}
   }
+}
+
+export function toggleShowAllCommunities () {
+  return {type: TOGGLE_SHOW_ALL_COMMUNITIES}
 }

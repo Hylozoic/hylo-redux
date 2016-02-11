@@ -40,6 +40,7 @@ import {
   SET_SIGNUP_ERROR,
   SIGNUP,
   TOGGLE_MAIN_MENU,
+  TOGGLE_SHOW_ALL_COMMUNITIES,
   TOGGLE_USER_SETTINGS_SECTION,
   TYPEAHEAD,
   UPDATE_COMMUNITY_EDITOR,
@@ -52,6 +53,11 @@ import {
 } from '../actions'
 
 export default combineReducers({
+  showAllCommunities: (state = false, action) => {
+    if (action.type === TOGGLE_SHOW_ALL_COMMUNITIES) return !state
+    return state
+  },
+
   mainMenuOpened: (state = false, action) => {
     let { error, type } = action
     if (error) return state

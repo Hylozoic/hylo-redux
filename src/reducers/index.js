@@ -3,6 +3,8 @@ import { routeReducer } from 'redux-simple-router'
 import { some, get, includes, omit, partition } from 'lodash'
 import comments from './comments'
 import commentsByPost from './commentsByPost'
+import communities from './communities'
+import networks from './networks'
 import people from './people'
 import peopleByQuery from './peopleByQuery'
 import postEdits from './postEdits'
@@ -11,7 +13,6 @@ import posts from './posts'
 import projectsByQuery from './projectsByQuery'
 import projects from './projects'
 import projectEdits from './projectEdits'
-import communities from './communities'
 import { UPDATE_PATH } from 'redux-simple-router'
 
 import {
@@ -136,6 +137,7 @@ export default combineReducers({
   comments,
   commentsByPost,
   communities,
+  networks,
   people,
   peopleByQuery,
   posts,

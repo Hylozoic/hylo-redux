@@ -20,6 +20,7 @@ export const FETCH_COMMUNITY_SETTINGS = 'FETCH_COMMUNITY_SETTINGS'
 export const FETCH_CURRENT_USER = 'FETCH_CURRENT_USER'
 export const FETCH_ACTIVITY = 'FETCH_ACTIVITY'
 export const FETCH_INVITATIONS = 'FETCH_INVITATIONS'
+export const FETCH_NETWORK = 'FETCH_NETWORK'
 export const FETCH_ONBOARDING = 'FETCH_ONBOARDING'
 export const FETCH_PEOPLE = 'FETCH_PEOPLE'
 export const FETCH_PERSON = 'FETCH_PERSON'
@@ -537,5 +538,13 @@ export function fetchOnboarding (userId, communityId) {
   return {
     type: FETCH_ONBOARDING,
     payload: {api: true, path}
+  }
+}
+
+export function fetchNetwork (id) {
+  return {
+    type: FETCH_NETWORK,
+    payload: {api: true, path: `/noo/network/${id}`},
+    meta: {cache: {bucket: 'networks', id, requiredProp: 'banner_url'}}
   }
 }

@@ -13,7 +13,6 @@ const fixHeaders = headers => ({...headers, host: upstreamHostname})
 
 const server = express()
 server.use(express.static('public'))
-server.use(express.static('dist'))
 
 server.post('/login', function (req, res) {
   let headers = fixHeaders(req.headers)

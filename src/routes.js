@@ -29,6 +29,12 @@ import ProjectPosts from './containers/project/ProjectPosts'
 import ProjectContributors from './containers/project/ProjectContributors'
 import ProjectInvite from './containers/project/ProjectInvite'
 import ProjectEditor from './containers/project/ProjectEditor'
+import NetworkProfile from './containers/network/NetworkProfile'
+import NetworkPosts from './containers/network/NetworkPosts'
+import NetworkMembers from './containers/network/NetworkMembers'
+import AboutNetwork from './containers/network/AboutNetwork'
+import NetworkCommunities from './containers/network/NetworkCommunities'
+import NetworkEditor from './containers/network/NetworkEditor'
 import Notifications from './containers/Notifications'
 import { debug } from './util/logging'
 import { makeUrl } from './client/util'
@@ -66,6 +72,8 @@ export default function makeRoutes (store) {
     <Route path='c/new' component={CommunityEditor} onEnter={requireLogin()}/>
     <Route path='c/join' component={CommunityJoinForm} onEnter={requireLogin()}/>
 
+    <Route path='n/new' component={NetworkEditor} onEnter={requireLogin()}/>
+
     <Route path='h/use-invitation' component={InvitationHandler}
       onEnter={requireLogin({
         startAtSignup: true,
@@ -97,6 +105,12 @@ export default function makeRoutes (store) {
       <Route path='contributors' component={ProjectContributors}/>
     </Route>
     <Route path='project/:id/:slug/invite' component={ProjectInvite}/>
+      <Route path='n/:id' component={NetworkProfile} onEnter={requireLogin()}>
+        <IndexRoute component={NetworkPosts}/>
+        <Route path='communities' component={NetworkCommunities}/>
+        <Route path='members' component={NetworkMembers}/>
+        <Route path='about' component={AboutNetwork}/>
+      </Route>
   </Route>
 }
 

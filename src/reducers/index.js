@@ -4,6 +4,7 @@ import { some, get, includes, omit, partition } from 'lodash'
 import comments from './comments'
 import commentsByPost from './commentsByPost'
 import communities from './communities'
+import communitiesByQuery from './communitiesByQuery'
 import networks from './networks'
 import people from './people'
 import peopleByQuery from './peopleByQuery'
@@ -137,6 +138,7 @@ export default combineReducers({
   comments,
   commentsByPost,
   communities,
+  communitiesByQuery,
   networks,
   people,
   peopleByQuery,
@@ -205,6 +207,17 @@ export default combineReducers({
     switch (type) {
       case FETCH_PROJECTS:
         return {...state, [meta.cache.id]: Number(payload.projects_total)}
+    }
+    return state
+  },
+
+  totalCommunitiesByQuery: (state = {}, action) => {
+    if (action.error) return state
+
+    let { type, meta } = action
+    switch (type) {
+      case FETCH_PROJECTS:
+        return {...state, [meta.cache.id]: 10000}
     }
     return state
   },

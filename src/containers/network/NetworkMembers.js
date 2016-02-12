@@ -27,7 +27,6 @@ export default class NetworkMembers extends React.Component {
     total: number,
     params: object,
     location: object,
-    community: object,
     currentUser: object
   }
 

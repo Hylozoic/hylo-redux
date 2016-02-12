@@ -17,6 +17,11 @@ export function fetchPeople (opts) {
       querystring = cleanAndStringify({search, limit, offset, paginate: true})
       payload.path = `/noo/project/${id}/users?${querystring}`
       break
+    case 'network':
+      querystring = cleanAndStringify({search, limit, offset})
+      payload.path = `/noo/network/${id}/members?${querystring}`
+      break
+
   }
 
   return {type: FETCH_PEOPLE, payload, meta: {cache}}

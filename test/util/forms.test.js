@@ -1,30 +1,20 @@
 require('../support')
-import { toggled } from '../../src/util/forms'
+import { reversibleUpdate } from '../../src/util/forms'
 
-describe('toggled', () => {
-  it('returns a new object with the value at `path` toggled', () => {
+describe('reversibleUpdate', () => {
+  it('calls the specified action with expected parameters', () => {
+    let action = spy(function (id, attrs, undoAttrs) {
+      expect(id).to.equal('a')
+      expect(attrs).to.deep.equal({foo: {bar: 'bar'}})
+      expect(undoAttrs).to.deep.equal({foo: {bar: 'baz'}})
+    })
+
     let obj = {
-      a: 1,
-      b: 2,
-      c: {
-        d: {e: false, f: true}
-      },
-      g: {h: 1}
+      id: 'a',
+      foo: {bar: 'baz'}
     }
 
-    let expected = {
-      a: 1,
-      b: 2,
-      c: {
-        d: {e: true, f: true}
-      },
-      g: {h: 1}
-    }
-
-    let actual = toggled(obj, 'c.d.e')
-    expect(actual).to.deep.equal(expected)
-    expect(obj).to.deep.equal(obj)
-    expect(actual.c).not.to.equal(obj.c)
-    expect(actual.g).not.to.equal(obj.g)
+    reversibleUpdate(action, obj, 'foo.bar', 'bar')
+    expect(action).to.have.been.called()
   })
 })

@@ -13,11 +13,12 @@ import {
 import { uploadImage } from '../../actions/uploadImage'
 import A from '../../components/A'
 import { formatDate } from '../../util/text'
-import { debounce, get, set, sortBy, throttle } from 'lodash'
+import { debounce, get, sortBy, throttle } from 'lodash'
 import ListItemTagInput from '../../components/ListItemTagInput'
 import { avatarUploadSettings, bannerUploadSettings } from '../../models/person'
 import { openPopup, setupPopupCallback, PROFILE_CONTEXT } from '../../util/auth'
 import { EDITED_USER_SETTINGS, trackEvent } from '../../util/analytics'
+import { reversibleUpdate } from '../../util/forms'
 
 @prefetch(({ dispatch, params: { id }, query }) => {
   switch (query.expand) {
@@ -108,9 +109,7 @@ export default class UserSettings extends React.Component {
 
   update = (path, value) => {
     let { currentUser, dispatch } = this.props
-    let attrs = set({}, path, value)
-    let revertAttrs = set({}, path, get(currentUser, path))
-    dispatch(updateUserSettings(currentUser.id, attrs, revertAttrs))
+    dispatch(reversibleUpdate(updateUserSettings, currentUser, path, value))
     this.trackEdit()
   }
 

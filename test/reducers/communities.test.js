@@ -179,15 +179,30 @@ describe('communities', () => {
     it('updates the community in the store', () => {
       let action = {
         type: UPDATE_COMMUNITY_SETTINGS_PENDING,
-        meta: {params: {name: 'New Name'}, slug: 'c1'}
+        meta: {
+          slug: 'c1',
+          params: {
+            name: 'New Name',
+            settings: {all_can_invite: true}
+          }
+        }
       }
 
       let state = {
-        c1: community1
+        c1: {
+          slug: 'c1',
+          intention: 'Intention.',
+          settings: {sends_email_prompts: true}
+        }
       }
 
       let expectedState = {
-        c1: {...community1, name: 'New Name'}
+        c1: {
+          slug: 'c1',
+          name: 'New Name',
+          intention: 'Intention.',
+          settings: {sends_email_prompts: true, all_can_invite: true}
+        }
       }
 
       expect(communities(state, action)).to.deep.equal(expectedState)

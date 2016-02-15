@@ -322,12 +322,12 @@ export default combineReducers({
         if (meta.subject === 'network-avatar') {
           return {
             ...state,
-            community: {...state.network, avatar_url: payload}
+            network: {...state.network, avatar_url: payload}
           }
         } else if (meta.subject === 'network-banner') {
           return {
             ...state,
-            community: {...state.network, banner_url: payload}
+            network: {...state.network, banner_url: payload}
           }
         }
     }

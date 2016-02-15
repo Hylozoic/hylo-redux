@@ -3,17 +3,24 @@ import { has, omit } from 'lodash'
 import { fetchJSON } from './util/api'
 import { debug } from './util/logging'
 import { blue } from 'chalk'
+import { find, values } from 'lodash'
 
 // TODO cache expiration
 export function cacheMiddleware (store) {
   return next => action => {
     let { cache } = action.meta || {}
-    let { bucket, id, array, limit, offset, requiredProp, refresh } = cache || {}
+    let { bucket, id, match, array, limit, offset, requiredProp, refresh } = cache || {}
     if (!bucket) return next(action)
     let state = store.getState()
     if (!state[bucket]) return next(action)
 
-    let hit = refresh ? null : (id ? state[bucket][id] : state[bucket])
+    let hit = refresh
+      ? null
+      : (match
+        ? find(values(state[bucket]), match)
+        : (id
+          ? state[bucket][id]
+          : state[bucket]))
 
     if (array) {
       if (hit && hit.length > offset) {

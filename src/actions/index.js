@@ -284,10 +284,10 @@ export function toggleMainMenu () {
   return {type: TOGGLE_MAIN_MENU}
 }
 
-export function updateUserSettings (params, prevProps) {
+export function updateUserSettings (id, params, prevProps) {
   return {
     type: UPDATE_USER_SETTINGS,
-    payload: {api: true, params, path: `/noo/user/${params.id}`, method: 'POST'},
+    payload: {api: true, params, path: `/noo/user/${id}`, method: 'POST'},
     meta: {params, prevProps}
   }
 }

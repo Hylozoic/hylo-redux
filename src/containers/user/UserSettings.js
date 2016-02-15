@@ -13,7 +13,7 @@ import {
 import { uploadImage } from '../../actions/uploadImage'
 import A from '../../components/A'
 import { formatDate } from '../../util/text'
-import { debounce, get, sortBy, throttle } from 'lodash'
+import { debounce, get, set, sortBy, throttle } from 'lodash'
 import ListItemTagInput from '../../components/ListItemTagInput'
 import { avatarUploadSettings, bannerUploadSettings } from '../../models/person'
 import { openPopup, setupPopupCallback, PROFILE_CONTEXT } from '../../util/auth'
@@ -106,10 +106,11 @@ export default class UserSettings extends React.Component {
     this.setState({editing: {...editing, [field]: false}})
   }
 
-  update = (field, value) => {
-    let { dispatch, currentUser } = this.props
-    var updatedUser = {...currentUser, [field]: value}
-    dispatch(updateUserSettings(updatedUser, {[field]: currentUser[field]}))
+  update = (path, value) => {
+    let { currentUser, dispatch } = this.props
+    let attrs = set({}, path, value)
+    let revertAttrs = set({}, path, get(currentUser, path))
+    dispatch(updateUserSettings(currentUser.id, attrs, revertAttrs))
     this.trackEdit()
   }
 
@@ -117,20 +118,11 @@ export default class UserSettings extends React.Component {
   // user is editing a text field, etc.
   trackEdit = throttle(() => trackEvent(EDITED_USER_SETTINGS), 60000)
 
-  delayedUpdate = debounce((field, value) => this.update(field, value), 2000)
+  delayedUpdate = debounce((path, value) => this.update(path, value), 2000)
 
-  updateSetting (setting, value) {
+  toggle (path) {
     let { currentUser } = this.props
-    let updatedSettings = {...currentUser.settings, [setting]: value}
-    this.update('settings', updatedSettings)
-  }
-
-  toggle (field) {
-    this.update(field, !this.props.currentUser[field])
-  }
-
-  toggleSetting (setting) {
-    this.updateSetting(setting, !this.props.currentUser.settings[setting])
+    this.update(path, !get(currentUser, path))
   }
 
   leaveCommunity (communityId) {
@@ -332,7 +324,7 @@ export default class UserSettings extends React.Component {
             <div className='summary'>Choose how frequently you would like to receive email about new activity in your communities.</div>
           </div>
           <div className='half-column right-align'>
-            <select value={currentUser.settings.digest_frequency} ref='digest_frequency' onChange={event => this.updateSetting('digest_frequency', event.target.value)} >
+            <select value={currentUser.settings.digest_frequency} ref='digest_frequency' onChange={event => this.update('settings.digest_frequency', event.target.value)} >
               <option value='daily'>Daily</option>
               <option value='weekly'>Weekly</option>
               <option value='never'>Never</option>
@@ -345,7 +337,7 @@ export default class UserSettings extends React.Component {
             <div className='summary'>Check the circle to get a weekly email that lets you create posts without leaving your inbox.</div>
           </div>
           <div className='half-column right-align'>
-            <input type='checkbox' checked={currentUser.settings.receives_email_prompts} onChange={() => this.toggleSetting('receives_email_prompts')}/>
+            <input type='checkbox' checked={currentUser.settings.receives_email_prompts} onChange={() => this.toggle('settings.receives_email_prompts')}/>
           </div>
         </Item>
         <Item>

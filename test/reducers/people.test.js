@@ -42,15 +42,27 @@ describe('people', () => {
       let action = {
         type: UPDATE_USER_SETTINGS,
         error: true,
-        meta: {prevProps: user1}
+        meta: {
+          prevProps: {
+            settings: {digest_frequency: 'weekly'},
+            name: 'Joe!'
+          }
+        }
       }
 
       let state = {
-        current: {...user1, email: 'joe@bar.com'}
+        current: {
+          email: 'joe@bar.com',
+          settings: {digest_frequency: 'daily', receives_email_prompts: true}
+        }
       }
 
       let expectedState = {
-        current: user1
+        current: {
+          email: 'joe@bar.com',
+          settings: {digest_frequency: 'weekly', receives_email_prompts: true},
+          name: 'Joe!'
+        }
       }
 
       expect(people(state, action)).to.deep.equal(expectedState)

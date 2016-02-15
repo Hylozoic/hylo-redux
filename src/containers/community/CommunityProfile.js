@@ -2,7 +2,7 @@ import React from 'react'
 import { A, IndexA } from '../../components/A'
 import { connect } from 'react-redux'
 import { prefetch, defer } from 'react-fetcher'
-import { find, get } from 'lodash'
+import { find, get, pick } from 'lodash'
 import { fetchCommunity, navigate, updateUserSettings } from '../../actions'
 import { locationWithoutParams } from '../../client/util'
 import { VIEWED_COMMUNITY, trackEvent } from '../../util/analytics'
@@ -68,7 +68,7 @@ export default class CommunityProfile extends React.Component {
 
 const OnboardingQuestions = ({ person, dispatch }) => {
   let update = (field, value) =>
-    dispatch(updateUserSettings({...person, [field]: value}, {[field]: person[field]}))
+    dispatch(updateUserSettings(person.id, {[field]: value}, pick(person, field)))
 
   let close = () => dispatch(navigate(locationWithoutParams('onboarding')))
 

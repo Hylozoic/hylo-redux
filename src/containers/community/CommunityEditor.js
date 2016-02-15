@@ -3,6 +3,7 @@ import { connect } from 'react-redux'
 import { some, get, omit, toPairs } from 'lodash'
 import {
   CREATE_COMMUNITY,
+  UPLOAD_IMAGE,
   createCommunity,
   navigate,
   resetCommunityValidation,
@@ -36,6 +37,7 @@ const categories = {
   let validating = some(communityValidation.pending)
   let { community, errors } = communityEditor
   let saving = pending[CREATE_COMMUNITY]
+  let uploadingImage = !!pending[UPLOAD_IMAGE]
 
   if (!errors) errors = {}
   errors.nameUsed = get(communityValidation, 'name.unique') === false
@@ -46,11 +48,12 @@ const categories = {
   if (!community.avatar_url) community.avatar_url = defaultAvatar
   if (!community.banner_url) community.banner_url = defaultBanner
 
-  return {community, errors, validating, saving}
+  return {community, errors, validating, saving, uploadingImage}
 })
 export default class CommunityEditor extends React.Component {
   static propTypes = {
     saving: bool,
+    uploadingImage: bool,
     validating: bool,
     errors: object,
     dispatch: func,
@@ -191,8 +194,8 @@ export default class CommunityEditor extends React.Component {
   }
 
   render () {
-    let { validating, saving, community, errors } = this.props
-    let disableSubmit = some(omit(errors, 'server')) || validating || saving
+    let { validating, saving, uploadingImage, community, errors } = this.props
+    let disableSubmit = some(omit(errors, 'server')) || validating || saving || uploadingImage
 
     return <div id='community-editor' className='form-sections'>
       <h2>Create a community</h2>
@@ -313,7 +316,7 @@ export default class CommunityEditor extends React.Component {
           {errors.server || 'The information you provided has some errors; please see above.'}
         </p>}
         <button type='button' onClick={this.submit} disabled={disableSubmit}>
-          {validating || saving ? 'Please wait...' : 'Save'}
+          {validating || saving || uploadingImage ? 'Please wait...' : 'Save'}
         </button>
       </div>
 

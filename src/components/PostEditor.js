@@ -96,8 +96,7 @@ export default class PostEditor extends React.Component {
     dispatch(updatePostEditor(data, id))
   }
 
-  selectType = (type, event) =>
-    this.updateStore({type: type})
+  selectType = (type) => this.updateStore({type: type})
 
   expand = () => {
     if (this.props.expanded) return
@@ -113,17 +112,12 @@ export default class PostEditor extends React.Component {
     dispatch(cancelPostEdit(id))
   }
 
-  setName = event =>
-    this.updateStore({name: event.target.value})
-
-  setDescription = event => this.updateStore({description: event.target.value})
+  set = key => event => this.updateStore({[key]: event.target.value})
 
   addCommunity = community => {
     let { communities } = this.props.postEdit
     this.updateStore({communities: (communities || []).concat(community.id)})
   }
-
-  setLocation = event => this.updateStore({location: event.target.value})
 
   removeCommunity = community => {
     let { communities } = this.props.postEdit
@@ -153,39 +147,42 @@ export default class PostEditor extends React.Component {
   save = () => {
     if (!this.validate()) return
 
-    // we use setTimeout here to avoid a race condition. the description field (tinymce)
-    // may not fire its change event until it loses focus, so if we click Post
-    // immediately after typing in the description field, we have to wait for props
-    // to update from the store
-    setTimeout(() => {
-      let { dispatch, post, postEdit, project, id } = this.props
+    // we use setTimeout here to avoid a race condition. the description field
+    // (tinymce) doesn't fire its change event until it loses focus, so if we
+    // click Save immediately after typing in the description field, we have to
+    // wait for events from the description field to be handled so that the
+    // store is up to date
+    setTimeout(() => this.reallySave())
+  }
 
-      postEdit = {
-        ...omit(postEdit, 'expanded'),
-        type: postEdit.type || 'chat'
-      }
+  reallySave () {
+    let { dispatch, post, postEdit, project, id } = this.props
 
-      let params = {
-        ...postEdit,
-        ...attachmentParams(post && post.media, postEdit.media),
-        projectId: project ? project.id : null
-      }
+    postEdit = {
+      ...omit(postEdit, 'expanded'),
+      type: postEdit.type || 'chat'
+    }
 
-      dispatch((post ? updatePost : createPost)(id, params))
-      .then(({ error }) => {
-        if (error) return
-        // FIXME ideally we would pass name and slug along as well, to make
-        // events more human-readable, but we're only passing around community
-        // ids in this component
-        let community = {id: get(postEdit, 'communities.0')}
-        trackEvent(post ? EDITED_POST : ADDED_POST, {
-          post: {
-            id: get(post, 'id'),
-            type: postEdit.type
-          },
-          community,
-          project
-        })
+    let params = {
+      ...postEdit,
+      ...attachmentParams(post && post.media, postEdit.media),
+      projectId: project ? project.id : null
+    }
+
+    dispatch((post ? updatePost : createPost)(id, params))
+    .then(({ error }) => {
+      if (error) return
+      // FIXME ideally we would pass name and slug along as well, to make
+      // events more human-readable, but we're only passing around community
+      // ids in this component
+      let community = {id: get(postEdit, 'communities.0')}
+      trackEvent(post ? EDITED_POST : ADDED_POST, {
+        post: {
+          id: get(post, 'id'),
+          type: postEdit.type
+        },
+        community,
+        project
       })
     })
   }
@@ -227,13 +224,13 @@ export default class PostEditor extends React.Component {
 
       <input type='text' ref='name' className='title form-control'
         placeholder={postTypeData[type].placeholder}
-        onFocus={this.expand} value={name} onChange={this.setName}/>
+        onFocus={this.expand} value={name} onChange={this.set('name')}/>
 
       {expanded && <div>
         <h3>Details</h3>
         <RichTextEditor className='details'
           content={description}
-          onChange={this.setDescription}
+          onChange={this.set('description')}
           mentionTemplate={personTemplate}
           mentionTypeahead={text => dispatch(typeahead(text, 'post'))}
           mentionChoices={this.props.mentionChoices}
@@ -244,7 +241,7 @@ export default class PostEditor extends React.Component {
             <p>Location (Optional)</p>
             <input type='text' ref='location' className='location form-control'
               value={location}
-              onChange={this.setLocation}/>
+              onChange={this.set('location')}/>
           </label>
         </div>}
 

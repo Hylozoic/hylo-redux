@@ -72,84 +72,56 @@ export default class CommunityEditor extends React.Component {
   checkUnique = (key, value) =>
     this.props.dispatch(validateCommunityAttribute(key, value, 'unique'))
 
-  setName = event => {
+  set = key => event => {
     let { value } = event.target
-    this.setValue('name', value)
-    this.validateName(value)
+    this.setValue(key, value)
+    this.validate(key, value)
   }
 
-  validateName (value) {
-    this.setError({nameBlank: !value})
+  validate (key, value) {
+    switch (key) {
+      case 'name':
+        this.setError({nameBlank: !value})
 
-    if (!value) {
-      this.resetValidation('name')
-    } else {
-      return this.checkUnique('name', value)
+        if (!value) {
+          this.resetValidation('name')
+        } else {
+          return this.checkUnique('name', value)
+        }
+        break
+      case 'description':
+        this.setError({descriptionBlank: !value})
+        break
+      case 'slug':
+        let error = {slugBlank: false, slugInvalid: false}
+
+        if (!value) {
+          error.slugBlank = true
+        } else if (!value.match(/^[a-z0-9-+]+$/)) {
+          error.slugInvalid = true
+        }
+
+        this.setError(error)
+
+        if (some(error)) {
+          this.resetValidation('slug')
+        } else {
+          return this.checkUnique('slug', value)
+        }
+        break
+      case 'beta_access_code':
+        this.setError({codeBlank: !value})
+
+        if (!value) {
+          this.resetValidation('beta_access_code')
+        } else {
+          return this.checkUnique('beta_access_code', value)
+        }
+        break
+      case 'category':
+        this.setError({categoryBlank: !value})
+        break
     }
-  }
-
-  setDescription = event => {
-    let { value } = event.target
-    this.setValue('description', value)
-    this.validateDescription(value)
-  }
-
-  validateDescription (value) {
-    this.setError({descriptionBlank: !value})
-  }
-
-  setSlug = event => {
-    let { value } = event.target
-    this.setValue('slug', value)
-    this.validateSlug(value)
-  }
-
-  validateSlug (value) {
-    let error = {slugBlank: false, slugInvalid: false}
-
-    if (!value) {
-      error.slugBlank = true
-    } else if (!value.match(/^[a-z0-9-+]+$/)) {
-      error.slugInvalid = true
-    }
-
-    this.setError(error)
-
-    if (some(error)) {
-      this.resetValidation('slug')
-    } else {
-      return this.checkUnique('slug', value)
-    }
-  }
-
-  setCode = event => {
-    let { value } = event.target
-    this.setValue('beta_access_code', value)
-    this.validateCode(value)
-  }
-
-  validateCode (value) {
-    this.setError({codeBlank: !value})
-
-    if (!value) {
-      this.resetValidation('beta_access_code')
-    } else {
-      return this.checkUnique('beta_access_code', value)
-    }
-  }
-
-  setCategory = event => {
-    let { value } = event.target
-    this.setValue('category', value)
-    this.validateCategory(value)
-  }
-
-  validateCategory (value) {
-    this.setError({categoryBlank: !value})
-  }
-
-  setLocation = event => {
-    this.setValue('location', event.target.value)
   }
 
   attachImage (type) {
@@ -163,22 +135,19 @@ export default class CommunityEditor extends React.Component {
     }
   }
 
-  validate () {
+  validateAll () {
     let { community } = this.props
-    return Promise.all([
-      this.validateName(community.name),
-      this.validateDescription(community.description),
-      this.validateSlug(community.slug),
-      this.validateCode(community.beta_access_code),
-      this.validateCategory(community.category)
-    ])
+    return Promise.all(
+      ['name', 'description', 'slug', 'beta_access_code', 'category']
+      .map(key => this.validate(key, community[key]))
+    )
   }
 
   submit = () => {
     let { validating, dispatch, community } = this.props
     if (validating) return
 
-    this.validate().then(() => {
+    this.validateAll().then(() => {
       if (some(this.props.errors)) return scrollToBottom()
 
       dispatch(createCommunity(community))
@@ -208,7 +177,7 @@ export default class CommunityEditor extends React.Component {
             <label>Community name</label>
           </div>
           <div className='main-column'>
-            <input type='text' ref='name' className='form-control' value={community.name} onChange={this.setName}/>
+            <input type='text' ref='name' className='form-control' value={community.name} onChange={this.set('name')}/>
             {errors.nameBlank && <p className='help error'>Please fill in this field.</p>}
             {errors.nameUsed && <p className='help error'>This name is already in use.</p>}
           </div>
@@ -219,7 +188,7 @@ export default class CommunityEditor extends React.Component {
             <label>Core Intention</label>
           </div>
           <div className='main-column'>
-            <textarea ref='description' className='form-control' onChange={this.setDescription}></textarea>
+            <textarea ref='description' className='form-control' onChange={this.set('description')}></textarea>
             {errors.descriptionBlank && <p className='help error'>Please fill in this field.</p>}
           </div>
         </div>
@@ -231,7 +200,7 @@ export default class CommunityEditor extends React.Component {
           <div className='main-column'>
             <div className='input-group'>
               <div className='input-group-addon'>www.hylo.com/c/</div>
-              <input ref='slug' className='form-control' onChange={this.setSlug}/>
+              <input ref='slug' className='form-control' onChange={this.set('slug')}/>
             </div>
             {errors.slugBlank && <p className='help error'>Please fill in this field.</p>}
             {errors.slugInvalid && <p className='help error'>Use lowercase letters, numbers, and hyphens only.</p>}
@@ -244,7 +213,7 @@ export default class CommunityEditor extends React.Component {
             <label>Invitation code</label>
           </div>
           <div className='main-column'>
-            <input ref='code' type='text' className='form-control' onChange={this.setCode}/>
+            <input ref='code' type='text' className='form-control' onChange={this.set('beta_access_code')}/>
             <p className='help'>People can use this code to join your community. (You will also be able to send email invitations to people directly, which do not require this code.)</p>
             {errors.codeBlank && <p className='help error'>Please fill in a code.</p>}
             {errors.codeUsed && <p className='help error'>This code cannot be used; please choose another.</p>}
@@ -256,7 +225,7 @@ export default class CommunityEditor extends React.Component {
             <label>What kind of community is this?</label>
           </div>
           <div className='main-column'>
-            <select ref='category' className='form-control' onChange={this.setCategory}>
+            <select ref='category' className='form-control' onChange={this.set('category')}>
               <option value=''>Pick one:</option>
               {toPairs(categories).map(([value, label]) => <option key={value} value={value}>
                 {label}
@@ -272,7 +241,7 @@ export default class CommunityEditor extends React.Component {
             <label>Location</label>
           </div>
           <div className='main-column'>
-            <input type='text' ref='location' className='form-control' onChange={this.setLocation}
+            <input type='text' ref='location' className='form-control' onChange={this.set('location')}
               placeholder='Optionally, choose a location for your community' />
           </div>
         </div>

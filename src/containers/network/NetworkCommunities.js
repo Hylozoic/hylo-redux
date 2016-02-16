@@ -32,6 +32,7 @@ export default class NetworkMembers extends React.Component {
 
   loadMore = () => {
     let { communities, dispatch, total, pending, params: { id }, location: { query } } = this.props
+    console.log('load more fired', { communities, dispatch, total, pending, id, query })
     let offset = communities.length
     if (!pending && offset < total) {
       dispatch(fetch(subject, id, {...query, offset}))

@@ -3,7 +3,7 @@ import A from '../components/A'
 import Masonry from 'react-masonry-component'
 
 const CommunityCards = ({ communities }) => {
-  return <div className='person-cards masonry-container'>
+  return <div className='community-card masonry-container'>
     <Masonry options={{transitionDuration: 0}}>
       {communities.map(community => <div key={community.id} className='masonry-item-wrapper'>
         <CommunityCard community={community} />
@@ -15,15 +15,23 @@ const CommunityCards = ({ communities }) => {
 export default CommunityCards
 
 const CommunityCard = ({ community }) => {
-  let { id, avatar_url, banner_url, name, memberCount } = community
+  let { slug, avatar_url, banner_url, name, memberCount } = community
+
   return <div className='community-card'>
-    <A to={`/c/${community.slug}`}>
-      <div className='large-avatar' style={{backgroundImage: `url(${avatar_url})`}}/>
+    <A to={`/c/${slug}`}>
+      <div className='background-wrapper'>
+        <div className='background'>
+          <div>
+            <div className='banner' style={{backgroundImage: `url(${banner_url})`}}>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div className='middle-content'>
+        <div className='logo' style={{backgroundImage: `url(${avatar_url})`}}/>
+        <div className='name'>{name}</div>
+        {memberCount} member{memberCount === 1 ? '' : 's'}
+      </div>
     </A>
-    <br/>
-    <A to={`/u/${community.id}`}>
-      <div className='large-avatar' style={{backgroundImage: `url(${banner_url})`}}/>
-    </A>
-    <A className='name' to={`/u/${id}`}>{name}</A>
   </div>
 }

@@ -22,6 +22,7 @@ import {
   CREATE_POST,
   CREATE_NETWORK,
   FETCH_ACTIVITY,
+  FETCH_COMMUNITIES,
   FETCH_INVITATIONS,
   FETCH_ONBOARDING,
   FETCH_PEOPLE,
@@ -214,10 +215,10 @@ export default combineReducers({
   totalCommunitiesByQuery: (state = {}, action) => {
     if (action.error) return state
 
-    let { type, meta } = action
+    let { type, payload, meta } = action
     switch (type) {
-      case FETCH_PROJECTS:
-        return {...state, [meta.cache.id]: 10000}
+      case FETCH_COMMUNITIES:
+        return {...state, [meta.cache.id]: Number(payload.communities_total)}
     }
     return state
   },

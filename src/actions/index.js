@@ -47,6 +47,7 @@ export const REMOVE_COMMUNITY_MODERATOR_PENDING = REMOVE_COMMUNITY_MODERATOR + _
 export const REMOVE_DOC = 'REMOVE_DOC'
 export const REMOVE_IMAGE = 'REMOVE_IMAGE'
 export const REMOVE_NOTIFICATION = 'REMOVE_NOTIFICATION'
+export const REMOVE_POST = 'REMOVE_POST'
 export const REMOVE_PROJECT_CONTRIBUTOR = 'REMOVE_PROJECT_CONTRIBUTOR'
 export const RESET_COMMUNITY_VALIDATION = 'RESET_COMMUNITY_VALIDATION'
 export const RESET_ERROR = 'RESET_ERROR'
@@ -546,4 +547,12 @@ export function fetchOnboarding (userId, communityId) {
 
 export function toggleShowAllCommunities () {
   return {type: TOGGLE_SHOW_ALL_COMMUNITIES}
+}
+
+export function removePost (id) {
+  return {
+    type: REMOVE_POST,
+    payload: {api: true, path: `/noo/post/${id}`, method: 'DELETE'},
+    meta: {id}
+  }
 }

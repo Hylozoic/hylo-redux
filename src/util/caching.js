@@ -1,5 +1,5 @@
 import qs from 'querystring'
-import { capitalize, includes, omitBy } from 'lodash'
+import { capitalize, compact, includes, omitBy } from 'lodash'
 import { navigate, FETCH_POSTS, FETCH_PROJECTS, FETCH_PEOPLE } from '../actions'
 
 const commonDefaults = {
@@ -46,7 +46,7 @@ export const connectedListProps = (state, props, itemType) => {
   let itemCountKey = `total${capitalize(itemType)}ByQuery`
 
   return {
-    [itemType]: (state[itemKey][cacheId] || []).map(id => state[itemType][id]),
+    [itemType]: compact((state[itemKey][cacheId] || []).map(id => state[itemType][id])),
     total: state[itemCountKey][cacheId],
     pending: state.pending[actionType]
   }

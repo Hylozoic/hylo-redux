@@ -1,9 +1,10 @@
 import {
+  CHANGE_EVENT_RESPONSE_PENDING,
   CREATE_POST,
   FETCH_POST,
   FETCH_POSTS,
+  REMOVE_POST,
   UPDATE_POST,
-  CHANGE_EVENT_RESPONSE_PENDING,
   VOTE_ON_POST,
   VOTE_ON_POST_PENDING
 } from '../actions'
@@ -48,6 +49,7 @@ export default function (state = {}, action) {
     }
   }
 
+  let id
   switch (type) {
     case FETCH_POSTS:
       return mergeList(state, payload.posts.map(normalize), 'id')
@@ -55,9 +57,9 @@ export default function (state = {}, action) {
     case FETCH_POST:
       return {...state, [payload.id]: normalize(payload)}
     case UPDATE_POST:
-      let { params, id } = meta
+      id = meta.id
       let post = state[id]
-      return {...state, [id]: normalizeUpdate(post, params)}
+      return {...state, [id]: normalizeUpdate(post, meta.params)}
     case CHANGE_EVENT_RESPONSE_PENDING:
       id = meta.id
       post = state[id]
@@ -73,6 +75,9 @@ export default function (state = {}, action) {
         newPost = {...post, myVote: true, votes: post.votes + 1}
       }
       return {...state, [id]: newPost}
+    case REMOVE_POST:
+      id = meta.id
+      return {...state, [id]: null}
   }
   return state
 }

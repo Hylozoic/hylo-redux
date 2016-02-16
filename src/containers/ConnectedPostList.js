@@ -9,10 +9,14 @@ const { array, bool, func, number, object, string } = React.PropTypes
 
 export const fetch = fetchWithCache(fetchPosts)
 
-@connect((state, props) => ({
-  ...connectedListProps(state, props, 'posts'),
-  postEdits: state.postEdits
-}))
+@connect((state, props) => {
+  let listProps = connectedListProps(state, props, 'posts')
+  let editingPostIds = intersection(
+    keys(omitBy(state.postEdits, isNull)),
+    listProps.posts.map(p => p.id)
+  )
+  return {...listProps, editingPostIds}
+})
 export class ConnectedPostList extends React.Component {
   static propTypes = {
     subject: string.isRequired,
@@ -22,7 +26,7 @@ export class ConnectedPostList extends React.Component {
     total: number,
     pending: bool,
     query: object,
-    postEdits: object
+    editingPostIds: array
   }
 
   loadMore = () => {
@@ -38,13 +42,9 @@ export class ConnectedPostList extends React.Component {
   }
 
   render () {
-    let { posts, total, pending, postEdits } = this.props
+    let { posts, total, pending, editingPostIds } = this.props
     if (!posts) posts = []
     debug(`posts: ${posts.length} / ${total || '??'}`)
-    let editingPostIds = intersection(
-      keys(omitBy(postEdits, isNull)),
-      posts.map(p => p.id)
-    )
     return <PostList {...{posts, editingPostIds, pending}} loadMore={this.loadMore}/>
   }
 }

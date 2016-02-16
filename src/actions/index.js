@@ -1,3 +1,5 @@
+import invariant from 'invariant'
+
 const _PENDING = '_PENDING'
 export const ADD_COMMUNITY_MODERATOR = 'ADD_COMMUNITY_MODERATOR'
 export const ADD_COMMUNITY_MODERATOR_PENDING = ADD_COMMUNITY_MODERATOR + _PENDING
@@ -300,11 +302,12 @@ export function leaveCommunity (communityId, prevProps) {
   }
 }
 
-export function updateCommunitySettings (params, prevProps) {
+export function updateCommunitySettings (id, params, prevProps) {
+  invariant(params.slug, 'must include slug in params')
   if (params.leader) params.leader_id = params.leader.id
   return {
     type: UPDATE_COMMUNITY_SETTINGS,
-    payload: {api: true, params, path: `/noo/community/${params.id}`, method: 'POST'},
+    payload: {api: true, params, path: `/noo/community/${id}`, method: 'POST'},
     meta: {slug: params.slug, params, prevProps}
   }
 }

@@ -17,6 +17,13 @@ export function addIdsToState (state, key, objects) {
   }
 }
 
+export function addSlugsToState (state, key, objects) {
+  return {
+    ...state,
+    [key]: uniq((state[key] || []).concat(objects.map(p => p.slug)))
+  }
+}
+
 export function hashById (objects, transform) {
   return objects.reduce((m, x) => {
     m[x.id] = transform ? transform(x) : x

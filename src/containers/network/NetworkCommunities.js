@@ -5,7 +5,7 @@ import { debounce } from 'lodash'
 import { fetchCommunities } from '../../actions/fetchCommunities'
 import { fetchWithCache, connectedListProps, refetch } from '../../util/caching'
 import ScrollListener from '../../components/ScrollListener'
-import PersonCards from '../../components/PersonCards'
+import CommunityCards from '../../components/CommunityCards'
 const { array, bool, func, number, object } = React.PropTypes
 
 const subject = 'network'
@@ -59,7 +59,7 @@ export default class NetworkMembers extends React.Component {
           }, 500)}/>
       </div>
       {pending && <div className='loading'>Loading...</div>}
-      <PersonCards people={communities}/>
+      <CommunityCards communities={communities}/>
       <ScrollListener onBottom={this.loadMore}/>
     </div>
   }

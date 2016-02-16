@@ -1,5 +1,5 @@
 import { FETCH_COMMUNITIES } from '../actions'
-import { addIdsToState } from './util'
+import { addSlugsToState } from './util'
 
 export default function (state = {}, action) {
   if (action.error) return state
@@ -7,7 +7,7 @@ export default function (state = {}, action) {
   let { type, payload, meta } = action
   switch (type) {
     case FETCH_COMMUNITIES:
-      return addIdsToState(state, meta.cache.id, payload.projects)
+      return addSlugsToState(state, meta.cache.id, payload.communities)
   }
 
   return state

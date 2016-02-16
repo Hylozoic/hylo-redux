@@ -10,7 +10,7 @@ export function fetchCommunities (opts) {
 
   switch (subject) {
     case 'network':
-      querystring = cleanAndStringify({search, limit, offset})
+      querystring = cleanAndStringify({search, limit, offset, paginate: true})
       payload.path = `/noo/network/${id}/communities?${querystring}`
       break
 

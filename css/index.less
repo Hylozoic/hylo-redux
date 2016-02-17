@@ -869,7 +869,9 @@ ul.tags {
   .body-text;
 }
 
-#community {
+
+
+.tabbed-context {
   .markdown {
     img {
       max-width: 100%;
@@ -906,6 +908,54 @@ ul.tags {
       margin-bottom: @p-bottom-margin;
     }
   }
+}
+
+.community-card-wrapper {
+  padding-left: 15px;
+  padding-right: 15px;
+}
+
+.community-card {
+  border: 1px solid @light-gray-border;
+  margin-bottom: 30px;
+
+  .banner {
+    padding: 90px 20px 20px;
+    margin-bottom: 0px;
+    .mobile({
+      margin-left: inherit;
+      width: inherit;
+    });
+  }
+
+  .middle-content {
+    padding: 15px;
+    position: relative;
+    background-color: @faint-gray-bg;
+
+    .logo {
+      margin-top: -60px;
+      display: inline-block;
+      width: @avatar-size-large;
+      height: @avatar-size-large;
+      overflow: hidden;
+      background-position: center;
+      background-size: cover;
+    }
+
+    a:hover {
+      text-decoration: none;
+    }
+
+    .name {
+      .proxima-nova-semibold;
+      font-size: 18px;
+    }
+  }
+}
+
+.community-cards .masonry-item-wrapper {
+  width: 33.33%;
 }
 
 .person-cards {

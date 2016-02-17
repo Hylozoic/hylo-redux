@@ -39,7 +39,7 @@ export default class CommunityProfile extends React.Component {
 
     let canModerate = !!find(currentUser.memberships, m => m.community.id === community.id && m.role === 1)
 
-    return <div id='community'>
+    return <div id='community' className='tabbed-context'>
       <VelocityTransitionGroup enter={{animation: 'slideDown', duration: 800}}
         leave={{animation: 'slideUp', duration: 800}}
         runOnMount={true}>

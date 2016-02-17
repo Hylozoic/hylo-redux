@@ -32,7 +32,6 @@ export default class NetworkMembers extends React.Component {
 
   loadMore = () => {
     let { communities, dispatch, total, pending, params: { id }, location: { query } } = this.props
-    console.log('load more fired', { communities, dispatch, total, pending, id, query })
     let offset = communities.length
     if (!pending && offset < total) {
       dispatch(fetch(subject, id, {...query, offset}))
@@ -49,13 +48,12 @@ export default class NetworkMembers extends React.Component {
     if (!currentUser) return <div>Loading...</div>
     let { search } = query
 
-    return <div className='members'>
+    return <div className='communities'>
       <div className='list-controls'>
         <input type='text' className='form-control search'
           placeholder='Search'
           defaultValue={search}
           onChange={debounce(event => {
-            console.log('Searching', event)
             this.updateQuery({search: event.target.value})
           }, 500)}/>
       </div>

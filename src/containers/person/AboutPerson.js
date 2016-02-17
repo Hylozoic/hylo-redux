@@ -5,6 +5,17 @@ import { markdown } from '../../util/text'
 const LinkButton = ({ href, icon }) =>
   <a className='button' href={href} target='_blank'><i className={`icon-${icon}`}></i></a>
 
+const Section = ({ title, children }) =>
+  <section>
+    <h4>{title}</h4>
+    {children}
+  </section>
+
+const Tags = ({ children }) =>
+  <ul className='tags'>
+    {children.map(tag => <div className='tag' key={tag}>{tag}</div>)}
+  </ul>
+
 const AboutPerson = connect(
   (state, { params }) => ({person: state.people[params.id]})
 )(({ person }) => {
@@ -12,41 +23,29 @@ const AboutPerson = connect(
   let hasSocialMedia = !!(facebook_url || twitter_name || linkedin_url)
 
   return <div className='about'>
-    <section>
-      <h4>About me</h4>
+    <Section title='About me'>
       <p>{person.bio}</p>
       {hasSocialMedia && <div className='social-media'>
         {facebook_url && <LinkButton href={facebook_url} icon='facebook'/>}
         {twitter_name && <LinkButton href={`https://twitter.com/${twitter_name}`} icon='twitter'/>}
         {linkedin_url && <LinkButton href={linkedin_url} icon='linkedin'/>}
       </div>}
-    </section>
-    <section>
-      <h4>What I am doing</h4>
+    </Section>
+    <Section title='What I am doing'>
       <p>{person.work}</p>
-    </section>
-    <section>
-      <h4>What I would like to do</h4>
+    </Section>
+    <Section title='What I would like to do'>
       <p>{person.intention}</p>
-    </section>
-    <section>
-      <h4>Skills</h4>
-      <ul className='tags'>
-        {person.skills.map(skill =>
-          <div className='tag' key={skill}>{skill}</div>)}
-      </ul>
-    </section>
-    <section>
-      <h4>Affiliations</h4>
-      <ul className='tags'>
-        {person.organizations.map(org =>
-          <div className='tag' key={org}>{org}</div>)}
-      </ul>
-    </section>
-    {person.extra_info && <section>
-      <h4>Other information</h4>
+    </Section>
+    <Section title='Skills'>
+      <Tags>{person.skills}</Tags>
+    </Section>
+    <Section title='Affiliations'>
+      <Tags>{person.organizations}</Tags>
+    </Section>
+    {person.extra_info && <Section title='Other information'>
       <div dangerouslySetInnerHTML={{__html: markdown(person.extra_info || '')}}></div>
-    </section>}
+    </Section>}
   </div>
 })
 

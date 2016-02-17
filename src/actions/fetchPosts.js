@@ -23,6 +23,9 @@ export function fetchPosts (opts) {
     case 'project':
       payload.path = `/noo/project/${id}/posts`
       break
+    case 'network':
+      payload.path = `/noo/network/${id}/posts`
+      break
   }
 
   payload.path += '?' + querystring

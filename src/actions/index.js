@@ -16,12 +16,14 @@ export const CREATE_NETWORK = 'CREATE_NETWORK'
 export const TOGGLE_USER_SETTINGS_SECTION = 'TOGGLE_USER_SETTINGS_SECTION'
 export const FETCH_COMMENTS = 'FETCH_COMMENTS'
 export const FETCH_COMMUNITY = 'FETCH_COMMUNITY'
+export const FETCH_COMMUNITIES = 'FETCH_COMMUNITIES'
 export const FETCH_COMMUNITY_FOR_INVITATION = 'FETCH_COMMUNITY_FOR_INVITATION'
 export const FETCH_COMMUNITY_MODERATORS = 'FETCH_COMMUNITY_MODERATORS'
 export const FETCH_COMMUNITY_SETTINGS = 'FETCH_COMMUNITY_SETTINGS'
 export const FETCH_CURRENT_USER = 'FETCH_CURRENT_USER'
 export const FETCH_ACTIVITY = 'FETCH_ACTIVITY'
 export const FETCH_INVITATIONS = 'FETCH_INVITATIONS'
+export const FETCH_NETWORK = 'FETCH_NETWORK'
 export const FETCH_ONBOARDING = 'FETCH_ONBOARDING'
 export const FETCH_PEOPLE = 'FETCH_PEOPLE'
 export const FETCH_PERSON = 'FETCH_PERSON'
@@ -545,6 +547,13 @@ export function fetchOnboarding (userId, communityId) {
   }
 }
 
+export function fetchNetwork (id) {
+  return {
+    type: FETCH_NETWORK,
+    payload: {api: true, path: `/noo/network/${id}`},
+    meta: {cache: {bucket: 'networks', id, requiredProp: 'banner_url'}}
+  }
+}
 export function toggleShowAllCommunities () {
   return {type: TOGGLE_SHOW_ALL_COMMUNITIES}
 }

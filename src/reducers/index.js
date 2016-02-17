@@ -3,6 +3,9 @@ import { routeReducer } from 'redux-simple-router'
 import { some, get, includes, omit, partition } from 'lodash'
 import comments from './comments'
 import commentsByPost from './commentsByPost'
+import communities from './communities'
+import communitiesByQuery from './communitiesByQuery'
+import networks from './networks'
 import people from './people'
 import peopleByQuery from './peopleByQuery'
 import postEdits from './postEdits'
@@ -11,7 +14,6 @@ import posts from './posts'
 import projectsByQuery from './projectsByQuery'
 import projects from './projects'
 import projectEdits from './projectEdits'
-import communities from './communities'
 import { UPDATE_PATH } from 'redux-simple-router'
 
 import {
@@ -20,6 +22,7 @@ import {
   CREATE_POST,
   CREATE_NETWORK,
   FETCH_ACTIVITY,
+  FETCH_COMMUNITIES,
   FETCH_INVITATIONS,
   FETCH_ONBOARDING,
   FETCH_PEOPLE,
@@ -142,6 +145,8 @@ export default combineReducers({
   comments,
   commentsByPost,
   communities,
+  communitiesByQuery,
+  networks,
   people,
   peopleByQuery,
   posts,
@@ -209,6 +214,17 @@ export default combineReducers({
     switch (type) {
       case FETCH_PROJECTS:
         return {...state, [meta.cache.id]: Number(payload.projects_total)}
+    }
+    return state
+  },
+
+  totalCommunitiesByQuery: (state = {}, action) => {
+    if (action.error) return state
+
+    let { type, payload, meta } = action
+    switch (type) {
+      case FETCH_COMMUNITIES:
+        return {...state, [meta.cache.id]: Number(payload.communities_total)}
     }
     return state
   },

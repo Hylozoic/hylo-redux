@@ -7,6 +7,7 @@ import {
   FETCH_COMMUNITY_FOR_INVITATION,
   FETCH_COMMUNITY_SETTINGS,
   FETCH_COMMUNITY_MODERATORS,
+  FETCH_COMMUNITIES,
   FETCH_POST,
   FETCH_CURRENT_USER,
   UPDATE_COMMUNITY_SETTINGS,
@@ -80,6 +81,8 @@ export default function (state = {}, action) {
         ...state,
         [community.slug]: community
       }
+    case FETCH_COMMUNITIES:
+      return mergeList(state, payload.communities, 'slug')
   }
   return state
 }

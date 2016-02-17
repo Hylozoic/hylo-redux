@@ -1,3 +1,32 @@
 import React from 'react'
-const NetworkPosts = props => <span />
-export default NetworkPosts
+import { connect } from 'react-redux'
+import { prefetch } from 'react-fetcher'
+import { fetch, ConnectedPostList } from '../ConnectedPostList'
+import { refetch } from '../../util/caching'
+import PostListControls from '../../components/PostListControls'
+import { compose } from 'redux'
+const { func, object } = React.PropTypes
+
+const subject = 'network'
+
+const NetworkPosts = props => {
+  let { dispatch, params: { id }, location: { query } } = props
+  let { type, sort, search } = query
+
+  return <div>
+    <PostListControls onChange={opts => dispatch(refetch(opts, props.location))} includeWelcome={true}
+      type={type} sort={sort} search={search}/>
+    <ConnectedPostList {...{subject, id, query}}/>
+  </div>
+}
+
+NetworkPosts.propTypes = {
+  dispatch: func,
+  params: object,
+  location: object
+}
+
+export default compose(
+  prefetch(({ dispatch, params, query }) => dispatch(fetch(subject, params.id, query))),
+  connect((state, { params }) => ({network: state.networks[params.id]}))
+)(NetworkPosts)

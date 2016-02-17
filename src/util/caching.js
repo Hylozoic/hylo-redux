@@ -1,6 +1,7 @@
 import qs from 'querystring'
+
 import { capitalize, compact, includes, omitBy } from 'lodash'
-import { navigate, FETCH_POSTS, FETCH_PROJECTS, FETCH_PEOPLE } from '../actions'
+import { navigate, FETCH_COMMUNITIES, FETCH_POSTS, FETCH_PROJECTS, FETCH_PEOPLE } from '../actions'
 
 const commonDefaults = {
   type: ['all+welcome', 'all'],
@@ -36,6 +37,10 @@ export const connectedListProps = (state, props, itemType) => {
     case 'people':
       actionType = FETCH_PEOPLE
       break
+    case 'communities':
+      actionType = FETCH_COMMUNITIES
+      break
+
     default:
       throw new Error(`unknown item type: ${itemType}`)
   }

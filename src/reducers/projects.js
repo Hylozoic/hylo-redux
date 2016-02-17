@@ -1,5 +1,5 @@
 import { FETCH_PROJECT, FETCH_PROJECTS, UPDATE_PROJECT, JOIN_PROJECT, JOIN_PROJECT_PENDING } from '../actions'
-import { hashById } from './util'
+import { hashBy } from './util'
 
 export default function (state = {}, action) {
   let { type, payload, meta, error } = action
@@ -16,7 +16,7 @@ export default function (state = {}, action) {
   let { id, params, currentUser } = meta || {}
   switch (type) {
     case FETCH_PROJECTS:
-      return {...state, ...hashById(payload.projects)}
+      return {...state, ...hashBy(payload.projects, 'id')}
     case FETCH_PROJECT:
       return {...state, [payload.id]: payload}
     case UPDATE_PROJECT:

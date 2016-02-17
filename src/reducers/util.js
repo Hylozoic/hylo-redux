@@ -1,4 +1,4 @@
-import { filter, merge, uniq } from 'lodash'
+import { filter, merge, transform, uniq } from 'lodash'
 
 // for pagination -- append a new page of data to existing data if present,
 // removing any duplicates.
@@ -17,11 +17,11 @@ export function addIdsToState (state, key, objects) {
   }
 }
 
-export function hashById (objects, transform) {
-  return objects.reduce((m, x) => {
-    m[x.id] = transform ? transform(x) : x
-    return m
-  }, {})
+export const hashBy = (objects, prop) => {
+  let fn = typeof prop === 'function'
+    ? (r, n) => r[prop(n)] = n
+    : (r, n) => r[n[prop]] = n
+  return transform(objects, fn, {})
 }
 
 // for modifying a post, project, or other object with a list of media; set an

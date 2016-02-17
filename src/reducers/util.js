@@ -1,26 +1,10 @@
 import { filter, merge, uniq } from 'lodash'
 
-// for pagination -- append a new page of data to existing data if present,
-// removing any duplicates.
-export function appendUniq (state, key, data) {
+export function appendUniq (state, key, values) {
   let existing = state[key] || []
   return {
     ...state,
-    [key]: uniq(existing.concat(data), (v, i) => v.id)
-  }
-}
-
-export function addIdsToState (state, key, objects) {
-  return {
-    ...state,
-    [key]: uniq((state[key] || []).concat(objects.map(p => p.id)))
-  }
-}
-
-export function addSlugsToState (state, key, objects) {
-  return {
-    ...state,
-    [key]: uniq((state[key] || []).concat(objects.map(p => p.slug)))
+    [key]: uniq(existing.concat(values))
   }
 }
 

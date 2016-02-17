@@ -1,5 +1,6 @@
 import { FETCH_COMMUNITIES } from '../actions'
-import { addSlugsToState } from './util'
+import { appendUniq } from './util'
+import { map } from 'lodash'
 
 export default function (state = {}, action) {
   if (action.error) return state
@@ -7,7 +8,7 @@ export default function (state = {}, action) {
   let { type, payload, meta } = action
   switch (type) {
     case FETCH_COMMUNITIES:
-      return addSlugsToState(state, meta.cache.id, payload.communities)
+      return appendUniq(state, meta.cache.id, map(payload.communities, 'slug'))
   }
 
   return state

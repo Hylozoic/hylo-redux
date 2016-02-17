@@ -1,3 +1,5 @@
+import invariant from 'invariant'
+
 const _PENDING = '_PENDING'
 export const ADD_COMMUNITY_MODERATOR = 'ADD_COMMUNITY_MODERATOR'
 export const ADD_COMMUNITY_MODERATOR_PENDING = ADD_COMMUNITY_MODERATOR + _PENDING
@@ -47,6 +49,7 @@ export const REMOVE_COMMUNITY_MODERATOR_PENDING = REMOVE_COMMUNITY_MODERATOR + _
 export const REMOVE_DOC = 'REMOVE_DOC'
 export const REMOVE_IMAGE = 'REMOVE_IMAGE'
 export const REMOVE_NOTIFICATION = 'REMOVE_NOTIFICATION'
+export const REMOVE_POST = 'REMOVE_POST'
 export const REMOVE_PROJECT_CONTRIBUTOR = 'REMOVE_PROJECT_CONTRIBUTOR'
 export const RESET_COMMUNITY_VALIDATION = 'RESET_COMMUNITY_VALIDATION'
 export const RESET_ERROR = 'RESET_ERROR'
@@ -62,8 +65,9 @@ export const START_POST_EDIT = 'START_POST_EDIT'
 export const START_PROJECT_EDIT = 'START_PROJECT_EDIT'
 export const THANK = 'THANK'
 export const THANK_PENDING = THANK + _PENDING
-export const TOGGLE_PROJECT_MODERATOR_ROLE = 'TOGGLE_PROJECT_MODERATOR_ROLE'
 export const TOGGLE_MAIN_MENU = 'TOGGLE_MAIN_MENU'
+export const TOGGLE_PROJECT_MODERATOR_ROLE = 'TOGGLE_PROJECT_MODERATOR_ROLE'
+export const TOGGLE_SHOW_ALL_COMMUNITIES = 'TOGGLE_SHOW_ALL_COMMUNITIES'
 export const TYPEAHEAD = 'TYPEAHEAD'
 export const UPDATE_COMMUNITY_EDITOR = 'UPDATE_COMMUNITY_EDITOR'
 export const UPDATE_INVITATION_EDITOR = 'UPDATE_INVITATION_EDITOR'
@@ -285,10 +289,10 @@ export function toggleMainMenu () {
   return {type: TOGGLE_MAIN_MENU}
 }
 
-export function updateUserSettings (params, prevProps) {
+export function updateUserSettings (id, params, prevProps) {
   return {
     type: UPDATE_USER_SETTINGS,
-    payload: {api: true, params, path: `/noo/user/${params.id}`, method: 'POST'},
+    payload: {api: true, params, path: `/noo/user/${id}`, method: 'POST'},
     meta: {params, prevProps}
   }
 }
@@ -301,11 +305,12 @@ export function leaveCommunity (communityId, prevProps) {
   }
 }
 
-export function updateCommunitySettings (params, prevProps) {
+export function updateCommunitySettings (id, params, prevProps) {
+  invariant(params.slug, 'must include slug in params')
   if (params.leader) params.leader_id = params.leader.id
   return {
     type: UPDATE_COMMUNITY_SETTINGS,
-    payload: {api: true, params, path: `/noo/community/${params.id}`, method: 'POST'},
+    payload: {api: true, params, path: `/noo/community/${id}`, method: 'POST'},
     meta: {slug: params.slug, params, prevProps}
   }
 }
@@ -547,5 +552,16 @@ export function fetchNetwork (id) {
     type: FETCH_NETWORK,
     payload: {api: true, path: `/noo/network/${id}`},
     meta: {cache: {bucket: 'networks', id, requiredProp: 'banner_url'}}
+  }
+}
+export function toggleShowAllCommunities () {
+  return {type: TOGGLE_SHOW_ALL_COMMUNITIES}
+}
+
+export function removePost (id) {
+  return {
+    type: REMOVE_POST,
+    payload: {api: true, path: `/noo/post/${id}`, method: 'DELETE'},
+    meta: {id}
   }
 }

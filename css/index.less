@@ -105,6 +105,7 @@ nav {
     text-overflow: ellipsis;
     line-height: 24px;
     text-decoration: none;
+    cursor: pointer;
     &:active {
       font-weight: bold;
     }
@@ -117,6 +118,9 @@ nav {
     &:hover {
       background-color: #ddd;
     }
+    &.meta:hover {
+      background-color: transparent;
+    }
   }
 
   @media (max-width: @screen-xs-max) {
@@ -126,6 +130,11 @@ nav {
     }
     border-bottom: 1px solid @light-gray-border;
     margin-bottom: 15px;
+  }
+
+  .divider {
+    border-top: 1px solid @light-gray-border;
+    height: 7px;
   }
 }
 

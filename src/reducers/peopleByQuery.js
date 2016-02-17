@@ -4,7 +4,7 @@ import {
   REMOVE_PROJECT_CONTRIBUTOR,
   TOGGLE_PROJECT_MODERATOR_ROLE
 } from '../actions'
-import { filter, flowRight, get, partialRight, uniq, without } from 'lodash'
+import { filter, flow, get, partialRight, uniq, without } from 'lodash'
 import qs from 'querystring'
 import { MemberRole } from '../models/project'
 
@@ -69,7 +69,7 @@ export default function (state = {}, action) {
       }
       break
     case REMOVE_PROJECT_CONTRIBUTOR:
-      return flowRight(
+      return flow(
         partialRight(removePerson, contributorKey(projectId), userId),
         partialRight(removePerson, moderatorKey(projectId), userId)
       )(state)

@@ -105,12 +105,12 @@ export default function makeRoutes (store) {
       <Route path='contributors' component={ProjectContributors}/>
     </Route>
     <Route path='project/:id/:slug/invite' component={ProjectInvite}/>
-      <Route path='n/:id' component={NetworkProfile} onEnter={requireLogin()}>
-        <IndexRoute component={NetworkPosts}/>
-        <Route path='communities' component={NetworkCommunities}/>
-        <Route path='members' component={NetworkMembers}/>
-        <Route path='about' component={AboutNetwork}/>
-      </Route>
+    <Route path='n/:id' component={NetworkProfile} onEnter={requireLogin()}>
+      <IndexRoute component={NetworkPosts}/>
+      <Route path='communities' component={NetworkCommunities}/>
+      <Route path='members' component={NetworkMembers}/>
+      <Route path='about' component={AboutNetwork}/>
+    </Route>
   </Route>
 }
 

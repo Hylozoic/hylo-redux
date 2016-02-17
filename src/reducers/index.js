@@ -45,6 +45,7 @@ import {
   SET_SIGNUP_ERROR,
   SIGNUP,
   TOGGLE_MAIN_MENU,
+  TOGGLE_SHOW_ALL_COMMUNITIES,
   TOGGLE_USER_SETTINGS_SECTION,
   TYPEAHEAD,
   UPDATE_COMMUNITY_EDITOR,
@@ -60,6 +61,11 @@ import {
 } from '../actions'
 
 export default combineReducers({
+  showAllCommunities: (state = false, action) => {
+    if (action.type === TOGGLE_SHOW_ALL_COMMUNITIES) return !state
+    return state
+  },
+
   mainMenuOpened: (state = false, action) => {
     let { error, type } = action
     if (error) return state
@@ -332,12 +338,12 @@ export default combineReducers({
         if (meta.subject === 'network-avatar') {
           return {
             ...state,
-            community: {...state.network, avatar_url: payload}
+            network: {...state.network, avatar_url: payload}
           }
         } else if (meta.subject === 'network-banner') {
           return {
             ...state,
-            community: {...state.network, banner_url: payload}
+            network: {...state.network, banner_url: payload}
           }
         }
     }

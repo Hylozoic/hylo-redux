@@ -1,4 +1,4 @@
-import { filter } from 'lodash'
+import { filter, merge } from 'lodash'
 import { debug } from '../util/logging'
 import {
   CREATE_COMMUNITY,
@@ -25,12 +25,12 @@ export default function (state = {}, action) {
       case UPDATE_USER_SETTINGS:
         return {
           ...state,
-          current: {...state.current, ...meta.prevProps}
+          current: merge({...state.current}, meta.prevProps)
         }
       case LEAVE_COMMUNITY:
         return {
           ...state,
-          current: {...state.current, ...meta.prevProps}
+          current: merge({...state.current}, meta.prevProps)
         }
       default:
         return state

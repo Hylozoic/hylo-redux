@@ -16,7 +16,14 @@ import RSVPControl from './RSVPControl'
 import SharingDropdown from './SharingDropdown'
 import { connect } from 'react-redux'
 import { SHOWED_POST_COMMENTS, trackEvent } from '../util/analytics'
-import { fetchComments, createComment, startPostEdit, changeEventResponse, voteOnPost } from '../actions'
+import {
+  changeEventResponse,
+  createComment,
+  fetchComments,
+  removePost,
+  startPostEdit,
+  voteOnPost
+} from '../actions'
 
 const spacer = <span>&nbsp; •&nbsp; </span>
 
@@ -71,6 +78,13 @@ export default class Post extends React.Component {
     dispatch(startPostEdit(post))
   }
 
+  remove = () => {
+    let { dispatch, post } = this.props
+    if (confirm('Are you sure? This cannot be undone.')) {
+      dispatch(removePost(post.id))
+    }
+  }
+
   render () {
     let { post, expanded, currentUser } = this.props
     if (post.type === 'welcome') return this.renderWelcome()
@@ -100,6 +114,7 @@ export default class Post extends React.Component {
             <i className='icon-down'></i>
           }>
             {canEdit && <li><a onClick={this.edit}>Edit</a></li>}
+            {canEdit && <li><a onClick={this.remove}>Remove</a></li>}
             <li>
               <a onClick={() => window.alert('TODO')}>Report objectionable content</a>
             </li>

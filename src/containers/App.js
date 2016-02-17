@@ -3,17 +3,27 @@ import { connect } from 'react-redux'
 import TopNav from '../components/TopNav'
 import LeftNav from '../components/LeftNav'
 import Notifier from '../components/Notifier'
-import { logout, removeNotification, toggleMainMenu } from '../actions'
+import { logout, removeNotification, toggleMainMenu, toggleShowAllCommunities } from '../actions'
 import { get, sortBy } from 'lodash'
 const { bool, func, number, object } = React.PropTypes
 
 const lastViewed = m => -Date.parse(m.last_viewed_at || '2001-01-01')
 
-const App = connect(({ mainMenuOpened, people, notifierMessages }) => ({
+const App = connect(({ mainMenuOpened, people, notifierMessages, showAllCommunities }) => ({
   currentUser: people.current,
   mainMenuOpened,
-  notifierMessages
-}))(({ currentUser, dispatch, mainMenuOpened, notifierMessages, children }) => {
+  notifierMessages,
+  showAllCommunities
+}))(props => {
+  let {
+    currentUser,
+    dispatch,
+    mainMenuOpened,
+    notifierMessages,
+    children,
+    showAllCommunities
+  } = props
+
   let communities = currentUser
     ? sortBy(currentUser.memberships, lastViewed).map(m => m.community)
     : []
@@ -28,7 +38,12 @@ const App = connect(({ mainMenuOpened, people, notifierMessages }) => ({
         logout={() => dispatch(logout())}/>
     </div>
     <div className='row' id='mainRow'>
-      <LeftNav communities={communities} open={mainMenuOpened} unreadCount={unreadCount} dispatch={dispatch}/>
+      <LeftNav
+        communities={communities}
+        open={mainMenuOpened}
+        unreadCount={unreadCount}
+        showAllCommunities={showAllCommunities}
+        toggleCommunities={() => dispatch(toggleShowAllCommunities())}/>
       <div id='main'>{children}</div>
     </div>
     <Notifier messages={notifierMessages} remove={id => dispatch(removeNotification(id))}/>

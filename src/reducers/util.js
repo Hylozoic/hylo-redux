@@ -1,4 +1,4 @@
-import { filter, uniq } from 'lodash'
+import { filter, merge, uniq } from 'lodash'
 
 // for pagination -- append a new page of data to existing data if present,
 // removing any duplicates.
@@ -47,7 +47,7 @@ export function updateMedia (obj, type, url) {
 export const mergeList = (state, items, key) => {
   let mergedItems = items.reduce((m, x) => {
     let id = x[key]
-    m[id] = {...state[id], ...x}
+    m[id] = merge({...state[id]}, x)
     return m
   }, {})
 

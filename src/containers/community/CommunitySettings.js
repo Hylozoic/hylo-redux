@@ -17,6 +17,7 @@ import {
 import { avatarUploadSettings, bannerUploadSettings } from '../../models/community'
 import { uploadImage } from '../../actions/uploadImage'
 import PersonChooser from '../../components/PersonChooser'
+import { reversibleUpdate } from '../../util/forms'
 
 @prefetch(({dispatch, params: {id}}) =>
   Promise.all([
@@ -49,13 +50,8 @@ export default class CommunitySettings extends React.Component {
       errors: {...this.state.errors, [field]: errors}
     })
 
-  setName = event => this.setEditState('name', event.target.value, !event.target.value)
-
-  setDescription = event => this.setEditState('description', event.target.value)
-
-  setWelcomeMessage = event => this.setEditState('welcome', event.target.value)
-
-  setLocation = event => this.setEditState('location', event.target.value)
+  setField = (name, required) => event =>
+    this.setEditState(name, event.target.value, required && !event.target.value)
 
   setBetaAccessCode = event => {
     let { dispatch, community } = this.props
@@ -100,10 +96,11 @@ export default class CommunitySettings extends React.Component {
     if (!this.validate()) return
     let { dispatch, community } = this.props
     let { editing, edited } = this.state
+    let { slug } = community
     let newEditing = reduce(args, (m, field) => { m[field] = false; return m }, {})
     let oldSettings = reduce(args, (m, field) => { m[field] = community[field]; return m }, {})
     this.setState({editing: {...editing, ...newEditing}})
-    dispatch(updateCommunitySettings({...community, ...edited}, oldSettings))
+    dispatch(updateCommunitySettings(community.id, {slug, ...edited}, oldSettings))
   }
 
   edit = (...args) => {
@@ -136,33 +133,17 @@ export default class CommunitySettings extends React.Component {
     .then(action => {
       let { error, payload } = action
       if (error) return
-
-      let { id, slug } = community
-      let params = {id, slug, [type]: payload}
-      dispatch(updateCommunitySettings(params, {[type]: community[type]}))
+      this.update(type, payload)
     })
   }
 
-  update (field, value) {
+  update (path, value) {
     let { dispatch, community } = this.props
-    var updatedCommunity = {...community, [field]: value}
-    dispatch(updateCommunitySettings(updatedCommunity, {[field]: community[field]}))
+    dispatch(reversibleUpdate(updateCommunitySettings, community, path, value, 'community'))
   }
 
-  // some settings are child attributes of the community object, and some are
-  // nested inside an attribute called "settings". yes, this is confusing.
-  updateNested (setting, value) {
-    let { community } = this.props
-    let updatedSettings = {...community.settings, [setting]: value}
-    this.update('settings', updatedSettings)
-  }
-
-  toggle (field) {
-    this.update(field, !this.props.community[field])
-  }
-
-  toggleNested (setting) {
-    this.updateNested(setting, !this.props.community.settings[setting])
+  toggle (path) {
+    this.update(path, !get(this.props.community, path))
   }
 
   toggleSection = (section, open) => {
@@ -223,7 +204,7 @@ export default class CommunitySettings extends React.Component {
                   <div className={cx('form-group', {'has-error': errors.name})}>
                     <input type='text' ref='name' className='name form-control'
                       value={edited.name}
-                      onChange={this.setName}/>
+                      onChange={this.setField('name', true)}/>
                     </div>
                 </form>
                 <div className='buttons'>
@@ -246,7 +227,7 @@ export default class CommunitySettings extends React.Component {
                   <div className={cx('form-group', {'has-error': errors.description})}>
                     <textarea className='form-control description'
                       value={edited.description}
-                      onChange={this.setDescription}/>
+                      onChange={this.setField('description')}/>
                     </div>
                 </form>
                 <div className='buttons'>
@@ -291,7 +272,7 @@ export default class CommunitySettings extends React.Component {
             ? <div className='full-column edit'>
                 <textarea className='form-control'
                   value={edited.welcome_message}
-                  onChange={this.setWelcomeMessage}
+                  onChange={this.setField('welcome_message')}
                   rows='4'
                   placeholder='Enter a welcome message.'>
                 </textarea>
@@ -327,7 +308,7 @@ export default class CommunitySettings extends React.Component {
                   <div className={cx('form-group', {'has-error': errors.location})}>
                     <input type='text' ref='location' className='location form-control'
                       value={edited.location}
-                      onChange={this.setLocation}/>
+                      onChange={this.setField('location')}/>
                     </div>
                 </form>
                 <div className='buttons'>
@@ -349,7 +330,7 @@ export default class CommunitySettings extends React.Component {
             <p className='summary'>If this is disabled, only moderators may send invitations to new members.</p>
           </div>
           <div className='half-column right-align'>
-            <input type='checkbox' checked={community.settings.all_can_invite} onChange={() => this.toggleNested('all_can_invite')}/>
+            <input type='checkbox' checked={community.settings.all_can_invite} onChange={() => this.toggle('settings.all_can_invite')}/>
           </div>
         </div>
         <div className='section-item'>
@@ -412,7 +393,7 @@ export default class CommunitySettings extends React.Component {
             <p className='summary'>If this is checked, each week members will receive an email that they can reply to with their offers, requests and intentions.</p>
           </div>
           <div className='half-column right-align'>
-            <input type='checkbox' checked={community.settings.sends_email_prompts} onChange={() => this.toggleNested('sends_email_prompts')}/>
+            <input type='checkbox' checked={community.settings.sends_email_prompts} onChange={() => this.toggle('settings.sends_email_prompts')}/>
           </div>
         </div>
       </div>}

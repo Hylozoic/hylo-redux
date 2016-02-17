@@ -3,6 +3,7 @@ import { connect } from 'react-redux'
 import { some, get, omit, filter, startsWith, contains } from 'lodash'
 import {
   CREATE_NETWORK,
+  UPLOAD_IMAGE,
   createNetwork,
   navigate,
   typeahead,
@@ -25,6 +26,7 @@ let typeaheadId = 'network_communities'
   let validating = some(networkValidation.pending)
   let { network, errors } = networkEditor
   let saving = pending[CREATE_NETWORK]
+  let uploadingImage = !!pending[UPLOAD_IMAGE]
 
   if (!errors) errors = {}
   errors.nameUsed = get(networkValidation, 'name.unique') === false
@@ -36,7 +38,7 @@ let typeaheadId = 'network_communities'
   if (!network.banner_url) network.banner_url = defaultBanner
 
   return {
-    network, errors, validating, saving,
+    network, errors, validating, saving, uploadingImage,
     currentUser: people.current,
     communityChoices: typeaheadMatches[typeaheadId] || []
   }
@@ -44,6 +46,7 @@ let typeaheadId = 'network_communities'
 export default class NetworkEditor extends React.Component {
   static propTypes = {
     saving: bool,
+    uploadingImage: bool,
     validating: bool,
     errors: object,
     dispatch: func,
@@ -209,9 +212,9 @@ export default class NetworkEditor extends React.Component {
   }
 
   render () {
-    let { validating, saving, network, errors, communityChoices } = this.props
+    let { validating, saving, uploadingImage, network, errors, communityChoices } = this.props
     let { communities } = network
-    let disableSubmit = some(omit(errors, 'server')) || validating || saving
+    let disableSubmit = some(omit(errors, 'server')) || validating || saving || uploadingImage
 
     return <div id='network-editor' className='form-sections'>
       <h2>Create a network</h2>
@@ -304,7 +307,7 @@ export default class NetworkEditor extends React.Component {
           {errors.server || 'The information you provided has some errors; please see above.'}
         </p>}
         <button type='button' onClick={this.submit} disabled={disableSubmit}>
-          {validating || saving ? 'Please wait...' : 'Save'}
+          {validating || saving || uploadingImage ? 'Please wait...' : 'Save'}
         </button>
       </div>
 

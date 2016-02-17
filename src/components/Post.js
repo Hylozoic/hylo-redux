@@ -27,12 +27,7 @@ import {
 
 const spacer = <span>&nbsp; •&nbsp; </span>
 
-@connect(({ comments, commentsByPost, people, postEdits, communities }, { post }) => ({
-  comments: commentsByPost[post.id] ? commentsByPost[post.id].map(id => comments[id]) : null,
-  currentUser: people.current,
-  communities: post.communities.map(id => find(communities, c => c.id === id))
-}))
-export default class Post extends React.Component {
+class Post extends React.Component {
   static propTypes = {
     post: object,
     onExpand: func,
@@ -160,6 +155,14 @@ export default class Post extends React.Component {
     </div>
   }
 }
+
+export default connect(({ comments, commentsByPost, people, postEdits, communities }, { post }) => ({
+  comments: commentsByPost[post.id] ? commentsByPost[post.id].map(id => comments[id]) : null,
+  currentUser: people.current,
+  communities: post.communities.map(id => find(communities, c => c.id === id))
+}))(Post)
+
+export const UndecoratedPost = Post // for testing
 
 const PostMeta = ({ post, toggleComments, vote }, { postDisplayMode }) => {
   const now = new Date()

@@ -56,6 +56,8 @@ export default class TagInput extends React.Component {
     let { choices, tags } = this.props
     if (!tags) tags = []
 
+    console.log('rendering taginput', {choices, tags})
+
     return <div className='tag-input' onClick={this.focus}>
       <ul>
         {tags.map(t => <li key={t.id} className='tag'>

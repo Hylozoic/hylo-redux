@@ -6,6 +6,7 @@ import commentsByPost from './commentsByPost'
 import communities from './communities'
 import communitiesByQuery from './communitiesByQuery'
 import networks from './networks'
+import networkEdits from './networkEdits'
 import people from './people'
 import peopleByQuery from './peopleByQuery'
 import postEdits from './postEdits'
@@ -147,6 +148,7 @@ export default combineReducers({
   communities,
   communitiesByQuery,
   networks,
+  networkEdits,
   people,
   peopleByQuery,
   posts,

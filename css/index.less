@@ -1430,11 +1430,40 @@ ul.tags {
     margin-bottom: 15px;
     padding: 15px;
     border: 1px solid @light-gray-border;
+    .clearfix;
+
+    .hello {
+      float: left;
+      text-align: center;
+      margin-right: 15px;
+      width: @avatar-size-medium + 30px;
+    }
+
     .avatar {
       .medium-avatar;
       display: inline-block;
       vertical-align: middle;
-      margin-right: 10px;
+      margin-bottom: 5px;
+    }
+
+    .content {
+      overflow: hidden;
+    }
+
+    .tag-group {
+      > strong {
+        float: left;
+        display: inline-block;
+        width: 65px;
+        padding-top: 3px;
+      }
+      ul.tags {
+        overflow: hidden;
+      }
+    }
+
+    .skills {
+      margin-bottom: @p-bottom-margin;
     }
   }
 

@@ -4,13 +4,14 @@ import { prefetch } from 'react-fetcher'
 import { connect } from 'react-redux'
 import { connectedListProps, fetchWithCache, refetch } from '../util/caching'
 import { navigate, search } from '../actions'
-import { debounce, get } from 'lodash'
+import { debounce, get, some } from 'lodash'
 import Select from '../components/Select'
 import Comment from '../components/Comment'
 import Avatar from '../components/Avatar'
 import A from '../components/A'
 import Post from '../components/Post'
 import ScrollListener from '../components/ScrollListener'
+import Tags from '../components/Tags'
 
 const types = [
   {name: 'Everything'},
@@ -68,9 +69,26 @@ const PostResult = ({ post, dispatch }) => {
 }
 
 const PersonResult = ({ person }) => {
+  let { bio, work, intention, skills, organizations } = person
   return <div className='person-result'>
-    <Avatar person={person}/>
-    <strong><A to={`/u/{person.id}`}>{person.name}</A></strong>
+    <div className='hello'>
+      <Avatar person={person}/>
+      <br/>
+      <strong><A to={`/u/${person.id}`}>{person.name}</A></strong>
+    </div>
+    <div className='content'>
+      {bio && <p><strong>About me:</strong> {bio}</p>}
+      {work && <p><strong>What I'm doing:</strong> {work}</p>}
+      {intention && <p><strong>What I'd like to do:</strong> {intention}</p>}
+      {some(skills) && <div className='tag-group skills'>
+        <strong>Skills:</strong>
+        <Tags>{skills}</Tags>
+      </div>}
+      {some(organizations) && <div className='tag-group'>
+        <strong>Groups:</strong>
+        <Tags>{organizations}</Tags>
+      </div>}
+    </div>
   </div>
 }
 

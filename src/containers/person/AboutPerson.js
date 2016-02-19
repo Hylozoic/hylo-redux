@@ -1,6 +1,7 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { markdown } from '../../util/text'
+import Tags from '../../components/Tags'
 
 const LinkButton = ({ href, icon }) =>
   <a className='button' href={href} target='_blank'><i className={`icon-${icon}`}></i></a>
@@ -10,11 +11,6 @@ const Section = ({ title, children }) =>
     <h4>{title}</h4>
     {children}
   </section>
-
-const Tags = ({ children }) =>
-  <ul className='tags'>
-    {children.map(tag => <div className='tag' key={tag}>{tag}</div>)}
-  </ul>
 
 const AboutPerson = connect(
   (state, { params }) => ({person: state.people[params.id]})

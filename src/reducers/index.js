@@ -15,6 +15,7 @@ import projectsByQuery from './projectsByQuery'
 import projects from './projects'
 import projectEdits from './projectEdits'
 import { UPDATE_PATH } from 'redux-simple-router'
+import { appendUniq } from './util'
 
 import {
   CANCEL_TYPEAHEAD,
@@ -38,6 +39,7 @@ import {
   RESET_ERROR,
   RESET_COMMUNITY_VALIDATION,
   RESET_NETWORK_VALIDATION,
+  SEARCH,
   SEND_COMMUNITY_INVITATION,
   SEND_PROJECT_INVITE,
   SET_LOGIN_ERROR,
@@ -59,6 +61,16 @@ import {
   VALIDATE_NETWORK_ATTRIBUTE,
   VALIDATE_NETWORK_ATTRIBUTE_PENDING
 } from '../actions'
+
+const keyedCounter = (actionType, payloadKey, statePath = 'meta.cache.id') =>
+  (state = {}, action) => {
+    let { type, payload, error } = action
+    if (error) return state
+    if (type === actionType) {
+      return {...state, [get(action, statePath)]: Number(payload[payloadKey])}
+    }
+    return state
+  }
 
 export default combineReducers({
   showAllCommunities: (state = false, action) => {
@@ -178,6 +190,7 @@ export default combineReducers({
       toggle(SEND_COMMUNITY_INVITATION) ||
       toggle(FETCH_INVITATIONS) ||
       toggle(SEND_PROJECT_INVITE) ||
+      toggle(SEARCH) ||
       state
   },
 
@@ -196,38 +209,9 @@ export default combineReducers({
     return state
   },
 
-  totalPeopleByQuery: (state = {}, action) => {
-    if (action.error) return state
-
-    let { type, payload, meta } = action
-    switch (type) {
-      case FETCH_PEOPLE:
-        return {...state, [meta.cache.id]: Number(payload.people_total)}
-    }
-    return state
-  },
-
-  totalProjectsByQuery: (state = {}, action) => {
-    if (action.error) return state
-
-    let { type, payload, meta } = action
-    switch (type) {
-      case FETCH_PROJECTS:
-        return {...state, [meta.cache.id]: Number(payload.projects_total)}
-    }
-    return state
-  },
-
-  totalCommunitiesByQuery: (state = {}, action) => {
-    if (action.error) return state
-
-    let { type, payload, meta } = action
-    switch (type) {
-      case FETCH_COMMUNITIES:
-        return {...state, [meta.cache.id]: Number(payload.communities_total)}
-    }
-    return state
-  },
+  totalPeopleByQuery: keyedCounter(FETCH_PEOPLE, 'people_total'),
+  totalProjectsByQuery: keyedCounter(FETCH_PROJECTS, 'projects_total'),
+  totalCommunitiesByQuery: keyedCounter(FETCH_COMMUNITIES, 'communities_total'),
 
   communityValidation: (state = {}, action) => {
     let { type, payload, error, meta } = action
@@ -439,17 +423,7 @@ export default combineReducers({
     return state
   },
 
-  totalInvitations: (state = {}, action) => {
-    let { type, payload, error, meta } = action
-    if (error) return state
-
-    switch (type) {
-      case FETCH_INVITATIONS:
-        return {...state, [meta.communityId]: payload.total}
-    }
-
-    return state
-  },
+  totalInvitations: keyedCounter(FETCH_INVITATIONS, 'total', 'meta.communityId'),
 
   invitationEditor: (state = {}, action) => {
     let { type, payload, error } = action
@@ -495,6 +469,17 @@ export default combineReducers({
         return payload
     }
     return state
-  }
+  },
 
+  searchResultsByQuery: (state = {}, action) => {
+    let { type, payload, meta, error } = action
+    if (error) return state
+    switch (type) {
+      case SEARCH:
+        return appendUniq(state, meta.cache.id, payload.items)
+    }
+    return state
+  },
+
+  totalSearchResultsByQuery: keyedCounter(SEARCH, 'total')
 })

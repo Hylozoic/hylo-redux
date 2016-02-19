@@ -17,7 +17,7 @@ const PersonCards = ({ people, menus, subtitles }) => {
 
 export default PersonCards
 
-const PersonCard = ({ person, menu, subtitle }) => {
+export const PersonCard = ({ person, menu, subtitle }) => {
   let { id, avatar_url, name, bio } = person
   return <div className='person-card'>
     {menu && <Dropdown className='caret-menu' alignRight={true}

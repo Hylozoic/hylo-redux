@@ -21,10 +21,6 @@ const SinglePost = props => {
   </div>
 }
 
-SinglePost.propTypes = {
-  post: object.isRequired
-}
-
 export default compose(
   prefetch(({ dispatch, params }) => Promise.all([
     dispatch(fetchPost(params.id))

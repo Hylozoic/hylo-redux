@@ -1,7 +1,14 @@
 import qs from 'querystring'
 
-import { capitalize, compact, includes, omitBy } from 'lodash'
-import { navigate, FETCH_COMMUNITIES, FETCH_POSTS, FETCH_PROJECTS, FETCH_PEOPLE } from '../actions'
+import { compact, includes, omitBy, upperFirst } from 'lodash'
+import {
+  navigate,
+  FETCH_COMMUNITIES,
+  FETCH_POSTS,
+  FETCH_PROJECTS,
+  FETCH_PEOPLE,
+  SEARCH
+} from '../actions'
 
 const commonDefaults = {
   type: ['all+welcome', 'all'],
@@ -20,13 +27,14 @@ export const cleanAndStringify = (opts, defaults) =>
   qs.stringify(omitBy(opts, blankOrDefault(defaults)))
 
 const createCacheId = (subject, id, query = {}) => {
-  let { type, sort, search, filter } = query
-  let cacheId = cleanAndStringify({subject, id, type, sort, search, filter})
-  return cacheId
+  let { type, sort, search, filter, q } = query
+  return cleanAndStringify({subject, id, type, sort, search, filter, q})
 }
 
 export const connectedListProps = (state, props, itemType) => {
   let actionType
+  let getItem = id => state[itemType][id]
+
   switch (itemType) {
     case 'posts':
       actionType = FETCH_POSTS
@@ -40,6 +48,10 @@ export const connectedListProps = (state, props, itemType) => {
     case 'communities':
       actionType = FETCH_COMMUNITIES
       break
+    case 'searchResults':
+      actionType = SEARCH
+      getItem = x => x
+      break
 
     default:
       throw new Error(`unknown item type: ${itemType}`)
@@ -48,10 +60,10 @@ export const connectedListProps = (state, props, itemType) => {
   let { subject, id, query } = props
   let cacheId = createCacheId(subject, id, query)
   let itemKey = `${itemType}ByQuery`
-  let itemCountKey = `total${capitalize(itemType)}ByQuery`
+  let itemCountKey = `total${upperFirst(itemType)}ByQuery`
 
   return {
-    [itemType]: compact((state[itemKey][cacheId] || []).map(id => state[itemType][id])),
+    [itemType]: compact((state[itemKey][cacheId] || []).map(getItem)),
     total: state[itemCountKey][cacheId],
     pending: state.pending[actionType]
   }

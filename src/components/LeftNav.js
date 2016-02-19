@@ -39,6 +39,7 @@ const LeftNav = props => {
           {unreadCount > 0 ? ` (${unreadCount})` : ''}
         </A>
       </li>
+      <li><A to='/search'>Search</A></li>
       <li className='divider'></li>
       {communities.map(CommunityListItem)}
     </ul>

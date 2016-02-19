@@ -54,6 +54,7 @@ export const REMOVE_PROJECT_CONTRIBUTOR = 'REMOVE_PROJECT_CONTRIBUTOR'
 export const RESET_COMMUNITY_VALIDATION = 'RESET_COMMUNITY_VALIDATION'
 export const RESET_ERROR = 'RESET_ERROR'
 export const RESET_NETWORK_VALIDATION = 'RESET_NETWORK_VALIDATION'
+export const SEARCH = 'SEARCH'
 export const SEND_COMMUNITY_INVITATION = 'SEND_COMMUNITY_INVITATION'
 export const SEND_PROJECT_INVITE = 'SEND_PROJECT_INVITE'
 export const SEND_PROJECT_INVITE_PENDING = SEND_PROJECT_INVITE + _PENDING
@@ -563,5 +564,17 @@ export function removePost (id) {
     type: REMOVE_POST,
     payload: {api: true, path: `/noo/post/${id}`, method: 'DELETE'},
     meta: {id}
+  }
+}
+
+export function search (opts) {
+  let { limit, offset, type, q, cacheId } = opts
+  if (!offset) offset = 0
+  let querystring = cleanAndStringify({q, type, limit, offset})
+  let cache = {id: cacheId, bucket: 'searchResultsByQuery', limit, offset, array: true}
+  return {
+    type: SEARCH,
+    payload: {api: true, path: `/noo/search/fulltext?${querystring}`},
+    meta: {cache}
   }
 }

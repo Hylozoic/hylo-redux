@@ -36,6 +36,7 @@ import AboutNetwork from './containers/network/AboutNetwork'
 import NetworkCommunities from './containers/network/NetworkCommunities'
 import NetworkEditor from './containers/network/NetworkEditor'
 import Notifications from './containers/Notifications'
+import Search from './containers/Search'
 import { debug } from './util/logging'
 import { makeUrl } from './client/util'
 
@@ -65,6 +66,7 @@ export default function makeRoutes (store) {
     <Route path='followed-posts' component={FollowedPosts} onEnter={requireLogin()}/>
     <Route path='projects' component={Projects} onEnter={requireLogin()}/>
     <Route path='notifications' component={Notifications} onEnter={requireLogin()}/>
+    <Route path='search' component={Search} onEnter={requireLogin()}/>
     <Route path='u/:id' component={PersonProfile} onEnter={requireLogin()}>
       <IndexRoute component={PersonPosts}/>
       <Route path='about' component={AboutPerson}/>

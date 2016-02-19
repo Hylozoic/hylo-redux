@@ -50,7 +50,7 @@ const query = {offset: 0, limit: 1000}
 
   let networkEdit = {...network, ...networkEdits[id]}
 
-  let validation = networkValidation
+  let validation = networkValidation[id] || {}
   let validating = some(validation.pending)
 
   let { errors } = networkEdit
@@ -93,10 +93,10 @@ export default class NetworkEditor extends React.Component {
     this.setValue('errors', obj)
 
   resetValidation = key =>
-    this.props.dispatch(resetNetworkValidation(key))
+    this.props.dispatch(resetNetworkValidation(this.props.id, key))
 
   checkUnique = (key, value) =>
-    this.props.dispatch(validateNetworkAttribute(key, value, 'unique'))
+    this.props.dispatch(validateNetworkAttribute(this.props.id, key, value, 'unique'))
 
   setName = event => {
     let { value } = event.target

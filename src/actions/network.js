@@ -22,18 +22,18 @@ export function updateNetwork (id, params) {
   }
 }
 
-export function validateNetworkAttribute (key, value, constraint) {
+export function validateNetworkAttribute (id, key, value, constraint) {
   return {
     type: VALIDATE_NETWORK_ATTRIBUTE,
     payload: {api: true, params: {column: key, value, constraint}, path: '/noo/network/validate', method: 'POST'},
-    meta: {key}
+    meta: {id, key}
   }
 }
 
-export function resetNetworkValidation (key) {
+export function resetNetworkValidation (id, key) {
   return {
     type: RESET_NETWORK_VALIDATION,
-    meta: {key}
+    meta: {id, key}
   }
 }
 

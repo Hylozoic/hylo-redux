@@ -132,6 +132,7 @@ export default class NetworkEditor extends React.Component {
   }
 
   validateSlug (value) {
+    let { creating } = this.props
     let error = {slugBlank: false, slugInvalid: false}
 
     if (!value) {
@@ -144,7 +145,7 @@ export default class NetworkEditor extends React.Component {
 
     if (some(error)) {
       this.resetValidation('slug')
-    } else {
+    } else if (creating) {
       return this.checkUnique('slug', value)
     }
   }

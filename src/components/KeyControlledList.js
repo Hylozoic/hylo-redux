@@ -64,7 +64,7 @@ export default class KeyControlledList extends React.Component {
     let { items, onChange, ...props } = this.props
     return <ul {...props}>
       {items.map((c, i) =>
-        <li key={c.id} className={cx({active: selectedIndex === i})}>
+        <li key={c.id || 'blank'} className={cx({active: selectedIndex === i})}>
           <a onClick={event => this.change(c, event)}>{c.name}</a>
         </li>)}
     </ul>

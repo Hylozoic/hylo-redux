@@ -4,7 +4,7 @@ import { prefetch } from 'react-fetcher'
 import { connect } from 'react-redux'
 import { connectedListProps, fetchWithCache, refetch } from '../util/caching'
 import { navigate, search } from '../actions'
-import { debounce } from 'lodash'
+import { debounce, get } from 'lodash'
 import Select from '../components/Select'
 import Comment from '../components/Comment'
 import Avatar from '../components/Avatar'
@@ -76,10 +76,15 @@ const PersonResult = ({ person }) => {
 
 const CommentResult = ({ comment }) => {
   let { post } = comment
+  let welcomedPerson = get(post, 'relatedUsers.0')
   return <div className='comment-result'>
     <strong>
       Comment on&ensp;
-      <A to={`/p/${post.id}`}>"{post.name}"</A>
+      <A to={`/p/${post.id}`}>
+        {post.type === 'welcome'
+          ? `${welcomedPerson.name}'s welcome post`
+          : `"${post.name}"`}
+      </A>
     </strong>
     <Comment comment={comment}/>
   </div>

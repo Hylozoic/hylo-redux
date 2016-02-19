@@ -661,6 +661,10 @@ ul.tags {
   margin-bottom: 5px;
   vertical-align: middle;
   font-size: 13px;
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 
   &, &:hover, &.active {
     text-decoration: none;
@@ -681,6 +685,9 @@ ul.tags {
   }
   &.intention {
     background-color: @hylo-teal;
+  }
+  &.clickable {
+    cursor: pointer;
   }
 
   .icon {

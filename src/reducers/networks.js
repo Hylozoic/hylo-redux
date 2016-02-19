@@ -3,7 +3,8 @@ import { map } from 'lodash'
 import {
   CREATE_NETWORK,
   FETCH_NETWORK,
-  FETCH_COMMUNITIES
+  FETCH_COMMUNITIES,
+  UPDATE_NETWORK_PENDING
 } from '../actions'
 
 export default function (state = {}, action) {
@@ -11,6 +12,8 @@ export default function (state = {}, action) {
   if (error) {
     return state
   }
+
+  let { id } = meta || {}
 
   switch (type) {
     case FETCH_NETWORK:
@@ -24,9 +27,11 @@ export default function (state = {}, action) {
         [payload.slug]: payload
       }
     case FETCH_COMMUNITIES:
-      let { id } = meta
       let newCommunities = (state[id].communities || []).concat(map(payload.communities, 'id'))
       return {...state, [id]: {...state[id], communities: newCommunities}}
+    case UPDATE_NETWORK_PENDING:
+      console.log('networks reducer, UNP', {id, params: meta.params})
+      return {...state, [id]: {...state[id], ...meta.params}}
   }
   return state
 }

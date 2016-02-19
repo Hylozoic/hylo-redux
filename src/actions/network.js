@@ -18,7 +18,8 @@ export function createNetwork (params) {
 export function updateNetwork (id, params) {
   return {
     type: UPDATE_NETWORK,
-    payload: {api: true, params, path: `/noo/network/${id}`, method: 'POST'}
+    payload: {api: true, params, path: `/noo/network/${id}`, method: 'POST'},
+    meta: {id, params}
   }
 }
 

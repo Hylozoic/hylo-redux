@@ -1,8 +1,8 @@
 import React from 'react'
 import { prefetch } from 'react-fetcher'
 import { connect } from 'react-redux'
-import { some, omit, filter, startsWith, contains } from 'lodash'
-import { fetchWithCache, connectedListProps } from '../../util/caching'
+import { get, some, omit, filter, startsWith, contains } from 'lodash'
+import { fetchWithCache } from '../../util/caching'
 import { scrollToBottom } from '../../util/scrolling'
 import { fetchCommunities } from '../../actions/fetchCommunities'
 import { uploadImage } from '../../actions/uploadImage'
@@ -22,7 +22,7 @@ import {
   updateNetwork
 } from '../../actions/network'
 import CommunityTagInput from '../../components/CommunityTagInput'
-const { array, bool, func, number, object, string } = React.PropTypes
+const { array, bool, func, object, string } = React.PropTypes
 
 const defaultBanner = 'https://d3ngex8q79bk55.cloudfront.net/misc/default_community_banner.jpg'
 const defaultAvatar = 'https://d3ngex8q79bk55.cloudfront.net/misc/default_community_avatar.png'
@@ -39,7 +39,7 @@ const query = {offset: 0, limit: 1000}
 })
 @connect((state, { params: { id } }) => {
   let { people, networks, networkValidation, pending, typeaheadMatches, networkEdits } = state
-  let validating = some(networkValidation.pending)
+
   let saving = pending[CREATE_NETWORK]
   let uploadingImage = !!pending[UPLOAD_IMAGE]
   let currentUser = people.current
@@ -50,19 +50,22 @@ const query = {offset: 0, limit: 1000}
 
   let networkEdit = {...network, ...networkEdits[id]}
 
+  let validation = networkValidation
+  let validating = some(validation.pending)
+
   let { errors } = networkEdit
 
   if (!errors) errors = {}
-  // errors.nameUsed = get(networkValidation, 'name.unique') === false
-  // errors.slugUsed = get(networkValidation, 'slug.unique') === false
+  errors.nameUsed = get(validation, 'name.unique') === false
+  errors.slugUsed = get(validation, 'slug.unique') === false
 
   if (!networkEdit.avatar_url) networkEdit.avatar_url = defaultAvatar
   if (!networkEdit.banner_url) networkEdit.banner_url = defaultBanner
 
   return {
-    ...connectedListProps(state, {subject, id, query}, 'communities'),
-    id, network, networkEdit, errors, validating, saving, uploadingImage, currentUser,
-    communityChoices: typeaheadMatches[typeaheadId] || []
+    communityChoices: typeaheadMatches[typeaheadId] || [],
+    creating: id === 'new',
+    id, network, networkEdit, errors, validating, saving, uploadingImage, currentUser
   }
 })
 export default class NetworkEditor extends React.Component {
@@ -77,11 +80,8 @@ export default class NetworkEditor extends React.Component {
     networkEdit: object,
     currentUser: object,
     communityChoices: array,
-    communities: array,
-    pending: bool,
-    total: number,
     params: object,
-    location: object
+    creating: bool
   }
 
   setValue = (key, value) => {
@@ -105,11 +105,12 @@ export default class NetworkEditor extends React.Component {
   }
 
   validateName (value) {
-    this.setError({nameBlank: !value})
+    let {creating, network} = this.props
 
+    this.setError({nameBlank: !value})
     if (!value) {
       this.resetValidation('name')
-    } else {
+    } else if (creating || value !== network.name) {
       return this.checkUnique('name', value)
     }
   }
@@ -148,43 +149,13 @@ export default class NetworkEditor extends React.Component {
     }
   }
 
-  setCode = event => {
-    let { value } = event.target
-    this.setValue('beta_access_code', value)
-    this.validateCode(value)
-  }
-
-  validateCode (value) {
-    this.setError({codeBlank: !value})
-
-    if (!value) {
-      this.resetValidation('beta_access_code')
-    } else {
-      return this.checkUnique('beta_access_code', value)
-    }
-  }
-
-  setCategory = event => {
-    let { value } = event.target
-    this.setValue('category', value)
-    this.validateCategory(value)
-  }
-
-  validateCategory (value) {
-    this.setError({categoryBlank: !value})
-  }
-
-  setLocation = event => {
-    this.setValue('location', event.target.value)
-  }
-
   addCommunity = community => {
     let { communities } = this.props.networkEdit
     this.setValue('communities', (communities || []).concat(community.id))
   }
 
   removeCommunity = community => {
-    let { communities } = this.props.network
+    let { communities } = this.props.networkEdit
     this.setValue('communities', filter(communities, cid => cid !== community.id))
   }
 
@@ -198,7 +169,7 @@ export default class NetworkEditor extends React.Component {
       return []
     }
 
-    let { currentUser, network: { communities } } = this.props
+    let { currentUser, networkEdit: { communities } } = this.props
     var match = c =>
       startsWith(c.name.toLowerCase(), term.toLowerCase()) &&
       !contains(communities, c.id)
@@ -207,8 +178,8 @@ export default class NetworkEditor extends React.Component {
   }
 
   attachImage (type) {
-    let { dispatch } = this.props
-    let network = {id: 'new', slug: 'new'}
+    let { dispatch, id } = this.props
+    let network = {id: id}
     switch (type) {
       case 'avatar':
         return dispatch(uploadImage(avatarUploadSettings(network)))
@@ -243,12 +214,12 @@ export default class NetworkEditor extends React.Component {
   }
 
   render () {
-    let { id, validating, saving, uploadingImage, networkEdit, errors, communityChoices } = this.props
+    let { creating, validating, saving, uploadingImage, networkEdit, errors, communityChoices } = this.props
     let { name, description, slug, avatar_url, banner_url, communities } = networkEdit
     let disableSubmit = some(omit(errors, 'server')) || validating || saving || uploadingImage
 
     return <div id='network-editor' className='form-sections'>
-      { id === 'new' ? <h2>Create a network</h2> : <h2>Edit network</h2> }
+      { creating ? <h2>Create a network</h2> : <h2>Edit network</h2> }
       <p>Let's take the first step toward unlocking the creative potential of your network with Hylo.</p>
 
       <div className='section-label'>Information</div>
@@ -274,7 +245,7 @@ export default class NetworkEditor extends React.Component {
           </div>
         </div>
 
-        <div className='section-item'>
+        {creating && <div className='section-item'>
           <div className='side-column'>
             <label>URL</label>
           </div>
@@ -287,7 +258,7 @@ export default class NetworkEditor extends React.Component {
             {errors.slugInvalid && <p className='help error'>Use lowercase letters, numbers, and hyphens only.</p>}
             {errors.slugUsed && <p className='help error'>This URL is already in use.</p>}
           </div>
-        </div>
+        </div>}
       </div>
 
       <div className='section-label'>Appearance</div>

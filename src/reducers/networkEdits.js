@@ -5,7 +5,6 @@ import {
   UPDATE_NETWORK_EDITOR,
   UPLOAD_IMAGE
 } from '../actions'
-import { updateMedia } from './util'
 
 export default function (state = {}, action) {
   if (action.error) return state
@@ -17,10 +16,15 @@ export default function (state = {}, action) {
       return {...state, [id]: {...state[id], ...payload}}
     case UPLOAD_IMAGE:
     case REMOVE_IMAGE:
-      if (subject === 'network') {
+      if (subject === 'network-avatar') {
         return {
           ...state,
-          [id]: updateMedia(state[id], 'image', payload)
+          [id]: {...state[id], avatar_url: payload}
+        }
+      } else if (subject === 'network-banner') {
+        return {
+          ...state,
+          [id]: {...state[id], banner_url: payload}
         }
       }
       break

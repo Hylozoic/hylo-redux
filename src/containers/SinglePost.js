@@ -3,10 +3,11 @@ import Post from '../components/Post'
 import { prefetch } from 'react-fetcher'
 import { connect } from 'react-redux'
 import { compose } from 'redux'
+import { get } from 'lodash'
 import { fetchComments, fetchPost, setMetaTags } from '../actions'
 import { ogMetaTags } from '../util'
 import PostEditor from '../components/PostEditor'
-const { object } = React.PropTypes
+import { scrollToAnchor } from '../util/scrolling'
 
 const SinglePost = props => {
   let { post, currentUser, editing } = props
@@ -24,13 +25,18 @@ const SinglePost = props => {
 export default compose(
   prefetch(({ dispatch, params }) => Promise.all([
     dispatch(fetchPost(params.id))
-    .then(action => {
-      let payload = action.payload
-      if (payload && !payload.api) {
-        return dispatch(setMetaTags(ogMetaTags(payload.name, payload.description, payload.media[0])))
-      }
+    .then(({ error, payload }) => {
+      if (error || !payload || payload.api) return
+      let { name, description, media } = payload
+      return dispatch(setMetaTags(ogMetaTags(name, description, media[0])))
     }),
     dispatch(fetchComments(params.id))
+    .then(({ error }) => {
+      if (error || typeof window === 'undefined') return
+
+      let anchor = get(window.location.hash.match(/#(comment-\d+$)/), '1')
+      if (anchor) scrollToAnchor(anchor, 15)
+    })
   ])),
   connect(({ posts, people, postEdits }, { params }) => ({
     post: posts[params.id],

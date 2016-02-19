@@ -205,8 +205,6 @@ const ExpandedPostDetails = props => {
   let description = present(sanitize(post.description))
   let attachments = filter(post.media, m => m.type !== 'image')
 
-  if (!comments) comments = []
-
   return <div className='post-details'>
     {image && <img src={image.url} className='full-image post-section'/>}
 
@@ -238,7 +236,7 @@ const ExpandedPostDetails = props => {
     </div>
 
     {commentsExpanded && <div className='comments-section'>
-      {comments.map(c => <Comment comment={c} key={c.id}/>)}
+      {(comments || []).map(c => <Comment comment={c} key={c.id}/>)}
       {!commentingDisabled && <CommentForm postId={post.id}/>}
     </div>}
   </div>

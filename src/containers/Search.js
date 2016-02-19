@@ -80,7 +80,7 @@ const CommentResult = ({ comment }) => {
   return <div className='comment-result'>
     <strong>
       Comment on&ensp;
-      <A to={`/p/${post.id}`}>
+      <A to={`/p/${post.id}#comment-${comment.id}`}>
         {post.type === 'welcome'
           ? `${welcomedPerson.name}'s welcome post`
           : `"${post.name}"`}

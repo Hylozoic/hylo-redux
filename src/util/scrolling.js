@@ -46,3 +46,8 @@ export function positionInViewport (element) {
 
   return {x, y}
 }
+
+export function scrollToAnchor (anchor, padding = 0) {
+  let element = document.querySelector(`[name='${anchor}']`)
+  return window.scrollTo(0, position(element).y - padding)
+}

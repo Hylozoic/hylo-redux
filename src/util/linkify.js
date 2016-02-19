@@ -1,7 +1,7 @@
 require('linkifyjs/plugins/hashtag')(require('linkifyjs'))
 import linkifyString from 'linkifyjs/string'
 import cheerio from 'cheerio'
-import { isEmpty, toPairs } from 'lodash'
+import { includes, isEmpty, toPairs } from 'lodash'
 
 var linkifyjsOptions = {
   formatHref: function (value, type) {
@@ -25,7 +25,7 @@ export default function linkify (text) {
   var linkifiedHtml = function (node) {
     return node.contents().map((i, el) => {
       if (el.type === 'text') return linkifyString(el.data, linkifyjsOptions)
-      if (['a', 'br'].includes(el.name)) return $.html(el)
+      if (includes(['a', 'br'], el.name)) return $.html(el)
 
       var attrs = isEmpty(el.attribs)
         ? ''

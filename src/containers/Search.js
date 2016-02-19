@@ -78,7 +78,7 @@ const CommentResult = ({ comment }) => {
   let { post } = comment
   return <div className='comment-result'>
     <strong>
-      Comment on
+      Comment on&ensp;
       <A to={`/p/${post.id}`}>"{post.name}"</A>
     </strong>
     <Comment comment={comment}/>

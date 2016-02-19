@@ -2,6 +2,8 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { markdown } from '../../util/text'
 import Tags from '../../components/Tags'
+import { navigate } from '../../actions'
+import { makeUrl } from '../../client/util'
 
 const LinkButton = ({ href, icon }) =>
   <a className='button' href={href} target='_blank'><i className={`icon-${icon}`}></i></a>
@@ -14,9 +16,11 @@ const Section = ({ title, children }) =>
 
 const AboutPerson = connect(
   (state, { params }) => ({person: state.people[params.id]})
-)(({ person }) => {
+)(({ person, dispatch }) => {
   let { facebook_url, twitter_name, linkedin_url } = person
   let hasSocialMedia = !!(facebook_url || twitter_name || linkedin_url)
+
+  let searchTag = tag => dispatch(navigate(makeUrl('/search', {q: tag})))
 
   return <div className='about'>
     <Section title='About me'>
@@ -34,10 +38,10 @@ const AboutPerson = connect(
       <p>{person.intention}</p>
     </Section>
     <Section title='Skills'>
-      <Tags>{person.skills}</Tags>
+      <Tags onClick={searchTag}>{person.skills}</Tags>
     </Section>
     <Section title='Affiliations'>
-      <Tags>{person.organizations}</Tags>
+      <Tags onClick={searchTag}>{person.organizations}</Tags>
     </Section>
     {person.extra_info && <Section title='Other information'>
       <div dangerouslySetInnerHTML={{__html: markdown(person.extra_info || '')}}></div>

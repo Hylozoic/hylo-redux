@@ -25,6 +25,7 @@ export function connectWebViewBridge (callback) {
   }
 }
 
+// FIXME this isn't client-specific
 export function makeUrl (path, params) {
   params = omitBy(params, x => !x)
   return `${path}${!isEmpty(params) ? '?' + qs.stringify(params) : ''}`

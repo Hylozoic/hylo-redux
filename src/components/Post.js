@@ -144,7 +144,8 @@ class Post extends React.Component {
     return <div className='post welcome'>
       <Avatar person={person}/>
       <div className='header'>
-        <strong><A to={`/u/${person.id}`}>{person.name}</A></strong> joined {communities[0].name}.&ensp;
+        <strong><A to={`/u/${person.id}`}>{person.name}</A></strong> joined&ensp;
+        <A to={`/c/${communities[0]}.slug`}>{communities[0].name}</A>.&ensp;
         <a className='open-comments' onClick={this.toggleComments}>Welcome them!</a>
         <PostMeta post={post} toggleComments={this.toggleComments}/>
       </div>

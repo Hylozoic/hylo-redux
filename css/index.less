@@ -428,7 +428,7 @@ ul.posts {
   &.welcome {
     border: 1px solid transparent;
     padding: 0 15px;
-    .avatar {
+    > .avatar {
       float: left;
       margin-right: 10px;
     }
@@ -580,29 +580,29 @@ ul.posts {
       }
     }
 
-    .followers {
-      margin-bottom: 10px;
-
-      .followers-dropdown {
-        display: inline;
-
-        li {
-          padding: 6px 15px;
-          min-width: 200px;
-        }
-
-        .avatar {
-          display: inline-block;
-          vertical-align: middle;
-          margin-right: 5px;
-        }
-      }
-
-    }
-
     .post-section {
       margin-bottom: @p-bottom-margin;
     }
+  }
+
+  .followers {
+    margin-bottom: 10px;
+
+    .followers-dropdown {
+      display: inline;
+
+      li {
+        padding: 6px 15px;
+        min-width: 200px;
+      }
+
+      .avatar {
+        display: inline-block;
+        vertical-align: middle;
+        margin-right: 5px;
+      }
+    }
+
   }
 
   .attachment {

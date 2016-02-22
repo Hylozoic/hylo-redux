@@ -1,102 +1,72 @@
 import React from 'react'
-import { prefetch } from 'react-fetcher'
 import { connect } from 'react-redux'
-import { get, some, omit, filter, startsWith, contains } from 'lodash'
-import { fetchWithCache } from '../../util/caching'
-import { scrollToBottom } from '../../util/scrolling'
-import { fetchCommunities } from '../../actions/fetchCommunities'
-import { uploadImage } from '../../actions/uploadImage'
-import { avatarUploadSettings, bannerUploadSettings } from '../../models/network'
+import { some, get, omit, filter, startsWith, contains } from 'lodash'
 import {
   CREATE_NETWORK,
   UPLOAD_IMAGE,
-  navigate,
-  typeahead
-} from '../../actions'
-import {
   createNetwork,
+  navigate,
+  typeahead,
   resetNetworkValidation,
   updateNetworkEditor,
-  validateNetworkAttribute,
-  fetchNetwork,
-  updateNetwork
-} from '../../actions/network'
+  validateNetworkAttribute
+} from '../../actions'
+import { uploadImage } from '../../actions/uploadImage'
+import { avatarUploadSettings, bannerUploadSettings } from '../../models/network'
+import { scrollToBottom } from '../../util/scrolling'
 import CommunityTagInput from '../../components/CommunityTagInput'
-const { array, bool, func, object, string } = React.PropTypes
+const { bool, func, object, array } = React.PropTypes
 
 const defaultBanner = 'https://d3ngex8q79bk55.cloudfront.net/misc/default_community_banner.jpg'
 const defaultAvatar = 'https://d3ngex8q79bk55.cloudfront.net/misc/default_community_avatar.png'
 
-const typeaheadId = 'network_communities'
+let typeaheadId = 'network_communities'
 
-const subject = 'network'
-const fetch = fetchWithCache(fetchCommunities)
-const query = {offset: 0, limit: 1000}
-
-@prefetch(({ dispatch, params: { id } }) => {
-  id && dispatch(fetchNetwork(id, true))
-  return dispatch(fetch(subject, id, query))
-})
-@connect((state, { params: { id } }) => {
-  let { people, networks, networkValidation, pending, typeaheadMatches, networkEdits } = state
-
+@connect(({people, networkEditor, networkValidation, pending, typeaheadMatches}) => {
+  let validating = some(networkValidation.pending)
+  let { network, errors } = networkEditor
   let saving = pending[CREATE_NETWORK]
   let uploadingImage = !!pending[UPLOAD_IMAGE]
-  let currentUser = people.current
-
-  if (!id) id = 'new'
-
-  let network = networks[id]
-
-  let networkEdit = {...network, ...networkEdits[id]}
-
-  let validation = networkValidation[id] || {}
-  let validating = some(validation.pending)
-
-  let { errors } = networkEdit
 
   if (!errors) errors = {}
-  errors.nameUsed = get(validation, 'name.unique') === false
-  errors.slugUsed = get(validation, 'slug.unique') === false
+  errors.nameUsed = get(networkValidation, 'name.unique') === false
+  errors.slugUsed = get(networkValidation, 'slug.unique') === false
+  errors.codeUsed = get(networkValidation, 'beta_access_code.unique') === false
 
-  if (!networkEdit.avatar_url) networkEdit.avatar_url = defaultAvatar
-  if (!networkEdit.banner_url) networkEdit.banner_url = defaultBanner
+  if (!network) network = {}
+  if (!network.avatar_url) network.avatar_url = defaultAvatar
+  if (!network.banner_url) network.banner_url = defaultBanner
 
   return {
-    communityChoices: typeaheadMatches[typeaheadId] || [],
-    creating: id === 'new',
-    id, network, networkEdit, errors, validating, saving, uploadingImage, currentUser
+    network, errors, validating, saving, uploadingImage,
+    currentUser: people.current,
+    communityChoices: typeaheadMatches[typeaheadId] || []
   }
 })
 export default class NetworkEditor extends React.Component {
   static propTypes = {
-    id: string,
     saving: bool,
     uploadingImage: bool,
     validating: bool,
     errors: object,
     dispatch: func,
     network: object,
-    networkEdit: object,
     currentUser: object,
-    communityChoices: array,
-    params: object,
-    creating: bool
+    communityChoices: array
   }
 
   setValue = (key, value) => {
-    let { id, dispatch } = this.props
-    return dispatch(updateNetworkEditor(id, {[key]: value}))
+    return this.props.dispatch(updateNetworkEditor('network', {[key]: value}))
   }
 
   setError = obj =>
-    this.setValue('errors', obj)
+    this.props.dispatch(updateNetworkEditor('errors', obj))
 
   resetValidation = key =>
-    this.props.dispatch(resetNetworkValidation(this.props.id, key))
+    this.props.dispatch(resetNetworkValidation(key))
 
   checkUnique = (key, value) =>
-    this.props.dispatch(validateNetworkAttribute(this.props.id, key, value, 'unique'))
+    this.props.dispatch(validateNetworkAttribute(key, value, 'unique'))
 
   setName = event => {
     let { value } = event.target
@@ -105,12 +75,11 @@ export default class NetworkEditor extends React.Component {
   }
 
   validateName (value) {
-    let {creating, network} = this.props
-
     this.setError({nameBlank: !value})
+
     if (!value) {
       this.resetValidation('name')
-    } else if (creating || value !== network.name) {
+    } else {
       return this.checkUnique('name', value)
     }
   }
@@ -132,7 +101,6 @@ export default class NetworkEditor extends React.Component {
   }
 
   validateSlug (value) {
-    let { creating } = this.props
     let error = {slugBlank: false, slugInvalid: false}
 
     if (!value) {
@@ -145,18 +113,48 @@ export default class NetworkEditor extends React.Component {
 
     if (some(error)) {
       this.resetValidation('slug')
-    } else if (creating) {
+    } else {
       return this.checkUnique('slug', value)
     }
   }
 
+  setCode = event => {
+    let { value } = event.target
+    this.setValue('beta_access_code', value)
+    this.validateCode(value)
+  }
+
+  validateCode (value) {
+    this.setError({codeBlank: !value})
+
+    if (!value) {
+      this.resetValidation('beta_access_code')
+    } else {
+      return this.checkUnique('beta_access_code', value)
+    }
+  }
+
+  setCategory = event => {
+    let { value } = event.target
+    this.setValue('category', value)
+    this.validateCategory(value)
+  }
+
+  validateCategory (value) {
+    this.setError({categoryBlank: !value})
+  }
+
+  setLocation = event => {
+    this.setValue('location', event.target.value)
+  }
+
   addCommunity = community => {
-    let { communities } = this.props.networkEdit
+    let { communities } = this.props.network
     this.setValue('communities', (communities || []).concat(community.id))
   }
 
   removeCommunity = community => {
-    let { communities } = this.props.networkEdit
+    let { communities } = this.props.network
     this.setValue('communities', filter(communities, cid => cid !== community.id))
   }
 
@@ -170,7 +168,7 @@ export default class NetworkEditor extends React.Component {
       return []
     }
 
-    let { currentUser, networkEdit: { communities } } = this.props
+    let { currentUser, network: { communities } } = this.props
     var match = c =>
       startsWith(c.name.toLowerCase(), term.toLowerCase()) &&
       !contains(communities, c.id)
@@ -179,8 +177,8 @@ export default class NetworkEditor extends React.Component {
   }
 
   attachImage (type) {
-    let { dispatch, id } = this.props
-    let network = {id: id}
+    let { dispatch } = this.props
+    let network = {id: 'new', slug: 'new'}
     switch (type) {
       case 'avatar':
         return dispatch(uploadImage(avatarUploadSettings(network)))
@@ -190,37 +188,36 @@ export default class NetworkEditor extends React.Component {
   }
 
   validate () {
-    let { networkEdit } = this.props
+    let { network } = this.props
     return Promise.all([
-      this.validateName(networkEdit.name),
-      this.validateDescription(networkEdit.description),
-      this.validateSlug(networkEdit.slug)
+      this.validateName(network.name),
+      this.validateDescription(network.description),
+      this.validateSlug(network.slug)
     ])
   }
 
   submit = () => {
-    let { validating, dispatch, id, network, networkEdit } = this.props
-
+    let { validating, dispatch, network } = this.props
     if (validating) return
 
     this.validate().then(() => {
       if (some(this.props.errors)) return scrollToBottom()
 
-      dispatch((network ? updateNetwork(id, networkEdit) : createNetwork(networkEdit)))
+      dispatch(createNetwork(network))
       .then(() => {
         if (some(this.props.errors)) return scrollToBottom()
-        dispatch(navigate(`/n/${networkEdit.slug}`))
+        dispatch(navigate(`/n/${network.slug}`))
       })
     })
   }
 
   render () {
-    let { creating, validating, saving, uploadingImage, networkEdit, errors, communityChoices } = this.props
-    let { name, description, slug, avatar_url, banner_url, communities } = networkEdit
+    let { validating, saving, uploadingImage, network, errors, communityChoices } = this.props
+    let { communities } = network
     let disableSubmit = some(omit(errors, 'server')) || validating || saving || uploadingImage
 
     return <div id='network-editor' className='form-sections'>
-      { creating ? <h2>Create a network</h2> : <h2>Edit network</h2> }
+      <h2>Create a network</h2>
       <p>Let's take the first step toward unlocking the creative potential of your network with Hylo.</p>
 
       <div className='section-label'>Information</div>
@@ -230,7 +227,7 @@ export default class NetworkEditor extends React.Component {
             <label>Network name</label>
           </div>
           <div className='main-column'>
-            <input type='text' ref='name' className='form-control' value={name} onChange={this.setName}/>
+            <input type='text' ref='name' className='form-control' value={network.name} onChange={this.setName}/>
             {errors.nameBlank && <p className='help error'>Please fill in this field.</p>}
             {errors.nameUsed && <p className='help error'>This name is already in use.</p>}
           </div>
@@ -241,25 +238,25 @@ export default class NetworkEditor extends React.Component {
             <label>Description</label>
           </div>
           <div className='main-column'>
-            <textarea ref='description' className='form-control' value={description} onChange={this.setDescription}></textarea>
+            <textarea ref='description' className='form-control' onChange={this.setDescription}></textarea>
             {errors.descriptionBlank && <p className='help error'>Please fill in this field.</p>}
           </div>
         </div>
 
-        {creating && <div className='section-item'>
+        <div className='section-item'>
           <div className='side-column'>
             <label>URL</label>
           </div>
           <div className='main-column'>
             <div className='input-group'>
               <div className='input-group-addon'>www.hylo.com/n/</div>
-              <input ref='slug' className='form-control' value={slug} onChange={this.setSlug}/>
+              <input ref='slug' className='form-control' onChange={this.setSlug}/>
             </div>
             {errors.slugBlank && <p className='help error'>Please fill in this field.</p>}
             {errors.slugInvalid && <p className='help error'>Use lowercase letters, numbers, and hyphens only.</p>}
             {errors.slugUsed && <p className='help error'>This URL is already in use.</p>}
           </div>
-        </div>}
+        </div>
       </div>
 
       <div className='section-label'>Appearance</div>
@@ -269,7 +266,7 @@ export default class NetworkEditor extends React.Component {
             <label>Icon</label>
           </div>
           <div className='main-column'>
-            <div className='medium-logo' style={{backgroundImage: `url(${avatar_url})`}}></div>
+            <div className='medium-logo' style={{backgroundImage: `url(${network.avatar_url})`}}></div>
             <button onClick={() => this.attachImage('avatar')}>Change</button>
             <p className='help'>This image appears next to your networks's name. (Tip: Try a transparent PNG image.)</p>
           </div>
@@ -280,7 +277,7 @@ export default class NetworkEditor extends React.Component {
             <label>Banner</label>
           </div>
           <div className='main-column'>
-            <div className='banner' style={{backgroundImage: `url(${banner_url})`}}></div>
+            <div className='banner' style={{backgroundImage: `url(${network.banner_url})`}}></div>
             <button onClick={() => this.attachImage('banner')}>Change</button>
             <p className='help'>
               This image appears across the top of your network page. (Aspect ratio: roughly 3.3:1.)

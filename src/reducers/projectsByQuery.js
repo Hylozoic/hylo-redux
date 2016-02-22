@@ -1,6 +1,5 @@
 import { FETCH_PROJECTS } from '../actions'
-import { appendUniq } from './util'
-import { map } from 'lodash'
+import { addIdsToState } from './util'
 
 export default function (state = {}, action) {
   if (action.error) return state
@@ -8,7 +7,7 @@ export default function (state = {}, action) {
   let { type, payload, meta } = action
   switch (type) {
     case FETCH_PROJECTS:
-      return appendUniq(state, meta.cache.id, map(payload.projects, 'id'))
+      return addIdsToState(state, meta.cache.id, payload.projects)
   }
 
   return state

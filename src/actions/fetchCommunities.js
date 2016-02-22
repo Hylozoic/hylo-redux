@@ -16,5 +16,5 @@ export function fetchCommunities (opts) {
 
   }
 
-  return {type: FETCH_COMMUNITIES, payload, meta: {cache, id}}
+  return {type: FETCH_COMMUNITIES, payload, meta: {cache}}
 }

@@ -74,6 +74,8 @@ export default function makeRoutes (store) {
     <Route path='c/new' component={CommunityEditor} onEnter={requireLogin()}/>
     <Route path='c/join' component={CommunityJoinForm} onEnter={requireLogin()}/>
 
+    <Route path='n/new' component={NetworkEditor} onEnter={requireLogin()}/>
+
     <Route path='h/use-invitation' component={InvitationHandler}
       onEnter={requireLogin({
         startAtSignup: true,
@@ -105,15 +107,12 @@ export default function makeRoutes (store) {
       <Route path='contributors' component={ProjectContributors}/>
     </Route>
     <Route path='project/:id/:slug/invite' component={ProjectInvite}/>
-    <Route path='n/new' component={NetworkEditor} onEnter={requireLogin()}/>
     <Route path='n/:id' component={NetworkProfile} onEnter={requireLogin()}>
       <IndexRoute component={NetworkPosts}/>
       <Route path='communities' component={NetworkCommunities}/>
       <Route path='members' component={NetworkMembers}/>
       <Route path='about' component={AboutNetwork}/>
     </Route>
-    <Route path='n/:id/edit' component={NetworkEditor} onEnter={requireLogin()}/>
-
   </Route>
 }
 

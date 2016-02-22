@@ -74,6 +74,8 @@ export const UPDATE_COMMUNITY_EDITOR = 'UPDATE_COMMUNITY_EDITOR'
 export const UPDATE_INVITATION_EDITOR = 'UPDATE_INVITATION_EDITOR'
 export const UPDATE_COMMUNITY_SETTINGS = 'UPDATE_COMMUNITY_SETTINGS'
 export const UPDATE_COMMUNITY_SETTINGS_PENDING = UPDATE_COMMUNITY_SETTINGS + _PENDING
+export const UPDATE_NETWORK = 'UPDATE_NETWORK'
+export const UPDATE_NETWORK_PENDING = 'UPDATE_NETWORK' + _PENDING
 export const UPDATE_NETWORK_EDITOR = 'UPDATE_NETWORK_EDITOR'
 export const UPDATE_POST = 'UPDATE_POST'
 export const UPDATE_POST_EDITOR = 'UPDATE_POST_EDITOR'
@@ -510,36 +512,6 @@ export function removeNotification (id) {
   }
 }
 
-export function createNetwork (params) {
-  return {
-    type: CREATE_NETWORK,
-    payload: {api: true, params, path: '/noo/network', method: 'POST'}
-  }
-}
-
-export function validateNetworkAttribute (key, value, constraint) {
-  return {
-    type: VALIDATE_NETWORK_ATTRIBUTE,
-    payload: {api: true, params: {column: key, value, constraint}, path: '/noo/network/validate', method: 'POST'},
-    meta: {key}
-  }
-}
-
-export function resetNetworkValidation (key) {
-  return {
-    type: RESET_NETWORK_VALIDATION,
-    meta: {key}
-  }
-}
-
-export function updateNetworkEditor (subtree, changes) {
-  return {
-    type: UPDATE_NETWORK_EDITOR,
-    payload: changes,
-    meta: {subtree}
-  }
-}
-
 export function fetchOnboarding (userId, communityId) {
   let path = `/noo/user/${userId}/onboarding?communityId=${communityId}`
   return {
@@ -548,13 +520,6 @@ export function fetchOnboarding (userId, communityId) {
   }
 }
 
-export function fetchNetwork (id) {
-  return {
-    type: FETCH_NETWORK,
-    payload: {api: true, path: `/noo/network/${id}`},
-    meta: {cache: {bucket: 'networks', id, requiredProp: 'banner_url'}}
-  }
-}
 export function toggleShowAllCommunities () {
   return {type: TOGGLE_SHOW_ALL_COMMUNITIES}
 }

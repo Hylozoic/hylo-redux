@@ -2,7 +2,7 @@ import React from 'react'
 import { A, IndexA } from '../../components/A'
 import { connect } from 'react-redux'
 import { prefetch } from 'react-fetcher'
-import { fetchNetwork } from '../../actions'
+import { fetchNetwork } from '../../actions/network'
 const { func, object } = React.PropTypes
 
 @prefetch(({ dispatch, params: { id } }) => dispatch(fetchNetwork(id)))

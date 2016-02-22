@@ -6,6 +6,7 @@ import commentsByPost from './commentsByPost'
 import communities from './communities'
 import communitiesByQuery from './communitiesByQuery'
 import networks from './networks'
+import networkEdits from './networkEdits'
 import people from './people'
 import peopleByQuery from './peopleByQuery'
 import postEdits from './postEdits'
@@ -159,6 +160,7 @@ export default combineReducers({
   communities,
   communitiesByQuery,
   networks,
+  networkEdits,
   people,
   peopleByQuery,
   posts,
@@ -276,22 +278,29 @@ export default combineReducers({
 
   networkValidation: (state = {}, action) => {
     let { type, payload, error, meta } = action
+    let { id, key } = meta || {}
     if (error) return state
 
     switch (type) {
       case VALIDATE_NETWORK_ATTRIBUTE_PENDING:
         return {
           ...state,
-          pending: {...state.pending, [meta.key]: true}
+          [id]: {...state[id], pending: {...(state[id] || {}).pending, [key]: true}}
         }
       case VALIDATE_NETWORK_ATTRIBUTE:
         return {
           ...state,
-          [meta.key]: payload,
-          pending: {...state.pending, [meta.key]: false}
+          [id]: {
+            ...state[id],
+            [key]: payload,
+            pending: {...state[id].pending, [key]: false}
+          }
         }
       case RESET_NETWORK_VALIDATION:
-        return {...state, [meta.key]: null}
+        return {
+          ...state,
+          [id]: {...state[id], [key]: null}
+        }
     }
 
     return state

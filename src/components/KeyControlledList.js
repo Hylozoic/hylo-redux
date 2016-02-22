@@ -1,18 +1,21 @@
 import React from 'react'
 import cx from 'classnames'
-import { isEmpty } from 'lodash'
-var { array, func } = React.PropTypes
+import { indexOf, isEmpty } from 'lodash'
+var { array, func, object } = React.PropTypes
 
 export default class KeyControlledList extends React.Component {
 
   static propTypes = {
     onChange: func,
-    items: array
+    items: array,
+    selected: object
   }
 
   constructor (props) {
     super(props)
-    this.state = {selectedIndex: 0}
+    let { items, selected } = props
+    let index = indexOf(items, selected)
+    this.state = {selectedIndex: index !== -1 ? index : 0}
   }
 
   componentWillReceiveProps (nextProps) {
@@ -35,6 +38,7 @@ export default class KeyControlledList extends React.Component {
     this.setState({selectedIndex: i})
   }
 
+  // this method is called from other components
   handleKeys = event => {
     switch (event.which) {
       case 38: // up arrow
@@ -58,7 +62,8 @@ export default class KeyControlledList extends React.Component {
     this.props.onChange(choice)
   }
 
-  // FIXME use more standard props e.g. {label, value} instead of {id, name}
+  // FIXME use more standard props e.g. {label, value} instead of {id, name}, or
+  // provide an API for configuring them
   render () {
     let { selectedIndex } = this.state
     let { items, onChange, ...props } = this.props

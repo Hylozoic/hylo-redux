@@ -30,7 +30,6 @@ export default function (state = {}, action) {
       let newCommunities = (state[id].communities || []).concat(map(payload.communities, 'id'))
       return {...state, [id]: {...state[id], communities: newCommunities}}
     case UPDATE_NETWORK_PENDING:
-      console.log('networks reducer, UNP', {id, params: meta.params})
       return {...state, [id]: {...state[id], ...meta.params}}
   }
   return state

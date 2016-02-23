@@ -37,7 +37,7 @@ export default class CommunityProfile extends React.Component {
 
     let { slug, banner_url, avatar_url, name } = community
 
-    let canModerate = !!find(currentUser.memberships, m => m.community.id === community.id && m.role === 1)
+    let canModerate = !!find(get(currentUser, 'memberships'), m => m.community.id === community.id && m.role === 1)
 
     return <div id='community' className='tabbed-context'>
       <VelocityTransitionGroup enter={{animation: 'slideDown', duration: 800}}

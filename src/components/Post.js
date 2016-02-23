@@ -211,10 +211,8 @@ const ExpandedPostDetails = props => {
     {description && <ClickCatchingDiv className='details post-section'
       dangerouslySetInnerHTML={{__html: description}}/>}
 
-    {post.type === 'event' && <RSVPControl
-      responders={post.responders}
-      currentResponse={(find(post.responders, responder => responder.id === currentUser.id) || {response: ''}).response}
-      onPickResponse={choice => dispatch(changeEventResponse(post.id, choice, currentUser))} />}
+    {post.type === 'event' && <EventRSVP {...{currentUser, dispatch}}
+      postId={post.id} responders={post.responders}/>}
 
     <Followers post={post} currentUser={currentUser} />
 
@@ -230,7 +228,7 @@ const ExpandedPostDetails = props => {
       <ul className='tags'>
         <li className={cx('tag', 'post-type', post.type)}>{post.type}</li>
         {communities.map(c => <li key={c.id} className='tag'>
-          <Link to={`/c/${c.slug}`} key={c.id}>{c.name}</Link>
+          <Link to={`/c/${c.slug}`}>{c.name}</Link>
         </li>)}
       </ul>
     </div>
@@ -240,6 +238,15 @@ const ExpandedPostDetails = props => {
       {!commentingDisabled && <CommentForm postId={post.id}/>}
     </div>}
   </div>
+}
+
+const EventRSVP = ({ currentUser, postId, responders, dispatch }) => {
+  let isCurrentUser = r => r.id === get(currentUser, 'id')
+  let currentResponse = get(find(responders, isCurrentUser), 'response') || ''
+  let onPickResponse = currentUser &&
+    (choice => dispatch(changeEventResponse(postId, choice, currentUser)))
+
+  return <RSVPControl {...{responders, currentResponse, onPickResponse}}/>
 }
 
 const Followers = props => {

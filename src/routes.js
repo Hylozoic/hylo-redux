@@ -90,14 +90,14 @@ export default function makeRoutes (store) {
 
     <Route path='c/:id/onboarding' component={Onboarding} onEnter={requireLogin()}/>
 
-    <Route path='c/:id' component={CommunityProfile} onEnter={requireLogin()}>
+    <Route path='c/:id' component={CommunityProfile}>
       <IndexRoute component={CommunityPosts}/>
-      <Route path='members' component={CommunityMembers}/>
+      <Route path='members' component={CommunityMembers} onEnter={requireLogin()}/>
       <Route path='events' component={CommunityEvents}/>
       <Route path='projects' component={CommunityProjects}/>
       <Route path='about' component={AboutCommunity}/>
-      <Route path='settings' component={CommunitySettings}/>
-      <Route path='invite' component={CommunityInvitations}/>
+      <Route path='settings' component={CommunitySettings} onEnter={requireLogin()}/>
+      <Route path='invite' component={CommunityInvitations} onEnter={requireLogin()}/>
     </Route>
     <Route path='p/:id' component={SinglePost}/>
     <Route path='project/new' component={ProjectEditor} onenter={requireLogin()}/>

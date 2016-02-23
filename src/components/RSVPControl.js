@@ -8,17 +8,22 @@ import Dropdown from './Dropdown'
 
 const RSVPButton = props => {
   let { eventResponse, responderList, onPickResponse } = props
-  return <button type='button' onClick={() => onPickResponse(responderList.response)} className={cx(`rsvp-#{responderList.response}`, 'btn', 'btn-default', {'active': eventResponse === responderList.response})}>
-      {responderList.title}
-      {responderList.responders.length > 0 && ` (${responderList.responders.length})`}
-    </button>
+  let { response, title, responders } = responderList
+  return <button type='button' onClick={() => onPickResponse(response)}
+    className={cx(`rsvp-#{response} btn btn-default`, {'active': eventResponse === response})}>
+    {title}
+    {responders.length > 0 && ` (${responders.length})`}
+  </button>
 }
 
 const Responder = props => {
   let { responder } = props
   return <li key={responder.id}>
       <span className='person'>
-        <Avatar person={responder} /> <Link className='person' to={`/u/${responder.id}`}><span>{responder.name}</span></Link>
+        <Avatar person={responder}/>
+        <Link className='person' to={`/u/${responder.id}`}>
+          <span>{responder.name}</span>
+        </Link>
       </span>
     </li>
 }
@@ -34,36 +39,42 @@ const ResponderList = props => {
   </span>
 }
 
-export default class RSVPControl extends React.Component {
-  static propTypes = {
-    responders: array,
-    currentUser: object,
-    post: object,
-    onPickResponse: func,
-    currentResponse: string
-  }
+const RSVPControl = props => {
+  let { responders, onPickResponse, currentResponse } = props
 
-  render () {
-    let { responders, onPickResponse, currentResponse } = this.props
+  var respondersByType = [
+    {title: 'Going', response: 'yes', responders: filter(responders, er => er.response === 'yes')},
+    {title: 'Maybe', response: 'maybe', responders: filter(responders, er => er.response === 'maybe')},
+    {title: 'Can\'t Go', response: 'no', responders: filter(responders, er => er.response === 'no')}
+  ]
 
-    var respondersByType = [
-      {title: 'Going', response: 'yes', responders: filter(responders, er => er.response === 'yes')},
-      {title: 'Maybe', response: 'maybe', responders: filter(responders, er => er.response === 'maybe')},
-      {title: 'Can\'t Go', response: 'no', responders: filter(responders, er => er.response === 'no')}
-    ]
+  return (
+    <div className='rsvp-controls post-section'>
+      {onPickResponse && <div className='btn-group buttons'>
+        {respondersByType.map(rl =>
+          <RSVPButton currentResponse={currentResponse}
+            responderList={rl}
+            onPickResponse={onPickResponse}
+            key={rl.response}/>)}
+      </div>}
 
-    return (
-      <div className='rsvp-controls post-section'>
-        <div className='btn-group buttons'>
-          {respondersByType.map(rl => <RSVPButton currentResponse={currentResponse} responderList={rl} onPickResponse={onPickResponse} key={rl.response}/>)}
-        </div>
-
-        {responders.length > 0 && <div className='responses'>
-          <Dropdown className='responses-dropdown' toggleChildren={<span>See Responses</span>}>
-            {respondersByType.map(rl => <ResponderList responderList={rl} key={rl.response}/>)}
-          </Dropdown>
-        </div>}
-      </div>
-    )
-  }
+      {responders.length > 0 && <div className='responses'>
+        <Dropdown className='responses-dropdown'
+          toggleChildren={<span>See Responses</span>}>
+          {respondersByType.map(rl =>
+            <ResponderList responderList={rl} key={rl.response}/>)}
+        </Dropdown>
+      </div>}
+    </div>
+  )
 }
+
+RSVPControl.propTypes = {
+  responders: array,
+  currentUser: object,
+  post: object,
+  onPickResponse: func,
+  currentResponse: string
+}
+
+export default RSVPControl

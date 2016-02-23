@@ -1,6 +1,6 @@
 import { FETCH_PROJECTS } from '../actions'
-import { appendUniq } from './util'
 import { map } from 'lodash'
+import { appendUniq } from './util'
 
 export default function (state = {}, action) {
   if (action.error) return state

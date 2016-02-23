@@ -5,6 +5,7 @@ import { compose } from 'redux'
 import { fetch, ConnectedPostList } from '../../containers/ConnectedPostList'
 import { refetch } from '../../util/caching'
 import cx from 'classnames'
+import { isMember } from '../../models/currentUser'
 const { func, object } = React.PropTypes
 
 const subject = 'community'
@@ -15,7 +16,7 @@ const setDefaults = query => {
 }
 
 const CommunityEvents = props => {
-  let { params: { id }, location, dispatch } = props
+  let { params: { id }, location, dispatch, currentUser, community } = props
   let query = setDefaults(location.query)
 
   let showingPast = query.filter !== 'future'
@@ -43,16 +44,23 @@ const CommunityEvents = props => {
       </button>
     </div>
     <ConnectedPostList {...{subject, id, query}}/>
+    {!isMember(currentUser, community) && <div className='meta'>
+      You are not a member of this community, so you are shown only posts that are marked as public.
+    </div>}
   </div>
 }
 
 CommunityEvents.propTypes = {
   dispatch: func,
   params: object,
-  community: object
+  community: object,
+  currentUser: object
 }
 
 export default compose(
   prefetch(({ dispatch, params, query }) => dispatch(fetch(subject, params.id, setDefaults(query)))),
-  connect()
+  connect(({ people, communities }, { params }) => ({
+    community: communities[params.id],
+    currentUser: people.current
+  }))
 )(CommunityEvents)

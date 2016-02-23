@@ -1,11 +1,16 @@
 import { MemberRole } from './community'
-import { get } from 'lodash'
+import { find, get } from 'lodash'
 
-export function canModerate (currentUser, community) {
-  let membership = currentUser.memberships.find(m => m.community.id === community.id)
-  return get(membership, 'role') === MemberRole.MODERATOR
-}
+const truthy = fn => (...args) => !!fn(...args)
 
-export function canInvite (currentUser, community) {
-  return community.settings.all_can_invite || canModerate(currentUser, community)
-}
+export const membership = (currentUser, community) =>
+  find(get(currentUser, 'memberships'), m => m.community.id === community.id)
+
+export const isMember = truthy(membership)
+
+export const canModerate = (currentUser, community) =>
+  get(membership(currentUser, community), 'role') === MemberRole.MODERATOR
+
+export const canInvite = (currentUser, community) =>
+  canModerate(currentUser, community) ||
+  (isMember(currentUser, community) && get(community, 'settings.all_can_invite'))

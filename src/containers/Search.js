@@ -3,7 +3,7 @@ import { prefetch } from 'react-fetcher'
 import { connect } from 'react-redux'
 import { connectedListProps, fetchWithCache, refetch } from '../util/caching'
 import { navigate, search } from '../actions'
-import { debounce, get, some } from 'lodash'
+import { debounce, get, isEmpty, some } from 'lodash'
 import Select from '../components/Select'
 import Comment from '../components/Comment'
 import Avatar from '../components/Avatar'
@@ -68,18 +68,29 @@ export default class Search extends React.Component {
     }
 
     return <div id='search'>
-      <h2>Search!</h2>
-      <div className='list-controls'>
-        <input type='text' className='form-control search'
-          value={this.state.textInput}
-          onChange={event => updateTextInput(event.target.value)}/>
-        <Select className='type' choices={types} selected={selectedType}
-          onChange={t => this.updateSearch({type: t.id})} alignRight={true}/>
+      <div className='row'>
+        <div className='col-sm-6'>
+          <h2>Search</h2>
+        </div>
+        <div className='col-sm-6'>
+          <div className='list-controls'>
+            <input type='text' className='form-control search'
+              value={this.state.textInput}
+              onChange={event => updateTextInput(event.target.value)}/>
+            <Select className='type' choices={types} selected={selectedType}
+              onChange={t => this.updateSearch({type: t.id})} alignRight={true}/>
+          </div>
+        </div>
       </div>
       <Results results={searchResults}
         dispatch={dispatch}
         onTagClick={tag => updateTextInput(tag)}
         loadMore={loadMore}/>
+      {pending
+        ? <div>Loading...</div>
+        : isEmpty(searchResults) && (q
+          ? <div>No results match your search term.</div>
+          : <div>Type a search term to search posts, comments, and people.</div>)}
     </div>
   }
 }

@@ -8,6 +8,9 @@ import { HOST } from '../../src/util/api'
 import cheerio from 'cheerio'
 
 const checkError = res => {
+  if (res.statusCode === 500) {
+    console.error(res.body)
+  }
   if (res.error) {
     if (res.error.payload) {
       let output = inspect(res.error.payload, {depth: 3}).replace(/^/mg, '       ')
@@ -61,18 +64,18 @@ describe('appHandler', () => {
     })
 
     it('redirects away from a page that requires login', () => {
-      req = support.mocks.request('/c/foo')
+      req = support.mocks.request('/c/foo/members')
 
       return appHandler(req, res)
       .then(() => {
-        expect(res.redirect).to.have.been.called.with(302, '/login?next=%2Fc%2Ffoo')
+        expect(res.redirect).to.have.been.called.with(302, '/login?next=%2Fc%2Ffoo%2Fmembers')
       })
     })
   })
 
   describe('with a logged-in user', () => {
     let bannerUrl = 'http://nowhere.com/house.png'
-    let community = {id: 1, name: 'House', slug: 'house', banner_url: bannerUrl}
+    let community = {id: 1, name: 'House', slug: 'house', banner_url: bannerUrl, settings: {}}
 
     beforeEach(() => {
       nock(HOST).get('/noo/user/me').reply(200, {id: 1, name: 'cat'})
@@ -81,7 +84,7 @@ describe('appHandler', () => {
     })
 
     it('loads a page that requires login', () => {
-      req = support.mocks.request('/c/house')
+      req = support.mocks.request('/c/house/members')
 
       return appHandler(req, res)
       .then(() => {
@@ -123,7 +126,7 @@ describe('appHandler', () => {
         description: 'The description body',
         media: [{
           type: 'image',
-          url: 'http://foo.com/bar.jog',
+          url: 'http://foo.com/bar.jpg',
           width: 99,
           height: 101
         }],
@@ -155,7 +158,7 @@ describe('appHandler', () => {
         var $ = cheerio.load(res.body)
         expect($('meta[property="og:title"]').attr('content')).to.equal('A test post')
         expect($('meta[property="og:description"]').attr('content')).to.equal('The description body')
-        expect($('meta[property="og:image"]').attr('content')).to.equal('http://foo.com/bar.jog')
+        expect($('meta[property="og:image"]').attr('content')).to.equal('http://foo.com/bar.jpg')
         expect($('meta[property="og:image:width"]').attr('content')).to.equal('99')
         expect($('meta[property="og:image:height"]').attr('content')).to.equal('101')
       })

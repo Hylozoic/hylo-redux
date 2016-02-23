@@ -61,18 +61,18 @@ describe('appHandler', () => {
     })
 
     it('redirects away from a page that requires login', () => {
-      req = support.mocks.request('/c/foo')
+      req = support.mocks.request('/c/foo/members')
 
       return appHandler(req, res)
       .then(() => {
-        expect(res.redirect).to.have.been.called.with(302, '/login?next=%2Fc%2Ffoo')
+        expect(res.redirect).to.have.been.called.with(302, '/login?next=%2Fc%2Ffoo%2Fmembers')
       })
     })
   })
 
   describe('with a logged-in user', () => {
     let bannerUrl = 'http://nowhere.com/house.png'
-    let community = {id: 1, name: 'House', slug: 'house', banner_url: bannerUrl}
+    let community = {id: 1, name: 'House', slug: 'house', banner_url: bannerUrl, settings: {}}
 
     beforeEach(() => {
       nock(HOST).get('/noo/user/me').reply(200, {id: 1, name: 'cat'})
@@ -81,7 +81,7 @@ describe('appHandler', () => {
     })
 
     it('loads a page that requires login', () => {
-      req = support.mocks.request('/c/house')
+      req = support.mocks.request('/c/house/members')
 
       return appHandler(req, res)
       .then(() => {

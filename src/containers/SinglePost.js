@@ -3,14 +3,33 @@ import Post from '../components/Post'
 import { prefetch } from 'react-fetcher'
 import { connect } from 'react-redux'
 import { compose } from 'redux'
-import { get } from 'lodash'
-import { fetchComments, fetchPost, setMetaTags } from '../actions'
+import { find, get } from 'lodash'
+import { FETCH_POST, fetchComments, fetchPost, setMetaTags } from '../actions'
 import { ogMetaTags } from '../util'
 import PostEditor from '../components/PostEditor'
 import { scrollToAnchor } from '../util/scrolling'
 
 const SinglePost = props => {
-  let { post, currentUser, editing } = props
+  let { post, currentUser, editing, error } = props
+
+  if (error) {
+    let errorMessage
+    switch (error.status) {
+      case 403:
+        errorMessage = "You don't have permission to view this page."
+        break
+      case 404:
+        errorMessage = 'Page not found.'
+        break
+      default:
+        errorMessage = 'An error occurred.'
+    }
+    return <div className='alert alert-danger'>
+      {errorMessage}&ensp;
+      <a href='javascript:history.go(-1)'>Back</a>
+    </div>
+  }
+
   if (!post) return <div className='loading'>Loading...</div>
 
   if (editing) {
@@ -20,6 +39,13 @@ const SinglePost = props => {
   return <div>
     <Post post={post} expanded={true} commentsExpanded={true} commentingDisabled={!currentUser}/>
   </div>
+}
+
+const findAccessError = (action, postId) => {
+  let match = action => get(action, 'meta.cache.id') === postId &&
+    get(action, 'meta.cache.bucket') === 'posts'
+
+  return get(find([action], match), 'payload.response')
 }
 
 export default compose(
@@ -38,9 +64,10 @@ export default compose(
       if (anchor) scrollToAnchor(anchor, 15)
     })
   ])),
-  connect(({ posts, people, postEdits }, { params }) => ({
+  connect(({ posts, people, postEdits, errors }, { params }) => ({
     post: posts[params.id],
     currentUser: people.current,
-    editing: postEdits[params.id]
+    editing: postEdits[params.id],
+    error: findAccessError(errors[FETCH_POST], params.id)
   }))
 )(SinglePost)

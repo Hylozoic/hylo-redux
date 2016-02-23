@@ -8,6 +8,9 @@ import { HOST } from '../../src/util/api'
 import cheerio from 'cheerio'
 
 const checkError = res => {
+  if (res.statusCode === 500) {
+    console.error(res.body)
+  }
   if (res.error) {
     if (res.error.payload) {
       let output = inspect(res.error.payload, {depth: 3}).replace(/^/mg, '       ')
@@ -123,7 +126,7 @@ describe('appHandler', () => {
         description: 'The description body',
         media: [{
           type: 'image',
-          url: 'http://foo.com/bar.jog',
+          url: 'http://foo.com/bar.jpg',
           width: 99,
           height: 101
         }],
@@ -155,7 +158,7 @@ describe('appHandler', () => {
         var $ = cheerio.load(res.body)
         expect($('meta[property="og:title"]').attr('content')).to.equal('A test post')
         expect($('meta[property="og:description"]').attr('content')).to.equal('The description body')
-        expect($('meta[property="og:image"]').attr('content')).to.equal('http://foo.com/bar.jog')
+        expect($('meta[property="og:image"]').attr('content')).to.equal('http://foo.com/bar.jpg')
         expect($('meta[property="og:image:width"]').attr('content')).to.equal('99')
         expect($('meta[property="og:image:height"]').attr('content')).to.equal('101')
       })

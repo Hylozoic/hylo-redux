@@ -2,23 +2,28 @@ import React from 'react'
 import { prefetch } from 'react-fetcher'
 import { connect } from 'react-redux'
 import { debounce } from 'lodash'
+import { FETCH_PEOPLE } from '../../actions'
 import { fetchPeople } from '../../actions/fetchPeople'
-import { fetchWithCache, connectedListProps, refetch } from '../../util/caching'
+import { createCacheId, connectedListProps, fetchWithCache, refetch } from '../../util/caching'
 import ScrollListener from '../../components/ScrollListener'
 import PersonCards from '../../components/PersonCards'
+import AccessErrorMessage from '../../components/AccessErrorMessage'
 import A from '../../components/A'
 const { array, bool, func, number, object } = React.PropTypes
 import { canInvite } from '../../models/currentUser'
+import { findError } from '../../actions/util'
 
 const subject = 'community'
 const fetch = fetchWithCache(fetchPeople)
 
 @prefetch(({ dispatch, params: { id }, query }) => dispatch(fetch(subject, id, query)))
 @connect((state, { params: { id }, location: { query } }) => {
+  let cacheId = createCacheId(subject, id, query)
   return {
     ...connectedListProps(state, {subject, id, query}, 'people'),
     community: state.communities[id],
-    currentUser: state.people.current
+    currentUser: state.people.current,
+    error: findError(state.errors, FETCH_PEOPLE, 'peopleByQuery', cacheId)
   }
 })
 export default class CommunityMembers extends React.Component {
@@ -30,7 +35,8 @@ export default class CommunityMembers extends React.Component {
     params: object,
     location: object,
     community: object,
-    currentUser: object
+    currentUser: object,
+    error: object
   }
 
   loadMore = () => {
@@ -47,7 +53,8 @@ export default class CommunityMembers extends React.Component {
   }
 
   render () {
-    let { pending, people, location: { query }, community, currentUser } = this.props
+    let { pending, people, location: { query }, community, currentUser, error } = this.props
+    if (error) return <AccessErrorMessage error={error}/>
     if (!currentUser) return <div>Loading...</div>
     let { search } = query
 

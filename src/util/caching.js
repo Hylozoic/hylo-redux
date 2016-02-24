@@ -26,7 +26,7 @@ const blankOrDefault = (defaults = commonDefaults) => (value, key) => {
 export const cleanAndStringify = (opts, defaults) =>
   qs.stringify(omitBy(opts, blankOrDefault(defaults)))
 
-const createCacheId = (subject, id, query = {}) => {
+export const createCacheId = (subject, id, query = {}) => {
   let { type, sort, search, filter, q } = query
   return cleanAndStringify({subject, id, type, sort, search, filter, q})
 }

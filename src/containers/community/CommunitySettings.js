@@ -12,7 +12,8 @@ import {
   addCommunityModerator,
   removeCommunityModerator,
   resetCommunityValidation,
-  validateCommunityAttribute
+  validateCommunityAttribute,
+  navigate
 } from '../../actions'
 import { avatarUploadSettings, bannerUploadSettings } from '../../models/community'
 import { uploadImage } from '../../actions/uploadImage'
@@ -139,7 +140,7 @@ export default class CommunitySettings extends React.Component {
 
   update (path, value) {
     let { dispatch, community } = this.props
-    dispatch(reversibleUpdate(updateCommunitySettings, community, path, value, 'community'))
+    return dispatch(reversibleUpdate(updateCommunitySettings, community, path, value, 'community'))
   }
 
   toggle (path) {
@@ -168,6 +169,17 @@ export default class CommunitySettings extends React.Component {
   changeLeader = person => {
     let { edited } = this.state
     this.setState({edited: {...edited, leader: person}})
+  }
+
+  delete = () => {
+    let { community, dispatch } = this.props
+    if (window.confirm(`Are you sure you wish to delete ${community.name}? This cannot be undone.`)) {
+      this.update('active', false)
+      .then(({ error }) => {
+        if (error) return
+        dispatch(navigate('/all-posts'))
+      })
+    }
   }
 
   componentDidMount () {
@@ -394,6 +406,19 @@ export default class CommunitySettings extends React.Component {
           </div>
           <div className='half-column right-align'>
             <input type='checkbox' checked={community.settings.sends_email_prompts} onChange={() => this.toggle('settings.sends_email_prompts')}/>
+          </div>
+        </div>
+      </div>}
+
+      <SectionLabel name='delete' {...labelProps}>Delete</SectionLabel>
+      {expand.delete && <div className='section delete'>
+        <div className='section-item'>
+          <div className='half-column'>
+            <label>Delete this community</label>
+            <p className='summary'>This will delete the community, preventing users from joining, browsing or posting in this community. Existing posts will still be viewable on the "All Posts" page.</p>
+          </div>
+          <div className='half-column right-align'>
+            <button type='button' onClick={this.delete}>Delete</button>
           </div>
         </div>
       </div>}

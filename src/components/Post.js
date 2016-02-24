@@ -141,7 +141,8 @@ class Post extends React.Component {
   renderWelcome () {
     let { post, communities, expanded, dispatch } = this.props
     let person = post.relatedUsers[0]
-    return <div className='post welcome'>
+    return communities[0]
+      ? <div className='post welcome'>
       <Avatar person={person}/>
       <div className='header'>
         <strong><A to={`/u/${person.id}`}>{person.name}</A></strong> joined&ensp;
@@ -154,6 +155,7 @@ class Post extends React.Component {
         commentsExpanded={this.state.commentsExpanded}
         {...this.props}/>}
     </div>
+    : <span />
   }
 }
 

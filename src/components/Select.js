@@ -19,6 +19,7 @@ export default class Select extends React.Component {
 
   toggle = event => {
     event.preventDefault()
+    event.stopPropagation()
     this.setState({active: !this.state.active})
   }
 
@@ -30,6 +31,18 @@ export default class Select extends React.Component {
   handleKeys = event => {
     if (!this.state.active) return
     if (this.refs.list.handleKeys(event)) event.preventDefault()
+  }
+
+  hide = event => {
+    if (this.state.active) this.setState({active: false})
+  }
+
+  componentDidMount () {
+    window.addEventListener('click', this.hide)
+  }
+
+  componentWillUnmount () {
+    window.removeEventListener('click', this.hide)
   }
 
   render () {

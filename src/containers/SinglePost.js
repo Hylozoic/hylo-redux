@@ -3,49 +3,24 @@ import Post from '../components/Post'
 import { prefetch } from 'react-fetcher'
 import { connect } from 'react-redux'
 import { compose } from 'redux'
-import { find, get } from 'lodash'
+import { get } from 'lodash'
 import { FETCH_POST, fetchComments, fetchPost, setMetaTags } from '../actions'
 import { ogMetaTags } from '../util'
 import PostEditor from '../components/PostEditor'
 import { scrollToAnchor } from '../util/scrolling'
+import { findError } from '../actions/util'
+import AccessErrorMessage from '../components/AccessErrorMessage'
 
 const SinglePost = props => {
   let { post, currentUser, editing, error } = props
 
-  if (error) {
-    let errorMessage
-    switch (error.status) {
-      case 403:
-        errorMessage = "You don't have permission to view this page."
-        break
-      case 404:
-        errorMessage = 'Page not found.'
-        break
-      default:
-        errorMessage = 'An error occurred.'
-    }
-    return <div className='alert alert-danger'>
-      {errorMessage}&ensp;
-      <a href='javascript:history.go(-1)'>Back</a>
-    </div>
-  }
-
+  if (error) return <AccessErrorMessage error={error}/>
   if (!post) return <div className='loading'>Loading...</div>
-
-  if (editing) {
-    return <PostEditor post={post} expanded={true}/>
-  }
+  if (editing) return <PostEditor post={post} expanded={true}/>
 
   return <div>
     <Post post={post} expanded={true} commentsExpanded={true} commentingDisabled={!currentUser}/>
   </div>
-}
-
-const findAccessError = (action, postId) => {
-  let match = action => get(action, 'meta.cache.id') === postId &&
-    get(action, 'meta.cache.bucket') === 'posts'
-
-  return get(find([action], match), 'payload.response')
 }
 
 export default compose(
@@ -68,6 +43,6 @@ export default compose(
     post: posts[params.id],
     currentUser: people.current,
     editing: postEdits[params.id],
-    error: findAccessError(errors[FETCH_POST], params.id)
+    error: findError(errors, FETCH_POST, 'posts', params.id)
   }))
 )(SinglePost)

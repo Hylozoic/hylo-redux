@@ -3,37 +3,42 @@ import qs from 'querystring'
 import { prefetch } from 'react-fetcher'
 import { connect } from 'react-redux'
 import { fetchProject, joinProject, updateProject } from '../../actions/project'
-import { navigate, notify, setMetaTags } from '../../actions'
+import { FETCH_PROJECT, navigate, notify, setMetaTags } from '../../actions'
 import { markdown } from '../../util/text'
 import { find, includes } from 'lodash'
 import truncate from 'html-truncate'
 import Avatar from '../../components/Avatar'
 import Video from '../../components/Video'
+import AccessErrorMessage from '../../components/AccessErrorMessage'
 import { A, IndexA } from '../../components/A'
 import SharingDropdown from '../../components/SharingDropdown'
 import { assetUrl } from '../../util/assets'
 import { ogMetaTags } from '../../util'
 import { Visibility } from '../../models/project'
+import { findError } from '../../actions/util'
 const { bool, func, object } = React.PropTypes
 
 @prefetch(({ dispatch, params: { id } }) =>
   dispatch(fetchProject(id))
-  .then(action => {
-    let payload = action.payload
-    if (payload && !payload.api) {
-      return dispatch(setMetaTags(ogMetaTags(payload.title, payload.details, payload.media[0])))
-    }
+  .then(({ payload, error }) => {
+    if (error || !payload || payload.api) return
+    let { title, details, media } = payload
+    return dispatch(setMetaTags(ogMetaTags(title, details, media[0])))
   }))
-@connect(({ projects, people, peopleByQuery }, { params: { id } }) => {
+@connect(({ projects, people, peopleByQuery, errors }, { params: { id } }) => {
   let project = projects[id]
-  if (!project) return {}
 
   let currentUser = people.current
   let key = qs.stringify({subject: 'project-moderators', id})
-  let canModerate = currentUser && (includes(peopleByQuery[key], currentUser.id) ||
-    project.user.id === currentUser.id)
 
-  return {project, currentUser, canModerate}
+  return {
+    project,
+    currentUser,
+    canModerate: project && currentUser &&
+      (includes(peopleByQuery[key], currentUser.id) ||
+      project.user.id === currentUser.id),
+    error: findError(errors, FETCH_PROJECT, 'projects', id)
+  }
 })
 export default class ProjectProfile extends React.Component {
   static propTypes = {
@@ -42,7 +47,8 @@ export default class ProjectProfile extends React.Component {
     currentUser: object,
     dispatch: func,
     location: object,
-    canModerate: bool
+    canModerate: bool,
+    error: object
   }
 
   constructor (props) {
@@ -81,8 +87,10 @@ export default class ProjectProfile extends React.Component {
   }
 
   render () {
-    let { project, currentUser, canModerate } = this.props
+    let { project, currentUser, canModerate, error } = this.props
+    if (error) return <AccessErrorMessage error={error}/>
     if (!project) return <div>Loading...</div>
+
     let { contributors } = project
     let { user, community, media, id, slug } = project
     let video = find(media, m => m.type === 'video')

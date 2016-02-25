@@ -494,11 +494,16 @@ export default combineReducers({
   totalSearchResultsByQuery: keyedCounter(SEARCH, 'total'),
 
   pageTitle: (state = 'Hylo', action) => {
-    let { type, payload } = action
+    let updateTitle = (title, count) => title.split(' (')[0] + (count > 0 ? ` (${count})` : '')
+    let { type, payload, meta } = action
     switch (type) {
+      case FETCH_ACTIVITY:
+        if (meta.resetCount) {
+          return updateTitle(state, 0)
+        }
+        break
       case FETCH_LIVE_STATUS:
-        let unreadCount = payload.new_notification_count
-        return state.split(' (')[0] + (unreadCount > 0 ? ` (${unreadCount})` : '')
+        return updateTitle(state, payload.new_notification_count)
     }
     return state
   }

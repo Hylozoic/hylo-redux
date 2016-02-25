@@ -122,3 +122,6 @@ export const projectUrl = project =>
 
 export const communityUrl = (community, params) =>
   makeUrl(`/c/${community.slug}`, params)
+
+export const communityOnboardingUrl = community =>
+  `/c/${community.slug}/onboarding`

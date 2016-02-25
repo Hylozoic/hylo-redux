@@ -2,7 +2,7 @@ import React from 'react'
 import { connect } from 'react-redux'
 const { func, bool, string } = React.PropTypes
 import { get, isEmpty } from 'lodash'
-import { communityUrl } from '../../routes'
+import { communityOnboardingUrl } from '../../routes'
 import {
   JOIN_COMMUNITY_WITH_CODE,
   resetError,
@@ -49,7 +49,7 @@ export default class CommunityJoinForm extends React.Component {
     let code = this.refs.code.value
     dispatch(joinCommunityWithCode(code))
     .then(({ error, payload: { community } }) =>
-      error || dispatch(navigate(communityUrl(community, {onboarding: true}))))
+      error || dispatch(navigate(communityOnboardingUrl(community))))
   }
 
   render () {

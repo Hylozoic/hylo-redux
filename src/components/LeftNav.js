@@ -31,7 +31,6 @@ const LeftNav = props => {
     <ul>
       <li><A to='/all-posts'>All posts</A></li>
       <li><A to='/my-posts'>My posts</A></li>
-      <li><A to='/followed-posts'>Followed posts</A></li>
       <li><A to='/projects'>Projects</A></li>
       <li>
         <A to='/notifications'>

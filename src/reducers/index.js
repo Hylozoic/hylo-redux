@@ -24,6 +24,7 @@ import {
   CREATE_POST,
   CREATE_NETWORK,
   FETCH_ACTIVITY,
+  FETCH_CURRENT_USER,
   FETCH_LIVE_STATUS,
   FETCH_COMMUNITIES,
   FETCH_INVITATIONS,
@@ -497,6 +498,7 @@ export default combineReducers({
     let { type, payload } = action
     switch (type) {
       case FETCH_LIVE_STATUS:
+      case FETCH_CURRENT_USER:
         let unreadCount = payload.new_notification_count
         return state.split(' (')[0] + (unreadCount > 0 ? ` (${unreadCount})` : '')
     }

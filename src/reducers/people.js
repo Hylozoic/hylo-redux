@@ -4,6 +4,7 @@ import {
   CREATE_COMMUNITY,
   FETCH_ACTIVITY,
   FETCH_CURRENT_USER,
+  FETCH_LIVE_STATUS,
   FETCH_PEOPLE,
   FETCH_PERSON,
   JOIN_COMMUNITY_WITH_CODE,
@@ -108,6 +109,11 @@ export default function (state = {}, action) {
         }
       }
       break
+    case FETCH_LIVE_STATUS:
+      return {
+        ...state,
+        current: {...state.current, new_notification_count: payload.new_notification_count}
+      }
   }
 
   return state

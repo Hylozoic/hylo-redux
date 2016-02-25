@@ -24,6 +24,7 @@ import {
   CREATE_POST,
   CREATE_NETWORK,
   FETCH_ACTIVITY,
+  FETCH_LIVE_STATUS,
   FETCH_COMMUNITIES,
   FETCH_INVITATIONS,
   FETCH_ONBOARDING,
@@ -490,5 +491,16 @@ export default combineReducers({
     return state
   },
 
-  totalSearchResultsByQuery: keyedCounter(SEARCH, 'total')
+  totalSearchResultsByQuery: keyedCounter(SEARCH, 'total'),
+
+  pageTitle: (state = 'Hylo', action) => {
+    let { type, payload } = action
+    switch (type) {
+      case FETCH_LIVE_STATUS:
+        let unreadCount = payload.new_notification_count
+        return state.split(' (')[0] + (unreadCount > 0 ? ` (${unreadCount})` : '')
+    }
+    return state
+  }
+
 })

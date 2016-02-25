@@ -85,7 +85,7 @@ function renderApp (res, renderProps, history, store) {
     let unreadCount = get(state, 'people.current.new_notification_count')
 
     return React.createElement(Html, {
-      pageTitle: 'Hylo' + (unreadCount && ` (${unreadCount})`),
+      pageTitle: 'Hylo' + (unreadCount > 0 ? ` (${unreadCount})` : ''),
       markup: markup,
       state: `window.INITIAL_STATE=${JSON.stringify(state)}`,
       assetManifest: `window.ASSET_MANIFEST=${JSON.stringify(getManifest())}`,

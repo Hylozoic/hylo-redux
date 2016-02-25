@@ -3,6 +3,7 @@ import { connect } from 'react-redux'
 import TopNav from '../components/TopNav'
 import LeftNav from '../components/LeftNav'
 import Notifier from '../components/Notifier'
+import LiveStatusPoller from '../components/LiveStatusPoller'
 import { logout, removeNotification, toggleMainMenu, toggleShowAllCommunities } from '../actions'
 import { get, sortBy } from 'lodash'
 const { bool, func, number, object } = React.PropTypes
@@ -47,6 +48,7 @@ const App = connect(({ mainMenuOpened, people, notifierMessages, showAllCommunit
       <div id='main'>{children}</div>
     </div>
     <Notifier messages={notifierMessages} remove={id => dispatch(removeNotification(id))}/>
+    <LiveStatusPoller />
   </div>
 })
 

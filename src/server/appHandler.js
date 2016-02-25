@@ -14,7 +14,7 @@ import { info, debug } from '../util/logging'
 import { fetchCurrentUser } from '../actions'
 import { localsForPrefetch } from '../util/universal'
 import { getManifest } from '../util/assets'
-import { some, isEmpty, toPairs } from 'lodash'
+import { some, isEmpty, toPairs, get } from 'lodash'
 
 const matchPromise = promisify(match, {multiArgs: true})
 
@@ -82,8 +82,10 @@ function renderApp (res, renderProps, history, store) {
     )
 
     let state = store.getState()
+    let unreadCount = get(state, 'people.current.new_notification_count')
 
     return React.createElement(Html, {
+      pageTitle: 'Hylo' + (unreadCount && ` (${unreadCount})`),
       markup: markup,
       state: `window.INITIAL_STATE=${JSON.stringify(state)}`,
       assetManifest: `window.ASSET_MANIFEST=${JSON.stringify(getManifest())}`,

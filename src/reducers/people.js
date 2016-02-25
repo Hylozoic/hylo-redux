@@ -14,6 +14,7 @@ import {
   SIGNUP,
   UPDATE_USER_SETTINGS_PENDING,
   UPDATE_USER_SETTINGS,
+  UPDATE_COMMUNITY_SETTINGS_PENDING,
   USE_INVITATION
 } from '../actions'
 import { mergeList } from './util'
@@ -61,6 +62,14 @@ export default function (state = {}, action) {
       return {
         ...state,
         current: {...state.current, memberships}
+      }
+    case UPDATE_COMMUNITY_SETTINGS_PENDING:
+      if (meta.params.active === false) {
+        memberships = filter(state.current.memberships, m => m.community.slug !== meta.params.slug)
+        return {
+          ...state,
+          current: {...state.current, memberships}
+        }
       }
   }
 

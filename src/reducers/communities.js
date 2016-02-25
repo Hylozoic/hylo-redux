@@ -1,4 +1,4 @@
-import { flatten, uniq, filter, merge, union } from 'lodash'
+import { flatten, uniq, filter, merge, union, omit } from 'lodash'
 import { debug } from '../util/logging'
 import {
   CREATE_COMMUNITY,
@@ -63,6 +63,9 @@ export default function (state = {}, action) {
       }
       break
     case UPDATE_COMMUNITY_SETTINGS_PENDING:
+      if (meta.params.active === false) {
+        return omit(state, meta.slug)
+      }
       return {
         ...state,
         [meta.slug]: merge({...state[meta.slug]}, meta.params)

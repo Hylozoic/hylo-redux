@@ -18,7 +18,7 @@ const SinglePost = props => {
   if (!post) return <div className='loading'>Loading...</div>
   if (editing) return <PostEditor post={post} expanded={true}/>
 
-  return <div>
+  return <div className='single-post'>
     <Post post={post} expanded={true} commentsExpanded={true} commentingDisabled={!currentUser}/>
   </div>
 }

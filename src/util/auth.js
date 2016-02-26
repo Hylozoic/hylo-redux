@@ -54,8 +54,8 @@ export function setupPopupCallback (dispatch, errorAction) {
             let next = params.next || `/u/${action.payload.id}`
             dispatch(navigate(next))
           })
-          popup.close()
         }
+        popup.close()
         break
       case PROFILE_CONTEXT:
         dispatch(fetchCurrentUser(true))

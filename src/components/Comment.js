@@ -19,7 +19,7 @@ const Comment = ({ comment, displayMode }) => {
       <strong>{person.name}</strong>
       <span className='meta'>
         {spacer}
-        {humanDate(comment.created_at)}
+        <A to={commentUrl(comment)}>{humanDate(comment.created_at)}</A>
         {displayMode === 'search' && <span>
           {spacer}
           <A to={commentUrl(comment)}>View in context</A>

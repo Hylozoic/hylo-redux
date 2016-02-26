@@ -219,7 +219,8 @@ const ExpandedPostDetails = props => {
     </div>
 
     {commentsExpanded && <div className='comments-section'>
-      {(comments || []).map(c => <Comment comment={c} key={c.id}/>)}
+      {(comments || []).map(c =>
+        <Comment comment={{...c, post_id: post.id}} key={c.id}/>)}
       {!commentingDisabled && <CommentForm postId={post.id}/>}
     </div>}
   </div>

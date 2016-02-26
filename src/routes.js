@@ -111,7 +111,6 @@ export default function makeRoutes (store) {
       <Route path='about' component={AboutNetwork}/>
     </Route>
     <Route path='n/:id/edit' component={NetworkEditor} onEnter={requireLogin()}/>
-
   </Route>
 }
 

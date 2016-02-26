@@ -29,7 +29,7 @@ const LeftNav = props => {
 
   return <nav id='leftNav' className={cx({open})}>
     <ul>
-      <li><A to='/all-posts'>All posts</A></li>
+      <li><A to='/'>All posts</A></li>
       <li><A to='/my-posts'>My posts</A></li>
       <li><A to='/projects'>Projects</A></li>
       <li>

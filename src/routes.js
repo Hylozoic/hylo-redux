@@ -1,6 +1,5 @@
 import React from 'react'
 import { Route, IndexRoute } from 'react-router'
-import Home from './components/Home'
 import Signup from './containers/Signup'
 import Login from './containers/Login'
 import App from './containers/App'
@@ -57,11 +56,10 @@ export default function makeRoutes (store) {
   }
 
   return <Route path='/' component={App}>
-    <IndexRoute component={Home}/>
+    <IndexRoute component={AllPosts} onEnter={requireLogin()}/>
     <Route path='signup' component={Signup}/>
     <Route path='login' component={Login}/>
     <Route path='settings' component={UserSettings} onEnter={requireLogin()}/>
-    <Route path='all-posts' component={AllPosts} onEnter={requireLogin()}/>
     <Route path='my-posts' component={MyPosts} onEnter={requireLogin()}/>
     <Route path='followed-posts' component={FollowedPosts} onEnter={requireLogin()}/>
     <Route path='projects' component={Projects} onEnter={requireLogin()}/>

@@ -15,6 +15,7 @@ import posts from './posts'
 import projectsByQuery from './projectsByQuery'
 import projects from './projects'
 import projectEdits from './projectEdits'
+import stagedPostsByQuery from './stagedPostsByQuery'
 import { UPDATE_PATH } from 'redux-simple-router'
 import { appendUniq } from './util'
 
@@ -147,6 +148,7 @@ export default combineReducers({
 
   totalPostsByQuery: (state = {}, action) => {
     if (action.error) return state
+    if (get(action, 'meta.staged')) return state
 
     let { type, payload, meta } = action
     switch (type) {
@@ -170,6 +172,7 @@ export default combineReducers({
   projects,
   projectsByQuery,
   projectEdits,
+  stagedPostsByQuery,
 
   pending: (state = {}, action) => {
     let { type, meta } = action

@@ -2,7 +2,7 @@ import { cleanAndStringify } from '../util/caching'
 import { FETCH_POSTS } from './index'
 
 export function fetchPosts (opts) {
-  let { subject, id, limit, offset, type, sort, search, filter, cacheId } = opts
+  let { subject, id, limit, offset, type, sort, search, filter, cacheId, staged } = opts
   if (!offset) offset = 0
   let querystring = cleanAndStringify({offset, limit, type, sort, search, filter})
   let payload = {api: true}
@@ -30,6 +30,13 @@ export function fetchPosts (opts) {
 
   payload.path += '?' + querystring
 
-  let cache = {id: cacheId, bucket: 'postsByQuery', limit, offset, array: true}
-  return {type: FETCH_POSTS, payload, meta: {cache}}
+  let meta = {staged}
+
+  if (staged) {
+    meta.cacheId = cacheId
+  } else {
+    meta.cache = {id: cacheId, bucket: 'postsByQuery', limit, offset, array: true}
+  }
+
+  return {type: FETCH_POSTS, payload, meta}
 }

@@ -497,7 +497,6 @@ export default combineReducers({
     let updateTitle = (title, count) => {
       let split = title.split(') ')
       let words = split.length > 1 ? split[1] : split[0]
-      console.log('updateTitle', {title, count, split, words})
       return (count > 0 ? `(${count}) ` : '') + words
     }
 

@@ -41,8 +41,12 @@ export class ConnectedPostList extends React.Component {
 
   componentDidMount () {
     let { dispatch, subject, id, query } = this.props
-    setInterval(() => dispatch(fetch(subject, id, {staged: true, ...query})),
+    this.intervalId = setInterval(() => dispatch(fetch(subject, id, {staged: true, limit: 5, ...query})),
       15 * 1000)
+  }
+
+  componentWillUnmount () {
+    clearInterval(this.intervalId)
   }
 
   shouldComponentUpdate (nextProps) {

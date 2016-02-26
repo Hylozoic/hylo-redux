@@ -11,6 +11,7 @@ import A from '../components/A'
 import Post from '../components/Post'
 import ScrollListener from '../components/ScrollListener'
 import Tags from '../components/Tags'
+import { commentUrl } from '../routes'
 const { array, bool, func, number, object } = React.PropTypes
 
 const types = [
@@ -143,12 +144,12 @@ const CommentResult = ({ comment }) => {
   return <div className='comment-result'>
     <strong>
       Comment on&ensp;
-      <A to={`/p/${post.id}#comment-${comment.id}`}>
+      <A to={commentUrl(comment)}>
         {post.type === 'welcome'
           ? `${welcomedPerson.name}'s welcome post`
           : `"${post.name}"`}
       </A>
     </strong>
-    <Comment comment={comment}/>
+    <Comment comment={comment} displayMode='search'/>
   </div>
 }

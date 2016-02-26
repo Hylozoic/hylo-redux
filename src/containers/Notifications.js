@@ -10,6 +10,7 @@ import Avatar from '../components/Avatar'
 import truncate from 'html-truncate'
 import { present, humanDate } from '../util/text'
 import { VIEWED_NOTIFICATIONS, trackEvent } from '../util/analytics'
+import { commentUrl } from '../routes'
 const { array, bool, func, number, object } = React.PropTypes
 
 const Notifications = compose(
@@ -113,7 +114,7 @@ const Activity = ({ activity, currentUser, dispatch }) => {
 
   let visit = () => {
     if (unread) dispatch(markActivityRead(activity.id))
-    dispatch(navigate(`/p/${post.id}`))
+    dispatch(navigate(commentUrl(comment)))
   }
 
   return <div key={activity.id} className={cx('activity', {unread})}>
@@ -125,7 +126,7 @@ const Activity = ({ activity, currentUser, dispatch }) => {
 
       {text && <div className='body-text' dangerouslySetInnerHTML={{__html: text}}/>}
 
-      <div className='controls'>
+      <div className='controls meta'>
         {humanDate(created_at)}
         {comment && <span>
           {spacer}

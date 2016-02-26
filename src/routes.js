@@ -123,3 +123,6 @@ export const communityUrl = (community, params) =>
 
 export const communityOnboardingUrl = community =>
   `/c/${community.slug}/onboarding`
+
+export const commentUrl = comment =>
+  `/p/${comment.post_id}#comment-${comment.id}`

@@ -1,8 +1,9 @@
-import { map, get } from 'lodash'
+import { map, get, omit } from 'lodash'
 import { appendUniq } from './util'
 
 import {
-  FETCH_POSTS
+  FETCH_POSTS,
+  MERGE_STAGED_POSTS
 } from '../actions'
 
 export default function (state = {}, action) {
@@ -13,6 +14,8 @@ export default function (state = {}, action) {
   switch (type) {
     case FETCH_POSTS:
       return appendUniq(state, meta.cacheId, map(payload.posts, 'id'))
+    case MERGE_STAGED_POSTS:
+      return omit(state, meta.cacheId)
   }
 
   return state

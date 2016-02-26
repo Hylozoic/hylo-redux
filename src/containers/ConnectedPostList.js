@@ -3,7 +3,8 @@ import { connect } from 'react-redux'
 import PostList from '../components/PostList'
 import { fetchPosts } from '../actions/fetchPosts'
 import { debug } from '../util/logging'
-import { connectedListProps, fetchWithCache } from '../util/caching'
+import { mergeStagedPosts } from '../actions'
+import { connectedListProps, fetchWithCache, createCacheId } from '../util/caching'
 import { intersection, isEqual, isNull, keys, omitBy } from 'lodash'
 const { array, bool, func, number, object, string } = React.PropTypes
 
@@ -54,13 +55,11 @@ export class ConnectedPostList extends React.Component {
   }
 
   render () {
-    let { posts, stagedPosts, total, pending, editingPostIds } = this.props
+    let { dispatch, posts, stagedPosts, total, pending, editingPostIds, subject, id, query } = this.props
 
-    let newPosts
-
-    if (stagedPosts.length > 0) {
-      newPosts = () => console.log('New Posts', stagedPosts)
-    }
+    let newPosts = (stagedPosts.length > 0)
+      ? () => dispatch(mergeStagedPosts(stagedPosts, createCacheId(subject, id, query)))
+      : undefined
 
     if (!posts) posts = []
     debug(`posts: ${posts.length} / ${total || '??'}`)

@@ -36,6 +36,7 @@ import {
   LOGOUT,
   MARK_ACTIVITY_READ,
   MARK_ALL_ACTIVITIES_READ_PENDING,
+  MERGE_STAGED_POSTS,
   NAVIGATE,
   NOTIFY,
   REMOVE_NOTIFICATION,
@@ -154,6 +155,8 @@ export default combineReducers({
     switch (type) {
       case FETCH_POSTS:
         return {...state, [meta.cache.id]: payload.posts_total}
+      case MERGE_STAGED_POSTS:
+        return {...state, [payload.cacheId]: state[payload.cacheId] + payload.posts.length}
     }
     return state
   },

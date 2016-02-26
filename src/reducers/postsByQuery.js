@@ -1,11 +1,12 @@
 import { includes, map, toPairs, get } from 'lodash'
 import qs from 'querystring'
-import { appendUniq } from './util'
+import { appendUniq, prependUniq } from './util'
 
 import {
   CREATE_POST,
   CLEAR_CACHE,
-  FETCH_POSTS
+  FETCH_POSTS,
+  MERGE_STAGED_POSTS
 } from '../actions'
 
 export default function (state = {}, action) {
@@ -40,6 +41,9 @@ export default function (state = {}, action) {
       if (payload.bucket === 'postsByCommunity') {
         return {...state, [payload.id]: null}
       }
+      break
+    case MERGE_STAGED_POSTS:
+      return prependUniq(state, payload.cacheId, map(payload.posts, 'id'))
   }
 
   return state

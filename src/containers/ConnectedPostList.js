@@ -15,6 +15,7 @@ export const fetch = fetchWithCache(fetchPosts)
     keys(omitBy(state.postEdits, isNull)),
     listProps.posts.map(p => p.id)
   )
+
   return {...listProps, editingPostIds}
 })
 export class ConnectedPostList extends React.Component {
@@ -22,6 +23,7 @@ export class ConnectedPostList extends React.Component {
     subject: string.isRequired,
     id: string.isRequired,
     posts: array,
+    stagedPosts: array,
     dispatch: func,
     total: number,
     pending: bool,
@@ -37,15 +39,28 @@ export class ConnectedPostList extends React.Component {
     }
   }
 
+  componentDidMount () {
+    let { dispatch, subject, id, query } = this.props
+    setInterval(() => dispatch(fetch(subject, id, {staged: true, ...query})),
+      15 * 1000)
+  }
+
   shouldComponentUpdate (nextProps) {
     return !isEqual(this.props, nextProps)
   }
 
   render () {
-    let { posts, total, pending, editingPostIds } = this.props
+    let { posts, stagedPosts, total, pending, editingPostIds } = this.props
+
+    let newPosts
+
+    if (stagedPosts.length > 0) {
+      newPosts = () => console.log('New Posts', stagedPosts)
+    }
+
     if (!posts) posts = []
     debug(`posts: ${posts.length} / ${total || '??'}`)
-    return <PostList {...{posts, editingPostIds, pending}} loadMore={this.loadMore}/>
+    return <PostList {...{posts, editingPostIds, pending, newPosts}} loadMore={this.loadMore}/>
   }
 }
 

@@ -1,4 +1,4 @@
-import { includes, map, toPairs } from 'lodash'
+import { includes, map, toPairs, get } from 'lodash'
 import qs from 'querystring'
 import { appendUniq } from './util'
 
@@ -10,6 +10,7 @@ import {
 
 export default function (state = {}, action) {
   if (action.error) return state
+  if (get(action, 'meta.staged')) return state
 
   let { type, payload, meta } = action
   switch (type) {

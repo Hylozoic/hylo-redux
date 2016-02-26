@@ -26,6 +26,7 @@ import {
   voteOnPost
 } from '../actions'
 import { same } from '../models'
+import decode from 'ent/decode'
 
 const spacer = <span>&nbsp; •&nbsp; </span>
 
@@ -73,7 +74,7 @@ class Post extends React.Component {
     var style = image ? {backgroundImage: `url(${image.url})`} : {}
     var classes = cx('post', post.type, {expanded: expanded, image: !!image})
 
-    let title = post.name
+    let title = decode(post.name || '')
     let person = post.user
 
     let isEvent = post.type === 'event'

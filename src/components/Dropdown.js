@@ -23,6 +23,18 @@ export default class Dropdown extends React.Component {
     }
   }
 
+  hide = event => {
+    if (this.state.active) this.setState({active: false})
+  }
+
+  componentDidMount () {
+    window.addEventListener('click', this.hide)
+  }
+
+  componentWillUnmount () {
+    window.removeEventListener('click', this.hide)
+  }
+
   render () {
     let { toggleChildren, className, children, alignRight } = this.props
     let { active } = this.state

@@ -1,5 +1,6 @@
 import {
   CHANGE_EVENT_RESPONSE_PENDING,
+  CREATE_COMMENT,
   CREATE_POST,
   FETCH_POST,
   FETCH_POSTS,
@@ -10,7 +11,7 @@ import {
   VOTE_ON_POST_PENDING
 } from '../actions'
 import { omit, find, without } from 'lodash'
-import { mergeList } from './util'
+import { cloneSet, mergeList } from './util'
 import { same } from '../models'
 
 const normalize = post => ({
@@ -85,23 +86,10 @@ export default function (state = {}, action) {
       post = state[id]
       let person = meta.person
       let follower = find(post.followers, same('id', person))
-      if (follower) {
-        return {
-          ...state,
-          [id]: {
-            ...post,
-            followers: without(post.followers, follower)
-          }
-        }
-      } else {
-        return {
-          ...state,
-          [id]: {
-            ...post,
-            followers: (post.followers || []).concat(person)
-          }
-        }
-      }
+      let newFollowers = follower
+        ? without(post.followers, follower)
+        : (post.followers || []).concat(person)
+      return cloneSet(state, `${id}.followers`, newFollowers)
   }
   return state
 }

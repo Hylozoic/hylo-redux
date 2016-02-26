@@ -1,4 +1,4 @@
-import { filter, merge, transform, uniq } from 'lodash'
+import { cloneDeep, filter, merge, set, transform, uniq } from 'lodash'
 
 export function appendUniq (state, key, values) {
   let existing = state[key] || []
@@ -36,4 +36,10 @@ export const mergeList = (state, items, key) => {
   }, {})
 
   return {...state, ...mergedItems}
+}
+
+export const cloneSet = (state, path, value) => {
+  let newState = cloneDeep(state)
+  set(newState, path, value)
+  return newState
 }

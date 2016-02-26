@@ -32,6 +32,7 @@ export const FETCH_POST = 'FETCH_POST'
 export const FETCH_POSTS = 'FETCH_POSTS'
 export const FETCH_PROJECT = 'FETCH_PROJECT'
 export const FETCH_PROJECTS = 'FETCH_PROJECTS'
+export const FOLLOW_POST = 'FOLLOW_POST'
 export const JOIN_COMMUNITY_WITH_CODE = 'JOIN_COMMUNITY_WITH_CODE'
 export const JOIN_PROJECT = 'JOIN_PROJECT'
 export const JOIN_PROJECT_PENDING = JOIN_PROJECT + _PENDING
@@ -549,5 +550,13 @@ export function fetchLiveStatus () {
   return {
     type: FETCH_LIVE_STATUS,
     payload: {api: true, path: `/noo/live-status`}
+  }
+}
+
+export function followPost (id, person) {
+  return {
+    type: FOLLOW_POST,
+    payload: {api: true, path: `/noo/post/${id}/follow`, method: 'POST'},
+    meta: {id, person: pick(person, 'id', 'name', 'avatar_url')}
   }
 }

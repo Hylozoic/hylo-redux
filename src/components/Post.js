@@ -1,6 +1,6 @@
 import React from 'react'
 import { Link } from 'react-router'
-import { filter, find, get, isEmpty, first, without } from 'lodash'
+import { filter, find, get, isEmpty, first, some, without } from 'lodash'
 import { projectUrl } from '../routes'
 const { array, bool, func, object, string } = React.PropTypes
 import cx from 'classnames'
@@ -20,10 +20,12 @@ import {
   changeEventResponse,
   createComment,
   fetchComments,
+  followPost,
   removePost,
   startPostEdit,
   voteOnPost
 } from '../actions'
+import { same } from '../models'
 
 const spacer = <span>&nbsp; •&nbsp; </span>
 
@@ -63,25 +65,8 @@ class Post extends React.Component {
     this.setState({commentsExpanded: !this.state.commentsExpanded})
   }
 
-  vote = () => {
-    let { dispatch, post } = this.props
-    dispatch(voteOnPost(post))
-  }
-
-  edit = () => {
-    let { dispatch, post } = this.props
-    dispatch(startPostEdit(post))
-  }
-
-  remove = () => {
-    let { dispatch, post } = this.props
-    if (confirm('Are you sure? This cannot be undone.')) {
-      dispatch(removePost(post.id))
-    }
-  }
-
   render () {
-    let { post, expanded, currentUser } = this.props
+    let { post, expanded, currentUser, dispatch } = this.props
     if (post.type === 'welcome') return this.renderWelcome()
 
     let image = find(post.media, m => m.type === 'image')
@@ -99,24 +84,12 @@ class Post extends React.Component {
       var eventTimeFull = timeRangeFull(start, end)
     }
 
-    let canEdit = (currentUser && currentUser.id === person.id)
-
     return <div className={classes} onClick={this.expand}>
       <div className='header'>
+        {expanded && <CaretMenu {...{dispatch, post, currentUser}}/>}
         <Avatar person={person}/>
-
-        {expanded && <Dropdown className='post-menu' alignRight={true} toggleChildren={
-            <i className='icon-down'></i>
-          }>
-            {canEdit && <li><a onClick={this.edit}>Edit</a></li>}
-            {canEdit && <li><a onClick={this.remove}>Remove</a></li>}
-            <li>
-              <a onClick={() => window.alert('TODO')}>Report objectionable content</a>
-            </li>
-          </Dropdown>}
-
         <span className='name'>{person.name}</span>
-        <PostMeta post={post} toggleComments={this.toggleComments} vote={this.vote}/>
+        <PostMeta post={post} toggleComments={this.toggleComments} dispatch={dispatch}/>
       </div>
 
       <p className='title'>{title}</p>
@@ -153,12 +126,36 @@ export default connect(({ comments, commentsByPost, people, postEdits, communiti
 
 export const UndecoratedPost = Post // for testing
 
-const PostMeta = ({ post, toggleComments, vote }, { postDisplayMode }) => {
+const CaretMenu = ({ dispatch, post, currentUser }) => {
+  let canEdit = same('id', currentUser, post.user)
+  let following = some(post.followers, same('id', currentUser))
+
+  const edit = () => dispatch(startPostEdit(post))
+  const remove = () => confirm('Are you sure? This cannot be undone.') &&
+    dispatch(removePost(post.id))
+
+  return <Dropdown className='post-menu' alignRight={true}
+    toggleChildren={<i className='icon-down'></i>}>
+    {canEdit && <li><a onClick={edit}>Edit</a></li>}
+    {canEdit && <li><a onClick={remove}>Remove</a></li>}
+    <li>
+      <a onClick={() => dispatch(followPost(post.id, currentUser))}>
+        Turn {following ? 'off' : 'on'} notifications for this post
+      </a>
+    </li>
+    <li>
+      <a onClick={() => window.alert('TODO')}>Report objectionable content</a>
+    </li>
+  </Dropdown>
+}
+
+const PostMeta = ({ post, toggleComments, dispatch }, { postDisplayMode }) => {
   const now = new Date()
   const createdAt = new Date(post.created_at)
   const updatedAt = new Date(post.updated_at)
   const shouldShowUpdatedAt = (now - updatedAt) < (now - createdAt) * 0.8
   let project = postDisplayMode !== 'project' && get(post, 'projects.0')
+  let vote = () => dispatch(voteOnPost(post))
 
   return <div className='meta'>
     <A to={`/p/${post.id}`}>{nonbreaking(humanDate(createdAt))}</A>

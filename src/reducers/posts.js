@@ -3,6 +3,7 @@ import {
   CREATE_POST,
   FETCH_POST,
   FETCH_POSTS,
+  FOLLOW_POST,
   REMOVE_POST,
   UPDATE_POST,
   VOTE_ON_POST,
@@ -10,6 +11,7 @@ import {
 } from '../actions'
 import { omit, find, without } from 'lodash'
 import { mergeList } from './util'
+import { same } from '../models'
 
 const normalize = post => ({
   ...post,
@@ -78,6 +80,28 @@ export default function (state = {}, action) {
     case REMOVE_POST:
       id = meta.id
       return {...state, [id]: null}
+    case FOLLOW_POST:
+      id = meta.id
+      post = state[id]
+      let person = meta.person
+      let follower = find(post.followers, same('id', person))
+      if (follower) {
+        return {
+          ...state,
+          [id]: {
+            ...post,
+            followers: without(post.followers, follower)
+          }
+        }
+      } else {
+        return {
+          ...state,
+          [id]: {
+            ...post,
+            followers: (post.followers || []).concat(person)
+          }
+        }
+      }
   }
   return state
 }

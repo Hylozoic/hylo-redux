@@ -139,24 +139,9 @@ class Post extends React.Component {
   }
 
   renderWelcome () {
-    let { post, communities, expanded, dispatch } = this.props
-    let person = post.relatedUsers[0]
-    return <div className='post welcome'>
-      <Avatar person={person}/>
-      <div className='header'>
-        <strong><A to={`/u/${person.id}`}>{person.name}</A></strong> joined&ensp;
-        {communities[0]
-          ? <A to={`/c/${communities[0].slug}`}>{communities[0].name}</A>
-          : <span>a community that is no longer active</span>
-        }.&ensp;
-        {communities[0] && <a className='open-comments' onClick={this.toggleComments}>Welcome them!</a>}
-        <PostMeta post={post} toggleComments={this.toggleComments}/>
-      </div>
-      {expanded && <ExpandedPostDetails
-        onCommentCreate={text => dispatch(createComment(post.id, text))}
-        commentsExpanded={this.state.commentsExpanded}
-        {...this.props}/>}
-    </div>
+    let { toggleComments } = this
+    let { commentsExpanded } = this.state
+    return <WelcomePost {...{...this.props, toggleComments, commentsExpanded}}/>
   }
 }
 
@@ -295,4 +280,25 @@ const Followers = props => {
   } else {
     return <span />
   }
+}
+
+const WelcomePost = props => {
+  let { post, communities, expanded, dispatch, toggleComments, commentsExpanded } = props
+  let person = post.relatedUsers[0]
+  return <div className='post welcome'>
+    <Avatar person={person}/>
+    <div className='header'>
+      <strong><A to={`/u/${person.id}`}>{person.name}</A></strong> joined&ensp;
+      {communities[0]
+        ? <A to={`/c/${communities[0].slug}`}>{communities[0].name}</A>
+        : <span>a community that is no longer active</span>
+      }.&ensp;
+      {communities[0] && <a className='open-comments' onClick={toggleComments}>Welcome them!</a>}
+      <PostMeta post={post} toggleComments={toggleComments}/>
+    </div>
+    {expanded && <ExpandedPostDetails
+      onCommentCreate={text => dispatch(createComment(post.id, text))}
+      commentsExpanded={commentsExpanded}
+      {...props}/>}
+  </div>
 }

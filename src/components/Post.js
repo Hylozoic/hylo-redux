@@ -2,7 +2,7 @@ import React from 'react'
 import { Link } from 'react-router'
 import { filter, find, first, get, isEmpty, map, pick, some, without } from 'lodash'
 import { projectUrl } from '../routes'
-const { array, bool, func, object } = React.PropTypes
+const { array, bool, func, object, string } = React.PropTypes
 import cx from 'classnames'
 import { humanDate, nonbreaking, present, sanitize, timeRange, timeRangeFull } from '../util/text'
 import truncate from 'html-truncate'
@@ -90,10 +90,45 @@ class Post extends React.Component {
     let image = find(post.media, m => m.type === 'image')
     var classes = cx('post', post.type, {expanded: expanded, image: !!image})
 
+    let style = image ? {backgroundImage: `url(${image.url})`} : {}
+    let title = decode(post.name || '')
+    let person = post.type === 'welcome'
+      ? post.relatedUsers[0]
+      : post.user
+
+    let isEvent = post.type === 'event'
+    if (isEvent) {
+      let start = new Date(post.start_time)
+      let end = post.end_time && new Date(post.end_time)
+      var eventTime = timeRange(start, end)
+      var eventTimeFull = timeRangeFull(start, end)
+    }
+
     return <div className={classes} onClick={this.expand}>
-      {post.type === 'welcome'
-        ? <WelcomePostHeader communities={communities} voters={voters}/>
-        : <NormalPostHeader expanded={expanded} image={image} voters={voters}/>}
+      <div className='header'>
+        {expanded && <CaretMenu/>}
+        <Avatar person={person}/>
+        {post.type === 'welcome'
+          ? <WelcomePostHeader communities={communities}/>
+          : <span>
+              <A className='name' to={`/u/${person.id}`}>{person.name}</A>
+            </span>}
+        <PostMeta voters={voters}/>
+      </div>
+
+      <p className='title'>{title}</p>
+
+      {isEvent && <p title={eventTimeFull} className='event-time'>
+        <i className='glyphicon glyphicon-time'></i>
+        {eventTime}
+      </p>}
+
+      {post.location && <p title='location' className='post-location'>
+        <i className='glyphicon glyphicon-map-marker'></i>
+        {post.location}
+      </p>}
+
+      {image && <div className='image' style={style}/>}
 
       {expanded && <PostDetails
         {...{comments, showingComments, communities, commentingDisabled}}/>}
@@ -115,65 +150,22 @@ export default connect((state, { post }) => {
 
 export const UndecoratedPost = Post // for testing
 
-const NormalPostHeader = ({ image, expanded, voters }, { post }) => {
-  var style = image ? {backgroundImage: `url(${image.url})`} : {}
-  let title = decode(post.name || '')
-  let person = post.user
-
-  let isEvent = post.type === 'event'
-  if (isEvent) {
-    let start = new Date(post.start_time)
-    let end = post.end_time && new Date(post.end_time)
-    var eventTime = timeRange(start, end)
-    var eventTimeFull = timeRangeFull(start, end)
-  }
-
-  return <div>
-    <div className='header'>
-      {expanded && <CaretMenu/>}
-      <Avatar person={person}/>
-      <A className='name' to={`/u/${person.id}`}>{person.name}</A>
-      <PostMeta voters={voters}/>
-    </div>
-
-    <p className='title'>{title}</p>
-
-    {isEvent && <p title={eventTimeFull} className='event-time'>
-      <i className='glyphicon glyphicon-time'></i>
-      {eventTime}
-    </p>}
-
-    {post.location && <p title='location' className='post-location'>
-      <i className='glyphicon glyphicon-map-marker'></i>
-      {post.location}
-    </p>}
-
-    {image && <div className='image' style={style}/>}
-  </div>
-}
-
-NormalPostHeader.contextTypes = {post: object}
-
-const WelcomePostHeader = ({ communities, voters }, { post, toggleComments }) => {
+const WelcomePostHeader = ({ communities }, { post, toggleComments }) => {
   let person = post.relatedUsers[0]
   let community = communities[0]
-  return <div>
-    <Avatar person={person}/>
-    <div className='header'>
-      <strong><A to={`/u/${person.id}`}>{person.name}</A></strong> joined&ensp;
-      {community
-        ? <span>
-            <A to={`/c/${community.slug}`}>{community.name}</A>.&ensp;
-            <a className='open-comments' onClick={toggleComments}>
-              Welcome them!
-            </a>
-          </span>
-        : <span>
-            a community that is no longer active.
-          </span>}
-      <PostMeta voters={voters}/>
-    </div>
-  </div>
+  return <span>
+    <strong><A to={`/u/${person.id}`}>{person.name}</A></strong> joined&ensp;
+    {community
+      ? <span>
+          <A to={`/c/${community.slug}`}>{community.name}</A>.&ensp;
+          <a className='open-comments' onClick={toggleComments}>
+            Welcome them!
+          </a>
+        </span>
+      : <span>
+          a community that is no longer active.
+        </span>}
+  </span>
 }
 
 WelcomePostHeader.contextTypes = {post: object, toggleComments: func}
@@ -242,7 +234,7 @@ const PostMeta = ({ voters }, { post, toggleComments, dispatch, postDisplayMode 
   </div>
 }
 
-PostMeta.contextTypes = Post.childContextTypes
+PostMeta.contextTypes = {...Post.childContextTypes, postDisplayMode: string}
 
 const PostDetails = (props, { post, toggleComments, currentUser, dispatch }) => {
   let { comments, showingComments, commentingDisabled, communities } = props
@@ -268,7 +260,7 @@ const PostDetails = (props, { post, toggleComments, currentUser, dispatch }) => 
         </a>)}
     </div>}
 
-    <CommunityTags post={post} communities={communities}/>
+    <PostTags post={post} communities={communities}/>
 
     <CommentSection expanded={showingComments}
       {...{post, comments, commentingDisabled}}/>
@@ -277,7 +269,7 @@ const PostDetails = (props, { post, toggleComments, currentUser, dispatch }) => 
 
 PostDetails.contextTypes = Post.childContextTypes
 
-const CommunityTags = ({ post, communities }) =>
+const PostTags = ({ post, communities }) =>
   <ul className='tags'>
     <li className={cx('tag', 'post-type', post.type)}>{post.type}</li>
     {communities.map(c => <li key={c.id} className='tag'>

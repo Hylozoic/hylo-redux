@@ -15,7 +15,7 @@ Experimental version of the Hylo.com frontend, written with React and Redux.
 
 ## Usage
 
-Use node 4+ and npm 3.
+Use node ^5.6.0.
 
 For local development, create a file named `.env` in the project root:
 

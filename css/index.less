@@ -429,9 +429,11 @@ ul.posts {
   }
 
   &.welcome {
-    border: 1px solid transparent;
     padding: 0 15px;
-    > .avatar {
+    &, &.expanded {
+      border: 1px solid transparent;
+    }
+    > div > .avatar {
       float: left;
       margin-right: 10px;
     }
@@ -1496,4 +1498,12 @@ ul.tags {
 .single-post {
   // prevent Intercom button from overlapping comment button
   margin-bottom: 70px;
+}
+
+.comments-section {
+  > a:first-child {
+    margin-top: @p-bottom-margin;
+    display: inline-block;
+    cursor: pointer;
+  }
 }

@@ -1,8 +1,8 @@
 import React from 'react'
 import { Link } from 'react-router'
-import { filter, find, get, isEmpty, first, some, without } from 'lodash'
+import { filter, find, get, isEmpty, first, map, pick, some, without } from 'lodash'
 import { projectUrl } from '../routes'
-const { array, bool, func, object, string } = React.PropTypes
+const { array, bool, func, object } = React.PropTypes
 import cx from 'classnames'
 import { humanDate, nonbreaking, present, sanitize, timeRange, timeRangeFull } from '../util/text'
 import truncate from 'html-truncate'
@@ -18,7 +18,6 @@ import { connect } from 'react-redux'
 import { SHOWED_POST_COMMENTS, trackEvent } from '../util/analytics'
 import {
   changeEventResponse,
-  createComment,
   fetchComments,
   followPost,
   removePost,
@@ -35,21 +34,36 @@ class Post extends React.Component {
     post: object,
     onExpand: func,
     expanded: bool,
-    commentsExpanded: bool,
+    showingComments: bool,
     communities: array,
     comments: array,
+    commentsLoaded: bool,
     dispatch: func,
     commentingDisabled: bool,
     currentUser: object
   }
 
+  static childContextTypes = {
+    currentUser: object,
+    dispatch: func,
+    post: object,
+    toggleComments: func
+  }
+
   constructor (props) {
     super(props)
-    this.state = {commentsExpanded: props.commentsExpanded}
+    this.state = {showingComments: props.showComments}
+  }
+
+  getChildContext () {
+    return {
+      ...pick(this.props, 'currentUser', 'dispatch', 'post'),
+      toggleComments: this.toggleComments
+    }
   }
 
   expand = () => {
-    let {expanded, onExpand, post} = this.props
+    let { expanded, onExpand, post } = this.props
     if (!expanded) onExpand(post.id)
   }
 
@@ -58,76 +72,104 @@ class Post extends React.Component {
     event.preventDefault()
     this.expand()
 
-    let { post, comments } = this.props
-    if (!comments) this.props.dispatch(fetchComments(post.id))
-    if (!this.state.commentsExpanded) {
+    let { post, commentsLoaded } = this.props
+    if (!this.state.showingComments) {
+      if (!commentsLoaded) this.props.dispatch(fetchComments(post.id))
       trackEvent(SHOWED_POST_COMMENTS, {post})
     }
-    this.setState({commentsExpanded: !this.state.commentsExpanded})
+    this.setState({showingComments: !this.state.showingComments})
   }
 
   render () {
-    let { post, expanded, currentUser, dispatch } = this.props
-    if (post.type === 'welcome') return this.renderWelcome()
+    let { post, communities, comments, commentingDisabled, expanded } = this.props
+    let { showingComments } = this.state
 
     let image = find(post.media, m => m.type === 'image')
-    var style = image ? {backgroundImage: `url(${image.url})`} : {}
     var classes = cx('post', post.type, {expanded: expanded, image: !!image})
 
-    let title = decode(post.name || '')
-    let person = post.user
-
-    let isEvent = post.type === 'event'
-    if (isEvent) {
-      let start = new Date(post.start_time)
-      let end = post.end_time && new Date(post.end_time)
-      var eventTime = timeRange(start, end)
-      var eventTimeFull = timeRangeFull(start, end)
-    }
-
     return <div className={classes} onClick={this.expand}>
-      <div className='header'>
-        {expanded && <CaretMenu {...{dispatch, post, currentUser}}/>}
-        <Avatar person={person}/>
-        <span className='name'>{person.name}</span>
-        <PostMeta post={post} toggleComments={this.toggleComments} dispatch={dispatch}/>
-      </div>
+      {post.type === 'welcome'
+        ? <WelcomePostHeader communities={communities}/>
+        : <NormalPostHeader expanded={expanded} image={image}/>}
 
-      <p className='title'>{title}</p>
-
-      {isEvent && <p title={eventTimeFull} className='event-time'>
-        <i className='glyphicon glyphicon-time'></i>
-        {eventTime}
-      </p>}
-
-      {post.location && <p title='location' className='post-location'>
-        <i className='glyphicon glyphicon-map-marker'></i>
-        {post.location}
-      </p>}
-
-      {image && <div className='image' style={style}></div>}
-      {expanded && <ExpandedPostDetails
-        commentsExpanded={this.state.commentsExpanded}
-        {...{image}} {...this.props}/>}
+      {expanded && <PostDetails
+        {...{comments, showingComments, communities, commentingDisabled}}/>}
     </div>
-  }
-
-  renderWelcome () {
-    let { toggleComments } = this
-    let { commentsExpanded } = this.state
-    return <WelcomePost {...{...this.props, toggleComments, commentsExpanded}}/>
   }
 }
 
-export default connect(({ comments, commentsByPost, people, postEdits, communities }, { post }) => ({
-  comments: commentsByPost[post.id] ? commentsByPost[post.id].map(id => comments[id]) : null,
-  currentUser: people.current,
-  communities: post.communities.map(id => find(communities, c => c.id === id))
-}))(Post)
+export default connect((state, { post }) => {
+  let { comments, commentsByPost, people, communities } = state
+  let commentIdsForPost = get(commentsByPost, post.id)
+  return {
+    commentsLoaded: !!commentIdsForPost,
+    comments: map(commentIdsForPost, id => comments[id]),
+    currentUser: people.current,
+    communities: post.communities.map(id => find(communities, c => c.id === id))
+  }
+})(Post)
 
 export const UndecoratedPost = Post // for testing
 
-const CaretMenu = ({ dispatch, post, currentUser }) => {
+const NormalPostHeader = ({ image, expanded }, { post }) => {
+  var style = image ? {backgroundImage: `url(${image.url})`} : {}
+  let title = decode(post.name || '')
+  let person = post.user
+
+  let isEvent = post.type === 'event'
+  if (isEvent) {
+    let start = new Date(post.start_time)
+    let end = post.end_time && new Date(post.end_time)
+    var eventTime = timeRange(start, end)
+    var eventTimeFull = timeRangeFull(start, end)
+  }
+
+  return <div>
+    <div className='header'>
+      {expanded && <CaretMenu/>}
+      <Avatar person={person}/>
+      <span className='name'>{person.name}</span>
+      <PostMeta/>
+    </div>
+
+    <p className='title'>{title}</p>
+
+    {isEvent && <p title={eventTimeFull} className='event-time'>
+      <i className='glyphicon glyphicon-time'></i>
+      {eventTime}
+    </p>}
+
+    {post.location && <p title='location' className='post-location'>
+      <i className='glyphicon glyphicon-map-marker'></i>
+      {post.location}
+    </p>}
+
+    {image && <div className='image' style={style}/>}
+  </div>
+}
+
+NormalPostHeader.contextTypes = {post: object}
+
+const WelcomePostHeader = ({ communities }, { post, toggleComments }) => {
+  let person = post.relatedUsers[0]
+  let community = communities[0]
+  return <div>
+    <Avatar person={person}/>
+    <div className='header'>
+      <strong><A to={`/u/${person.id}`}>{person.name}</A></strong> joined&ensp;
+      {community
+        ? <A to={`/c/${community.slug}`}>{community.name}</A>
+        : <span>a community that is no longer active</span>
+      }.&ensp;
+      {community && <a className='open-comments' onClick={toggleComments}>Welcome them!</a>}
+      <PostMeta/>
+    </div>
+  </div>
+}
+
+WelcomePostHeader.contextTypes = {post: object, toggleComments: func}
+
+const CaretMenu = (props, { dispatch, post, currentUser }) => {
   let canEdit = same('id', currentUser, post.user)
   let following = some(post.followers, same('id', currentUser))
 
@@ -150,7 +192,9 @@ const CaretMenu = ({ dispatch, post, currentUser }) => {
   </Dropdown>
 }
 
-const PostMeta = ({ post, toggleComments, dispatch }, { postDisplayMode }) => {
+CaretMenu.contextTypes = Post.childContextTypes
+
+const PostMeta = (props, { post, toggleComments, dispatch, postDisplayMode }) => {
   const now = new Date()
   const createdAt = new Date(post.created_at)
   const updatedAt = new Date(post.updated_at)
@@ -167,7 +211,10 @@ const PostMeta = ({ post, toggleComments, dispatch }, { postDisplayMode }) => {
       {spacer}updated&nbsp;{nonbreaking(humanDate(updatedAt))}
     </span>}
     {spacer}
-    <a onClick={vote} className='vote'>{post.votes}&nbsp;<i className={post.myVote ? 'icon-heart-new-selected' : 'icon-heart-new'}></i></a>
+    <a onClick={vote} className='vote'>
+      {post.votes}&nbsp;
+      <i className={`icon-heart-new${post.myVote ? '-selected' : ''}`}></i>
+    </a>
     {spacer}
     <a onClick={toggleComments} href='#'>
       {post.numComments}&nbsp;comment{post.numComments === 1 ? '' : 's'}
@@ -179,15 +226,12 @@ const PostMeta = ({ post, toggleComments, dispatch }, { postDisplayMode }) => {
   </div>
 }
 
-PostMeta.contextTypes = {
-  postDisplayMode: string
-}
+PostMeta.contextTypes = Post.childContextTypes
 
-const ExpandedPostDetails = props => {
-  let {
-    post, image, comments, commentsExpanded, currentUser, dispatch,
-    commentingDisabled, communities
-  } = props
+const PostDetails = (props, { post, toggleComments, currentUser, dispatch }) => {
+  let { comments, showingComments, commentingDisabled, communities } = props
+
+  let image = find(post.media, m => m.type === 'image')
   let description = present(sanitize(post.description))
   let attachments = filter(post.media, m => m.type !== 'image')
 
@@ -197,9 +241,7 @@ const ExpandedPostDetails = props => {
     {description && <ClickCatchingDiv className='details post-section'
       dangerouslySetInnerHTML={{__html: description}}/>}
 
-    {post.type === 'event' && <EventRSVP {...{currentUser, dispatch}}
-      postId={post.id} responders={post.responders}/>}
-
+    {post.type === 'event' && <EventRSVP postId={post.id} responders={post.responders}/>}
     <Followers post={post} currentUser={currentUser} />
 
     {!isEmpty(attachments) && <div className='post-section'>
@@ -210,24 +252,39 @@ const ExpandedPostDetails = props => {
         </a>)}
     </div>}
 
-    <div className='meta'>
-      <ul className='tags'>
-        <li className={cx('tag', 'post-type', post.type)}>{post.type}</li>
-        {communities.map(c => <li key={c.id} className='tag'>
-          <Link to={`/c/${c.slug}`}>{c.name}</Link>
-        </li>)}
-      </ul>
-    </div>
+    <CommunityTags post={post} communities={communities}/>
 
-    {commentsExpanded && <div className='comments-section'>
-      {(comments || []).map(c =>
-        <Comment comment={{...c, post_id: post.id}} key={c.id}/>)}
-      {!commentingDisabled && <CommentForm postId={post.id}/>}
-    </div>}
+    <CommentSection expanded={showingComments}
+      {...{post, comments, commentingDisabled}}/>
   </div>
 }
 
-const EventRSVP = ({ currentUser, postId, responders, dispatch }) => {
+PostDetails.contextTypes = Post.childContextTypes
+
+const CommunityTags = ({ post, communities }) =>
+  <ul className='tags'>
+    <li className={cx('tag', 'post-type', post.type)}>{post.type}</li>
+    {communities.map(c => <li key={c.id} className='tag'>
+      <Link to={`/c/${c.slug}`}>{c.name}</Link>
+    </li>)}
+  </ul>
+
+const CommentSection = (props, { toggleComments, post }) => {
+  let { comments, commentingDisabled, expanded } = props
+  let count = Math.max(comments.length, post.numComments || 0)
+  return <div className='comments-section'>
+    {expanded
+      ? (comments || []).map(c =>
+          <Comment comment={{...c, post_id: post.id}} key={c.id}/>)
+      : count > 0 &&
+          <a onClick={toggleComments}>Show {count} comments</a>}
+    {!commentingDisabled && <CommentForm postId={post.id}/>}
+  </div>
+}
+
+CommentSection.contextTypes = {post: object, toggleComments: func}
+
+const EventRSVP = ({ postId, responders }, { currentUser, dispatch }) => {
   let isCurrentUser = r => r.id === get(currentUser, 'id')
   let currentResponse = get(find(responders, isCurrentUser), 'response') || ''
   let onPickResponse = currentUser &&
@@ -236,8 +293,9 @@ const EventRSVP = ({ currentUser, postId, responders, dispatch }) => {
   return <RSVPControl {...{responders, currentResponse, onPickResponse}}/>
 }
 
-const Followers = props => {
-  let { post, currentUser } = props
+EventRSVP.contextTypes = {currentUser: object, dispatch: func}
+
+const Followers = (props, { post, currentUser }) => {
   let { followers } = post
 
   let onlyAuthorIsFollowing = followers.length === 1 && first(followers).id === post.user.id
@@ -256,10 +314,12 @@ const Followers = props => {
       </span>}
       {otherFollowers.slice(0, numShown).map((person, index) => {
         let last = index === numShown - 1
-        return <a key={person.id} href={`/u/${person.id}`}>
-          {person.name}
+        return <span key={person.id}>
+          <a href={`/u/${person.id}`}>
+            {person.name}
+          </a>
           {!last && separator(2)}
-        </a>
+        </span>
       })}
       {hasHidden && ' and '}
       {hasHidden && <Dropdown className='followers-dropdown'
@@ -281,23 +341,4 @@ const Followers = props => {
   }
 }
 
-const WelcomePost = props => {
-  let { post, communities, expanded, dispatch, toggleComments, commentsExpanded } = props
-  let person = post.relatedUsers[0]
-  return <div className='post welcome'>
-    <Avatar person={person}/>
-    <div className='header'>
-      <strong><A to={`/u/${person.id}`}>{person.name}</A></strong> joined&ensp;
-      {communities[0]
-        ? <A to={`/c/${communities[0].slug}`}>{communities[0].name}</A>
-        : <span>a community that is no longer active</span>
-      }.&ensp;
-      {communities[0] && <a className='open-comments' onClick={toggleComments}>Welcome them!</a>}
-      <PostMeta post={post} toggleComments={toggleComments}/>
-    </div>
-    {expanded && <ExpandedPostDetails
-      onCommentCreate={text => dispatch(createComment(post.id, text))}
-      commentsExpanded={commentsExpanded}
-      {...props}/>}
-  </div>
-}
+Followers.contextTypes = {post: object, currentUser: object}

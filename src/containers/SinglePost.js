@@ -19,7 +19,7 @@ const SinglePost = props => {
   if (editing) return <PostEditor post={post} expanded={true}/>
 
   return <div className='single-post'>
-    <Post post={post} expanded={true} commentsExpanded={true} commentingDisabled={!currentUser}/>
+    <Post post={post} expanded={true} showComments={true} commentingDisabled={!currentUser}/>
   </div>
 }
 

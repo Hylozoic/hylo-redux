@@ -4,6 +4,7 @@ import { prefetch } from 'react-fetcher'
 import { connect } from 'react-redux'
 import { debounce } from 'lodash'
 import { fetchCommunities } from '../../actions/fetchCommunities'
+import { FETCH_COMMUNITIES } from '../../actions'
 import { fetchWithCache, connectedListProps, refetch } from '../../util/caching'
 import ScrollListener from '../../components/ScrollListener'
 import CommunityCards from '../../components/CommunityCards'
@@ -18,7 +19,8 @@ const NetworkCommunities = compose(
     return {
       ...connectedListProps(state, {subject, id, query}, 'communities'),
       network: state.networks[id],
-      currentUser: state.people.current
+      currentUser: state.people.current,
+      pending: state.pending[FETCH_COMMUNITIES]
     }
   })
 )(props => {

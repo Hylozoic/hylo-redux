@@ -192,6 +192,7 @@ export default combineReducers({
       toggle(FETCH_ACTIVITY) ||
       toggle(SEND_COMMUNITY_INVITATION) ||
       toggle(FETCH_INVITATIONS) ||
+      toggle(FETCH_COMMUNITIES) ||
       toggle(SEND_PROJECT_INVITE) ||
       toggle(SEARCH) ||
       state

@@ -1,51 +1,73 @@
-.dropdown-menu > li {
-  position: relative;
+.dropdown-menu {
+  max-height: 50vh;
+  overflow-y: scroll;
+  > li {
+    position: relative;
 
-  > a {
-    cursor: pointer;
+    > div {
+      padding: 6px 15px;
+      min-width: 200px;
+      .clearfix;
+    }
 
-    &.remove {
-      float: right;
-      position: absolute;
-      top: 1px;
-      right: -4px;
-      font-size: 18px;
-      padding: 0 4px;
-      line-height: 26px;
-      height: 26px;
-      width: 19px;
-      &:hover {
-        font-weight: bold;
-        color: red;
-        background-color: transparent;
+    > a {
+      cursor: pointer;
+
+      &.remove {
+        float: right;
+        position: absolute;
+        top: 1px;
+        right: -4px;
+        font-size: 18px;
+        padding: 0 4px;
+        line-height: 26px;
+        height: 26px;
+        width: 19px;
+        &:hover {
+          font-weight: bold;
+          color: red;
+          background-color: transparent;
+        }
+      }
+
+      img {
+        margin-right: 5px;
+        position: relative;
+        top: -2px;
       }
     }
 
-    img {
-      margin-right: 5px;
-      position: relative;
-      top: -2px;
+    .avatar {
+      display: inline-block;
+      vertical-align: middle;
+      margin-right: 7px;
     }
   }
 }
 
-.dropdown.active .dropdown-menu {
-  display: block;
+.dropdown {
+  &.inline {
+    display: inline-block;
+  }
+
+  &.active .dropdown-menu {
+    display: block;
+  }
+
+  &.button {
+    .btn;
+    .btn-default;
+    height: 34px;
+    line-height: 32px;
+    padding: 0 9px 0 12px;
+    margin-right: 5px;
+    > a {
+      text-decoration: none;
+    }
+  }
 }
 
 a.dropdown-toggle {
   text-decoration: none;
   cursor: pointer;
-}
-
-.dropdown.button {
-  .btn;
-  .btn-default;
-  height: 34px;
-  line-height: 32px;
-  padding: 0 9px 0 12px;
-  margin-right: 5px;
-  > a {
-    text-decoration: none;
-  }
 }

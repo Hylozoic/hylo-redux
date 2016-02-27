@@ -377,10 +377,10 @@ ul.posts {
   margin-bottom: 15px;
 
   .header {
-    .meta a {
+    .meta > a, .meta > div > a {
       .meta-text;
     }
-    .avatar {
+    > .avatar {
       float: left;
       margin-right: 10px;
     }
@@ -411,6 +411,13 @@ ul.posts {
       vertical-align: middle;
       position: relative;
       top: -1px;
+    }
+
+    &:hover {
+      text-decoration: none;
+      i {
+        color: #f8f;
+      }
     }
 
     .icon-heart-new-selected {
@@ -592,22 +599,6 @@ ul.posts {
 
   .followers {
     margin-bottom: 10px;
-
-    .followers-dropdown {
-      display: inline;
-
-      li {
-        padding: 6px 15px;
-        min-width: 200px;
-      }
-
-      .avatar {
-        display: inline-block;
-        vertical-align: middle;
-        margin-right: 5px;
-      }
-    }
-
   }
 
   .attachment {

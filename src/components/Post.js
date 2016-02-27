@@ -1,6 +1,6 @@
 import React from 'react'
 import { Link } from 'react-router'
-import { filter, find, get, isEmpty, first, map, pick, some, without } from 'lodash'
+import { filter, find, first, get, isEmpty, map, pick, some, without } from 'lodash'
 import { projectUrl } from '../routes'
 const { array, bool, func, object } = React.PropTypes
 import cx from 'classnames'
@@ -14,6 +14,7 @@ import Comment from './Comment'
 import CommentForm from './CommentForm'
 import RSVPControl from './RSVPControl'
 import SharingDropdown from './SharingDropdown'
+import PersonDropdownItem from './PersonDropdownItem'
 import { connect } from 'react-redux'
 import { SHOWED_POST_COMMENTS, trackEvent } from '../util/analytics'
 import {
@@ -24,6 +25,7 @@ import {
   startPostEdit,
   voteOnPost
 } from '../actions'
+import { fetchPeople } from '../actions/fetchPeople'
 import { same } from '../models'
 import decode from 'ent/decode'
 
@@ -40,7 +42,8 @@ class Post extends React.Component {
     commentsLoaded: bool,
     dispatch: func,
     commentingDisabled: bool,
-    currentUser: object
+    currentUser: object,
+    voters: array
   }
 
   static childContextTypes = {
@@ -81,7 +84,7 @@ class Post extends React.Component {
   }
 
   render () {
-    let { post, communities, comments, commentingDisabled, expanded } = this.props
+    let { post, communities, comments, commentingDisabled, expanded, voters } = this.props
     let { showingComments } = this.state
 
     let image = find(post.media, m => m.type === 'image')
@@ -89,8 +92,8 @@ class Post extends React.Component {
 
     return <div className={classes} onClick={this.expand}>
       {post.type === 'welcome'
-        ? <WelcomePostHeader communities={communities}/>
-        : <NormalPostHeader expanded={expanded} image={image}/>}
+        ? <WelcomePostHeader communities={communities} voters={voters}/>
+        : <NormalPostHeader expanded={expanded} image={image} voters={voters}/>}
 
       {expanded && <PostDetails
         {...{comments, showingComments, communities, commentingDisabled}}/>}
@@ -99,19 +102,20 @@ class Post extends React.Component {
 }
 
 export default connect((state, { post }) => {
-  let { comments, commentsByPost, people, communities } = state
-  let commentIdsForPost = get(commentsByPost, post.id)
+  let { comments, commentsByPost, people, peopleByQuery, communities } = state
+  let commentIds = commentsByPost[post.id]
   return {
-    commentsLoaded: !!commentIdsForPost,
-    comments: map(commentIdsForPost, id => comments[id]),
+    commentsLoaded: !!commentIds,
+    comments: map(commentIds, id => comments[id]),
     currentUser: people.current,
-    communities: post.communities.map(id => find(communities, c => c.id === id))
+    communities: post.communities.map(id => find(communities, c => c.id === id)),
+    voters: map(peopleByQuery[`subject=voters&id=${post.id}`], id => people[id])
   }
 })(Post)
 
 export const UndecoratedPost = Post // for testing
 
-const NormalPostHeader = ({ image, expanded }, { post }) => {
+const NormalPostHeader = ({ image, expanded, voters }, { post }) => {
   var style = image ? {backgroundImage: `url(${image.url})`} : {}
   let title = decode(post.name || '')
   let person = post.user
@@ -128,8 +132,8 @@ const NormalPostHeader = ({ image, expanded }, { post }) => {
     <div className='header'>
       {expanded && <CaretMenu/>}
       <Avatar person={person}/>
-      <span className='name'>{person.name}</span>
-      <PostMeta/>
+      <A className='name' to={`/u/${person.id}`}>{person.name}</A>
+      <PostMeta voters={voters}/>
     </div>
 
     <p className='title'>{title}</p>
@@ -150,7 +154,7 @@ const NormalPostHeader = ({ image, expanded }, { post }) => {
 
 NormalPostHeader.contextTypes = {post: object}
 
-const WelcomePostHeader = ({ communities }, { post, toggleComments }) => {
+const WelcomePostHeader = ({ communities, voters }, { post, toggleComments }) => {
   let person = post.relatedUsers[0]
   let community = communities[0]
   return <div>
@@ -158,11 +162,16 @@ const WelcomePostHeader = ({ communities }, { post, toggleComments }) => {
     <div className='header'>
       <strong><A to={`/u/${person.id}`}>{person.name}</A></strong> joined&ensp;
       {community
-        ? <A to={`/c/${community.slug}`}>{community.name}</A>
-        : <span>a community that is no longer active</span>
-      }.&ensp;
-      {community && <a className='open-comments' onClick={toggleComments}>Welcome them!</a>}
-      <PostMeta/>
+        ? <span>
+            <A to={`/c/${community.slug}`}>{community.name}</A>.&ensp;
+            <a className='open-comments' onClick={toggleComments}>
+              Welcome them!
+            </a>
+          </span>
+        : <span>
+            a community that is no longer active.
+          </span>}
+      <PostMeta voters={voters}/>
     </div>
   </div>
 }
@@ -192,15 +201,16 @@ const CaretMenu = (props, { dispatch, post, currentUser }) => {
   </Dropdown>
 }
 
-CaretMenu.contextTypes = Post.childContextTypes
+CaretMenu.contextTypes = {dispatch: func, post: object, currentUser: object}
 
-const PostMeta = (props, { post, toggleComments, dispatch, postDisplayMode }) => {
+const PostMeta = ({ voters }, { post, toggleComments, dispatch, postDisplayMode }) => {
   const now = new Date()
   const createdAt = new Date(post.created_at)
   const updatedAt = new Date(post.updated_at)
   const shouldShowUpdatedAt = (now - updatedAt) < (now - createdAt) * 0.8
   let project = postDisplayMode !== 'project' && get(post, 'projects.0')
   let vote = () => dispatch(voteOnPost(post))
+  let fetchVoters = () => dispatch(fetchPeople({subject: 'voters', id: post.id}))
 
   return <div className='meta'>
     <A to={`/p/${post.id}`}>{nonbreaking(humanDate(createdAt))}</A>
@@ -211,8 +221,14 @@ const PostMeta = (props, { post, toggleComments, dispatch, postDisplayMode }) =>
       {spacer}updated&nbsp;{nonbreaking(humanDate(updatedAt))}
     </span>}
     {spacer}
+    {post.votes === 0
+      ? '0'
+      : <Dropdown className='inline'
+          onFirstOpen={fetchVoters}
+          toggleChildren={<span>{post.votes}</span>}>
+          {voters.map(p => <PersonDropdownItem key={p.id} person={p}/>)}
+        </Dropdown>}
     <a onClick={vote} className='vote'>
-      {post.votes}&nbsp;
       <i className={`icon-heart-new${post.myVote ? '-selected' : ''}`}></i>
     </a>
     {spacer}
@@ -296,42 +312,33 @@ const EventRSVP = ({ postId, responders }, { currentUser, dispatch }) => {
 EventRSVP.contextTypes = {currentUser: object, dispatch: func}
 
 const Followers = (props, { post, currentUser }) => {
-  let { followers } = post
+  let { followers, length } = post
 
-  let onlyAuthorIsFollowing = followers.length === 1 && first(followers).id === post.user.id
-  let meInFollowers = (currentUser && find(followers, {id: currentUser.id}))
+  let onlyAuthorIsFollowing = length === 1 && same('id', first(followers), post.user)
+  let meInFollowers = find(followers, same('id', currentUser))
   let otherFollowers = meInFollowers ? without(followers, meInFollowers) : followers
 
   let numShown = 2
   let num = otherFollowers.length
   let hasHidden = num > numShown
-  let separator = threshold => num > threshold ? ', ' : (num === threshold ? ' and ' : '')
+  let separator = threshold =>
+    num > threshold ? ', ' : (num === threshold ? ' and ' : '')
 
   if (followers.length > 0 && !onlyAuthorIsFollowing) {
     return <div className='meta followers'>
-      {meInFollowers && <span>
-        You{separator(1)}
-      </span>}
-      {otherFollowers.slice(0, numShown).map((person, index) => {
-        let last = index === numShown - 1
-        return <span key={person.id}>
-          <a href={`/u/${person.id}`}>
-            {person.name}
-          </a>
-          {!last && separator(2)}
-        </span>
-      })}
+      {meInFollowers && <span>You{separator(1)}</span>}
+      {otherFollowers.slice(0, numShown).map((person, index) =>
+        <span key={person.id}>
+          <a href={`/u/${person.id}`}>{person.name}</a>
+          {index !== numShown - 1 && separator(2)}
+        </span>)}
       {hasHidden && ' and '}
-      {hasHidden && <Dropdown className='followers-dropdown'
+      {hasHidden && <Dropdown className='inline'
         toggleChildren={<span>
           {num - numShown} other{num - numShown > 1 ? 's' : ''}
         </span>}>
-        {otherFollowers.slice(numShown).map(f => <li key={f.id}>
-          <div>
-            <Avatar person={f}/>
-            <Link to={`/u/${f.id}`}>{f.name}</Link>
-          </div>
-        </li>)}
+        {otherFollowers.slice(numShown).map(p =>
+          <PersonDropdownItem key={p.id} person={p}/>)}
       </Dropdown>}
       &nbsp;{meInFollowers || num > 1 ? 'are' : 'is'} following this.
 

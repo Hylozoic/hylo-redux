@@ -1,6 +1,6 @@
 import qs from 'querystring'
 
-import { compact, includes, omitBy, upperFirst, difference } from 'lodash'
+import { compact, includes, omitBy, upperFirst } from 'lodash'
 import {
   navigate,
   FETCH_COMMUNITIES,
@@ -61,16 +61,16 @@ export const connectedListProps = (state, props, itemType) => {
   let cacheId = createCacheId(subject, id, query)
   let itemKey = `${itemType}ByQuery`
   let itemCountKey = `total${upperFirst(itemType)}ByQuery`
-  let stagedItemKey = `staged${upperFirst(itemKey)}`
+  let newItemKey = `new${upperFirst(itemType)}ByQuery`
 
   let itemIds = compact(state[itemKey][cacheId] || [])
-  let stagedIds = difference((state[stagedItemKey] || {})[cacheId] || [], itemIds)
+  let newItems = (state[newItemKey] || {})[cacheId]
 
   return {
     [itemType]: itemIds.map(getItem),
     total: state[itemCountKey][cacheId],
     pending: state.pending[actionType],
-    [`staged${upperFirst(itemType)}`]: stagedIds.map(getItem)
+    [`new${upperFirst(itemType)}`]: newItems
   }
 }
 

@@ -11,7 +11,7 @@ class PostList extends React.Component {
   static propTypes = {
     posts: array,
     loadMore: func,
-    newPosts: func,
+    refreshPostList: func,
     pending: bool,
     editingPostIds: array
   }
@@ -48,7 +48,7 @@ class PostList extends React.Component {
   }
 
   render () {
-    let { posts, editingPostIds, pending, loadMore, newPosts } = this.props
+    let { posts, editingPostIds, pending, loadMore, refreshPostList } = this.props
     let { project } = this.context
 
     if (!pending && posts.length === 0) {
@@ -57,8 +57,8 @@ class PostList extends React.Component {
 
     return <ul className='posts'>
       {pending && <li className='loading'>Loading...</li>}
-      {newPosts && <li>
-        <div className='post new-posts'>New Posts are available. <a onClick={newPosts}>Refresh</a></div>
+      {refreshPostList && <li>
+        <div className='post new-posts'>New Posts are available. <a onClick={refreshPostList}>Refresh</a></div>
       </li>}
       {posts.map(p => <li key={p.id} ref={p.id}>
         {includes(editingPostIds, p.id)

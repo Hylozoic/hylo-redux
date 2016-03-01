@@ -425,11 +425,11 @@ export function markAllActivitiesRead () {
   }
 }
 
-export function thank (commentId, userId) {
+export function thank (commentId, currentUser) {
   return {
     type: THANK,
     payload: {api: true, params: {unread: false}, path: `/noo/comment/${commentId}/thank`, method: 'POST'},
-    meta: {commentId, userId}
+    meta: {commentId, person: pick(currentUser, 'id', 'name', 'avatar_url')}
   }
 }
 

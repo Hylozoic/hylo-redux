@@ -1,5 +1,5 @@
-import { hashBy } from './util'
-import { filter, find } from 'lodash'
+import { hashBy, toggleIncludes } from './util'
+import { filter, some } from 'lodash'
 import {
   FETCH_ACTIVITY,
   FETCH_COMMENTS,
@@ -16,15 +16,13 @@ export default function (state = {}, action) {
   // the cases where there isn't a payload
   switch (type) {
     case THANK_PENDING:
-      let { commentId, userId } = meta
-      let userThanks = find(state[commentId].thanks, t => t.thanked_by_id === userId)
-      var updatedComment
-      if (userThanks) {
-        updatedComment = {...state[commentId], thanks: filter(state[commentId].thanks, t => t.thanked_by_id !== userId)}
-      } else {
-        updatedComment = {...state[commentId], thanks: state[commentId].thanks.concat([{comment_id: commentId, thanked_by_id: userId}])}
+      let { commentId, person } = meta
+      let thanks = toggleIncludes(state[commentId].thanks, person)
+      let isThanked = some(thanks, person)
+      return {
+        ...state,
+        [commentId]: {...state[commentId], thanks, isThanked}
       }
-      return {...state, [commentId]: updatedComment}
   }
 
   if (!payload) return state

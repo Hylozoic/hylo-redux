@@ -4,13 +4,17 @@ import A from './A'
 import ClickCatchingDiv from './ClickCatchingDiv'
 import {humanDate, sanitize, present} from '../util/text'
 import { commentUrl } from '../routes'
-var { object } = React.PropTypes
+import { thank } from '../actions'
+import Dropdown from './Dropdown'
+import PersonDropdownItem from './PersonDropdownItem'
+var { func, object } = React.PropTypes
 
 const spacer = <span>&nbsp;&nbsp;•&nbsp;&nbsp;</span>
 
-const Comment = ({ comment, displayMode }) => {
+const Comment = ({ comment, displayMode }, { dispatch, currentUser }) => {
   let person = comment.user
   let text = present(sanitize(comment.comment_text))
+  let { isThanked, thanks } = comment
 
   return <div className='comment' data-comment-id={comment.id}>
     <a name={`comment-${comment.id}`}></a>
@@ -24,6 +28,14 @@ const Comment = ({ comment, displayMode }) => {
           {spacer}
           <A to={commentUrl(comment)}>View in context</A>
         </span>}
+        {spacer}
+        {currentUser && <a onClick={() => dispatch(thank(comment.id, currentUser))}>
+          {isThanked ? `You thanked ${person.name.split(' ')[0]}` : 'Say thanks'}
+        </a>}&ensp;
+        {thanks.length > 0 && <Dropdown className='inline'
+          toggleChildren={<span>({thanks.length})</span>}>
+          {thanks.map(p => <PersonDropdownItem key={p.id} person={p}/>)}
+        </Dropdown>}
       </span>
       <ClickCatchingDiv className='text' dangerouslySetInnerHTML={{__html: text}}/>
     </div>
@@ -32,6 +44,11 @@ const Comment = ({ comment, displayMode }) => {
 
 Comment.propTypes = {
   comment: object.isRequired
+}
+
+Comment.contextTypes = {
+  dispatch: func.isRequired,
+  currentUser: object
 }
 
 export default Comment

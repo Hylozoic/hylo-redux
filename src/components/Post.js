@@ -28,6 +28,7 @@ import {
 import { fetchPeople } from '../actions/fetchPeople'
 import { same } from '../models'
 import decode from 'ent/decode'
+import { scrollToAnchor } from '../util/scrolling'
 
 const spacer = <span>&nbsp; •&nbsp; </span>
 
@@ -77,7 +78,8 @@ class Post extends React.Component {
 
     let { post, commentsLoaded } = this.props
     if (!this.state.showingComments) {
-      if (!commentsLoaded) this.props.dispatch(fetchComments(post.id))
+      Promise.resolve(commentsLoaded || this.props.dispatch(fetchComments(post.id)))
+      .then(() => scrollToAnchor(`post-${post.id}-comments`))
       trackEvent(SHOWED_POST_COMMENTS, {post})
     }
     this.setState({showingComments: !this.state.showingComments})
@@ -281,6 +283,7 @@ const CommentSection = (props, { toggleComments, post }) => {
   let { comments, commentingDisabled, expanded } = props
   let count = Math.max(comments.length, post.numComments || 0)
   return <div className='comments-section'>
+    <a name={`post-${post.id}-comments`}></a>
     {expanded
       ? (comments || []).map(c =>
           <Comment comment={{...c, post_id: post.id}} key={c.id}/>)

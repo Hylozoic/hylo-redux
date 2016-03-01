@@ -64,7 +64,7 @@ export const connectedListProps = (state, props, itemType) => {
   let newItemKey = `new${upperFirst(itemType)}ByQuery`
 
   let itemIds = compact(state[itemKey][cacheId] || [])
-  let newItems = (state[newItemKey] || {})[cacheId]
+  let newItems = (state[newItemKey] || {})[cacheId] || false
 
   return {
     [itemType]: itemIds.map(getItem),

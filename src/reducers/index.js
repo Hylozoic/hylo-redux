@@ -15,7 +15,6 @@ import posts from './posts'
 import projectsByQuery from './projectsByQuery'
 import projects from './projects'
 import projectEdits from './projectEdits'
-import stagedPostsByQuery from './stagedPostsByQuery'
 import { UPDATE_PATH } from 'redux-simple-router'
 import { appendUniq } from './util'
 
@@ -37,7 +36,6 @@ import {
   LOGOUT,
   MARK_ACTIVITY_READ,
   MARK_ALL_ACTIVITIES_READ_PENDING,
-  MERGE_STAGED_POSTS,
   NAVIGATE,
   NOTIFY,
   REMOVE_NOTIFICATION,
@@ -162,7 +160,6 @@ export default combineReducers({
   projects,
   projectsByQuery,
   projectEdits,
-  stagedPostsByQuery,
 
   pending: (state = {}, action) => {
     let { type, meta } = action
@@ -217,14 +214,11 @@ export default combineReducers({
 
   totalPostsByQuery: (state = {}, action) => {
     if (action.error) return state
-    if (get(action, 'meta.staged')) return state
 
     let { type, payload, meta } = action
     switch (type) {
       case FETCH_POSTS:
         return {...state, [meta.cache.id]: payload.posts_total}
-      case MERGE_STAGED_POSTS:
-        return {...state, [payload.cacheId]: state[payload.cacheId] + payload.posts.length}
     }
     return state
   },

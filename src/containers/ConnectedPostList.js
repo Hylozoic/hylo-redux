@@ -47,7 +47,7 @@ export class ConnectedPostList extends React.Component {
         subject,
         id,
         posts.map(p => pick(p, ['id', 'updated_at'])),
-        {staged: true, limit: 6, ...query}
+        {limit: 6, ...query}
       )),
       15 * 1000)
   }

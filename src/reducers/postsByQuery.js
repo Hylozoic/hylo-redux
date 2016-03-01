@@ -1,17 +1,15 @@
-import { includes, map, toPairs, get } from 'lodash'
+import { includes, map, toPairs } from 'lodash'
 import qs from 'querystring'
-import { appendUniq, prependUniq } from './util'
+import { appendUniq } from './util'
 
 import {
   CREATE_POST,
   CLEAR_CACHE,
-  FETCH_POSTS,
-  MERGE_STAGED_POSTS
+  FETCH_POSTS
 } from '../actions'
 
 export default function (state = {}, action) {
   if (action.error) return state
-  if (get(action, 'meta.staged')) return state
 
   let { type, payload, meta } = action
   switch (type) {
@@ -42,8 +40,6 @@ export default function (state = {}, action) {
         return {...state, [payload.id]: null}
       }
       break
-    case MERGE_STAGED_POSTS:
-      return prependUniq(state, payload.cacheId, map(payload.posts, 'id'))
   }
 
   return state

@@ -44,7 +44,6 @@ export const MARK_ACTIVITY_READ = 'MARK_ACTIVITY_READ'
 export const MARK_ACTIVITY_READ_PENDING = MARK_ACTIVITY_READ + _PENDING
 export const MARK_ALL_ACTIVITIES_READ = 'MARK_ALL_ACTIVITIES_READ'
 export const MARK_ALL_ACTIVITIES_READ_PENDING = MARK_ALL_ACTIVITIES_READ + _PENDING
-export const MERGE_STAGED_POSTS = 'MERGE_STAGED_POSTS'
 export const NAVIGATE = 'NAVIGATE'
 export const NOTIFY = 'NOTIFY'
 export const REMOVE_COMMUNITY_MODERATOR = 'REMOVE_COMMUNITY_MODERATOR'
@@ -551,12 +550,5 @@ export function fetchLiveStatus () {
   return {
     type: FETCH_LIVE_STATUS,
     payload: {api: true, path: `/noo/live-status`}
-  }
-}
-
-export function mergeStagedPosts (posts, cacheId) {
-  return {
-    type: MERGE_STAGED_POSTS,
-    payload: {posts, cacheId}
   }
 }

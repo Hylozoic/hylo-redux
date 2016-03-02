@@ -18,10 +18,8 @@
       "afterEach",
       "before",
       "beforeEach",
-      "confirm",
       "describe",
       "expect",
-      "FB",
       "it",
       "spy"
     ]

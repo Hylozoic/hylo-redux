@@ -177,7 +177,7 @@ const CaretMenu = (props, { dispatch, post, currentUser }) => {
   let following = some(post.followers, same('id', currentUser))
 
   const edit = () => dispatch(startPostEdit(post))
-  const remove = () => confirm('Are you sure? This cannot be undone.') &&
+  const remove = () => window.confirm('Are you sure? This cannot be undone.') &&
     dispatch(removePost(post.id))
 
   return <Dropdown className='post-menu' alignRight={true}

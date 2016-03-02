@@ -3,7 +3,7 @@ import Dropdown from './Dropdown'
 import { host } from '../config'
 
 let share = href => {
-  FB.ui({
+  window.FB.ui({
     method: 'share',
     href: href
   }, function (response) {})

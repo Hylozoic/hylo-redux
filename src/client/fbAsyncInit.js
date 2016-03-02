@@ -3,7 +3,7 @@ const { appId } = config.facebook
 
 const script = () => {
   window.fbAsyncInit = function () {
-    FB.init({
+    window.FB.init({
       appId: appId,
       xfbml: true,
       version: 'v2.5'

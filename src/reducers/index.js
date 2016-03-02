@@ -20,7 +20,8 @@ import { appendUniq } from './util'
 
 import {
   CANCEL_TYPEAHEAD,
-  CHECK_FRESHNESS,
+  CHECK_FRESHNESS_POSTS,
+  CLEAR_CACHE,
   CREATE_COMMUNITY,
   CREATE_POST,
   CREATE_NETWORK,
@@ -71,6 +72,19 @@ const keyedCounter = (actionType, payloadKey, statePath = 'meta.cache.id') =>
     if (error) return state
     if (type === actionType) {
       return {...state, [get(action, statePath)]: Number(payload[payloadKey])}
+    }
+    return state
+  }
+
+const keyedHasFreshItems = (actionType, bucket) =>
+  (state = {}, action) => {
+    let { type, payload, error, meta } = action
+    if (error) return state
+    if (type === actionType) {
+      return {...state, [meta.cacheId]: payload}
+    }
+    if (type === CLEAR_CACHE && payload.bucket === bucket) {
+      return {...state, [payload.id]: false}
     }
     return state
   }
@@ -202,15 +216,7 @@ export default combineReducers({
     return state
   },
 
-  newPostsByQuery: (state = {}, action) => {
-    if (action.error) return state
-    let { type, payload, meta } = action
-    switch (type) {
-      case CHECK_FRESHNESS:
-        return {...state, [meta.cacheId]: payload}
-    }
-    return state
-  },
+  hasFreshPostsByQuery: keyedHasFreshItems(CHECK_FRESHNESS_POSTS, 'postsByQuery'),
 
   totalPostsByQuery: (state = {}, action) => {
     if (action.error) return state

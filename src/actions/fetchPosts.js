@@ -1,5 +1,5 @@
 import { cleanAndStringify, createCacheId } from '../util/caching'
-import { FETCH_POSTS, CHECK_FRESHNESS } from './index'
+import { FETCH_POSTS, CHECK_FRESHNESS_POSTS } from './index'
 
 export function fetchPosts (opts) {
   let { subject, id, limit, offset, type, sort, search, filter, cacheId } = opts
@@ -46,5 +46,5 @@ export function checkFreshness (subject, id, posts, query = {}) {
 
   var meta = {cacheId}
 
-  return {type: CHECK_FRESHNESS, payload, meta}
+  return {type: CHECK_FRESHNESS_POSTS, payload, meta}
 }

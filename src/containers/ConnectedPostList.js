@@ -5,7 +5,7 @@ import { fetchPosts, checkFreshness } from '../actions/fetchPosts'
 import { debug } from '../util/logging'
 import { clearCache } from '../actions'
 import { connectedListProps, fetchWithCache, createCacheId } from '../util/caching'
-import { intersection, isEqual, isNull, keys, omitBy, pick } from 'lodash'
+import { intersection, isEqual, isNull, keys, omitBy, pick, differenceBy } from 'lodash'
 const { array, bool, func, number, object, string } = React.PropTypes
 
 export const fetch = fetchWithCache(fetchPosts)
@@ -24,7 +24,7 @@ export class ConnectedPostList extends React.Component {
     subject: string.isRequired,
     id: string.isRequired,
     posts: array,
-    newPosts: bool,
+    stale: bool,
     dispatch: func,
     total: number,
     pending: bool,
@@ -40,16 +40,32 @@ export class ConnectedPostList extends React.Component {
     }
   }
 
+  setCheckFreshnessInterval (cachedPosts) {
+    /*
+    let { dispatch, subject, id, query } = this.props
+    var dispatchCheckFreshness = () => dispatch(checkFreshness(
+      subject,
+      id,
+      cachedPosts.map(p => pick(p, ['id', 'updated_at'])),
+      {limit: 5, offset: 0, ...query}
+    ))
+
+    if (this.intervalId) {
+      clearInterval(this.intervalId)
+    }
+
+    this.intervalId = setInterval(dispatchCheckFreshness, 15 * 1000)
+    */
+  }
+
   componentDidMount () {
-    let { dispatch, subject, id, query, posts } = this.props
-    this.intervalId = setInterval(() =>
-      dispatch(checkFreshness(
-        subject,
-        id,
-        posts.map(p => pick(p, ['id', 'updated_at'])),
-        query
-      )),
-      15 * 1000)
+    this.setCheckFreshnessInterval(this.props.posts)
+  }
+
+  componentWillReceiveProps (nextProps) {
+    if (differenceBy(nextProps.posts, this.props.posts, 'id').length !== 0) {
+      this.setCheckFreshnessInterval(nextProps.posts)
+    }
   }
 
   componentWillUnmount () {
@@ -61,12 +77,12 @@ export class ConnectedPostList extends React.Component {
   }
 
   render () {
-    let { dispatch, newPosts, posts, total, pending, editingPostIds, subject, id, query } = this.props
+    let { dispatch, stale, posts, total, pending, editingPostIds, subject, id, query } = this.props
 
     let refreshPostList
-    if (newPosts) {
+    if (stale) {
       refreshPostList = () => {
-        dispatch(clearCache('postsByCommunity', createCacheId(subject, id, query)))
+        dispatch(clearCache('postsByQuery', createCacheId(subject, id, query)))
         dispatch(fetch(subject, id, {...query}))
       }
     }

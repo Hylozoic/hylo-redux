@@ -7,6 +7,7 @@
     "start": "./node_modules/.bin/gulp",
     "es5": "node src-es5/server",
     "test": "./node_modules/.bin/babel-node ./node_modules/.bin/_mocha",
+    "test-client": "./node_modules/.bin/babel-node ./node_modules/.bin/_mocha test/client/index.js",
     "cover": "./node_modules/.bin/babel-node ./node_modules/isparta/bin/isparta cover node_modules/.bin/_mocha",
     "autotest": "./node_modules/.bin/gulp autotest",
     "deploy": "./node_modules/.bin/gulp deploy"
@@ -87,6 +88,7 @@
     "gulp-uglify": "^1.5.1",
     "heroku-client": "^2.4.0",
     "isparta": "3.5.3",
+    "jsdom": "^8.1.0",
     "livereactload": "^2.1.0",
     "mocha": "^2.3.4",
     "nock": "^3.1.1",

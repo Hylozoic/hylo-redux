@@ -140,13 +140,13 @@ class Post extends React.Component {
 
 export default connect((state, { post }) => {
   let { comments, commentsByPost, people, peopleByQuery, communities } = state
-  let commentIds = commentsByPost[post.id]
+  let commentIds = get(commentsByPost, post.id)
   return {
     commentsLoaded: !!commentIds,
     comments: map(commentIds, id => comments[id]),
-    currentUser: people.current,
-    communities: post.communities.map(id => find(communities, c => c.id === id)),
-    voters: map(peopleByQuery[`subject=voters&id=${post.id}`], id => people[id])
+    currentUser: get(people, 'current'),
+    communities: map(post.communities, id => find(communities, same('id', {id}))),
+    voters: map(get(peopleByQuery, `subject=voters&id=${post.id}`), id => people[id])
   }
 })(Post)
 
@@ -202,6 +202,7 @@ const PostMeta = ({ voters }, { post, toggleComments, dispatch, postDisplayMode 
   const createdAt = new Date(post.created_at)
   const updatedAt = new Date(post.updated_at)
   const shouldShowUpdatedAt = (now - updatedAt) < (now - createdAt) * 0.8
+  if (!voters) voters = []
   let project = postDisplayMode !== 'project' && get(post, 'projects.0')
   let vote = () => dispatch(voteOnPost(post))
   let fetchVoters = () => dispatch(fetchPeople({subject: 'voters', id: post.id}))
@@ -274,18 +275,19 @@ PostDetails.contextTypes = Post.childContextTypes
 const PostTags = ({ post, communities }) =>
   <ul className='tags'>
     <li className={cx('tag', 'post-type', post.type)}>{post.type}</li>
-    {communities.map(c => <li key={c.id} className='tag'>
+    {(communities || []).map(c => <li key={c.id} className='tag'>
       <Link to={`/c/${c.slug}`}>{c.name}</Link>
     </li>)}
   </ul>
 
 const CommentSection = (props, { toggleComments, post }) => {
   let { comments, commentingDisabled, expanded } = props
+  if (!comments) comments = []
   let count = Math.max(comments.length, post.numComments || 0)
   return <div className='comments-section'>
     <a name={`post-${post.id}-comments`}></a>
     {expanded
-      ? (comments || []).map(c =>
+      ? comments.map(c =>
           <Comment comment={{...c, post_id: post.id}} key={c.id}/>)
       : count > 0 &&
           <a onClick={toggleComments}>Show {count} comments</a>}
@@ -308,6 +310,7 @@ EventRSVP.contextTypes = {currentUser: object, dispatch: func}
 
 const Followers = (props, { post, currentUser }) => {
   let { followers, length } = post
+  if (!followers) followers = []
 
   let onlyAuthorIsFollowing = length === 1 && same('id', first(followers), post.user)
   let meInFollowers = find(followers, same('id', currentUser))

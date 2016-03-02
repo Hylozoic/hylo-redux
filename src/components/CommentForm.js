@@ -1,12 +1,13 @@
 import React from 'react'
 import RichTextEditor from './RichTextEditor'
+import { get } from 'lodash'
 import { connect } from 'react-redux'
 import { createComment, typeahead } from '../actions'
 import { personTemplate } from '../util/mentions'
 import { ADDED_COMMENT, trackEvent } from '../util/analytics'
 var { array, func, string } = React.PropTypes
 
-@connect(state => ({mentionChoices: state.typeaheadMatches.comment}))
+@connect(state => ({mentionChoices: get(state, 'typeaheadMatches.comment')}))
 export default class CommentForm extends React.Component {
   static propTypes = {
     mentionChoices: array,

@@ -1,3 +1,5 @@
+require('../support')
+import { mocks } from '../../support'
 import { UndecoratedPost } from '../../../src/components/Post'
 import Post from '../../../src/components/Post'
 import React from 'react'
@@ -24,12 +26,6 @@ let post = {
 
 let state = {}
 
-let store = {
-  getState: () => state,
-  subscribe: () => {},
-  dispatch: () => {}
-}
-
 describe('UndecoratedPost', () => {
   let component, node, expand
   before(() => {
@@ -53,10 +49,12 @@ describe('UndecoratedPost', () => {
 
 describe('Post', () => {
   it('renders expanded', () => {
-    let component = <Provider store={store}>
+    let component = <Provider store={mocks.redux.store(state)}>
       <Post post={post} expanded={true}/>
     </Provider>
     let node = renderIntoDocument(component)
     findRenderedDOMComponentWithClass(node, 'post offer expanded')
+    let details = findRenderedDOMComponentWithClass(node, 'details')
+    expect(details.innerHTML).to.equal(`<p>${post.description}</p>`)
   })
 })

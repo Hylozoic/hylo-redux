@@ -113,7 +113,7 @@ const Activity = ({ activity, currentUser, dispatch }) => {
 
   let visit = () => {
     if (unread) dispatch(markActivityRead(activity.id))
-    dispatch(navigate(commentUrl(comment)))
+    dispatch(navigate(commentUrl({...comment, post_id: post.id})))
   }
 
   return <div key={activity.id} className={cx('activity', {unread})}>

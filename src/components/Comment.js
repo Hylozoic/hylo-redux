@@ -1,4 +1,5 @@
 import React from 'react'
+import { isEmpty } from 'lodash'
 import Avatar from './Avatar'
 import A from './A'
 import ClickCatchingDiv from './ClickCatchingDiv'
@@ -11,7 +12,7 @@ var { func, object } = React.PropTypes
 
 const spacer = <span>&nbsp;&nbsp;•&nbsp;&nbsp;</span>
 
-const Comment = ({ comment, displayMode }, { dispatch, currentUser }) => {
+const Comment = ({ comment }, { dispatch, currentUser }) => {
   let person = comment.user
   let text = present(sanitize(comment.comment_text))
   let { isThanked, thanks } = comment
@@ -24,18 +25,21 @@ const Comment = ({ comment, displayMode }, { dispatch, currentUser }) => {
       <span className='meta'>
         {spacer}
         <A to={commentUrl(comment)}>{humanDate(comment.created_at)}</A>
-        {displayMode === 'search' && <span>
-          {spacer}
-          <A to={commentUrl(comment)}>View in context</A>
+        {currentUser && <span>
+          {(currentUser.id !== person.id || !isEmpty(thanks)) && spacer}
+          {currentUser.id !== person.id &&
+            <a onClick={() => dispatch(thank(comment.id, currentUser))}>
+              {isThanked ? `You thanked ${person.name.split(' ')[0]}` : 'Say thanks'}
+            </a>}&ensp;
+          {!isEmpty(thanks) && <Dropdown className='inline'
+            toggleChildren={<span>
+              {currentUser.id !== person.id
+                ? `(${thanks.length})`
+                : `${thanks.length} thanks`}
+            </span>}>
+            {thanks.map(p => <PersonDropdownItem key={p.id} person={p}/>)}
+          </Dropdown>}
         </span>}
-        {spacer}
-        {currentUser && <a onClick={() => dispatch(thank(comment.id, currentUser))}>
-          {isThanked ? `You thanked ${person.name.split(' ')[0]}` : 'Say thanks'}
-        </a>}&ensp;
-        {thanks.length > 0 && <Dropdown className='inline'
-          toggleChildren={<span>({thanks.length})</span>}>
-          {thanks.map(p => <PersonDropdownItem key={p.id} person={p}/>)}
-        </Dropdown>}
       </span>
       <ClickCatchingDiv className='text' dangerouslySetInnerHTML={{__html: text}}/>
     </div>

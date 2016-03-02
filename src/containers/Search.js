@@ -150,6 +150,6 @@ const CommentResult = ({ comment }) => {
           : `"${post.name}"`}
       </A>
     </strong>
-    <Comment comment={comment} displayMode='search'/>
+    <Comment comment={comment}/>
   </div>
 }

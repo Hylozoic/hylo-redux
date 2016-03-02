@@ -20,12 +20,12 @@ export const isProjectOwner = (currentUser, project) =>
   currentUser.id === project.id
 
 // FIXME how to do this without depending on state?
-export const isProjectModerator = (currentUser, project, { peopleByQuery }) => {
+export const isProjectModerator = (currentUser, project, state) => {
   let key = qs.stringify({subject: 'project-moderators', id: project.id})
-  return includes(peopleByQuery[key], currentUser.id)
+  return includes(get(state, `peopleByQuery.${key}`), get(currentUser, 'id'))
 }
 
 export const canModerateProject = (currentUser, project, state) =>
   canModerate(currentUser, {id: project.community_id}) ||
   isProjectModerator(currentUser, project) ||
-  project.user.id === currentUser.id
+  project.user.id === get(currentUser, 'id')

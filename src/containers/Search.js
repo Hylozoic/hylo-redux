@@ -3,7 +3,7 @@ import { prefetch } from 'react-fetcher'
 import { connect } from 'react-redux'
 import { connectedListProps, fetchWithCache, refetch } from '../util/caching'
 import { navigate, search } from '../actions'
-import { debounce, get, isEmpty, some } from 'lodash'
+import { debounce, get, isEmpty, pick, some } from 'lodash'
 import Select from '../components/Select'
 import Comment from '../components/Comment'
 import Avatar from '../components/Avatar'
@@ -26,7 +26,8 @@ const fetch = fetchWithCache(search)
 
 @prefetch(({ dispatch, query }) => query.q && dispatch(fetch(subject, null, query)))
 @connect((state, { location: { query } }) => ({
-  ...connectedListProps(state, {subject, query}, 'searchResults')
+  ...connectedListProps(state, {subject, query}, 'searchResults'),
+  currentUser: state.people.current
 }))
 export default class Search extends React.Component {
   static propTypes = {
@@ -37,9 +38,18 @@ export default class Search extends React.Component {
     pending: bool
   }
 
+  static childContextTypes = {
+    dispatch: func,
+    currentUser: object
+  }
+
   constructor (props) {
     super(props)
     this.state = {textInput: get(props, 'location.query.q')}
+  }
+
+  getChildContext () {
+    return pick(this.props, 'currentUser', 'dispatch')
   }
 
   updateSearch = debounce(opts => {

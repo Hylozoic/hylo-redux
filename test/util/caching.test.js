@@ -31,7 +31,7 @@ describe('connectedListProps', () => {
       posts: [{id: 'a'}, {id: 'c'}],
       total: 20,
       pending: true,
-      newPosts: false
+      stale: false
     }
 
     expect(connectedListProps(state, props, 'posts')).to.deep.equal(expectedProps)

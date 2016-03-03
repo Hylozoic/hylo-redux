@@ -57,7 +57,7 @@ class PostList extends React.Component {
     }
 
     return <span>
-      {refreshPostList || true  && <RefreshButton refresh={refreshPostList} />}
+      {refreshPostList && <RefreshButton refresh={refreshPostList} />}
       <ul className='posts'>
       {pending && <li className='loading'>Loading...</li>}
       {posts.map(p => <li key={p.id} ref={p.id}>

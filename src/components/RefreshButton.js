@@ -27,7 +27,7 @@ export default class RefreshButton extends React.Component {
 
   componentDidMount () {
     this.startingY = position(this.refs['refresh-button']).y
-    this.isStatic = true
+    this.setState({isStatic: viewportTop() < this.startingY})
     window.addEventListener('scroll', this.handleScrollEvents)
   }
 

@@ -1,4 +1,4 @@
-import { filter, merge, transform, uniq } from 'lodash'
+import { cloneDeep, filter, isEqual, merge, set, some, transform, uniq } from 'lodash'
 
 export function appendUniq (state, key, values) {
   let existing = state[key] || []
@@ -45,4 +45,16 @@ export const mergeList = (state, items, key) => {
   }, {})
 
   return {...state, ...mergedItems}
+}
+
+export const cloneSet = (state, path, value) => {
+  let newState = cloneDeep(state)
+  set(newState, path, value)
+  return newState
+}
+
+export const toggleIncludes = (arr, element) => {
+  return some(arr, x => isEqual(x, element))
+    ? filter(arr, x => !isEqual(x, element))
+    : [...arr, element]
 }

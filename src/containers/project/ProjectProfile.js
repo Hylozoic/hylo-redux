@@ -14,6 +14,7 @@ import { A, IndexA } from '../../components/A'
 import SharingDropdown from '../../components/SharingDropdown'
 import { assetUrl } from '../../util/assets'
 import { ogMetaTags } from '../../util'
+import { canModerateProject } from '../../models/currentUser'
 import { Visibility } from '../../models/project'
 import { findError } from '../../actions/util'
 const { bool, func, object } = React.PropTypes
@@ -25,19 +26,14 @@ const { bool, func, object } = React.PropTypes
     let { title, details, media } = payload
     return dispatch(setMetaTags(ogMetaTags(title, details, media[0])))
   }))
-@connect(({ projects, people, peopleByQuery, errors }, { params: { id } }) => {
-  let project = projects[id]
-
-  let currentUser = people.current
-  let key = qs.stringify({subject: 'project-moderators', id})
-
+@connect((state, { params: { id } }) => {
+  let project = state.projects[id]
+  let currentUser = state.people.current
   return {
     project,
     currentUser,
-    canModerate: project && currentUser &&
-      (includes(peopleByQuery[key], currentUser.id) ||
-      project.user.id === currentUser.id),
-    error: findError(errors, FETCH_PROJECT, 'projects', id)
+    canModerate: canModerateProject(currentUser, project, state),
+    error: findError(state.errors, FETCH_PROJECT, 'projects', id)
   }
 })
 export default class ProjectProfile extends React.Component {

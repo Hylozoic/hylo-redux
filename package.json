@@ -7,7 +7,8 @@
     "start": "./node_modules/.bin/gulp",
     "es5": "node src-es5/server",
     "test": "./node_modules/.bin/babel-node ./node_modules/.bin/_mocha",
-    "cover": "./node_modules/.bin/babel-node ./node_modules/isparta/bin/isparta cover node_modules/.bin/_mocha",
+    "test-client": "./node_modules/.bin/babel-node ./node_modules/.bin/_mocha -- test/client/index.js",
+    "cover": "./cover",
     "autotest": "./node_modules/.bin/gulp autotest",
     "deploy": "./node_modules/.bin/gulp deploy"
   },
@@ -18,10 +19,8 @@
       "afterEach",
       "before",
       "beforeEach",
-      "confirm",
       "describe",
       "expect",
-      "FB",
       "it",
       "spy"
     ]
@@ -39,6 +38,7 @@
     "cheerio": "^0.19.0",
     "classnames": "^2.2.0",
     "dotenv": "^1.2.0",
+    "ent": "^2.2.0",
     "express": "^4.13.3",
     "history": "^1.17.0",
     "html-truncate": "^1.2.1",
@@ -88,6 +88,8 @@
     "gulp-uglify": "^1.5.1",
     "heroku-client": "^2.4.0",
     "isparta": "3.5.3",
+    "istanbul-combine": "^0.3.0",
+    "jsdom": "^8.1.0",
     "livereactload": "^2.1.0",
     "mocha": "^2.3.4",
     "nock": "^3.1.1",

@@ -10,17 +10,16 @@ import { promisify } from 'bluebird'
 const matchPromise = promisify(match, {multiArgs: true})
 
 describe('server-side rendering without prefetching', () => {
-  it('renders the logged-out home page', () => {
+  it('renders the login page', () => {
     const store = configureStore({})
     const routes = makeRoutes(store)
 
-    return matchPromise({routes, location: '/'})
+    return matchPromise({routes, location: '/login'})
     .then(([redirectLocation, renderProps]) => {
       let html = renderToString(<Provider store={store}>
         <RoutingContext location='history' {...renderProps}/>
       </Provider>)
 
-      expect(html).to.contain('Home!')
       expect(html).to.contain('Log in')
     })
   })

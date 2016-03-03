@@ -33,7 +33,7 @@ describe('appHandler', () => {
     })
 
     it('sets the error property of the response', () => {
-      req = support.mocks.request('/')
+      req = support.mocks.request('/login')
 
       return appHandler(req, res)
       .then(() => {
@@ -49,8 +49,8 @@ describe('appHandler', () => {
       nock(HOST).get('/noo/user/me').reply(200, {})
     })
 
-    it('prefetches and renders the logged out home page', () => {
-      req = support.mocks.request('/')
+    it('prefetches and renders the login page', () => {
+      req = support.mocks.request('/login')
 
       return appHandler(req, res)
       .then(() => {
@@ -58,8 +58,8 @@ describe('appHandler', () => {
         expect(res.status).to.have.been.called.with(200)
         expect(res.send).to.have.been.called
         expect(res.body).to.contain('<!DOCTYPE html>')
-        expect(res.body).to.contain('Home!')
         expect(res.body).to.contain('Log in')
+        expect(res.body).to.match(/Or <\/span><a class="" href="\/signup" .*>sign up<\/a>/)
       })
     })
 

@@ -1,0 +1,5 @@
+Tests in this folder will be run in a mock client-side React environment. They
+need to be run in isolation from other tests because mocking client-side React
+requires "window" to be defined globally, but that confuses server-side tests.
+
+http://jaketrent.com/post/testing-react-with-jsdom/

@@ -177,7 +177,7 @@ export default class CommunitySettings extends React.Component {
       this.update('active', false)
       .then(({ error }) => {
         if (error) return
-        dispatch(navigate('/all-posts'))
+        dispatch(navigate('/'))
       })
     }
   }

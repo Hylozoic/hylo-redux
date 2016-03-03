@@ -2,7 +2,7 @@ import React from 'react'
 import { prefetch } from 'react-fetcher'
 import { connect } from 'react-redux'
 import { find, get, map } from 'lodash'
-import { communityUrl } from '../../routes'
+import { communityOnboardingUrl } from '../../routes'
 import {
   JOIN_COMMUNITY_WITH_CODE,
   joinCommunityWithCode,
@@ -31,16 +31,14 @@ export default class CommunityJoinLinkHandler extends React.Component {
   // implement checking for redirects that take place during prefetching
   componentDidMount () {
     let { currentUser, dispatch, params: { id } } = this.props
-    if (currentUser) {
-      let community = find(map(currentUser.memberships, 'community'), c => c.slug === id)
-      if (community) {
-        let url = communityUrl(community, {onboarding: true})
-        // for some reason, calling navigate here without wrapping it in
-        // setTimeout results in prefetching not taking place in the
-        // CommunityProfile that we go to next
-        setTimeout(() => dispatch(navigate(url)))
-      }
-    }
+    if (!currentUser) return
+    let community = find(map(currentUser.memberships, 'community'), c => c.slug === id)
+    if (!community) return
+
+    // for some reason, calling navigate here without wrapping it in
+    // setTimeout results in prefetching not taking place in the
+    // CommunityProfile that we go to next
+    setTimeout(() => dispatch(navigate(communityOnboardingUrl(community))))
   }
 
   render () {

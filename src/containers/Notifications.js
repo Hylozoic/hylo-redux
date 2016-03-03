@@ -3,13 +3,14 @@ import { compose } from 'redux'
 import { connect } from 'react-redux'
 import { defer, prefetch } from 'react-fetcher'
 import { fetchActivity, FETCH_ACTIVITY, markActivityRead, markAllActivitiesRead, navigate, thank } from '../actions'
-import { filter, find, get, includes } from 'lodash'
+import { filter, get, includes } from 'lodash'
 import cx from 'classnames'
 import ScrollListener from '../components/ScrollListener'
 import Avatar from '../components/Avatar'
 import truncate from 'html-truncate'
 import { present, humanDate } from '../util/text'
 import { VIEWED_NOTIFICATIONS, trackEvent } from '../util/analytics'
+import { commentUrl } from '../routes'
 const { array, bool, func, number, object } = React.PropTypes
 
 const Notifications = compose(
@@ -43,12 +44,10 @@ const Notifications = compose(
     </div>
     <div className='activities'>
       {activities.map(activity => {
-        let comment = comments[activity.comment_id]
-        if (comment) {
+        if (activity.comment_id) {
           activity = {
             ...activity,
-            comment,
-            isThanked: find(comment.thanks, t => t.thanked_by_id === currentUser.id)
+            comment: comments[activity.comment_id]
           }
         }
         return <Activity key={activity.id} {...{activity, currentUser, dispatch}}/>
@@ -94,7 +93,8 @@ let bodyText = (action, comment, post) => {
 }
 
 const Activity = ({ activity, currentUser, dispatch }) => {
-  let { actor, action, post, comment, comment_id, isThanked, unread, created_at } = activity
+  let { actor, action, post, comment, comment_id, unread, created_at } = activity
+  let { isThanked } = comment || {}
   const spacer = <span>&nbsp;&nbsp;•&nbsp;&nbsp;</span>
 
   let text = bodyText(action, comment, post)
@@ -105,15 +105,15 @@ const Activity = ({ activity, currentUser, dispatch }) => {
 
   let thankLinkText = isThanked
     ? `You thanked ${actor.name.split(' ')[0]}`
-    : 'Say "Thank you"'
+    : 'Say thanks'
 
   let thankTooltipText = isThanked
-    ? 'click to take back your "Thank You"'
+    ? 'click to take back your thanks'
     : 'click to give thanks for this comment'
 
   let visit = () => {
     if (unread) dispatch(markActivityRead(activity.id))
-    dispatch(navigate(`/p/${post.id}`))
+    dispatch(navigate(commentUrl({...comment, post_id: post.id})))
   }
 
   return <div key={activity.id} className={cx('activity', {unread})}>
@@ -125,12 +125,12 @@ const Activity = ({ activity, currentUser, dispatch }) => {
 
       {text && <div className='body-text' dangerouslySetInnerHTML={{__html: text}}/>}
 
-      <div className='controls'>
+      <div className='controls meta'>
         {humanDate(created_at)}
         {comment && <span>
           {spacer}
           <a tooltip={thankTooltipText} tooltip-popup-delay='500'
-            onClick={() => dispatch(thank(comment_id, currentUser.id))}>
+            onClick={() => dispatch(thank(comment_id, currentUser))}>
             {thankLinkText}
           </a>
           {spacer}

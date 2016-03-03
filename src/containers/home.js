@@ -13,10 +13,10 @@ const makeComponent = (subject, title, showEditor) => props => {
 
   return <div>
     <div className='row'>
-      <div className='col-sm-6'>
+      <div className='col-sm-4'>
         <h2>{title}</h2>
       </div>
-      <div className='col-sm-6'>
+      <div className='col-sm-8'>
         <PostListControls onChange={opts => dispatch(refetch(opts, props.location))}
           type={type} sort={sort} search={search}/>
       </div>

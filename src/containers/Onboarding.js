@@ -5,6 +5,7 @@ import { connect } from 'react-redux'
 import { fetchOnboarding } from '../actions'
 import A from '../components/A'
 import { communityUrl } from '../routes'
+import { isEmpty } from 'lodash'
 
 const Onboarding = compose(
   prefetch(({ dispatch, params: { id }, currentUser }) =>
@@ -12,6 +13,8 @@ const Onboarding = compose(
   connect(({ onboarding }) => ({community: onboarding}))
 )(({ community }) => {
   let bg = url => ({style: {backgroundImage: `url(${url})`}})
+
+  if (isEmpty(community)) return <div>Loading...</div>
 
   return <div id='onboarding-start'>
     <div className='header'>

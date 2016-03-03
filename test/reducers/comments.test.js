@@ -79,9 +79,11 @@ describe('comments', () => {
 
   describe('on THANK_PENDING', () => {
     it('adds a thanks', () => {
+      let person = {id: '10', name: 'foo', avatar_url: 'http://foo.com/foo.png'}
+
       let action = {
         type: THANK_PENDING,
-        meta: {commentId: '1', userId: '10'}
+        meta: {commentId: '1', person}
       }
 
       let state = {
@@ -90,7 +92,7 @@ describe('comments', () => {
       }
 
       let expectedState = {
-        '1': {id: '1', comment_text: 'foo', thanks: [{comment_id: '1', thanked_by_id: '10'}]},
+        '1': {id: '1', comment_text: 'foo', isThanked: true, thanks: [person]},
         '2': {id: '2', comment_text: 'bar', thanks: []}
       }
 
@@ -102,16 +104,16 @@ describe('comments', () => {
     it('removes a thanks', () => {
       let action = {
         type: THANK_PENDING,
-        meta: {commentId: '1', userId: '10'}
+        meta: {commentId: '1', person: {id: '10'}}
       }
 
       let state = {
-        '1': {id: '1', comment_text: 'foo', thanks: [{comment_id: '1', thanked_by_id: '10'}, {comment_id: '1', thanked_by_id: '20'}]},
+        '1': {id: '1', comment_text: 'foo', isThanked: true, thanks: [{id: '10'}, {id: '20'}]},
         '2': {id: '2', comment_text: 'bar', thanks: []}
       }
 
       let expectedState = {
-        '1': {id: '1', comment_text: 'foo', thanks: [{comment_id: '1', thanked_by_id: '20'}]},
+        '1': {id: '1', comment_text: 'foo', isThanked: false, thanks: [{id: '20'}]},
         '2': {id: '2', comment_text: 'bar', thanks: []}
       }
 

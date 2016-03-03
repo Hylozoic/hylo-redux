@@ -3,7 +3,7 @@ import { prefetch } from 'react-fetcher'
 import { connect } from 'react-redux'
 import { connectedListProps, fetchWithCache, refetch } from '../util/caching'
 import { navigate, search } from '../actions'
-import { debounce, get, isEmpty, some } from 'lodash'
+import { debounce, get, isEmpty, pick, some } from 'lodash'
 import Select from '../components/Select'
 import Comment from '../components/Comment'
 import Avatar from '../components/Avatar'
@@ -11,6 +11,7 @@ import A from '../components/A'
 import Post from '../components/Post'
 import ScrollListener from '../components/ScrollListener'
 import Tags from '../components/Tags'
+import { commentUrl } from '../routes'
 const { array, bool, func, number, object } = React.PropTypes
 
 const types = [
@@ -25,7 +26,8 @@ const fetch = fetchWithCache(search)
 
 @prefetch(({ dispatch, query }) => query.q && dispatch(fetch(subject, null, query)))
 @connect((state, { location: { query } }) => ({
-  ...connectedListProps(state, {subject, query}, 'searchResults')
+  ...connectedListProps(state, {subject, query}, 'searchResults'),
+  currentUser: state.people.current
 }))
 export default class Search extends React.Component {
   static propTypes = {
@@ -36,9 +38,18 @@ export default class Search extends React.Component {
     pending: bool
   }
 
+  static childContextTypes = {
+    dispatch: func,
+    currentUser: object
+  }
+
   constructor (props) {
     super(props)
     this.state = {textInput: get(props, 'location.query.q')}
+  }
+
+  getChildContext () {
+    return pick(this.props, 'currentUser', 'dispatch')
   }
 
   updateSearch = debounce(opts => {
@@ -143,7 +154,7 @@ const CommentResult = ({ comment }) => {
   return <div className='comment-result'>
     <strong>
       Comment on&ensp;
-      <A to={`/p/${post.id}#comment-${comment.id}`}>
+      <A to={commentUrl(comment)}>
         {post.type === 'welcome'
           ? `${welcomedPerson.name}'s welcome post`
           : `"${post.name}"`}

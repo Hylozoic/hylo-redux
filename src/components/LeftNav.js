@@ -1,4 +1,4 @@
-import { A } from './A'
+import { A, IndexA } from './A'
 import React from 'react'
 import cx from 'classnames'
 import { VelocityTransitionGroup } from 'velocity-react'
@@ -29,9 +29,8 @@ const LeftNav = props => {
 
   return <nav id='leftNav' className={cx({open})}>
     <ul>
-      <li><A to='/all-posts'>All posts</A></li>
+      <li><IndexA to='/'>All posts</IndexA></li>
       <li><A to='/my-posts'>My posts</A></li>
-      <li><A to='/followed-posts'>Followed posts</A></li>
       <li><A to='/projects'>Projects</A></li>
       <li>
         <A to='/notifications'>

@@ -16,6 +16,10 @@ p {
   margin-bottom: @p-bottom-margin;
 }
 
+a {
+  cursor: pointer;
+}
+
 button, a.button, input[type=submit] {
   .btn;
   .btn-default;
@@ -377,7 +381,10 @@ ul.posts {
   margin-bottom: 15px;
 
   .header {
-    .avatar {
+    .meta > a, .meta > div > a {
+      .meta-text;
+    }
+    > .avatar {
       float: left;
       margin-right: 10px;
     }
@@ -410,6 +417,13 @@ ul.posts {
       top: -1px;
     }
 
+    &:hover {
+      text-decoration: none;
+      i {
+        color: #f8f;
+      }
+    }
+
     .icon-heart-new-selected {
       color: #f8f;
     }
@@ -426,9 +440,11 @@ ul.posts {
   }
 
   &.welcome {
-    border: 1px solid transparent;
     padding: 0 15px;
-    > .avatar {
+    &, &.expanded {
+      border: 1px solid transparent;
+    }
+    > div > .avatar {
       float: left;
       margin-right: 10px;
     }
@@ -587,22 +603,6 @@ ul.posts {
 
   .followers {
     margin-bottom: 10px;
-
-    .followers-dropdown {
-      display: inline;
-
-      li {
-        padding: 6px 15px;
-        min-width: 200px;
-      }
-
-      .avatar {
-        display: inline-block;
-        vertical-align: middle;
-        margin-right: 5px;
-      }
-    }
-
   }
 
   .attachment {
@@ -725,6 +725,10 @@ ul.tags {
 
   .text {
     .body-text;
+  }
+
+  .meta a {
+    .meta-text;
   }
 }
 
@@ -924,14 +928,8 @@ ul.tags {
   }
 }
 
-.community-card-wrapper {
-  padding-left: 15px;
-  padding-right: 15px;
-}
-
 .community-card {
-  border: 1px solid @light-gray-border;
-  margin-bottom: 30px;
+  .card;
 
   .banner {
     padding: 90px 20px 20px;
@@ -981,8 +979,7 @@ ul.tags {
 }
 
 .person-card {
-  border: 1px solid @light-gray-border;
-  border-radius: @border-radius-base;
+  .card;
   padding: 15px 0;
   text-align: center;
   position: relative;
@@ -1415,6 +1412,8 @@ ul.tags {
     border-radius: @border-radius-base;
     padding: 10px;
     margin-bottom: @p-bottom-margin;
+    .clearfix;
+
     .leader {
       float: left;
       display: inline-block;
@@ -1484,6 +1483,7 @@ ul.tags {
   }
 }
 
+<<<<<<< HEAD
 
 
 .refresh-button {
@@ -1505,6 +1505,17 @@ ul.tags {
     margin-left: -10px;
     top: 0px;
   }
+}
 
+.single-post {
+  // prevent Intercom button from overlapping comment button
+  margin-bottom: 70px;
+}
 
+.comments-section {
+  > a:first-child {
+    margin-top: @p-bottom-margin;
+    display: inline-block;
+    cursor: pointer;
+  }
 }

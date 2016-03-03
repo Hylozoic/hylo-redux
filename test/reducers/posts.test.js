@@ -1,6 +1,6 @@
 require('../support')
 import posts from '../../src/reducers/posts'
-import { FETCH_POSTS, UPDATE_POST } from '../../src/actions'
+import { FETCH_POSTS, FOLLOW_POST, UPDATE_POST } from '../../src/actions'
 
 describe('posts', () => {
   describe('on FETCH_POSTS', () => {
@@ -169,6 +169,37 @@ describe('posts', () => {
       }
 
       expect(posts(state, action)).to.deep.equal(expectedState)
+    })
+  })
+
+  describe('on FOLLOW_POST', () => {
+    let person = {id: 'person', name: 'person', avatar_url: 'http://people.com/me.png'}
+    let cat = {id: 'cat', name: 'Cat', avatar_url: 'http://cats.com/me.png'}
+
+    it('removes an existing follower', () => {
+      let action = {
+        type: FOLLOW_POST,
+        meta: {id: 'a', person}
+      }
+      let state = {
+        a: {name: 'post!', followers: [person, cat]}
+      }
+
+      let newState = posts(state, action)
+      expect(newState.a.followers).to.deep.equal([cat])
+    })
+
+    it('adds the current user as follower', () => {
+      let action = {
+        type: FOLLOW_POST,
+        meta: {id: 'a', person}
+      }
+      let state = {
+        a: {name: 'post!', followers: [cat]}
+      }
+
+      let newState = posts(state, action)
+      expect(newState.a.followers).to.deep.equal([cat, person])
     })
   })
 })

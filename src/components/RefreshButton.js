@@ -1,5 +1,6 @@
 import React from 'react'
 import { throttle } from 'lodash'
+import { VelocityTransitionGroup } from 'velocity-react'
 import { position, viewportTop } from '../util/scrolling'
 import cx from 'classnames'
 const { func } = React.PropTypes
@@ -26,7 +27,7 @@ export default class RefreshButton extends React.Component {
   }, 50)
 
   componentDidMount () {
-    this.startingY = position(this.refs['refresh-button']).y
+    this.startingY = position(this.refs['placeholder']).y
     this.setState({isStatic: viewportTop() < this.startingY})
     window.addEventListener('scroll', this.handleScrollEvents)
   }
@@ -38,10 +39,13 @@ export default class RefreshButton extends React.Component {
   render () {
     let { refresh } = this.props
     let { isStatic } = this.state
-    return <div
-      className={cx('refresh-button', {'static': isStatic, 'floating': !isStatic})}
-      ref='refresh-button'>
-      New Posts are available. <a onClick={refresh}>Refresh</a>
-    </div>
+    return <span ref='placeholder'>
+      <VelocityTransitionGroup enter={{animation: 'slideDown'}} leave={{animation: 'slideUp'}}>
+        {refresh && <div className={cx('refresh-button', {'static': isStatic, 'floating': !isStatic})}
+          ref='refresh-button'>
+          New Posts are available. <a onClick={refresh}>Refresh</a>
+        </div>}
+      </VelocityTransitionGroup>
+    </span>
   }
 }

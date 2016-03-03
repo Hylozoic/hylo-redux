@@ -27,9 +27,11 @@ gulp.task('serve', function () {
 })
 
 gulp.task('autotest', function () {
+  const cmd = `
+  ./node_modules/.bin/babel-node ./node_modules/.bin/_mocha -R progress &&
+  ./node_modules/.bin/babel-node ./node_modules/.bin/_mocha -R progress -- test/client/index.js`
   gulp.watch(['src/**/*', 'test/**/*'], debounce(function () {
-    let cmd = 'env LOG_LEVEL=warn npm test -- -R progress'.split(' ')
-    spawn(cmd[0], cmd.slice(1, cmd.length), {stdio: 'inherit'})
+    spawn('bash', ['-c', cmd], {stdio: 'inherit'})
   }, 500, true))
 })
 

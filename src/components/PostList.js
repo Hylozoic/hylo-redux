@@ -1,6 +1,7 @@
 import React from 'react'
 import Post from './Post'
 import ScrollListener from './ScrollListener'
+import RefreshButton from './RefreshButton'
 import { position, positionInViewport } from '../util/scrolling'
 import { includes } from 'lodash'
 import PostEditor from './PostEditor'
@@ -55,11 +56,10 @@ class PostList extends React.Component {
       return <div className='no-posts'>No posts to show.</div>
     }
 
-    return <ul className='posts'>
+    return <span>
+      {refreshPostList || true  && <RefreshButton refresh={refreshPostList} />}
+      <ul className='posts'>
       {pending && <li className='loading'>Loading...</li>}
-      {refreshPostList && <li>
-        <div className='post new-posts'>New Posts are available. <a onClick={refreshPostList}>Refresh</a></div>
-      </li>}
       {posts.map(p => <li key={p.id} ref={p.id}>
         {includes(editingPostIds, p.id)
           ? <PostEditor post={p} expanded={true} project={project}/>
@@ -67,6 +67,7 @@ class PostList extends React.Component {
       </li>)}
       <ScrollListener onBottom={loadMore}/>
     </ul>
+    </span>
   }
 }
 

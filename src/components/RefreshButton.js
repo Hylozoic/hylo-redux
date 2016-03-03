@@ -39,7 +39,7 @@ export default class RefreshButton extends React.Component {
     let { refresh } = this.props
     let { isStatic } = this.state
     return <div
-      className={cx('refresh-button', {'static': isStatic, 'fixed': !isStatic})}
+      className={cx('refresh-button', {'static': isStatic, 'floating': !isStatic})}
       ref='refresh-button'>
       New Posts are available. <a onClick={refresh}>Refresh</a>
     </div>

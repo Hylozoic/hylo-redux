@@ -308,7 +308,7 @@ const EventRSVP = ({ postId, responders }, { currentUser, dispatch }) => {
 
 EventRSVP.contextTypes = {currentUser: object, dispatch: func}
 
-const Followers = (props, { post, currentUser }) => {
+export const Followers = (props, { post, currentUser }) => {
   let { followers, length } = post
   if (!followers) followers = []
 
@@ -320,7 +320,11 @@ const Followers = (props, { post, currentUser }) => {
   let num = otherFollowers.length
   let hasHidden = num > numShown
   let separator = threshold =>
-    num > threshold ? ', ' : (num === threshold ? ' and ' : '')
+    num > threshold
+      ? ', '
+      : num === threshold
+        ? `${followers.length === 2 ? '' : ','} and `
+        : ''
 
   if (followers.length > 0 && !onlyAuthorIsFollowing) {
     return <div className='meta followers'>
@@ -330,7 +334,7 @@ const Followers = (props, { post, currentUser }) => {
           <a href={`/u/${person.id}`}>{person.name}</a>
           {index !== numShown - 1 && separator(2)}
         </span>)}
-      {hasHidden && ' and '}
+      {hasHidden && ', and '}
       {hasHidden && <Dropdown className='inline'
         toggleChildren={<span>
           {num - numShown} other{num - numShown > 1 ? 's' : ''}

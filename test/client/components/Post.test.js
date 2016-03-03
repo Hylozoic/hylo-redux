@@ -89,6 +89,9 @@ describe('Followers', () => {
     expectTopText($, text)
   }
 
+  it('handles one follower',
+    test([followers[0]], 'Sneezy&nbsp;is following this.'))
+
   it('handles the current user as a follower',
     test([currentUser], 'You&nbsp;are following this.'))
 

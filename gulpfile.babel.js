@@ -27,9 +27,12 @@ gulp.task('serve', function () {
 })
 
 gulp.task('autotest', function () {
-  const cmd = `
-  ./node_modules/.bin/babel-node ./node_modules/.bin/_mocha -R progress &&
-  ./node_modules/.bin/babel-node ./node_modules/.bin/_mocha -R progress -- test/client/index.js`
+  const argv = require('minimist')(process.argv)
+  const file = argv.file || argv.f
+  const run = './node_modules/.bin/babel-node ./node_modules/.bin/_mocha -R progress'
+  const cmd = file
+    ? `${run} -- ${file}`
+    : `${run} && ${run} -- test/client/index.js`
   gulp.watch(['src/**/*', 'test/**/*'], debounce(function () {
     spawn('bash', ['-c', cmd], {stdio: 'inherit'})
   }, 500, true))

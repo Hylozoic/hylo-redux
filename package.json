@@ -91,6 +91,7 @@
     "istanbul-combine": "^0.3.0",
     "jsdom": "^8.1.0",
     "livereactload": "^2.1.0",
+    "minimist": "^1.2.0",
     "mocha": "^2.3.4",
     "nock": "^3.1.1",
     "node-notifier": "^4.3.1",

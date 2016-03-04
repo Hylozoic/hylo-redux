@@ -2,40 +2,37 @@
 
 import React from 'react'
 import cx from 'classnames'
+import { parse, format } from 'url'
 
-const youtubeParams = '?autoplay=0&showinfo=0&controls=0'
+export const youtubeParams = '?autoplay=0&showinfo=0&controls=0'
 
 // Produce an embeddable url
 // for youtube: src="//www.youtube.com/embed/{{video_id}}"
-// for vimeo: src="http://player.vimeo.com/video/{{video_id}}
-function convert (url) {
-  let newUrl
+// for vimeo: src="//player.vimeo.com/video/{{video_id}}
+export function convert (url) {
+  let u = parse(url, true)
+  delete u.protocol
 
-  if (url.indexOf('vimeo') >= 0) { // Displaying a vimeo video
-    if (url.indexOf('player.vimeo') >= 0) {
-      newUrl = url
-    } else {
-      newUrl = url.replace(/https?:/, '')
-      let urlSections = newUrl.split('.com/')
-      newUrl = newUrl.replace('vimeo', 'player.vimeo')
-      newUrl = newUrl.replace('/' + urlSections[urlSections.length - 1], '/video/' + urlSections[urlSections.length - 1] + '')
-    }
-  } else if (url.indexOf('youtu.be') >= 0) {
-    let index = url.indexOf('.be/')
-
-    newUrl = url.slice(index + 4, url.length)
-    newUrl = 'http://www.youtube.com/embed/' + newUrl + youtubeParams
-  } else if (url.indexOf('youtube.com') >= 0) { // displaying a youtube video
-    if (url.indexOf('embed') >= 0) {
-      newUrl = url
-    } else {
-      newUrl = url.replace('/watch?v=', '/embed/')
-    }
-
-    newUrl += youtubeParams
+  switch (u.host) {
+    case 'vimeo.com':
+      delete u.query
+      delete u.search
+      u.host = 'player.vimeo.com'
+      u.pathname = `/video${u.pathname}`
+      break
+    case 'youtu.be':
+      u.search = youtubeParams
+      u.host = 'www.youtube.com'
+      u.pathname = `/embed${u.pathname}`
+      break
+    case 'youtube.com':
+    case 'www.youtube.com':
+      u.search = youtubeParams
+      u.host = 'www.youtube.com'
+      u.pathname = `/embed/${u.query.v}`
+      break
   }
-
-  return newUrl
+  return format(u)
 }
 
 const Video = props => {

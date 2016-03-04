@@ -33,7 +33,7 @@ const categories = {
   'other': 'Other'
 }
 
-@connect(({communityEditor, communityValidation, pending}) => {
+@connect(({ communityEditor, communityValidation, pending }) => {
   let validating = some(communityValidation.pending)
   let { community, errors } = communityEditor
   let saving = pending[CREATE_COMMUNITY]
@@ -49,7 +49,7 @@ const categories = {
   if (!community.banner_url) community.banner_url = defaultBanner
 
   return {community, errors, validating, saving, uploadingImage}
-})
+}, null, null, {withRef: true})
 export default class CommunityEditor extends React.Component {
   static propTypes = {
     saving: bool,

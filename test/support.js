@@ -48,8 +48,8 @@ export default {
     redux: {
       store: function (state) {
         return {
-          subscribe: () => {},
-          dispatch: () => {},
+          subscribe: spy(() => {}),
+          dispatch: spy(() => {}),
           getState: () => ({...state})
         }
       }

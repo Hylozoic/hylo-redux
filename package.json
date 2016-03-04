@@ -35,7 +35,7 @@
     "bluebird": "^3.0.5",
     "bootstrap": "^3.3.5",
     "chalk": "^1.1.1",
-    "cheerio": "^0.19.0",
+    "cheerio": "^0.20.0",
     "classnames": "^2.2.0",
     "dotenv": "^1.2.0",
     "ent": "^2.2.0",

@@ -1,10 +1,12 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { prefetch, defer } from 'react-fetcher'
-import { fetchPerson } from '../../actions'
+import { FETCH_PERSON, fetchPerson } from '../../actions'
 import { get } from 'lodash'
 import { VIEWED_PERSON, VIEWED_SELF, trackEvent } from '../../util/analytics'
 import { A, IndexA } from '../../components/A'
+import { findError } from '../../actions/util'
+import AccessErrorMessage from '../../components/AccessErrorMessage'
 const { object } = React.PropTypes
 
 const defaultBanner = 'https://d3ngex8q79bk55.cloudfront.net/misc/default_user_banner.jpg'
@@ -13,6 +15,7 @@ const defaultBanner = 'https://d3ngex8q79bk55.cloudfront.net/misc/default_user_b
 @defer(({ store, params: { id } }) => {
   let state = store.getState()
   let person = state.people[id]
+  if (!person) return
   let currentUser = state.people.current
   if (get(currentUser, 'id') === person.id) {
     return trackEvent(VIEWED_SELF)
@@ -20,20 +23,23 @@ const defaultBanner = 'https://d3ngex8q79bk55.cloudfront.net/misc/default_user_b
     return trackEvent(VIEWED_PERSON, {person})
   }
 })
-@connect(({ people }, props) => ({
-  person: people[props.params.id],
-  currentUser: people.current
+@connect(({ people, errors }, { params: { id } }) => ({
+  person: people[id],
+  currentUser: people.current,
+  error: findError(errors, FETCH_PERSON, 'people', id)
 }))
 export default class PersonProfile extends React.Component {
   static propTypes = {
     params: object,
     person: object,
     children: object,
-    currentUser: object
+    currentUser: object,
+    error: object
   }
 
   render () {
-    let { person, currentUser } = this.props
+    let { person, currentUser, error } = this.props
+    if (error) return <AccessErrorMessage error={error}/>
     if (!person) return <div>Loading...</div>
 
     let bannerUrl = person.banner_url || defaultBanner

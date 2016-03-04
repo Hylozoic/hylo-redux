@@ -1,10 +1,12 @@
-@import '../node_modules/bootstrap/less/bootstrap';
+// @import '../node_modules/bootstrap/less/bootstrap';
+@import 'bootstrap-lite';
 @import 'globals';
 @import 'type';
 @import 'icons';
 @import 'mixins';
 @import 'dropdown';
 @import 'forms';
+@import 'tinymce';
 
 body {
   background-color: @off-white;
@@ -89,6 +91,10 @@ nav {
     position: relative;
     color: @hylo-teal;
     margin-right: 2px;
+  }
+
+  .mobile-menu-link {
+    .visible-xs;
   }
 }
 
@@ -882,11 +888,6 @@ ul.tags {
     width: auto;
     display: inline-block;
   }
-}
-
-#tinymce {
-  padding: 6px 12px; // same as .form-control
-  .body-text;
 }
 
 .tabbed-context {

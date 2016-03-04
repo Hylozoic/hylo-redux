@@ -10,8 +10,8 @@ const TopNav = (props) => {
       <li>
         <i className='icon-hylo-script'></i>
       </li>
-      <li>
-        <a onClick={toggleMenu} className={cx('visible-xs', {active: mainMenuOpened})}>
+      <li className='mobile-menu-link'>
+        <a onClick={toggleMenu} className={cx({active: mainMenuOpened})}>
           Menu <span className='caret'></span>
         </a>
       </li>

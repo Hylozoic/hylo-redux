@@ -1,0 +1,48 @@
+// http://transmission.vehikl.com/using-bootstrap-as-a-semantic-mixin-library/
+
+@prefix: '../node_modules/bootstrap/less/';
+
+// these are required to be imported normally, according to the blog post above
+@import "@{prefix}normalize.less";
+@import "@{prefix}print.less";
+@import "@{prefix}type.less";
+@import "@{prefix}code.less";
+@import "@{prefix}tables.less";
+@import "@{prefix}forms.less";
+@import "@{prefix}scaffolding.less";
+
+// these were moved out of the reference section to support existing uses of
+// Bootstrap classes in this codebase. perhaps the code can be refactored to
+// make this unnecessary
+@import "@{prefix}dropdowns.less";
+@import "@{prefix}grid.less";
+@import "@{prefix}input-groups.less";
+@import "@{prefix}button-groups.less";
+
+@import (reference) "@{prefix}variables.less";
+@import (reference) "@{prefix}mixins.less";
+@import (reference) "@{prefix}buttons.less";
+@import (reference) "@{prefix}component-animations.less";
+@import (reference) "@{prefix}glyphicons.less";
+@import (reference) "@{prefix}navs.less";
+@import (reference) "@{prefix}navbar.less";
+@import (reference) "@{prefix}breadcrumbs.less";
+@import (reference) "@{prefix}pagination.less";
+@import (reference) "@{prefix}pager.less";
+@import (reference) "@{prefix}labels.less";
+@import (reference) "@{prefix}badges.less";
+@import (reference) "@{prefix}jumbotron.less";
+@import (reference) "@{prefix}thumbnails.less";
+@import (reference) "@{prefix}alerts.less";
+@import (reference) "@{prefix}progress-bars.less";
+@import (reference) "@{prefix}media.less";
+@import (reference) "@{prefix}list-group.less";
+@import (reference) "@{prefix}panels.less";
+@import (reference) "@{prefix}wells.less";
+@import (reference) "@{prefix}close.less";
+@import (reference) "@{prefix}modals.less";
+@import (reference) "@{prefix}tooltip.less";
+@import (reference) "@{prefix}popovers.less";
+@import (reference) "@{prefix}carousel.less";
+@import (reference) "@{prefix}utilities.less";
+@import (reference) "@{prefix}responsive-utilities.less";

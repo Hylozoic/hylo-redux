@@ -41,9 +41,9 @@ export default class RefreshButton extends React.Component {
     let { isStatic } = this.state
     return <span ref='placeholder'>
       <VelocityTransitionGroup enter={{animation: 'slideDown'}} leave={{animation: 'slideUp'}}>
-        {refresh && <div className={cx('refresh-button', {'static': isStatic, 'floating': !isStatic})}
+        {refresh && <div onClick={refresh} className={cx('refresh-button', {'static': isStatic, 'floating': !isStatic})}
           ref='refresh-button'>
-          New Posts are available. <a onClick={refresh}>Refresh</a>
+          New Posts are available. Refresh
         </div>}
       </VelocityTransitionGroup>
     </span>

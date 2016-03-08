@@ -36,6 +36,43 @@ describe('connectedListProps', () => {
 
     expect(connectedListProps(state, props, 'posts')).to.deep.equal(expectedProps)
   })
+
+  it('sets stale to true when the store hasFreshPosts', () => {
+    let state = {
+      posts: {
+        'a': {id: 'a'},
+        'b': {id: 'b'},
+        'c': {id: 'c'}
+      },
+      postsByQuery: {
+        'subject=foo&id=bar&search=baz': ['a', 'c']
+      },
+      totalPostsByQuery: {
+        'subject=foo&id=bar&search=baz': 20
+      },
+      hasFreshPostsByQuery: {
+        'subject=foo&id=bar&search=baz': true
+      },
+      pending: {
+        [FETCH_POSTS]: true
+      }
+    }
+
+    let props = {
+      subject: 'foo',
+      id: 'bar',
+      query: {search: 'baz'}
+    }
+
+    let expectedProps = {
+      posts: [{id: 'a'}, {id: 'c'}],
+      total: 20,
+      pending: true,
+      stale: true
+    }
+
+    expect(connectedListProps(state, props, 'posts')).to.deep.equal(expectedProps)
+  })
 })
 
 describe('fetchWithCache', () => {

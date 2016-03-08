@@ -219,16 +219,7 @@ export default combineReducers({
 
   hasFreshPostsByQuery: keyedHasFreshItems(CHECK_FRESHNESS_POSTS, 'postsByQuery'),
 
-  totalPostsByQuery: (state = {}, action) => {
-    if (action.error) return state
-
-    let { type, payload, meta } = action
-    switch (type) {
-      case FETCH_POSTS:
-        return {...state, [meta.cache.id]: payload.posts_total}
-    }
-    return state
-  },
+  totalPostsByQuery: keyedCounter(FETCH_POSTS, 'posts_total'),
   totalPeopleByQuery: keyedCounter(FETCH_PEOPLE, 'people_total'),
   totalProjectsByQuery: keyedCounter(FETCH_PROJECTS, 'projects_total'),
   totalCommunitiesByQuery: keyedCounter(FETCH_COMMUNITIES, 'communities_total'),

@@ -11,9 +11,7 @@ let share = href => {
 
 export const SharingDropdown = props => {
   let { url, text, ...otherProps } = props
-  // let origin = typeof window !== 'undefined' ? window.location.origin : host
-  host
-  let origin = 'localhost:9000'
+  let origin = typeof window !== 'undefined' ? window.location.origin : host
   let absoluteUrl = `${origin}/${url}`
   var twitterText = text
   let max = 100

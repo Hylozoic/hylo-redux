@@ -29,3 +29,5 @@ export const canModerateProject = (currentUser, project, state) =>
   canModerate(currentUser, {id: project.community_id}) ||
   isProjectModerator(currentUser, project) ||
   project.user.id === get(currentUser, 'id')
+
+export const isAdmin = currentUser => !!get(currentUser, 'is_admin')

@@ -2,9 +2,11 @@ import React from 'react'
 import { A } from './A'
 import Dropdown from './Dropdown'
 import cx from 'classnames'
+import { isAdmin } from '../models/currentUser'
 
 const TopNav = (props) => {
   let { currentUser, logout, toggleMenu, mainMenuOpened } = props
+
   return <nav id='topNav' className='clearfix'>
     <ul className='left'>
       <li>
@@ -26,6 +28,7 @@ const TopNav = (props) => {
           }>
             <li><A to={`/u/${currentUser.id}`}>My profile</A></li>
             <li><A to={'/settings'}>Settings</A></li>
+            {isAdmin(currentUser) && <li><A to={'/admin'}>Admin</A></li>}
             <li><a href='#' onClick={logout}>Log out</a></li>
           </Dropdown>
         </li>

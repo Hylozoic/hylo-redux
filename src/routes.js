@@ -36,6 +36,7 @@ import NetworkCommunities from './containers/network/NetworkCommunities'
 import NetworkEditor from './containers/network/NetworkEditor'
 import Notifications from './containers/Notifications'
 import Search from './containers/Search'
+import Admin from './containers/Admin'
 import { debug } from './util/logging'
 import { makeUrl } from './client/util'
 
@@ -71,6 +72,8 @@ export default function makeRoutes (store) {
     </Route>
     <Route path='c/new' component={CommunityEditor} onEnter={requireLogin()}/>
     <Route path='c/join' component={CommunityJoinForm} onEnter={requireLogin()}/>
+
+    <Route path='admin' component={Admin}/>
 
     <Route path='h/use-invitation' component={InvitationHandler}
       onEnter={requireLogin({

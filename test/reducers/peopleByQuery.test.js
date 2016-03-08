@@ -70,4 +70,26 @@ describe('peopleByQuery', () => {
 
     expect(peopleByQuery(state, action)).to.deep.equal(expectedState)
   })
+
+  it('stores the community moderators when fetching people for a community', () => {
+    let state = {}
+
+    let action = {
+      type: FETCH_PEOPLE,
+      payload: {
+        people_total: '1',
+        people: [{id: 'a', isModerator: 1}]
+      },
+      meta: {
+        cache: {id: 'subject=community&id=123'}
+      }
+    }
+
+    let expectedState = {
+      'subject=community&id=123': ['a'],
+      'subject=community-moderators&id=123': ['a']
+    }
+
+    expect(peopleByQuery(state, action)).to.deep.equal(expectedState)
+  })
 })

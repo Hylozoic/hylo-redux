@@ -25,7 +25,7 @@ const fetch = fetchWithCache(fetchPeople)
     community: state.communities[id],
     currentUser: state.people.current,
     error: findError(state.errors, FETCH_PEOPLE, 'peopleByQuery', cacheId),
-    moderators: state.peopleByQuery[qs.stringify({subject: 'community-moderators', id})]
+    moderators: state.peopleByQuery[qs.stringify({subject: 'community-moderators', id})] || []
   }
 })
 export default class CommunityMembers extends React.Component {

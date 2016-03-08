@@ -12,6 +12,7 @@ import A from '../../components/A'
 const { array, bool, func, number, object } = React.PropTypes
 import { canInvite } from '../../models/currentUser'
 import { findError } from '../../actions/util'
+import qs from 'querystring'
 
 const subject = 'community'
 const fetch = fetchWithCache(fetchPeople)
@@ -23,12 +24,14 @@ const fetch = fetchWithCache(fetchPeople)
     ...connectedListProps(state, {subject, id, query}, 'people'),
     community: state.communities[id],
     currentUser: state.people.current,
-    error: findError(state.errors, FETCH_PEOPLE, 'peopleByQuery', cacheId)
+    error: findError(state.errors, FETCH_PEOPLE, 'peopleByQuery', cacheId),
+    moderators: state.peopleByQuery[qs.stringify({subject: 'community-moderators', id})]
   }
 })
 export default class CommunityMembers extends React.Component {
   static propTypes = {
     people: array,
+    moderators: array,
     pending: bool,
     dispatch: func,
     total: number,
@@ -53,10 +56,11 @@ export default class CommunityMembers extends React.Component {
   }
 
   render () {
-    let { pending, people, location: { query }, community, currentUser, error } = this.props
+    let { pending, people, moderators, location: { query }, community, currentUser, error } = this.props
     if (error) return <AccessErrorMessage error={error}/>
     if (!currentUser) return <div>Loading...</div>
     let { search } = query
+    let subtitles = moderators.reduce((acc, mod) => ({...acc, [mod]: 'Moderator'}), {})
 
     return <div className='members'>
       <div className='list-controls'>
@@ -69,7 +73,7 @@ export default class CommunityMembers extends React.Component {
           onChange={debounce(event => this.updateQuery({search: event.target.value}), 500)}/>
       </div>
       {pending && <div className='loading'>Loading...</div>}
-      <PersonCards people={people}/>
+      <PersonCards people={people} subtitles={subtitles}/>
       <ScrollListener onBottom={this.loadMore}/>
     </div>
   }

@@ -88,7 +88,7 @@ let bodyText = (action, comment, post) => {
   if (includes(['followAdd', 'follow', 'unfollow'], action)) {
     return ''
   }
-  let text = get(comment, 'comment_text') || get(post, 'description')
+  let text = get(comment, 'text') || get(post, 'description')
   return present(text, {communityId: post.communities[0].id, maxlength: 200})
 }
 

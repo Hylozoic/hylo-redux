@@ -13,19 +13,19 @@ describe('comments', () => {
       let action = {
         type: FETCH_COMMENTS,
         payload: [
-          {id: '2', comment_text: 'bar'},
-          {id: '3', comment_text: 'baz'}
+          {id: '2', text: 'bar'},
+          {id: '3', text: 'baz'}
         ]
       }
 
       let state = {
-        '1': {id: '1', comment_text: 'foo'}
+        '1': {id: '1', text: 'foo'}
       }
 
       let expectedState = {
-        '1': {id: '1', comment_text: 'foo'},
-        '2': {id: '2', comment_text: 'bar'},
-        '3': {id: '3', comment_text: 'baz'}
+        '1': {id: '1', text: 'foo'},
+        '2': {id: '2', text: 'bar'},
+        '3': {id: '3', text: 'baz'}
       }
 
       expect(comments(state, action)).to.deep.equal(expectedState)
@@ -36,16 +36,16 @@ describe('comments', () => {
     it('appends comment to state', () => {
       let action = {
         type: CREATE_COMMENT,
-        payload: {id: '2', comment_text: 'bar'}
+        payload: {id: '2', text: 'bar'}
       }
 
       let state = {
-        '1': {id: '1', comment_text: 'foo'}
+        '1': {id: '1', text: 'foo'}
       }
 
       let expectedState = {
-        '1': {id: '1', comment_text: 'foo'},
-        '2': {id: '2', comment_text: 'bar'}
+        '1': {id: '1', text: 'foo'},
+        '2': {id: '2', text: 'bar'}
       }
 
       expect(comments(state, action)).to.deep.equal(expectedState)
@@ -57,20 +57,20 @@ describe('comments', () => {
       let action = {
         type: FETCH_ACTIVITY,
         payload: {items: [
-          {id: '20', comment: {id: '2', comment_text: 'bar'}},
-          {id: '30', comment: {id: '3', comment_text: 'baz'}},
+          {id: '20', comment: {id: '2', text: 'bar'}},
+          {id: '30', comment: {id: '3', text: 'baz'}},
           {id: '40'}
         ]}
       }
 
       let state = {
-        '1': {id: '1', comment_text: 'foo'}
+        '1': {id: '1', text: 'foo'}
       }
 
       let expectedState = {
-        '1': {id: '1', comment_text: 'foo'},
-        '2': {id: '2', comment_text: 'bar'},
-        '3': {id: '3', comment_text: 'baz'}
+        '1': {id: '1', text: 'foo'},
+        '2': {id: '2', text: 'bar'},
+        '3': {id: '3', text: 'baz'}
       }
 
       expect(comments(state, action)).to.deep.equal(expectedState)
@@ -87,13 +87,13 @@ describe('comments', () => {
       }
 
       let state = {
-        '1': {id: '1', comment_text: 'foo', thanks: []},
-        '2': {id: '2', comment_text: 'bar', thanks: []}
+        '1': {id: '1', text: 'foo', thanks: []},
+        '2': {id: '2', text: 'bar', thanks: []}
       }
 
       let expectedState = {
-        '1': {id: '1', comment_text: 'foo', isThanked: true, thanks: [person]},
-        '2': {id: '2', comment_text: 'bar', thanks: []}
+        '1': {id: '1', text: 'foo', isThanked: true, thanks: [person]},
+        '2': {id: '2', text: 'bar', thanks: []}
       }
 
       expect(comments(state, action)).to.deep.equal(expectedState)
@@ -108,13 +108,13 @@ describe('comments', () => {
       }
 
       let state = {
-        '1': {id: '1', comment_text: 'foo', isThanked: true, thanks: [{id: '10'}, {id: '20'}]},
-        '2': {id: '2', comment_text: 'bar', thanks: []}
+        '1': {id: '1', text: 'foo', isThanked: true, thanks: [{id: '10'}, {id: '20'}]},
+        '2': {id: '2', text: 'bar', thanks: []}
       }
 
       let expectedState = {
-        '1': {id: '1', comment_text: 'foo', isThanked: false, thanks: [{id: '20'}]},
-        '2': {id: '2', comment_text: 'bar', thanks: []}
+        '1': {id: '1', text: 'foo', isThanked: false, thanks: [{id: '20'}]},
+        '2': {id: '2', text: 'bar', thanks: []}
       }
 
       expect(comments(state, action)).to.deep.equal(expectedState)

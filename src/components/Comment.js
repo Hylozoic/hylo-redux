@@ -14,7 +14,7 @@ const spacer = <span>&nbsp;&nbsp;•&nbsp;&nbsp;</span>
 
 const Comment = ({ comment }, { dispatch, currentUser }) => {
   let person = comment.user
-  let text = present(sanitize(comment.comment_text))
+  let text = present(sanitize(comment.text))
   let { isThanked, thanks } = comment
 
   return <div className='comment' data-comment-id={comment.id}>

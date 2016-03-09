@@ -8,9 +8,11 @@ import { filter, flow, get, partialRight, uniq, without } from 'lodash'
 import qs from 'querystring'
 import { MemberRole } from '../models/project'
 
-const moderatorKey = id => qs.stringify({subject: 'project-moderators', id})
+const projectModeratorKey = id => qs.stringify({subject: 'project-moderators', id})
 
-const contributorKey = id => qs.stringify({subject: 'project', id})
+const projectContributorKey = id => qs.stringify({subject: 'project', id})
+
+const communityModeratorKey = id => qs.stringify({subject: 'community-moderators', id})
 
 const addPeople = (state, key, ...userIds) => {
   return {
@@ -37,7 +39,12 @@ const handlePeople = (state, key, people) => {
   if (subject === 'project') {
     let isModerator = p => get(p, 'membership.role') === MemberRole.MODERATOR
     let moderatorIds = filter(people, isModerator).map(p => p.id)
-    return addPeople(newState, moderatorKey(id), ...moderatorIds)
+    return addPeople(newState, projectModeratorKey(id), ...moderatorIds)
+  }
+  if (subject === 'community') {
+    let isModerator = p => p.isModerator
+    let moderatorIds = filter(people, isModerator).map(p => p.id)
+    return addPeople(newState, communityModeratorKey(id), ...moderatorIds)
   }
 
   return newState
@@ -63,15 +70,15 @@ export default function (state = {}, action) {
       break
     case TOGGLE_PROJECT_MODERATOR_ROLE:
       if (role === MemberRole.MODERATOR) {
-        return addPeople(state, moderatorKey(projectId), userId)
+        return addPeople(state, projectModeratorKey(projectId), userId)
       } else {
-        return removePerson(state, moderatorKey(projectId), userId)
+        return removePerson(state, projectModeratorKey(projectId), userId)
       }
       break
     case REMOVE_PROJECT_CONTRIBUTOR:
       return flow(
-        partialRight(removePerson, contributorKey(projectId), userId),
-        partialRight(removePerson, moderatorKey(projectId), userId)
+        partialRight(removePerson, projectContributorKey(projectId), userId),
+        partialRight(removePerson, projectModeratorKey(projectId), userId)
       )(state)
 
   }

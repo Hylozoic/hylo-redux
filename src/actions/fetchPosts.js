@@ -1,5 +1,5 @@
-import { cleanAndStringify } from '../util/caching'
-import { FETCH_POSTS } from './index'
+import { cleanAndStringify, createCacheId } from '../util/caching'
+import { FETCH_POSTS, CHECK_FRESHNESS_POSTS } from './index'
 
 export function fetchPosts (opts) {
   let { subject, id, limit, offset, type, sort, search, filter, cacheId } = opts
@@ -30,6 +30,21 @@ export function fetchPosts (opts) {
 
   payload.path += '?' + querystring
 
-  let cache = {id: cacheId, bucket: 'postsByQuery', limit, offset, array: true}
-  return {type: FETCH_POSTS, payload, meta: {cache}}
+  var meta = {cache: {id: cacheId, bucket: 'postsByQuery', limit, offset, array: true}}
+
+  return {type: FETCH_POSTS, payload, meta}
+}
+
+export function checkFreshness (subject, id, posts, query = {}) {
+  let { limit, offset, type, sort, search, filter } = query
+  let cacheId = createCacheId(subject, id, query)
+  if (!offset) offset = 0
+  let querystring = cleanAndStringify({offset, limit, type, sort, search, filter})
+  let payload = {api: true, params: {posts}, path: `/noo/freshness/posts/${subject}/${id}`, method: 'POST'}
+
+  payload.path += '?' + querystring
+
+  var meta = {cacheId}
+
+  return {type: CHECK_FRESHNESS_POSTS, payload, meta}
 }

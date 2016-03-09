@@ -1,6 +1,7 @@
 import React from 'react'
 import Post from './Post'
 import ScrollListener from './ScrollListener'
+import RefreshButton from './RefreshButton'
 import { position, positionInViewport } from '../util/scrolling'
 import { includes } from 'lodash'
 import PostEditor from './PostEditor'
@@ -11,6 +12,7 @@ class PostList extends React.Component {
   static propTypes = {
     posts: array,
     loadMore: func,
+    refreshPostList: func,
     pending: bool,
     editingPostIds: array
   }
@@ -47,14 +49,16 @@ class PostList extends React.Component {
   }
 
   render () {
-    let { posts, editingPostIds, pending, loadMore } = this.props
+    let { posts, editingPostIds, pending, loadMore, refreshPostList } = this.props
     let { project } = this.context
 
     if (!pending && posts.length === 0) {
       return <div className='no-posts'>No posts to show.</div>
     }
 
-    return <ul className='posts'>
+    return <span>
+      <RefreshButton refresh={refreshPostList} />
+      <ul className='posts'>
       {pending && <li className='loading'>Loading...</li>}
       {posts.map(p => <li key={p.id} ref={p.id}>
         {includes(editingPostIds, p.id)
@@ -63,6 +67,7 @@ class PostList extends React.Component {
       </li>)}
       <ScrollListener onBottom={loadMore}/>
     </ul>
+    </span>
   }
 }
 

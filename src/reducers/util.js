@@ -2,9 +2,18 @@ import { cloneDeep, filter, isEqual, merge, set, some, transform, uniq } from 'l
 
 export function appendUniq (state, key, values) {
   let existing = state[key] || []
+  return concatUniq(state, key, existing, values)
+}
+
+export function prependUniq (state, key, values) {
+  let existing = state[key] || []
+  return concatUniq(state, key, values, existing)
+}
+
+export function concatUniq (state, key, first, second) {
   return {
     ...state,
-    [key]: uniq(existing.concat(values))
+    [key]: uniq(first.concat(second))
   }
 }
 

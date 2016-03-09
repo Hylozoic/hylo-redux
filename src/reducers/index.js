@@ -20,6 +20,8 @@ import { appendUniq } from './util'
 
 import {
   CANCEL_TYPEAHEAD,
+  CHECK_FRESHNESS_POSTS,
+  CLEAR_CACHE,
   CREATE_COMMUNITY,
   CREATE_POST,
   CREATE_NETWORK,
@@ -70,6 +72,19 @@ const keyedCounter = (actionType, payloadKey, statePath = 'meta.cache.id') =>
     if (error) return state
     if (type === actionType) {
       return {...state, [get(action, statePath)]: Number(payload[payloadKey])}
+    }
+    return state
+  }
+
+const keyedHasFreshItems = (actionType, bucket) =>
+  (state = {}, action) => {
+    let { type, payload, error, meta } = action
+    if (error) return state
+    if (type === actionType) {
+      return {...state, [meta.cacheId]: payload}
+    }
+    if (type === CLEAR_CACHE && payload.bucket === bucket) {
+      return {...state, [payload.id]: false}
     }
     return state
   }
@@ -145,17 +160,6 @@ export default combineReducers({
     return state
   },
 
-  totalPostsByQuery: (state = {}, action) => {
-    if (action.error) return state
-
-    let { type, payload, meta } = action
-    switch (type) {
-      case FETCH_POSTS:
-        return {...state, [meta.cache.id]: payload.posts_total}
-    }
-    return state
-  },
-
   comments,
   commentsByPost,
   communities,
@@ -213,6 +217,9 @@ export default combineReducers({
     return state
   },
 
+  hasFreshPostsByQuery: keyedHasFreshItems(CHECK_FRESHNESS_POSTS, 'postsByQuery'),
+
+  totalPostsByQuery: keyedCounter(FETCH_POSTS, 'posts_total'),
   totalPeopleByQuery: keyedCounter(FETCH_PEOPLE, 'people_total'),
   totalProjectsByQuery: keyedCounter(FETCH_PROJECTS, 'projects_total'),
   totalCommunitiesByQuery: keyedCounter(FETCH_COMMUNITIES, 'communities_total'),

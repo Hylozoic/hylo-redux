@@ -36,9 +36,10 @@ export default function (state = {}, action) {
       }, {})
       return {...state, ...updatedPostLists}
     case CLEAR_CACHE:
-      if (payload.bucket === 'postsByCommunity') {
+      if (payload.bucket === 'postsByQuery') {
         return {...state, [payload.id]: null}
       }
+      break
   }
 
   return state

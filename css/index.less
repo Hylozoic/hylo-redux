@@ -1484,6 +1484,27 @@ ul.tags {
   }
 }
 
+.refresh-button {
+  padding: 15px;
+  background-color: @light-gray-bg;
+  border: 1px solid @light-gray-border;
+  width: 235px;
+  z-index: 1;
+
+  &.static {
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 7px;
+  }
+
+  &.floating {
+    position: fixed;
+    left: 50%;
+    margin-left: -10px;
+    top: 0px;
+  }
+}
+
 .single-post {
   // prevent Intercom button from overlapping comment button
   margin-bottom: 70px;

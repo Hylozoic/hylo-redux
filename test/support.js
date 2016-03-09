@@ -1,7 +1,7 @@
 import dotenv from 'dotenv'
 import chai from 'chai'
-import React from 'react'
-import { mapValues } from 'lodash'
+import { Component, createElement, PropTypes } from 'react'
+import { mapValues, omit } from 'lodash'
 process.env.NODE_ENV = 'test'
 
 dotenv.load({path: './.env.test', silent: true})
@@ -12,13 +12,29 @@ global.spy = chai.spy
 
 export default {
   helpers: {
-    withContext: (element, context) => {
-      let Wrapper = React.createClass({
-        childContextTypes: mapValues(context, () => React.PropTypes.any),
-        getChildContext: () => context,
-        render: () => element
-      })
-      return React.createElement(Wrapper)
+    createElement: (componentClass, props, context) => {
+      class Wrapper extends Component {
+        static childContextTypes = mapValues(context, () => PropTypes.any)
+
+        getChildContext () { return context }
+
+        render () {
+          this.renderedElement = createElement(componentClass, {
+            ...omit(props, 'stateless'),
+            ref: props.stateless ? null : 'wrappedInstance'
+          })
+          return this.renderedElement
+        }
+
+        getWrappedInstance () {
+          if (this.refs.wrappedInstance && this.refs.wrappedInstance.getWrappedInstance) {
+            return this.refs.wrappedInstance.getWrappedInstance()
+          }
+          return this.refs.wrappedInstance
+        }
+      }
+
+      return createElement(Wrapper)
     }
   },
   mocks: {

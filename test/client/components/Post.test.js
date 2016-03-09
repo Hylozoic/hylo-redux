@@ -72,7 +72,7 @@ describe('Followers', () => {
   ]
 
   const renderWithFollowers = followers => {
-    let component = helpers.withContext(<Followers/>, {
+    let component = helpers.createElement(Followers, {stateless: true}, {
       post: {followers}, currentUser
     })
     let node = renderIntoDocument(component)

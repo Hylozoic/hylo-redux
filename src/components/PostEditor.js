@@ -71,7 +71,7 @@ const postTypeData = {
     currentUser: state.people.current,
     saving: state.pending[CREATE_POST] || state.pending[UPDATE_POST]
   }
-})
+}, null, null, {withRef: true})
 export default class PostEditor extends React.Component {
   static propTypes = {
     expanded: bool,
@@ -205,7 +205,7 @@ export default class PostEditor extends React.Component {
   }
 
   render () {
-    let { expanded, post, postEdit, dispatch, project } = this.props
+    let { expanded, post, postEdit, dispatch, project, currentUser } = this.props
     let { name, description, communities, type, location } = postEdit
     let { communityChoiceTerm } = this.state
     let communityChoices = this.getCommunityChoices(communityChoiceTerm)
@@ -263,13 +263,14 @@ export default class PostEditor extends React.Component {
         <div className='buttons'>
           <div className='right'>
             <button onClick={this.cancel}>Cancel</button>
-            <button className='btn-primary' onClick={this.save} disabled={this.props.saving}>
+            <button className='btn-primary' onClick={this.save}
+              disabled={this.props.saving} ref='save'>
               {post ? 'Save Changes' : 'Post'}
             </button>
           </div>
 
           <AttachmentButtons id={this.props.id} media={postEdit.media}
-            path={`user/${this.props.currentUser.id}/seeds`}/>
+            path={`user/${currentUser.id}/seeds`}/>
         </div>
       </div>}
     </div>

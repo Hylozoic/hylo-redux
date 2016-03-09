@@ -18,7 +18,7 @@ const PersonCards = ({ people, menus, subtitles }) => {
 export default PersonCards
 
 export const PersonCard = ({ person, menu, subtitle }) => {
-  let { id, avatar_url, name, bio } = person
+  let { id, avatar_url, name, bio, isModerator } = person
   return <div className='person-card'>
     {menu && <Dropdown className='caret-menu' alignRight={true}
       toggleChildren={<i className='icon-down'></i>}>
@@ -29,6 +29,7 @@ export const PersonCard = ({ person, menu, subtitle }) => {
     </A>
     <br/>
     <A className='name' to={`/u/${id}`}>{name}</A>
+    {isModerator && <div className='moderator'>Moderator</div>}
     {subtitle && <div className='subtitle'>{subtitle}</div>}
     {bio && <div className='details'>{bio}</div>}
   </div>

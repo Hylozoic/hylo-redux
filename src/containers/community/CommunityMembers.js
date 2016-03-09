@@ -1,7 +1,7 @@
 import React from 'react'
 import { prefetch } from 'react-fetcher'
 import { connect } from 'react-redux'
-import { debounce } from 'lodash'
+import { debounce, includes } from 'lodash'
 import { FETCH_PEOPLE } from '../../actions'
 import { fetchPeople } from '../../actions/fetchPeople'
 import { createCacheId, connectedListProps, fetchWithCache, refetch } from '../../util/caching'
@@ -25,13 +25,13 @@ const fetch = fetchWithCache(fetchPeople)
     community: state.communities[id],
     currentUser: state.people.current,
     error: findError(state.errors, FETCH_PEOPLE, 'peopleByQuery', cacheId),
-    moderators: state.peopleByQuery[qs.stringify({subject: 'community-moderators', id})] || []
+    moderatorIds: state.peopleByQuery[qs.stringify({subject: 'community-moderators', id})] || []
   }
 })
 export default class CommunityMembers extends React.Component {
   static propTypes = {
     people: array,
-    moderators: array,
+    moderatorIds: array,
     pending: bool,
     dispatch: func,
     total: number,
@@ -56,11 +56,16 @@ export default class CommunityMembers extends React.Component {
   }
 
   render () {
-    let { pending, people, moderators, location: { query }, community, currentUser, error } = this.props
+    let { pending, people, moderatorIds, location: { query }, community, currentUser, error } = this.props
     if (error) return <AccessErrorMessage error={error}/>
     if (!currentUser) return <div>Loading...</div>
     let { search } = query
-    let subtitles = moderators.reduce((acc, mod) => ({...acc, [mod]: 'Moderator'}), {})
+    let peopleWithModeratorFlag = people.map(person => {
+      if (includes(moderatorIds, person.id)) {
+        return {...person, isModerator: true}
+      }
+      return person
+    })
 
     return <div className='members'>
       <div className='list-controls'>
@@ -73,7 +78,7 @@ export default class CommunityMembers extends React.Component {
           onChange={debounce(event => this.updateQuery({search: event.target.value}), 500)}/>
       </div>
       {pending && <div className='loading'>Loading...</div>}
-      <PersonCards people={people} subtitles={subtitles}/>
+      <PersonCards people={peopleWithModeratorFlag} />
       <ScrollListener onBottom={this.loadMore}/>
     </div>
   }

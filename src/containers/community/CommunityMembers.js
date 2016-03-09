@@ -60,12 +60,10 @@ export default class CommunityMembers extends React.Component {
     if (error) return <AccessErrorMessage error={error}/>
     if (!currentUser) return <div>Loading...</div>
     let { search } = query
-    let peopleWithModeratorFlag = people.map(person => {
-      if (includes(moderatorIds, person.id)) {
-        return {...person, isModerator: true}
-      }
-      return person
-    })
+    let peopleWithModeratorFlag = people.map(person => ({
+      ...person,
+      isModerator: includes(moderatorIds, person.id)
+    }))
 
     return <div className='members'>
       <div className='list-controls'>

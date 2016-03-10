@@ -55,12 +55,12 @@ export function setupPopupCallback (dispatch, errorAction) {
             dispatch(navigate(next))
           })
         }
-        popup.close()
         break
       case PROFILE_CONTEXT:
         dispatch(fetchCurrentUser(true))
-        popup.close()
     }
+
+    popup.close()
   }
 
   window.addEventListener('message', ({ data }) => {

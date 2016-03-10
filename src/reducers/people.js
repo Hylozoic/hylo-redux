@@ -110,6 +110,7 @@ export default function (state = {}, action) {
       }
       break
     case FETCH_LIVE_STATUS:
+      if (!state.current) return state
       return {
         ...state,
         current: {...state.current, new_notification_count: payload.new_notification_count}

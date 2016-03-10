@@ -19,6 +19,7 @@ import { avatarUploadSettings, bannerUploadSettings } from '../../models/communi
 import { uploadImage } from '../../actions/uploadImage'
 import PersonChooser from '../../components/PersonChooser'
 import { reversibleUpdate } from '../../util/forms'
+import { makeUrl } from '../../client/util'
 
 @prefetch(({dispatch, params: {id}}) =>
   Promise.all([
@@ -130,6 +131,10 @@ export default class CommunitySettings extends React.Component {
     let oldSettings = reduce(args, (m, field) => { m[field] = community[field]; return m }, {})
     this.setState({editing: {...editing, ...newEditing}})
     dispatch(updateCommunitySettings(community.id, {slug, ...edited}, oldSettings))
+    .then(({ error }) => {
+      if (error || !edited.slug) return
+      dispatch(navigate(makeUrl(`/c/${edited.slug}/settings`, {expand: 'appearance'})))
+    })
   }
 
   edit = (...args) => {
@@ -223,8 +228,6 @@ export default class CommunitySettings extends React.Component {
     let labelProps = {expand, toggle: this.toggleSection}
     let joinUrl, codeNotUnique, slugNotUnique
     let { is_admin } = this.props.currentUser
-
-    console.log({errors})
 
     if (expand.appearance) {
       slugNotUnique = get(this.props.validation, 'slug.unique') === false

@@ -64,6 +64,7 @@ export function trackEvent (eventName, options = {}) {
       track(otherOptions)
       break
     case EDITED_USER_SETTINGS:
+    case LOGGED_IN:
     case STARTED_LOGIN:
     case STARTED_SIGNUP:
     case VIEWED_NOTIFICATIONS:
@@ -71,7 +72,7 @@ export function trackEvent (eventName, options = {}) {
       track()
       break
     default:
-      throw new Error(`Don't know how to handle event named "${name}"`)
+      throw new Error(`Don't know how to handle event named "${eventName}"`)
   }
 
   return Promise.resolve()

@@ -21,13 +21,14 @@ export const isProjectOwner = (currentUser, project) =>
 
 // FIXME how to do this without depending on state?
 export const isProjectModerator = (currentUser, project, state) => {
+  if (!project) return false
   let key = qs.stringify({subject: 'project-moderators', id: project.id})
   return includes(get(state, `peopleByQuery.${key}`), get(currentUser, 'id'))
 }
 
 export const canModerateProject = (currentUser, project, state) =>
-  canModerate(currentUser, {id: project.community_id}) ||
+  project && (canModerate(currentUser, {id: project.community_id}) ||
   isProjectModerator(currentUser, project) ||
-  project.user.id === get(currentUser, 'id')
+  project.user.id === get(currentUser, 'id'))
 
 export const isAdmin = currentUser => !!get(currentUser, 'is_admin')

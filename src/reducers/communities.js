@@ -16,6 +16,7 @@ import {
   ADD_COMMUNITY_MODERATOR_PENDING,
   REMOVE_COMMUNITY_MODERATOR,
   REMOVE_COMMUNITY_MODERATOR_PENDING,
+  TYPEAHEAD,
   USE_INVITATION
 } from '../actions'
 import { mergeList } from './util'
@@ -86,6 +87,10 @@ export default function (state = {}, action) {
       }
     case FETCH_COMMUNITIES:
       return mergeList(state, payload.communities, 'slug')
+    case TYPEAHEAD:
+      if (meta.id === 'network_communities') {
+        return mergeList(state, payload, 'slug')
+      }
   }
   return state
 }

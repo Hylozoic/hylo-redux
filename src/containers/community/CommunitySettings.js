@@ -281,7 +281,7 @@ export default class CommunitySettings extends React.Component {
                       onChange={this.setSlug}/>
                     </div>
                 </form>
-                <p className='meta'>Warning: changing community slug will break any links to posts.</p>
+                <p className='meta'>Warning: any links that refer to the old slug will no longer work.</p>
                 {!!get(errors, 'slug.empty') && <p className='help error'>Please fill in a slug.</p>}
                 {slugNotUnique && <p className='help error'>This code cannot be used; please choose another.</p>}
                 <div className='buttons'>

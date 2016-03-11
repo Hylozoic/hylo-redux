@@ -215,7 +215,16 @@ export default class NetworkEditor extends React.Component {
   }
 
   render () {
-    let { creating, validating, saving, uploadingImage, networkEdit, errors, communityChoices } = this.props
+    let {
+      creating,
+      validating,
+      saving,
+      uploadingImage,
+      networkEdit,
+      errors,
+      communityChoices,
+      currentUser: { is_admin }
+    } = this.props
     let { name, description, slug, avatar_url, banner_url, communities } = networkEdit
     let disableSubmit = some(omit(errors, 'server')) || validating || saving || uploadingImage
 
@@ -246,7 +255,7 @@ export default class NetworkEditor extends React.Component {
           </div>
         </div>
 
-        {creating && <div className='section-item'>
+        {(creating || is_admin) && <div className='section-item'>
           <div className='side-column'>
             <label>URL</label>
           </div>
@@ -255,6 +264,7 @@ export default class NetworkEditor extends React.Component {
               <div className='input-group-addon'>www.hylo.com/n/</div>
               <input ref='slug' className='form-control' value={slug} onChange={this.setSlug}/>
             </div>
+            {!creating && is_admin && <p className='meta'>Warning: changing slug will break links to this network.</p>}
             {errors.slugBlank && <p className='help error'>Please fill in this field.</p>}
             {errors.slugInvalid && <p className='help error'>Use lowercase letters, numbers, and hyphens only.</p>}
             {errors.slugUsed && <p className='help error'>This URL is already in use.</p>}

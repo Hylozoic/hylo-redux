@@ -2,8 +2,8 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { prefetch } from 'react-fetcher'
 import cx from 'classnames'
-const { object, func, array } = React.PropTypes
-import { find, get, reduce } from 'lodash'
+const { object, func } = React.PropTypes
+import { find, get, reduce, isEmpty } from 'lodash'
 import { markdown } from '../../util/text'
 import {
   updateCommunitySettings,
@@ -19,6 +19,7 @@ import { avatarUploadSettings, bannerUploadSettings } from '../../models/communi
 import { uploadImage } from '../../actions/uploadImage'
 import PersonChooser from '../../components/PersonChooser'
 import { reversibleUpdate } from '../../util/forms'
+import { makeUrl } from '../../client/util'
 
 @prefetch(({dispatch, params: {id}}) =>
   Promise.all([
@@ -28,7 +29,8 @@ import { reversibleUpdate } from '../../util/forms'
 )
 @connect((state, { params }) => ({
   community: state.communities[params.id],
-  validation: state.communityValidation
+  validation: state.communityValidation,
+  currentUser: get(state, 'people.current')
 }))
 export default class CommunitySettings extends React.Component {
 
@@ -41,7 +43,7 @@ export default class CommunitySettings extends React.Component {
     community: object,
     dispatch: func,
     location: object,
-    people: array,
+    currentUser: object,
     validation: object
   }
 
@@ -68,6 +70,20 @@ export default class CommunitySettings extends React.Component {
     return this.setEditState('beta_access_code', code, errors)
   }
 
+  setSlug = event => {
+    let { dispatch, community } = this.props
+    let slug = event.target.value
+
+    if (slug && slug !== community.slug) {
+      dispatch(validateCommunityAttribute('slug', slug, 'unique'))
+    } else {
+      dispatch(resetCommunityValidation('slug'))
+    }
+
+    let errors = !slug ? {empty: true} : {}
+    return this.setEditState('slug', slug, errors)
+  }
+
   validate () {
     let { errors } = this.state
 
@@ -75,6 +91,19 @@ export default class CommunitySettings extends React.Component {
       window.alert('Please provide a community name.')
       this.refs.name.focus()
       return
+    }
+
+    if (errors.slug) {
+      if (errors.slug.not_unique) {
+        window.alert('This slug cannot be used; please choose another.')
+        this.refs.slug.focus()
+        return
+      }
+      if (errors.slug.empty) {
+        window.alert('Please fill in a slug.')
+        this.refs.slug.focus()
+        return
+      }
     }
 
     if (errors.beta_access_code) {
@@ -102,6 +131,10 @@ export default class CommunitySettings extends React.Component {
     let oldSettings = reduce(args, (m, field) => { m[field] = community[field]; return m }, {})
     this.setState({editing: {...editing, ...newEditing}})
     dispatch(updateCommunitySettings(community.id, {slug, ...edited}, oldSettings))
+    .then(({ error }) => {
+      if (error || !edited.slug) return
+      dispatch(navigate(makeUrl(`/c/${edited.slug}/settings`, {expand: 'appearance'})))
+    })
   }
 
   edit = (...args) => {
@@ -193,7 +226,12 @@ export default class CommunitySettings extends React.Component {
     let { avatar_url, banner_url } = community
     let { editing, edited, errors, expand } = this.state
     let labelProps = {expand, toggle: this.toggleSection}
-    let joinUrl, codeNotUnique
+    let joinUrl, codeNotUnique, slugNotUnique
+    let { is_admin } = this.props.currentUser
+
+    if (expand.appearance) {
+      slugNotUnique = get(this.props.validation, 'slug.unique') === false
+    }
 
     if (expand.access) {
       let origin = typeof window !== 'undefined' ? window.location.origin : 'https://www.hylo.com'
@@ -228,6 +266,33 @@ export default class CommunitySettings extends React.Component {
                 <button type='button' onClick={() => this.edit('name')}>Change</button>
               </div>}
         </div>
+
+        {is_admin && <div className='section-item'>
+          <div className='half-column'>
+            <label>Slug</label>
+            <p>{community.slug}</p>
+          </div>
+          {editing.slug
+            ? <div className='half-column right-align'>
+                <form name='slugForm'>
+                  <div className={cx('form-group', {'has-error': !isEmpty(errors.slug)})}>
+                    <input type='text' ref='slug' className='slug form-control'
+                      value={edited.slug}
+                      onChange={this.setSlug}/>
+                    </div>
+                </form>
+                <p className='meta'>Warning: any links that refer to the old slug will no longer work.</p>
+                {!!get(errors, 'slug.empty') && <p className='help error'>Please fill in a slug.</p>}
+                {slugNotUnique && <p className='help error'>This code cannot be used; please choose another.</p>}
+                <div className='buttons'>
+                  <button type='button' onClick={() => this.cancelEdit('slug')}>Cancel</button>
+                  <button type='button' className='btn-primary' onClick={() => this.save('slug')}>Save</button>
+                </div>
+              </div>
+            : <div className='half-column right-align'>
+                <button type='button' onClick={() => this.edit('slug')}>Change</button>
+              </div>}
+        </div>}
 
         <div className='section-item description'>
           <div className='full-column'>

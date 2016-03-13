@@ -113,6 +113,8 @@ export default class Login extends React.Component {
   render () {
     let { error, actionError, location: { query }, project, community } = this.props
 
+    if (error === 'no user') error = 'Login was canceled or no user data was found.'
+
     return <div id='login' className='login-signup'>
       <form onSubmit={this.submit}>
         <h2>Log in</h2>

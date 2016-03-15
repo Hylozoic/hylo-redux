@@ -14,7 +14,6 @@ export const CREATE_COMMUNITY = 'CREATE_COMMUNITY'
 export const CREATE_POST = 'CREATE_POST'
 export const CREATE_PROJECT = 'CREATE_PROJECT'
 export const CREATE_NETWORK = 'CREATE_NETWORK'
-export const TOGGLE_USER_SETTINGS_SECTION = 'TOGGLE_USER_SETTINGS_SECTION'
 export const FETCH_ACTIVITY = 'FETCH_ACTIVITY'
 export const FETCH_COMMENTS = 'FETCH_COMMENTS'
 export const FETCH_COMMUNITY = 'FETCH_COMMUNITY'
@@ -71,7 +70,7 @@ export const THANK = 'THANK'
 export const THANK_PENDING = THANK + _PENDING
 export const TOGGLE_MAIN_MENU = 'TOGGLE_MAIN_MENU'
 export const TOGGLE_PROJECT_MODERATOR_ROLE = 'TOGGLE_PROJECT_MODERATOR_ROLE'
-export const TOGGLE_SHOW_ALL_COMMUNITIES = 'TOGGLE_SHOW_ALL_COMMUNITIES'
+export const TOGGLE_USER_SETTINGS_SECTION = 'TOGGLE_USER_SETTINGS_SECTION'
 export const TYPEAHEAD = 'TYPEAHEAD'
 export const UPDATE_COMMUNITY_EDITOR = 'UPDATE_COMMUNITY_EDITOR'
 export const UPDATE_INVITATION_EDITOR = 'UPDATE_INVITATION_EDITOR'
@@ -521,10 +520,6 @@ export function fetchOnboarding (userId, communityId) {
     type: FETCH_ONBOARDING,
     payload: {api: true, path}
   }
-}
-
-export function toggleShowAllCommunities () {
-  return {type: TOGGLE_SHOW_ALL_COMMUNITIES}
 }
 
 export function removePost (id) {

@@ -1,0 +1,128 @@
+@top-nav-height: 75px;
+@left-nav-width: 208px;
+
+nav {
+  ul {
+    .no-bullets;
+  }
+}
+
+.menu-button {
+  display: block;
+  height: @top-nav-height;
+  line-height: @top-nav-height;
+  padding-left: 30px;
+  padding-right: 30px;
+  &:hover {
+    text-decoration: none;
+  }
+  > * {
+    vertical-align: middle;
+  }
+  .hamburger {
+    width: 26px;
+    display: inline-block;
+    margin-right: 10px;
+    .bar {
+      height: 1px;
+      margin-bottom: 7px;
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+  }
+}
+
+#topNav {
+  width: 100%;
+  background-color: @top-nav-background;
+  line-height: @top-nav-height;
+  height: @top-nav-height;
+  border-bottom: 1px solid #fff;
+
+  .menu-button {
+    float: left;
+    border-bottom: 1px solid #fff;
+    background-color: @top-nav-background;
+    color: @off-black;
+    .bar {
+      background-color: @damian-green;
+    }
+  }
+
+  .communities {
+    position: absolute;
+    left: 50%;
+    margin-left: -15vw;
+    text-align: center;
+    &, .dropdown-menu li {
+      width: 30vw;
+    }
+    img {
+      width: 48px;
+      height: 48px;
+      margin-right: 10px;
+    }
+    .dropdown-toggle {
+      font-weight: bold;
+    }
+  }
+
+  ul.right {
+    margin-right: 30px;
+  }
+}
+
+#leftNav {
+  position: fixed;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: @left-nav-width;
+  background-color: @left-nav-background;
+
+  .menu-button {
+    background-color: #2e2e2e;
+    color: white;
+    .hamburger {
+      .bar {
+        background-color: white;
+      }
+    }
+  }
+
+  ul {
+    padding: 23px 25px 0 16px;
+  }
+
+  ul a {
+    height: 30px;
+    line-height: 30px;
+    padding: 0 12px;
+    display: block;
+    margin-bottom: 6px;
+    > * {
+      vertical-align: baseline;
+    }
+    &:hover {
+      text-decoration: none;
+    }
+    &.active {
+      background-color: @left-nav-hover-link-background;
+      border-radius: 12px;
+      color: @damian-green;
+      font-weight: normal;
+    }
+    .glyphicon {
+      margin-right: 8px;
+      position: relative;
+      top: 1px;
+    }
+  }
+}
+
+#main {
+  h2:first-child {
+    margin-top: 0;
+  }
+}

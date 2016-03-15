@@ -26,7 +26,7 @@ export default class NetworkProfile extends React.Component {
 
     let { slug, banner_url, avatar_url, name } = network
 
-    return <div id='network' className='tabbed-context'>
+    return <div id='network'>
       <div className='banner'>
         <div className='background' style={{backgroundImage: `url(${banner_url})`}}/>
         <div className='logo' style={{backgroundImage: `url(${avatar_url})`}}/>

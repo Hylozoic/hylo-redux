@@ -1,64 +1,77 @@
 import { A, IndexA } from './A'
 import React from 'react'
-import cx from 'classnames'
 import { VelocityTransitionGroup } from 'velocity-react'
 
-const cutoff = 5
+// this value is dupicated in CSS
+export const leftNavWidth = 208
 
-const CommunityListItem = community =>
-  <li key={community.id}>
-    <A to={`/c/${community.slug}`} title={community.name}>
-      <img src={community.avatar_url}/> {community.name}
-    </A>
-  </li>
+export const leftNavEasing = [80, 25]
 
-const LeftNav = props => {
-  let {
-    communities,
-    open,
-    unreadCount,
-    toggleCommunities,
-    showAllCommunities
-  } = props
+const animations = {
+  enter: {
+    animation: {translateX: [0, '-100%']},
+    easing: leftNavEasing
+  },
 
-  let extra = communities.length - cutoff
-  if (extra > 0 && showAllCommunities) {
-    var moreCommunities = communities.slice(cutoff)
+  leave: {
+    animation: {translateX: '-100%'},
+    easing: leftNavEasing
   }
-  communities = communities.slice(0, cutoff)
+}
 
-  return <nav id='leftNav' className={cx({open})}>
-    <ul>
-      <li><IndexA to='/'>All posts</IndexA></li>
-      <li><A to='/my-posts'>My posts</A></li>
-      <li><A to='/projects'>Projects</A></li>
-      <li>
-        <A to='/notifications'>
-          Notifications
-          {unreadCount > 0 ? ` (${unreadCount})` : ''}
-        </A>
-      </li>
-      <li><A to='/search'>Search</A></li>
-      <li className='divider'></li>
-      {communities.map(CommunityListItem)}
-    </ul>
+export const MenuButton = ({ onClick, label }) =>
+  <a className='menu-button' onClick={onClick}>
+    <div className='hamburger'>
+      <div className='bar'></div>
+      <div className='bar'></div>
+      <div className='bar'></div>
+    </div>
+    <span>{label || 'Menu'}</span>
+  </a>
 
-    <VelocityTransitionGroup enter={{animation: 'slideDown'}} leave={{animation: 'slideUp'}}>
-      {moreCommunities && <ul>{moreCommunities.map(CommunityListItem)}</ul>}
-    </VelocityTransitionGroup>
+export const LeftNav = ({ opened, community, close }) => {
+  let { slug } = community
 
-    <ul>
-      {extra > 0 && <li>
-        <a onClick={toggleCommunities} className='meta'>
-          {showAllCommunities ? 'Show fewer...' : `Show ${extra} more...`}
-        </a>
-      </li>}
-
-      <li className='divider'></li>
-      <li><A to='/c/join'>Join a community</A></li>
-      <li><A to='/c/new'>Create a community</A></li>
-    </ul>
-  </nav>
+  return <VelocityTransitionGroup {...animations}>
+    {opened && <nav id='leftNav'>
+      <MenuButton onClick={close}/>
+      <ul>
+        <li>
+          <IndexA to={`/c/${slug}`}>
+            <Icon name='th-list'/> Conversations
+          </IndexA>
+        </li>
+        <li>
+          <A to={`/c/${slug}/events`}>
+            <Icon name='calendar'/> Events
+          </A>
+        </li>
+        <li>
+          <A to={`/c/${slug}/projects`}>
+            <Icon name='road'/> Projects
+          </A>
+        </li>
+        <li>
+          <A to={`/c/${slug}/members`}>
+            <Icon name='user'/> Members
+          </A>
+        </li>
+        <li>
+          <A to={`/c/${slug}/about`}>
+            <Icon name='question-sign'/> About
+          </A>
+        </li>
+        <li>
+          <A to={`/c/${slug}/invite`}>
+            <Icon name='sunglasses'/> Invite
+          </A>
+        </li>
+      </ul>
+    </nav>}
+  </VelocityTransitionGroup>
 }
 
 export default LeftNav
+
+const Icon = ({ name }) =>
+  <span className={`icon glyphicon glyphicon-${name}`}></span>

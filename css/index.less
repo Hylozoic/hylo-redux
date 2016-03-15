@@ -7,9 +7,10 @@
 @import 'dropdown';
 @import 'forms';
 @import 'tinymce';
+@import 'nav';
 
 body {
-  background-color: @off-white;
+  background-color: @page-background;
   color: @off-black;
   .base-text;
 }
@@ -31,130 +32,6 @@ button, a.button, input[type=submit] {
     top: 2px;
     left: -1px;
     margin-right: 2px;
-  }
-}
-
-#app {
-  .container-fluid;
-}
-
-nav {
-  ul {
-    .no-bullets;
-  }
-
-  a.active {
-    font-weight: bold;
-  }
-}
-
-#topNav {
-  .make-md-column-offset(1);
-  .make-md-column(10);
-  border-bottom: 2px solid @hylo-teal;
-  padding: 15px 15px 5px;
-  line-height: 36px;
-  > ul {
-    > li {
-      display: inline-block;
-      margin-right: 15px;
-      &.visible-xs {
-        @media (max-width: @screen-xs-max) {
-          display: inline-block !important;
-        }
-      }
-    }
-
-    &.right {
-      > li {
-        margin-left: 15px;
-        margin-right: 0;
-      }
-    }
-  }
-
-  a {
-    cursor: pointer;
-    color: @off-black;
-
-    // FIXME this a workaround for the hover state not going away
-    // on touch devices -- probably fixable with whatever the React
-    // counterpart to ngTouch is
-    @media (max-width: @screen-xs-max) {
-      text-decoration: none;
-    }
-  }
-
-  .icon-hylo-script {
-    font-size: 36px;
-    vertical-align: middle;
-    position: relative;
-    color: @hylo-teal;
-    margin-right: 2px;
-  }
-
-  .mobile-menu-link {
-    .visible-xs;
-  }
-}
-
-#leftNav {
-  .make-sm-column(3);
-  .make-md-column(2);
-  .make-md-column-offset(1);
-  padding: 15px;
-  height: 100%;
-  font-size: 13px;
-  a {
-    padding: 3px;
-    display: block;
-    width: 100%;
-    margin-bottom: 5px;
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    line-height: 24px;
-    text-decoration: none;
-    cursor: pointer;
-    &:active {
-      font-weight: bold;
-    }
-    img {
-      height: 24px;
-      width: 24px;
-      margin-right: 5px;
-      float: left;
-    }
-    &:hover {
-      background-color: #ddd;
-    }
-    &.meta:hover {
-      background-color: transparent;
-    }
-  }
-
-  @media (max-width: @screen-xs-max) {
-    display: none;
-    &.open {
-      display: block;
-    }
-    border-bottom: 1px solid @light-gray-border;
-    margin-bottom: 15px;
-  }
-
-  .divider {
-    border-top: 1px solid @light-gray-border;
-    height: 7px;
-  }
-}
-
-#main {
-  .make-sm-column(9);
-  .make-md-column(8);
-  padding: 15px;
-
-  h2:first-child {
-    margin-top: 0;
   }
 }
 
@@ -277,6 +154,32 @@ ul.tabs {
   }
 }
 
+#cover-image {
+  width: 100%;
+  .shaded-background;
+  .fluid-height(28.8%);
+  // height: 24vw;
+  overflow: hidden;
+  position: relative;
+
+  .background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-position: center;
+    background-size: cover;
+    z-index: -1;
+  }
+}
+
+#cover-image-page-content {
+  width: 688px;
+  margin: -170px auto 0;
+  position: relative;
+}
+
 .banner {
   padding: 45px 15px 15px;
   position: relative;
@@ -382,9 +285,10 @@ ul.posts {
 }
 
 .post {
-  border: 1px solid @light-gray-border;
+  border: 1px solid @post-border;
   padding: 15px;
   margin-bottom: 15px;
+  background-color: #fff;
 
   .header {
     .meta > a, .meta > div > a {
@@ -764,7 +668,7 @@ ul.tags {
 
 .post-editor {
   padding: 15px;
-  background-color: @light-gray-bg;
+  background-color: #fff;
   margin-bottom: 15px;
   .mobile-full-bleed;
 
@@ -876,6 +780,8 @@ ul.tags {
   line-height: 34px;
   margin-bottom: 15px;
   text-align: right;
+  background-color: @list-controls-background;
+  padding: 15px;
 
   > * {
     vertical-align: middle;
@@ -890,42 +796,39 @@ ul.tags {
   }
 }
 
-.tabbed-context {
-  .markdown {
-    img {
-      max-width: 100%;
-    }
-  }
-
-  .markdown.description {
+.markdown {
+  &.description {
     padding-top: 15px;
   }
+  img {
+    max-width: 100%;
+  }
+}
 
-  .members {
-    > ul {
-      .no-bullets;
+.members {
+  > ul {
+    .no-bullets;
+  }
+}
+
+.onboarding-questions {
+  border: 1px solid @hylo-teal;
+  border-radius: @border-radius-base;
+  margin-bottom: 15px;
+  .header {
+    background-color: @hylo-teal;
+    padding: 15px;
+    color: white;
+    h3 {
+      margin: 0;
     }
   }
+  .content {
+    padding: 15px;
+  }
 
-  .onboarding {
-    border: 1px solid @hylo-teal;
-    border-radius: @border-radius-base;
-    margin-bottom: 15px;
-    .header {
-      background-color: @hylo-teal;
-      padding: 15px;
-      color: white;
-      h3 {
-        margin: 0;
-      }
-    }
-    .content {
-      padding: 15px;
-    }
-
-    .tag-input {
-      margin-bottom: @p-bottom-margin;
-    }
+  .tag-input {
+    margin-bottom: @p-bottom-margin;
   }
 }
 

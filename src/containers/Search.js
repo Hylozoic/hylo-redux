@@ -153,7 +153,8 @@ const CommentResult = ({ comment }) => {
   let welcomedPerson = get(post, 'relatedUsers.0')
   return <div className='comment-result'>
     <strong>
-      Comment on&ensp;
+      Comment on
+      <span> </span>
       <A to={commentUrl(comment)}>
         {post.type === 'welcome'
           ? `${welcomedPerson.name}'s welcome post`

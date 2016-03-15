@@ -30,9 +30,10 @@ const Comment = ({ comment }, { dispatch, currentUser }) => {
           {currentUser.id !== person.id &&
             <a onClick={() => dispatch(thank(comment.id, currentUser))}>
               {isThanked ? `You thanked ${person.name.split(' ')[0]}` : 'Say thanks'}
-            </a>}&ensp;
+            </a>}
           {!isEmpty(thanks) && <Dropdown className='inline'
             toggleChildren={<span>
+              &nbsp;
               {currentUser.id !== person.id
                 ? `(${thanks.length})`
                 : `${thanks.length} thanks`}

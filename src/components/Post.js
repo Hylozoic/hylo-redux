@@ -156,10 +156,12 @@ const WelcomePostHeader = ({ communities }, { post, toggleComments }) => {
   let person = post.relatedUsers[0]
   let community = communities[0]
   return <span>
-    <strong><A to={`/u/${person.id}`}>{person.name}</A></strong> joined&ensp;
+    <strong><A to={`/u/${person.id}`}>{person.name}</A></strong> joined
+    <span> </span>
     {community
       ? <span>
-          <A to={`/c/${community.slug}`}>{community.name}</A>.&ensp;
+          <A to={`/c/${community.slug}`}>{community.name}</A>.
+          <span> </span>
           <a className='open-comments' onClick={toggleComments}>
             Welcome them!
           </a>

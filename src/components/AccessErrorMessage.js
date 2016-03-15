@@ -14,7 +14,8 @@ const AccessErrorMessage = ({ error }) => {
       errorMessage = 'An error occurred.'
   }
   return <div className='alert alert-danger'>
-    {errorMessage}&ensp;
+    {errorMessage}
+    <span> </span>
     <a href='javascript:history.go(-1)'>Back</a>
   </div>
 }

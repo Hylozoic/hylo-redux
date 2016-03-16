@@ -28,9 +28,9 @@ const getLabel = path => {
 
 const TopNav = (props) => {
   let { currentUser, logout, openLeftNav, leftNavOpened, path, community } = props
+  if (!community) community = {id: null, name: 'All Communities'}
 
   const lastViewed = m => -Date.parse(m.last_viewed_at || '2001-01-01')
-
   const communities = [community].concat(flow(
     get('memberships'),
     sortBy(lastViewed),
@@ -72,13 +72,13 @@ const TopNav = (props) => {
         <li><A to='/signup'>Sign up</A></li>
         <li><A to='/login'>Log in</A></li>
       </ul>}
-    <CommunityMenu {...{communities, community}}/>
+    <CenterMenu {...{communities, community}}/>
   </nav>
 }
 
 export default TopNav
 
-const CommunityMenu = ({ communities }) =>
+const CenterMenu = ({ communities }) =>
   <Dropdown className='communities'
     toggleChildren={<div>
       <img src={communities[0].avatar_url}/>

@@ -160,7 +160,9 @@ ul.tabs {
   .fluid-height(28.8%);
   // height: 24vw;
   overflow: hidden;
-  position: relative;
+  position: absolute;
+  top: @top-nav-height;
+  left: 0;
 
   .background {
     position: absolute;
@@ -176,7 +178,7 @@ ul.tabs {
 
 #cover-image-page-content {
   width: 688px;
-  margin: -170px auto 0;
+  margin: 140px auto 0;
   position: relative;
 }
 
@@ -288,7 +290,7 @@ ul.posts {
   border: 1px solid @post-border;
   padding: 15px;
   margin-bottom: 15px;
-  background-color: #fff;
+  background-color: @card-background;
 
   .header {
     .meta > a, .meta > div > a {
@@ -963,8 +965,7 @@ ul.tags {
 }
 
 .project-card {
-  border: 1px solid @light-gray-border;
-  border-radius: @border-radius-base;
+  .card;
   margin: 0;
 
   .image {

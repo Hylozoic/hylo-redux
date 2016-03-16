@@ -6,44 +6,40 @@ import Notifier from '../components/Notifier'
 import LiveStatusPoller from '../components/LiveStatusPoller'
 import PageTitleController from '../components/PageTitleController'
 import { logout, removeNotification, toggleMainMenu } from '../actions'
-import { sortBy } from 'lodash'
 import { VelocityComponent } from 'velocity-react'
-const { bool, func, number, object } = React.PropTypes
 
-const lastViewed = m => -Date.parse(m.last_viewed_at || '2001-01-01')
-
-const App = connect(({ leftNavOpened, people, notifierMessages, showAllCommunities, routing: { path } }) => ({
-  currentUser: people.current,
-  leftNavOpened,
-  notifierMessages,
-  showAllCommunities,
-  path
-}))(props => {
+const App = connect((state, { params: { id } }) => {
+  const { leftNavOpened, notifierMessages } = state
+  return {
+    leftNavOpened,
+    notifierMessages,
+    currentUser: state.people.current,
+    community: state.communities[id],
+    path: state.routing.path
+  }
+})(props => {
   const {
+    children,
+    community,
     currentUser,
     dispatch,
     leftNavOpened,
     notifierMessages,
-    path,
-    children
+    path
   } = props
 
-  const communities = currentUser
-    ? sortBy(currentUser.memberships, lastViewed).map(m => m.community)
-    : []
-
-  const currentCommunity = communities[0] // TODO
   const moveWithMenu = {marginLeft: leftNavOpened ? leftNavWidth : 0}
   const toggleLeftNav = () => dispatch(toggleMainMenu())
 
   return <div>
     <LeftNav opened={leftNavOpened}
-      community={currentCommunity}
+      community={community}
       close={toggleLeftNav}/>
 
     <VelocityComponent animation={moveWithMenu} easing={leftNavEasing}>
       <div>
         <TopNav currentUser={currentUser}
+          community={community}
           openLeftNav={toggleLeftNav}
           leftNavOpened={leftNavOpened}
           logout={() => dispatch(logout())}
@@ -54,17 +50,9 @@ const App = connect(({ leftNavOpened, people, notifierMessages, showAllCommuniti
 
     <Notifier messages={notifierMessages}
       remove={id => dispatch(removeNotification(id))}/>
-    <LiveStatusPoller />
-    <PageTitleController />
+    <LiveStatusPoller/>
+    <PageTitleController/>
   </div>
 })
-
-App.propTypes = {
-  children: object,
-  count: number,
-  currentUser: object,
-  dispatch: func,
-  leftNavOpened: bool
-}
 
 export default App

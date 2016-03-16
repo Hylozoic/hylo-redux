@@ -23,7 +23,7 @@ const CommunityProfile = props => {
     <VelocityTransitionGroup runOnMount={true}
       enter={{animation: 'slideDown', duration: 800}}
       leave={{animation: 'slideUp', duration: 800}}>
-        {showOnboarding && <OnboardingQuestions person={currentUser} dispatch={dispatch}/>}
+      {showOnboarding && <OnboardingQuestions person={currentUser} dispatch={dispatch}/>}
     </VelocityTransitionGroup>
     <CoverImage url={community.banner_url}/>
     <div id='cover-image-page-content'>

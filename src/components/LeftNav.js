@@ -5,7 +5,7 @@ import { VelocityTransitionGroup } from 'velocity-react'
 // this value is dupicated in CSS
 export const leftNavWidth = 208
 
-export const leftNavEasing = [80, 25]
+export const leftNavEasing = [70, 25]
 
 const animations = {
   enter: {

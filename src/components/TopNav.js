@@ -2,7 +2,8 @@ import React from 'react'
 import { A } from './A'
 import Dropdown from './Dropdown'
 import { isAdmin } from '../models/currentUser'
-import { get, map } from 'lodash'
+import { filter, flow, get, map, sortBy } from 'lodash/fp'
+import { same } from '../models'
 import { MenuButton } from './LeftNav'
 import { VelocityTransitionGroup } from 'velocity-react'
 
@@ -25,25 +26,23 @@ const getLabel = path => {
 }
 
 const TopNav = (props) => {
-  let { currentUser, logout, openLeftNav, leftNavOpened, path } = props
+  let { currentUser, logout, openLeftNav, leftNavOpened, path, community } = props
 
-  let communities = map(get(currentUser, 'memberships'), 'community')
-  let currentCommunity = communities[0] // TODO
+  const lastViewed = m => -Date.parse(m.last_viewed_at || '2001-01-01')
+
+  const communities = [community].concat(flow(
+    get('memberships'),
+    sortBy(lastViewed),
+    map('community'),
+    filter(c => !same('id', community, c))
+  )(currentUser))
+
   let label = getLabel(path)
 
   return <nav id='topNav' className='clearfix'>
     <VelocityTransitionGroup enter={{animation: 'fadeIn'}}>
       {leftNavOpened || <MenuButton onClick={openLeftNav} label={label}/>}
     </VelocityTransitionGroup>
-    <Dropdown className='communities'
-      toggleChildren={<div>
-        <img src={currentCommunity.avatar_url}/>
-        {currentCommunity.name} <span className='caret'></span>
-      </div>}>
-      {communities.map(CommunityListItem)}
-      <li><A to='/c/join'>Join a community</A></li>
-      <li><A to='/c/new'>Create a community</A></li>
-    </Dropdown>
     {currentUser
     ? <ul className='right'>
         <li>
@@ -63,7 +62,26 @@ const TopNav = (props) => {
         <li><A to='/signup'>Sign up</A></li>
         <li><A to='/login'>Log in</A></li>
       </ul>}
+    <CommunityMenu {...{communities, community}}/>
   </nav>
 }
 
 export default TopNav
+
+const CommunityMenu = ({ communities }) =>
+  <Dropdown className='communities'
+    toggleChildren={<div>
+      <img src={communities[0].avatar_url}/>
+      {communities[0].name} <span className='caret'></span>
+    </div>}>
+    <li>
+      <ul className='inner-list dropdown-menu'>
+        {communities.slice(1).map(CommunityListItem)}
+      </ul>
+    </li>
+    <li className='join-or-start'>
+      <div>
+        <A to='/c/join'>Join</A> or <A to='/c/new'>start</A> a community
+      </div>
+    </li>
+  </Dropdown>

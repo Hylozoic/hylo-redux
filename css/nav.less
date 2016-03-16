@@ -45,31 +45,89 @@ nav {
     border-bottom: 1px solid #fff;
     background-color: @top-nav-background;
     color: @off-black;
+    font-weight: bold;
     .bar {
       background-color: @damian-green;
     }
   }
 
   .communities {
-    position: absolute;
-    left: 50%;
-    margin-left: -15vw;
+    margin: 0 auto;
     text-align: center;
     &, .dropdown-menu li {
       width: 30vw;
     }
+
     img {
-      width: 48px;
-      height: 48px;
+      width: 40px;
+      height: 40px;
       margin-right: 10px;
     }
+
     .dropdown-toggle {
       font-weight: bold;
+      span {
+        vertical-align: middle;
+      }
+    }
+
+    > .dropdown-menu {
+      .has-top-triangle(#fff, #fff, 6px);
+      margin-top: 10px;
+      overflow-y: visible;
+      max-height: none;
+      padding: 0;
+      li {
+        border-bottom: 1px solid @list-item-border;
+        &:last-child {
+          border-bottom: 0;
+        }
+
+        a {
+          padding: 15px 20px;
+        }
+      }
+    }
+
+    .inner-list {
+      border: 0;
+      margin: 0;
+      padding: 0;
+      max-height: 65vh;
+      position: static;
+      li:last-child {
+        padding-bottom: 50px;
+      }
+    }
+
+    .join-or-start {
+      div {
+        padding: 0;
+        line-height: 50px;
+        height: 50px;
+      }
+      background-color: #fff;
+      border-top: 1px solid @list-item-border;
+      position: absolute;
+      bottom: 0;
+      > * {
+        vertical-align: middle;
+      }
+      text-align: center;
+      a {
+        color: @damian-green;
+        display: inline;
+        padding: 0 !important;
+        font-weight: bold;
+      }
     }
   }
 
   ul.right {
     margin-right: 30px;
+    .dropdown-toggle {
+      vertical-align: middle;
+    }
   }
 }
 
@@ -77,6 +135,7 @@ nav {
   position: fixed;
   left: 0;
   top: 0;
+  z-index: 1;
   height: 100%;
   width: @left-nav-width;
   background-color: @left-nav-background;
@@ -106,6 +165,7 @@ nav {
     }
     &:hover {
       text-decoration: none;
+      color: #fff;
     }
     &.active {
       background-color: @left-nav-hover-link-background;

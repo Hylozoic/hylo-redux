@@ -56,7 +56,9 @@ Then run `git push heroku master` to deploy the most recent code.
 
 ## License
 
-    Hylo is a mobile and web application to help people do more together. Hylo helps communities better understand who in their community has what skills, and how they can create things together.
+    Hylo is a mobile and web application to help people do more together. 
+    Hylo helps communities better understand who in their community has what skills, 
+    and how they can create things together.
     Copyright (C) 2016, Hylozoic, Inc.
 
     This program is free software: you can redistribute it and/or modify

@@ -53,3 +53,23 @@ To deploy, first run `gulp deploy`. This will:
 * Set `SOURCE_VERSION` on the Heroku app to be the first 8 characters of the current commit hash (the app uses this to determine which set of uploaded assets to use)
 
 Then run `git push heroku master` to deploy the most recent code.
+
+## License
+
+    Hylo is a mobile and web application to help people do more together. 
+    Hylo helps communities better understand who in their community has what skills, 
+    and how they can create things together.
+    Copyright (C) 2016, Hylozoic, Inc.
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.

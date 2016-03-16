@@ -19,7 +19,7 @@ const CommunityProfile = props => {
 
   const showOnboarding = get(location, 'query.onboarding')
 
-  return <div id='community'>
+  return <div id='community' className='cover-image-container'>
     <VelocityTransitionGroup runOnMount={true}
       enter={{animation: 'slideDown', duration: 800}}
       leave={{animation: 'slideUp', duration: 800}}>

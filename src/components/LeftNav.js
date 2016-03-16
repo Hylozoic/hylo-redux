@@ -30,7 +30,7 @@ export const MenuButton = ({ onClick, label }) =>
   </a>
 
 export const LeftNav = ({ opened, community, close }) => {
-  let { slug } = community
+  let { slug } = community || {}
 
   return <VelocityTransitionGroup {...animations}>
     {opened && <nav id='leftNav'>

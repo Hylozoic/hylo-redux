@@ -1,5 +1,6 @@
 import React from 'react'
-import { A } from './A'
+import A from './A'
+import { NonLinkAvatar } from './Avatar'
 import Dropdown from './Dropdown'
 import { isAdmin } from '../models/currentUser'
 import { filter, flow, get, map, sortBy } from 'lodash/fp'
@@ -46,10 +47,19 @@ const TopNav = (props) => {
     {currentUser
     ? <ul className='right'>
         <li>
-          <Dropdown alignRight={true} toggleChildren={
-            <span>
-              {currentUser.name} <span className='caret'></span>
-            </span>
+          <div className='search'>
+            <span className='glyphicon glyphicon-search'></span>
+            <input type='text' placeholder='Search'/>
+          </div>
+        </li>
+        <li>
+          <A to='/notifications'>
+            <div className='glyphicon glyphicon-bell'></div>
+          </A>
+        </li>
+        <li>
+          <Dropdown className='user-menu' alignRight={true} toggleChildren={
+            <NonLinkAvatar person={currentUser}/>
           }>
             <li><A to={`/u/${currentUser.id}`}>My profile</A></li>
             <li><A to={'/settings'}>Settings</A></li>

@@ -1,5 +1,5 @@
 import React from 'react'
-import A from './A'
+import { A, IndexA } from './A'
 import { NonLinkAvatar } from './Avatar'
 import Dropdown from './Dropdown'
 import { isAdmin } from '../models/currentUser'
@@ -26,9 +26,15 @@ const getLabel = path => {
   return 'Menu'
 }
 
+const allCommunities = {
+  id: null,
+  avatar_url: '/img/all-communities-logo.jpg',
+  name: 'All Communities'
+}
+
 const TopNav = (props) => {
   let { currentUser, logout, openLeftNav, leftNavOpened, path, community } = props
-  if (!community) community = {id: null, name: 'All Communities'}
+  if (!community) community = allCommunities
 
   const lastViewed = m => -Date.parse(m.last_viewed_at || '2001-01-01')
   const communities = [community].concat(flow(
@@ -86,6 +92,11 @@ const CenterMenu = ({ communities }) =>
     </div>}>
     <li>
       <ul className='inner-list dropdown-menu'>
+        <li key='all'>
+          <IndexA to='/'>
+            <img src={allCommunities.avatar_url}/> All Communities
+          </IndexA>
+        </li>
         {communities.slice(1).map(CommunityListItem)}
       </ul>
     </li>

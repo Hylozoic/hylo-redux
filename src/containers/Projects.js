@@ -4,6 +4,7 @@ import { prefetch } from 'react-fetcher'
 import { fetch, ConnectedProjectList } from './ConnectedProjectList'
 import ProjectListControls from '../components/ProjectListControls'
 import { refetch } from '../util/caching'
+import CoverImagePage from '../components/CoverImagePage'
 const { func, object } = React.PropTypes
 
 const subject = 'all'
@@ -26,17 +27,9 @@ export default class Projects extends React.Component {
     let { location: { query } } = this.props
     let { type, search } = query || {}
 
-    return <div>
-      <div className='row'>
-        <div className='col-sm-4'>
-          <h2>Projects</h2>
-        </div>
-        <div className='col-sm-8'>
-          <ProjectListControls onChange={this.changeQuery} search={search} type={type}/>
-        </div>
-      </div>
-
+    return <CoverImagePage>
+      <ProjectListControls onChange={this.changeQuery} search={search} type={type}/>
       <ConnectedProjectList {...{subject, id, query}}/>
-    </div>
+    </CoverImagePage>
   }
 }

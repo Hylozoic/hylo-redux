@@ -1,6 +1,7 @@
 import React from 'react'
 import cx from 'classnames'
 import { isEmpty } from 'lodash'
+import { VelocityTransitionGroup } from 'velocity-react'
 const { array, bool, func, object, string } = React.PropTypes
 
 export default class Dropdown extends React.Component {
@@ -14,7 +15,8 @@ export default class Dropdown extends React.Component {
     className: string,
     alignRight: bool,
     toggleChildren: object.isRequired,
-    onFirstOpen: func
+    onFirstOpen: func,
+    backdrop: bool
   }
 
   toggle = event => {
@@ -43,7 +45,7 @@ export default class Dropdown extends React.Component {
   }
 
   render () {
-    let { toggleChildren, className, children, alignRight } = this.props
+    let { toggleChildren, className, children, alignRight, backdrop } = this.props
     let active = this.state.active && !isEmpty(children)
     return <div className={cx('dropdown', className, {active})}>
       <a className='dropdown-toggle' onClick={this.toggle}>
@@ -53,6 +55,11 @@ export default class Dropdown extends React.Component {
         onClick={() => this.toggle()}>
         {children}
       </ul>
+      <VelocityTransitionGroup
+        enter={{animation: 'fadeIn', duration: 100}} 
+        leave={{animation: 'fadeOut', duration: 100}}>
+        {backdrop && active && <div className='backdrop'/>}
+      </VelocityTransitionGroup>
     </div>
   }
 }

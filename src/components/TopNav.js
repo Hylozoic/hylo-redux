@@ -86,6 +86,7 @@ export default TopNav
 
 const CenterMenu = ({ communities }) =>
   <Dropdown className='communities'
+    backdrop={true}
     toggleChildren={<div>
       <img src={communities[0].avatar_url}/>
       {communities[0].name} <span className='caret'></span>

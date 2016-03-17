@@ -6,7 +6,8 @@ import { LeftNav, leftNavWidth, leftNavEasing } from '../components/LeftNav'
 import Notifier from '../components/Notifier'
 import LiveStatusPoller from '../components/LiveStatusPoller'
 import PageTitleController from '../components/PageTitleController'
-import { logout, removeNotification, toggleMainMenu } from '../actions'
+import { logout, navigate, removeNotification, toggleMainMenu } from '../actions'
+import { makeUrl } from '../client/util'
 import { VelocityComponent } from 'velocity-react'
 
 const App = connect((state, { params: { id } }) => {
@@ -31,6 +32,7 @@ const App = connect((state, { params: { id } }) => {
 
   const moveWithMenu = {marginLeft: leftNavOpened ? leftNavWidth : 0}
   const toggleLeftNav = () => dispatch(toggleMainMenu())
+  const doSearch = text => dispatch(navigate(makeUrl('/search', {q: text})))
 
   return <div>
     <LeftNav opened={leftNavOpened}
@@ -44,7 +46,9 @@ const App = connect((state, { params: { id } }) => {
           openLeftNav={toggleLeftNav}
           leftNavOpened={leftNavOpened}
           logout={() => dispatch(logout())}
-          path={path}/>
+          path={path}
+          search={doSearch}
+          dispatch={dispatch}/>
         {children}
       </div>
     </VelocityComponent>

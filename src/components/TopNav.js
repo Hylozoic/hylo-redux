@@ -7,6 +7,7 @@ import { filter, flow, get, map, sortBy } from 'lodash/fp'
 import { same } from '../models'
 import { MenuButton } from './LeftNav'
 import { VelocityTransitionGroup } from 'velocity-react'
+const { func } = React.PropTypes
 
 const communityItem = community =>
   <A to={`/c/${community.slug}`} title={community.name}>
@@ -33,7 +34,7 @@ const allCommunities = {
 }
 
 const TopNav = (props) => {
-  let { currentUser, logout, openLeftNav, leftNavOpened, path, community } = props
+  let { search, currentUser, logout, openLeftNav, leftNavOpened, path, community } = props
   if (!community) community = allCommunities
 
   const lastViewed = m => -Date.parse(m.last_viewed_at || '2001-01-01')
@@ -44,7 +45,7 @@ const TopNav = (props) => {
     filter(c => !same('id', community, c))
   )(currentUser))
 
-  let label = getLabel(path)
+  const label = getLabel(path)
 
   return <nav id='topNav' className='clearfix'>
     <VelocityTransitionGroup enter={{animation: 'fadeIn'}}>
@@ -55,7 +56,7 @@ const TopNav = (props) => {
         <li>
           <div className='search'>
             <span className='glyphicon glyphicon-search'></span>
-            <input type='text' placeholder='Search'/>
+            <Search onChange={search}/>
           </div>
         </li>
         <li>
@@ -83,6 +84,26 @@ const TopNav = (props) => {
 }
 
 export default TopNav
+
+class Search extends React.Component {
+  constructor (props) {
+    super(props)
+    this.state = {}
+  }
+
+  static propTypes = {
+    onChange: func.isRequired
+  }
+
+  render () {
+    const handleChange = ({ target: { value } }) => this.setState({value})
+    const handleKeyUp = ({ which }) =>
+      which === 13 && this.props.onChange(this.state.value)
+
+    return <input type='text' placeholder='Search'
+      onKeyUp={handleKeyUp} onChange={handleChange}/>
+  }
+}
 
 const CenterMenu = ({ communities }) =>
   <Dropdown className='communities'

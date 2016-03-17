@@ -9,13 +9,11 @@ import PostListControls from '../components/PostListControls'
 import CoverImagePage from '../components/CoverImagePage'
 import { setCurrentCommunityId } from '../actions'
 
-const earth = '/img/earth_1920x1080.jpg'
-
 const makeComponent = (subject, title, showEditor) => props => {
   let { dispatch, location: { query }, currentUser: { id } } = props
   let { type, sort, search } = query
 
-  return <CoverImagePage image={earth}>
+  return <CoverImagePage>
     {showEditor && <PostEditor/>}
     <PostListControls onChange={opts => dispatch(refetch(opts, props.location))}
       type={type} sort={sort} search={search}/>

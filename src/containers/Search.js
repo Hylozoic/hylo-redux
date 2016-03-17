@@ -11,6 +11,7 @@ import A from '../components/A'
 import Post from '../components/Post'
 import ScrollListener from '../components/ScrollListener'
 import Tags from '../components/Tags'
+import CoverImagePage from '../components/CoverImagePage'
 import { commentUrl } from '../routes'
 const { array, bool, func, number, object } = React.PropTypes
 
@@ -78,31 +79,24 @@ export default class Search extends React.Component {
       this.updateSearch({q: text})
     }
 
-    return <div id='search'>
-      <div className='row'>
-        <div className='col-sm-6'>
-          <h2>Search</h2>
-        </div>
-        <div className='col-sm-6'>
-          <div className='list-controls'>
-            <input type='text' className='form-control search'
-              value={this.state.textInput}
-              onChange={event => updateTextInput(event.target.value)}/>
-            <Select className='type' choices={types} selected={selectedType}
-              onChange={t => this.updateSearch({type: t.id})} alignRight={true}/>
-          </div>
-        </div>
+    return <CoverImagePage id='search'>
+      <div className='list-controls'>
+        <input type='text' className='form-control search'
+          value={this.state.textInput}
+          onChange={event => updateTextInput(event.target.value)}/>
+        <Select className='type' choices={types} selected={selectedType}
+          onChange={t => this.updateSearch({type: t.id})} alignRight={true}/>
       </div>
       <Results results={searchResults}
         dispatch={dispatch}
         onTagClick={tag => updateTextInput(tag)}
         loadMore={loadMore}/>
       {pending
-        ? <div>Loading...</div>
+        ? <div className='message'>Loading...</div>
         : isEmpty(searchResults) && (q
-          ? <div>No results match your search term.</div>
-          : <div>Type a search term to search posts, comments, and people.</div>)}
-    </div>
+          ? <div className='message'>No results match your search term.</div>
+        : <div className='message'>Type a search term to search posts, comments, and people.</div>)}
+    </CoverImagePage>
   }
 }
 
@@ -113,7 +107,7 @@ const Results = ({ results, dispatch, onTagClick, loadMore }) => {
         ? <PostResult post={data} dispatch={dispatch}/>
         : type === 'person'
           ? <PersonResult person={data} onTagClick={onTagClick}/>
-        : <CommentResult comment={data}/>}
+        : <CommentResult comment={data} dispatch={dispatch}/>}
     </div>)}
     <ScrollListener onBottom={loadMore}/>
   </div>
@@ -148,9 +142,11 @@ const PersonResult = ({ person, onTagClick }) => {
   </div>
 }
 
-const CommentResult = ({ comment }) => {
-  let { post } = comment
-  let welcomedPerson = get(post, 'relatedUsers.0')
+const CommentResult = ({ comment, dispatch }) => {
+  const { post } = comment
+  const welcomedPerson = get(post, 'relatedUsers.0')
+  const url = commentUrl(comment)
+  const visit = () => dispatch(navigate(url))
   return <div className='comment-result'>
     <strong>
       Comment on
@@ -161,6 +157,6 @@ const CommentResult = ({ comment }) => {
           : `"${post.name}"`}
       </A>
     </strong>
-    <Comment comment={comment}/>
+    <Comment comment={comment} truncate={500} expand={visit}/>
   </div>
 }

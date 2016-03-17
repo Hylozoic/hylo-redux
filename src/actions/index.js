@@ -1,6 +1,6 @@
 import invariant from 'invariant'
 
-const _PENDING = '_PENDING'
+export const _PENDING = '_PENDING'
 export const ADD_COMMUNITY_MODERATOR = 'ADD_COMMUNITY_MODERATOR'
 export const ADD_COMMUNITY_MODERATOR_PENDING = ADD_COMMUNITY_MODERATOR + _PENDING
 export const CANCEL_POST_EDIT = 'CANCEL_POST_EDIT'

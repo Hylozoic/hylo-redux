@@ -23,7 +23,7 @@ const getLabel = path => {
   if (path.endsWith('members')) return 'Members'
   if (path.endsWith('about')) return 'About'
   if (path.endsWith('invite')) return 'Invite'
-  if (path.match(/^\/c\/[^\/]+$/)) return 'Conversations'
+  if (path === '/' || path.match(/^\/c\/[^\/]+$/)) return 'Conversations'
   return 'Menu'
 }
 

@@ -183,7 +183,7 @@ ul.tabs {
 }
 
 #cover-image-page-content, .simple-page {
-  width: 688px;
+  max-width: 688px;
   margin: 0 auto;
   position: relative;
 }
@@ -807,6 +807,10 @@ ul.tags {
   }
 }
 
+.list-controls + .masonry-container {
+  margin-top: 15px;
+}
+
 .markdown {
   &.description {
     padding-top: 15px;
@@ -970,8 +974,12 @@ ul.tags {
   float: left;
 }
 
+.project-card-container {
+  margin-top: 15px;
+}
+
 .project-card-container .masonry-item-wrapper {
-  width: 33.33%;
+  width: 50%;
 }
 
 .project-card {

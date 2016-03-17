@@ -37,35 +37,35 @@ export const LeftNav = ({ opened, community, close }) => {
       <MenuButton onClick={close}/>
       <ul>
         <li>
-          <IndexA to={`/c/${slug}`}>
+          <IndexA to={slug ? `/c/${slug}` : '/'}>
             <Icon name='th-list'/> Conversations
           </IndexA>
         </li>
-        <li>
+        {community && <li>
           <A to={`/c/${slug}/events`}>
             <Icon name='calendar'/> Events
           </A>
-        </li>
+        </li>}
         <li>
-          <A to={`/c/${slug}/projects`}>
+          <A to={slug ? `/c/${slug}/projects` : '/projects'}>
             <Icon name='road'/> Projects
           </A>
         </li>
-        <li>
+        {community && <li>
           <A to={`/c/${slug}/members`}>
             <Icon name='user'/> Members
           </A>
-        </li>
-        <li>
+        </li>}
+        {community && <li>
           <A to={`/c/${slug}/about`}>
             <Icon name='question-sign'/> About
           </A>
-        </li>
-        <li>
+        </li>}
+        {community && <li>
           <A to={`/c/${slug}/invite`}>
             <Icon name='sunglasses'/> Invite
           </A>
-        </li>
+        </li>}
       </ul>
     </nav>}
   </VelocityTransitionGroup>

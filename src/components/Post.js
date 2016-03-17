@@ -16,7 +16,8 @@ import RSVPControl from './RSVPControl'
 import SharingDropdown from './SharingDropdown'
 import PersonDropdownItem from './PersonDropdownItem'
 import { connect } from 'react-redux'
-import { SHOWED_POST_COMMENTS, trackEvent } from '../util/analytics'
+import { prefetch } from 'react-fetcher'
+import { compose } from 'redux'
 import {
   changeEventResponse,
   fetchComments,
@@ -28,7 +29,6 @@ import {
 import { fetchPeople } from '../actions/fetchPeople'
 import { same } from '../models'
 import decode from 'ent/decode'
-import { scrollToAnchor } from '../util/scrolling'
 
 const spacer = <span>&nbsp; •&nbsp; </span>
 
@@ -36,8 +36,6 @@ class Post extends React.Component {
   static propTypes = {
     post: object,
     onExpand: func,
-    expanded: bool,
-    showingComments: bool,
     communities: array,
     comments: array,
     commentsLoaded: bool,
@@ -50,49 +48,30 @@ class Post extends React.Component {
   static childContextTypes = {
     currentUser: object,
     dispatch: func,
-    post: object,
-    toggleComments: func
+    post: object
   }
 
   constructor (props) {
     super(props)
-    this.state = {showingComments: props.showComments}
+    this.state = {}
   }
 
   getChildContext () {
-    return {
-      ...pick(this.props, 'currentUser', 'dispatch', 'post'),
-      toggleComments: this.toggleComments
-    }
+    return pick(this.props, 'currentUser', 'dispatch', 'post')
   }
 
-  expand = () => {
-    let { expanded, onExpand, post } = this.props
-    if (!expanded) onExpand(post.id)
-  }
-
-  toggleComments = event => {
-    event.stopPropagation()
-    event.preventDefault()
-    this.expand()
-
-    let { post, commentsLoaded } = this.props
-    if (!this.state.showingComments) {
-      Promise.resolve(commentsLoaded || this.props.dispatch(fetchComments(post.id)))
-      .then(() => scrollToAnchor(`post-${post.id}-comments`))
-      trackEvent(SHOWED_POST_COMMENTS, {post})
-    }
-    this.setState({showingComments: !this.state.showingComments})
+  componentDidMount () {
+    console.log('componentDidMount')
+    let { dispatch, post: {id} } = this.props
+    dispatch(fetchComments(id))
   }
 
   render () {
-    let { post, communities, comments, commentingDisabled, expanded, voters } = this.props
-    let { showingComments } = this.state
+    let { post, communities, comments, commentingDisabled, voters } = this.props
 
     let image = find(post.media, m => m.type === 'image')
-    var classes = cx('post', post.type, {expanded: expanded, image: !!image})
+    var classes = cx('post', post.type, {expanded: true, image: !!image})
 
-    let style = image ? {backgroundImage: `url(${image.url})`} : {}
     let title = decode(post.name || '')
     let person = post.type === 'welcome'
       ? post.relatedUsers[0]
@@ -108,7 +87,7 @@ class Post extends React.Component {
 
     return <div className={classes} onClick={this.expand}>
       <div className='header'>
-        {expanded && <CaretMenu/>}
+        <CaretMenu/>
         <Avatar person={person}/>
         {post.type === 'welcome'
           ? <WelcomePostHeader communities={communities}/>
@@ -130,29 +109,30 @@ class Post extends React.Component {
         {post.location}
       </p>}
 
-      {image && <div className='image' style={style}/>}
-
-      {expanded && <PostDetails
-        {...{comments, showingComments, communities, commentingDisabled}}/>}
+      <PostDetails
+        {...{comments, communities, commentingDisabled}}/>
     </div>
   }
 }
 
-export default connect((state, { post }) => {
-  let { comments, commentsByPost, people, peopleByQuery, communities } = state
-  let commentIds = get(commentsByPost, post.id)
-  return {
-    commentsLoaded: !!commentIds,
-    comments: map(commentIds, id => comments[id]),
-    currentUser: get(people, 'current'),
-    communities: map(post.communities, id => find(communities, same('id', {id}))),
-    voters: map(get(peopleByQuery, `subject=voters&id=${post.id}`), id => people[id])
-  }
-})(Post)
+export default compose(
+  prefetch(({ dispatch, params, query }) => dispatch(fetchComments({id: 13624, log: console.log('prefetch!')}))),
+  connect((state, { post }) => {
+    let { comments, commentsByPost, people, peopleByQuery, communities } = state
+    let commentIds = get(commentsByPost, post.id)
+    return {
+      commentsLoaded: !!commentIds,
+      comments: map(commentIds, id => comments[id]),
+      currentUser: get(people, 'current'),
+      communities: map(post.communities, id => find(communities, same('id', {id}))),
+      voters: map(get(peopleByQuery, `subject=voters&id=${post.id}`), id => people[id])
+    }
+  })
+)(Post)
 
 export const UndecoratedPost = Post // for testing
 
-const WelcomePostHeader = ({ communities }, { post, toggleComments }) => {
+const WelcomePostHeader = ({ communities }, { post }) => {
   let person = post.relatedUsers[0]
   let community = communities[0]
   return <span>
@@ -162,7 +142,7 @@ const WelcomePostHeader = ({ communities }, { post, toggleComments }) => {
       ? <span>
           <A to={`/c/${community.slug}`}>{community.name}</A>.
           <span> </span>
-          <a className='open-comments' onClick={toggleComments}>
+          <a className='open-comments'>
             Welcome them!
           </a>
         </span>
@@ -172,7 +152,7 @@ const WelcomePostHeader = ({ communities }, { post, toggleComments }) => {
   </span>
 }
 
-WelcomePostHeader.contextTypes = {post: object, toggleComments: func}
+WelcomePostHeader.contextTypes = {post: object}
 
 const CaretMenu = (props, { dispatch, post, currentUser }) => {
   let canEdit = same('id', currentUser, post.user)
@@ -199,7 +179,7 @@ const CaretMenu = (props, { dispatch, post, currentUser }) => {
 
 CaretMenu.contextTypes = {dispatch: func, post: object, currentUser: object}
 
-const PostMeta = ({ voters }, { post, toggleComments, dispatch, postDisplayMode }) => {
+const PostMeta = ({ voters }, { post, dispatch, postDisplayMode }) => {
   const now = new Date()
   const createdAt = new Date(post.created_at)
   const updatedAt = new Date(post.updated_at)
@@ -229,7 +209,7 @@ const PostMeta = ({ voters }, { post, toggleComments, dispatch, postDisplayMode 
       <i className={`icon-heart-new${post.myVote ? '-selected' : ''}`}></i>
     </a>
     {spacer}
-    <a onClick={toggleComments} href='#'>
+    <a href='#'>
       {post.numComments}&nbsp;comment{post.numComments === 1 ? '' : 's'}
     </a>
     {post.public && <span>
@@ -241,8 +221,8 @@ const PostMeta = ({ voters }, { post, toggleComments, dispatch, postDisplayMode 
 
 PostMeta.contextTypes = {...Post.childContextTypes, postDisplayMode: string}
 
-const PostDetails = (props, { post, toggleComments, currentUser, dispatch }) => {
-  let { comments, showingComments, commentingDisabled, communities } = props
+const PostDetails = (props, { post, currentUser, dispatch }) => {
+  let { comments, commentingDisabled, communities } = props
 
   let image = find(post.media, m => m.type === 'image')
   let description = present(sanitize(post.description))
@@ -267,7 +247,7 @@ const PostDetails = (props, { post, toggleComments, currentUser, dispatch }) => 
 
     <PostTags post={post} communities={communities}/>
 
-    <CommentSection expanded={showingComments}
+    <CommentSection
       {...{post, comments, commentingDisabled}}/>
   </div>
 }
@@ -282,22 +262,18 @@ const PostTags = ({ post, communities }) =>
     </li>)}
   </ul>
 
-const CommentSection = (props, { toggleComments, post }) => {
-  let { comments, commentingDisabled, expanded } = props
+const CommentSection = (props, { post }) => {
+  let { comments, commentingDisabled } = props
   if (!comments) comments = []
-  let count = Math.max(comments.length, post.numComments || 0)
   return <div className='comments-section'>
     <a name={`post-${post.id}-comments`}></a>
-    {expanded
-      ? comments.map(c =>
-          <Comment comment={{...c, post_id: post.id}} key={c.id}/>)
-      : count > 0 &&
-          <a onClick={toggleComments}>Show {count} comments</a>}
+      {comments.map(c =>
+        <Comment comment={{...c, post_id: post.id}} key={c.id}/>)}
     {!commentingDisabled && <CommentForm postId={post.id}/>}
   </div>
 }
 
-CommentSection.contextTypes = {post: object, toggleComments: func}
+CommentSection.contextTypes = {post: object}
 
 const EventRSVP = ({ postId, responders }, { currentUser, dispatch }) => {
   let isCurrentUser = r => r.id === get(currentUser, 'id')

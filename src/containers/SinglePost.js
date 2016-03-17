@@ -3,33 +3,45 @@ import Post from '../components/Post'
 import { prefetch } from 'react-fetcher'
 import { connect } from 'react-redux'
 import { compose } from 'redux'
-import { get } from 'lodash'
-import { FETCH_POST, fetchComments, fetchPost, setMetaTags } from '../actions'
+import { find, get } from 'lodash'
+import {
+  FETCH_POST,
+  fetchComments,
+  fetchPost,
+  setCurrentCommunityId,
+  setMetaTags
+} from '../actions'
 import { ogMetaTags } from '../util'
 import PostEditor from '../components/PostEditor'
 import { scrollToAnchor } from '../util/scrolling'
 import { findError } from '../actions/util'
 import AccessErrorMessage from '../components/AccessErrorMessage'
+import CoverImagePage from '../components/CoverImagePage'
 
 const SinglePost = props => {
-  let { post, currentUser, editing, error } = props
+  const { post, community, currentUser, editing, error } = props
 
   if (error) return <AccessErrorMessage error={error}/>
   if (!post) return <div className='loading'>Loading...</div>
   if (editing) return <PostEditor post={post} expanded={true}/>
+  const image = get(community, 'banner_url') || 'http://i.imgur.com/G5WpY72.jpg'
 
-  return <div className='single-post'>
+  return <CoverImagePage id='single-post' image={image}>
     <Post post={post} expanded={true} showComments={true} commentingDisabled={!currentUser}/>
-  </div>
+  </CoverImagePage>
 }
 
 export default compose(
-  prefetch(({ dispatch, params }) => Promise.all([
+  prefetch(({ store, dispatch, params }) => Promise.all([
     dispatch(fetchPost(params.id))
     .then(({ error, payload }) => {
-      if (error || !payload || payload.api) return
-      let { name, description, media } = payload
-      return dispatch(setMetaTags(ogMetaTags(name, description, media[0])))
+      if (error) return
+      const post = store.getState().posts[params.id]
+      post && dispatch(setCurrentCommunityId(post.communities[0]))
+
+      if (!payload || payload.api) return
+      const { name, description, media } = payload
+      dispatch(setMetaTags(ogMetaTags(name, description, media[0])))
     }),
     dispatch(fetchComments(params.id))
     .then(({ error }) => {
@@ -39,10 +51,14 @@ export default compose(
       if (anchor) scrollToAnchor(anchor, 15)
     })
   ])),
-  connect(({ posts, people, postEdits, errors }, { params }) => ({
-    post: posts[params.id],
-    currentUser: people.current,
-    editing: postEdits[params.id],
-    error: findError(errors, FETCH_POST, 'posts', params.id)
-  }))
+  connect((state, { params }) => {
+    const { communities, currentCommunityId } = state
+    return {
+      post: state.posts[params.id],
+      community: find(communities, c => c.id === currentCommunityId),
+      currentUser: state.people.current,
+      editing: state.postEdits[params.id],
+      error: findError(state.errors, FETCH_POST, 'posts', params.id)
+    }
+  })
 )(SinglePost)

@@ -3,7 +3,12 @@ import { compose } from 'redux'
 import { connect } from 'react-redux'
 import { prefetch, defer } from 'react-fetcher'
 import { get, pick } from 'lodash'
-import { fetchCommunity, navigate, updateUserSettings } from '../../actions'
+import {
+  fetchCommunity,
+  navigate,
+  setCurrentCommunityId,
+  updateUserSettings
+} from '../../actions'
 import { locationWithoutParams } from '../../client/util'
 import { VIEWED_COMMUNITY, trackEvent } from '../../util/analytics'
 import { VelocityTransitionGroup } from 'velocity-react'
@@ -39,7 +44,12 @@ CommunityProfile.propTypes = {
 }
 
 export default compose(
-  prefetch(({ dispatch, params: { id } }) => dispatch(fetchCommunity(id))),
+  prefetch(({ store, dispatch, params: { id } }) =>
+    dispatch(fetchCommunity(id))
+    .then(() => {
+      let community = store.getState().communities[id]
+      community && dispatch(setCurrentCommunityId(community.id))
+    })),
   defer(({ params: { id }, store }) => {
     let community = store.getState().communities[id]
     return trackEvent(VIEWED_COMMUNITY, {community})

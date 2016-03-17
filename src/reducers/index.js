@@ -46,6 +46,7 @@ import {
   SEARCH,
   SEND_COMMUNITY_INVITATION,
   SEND_PROJECT_INVITE,
+  SET_CURRENT_COMMUNITY_ID,
   SET_LOGIN_ERROR,
   SET_META_TAGS,
   SET_SIGNUP_ERROR,
@@ -89,6 +90,18 @@ const keyedHasFreshItems = (actionType, bucket) =>
   }
 
 export default combineReducers({
+  currentCommunityId: (state = null, action) => {
+    let { error, type, payload } = action
+    if (error) return state
+
+    switch (type) {
+      case SET_CURRENT_COMMUNITY_ID:
+        return payload
+    }
+
+    return state
+  },
+
   leftNavOpened: (state = false, action) => {
     let { error, type } = action
     if (error) return state

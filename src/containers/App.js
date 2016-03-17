@@ -1,5 +1,6 @@
 import React from 'react'
 import { connect } from 'react-redux'
+import { find } from 'lodash'
 import TopNav from '../components/TopNav'
 import { LeftNav, leftNavWidth, leftNavEasing } from '../components/LeftNav'
 import Notifier from '../components/Notifier'
@@ -14,7 +15,7 @@ const App = connect((state, { params: { id } }) => {
     leftNavOpened,
     notifierMessages,
     currentUser: state.people.current,
-    community: state.communities[id],
+    community: find(state.communities, c => c.id === state.currentCommunityId),
     path: state.routing.path
   }
 })(props => {

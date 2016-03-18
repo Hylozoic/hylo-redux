@@ -202,6 +202,14 @@ ul.tabs {
   .list-controls {
     background-color: transparent;
   }
+  ul.tabs a.active:after {
+    background-color: @page-background !important;
+  }
+
+  .mobile({
+    margin-left: 15px;
+    margin-right: 15px;
+  })
 }
 
 .banner {
@@ -951,6 +959,10 @@ ul.tags {
 }
 
 #person {
+  ul.tabs a.active:after {
+    background-color: @page-background;
+  }
+
   .about {
     padding: 15px;
     border: 1px solid @light-gray-border;

@@ -45,7 +45,7 @@ export default class PersonProfile extends React.Component {
     let bannerUrl = person.banner_url || defaultBanner
     let isSelf = currentUser && person.id === currentUser.id
 
-    return <div id='person'>
+    return <div id='person' className='simple-page'>
       <div className='banner'>
         <div className='background' style={{backgroundImage: `url(${bannerUrl})`}}/>
         <div className='corner'>

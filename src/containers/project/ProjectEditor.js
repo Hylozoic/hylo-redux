@@ -107,7 +107,7 @@ export default class ProjectEditor extends React.Component {
     let selectedVisibility = visibilityOptions.find(o => o.id === visibility) || visibilityOptions[0]
     let isPublished = !!(project && project.published_at)
 
-    return <div id='project-editor'>
+    return <div id='project-editor' className='simple-page'>
       <p className='intro'>
         <SaveButton onClick={this.save} {...{isPublished, pending}} className='right'/>
         Everything amazing in the world begins with a story of what might be. Tell a story about what you want to create, and how it could become real. It doesn't have to be perfect; you can always return to edit it later.

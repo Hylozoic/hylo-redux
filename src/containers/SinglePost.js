@@ -37,7 +37,8 @@ export default compose(
     .then(({ error, payload }) => {
       if (error) return
       const post = store.getState().posts[params.id]
-      post && dispatch(setCurrentCommunityId(post.communities[0]))
+      const communityId = get(post, 'communities.0') || 'all'
+      dispatch(setCurrentCommunityId(communityId))
 
       if (!payload || payload.api) return
       const { name, description, media } = payload

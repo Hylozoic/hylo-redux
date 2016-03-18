@@ -52,7 +52,7 @@ export default class UserSettings extends React.Component {
   }
 
   componentDidMount () {
-    if (!window.popupDone) setupPopupCallback(this.props.dispatch)
+    setupPopupCallback('settings', this.props.dispatch)
   }
 
   validate () {

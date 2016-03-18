@@ -1,5 +1,6 @@
 import { upstreamHost } from '../config'
 import { fetchCurrentUser, navigate } from '../actions'
+import { get } from 'lodash'
 import qs from 'querystring'
 
 export const LOGIN_CONTEXT = 'login'
@@ -38,7 +39,9 @@ export function openPopup (service, authContext) {
   return popup
 }
 
-export function setupPopupCallback (dispatch, errorAction) {
+export function setupPopupCallback (name, dispatch, errorAction) {
+  if (get(window, 'popupDone.callingContext') === name) return
+
   window.popupDone = opts => {
     let { context, error } = opts
     switch (context) {
@@ -63,7 +66,12 @@ export function setupPopupCallback (dispatch, errorAction) {
     popup.close()
   }
 
+  window.popupDone.callingContext = name
+
+  // TODO remove event listener if it already exists
+
   window.addEventListener('message', ({ data }) => {
     if (data.type === 'third party auth') window.popupDone(data)
   })
+
 }

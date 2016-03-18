@@ -1,10 +1,9 @@
 import React from 'react'
-import { Link } from 'react-router'
 import { filter, find, first, get, isEmpty, map, pick, some, without } from 'lodash'
 import { projectUrl } from '../routes'
 const { array, bool, func, object, string } = React.PropTypes
 import cx from 'classnames'
-import { humanDate, nonbreaking, present, sanitize, timeRange, timeRangeFull } from '../util/text'
+import { humanDate, nonbreaking, present, sanitize, timeRange, timeRangeFull, appendInP } from '../util/text'
 import truncate from 'html-truncate'
 import A from './A'
 import Avatar from './Avatar'
@@ -61,16 +60,20 @@ class Post extends React.Component {
   }
 
   componentDidMount () {
-    console.log('componentDidMount')
+    // TODO this is a hack because prefetch is doing what I want yet
     let { dispatch, post: {id} } = this.props
     dispatch(fetchComments(id))
   }
 
   render () {
-    let { post, communities, comments, commentingDisabled, voters } = this.props
+    let { post, communities, comments, commentingDisabled, community } = this.props
+
+    console.log(this.props)
 
     let image = find(post.media, m => m.type === 'image')
-    var classes = cx('post', post.type, {expanded: true, image: !!image})
+    var classes = cx('post', post.type, 'expanded', {image: !!image})
+
+    const createdAt = new Date(post.created_at)
 
     let title = decode(post.name || '')
     let person = post.type === 'welcome'
@@ -87,17 +90,18 @@ class Post extends React.Component {
 
     return <div className={classes} onClick={this.expand}>
       <div className='header'>
-        <CaretMenu/>
+        <PostMenu/>
         <Avatar person={person}/>
         {post.type === 'welcome'
           ? <WelcomePostHeader communities={communities}/>
           : <span>
               <A className='name' to={`/u/${person.id}`}>{person.name}</A>
+              {spacer}
+              <A to={`/p/${post.id}`}>{nonbreaking(humanDate(createdAt))}</A>
             </span>}
-        <PostMeta voters={voters}/>
       </div>
 
-      <p className='title'>{title}</p>
+      <div className='post-section'><p className='title'>{title}</p></div>
 
       {isEvent && <p title={eventTimeFull} className='event-time'>
         <i className='glyphicon glyphicon-time'></i>
@@ -116,7 +120,7 @@ class Post extends React.Component {
 }
 
 export default compose(
-  prefetch(({ dispatch, params, query }) => dispatch(fetchComments({id: 13624, log: console.log('prefetch!')}))),
+  prefetch(({ dispatch, params: { id } }) => dispatch(fetchComments(id))),
   connect((state, { post }) => {
     let { comments, commentsByPost, people, peopleByQuery, communities } = state
     let commentIds = get(commentsByPost, post.id)
@@ -154,7 +158,7 @@ const WelcomePostHeader = ({ communities }, { post }) => {
 
 WelcomePostHeader.contextTypes = {post: object}
 
-const CaretMenu = (props, { dispatch, post, currentUser }) => {
+const PostMenu = (props, { dispatch, post, currentUser }) => {
   let canEdit = same('id', currentUser, post.user)
   let following = some(post.followers, same('id', currentUser))
 
@@ -163,7 +167,7 @@ const CaretMenu = (props, { dispatch, post, currentUser }) => {
     dispatch(removePost(post.id))
 
   return <Dropdown className='post-menu' alignRight={true}
-    toggleChildren={<i className='icon-down'></i>}>
+    toggleChildren={<i className='glyphicon glyphicon-option-horizontal'></i>}>
     {canEdit && <li><a onClick={edit}>Edit</a></li>}
     {canEdit && <li><a onClick={remove}>Remove</a></li>}
     <li>
@@ -177,7 +181,7 @@ const CaretMenu = (props, { dispatch, post, currentUser }) => {
   </Dropdown>
 }
 
-CaretMenu.contextTypes = {dispatch: func, post: object, currentUser: object}
+PostMenu.contextTypes = {dispatch: func, post: object, currentUser: object}
 
 const PostMeta = ({ voters }, { post, dispatch, postDisplayMode }) => {
   const now = new Date()
@@ -222,17 +226,23 @@ const PostMeta = ({ voters }, { post, dispatch, postDisplayMode }) => {
 PostMeta.contextTypes = {...Post.childContextTypes, postDisplayMode: string}
 
 const PostDetails = (props, { post, currentUser, dispatch }) => {
-  let { comments, commentingDisabled, communities } = props
+  let { comments, commentingDisabled } = props
 
   let image = find(post.media, m => m.type === 'image')
-  let description = present(sanitize(post.description))
+  let description = present(appendInP(
+    sanitize(post.description),
+    ` <a class='hashtag'>#${post.type}</a>`))
   let attachments = filter(post.media, m => m.type !== 'image')
 
-  return <div className='post-details'>
-    {image && <img src={image.url} className='full-image post-section'/>}
+  console.log({description})
 
+  return <div className='post-details'>
     {description && <ClickCatchingDiv className='details post-section'
       dangerouslySetInnerHTML={{__html: description}}/>}
+
+    {image && <div className='post-section'>
+       <img src={image.url} className='full-image'/>
+     </div>}
 
     {post.type === 'event' && <EventRSVP postId={post.id} responders={post.responders}/>}
     <Followers post={post} currentUser={currentUser} />
@@ -245,22 +255,12 @@ const PostDetails = (props, { post, currentUser, dispatch }) => {
         </a>)}
     </div>}
 
-    <PostTags post={post} communities={communities}/>
-
     <CommentSection
       {...{post, comments, commentingDisabled}}/>
   </div>
 }
 
 PostDetails.contextTypes = Post.childContextTypes
-
-const PostTags = ({ post, communities }) =>
-  <ul className='tags'>
-    <li className={cx('tag', 'post-type', post.type)}>{post.type}</li>
-    {(communities || []).map(c => <li key={c.id} className='tag'>
-      <Link to={`/c/${c.slug}`}>{c.name}</Link>
-    </li>)}
-  </ul>
 
 const CommentSection = (props, { post }) => {
   let { comments, commentingDisabled } = props

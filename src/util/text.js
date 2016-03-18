@@ -38,6 +38,14 @@ export function present (text, opts) {
   return text
 }
 
+export function appendInP (text, appendor) {
+  if (text.substr(text.length - 4) === '</p>') {
+    return text.substr(0, text.length - 4) + appendor + '</p>'
+  } else {
+    return text + appendor
+  }
+}
+
 export function humanDate (date, short) {
   var ret = prettyDate.format(typeof date === 'string' ? new Date(date) : date)
   if (short) {

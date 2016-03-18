@@ -18,7 +18,8 @@ class PostList extends React.Component {
   }
 
   static contextTypes = {
-    project: object
+    project: object,
+    community: object
   }
 
   constructor (props) {

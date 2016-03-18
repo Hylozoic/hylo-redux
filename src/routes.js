@@ -39,25 +39,34 @@ import Search from './containers/Search'
 import Admin from './containers/Admin'
 import { debug } from './util/logging'
 import { makeUrl } from './client/util'
+import { get, isEmpty } from 'lodash'
 
 export default function makeRoutes (store) {
   const requireLogin = (options = {}) => (nextState, replaceState) => {
     let { startAtSignup, addParams } = options
-    if (!store.getState().people.current) {
-      let start = startAtSignup ? 'signup' : 'login'
-      debug(`redirecting to ${start}`)
+    if (store.getState().people.current) return true
 
-      let params = {
-        next: nextState.location.pathname,
-        ...(addParams ? addParams(nextState) : null)
-      }
+    let start = startAtSignup ? 'signup' : 'login'
+    debug(`redirecting to ${start}`)
 
-      replaceState({}, makeUrl(`/${start}`, params))
+    let params = {
+      next: nextState.location.pathname,
+      ...(addParams ? addParams(nextState) : null)
+    }
+
+    replaceState({}, makeUrl(`/${start}`, params))
+  }
+
+  const requireCommunity = (options = {}) => (nextState, replaceState) => {
+    if (!requireLogin(options)(nextState, replaceState)) return
+
+    if (isEmpty(get(store.getState().people.current, 'memberships'))) {
+      replaceState({}, '/c/join')
     }
   }
 
   return <Route path='/' component={App}>
-    <IndexRoute component={AllPosts} onEnter={requireLogin()}/>
+    <IndexRoute component={AllPosts} onEnter={requireCommunity()}/>
     <Route path='signup' component={Signup}/>
     <Route path='login' component={Login}/>
     <Route path='settings' component={UserSettings} onEnter={requireLogin()}/>

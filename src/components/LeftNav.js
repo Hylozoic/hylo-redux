@@ -35,7 +35,7 @@ export const LeftNav = ({ opened, community, close, canModerate, canInvite }) =>
   return <VelocityTransitionGroup {...animations}>
     {opened && <nav id='leftNav'>
       <MenuButton onClick={close}/>
-      <ul>
+      <ul onClick={close}>
         <li>
           <IndexA to={slug ? `/c/${slug}` : '/'}>
             <Icon name='th-list'/> Conversations

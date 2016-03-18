@@ -109,9 +109,6 @@ export default combineReducers({
     switch (type) {
       case TOGGLE_MAIN_MENU:
         return !state
-      case NAVIGATE:
-      case UPDATE_PATH:
-        return false
     }
 
     return state

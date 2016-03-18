@@ -11,27 +11,39 @@ const { func, object } = React.PropTypes
 
 const subject = 'community'
 
-const CommunityPosts = props => {
-  let { dispatch, community, params: { id }, location: { query }, currentUser } = props
-  let { type, sort, search } = query
+class CommunityPosts extends React.Component {
 
-  return <div>
-    <PostEditor community={community}/>
-    <PostListControls onChange={opts => dispatch(refetch(opts, props.location))} includeWelcome={true}
-      type={type} sort={sort} search={search}/>
-    <ConnectedPostList {...{subject, id, query}}/>
-    {!isMember(currentUser, community) && <div className='meta'>
-      You are not a member of this community, so you are shown only posts that are marked as public.
-    </div>}
-  </div>
-}
+  static propTypes = {
+    dispatch: func,
+    params: object,
+    community: object,
+    location: object,
+    currentUser: object
+  }
 
-CommunityPosts.propTypes = {
-  dispatch: func,
-  params: object,
-  community: object,
-  location: object,
-  currentUser: object
+  static childContextTypes = {
+    community: object
+  }
+
+  getChildContext () {
+    let { community } = this.props
+    return {community}
+  }
+
+  render () {
+    let { dispatch, community, params: { id }, location: { query }, currentUser } = this.props
+    let { type, sort, search } = query
+
+    return <div>
+      <PostEditor community={community}/>
+      <PostListControls onChange={opts => dispatch(refetch(opts, this.props.location))} includeWelcome={true}
+        type={type} sort={sort} search={search}/>
+      <ConnectedPostList {...{subject, id, query}}/>
+      {!isMember(currentUser, community) && <div className='meta'>
+        You are not a member of this community, so you are shown only posts that are marked as public.
+      </div>}
+    </div>
+  }
 }
 
 export default compose(

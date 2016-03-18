@@ -44,6 +44,10 @@ class Post extends React.Component {
     voters: array
   }
 
+  static contextTypes = {
+    community: object
+  }
+
   static childContextTypes = {
     currentUser: object,
     dispatch: func,
@@ -66,9 +70,10 @@ class Post extends React.Component {
   }
 
   render () {
-    let { post, communities, comments, commentingDisabled, community } = this.props
+    let { post, communities, comments, commentingDisabled } = this.props
 
-    console.log(this.props)
+    // console.log(this.props)
+    console.log('context:', this.context)
 
     let image = find(post.media, m => m.type === 'image')
     var classes = cx('post', post.type, 'expanded', {image: !!image})
@@ -233,8 +238,6 @@ const PostDetails = (props, { post, currentUser, dispatch }) => {
     sanitize(post.description),
     ` <a class='hashtag'>#${post.type}</a>`))
   let attachments = filter(post.media, m => m.type !== 'image')
-
-  console.log({description})
 
   return <div className='post-details'>
     {description && <ClickCatchingDiv className='details post-section'

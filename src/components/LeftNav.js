@@ -29,7 +29,7 @@ export const MenuButton = ({ onClick, label }) =>
     <span>{label || 'Menu'}</span>
   </a>
 
-export const LeftNav = ({ opened, community, close }) => {
+export const LeftNav = ({ opened, community, close, canModerate, canInvite }) => {
   let { slug } = community || {}
 
   return <VelocityTransitionGroup {...animations}>
@@ -61,9 +61,14 @@ export const LeftNav = ({ opened, community, close }) => {
             <Icon name='question-sign'/> About
           </A>
         </li>}
-        {community && <li>
+        {canInvite && <li>
           <A to={`/c/${slug}/invite`}>
             <Icon name='sunglasses'/> Invite
+          </A>
+        </li>}
+        {canModerate && <li>
+          <A to={`/c/${slug}/settings`}>
+            <Icon name='cog'/> Settings
           </A>
         </li>}
       </ul>

@@ -9,6 +9,7 @@ import PageTitleController from '../components/PageTitleController'
 import { logout, navigate, removeNotification, toggleMainMenu } from '../actions'
 import { makeUrl } from '../client/util'
 import { VelocityComponent } from 'velocity-react'
+import { canInvite, canModerate } from '../models/currentUser'
 
 const App = connect((state, { params: { id } }) => {
   const { leftNavOpened, notifierMessages } = state
@@ -37,6 +38,8 @@ const App = connect((state, { params: { id } }) => {
   return <div>
     <LeftNav opened={leftNavOpened}
       community={community}
+      canModerate={canModerate(currentUser, community)}
+      canInvite={canInvite(currentUser, community)}
       close={toggleLeftNav}/>
 
     <VelocityComponent animation={moveWithMenu} easing={leftNavEasing}>

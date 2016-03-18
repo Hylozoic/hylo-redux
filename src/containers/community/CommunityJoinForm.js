@@ -59,7 +59,7 @@ export default class CommunityJoinForm extends React.Component {
   render () {
     let { codeInvalid, error } = this.props
 
-    return <div id='community-editor' className='form-sections'>
+    return <div id='community-editor' className='form-sections simple-page'>
       <h2>Join a community</h2>
       <p>Enter the code that was given to you by your community manager.</p>
       {error && <div className='alert alert-danger'>{error}</div>}

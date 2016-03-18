@@ -166,7 +166,7 @@ export default class CommunityEditor extends React.Component {
     let { validating, saving, uploadingImage, community, errors } = this.props
     let disableSubmit = some(omit(errors, 'server')) || validating || saving || uploadingImage
 
-    return <div id='community-editor' className='form-sections'>
+    return <div id='community-editor' className='form-sections simple-page'>
       <h2>Create a community</h2>
       <p>Let's take the first step toward unlocking the creative potential of your community with Hylo.</p>
 

@@ -34,6 +34,12 @@ const App = connect((state, { params: { id } }) => {
   const moveWithMenu = {marginLeft: leftNavOpened ? leftNavWidth : 0}
   const toggleLeftNav = () => dispatch(toggleMainMenu())
   const doSearch = text => dispatch(navigate(makeUrl('/search', {q: text})))
+  const visitCommunity = community => {
+    const match = path.match(/(events|projects|members|about|invite)$/)
+    const pathStart = community ? `/c/${community.slug}` : ''
+    const pathEnd = match ? `/${match[1]}` : '/'
+    dispatch(navigate(pathStart + pathEnd))
+  }
 
   return <div>
     <LeftNav opened={leftNavOpened}
@@ -46,12 +52,12 @@ const App = connect((state, { params: { id } }) => {
       <div>
         <TopNav currentUser={currentUser}
           community={community}
+          onChangeCommunity={visitCommunity}
           openLeftNav={toggleLeftNav}
           leftNavOpened={leftNavOpened}
           logout={() => dispatch(logout())}
           path={path}
-          search={doSearch}
-          dispatch={dispatch}/>
+          search={doSearch}/>
         {children}
       </div>
     </VelocityComponent>

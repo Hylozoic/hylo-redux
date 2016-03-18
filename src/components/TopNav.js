@@ -1,5 +1,5 @@
 import React from 'react'
-import { A, IndexA } from './A'
+import { A } from './A'
 import { NonLinkAvatar } from './Avatar'
 import Dropdown from './Dropdown'
 import { isAdmin } from '../models/currentUser'
@@ -8,14 +8,6 @@ import { same } from '../models'
 import { MenuButton } from './LeftNav'
 import { VelocityTransitionGroup } from 'velocity-react'
 const { func } = React.PropTypes
-
-const communityItem = community =>
-  <A to={`/c/${community.slug}`} title={community.name}>
-    <img src={community.avatar_url}/> {community.name}
-  </A>
-
-const CommunityListItem = community =>
-  <li key={community.id}>{communityItem(community)}</li>
 
 const getLabel = path => {
   if (path.endsWith('events')) return 'Events'
@@ -34,7 +26,16 @@ const allCommunities = {
 }
 
 const TopNav = (props) => {
-  let { search, currentUser, logout, openLeftNav, leftNavOpened, path, community } = props
+  let {
+    search,
+    currentUser,
+    logout,
+    openLeftNav,
+    leftNavOpened,
+    path,
+    community,
+    onChangeCommunity
+  } = props
   if (!community) community = allCommunities
 
   const lastViewed = m => -Date.parse(m.last_viewed_at || '2001-01-01')
@@ -79,7 +80,7 @@ const TopNav = (props) => {
         <li><A to='/signup'>Sign up</A></li>
         <li><A to='/login'>Log in</A></li>
       </ul>}
-    <CenterMenu {...{communities, community}}/>
+    <CenterMenu {...{communities, onChangeCommunity}}/>
   </nav>
 }
 
@@ -105,7 +106,7 @@ class Search extends React.Component {
   }
 }
 
-const CenterMenu = ({ communities }) =>
+const CenterMenu = ({ communities, onChangeCommunity }) =>
   <Dropdown className='communities'
     backdrop={true}
     toggleChildren={<div>
@@ -115,11 +116,15 @@ const CenterMenu = ({ communities }) =>
     <li>
       <ul className='inner-list dropdown-menu'>
         <li key='all'>
-          <IndexA to='/'>
+          <a onClick={() => onChangeCommunity()}>
             <img src={allCommunities.avatar_url}/> All Communities
-          </IndexA>
+          </a>
         </li>
-        {communities.slice(1).map(CommunityListItem)}
+        {communities.slice(1).map(community => <li key={community.id}>
+          <a onClick={() => onChangeCommunity(community)} title={community.name}>
+            <img src={community.avatar_url}/> {community.name}
+          </a>
+        </li>)}
       </ul>
     </li>
     <li className='join-or-start'>

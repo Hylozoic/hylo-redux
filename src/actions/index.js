@@ -1,6 +1,6 @@
 import invariant from 'invariant'
 
-const _PENDING = '_PENDING'
+export const _PENDING = '_PENDING'
 export const ADD_COMMUNITY_MODERATOR = 'ADD_COMMUNITY_MODERATOR'
 export const ADD_COMMUNITY_MODERATOR_PENDING = ADD_COMMUNITY_MODERATOR + _PENDING
 export const CANCEL_POST_EDIT = 'CANCEL_POST_EDIT'
@@ -60,6 +60,7 @@ export const SEARCH = 'SEARCH'
 export const SEND_COMMUNITY_INVITATION = 'SEND_COMMUNITY_INVITATION'
 export const SEND_PROJECT_INVITE = 'SEND_PROJECT_INVITE'
 export const SEND_PROJECT_INVITE_PENDING = SEND_PROJECT_INVITE + _PENDING
+export const SET_CURRENT_COMMUNITY_ID = 'SET_CURRENT_COMMUNITY_ID'
 export const SET_LOGIN_ERROR = 'SET_LOGIN_ERROR'
 export const SET_META_TAGS = 'SET_META_TAGS'
 export const SET_SIGNUP_ERROR = 'SET_SIGNUP_ERROR'
@@ -555,4 +556,8 @@ export function followPost (id, person) {
     payload: {api: true, path: `/noo/post/${id}/follow`, method: 'POST'},
     meta: {id, person: pick(person, 'id', 'name', 'avatar_url')}
   }
+}
+
+export function setCurrentCommunityId (id) {
+  return {type: SET_CURRENT_COMMUNITY_ID, payload: id}
 }

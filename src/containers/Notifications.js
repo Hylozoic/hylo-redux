@@ -29,7 +29,7 @@ const Notifications = compose(
     ? () => dispatch(fetchActivity(offset))
     : () => {}
 
-  return <div>
+  return <div className='simple-page'>
     <div className='row'>
       <div className='col-sm-6'>
         <h2>Notifications</h2>

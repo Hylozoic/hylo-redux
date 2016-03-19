@@ -4,10 +4,13 @@ import { fetchJSON } from './util/api'
 import { debug } from './util/logging'
 import { blue } from 'chalk'
 import { find, values } from 'lodash'
+import { _PENDING } from './actions'
 
 // TODO cache expiration
 export function cacheMiddleware (store) {
   return next => action => {
+    if (action.type.endsWith(_PENDING)) return next(action)
+
     let { cache } = action.meta || {}
     let { bucket, id, match, array, limit, offset, requiredProp, refresh } = cache || {}
     if (!bucket) return next(action)
@@ -76,7 +79,7 @@ export function pendingPromiseMiddleware (store) {
   return next => action => {
     let { type, payload } = action
     if (isPromise(payload)) {
-      store.dispatch({...action, type: type + '_PENDING', payload: null})
+      store.dispatch({...action, type: type + _PENDING, payload: null})
     }
     return next(action)
   }

@@ -16,7 +16,7 @@ const Onboarding = compose(
 
   if (isEmpty(community)) return <div>Loading...</div>
 
-  return <div id='onboarding-start'>
+  return <div id='onboarding-start' className='simple-page'>
     <div className='header'>
       <h2>Welcome to {community.name}</h2>
       <div className='logo' {...bg(community.avatar_url)}></div>

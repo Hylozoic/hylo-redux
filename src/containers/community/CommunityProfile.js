@@ -3,11 +3,17 @@ import { compose } from 'redux'
 import { connect } from 'react-redux'
 import { prefetch, defer } from 'react-fetcher'
 import { get, pick } from 'lodash'
-import { fetchCommunity, navigate, updateUserSettings } from '../../actions'
+import {
+  fetchCommunity,
+  navigate,
+  setCurrentCommunityId,
+  updateUserSettings
+} from '../../actions'
 import { locationWithoutParams } from '../../client/util'
 import { VIEWED_COMMUNITY, trackEvent } from '../../util/analytics'
 import { VelocityTransitionGroup } from 'velocity-react'
 import ListItemTagInput from '../../components/ListItemTagInput'
+import CoverImagePage from '../../components/CoverImagePage'
 const { func, object } = React.PropTypes
 
 const CommunityProfile = props => {
@@ -19,17 +25,14 @@ const CommunityProfile = props => {
 
   const showOnboarding = get(location, 'query.onboarding')
 
-  return <div id='community' className='cover-image-container'>
-    <CoverImage url={community.banner_url}/>
-    <div id='cover-image-page-content'>
-      <VelocityTransitionGroup runOnMount={true}
-        enter={{animation: 'slideDown', duration: 800}}
-        leave={{animation: 'slideUp', duration: 800}}>
-        {showOnboarding && <OnboardingQuestions person={currentUser} dispatch={dispatch}/>}
-      </VelocityTransitionGroup>
-      {children}
-    </div>
-  </div>
+  return <CoverImagePage id='community' image={community.banner_url}>
+    <VelocityTransitionGroup runOnMount={true}
+      enter={{animation: 'slideDown', duration: 800}}
+      leave={{animation: 'slideUp', duration: 800}}>
+      {showOnboarding && <OnboardingQuestions person={currentUser} dispatch={dispatch}/>}
+    </VelocityTransitionGroup>
+    {children}
+  </CoverImagePage>
 }
 
 CommunityProfile.propTypes = {
@@ -41,7 +44,12 @@ CommunityProfile.propTypes = {
 }
 
 export default compose(
-  prefetch(({ dispatch, params: { id } }) => dispatch(fetchCommunity(id))),
+  prefetch(({ store, dispatch, params: { id } }) =>
+    dispatch(fetchCommunity(id))
+    .then(() => {
+      let community = store.getState().communities[id]
+      community && dispatch(setCurrentCommunityId(community.id))
+    })),
   defer(({ params: { id }, store }) => {
     let community = store.getState().communities[id]
     return trackEvent(VIEWED_COMMUNITY, {community})
@@ -51,11 +59,6 @@ export default compose(
     currentUser: state.people.current
   }))
 )(CommunityProfile)
-
-const CoverImage = ({ url }) =>
-  <div id='cover-image'>
-    <div className='background' style={{backgroundImage: `url(${url})`}}/>
-  </div>
 
 const OnboardingQuestions = ({ person, dispatch }) => {
   let update = (field, value) =>

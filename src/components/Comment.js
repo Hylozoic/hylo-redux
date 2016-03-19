@@ -9,12 +9,21 @@ import { thank } from '../actions'
 import Dropdown from './Dropdown'
 import PersonDropdownItem from './PersonDropdownItem'
 var { func, object } = React.PropTypes
+import truncateHtml from 'html-truncate'
 
 const spacer = <span>&nbsp;&nbsp;•&nbsp;&nbsp;</span>
 
-const Comment = ({ comment }, { dispatch, currentUser }) => {
+const Comment = ({ comment, truncate, expand }, { dispatch, currentUser }) => {
   let person = comment.user
   let text = present(sanitize(comment.text))
+  let truncated = false
+  if (truncate) {
+    let truncatedText = truncateHtml(text, truncate)
+    if (truncatedText.length < text.length) {
+      text = truncatedText
+      truncated = true
+    }
+  }
   let { isThanked, thanks } = comment
 
   return <div className='comment' data-comment-id={comment.id}>
@@ -43,6 +52,7 @@ const Comment = ({ comment }, { dispatch, currentUser }) => {
         </span>}
       </span>
       <ClickCatchingDiv className='text' dangerouslySetInnerHTML={{__html: text}}/>
+      {truncated && <a onClick={expand} className='show-more'>Show more</a>}
     </div>
   </div>
 }

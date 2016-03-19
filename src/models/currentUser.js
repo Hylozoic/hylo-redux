@@ -5,7 +5,8 @@ import qs from 'querystring'
 const truthy = fn => (...args) => !!fn(...args)
 
 export const membership = (currentUser, community) =>
-  find(get(currentUser, 'memberships'), m => m.community.id === community.id)
+  community &&
+    find(get(currentUser, 'memberships'), m => m.community.id === community.id)
 
 export const isMember = truthy(membership)
 

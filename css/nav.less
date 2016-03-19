@@ -39,6 +39,8 @@ nav {
   line-height: @top-nav-height;
   height: @top-nav-height;
   border-bottom: 1px solid #fff;
+  position: relative;
+  z-index: 10;
 
   .menu-button {
     float: left;
@@ -72,29 +74,31 @@ nav {
     }
 
     > .dropdown-menu {
-      .has-top-triangle(#fff, #fff, 6px);
-      margin-top: 10px;
+      .has-top-triangle(#fff, #fff, 5px);
+      margin-top: 9px;
       overflow-y: visible;
       max-height: none;
-      padding: 0;
+      padding: @border-radius-base 0 0 0;
       li {
-        border-bottom: 1px solid @list-item-border;
+        border-bottom: 1px solid @center-menu-list-item-border;
         &:last-child {
           border-bottom: 0;
         }
-
         a {
-          padding: 15px 20px;
+          padding: 13px 15px;
         }
       }
     }
 
     .inner-list {
+      border-top-left-radius: @border-radius-base;
+      border-top-right-radius: @border-radius-base;
       border: 0;
       margin: 0;
       padding: 0;
       max-height: 65vh;
       position: static;
+      box-shadow: none;
       li:last-child {
         padding-bottom: 50px;
       }
@@ -107,7 +111,9 @@ nav {
         height: 50px;
       }
       background-color: #fff;
-      border-top: 1px solid @list-item-border;
+      border-top: 1px solid @center-menu-list-item-border;
+      border-bottom-left-radius: @border-radius-base;
+      border-bottom-right-radius: @border-radius-base;
       position: absolute;
       bottom: 0;
       > * {
@@ -181,7 +187,7 @@ nav {
   position: fixed;
   left: 0;
   top: 0;
-  z-index: 1;
+  z-index: 20;
   height: 100%;
   width: @left-nav-width;
   background-color: @left-nav-background;
@@ -206,11 +212,11 @@ nav {
     padding: 0 12px;
     display: block;
     margin-bottom: 6px;
+    text-decoration: none;
     > * {
       vertical-align: baseline;
     }
     &:hover {
-      text-decoration: none;
       color: #fff;
     }
     &.active {
@@ -224,11 +230,5 @@ nav {
       position: relative;
       top: 1px;
     }
-  }
-}
-
-#main {
-  h2:first-child {
-    margin-top: 0;
   }
 }

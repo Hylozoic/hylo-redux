@@ -65,15 +65,18 @@ class Post extends React.Component {
 
   componentDidMount () {
     // TODO this is a hack because prefetch is doing what I want yet
-    let { dispatch, post: {id} } = this.props
-    dispatch(fetchComments(id))
+    // let { dispatch, post: {id} } = this.props
+    // dispatch(fetchComments(id))
   }
 
   render () {
     let { post, communities, comments, commentingDisabled } = this.props
-
-    // console.log(this.props)
-    console.log('context:', this.context)
+    let community
+    if (this.context.community) {
+      community = this.context.community
+    } else {
+      community = communities[0]
+    }
 
     let image = find(post.media, m => m.type === 'image')
     var classes = cx('post', post.type, 'expanded', {image: !!image})
@@ -103,6 +106,7 @@ class Post extends React.Component {
               <A className='name' to={`/u/${person.id}`}>{person.name}</A>
               {spacer}
               <A to={`/p/${post.id}`}>{nonbreaking(humanDate(createdAt))}</A>
+              &nbsp;in {community.name}
             </span>}
       </div>
 

@@ -105,8 +105,10 @@ class Post extends React.Component {
           : <span>
               <A className='name' to={`/u/${person.id}`}>{person.name}</A>
               {spacer}
-              <A to={`/p/${post.id}`}>{nonbreaking(humanDate(createdAt))}</A>
-              &nbsp;in {community.name}
+              <span className='meta'>
+                <A to={`/p/${post.id}`}>{nonbreaking(humanDate(createdAt))}</A>
+                &nbsp;in {community.name}
+              </span>
             </span>}
       </div>
 

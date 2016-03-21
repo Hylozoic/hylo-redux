@@ -64,13 +64,13 @@ class Post extends React.Component {
   }
 
   componentDidMount () {
-    // TODO this is a hack because prefetch is doing what I want yet
+    // TODO this is a hack because prefetch isn't doing what I want yet
     // let { dispatch, post: {id} } = this.props
     // dispatch(fetchComments(id))
   }
 
   render () {
-    let { post, communities, comments, commentingDisabled } = this.props
+    let { post, communities, comments, commentingDisabled, voters } = this.props
     let community
     if (this.context.community) {
       community = this.context.community
@@ -123,13 +123,16 @@ class Post extends React.Component {
       </p>}
 
       <PostDetails
-        {...{comments, communities, commentingDisabled}}/>
+        {...{comments, communities, commentingDisabled, voters}}/>
     </div>
   }
 }
 
 export default compose(
-  prefetch(({ dispatch, params: { id } }) => dispatch(fetchComments(id))),
+  prefetch(({ dispatch, params: { id } }) => Promise.all([
+    dispatch(fetchComments(id)),
+    dispatch(fetchPeople({subject: 'voters', id}))
+  ])),
   connect((state, { post }) => {
     let { comments, commentsByPost, people, peopleByQuery, communities } = state
     let commentIds = get(commentsByPost, post.id)
@@ -235,8 +238,7 @@ const PostMeta = ({ voters }, { post, dispatch, postDisplayMode }) => {
 PostMeta.contextTypes = {...Post.childContextTypes, postDisplayMode: string}
 
 const PostDetails = (props, { post, currentUser, dispatch }) => {
-  let { comments, commentingDisabled } = props
-
+  let { comments, commentingDisabled, voters } = props
   let image = find(post.media, m => m.type === 'image')
   let description = present(appendInP(
     sanitize(post.description),
@@ -252,7 +254,7 @@ const PostDetails = (props, { post, currentUser, dispatch }) => {
      </div>}
 
     {post.type === 'event' && <EventRSVP postId={post.id} responders={post.responders}/>}
-    <Followers post={post} currentUser={currentUser} />
+    <Voters voters={voters} />
 
     {!isEmpty(attachments) && <div className='post-section'>
       {attachments.map((file, i) =>
@@ -293,28 +295,29 @@ const EventRSVP = ({ postId, responders }, { currentUser, dispatch }) => {
 
 EventRSVP.contextTypes = {currentUser: object, dispatch: func}
 
-export const Followers = (props, { post, currentUser }) => {
-  let { followers, length } = post
-  if (!followers) followers = []
+export const Voters = (props, {post, currentUser}) => {
+  let { voters } = props
 
-  let onlyAuthorIsFollowing = length === 1 && same('id', first(followers), post.user)
-  let meInFollowers = find(followers, same('id', currentUser))
-  let otherFollowers = meInFollowers ? without(followers, meInFollowers) : followers
+  if (!voters) voters = []
+
+  let onlyAuthorIsVoting = voters.length === 1 && same('id', first(voters), post.user)
+  let meInVoters = find(voters, same('id', currentUser))
+  let otherVoters = meInVoters ? without(voters, meInVoters) : voters
 
   let numShown = 2
-  let num = otherFollowers.length
+  let num = otherVoters.length
   let hasHidden = num > numShown
   let separator = threshold =>
     num > threshold
       ? ', '
       : num === threshold
-        ? `${followers.length === 2 ? '' : ','} and `
+        ? `${voters.length === 2 ? '' : ','} and `
         : ''
 
-  if (followers.length > 0 && !onlyAuthorIsFollowing) {
-    return <div className='meta followers'>
-      {meInFollowers && <span>You{separator(1)}</span>}
-      {otherFollowers.slice(0, numShown).map((person, index) =>
+  if (voters.length > 0 && !onlyAuthorIsVoting) {
+    return <div className='meta voters'>
+      {meInVoters && <span>You{separator(1)}</span>}
+      {otherVoters.slice(0, numShown).map((person, index) =>
         <span key={person.id}>
           <a href={`/u/${person.id}`}>{person.name}</a>
           {index !== numShown - 1 && separator(2)}
@@ -324,10 +327,10 @@ export const Followers = (props, { post, currentUser }) => {
         toggleChildren={<span>
           {num - numShown} other{num - numShown > 1 ? 's' : ''}
         </span>}>
-        {otherFollowers.slice(numShown).map(p =>
+        {otherVoters.slice(numShown).map(p =>
           <PersonDropdownItem key={p.id} person={p}/>)}
       </Dropdown>}
-      &nbsp;{meInFollowers || num > 1 ? 'are' : 'is'} following this.
+      &nbsp;liked this.
 
     </div>
   } else {
@@ -335,4 +338,4 @@ export const Followers = (props, { post, currentUser }) => {
   }
 }
 
-Followers.contextTypes = {post: object, currentUser: object}
+Voters.contextTypes = {post: object, currentUser: object}

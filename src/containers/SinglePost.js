@@ -11,6 +11,7 @@ import {
   setCurrentCommunityId,
   setMetaTags
 } from '../actions'
+import { fetchPeople } from '../actions/fetchPeople'
 import { ogMetaTags } from '../util'
 import PostEditor from '../components/PostEditor'
 import { scrollToAnchor } from '../util/scrolling'
@@ -32,11 +33,11 @@ const SinglePost = props => {
 }
 
 export default compose(
-  prefetch(({ store, dispatch, params }) => Promise.all([
-    dispatch(fetchPost(params.id))
+  prefetch(({ store, dispatch, params: { id } }) => Promise.all([
+    dispatch(fetchPost(id))
     .then(({ error, payload }) => {
       if (error) return
-      const post = store.getState().posts[params.id]
+      const post = store.getState().posts[id]
       const communityId = get(post, 'communities.0') || 'all'
       dispatch(setCurrentCommunityId(communityId))
 
@@ -44,13 +45,14 @@ export default compose(
       const { name, description, media } = payload
       dispatch(setMetaTags(ogMetaTags(name, description, media[0])))
     }),
-    dispatch(fetchComments(params.id))
+    dispatch(fetchComments(id))
     .then(({ error }) => {
       if (error || typeof window === 'undefined') return
 
       let anchor = get(window.location.hash.match(/#(comment-\d+$)/), '1')
       if (anchor) scrollToAnchor(anchor, 15)
-    })
+    }),
+    dispatch(fetchPeople({subject: 'voters', id}))
   ])),
   connect((state, { params }) => {
     const { communities, currentCommunityId } = state

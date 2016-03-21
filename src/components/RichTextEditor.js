@@ -4,16 +4,19 @@ import cx from 'classnames'
 import Mention from './Mention'
 import uuid from 'react-tinymce/lib/helpers/uuid'
 import { assetUrl } from '../util/assets'
+import { merge } from 'lodash'
 const { array, func, string } = React.PropTypes
 
 const editorConfig = {
   menubar: false,
   statusbar: false,
-  plugins: ['paste', 'autolink', 'link'],
+  plugins: ['paste', 'autolink', 'link', 'autoresize'],
   paste_as_text: true,
-  toolbar: 'bold italic | bullist numlist | link unlink',
+  // toolbar: 'bold italic | bullist numlist | link unlink',
+  toolbar: false,
   resize: true,
-  relative_urls: false
+  relative_urls: false,
+  autoresize_bottom_margin: 0
 }
 
 export default class RichTextEditor extends React.Component {
@@ -33,8 +36,14 @@ export default class RichTextEditor extends React.Component {
     if (typeof window !== 'undefined') {
       this.editorId = uuid()
 
-      // this needs to be set only on the client side.
-      editorConfig.content_css = assetUrl('/index.css')
+      // these can be set only on the client side.
+      merge(editorConfig, {
+        content_css: assetUrl('/index.css'),
+
+        // TODO initialize this elsewhere so that it can adapt to a change in
+        // viewport size
+        autoresize_max_height: document.documentElement.clientHeight * 0.7
+      })
     } else {
       // do not use uuid() on the server, because it will keep a single count
       // for all requests. this will break if we render a page on the server

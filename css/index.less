@@ -783,25 +783,46 @@ ul.tags {
 }
 
 .post-editor {
-  padding: 15px;
+  @content-left-margin: 80px;
+  @content-right-margin: 15px;
+  padding: 22px 0 15px 0;
   background-color: #fff;
   margin-bottom: 15px;
   .mobile-full-bleed;
+  position: relative;
 
-  .post-types {
-    .no-bullets;
-    margin-bottom: @p-bottom-margin;
-    li {
-      .tag;
-      .post-type-text;
-      cursor: pointer;
-    }
+  .name {
+    margin-left: @content-left-margin;
+    color: @damian-green;
+  }
+
+  .avatar {
+    position: absolute;
+    left: @content-left-margin - @avatar-size-default - 15px;
+  }
+
+  .prompt {
+    font-size: 24px;
+    color: #a9a9a9; // placeholder color
+    margin-left: @content-left-margin;
+  }
+
+  .title {
+    font-size: 24px;
+    display: block;
+    width: 100%;
+    border: none;
+    padding: 0;
+    padding-left: @content-left-margin;
+    padding-right: @content-right-margin;
+    outline: none;
   }
 
   .details {
-    iframe {
-      height: 22vh !important;
-    }
+    padding-left: @content-left-margin;
+    padding-right: @content-right-margin;
+    border-bottom: 2px dotted #e5e5e5;
+    margin-bottom: 5px;
   }
 
   .input-row {
@@ -809,10 +830,6 @@ ul.tags {
     p {
       margin-bottom: 5px;
     }
-  }
-
-  &.expanded input.title, .tag-list, .visibility {
-    margin-bottom: @p-bottom-margin;
   }
 
   .visibility {
@@ -830,6 +847,52 @@ ul.tags {
   > h3:first-child {
     margin-top: 0;
   }
+
+  .communities {
+    margin-left: @content-left-margin;
+    .meta-text;
+
+    > span {
+      position: absolute;
+      padding-top: 3px;
+    }
+
+    .tag-input {
+      border: 0;
+      box-shadow: none;
+      padding-top: 0;
+      padding-left: 0;
+      margin-left: 14px;
+      width: auto;
+
+      input[type="text"] {
+        padding-left: 0;
+        height: 23px;
+      }
+    }
+
+    .tag {
+      background-color: transparent;
+      padding: 0;
+      border: 0;
+      margin-right: 10px;
+      margin-bottom: 0;
+      &:hover {
+        border: 0;
+      }
+      .icon {
+        display: none;
+      }
+      span {
+        color: @damian-green;
+      }
+      .remove {
+        position: relative;
+        top: 1px;
+      }
+    }
+  }
+
 }
 
 .image-attachment-button {
@@ -875,12 +938,10 @@ ul.tags {
 }
 
 .rich-text-editor {
-  .form-control;
   padding: 0;
   height: auto;
-  > .mce-container {
+  .mce-container {
     border: none;
-    border-radius: @border-radius-base;
     overflow: hidden;
   }
   > .dropdown {

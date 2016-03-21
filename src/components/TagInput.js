@@ -53,8 +53,9 @@ export default class TagInput extends React.Component {
   }
 
   render () {
-    let { choices, tags } = this.props
+    let { choices, tags, placeholder } = this.props
     if (!tags) tags = []
+    if (!placeholder) placeholder = 'Type...'
 
     return <div className='tag-input' onClick={this.focus}>
       <ul>
@@ -65,7 +66,7 @@ export default class TagInput extends React.Component {
         </li>)}
       </ul>
 
-      <input ref='input' type='text' placeholder='Type...'
+      <input ref='input' type='text' placeholder={placeholder}
         onChange={event => this.props.handleInput(event.target.value)}
         onKeyDown={this.handleKeys}/>
 

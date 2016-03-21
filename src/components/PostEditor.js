@@ -7,8 +7,7 @@ because they make more sense.
 */
 
 import React from 'react'
-import { filter, find, get, includes, isEmpty, omit, startsWith } from 'lodash'
-import cx from 'classnames'
+import { filter, find, get, includes, isEmpty, startsWith } from 'lodash'
 import CommunityTagInput from './CommunityTagInput'
 import Dropdown from './Dropdown'
 import ImageAttachmentButton from './ImageAttachmentButton'
@@ -57,24 +56,19 @@ const postTypeData = {
   // this object tracks the edits that are currently being made
   let postEdit = state.postEdits[id] || {}
 
-  // FIXME: this one attribute in postEdit isn't actually a post attribute
-  let { expanded } = postEdit
-
   if (!project && post) project = get(post, 'projects.0')
 
   return {
     id,
     postEdit,
     project,
-    expanded,
     mentionChoices: state.typeaheadMatches.post,
     currentUser: state.people.current,
     saving: state.pending[CREATE_POST] || state.pending[UPDATE_POST]
   }
 }, null, null, {withRef: true})
-export default class PostEditor extends React.Component {
+class PostEditor extends React.Component {
   static propTypes = {
-    expanded: bool,
     dispatch: func,
     mentionChoices: array,
     currentUser: object,
@@ -83,12 +77,19 @@ export default class PostEditor extends React.Component {
     postEdit: object,
     community: object,
     saving: bool,
-    project: object
+    project: object,
+    onCancel: func
   }
 
   constructor (props) {
     super(props)
     this.state = {communityChoiceTerm: ''}
+  }
+
+  componentDidMount () {
+    // initialize the communities list when opening the editor in a community
+    let { community, postEdit: { communities } } = this.props
+    if (community && isEmpty(communities)) this.addCommunity(community)
   }
 
   updateStore (data) {
@@ -98,18 +99,10 @@ export default class PostEditor extends React.Component {
 
   selectType = (type) => this.updateStore({type: type})
 
-  expand = () => {
-    if (this.props.expanded) return
-    this.updateStore({expanded: true})
-
-    // initialize the communities list when opening the editor in a community
-    let { community, postEdit: { communities } } = this.props
-    if (community && isEmpty(communities)) this.addCommunity(community)
-  }
-
   cancel = () => {
-    let { dispatch, id } = this.props
+    let { dispatch, id, onCancel } = this.props
     dispatch(cancelPostEdit(id))
+    if (typeof onCancel === 'function') onCancel()
   }
 
   set = key => event => this.updateStore({[key]: event.target.value})
@@ -158,10 +151,7 @@ export default class PostEditor extends React.Component {
   reallySave () {
     let { dispatch, post, postEdit, project, id } = this.props
 
-    postEdit = {
-      ...omit(postEdit, 'expanded'),
-      type: postEdit.type || 'chat'
-    }
+    if (postEdit.type) postEdit.type = 'chat'
 
     let params = {
       ...postEdit,
@@ -204,75 +194,73 @@ export default class PostEditor extends React.Component {
     return filter(currentUser.memberships.map(m => m.community), match)
   }
 
+  goToDetails = event => {
+    if (event.which === 13) this.refs.details.editor().focus()
+  }
+
   render () {
-    let { expanded, post, postEdit, dispatch, project, currentUser } = this.props
+    let { post, postEdit, dispatch, project, currentUser } = this.props
     let { name, description, communities, type, location } = postEdit
     let { communityChoiceTerm } = this.state
     let communityChoices = this.getCommunityChoices(communityChoiceTerm)
 
     if (!type) type = 'chat'
 
-    return <div className={cx('post-editor', 'clearfix', {expanded})}>
-      {post && <h3>Editing Post</h3>}
-      <ul className='left post-types'>
-        {postTypes.map(t => <li key={t}
-          className={cx('post-type', t, {selected: t === type})}
-          onClick={() => this.selectType(t)}>
-          {t}
-        </li>)}
-      </ul>
+    return <div className='post-editor clearfix'>
+      <img src={currentUser.avatar_url} className='avatar'/>
+      <strong className='name'>{currentUser.name}</strong>
 
-      <input type='text' ref='name' className='title form-control'
-        placeholder={postTypeData[type].placeholder}
-        onFocus={this.expand} value={name} onChange={this.set('name')}/>
+      <input type='text' ref='name' className='title' value={name}
+        placeholder='Start a conversation'
+        onFocus={this.expand}
+        onChange={this.set('name')}
+        onKeyUp={this.goToDetails}/>
 
-      {expanded && <div>
-        <h3>Details</h3>
-        <RichTextEditor className='details'
-          content={description}
-          onChange={this.set('description')}
-          mentionTemplate={personTemplate}
-          mentionTypeahead={text => dispatch(typeahead(text, 'post'))}
-          mentionChoices={this.props.mentionChoices}
-          mentionSelector='[data-user-id]'/>
+      <RichTextEditor className='details'
+        ref='details'
+        content={description}
+        onChange={this.set('description')}
+        mentionTemplate={personTemplate}
+        mentionTypeahead={text => dispatch(typeahead(text, 'post'))}
+        mentionChoices={this.props.mentionChoices}
+        mentionSelector='[data-user-id]'/>
 
-        {type === 'event' && <div className='input-row'>
-          <label>
-            <p>Location (Optional)</p>
-            <input type='text' ref='location' className='location form-control'
-              value={location}
-              onChange={this.set('location')}/>
-          </label>
-        </div>}
-
-        {!project && <div>
-          <h3 className='communities-header'>Communities</h3>
-          <CommunityTagInput ids={communities}
-            handleInput={this.updateCommunityChoiceTerm}
-            choices={communityChoices}
-            onSelect={this.addCommunity}
-            onRemove={this.removeCommunity}/>
-        </div>}
-
-        <label className='visibility'>
-          <input type='checkbox' value={postEdit.public} onChange={this.togglePublic}/>
-          &nbsp;
-          Make this post publicly visible
+      {type === 'event' && <div className='input-row'>
+        <label>
+          <p>Location (Optional)</p>
+          <input type='text' ref='location' className='location form-control'
+            value={location}
+            onChange={this.set('location')}/>
         </label>
-
-        <div className='buttons'>
-          <div className='right'>
-            <button onClick={this.cancel}>Cancel</button>
-            <button className='btn-primary' onClick={this.save}
-              disabled={this.props.saving} ref='save'>
-              {post ? 'Save Changes' : 'Post'}
-            </button>
-          </div>
-
-          <AttachmentButtons id={this.props.id} media={postEdit.media}
-            path={`user/${currentUser.id}/seeds`}/>
-        </div>
       </div>}
+
+      {!project && <div className='communities'>
+        in&nbsp;
+        <CommunityTagInput ids={communities}
+          handleInput={this.updateCommunityChoiceTerm}
+          choices={communityChoices}
+          onSelect={this.addCommunity}
+          onRemove={this.removeCommunity}/>
+      </div>}
+
+      <label className='visibility'>
+        <input type='checkbox' value={postEdit.public} onChange={this.togglePublic}/>
+        &nbsp;
+        Make this post publicly visible
+      </label>
+
+      <div className='buttons'>
+        <div className='right'>
+          <button onClick={this.cancel}>Cancel</button>
+          <button className='btn-primary' onClick={this.save}
+            disabled={this.props.saving} ref='save'>
+            {post ? 'Save Changes' : 'Post'}
+          </button>
+        </div>
+
+        <AttachmentButtons id={this.props.id} media={postEdit.media}
+          path={`user/${currentUser.id}/seeds`}/>
+      </div>
     </div>
   }
 }
@@ -326,4 +314,38 @@ AttachmentButtons.propTypes = {
   id: string,
   media: array,
   path: string
+}
+
+@connect(state => ({
+  currentUser: state.people.current
+}), null, null, {withRef: true})
+export default class PostEditorWrapper extends React.Component {
+  static propTypes = {
+    currentUser: object,
+    post: object,
+    project: object
+  }
+
+  constructor (props) {
+    super(props)
+    this.state = {expanded: props.expanded}
+  }
+
+  toggle = () => {
+    this.setState({expanded: !this.state.expanded})
+  }
+
+  render () {
+    if (!this.state.expanded) {
+      const { currentUser } = this.props
+      return <div className='post-editor' onClick={this.toggle}>
+        <img src={currentUser.avatar_url} className='avatar'/>
+        <strong className='name'>{currentUser.name}</strong>
+        <div className='prompt'>Start a conversation</div>
+      </div>
+    }
+
+    const { post, project, community } = this.props
+    return <PostEditor {...{post, project, community}} onCancel={this.toggle}/>
+  }
 }

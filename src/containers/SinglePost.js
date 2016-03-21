@@ -23,11 +23,11 @@ const SinglePost = props => {
 
   if (error) return <AccessErrorMessage error={error}/>
   if (!post) return <div className='loading'>Loading...</div>
-  if (editing) return <PostEditor post={post} expanded={true}/>
-  const image = get(community, 'banner_url') || 'http://i.imgur.com/G5WpY72.jpg'
 
-  return <CoverImagePage id='single-post' image={image}>
-    <Post post={post} expanded={true} showComments={true} commentingDisabled={!currentUser}/>
+  return <CoverImagePage id='single-post' image={get(community, 'banner_url')}>
+    {editing
+      ? <PostEditor post={post} expanded={true}/>
+      : <Post post={post} expanded={true} showComments={true} commentingDisabled={!currentUser}/>}
   </CoverImagePage>
 }
 

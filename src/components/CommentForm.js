@@ -1,51 +1,31 @@
 import React from 'react'
-import RichTextEditor from './RichTextEditor'
 import { get } from 'lodash'
 import { connect } from 'react-redux'
-import { createComment, typeahead } from '../actions'
-import { personTemplate } from '../util/mentions'
+import Avatar from './Avatar'
+import { createComment } from '../actions'
 import { ADDED_COMMENT, trackEvent } from '../util/analytics'
-var { array, func, string } = React.PropTypes
+var { func, string, object } = React.PropTypes
 
-@connect(state => ({mentionChoices: get(state, 'typeaheadMatches.comment')}))
+@connect(state => ({currentUser: get(state, 'people.current')}))
 export default class CommentForm extends React.Component {
   static propTypes = {
-    mentionChoices: array,
-    mentionTypeahead: func,
+    currentUser: object,
     dispatch: func,
     postId: string
-  }
-
-  constructor (props) {
-    super(props)
-    this.state = {input: ''}
-  }
-
-  handleChange = event => {
-    this.setState({input: event.target.value})
   }
 
   submit = event => {
     let { dispatch, postId } = this.props
     event.preventDefault()
-    dispatch(createComment(postId, this.state.input))
+    dispatch(createComment(postId, this.refs.editor.value))
     trackEvent(ADDED_COMMENT, {post: {id: postId}})
-    this.setState({input: ''})
-    this.refs.editor.setContent('')
+    this.refs.editor.value = ''
   }
 
   render () {
-    let { dispatch } = this.props
-
+    let { currentUser } = this.props
     return <form onSubmit={this.submit} className='comment-form'>
-      <RichTextEditor ref='editor'
-        content={this.state.input}
-        onChange={this.handleChange}
-        mentionTemplate={personTemplate}
-        mentionTypeahead={text => dispatch(typeahead(text, 'comment'))}
-        mentionChoices={this.props.mentionChoices}
-        mentionSelector='[data-user-id]'/>
-      <input type='submit' value='Comment'/>
+      <Avatar person={currentUser}/><input type='text' ref='editor' placeholder='Add your comment'/>
     </form>
   }
 }

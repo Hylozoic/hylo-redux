@@ -317,7 +317,7 @@ ul.posts {
 }
 
 .post {
-  padding: 25px;
+  padding: 25px 25px 5px 25px;
   margin-bottom: 15px;
   background-color: @card-background;
 
@@ -737,6 +737,7 @@ ul.tags {
 }
 
 .comment-form {
+  .has-left-side-avatar;
   margin-top: 15px;
   margin-bottom: 0;
   .clearfix;
@@ -749,9 +750,25 @@ ul.tags {
   }
 
   input[type='text'] {
-    .form-control;
-    width: 61.8%;
-    display: inline-block;
+    border: none;
+    width: 75%;
+    margin-top: 8px;
+    margin-left: 15px;
+    &:focus {
+      outline-width: 0;
+    }
+    &::-webkit-input-placeholder {
+      font-style: italic;
+    }
+    &:-moz-placeholder {
+      font-style: italic;
+    }
+    &::-moz-placeholder {
+      font-style: italic;
+    }
+    &:-ms-input-placeholder {
+      font-style: italic;
+    }
   }
 
   input[type='submit'] {

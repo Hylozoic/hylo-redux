@@ -222,8 +222,6 @@ const PostDetails = (props, { post, currentUser, dispatch }) => {
         </a>)}
     </div>}
 
-    <div className='divider' />
-
     <CommentSection
       {...{post, comments, commentingDisabled}}/>
   </div>
@@ -235,6 +233,7 @@ const CommentSection = (props, { post }) => {
   let { comments, commentingDisabled } = props
   if (!comments) comments = []
   return <div className='comments-section post-section'>
+    {!isEmpty(comments) && <div className='divider' />}
     <a name={`post-${post.id}-comments`}></a>
       {comments.map(c =>
         <Comment comment={{...c, post_id: post.id}} key={c.id}/>)}

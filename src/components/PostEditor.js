@@ -67,7 +67,7 @@ const postTypeData = {
     saving: state.pending[CREATE_POST] || state.pending[UPDATE_POST]
   }
 }, null, null, {withRef: true})
-class PostEditor extends React.Component {
+export class PostEditor extends React.Component {
   static propTypes = {
     dispatch: func,
     mentionChoices: array,

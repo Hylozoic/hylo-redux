@@ -151,7 +151,7 @@ export class PostEditor extends React.Component {
   reallySave () {
     let { dispatch, post, postEdit, project, id } = this.props
 
-    if (postEdit.type) postEdit.type = 'chat'
+    if (!postEdit.type) postEdit.type = 'chat'
 
     let params = {
       ...postEdit,
@@ -243,23 +243,22 @@ export class PostEditor extends React.Component {
           onRemove={this.removeCommunity}/>
       </div>}
 
-      <label className='visibility'>
-        <input type='checkbox' value={postEdit.public} onChange={this.togglePublic}/>
-        &nbsp;
-        Make this post publicly visible
-      </label>
-
       <div className='buttons'>
         <div className='right'>
+          <label className='visibility'>
+            <input type='checkbox' value={postEdit.public} onChange={this.togglePublic}/>
+            &nbsp;
+            Public
+          </label>
           <button onClick={this.cancel}>Cancel</button>
-          <button className='btn-primary' onClick={this.save}
-            disabled={this.props.saving} ref='save'>
-            {post ? 'Save Changes' : 'Post'}
-          </button>
+          <AttachmentButtons id={this.props.id} media={postEdit.media}
+            path={`user/${currentUser.id}/seeds`}/>
         </div>
-
-        <AttachmentButtons id={this.props.id} media={postEdit.media}
-          path={`user/${currentUser.id}/seeds`}/>
+        <button className='save' onClick={this.save}
+          disabled={this.props.saving} ref='save'>
+          {post ? 'Save Changes' : 'Post'}
+        </button>
+        <span className='glyphicon glyphicon-camera'></span>
       </div>
     </div>
   }

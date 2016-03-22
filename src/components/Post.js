@@ -229,21 +229,43 @@ const PostDetails = (props, { post, currentUser, dispatch }) => {
 
 PostDetails.contextTypes = Post.childContextTypes
 
-const CommentSection = (props, { post }) => {
-  let { comments, commentingDisabled } = props
-  if (!comments) comments = []
-  return <div className='comments-section post-section'>
-    {!isEmpty(comments) && <div className='divider' />}
-    <a name={`post-${post.id}-comments`}></a>
-      {comments.map(c =>
-        <Comment comment={{...c, post_id: post.id}} key={c.id}/>)}
-    {!commentingDisabled && <br />}
-    {!commentingDisabled && <div className='divider' />}
-    {!commentingDisabled && <CommentForm postId={post.id}/>}
-  </div>
-}
+class CommentSection extends React.Component {
+  static propTypes = {
+    comments: array,
+    commentingDisabled: bool
+  }
 
-CommentSection.contextTypes = {post: object}
+  static contextTypes = {post: object}
+
+  constructor (props) {
+    super(props)
+    this.state = {expanded: false}
+  }
+
+  toggleExpanded = () => {
+    console.log('togglin, ', !this.state.expanded)
+    this.setState({expanded: !this.state.expanded})
+  }
+
+  render () {
+    let { comments, commentingDisabled } = this.props
+    let { post } = this.context
+    let { expanded } = this.state
+    if (!comments) comments = []
+    let displayedComments = expanded ? comments : comments.slice(0, 3)
+    return <div className='comments-section post-section'>
+      {!isEmpty(comments) && <div className='divider' />}
+      <a name={`post-${post.id}-comments`}></a>
+        {displayedComments.map(c =>
+          <Comment comment={{...c, post_id: post.id}} key={c.id}/>)}
+      {comments.length > 3 && !expanded &&
+        <a className='show-all' onClick={this.toggleExpanded}>Show all</a>}
+      {!commentingDisabled && <br />}
+      {!commentingDisabled && <div className='divider' />}
+      {!commentingDisabled && <CommentForm postId={post.id}/>}
+    </div>
+  }
+}
 
 const EventRSVP = ({ postId, responders }, { currentUser, dispatch }) => {
   let isCurrentUser = r => r.id === get(currentUser, 'id')

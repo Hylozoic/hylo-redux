@@ -767,6 +767,9 @@ ul.tags {
 
   label {
     font-weight: normal;
+    > span {
+      vertical-align: middle;
+    }
   }
 
   > h3:first-child {
@@ -818,6 +821,31 @@ ul.tags {
     }
   }
 
+  .buttons {
+    margin-left: @content-left-margin;
+
+    div {
+      display: inline-block;
+    }
+
+    .save {
+      height: 40px;
+      line-height: 40px;
+      border-radius: 40px;
+      color: #fff;
+      background-color: @damian-green;
+      text-align: center;
+      padding: 0 32px;
+      margin-right: 10px;
+    }
+  }
+
+  .glyphicon-camera {
+    color: #bababa;
+    line-height: 40px;
+    font-size: 18px;
+    vertical-align: middle;
+  }
 }
 
 .image-attachment-button {

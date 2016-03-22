@@ -238,6 +238,8 @@ const CommentSection = (props, { post }) => {
     <a name={`post-${post.id}-comments`}></a>
       {comments.map(c =>
         <Comment comment={{...c, post_id: post.id}} key={c.id}/>)}
+    {!commentingDisabled && <br />}
+    {!commentingDisabled && <div className='divider' />}
     {!commentingDisabled && <CommentForm postId={post.id}/>}
   </div>
 }

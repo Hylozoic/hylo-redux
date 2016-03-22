@@ -1,58 +1,34 @@
 import React from 'react'
-import { isEmpty } from 'lodash'
 import Avatar from './Avatar'
 import A from './A'
-import ClickCatchingDiv from './ClickCatchingDiv'
 import {humanDate, sanitize, present} from '../util/text'
 import { commentUrl } from '../routes'
 import { thank } from '../actions'
-import Dropdown from './Dropdown'
-import PersonDropdownItem from './PersonDropdownItem'
 var { func, object } = React.PropTypes
-import truncateHtml from 'html-truncate'
 
 const spacer = <span>&nbsp;&nbsp;•&nbsp;&nbsp;</span>
 
-const Comment = ({ comment, truncate, expand }, { dispatch, currentUser }) => {
+const Comment = ({ comment, expand }, { dispatch, currentUser }) => {
   let person = comment.user
   let text = present(sanitize(comment.text))
-  let truncated = false
-  if (truncate) {
-    let truncatedText = truncateHtml(text, truncate)
-    if (truncatedText.length < text.length) {
-      text = truncatedText
-      truncated = true
-    }
-  }
-  let { isThanked, thanks } = comment
+  let { isThanked } = comment
 
   return <div className='comment' data-comment-id={comment.id}>
     <a name={`comment-${comment.id}`}></a>
     <Avatar person={person}/>
     <div className='content'>
-      <strong>{person.name}</strong>
-      <span className='meta'>
-        {spacer}
-        <A to={commentUrl(comment)}>{humanDate(comment.created_at)}</A>
+      <strong className='name'>{person.name}</strong>
+      <span className='text' dangerouslySetInnerHTML={{__html: text}} />
+      <div>
         {currentUser && <span>
-          {(currentUser.id !== person.id || !isEmpty(thanks)) && spacer}
           {currentUser.id !== person.id &&
-            <a onClick={() => dispatch(thank(comment.id, currentUser))}>
+            <a className='thanks' onClick={() => dispatch(thank(comment.id, currentUser))}>
               {isThanked ? `You thanked ${person.name.split(' ')[0]}` : 'Say thanks'}
             </a>}
-          {!isEmpty(thanks) && <Dropdown className='inline'
-            toggleChildren={<span>
-              &nbsp;
-              {currentUser.id !== person.id
-                ? `(${thanks.length})`
-                : `${thanks.length} thanks`}
-            </span>}>
-            {thanks.map(p => <PersonDropdownItem key={p.id} person={p}/>)}
-          </Dropdown>}
+          {currentUser.id !== person.id && spacer}
         </span>}
-      </span>
-      <ClickCatchingDiv className='text' dangerouslySetInnerHTML={{__html: text}}/>
-      {truncated && <a onClick={expand} className='show-more'>Show more</a>}
+        <A className='date' to={commentUrl(comment)}>{humanDate(comment.created_at)}</A>
+      </div>
     </div>
   </div>
 }

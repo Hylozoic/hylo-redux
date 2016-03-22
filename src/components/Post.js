@@ -1,7 +1,6 @@
 import React from 'react'
 import { filter, find, first, get, isEmpty, map, pick, some, without } from 'lodash'
-import { projectUrl } from '../routes'
-const { array, bool, func, object, string } = React.PropTypes
+const { array, bool, func, object } = React.PropTypes
 import cx from 'classnames'
 import { humanDate, nonbreaking, present, sanitize, timeRange, timeRangeFull, appendInP } from '../util/text'
 import truncate from 'html-truncate'
@@ -12,7 +11,6 @@ import ClickCatchingDiv from './ClickCatchingDiv'
 import Comment from './Comment'
 import CommentForm from './CommentForm'
 import RSVPControl from './RSVPControl'
-import SharingDropdown from './SharingDropdown'
 import PersonDropdownItem from './PersonDropdownItem'
 import { connect } from 'react-redux'
 import { prefetch } from 'react-fetcher'
@@ -195,48 +193,6 @@ const PostMenu = (props, { dispatch, post, currentUser }) => {
 
 PostMenu.contextTypes = {dispatch: func, post: object, currentUser: object}
 
-const PostMeta = ({ voters }, { post, dispatch, postDisplayMode }) => {
-  const now = new Date()
-  const createdAt = new Date(post.created_at)
-  const updatedAt = new Date(post.updated_at)
-  const shouldShowUpdatedAt = (now - updatedAt) < (now - createdAt) * 0.8
-  if (!voters) voters = []
-  let project = postDisplayMode !== 'project' && get(post, 'projects.0')
-  let vote = () => dispatch(voteOnPost(post))
-  let fetchVoters = () => dispatch(fetchPeople({subject: 'voters', id: post.id}))
-
-  return <div className='meta'>
-    <A to={`/p/${post.id}`}>{nonbreaking(humanDate(createdAt))}</A>
-    {project && <span>
-      &nbsp;for <A to={projectUrl(project)}>"{truncate(project.title, 60)}"</A>
-    </span>}
-    {shouldShowUpdatedAt && <span>
-      {spacer}updated&nbsp;{nonbreaking(humanDate(updatedAt))}
-    </span>}
-    {spacer}
-    {post.votes === 0
-      ? '0'
-      : <Dropdown className='inline'
-          onFirstOpen={fetchVoters}
-          toggleChildren={<span>{post.votes}</span>}>
-          {voters.map(p => <PersonDropdownItem key={p.id} person={p}/>)}
-        </Dropdown>}
-    <a onClick={vote} className='vote'>
-      <i className={`icon-heart-new${post.myVote ? '-selected' : ''}`}></i>
-    </a>
-    {spacer}
-    <a href='#'>
-      {post.numComments}&nbsp;comment{post.numComments === 1 ? '' : 's'}
-    </a>
-    {post.public && <span>
-      {spacer}Public
-      {spacer}<SharingDropdown className='share-post' toggleChildren={<span>Share</span>} alignRight={true} url={`/p/${post.id}`} text={post.name} />
-    </span>}
-  </div>
-}
-
-PostMeta.contextTypes = {...Post.childContextTypes, postDisplayMode: string}
-
 const PostDetails = (props, { post, currentUser, dispatch }) => {
   let { comments, commentingDisabled, voters } = props
   let image = find(post.media, m => m.type === 'image')
@@ -266,6 +222,8 @@ const PostDetails = (props, { post, currentUser, dispatch }) => {
         </a>)}
     </div>}
 
+    <div className='divider' />
+
     <CommentSection
       {...{post, comments, commentingDisabled}}/>
   </div>
@@ -276,7 +234,7 @@ PostDetails.contextTypes = Post.childContextTypes
 const CommentSection = (props, { post }) => {
   let { comments, commentingDisabled } = props
   if (!comments) comments = []
-  return <div className='comments-section'>
+  return <div className='comments-section post-section'>
     <a name={`post-${post.id}-comments`}></a>
       {comments.map(c =>
         <Comment comment={{...c, post_id: post.id}} key={c.id}/>)}

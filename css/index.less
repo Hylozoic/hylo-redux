@@ -386,6 +386,14 @@ ul.posts {
     }
   }
 
+  .divider {
+    border-top: 1px solid @input-border;
+    margin-bottom: -10px;
+  }
+
+  .comments-section {
+  }
+
   &.welcome {
     padding: 0 15px;
     &, &.expanded {
@@ -435,6 +443,11 @@ ul.posts {
   }
 
   .post-menu {
+    i {
+      font-size: 20px;
+      color: @gray-text;
+    }
+
     float: right;
     .meta-text;
     cursor: pointer;
@@ -551,6 +564,7 @@ ul.posts {
   .voting {
     margin-left: 14px !important;
     margin-top: 25px;
+    margin-bottom: 30px !important;
     .voter {
       .proxima-nova-bold();
       color: #000;
@@ -681,12 +695,30 @@ ul.tags {
 
 .comment {
   margin-top: 15px;
-  border-top: 1px solid #ddd;
   padding-top: 15px;
   .has-left-side-avatar;
 
+  .name {
+    margin-right: 10px;
+  }
+
   .text {
+    color: @gray-text;
     .body-text;
+    p:first-child {
+      display: inline;
+    }
+    p {
+      margin-right: 5px;
+    }
+  }
+
+  .thanks {
+    color: @new-green;
+  }
+
+  .date {
+    color: @mid-gray-bg;
   }
 
   .meta a {
@@ -696,6 +728,8 @@ ul.tags {
   .show-more {
     .meta-text;
   }
+
+
 }
 
 .comment-form {
@@ -1496,7 +1530,6 @@ ul.tags {
 .comments-section {
   > a:first-child {
     margin-top: @p-bottom-margin;
-    display: inline-block;
     cursor: pointer;
   }
 }

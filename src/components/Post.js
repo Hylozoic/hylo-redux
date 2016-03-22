@@ -254,7 +254,9 @@ const PostDetails = (props, { post, currentUser, dispatch }) => {
      </div>}
 
     {post.type === 'event' && <EventRSVP postId={post.id} responders={post.responders}/>}
-    <Voters voters={voters} />
+    <div className='voting post-section'>
+      <VoteButton /><Voters voters={voters} />
+    </div>
 
     {!isEmpty(attachments) && <div className='post-section'>
       {attachments.map((file, i) =>
@@ -295,9 +297,17 @@ const EventRSVP = ({ postId, responders }, { currentUser, dispatch }) => {
 
 EventRSVP.contextTypes = {currentUser: object, dispatch: func}
 
-export const Voters = (props, {post, currentUser}) => {
-  let { voters } = props
+export const VoteButton = (props, { post, dispatch }) => {
+  let vote = () => dispatch(voteOnPost(post))
+  return <a className='vote-button' onClick={vote}>
+    <i className={`icon-heart-new${post.myVote ? '-selected' : ''}`}></i>
+    {post.myVote ? 'Liked' : 'Like'}
+  </a>
+}
 
+VoteButton.contextTypes = {post: object, dispatch: func}
+
+export const Voters = ({ voters }, { post, currentUser }) => {
   if (!voters) voters = []
 
   let onlyAuthorIsVoting = voters.length === 1 && same('id', first(voters), post.user)
@@ -315,10 +325,11 @@ export const Voters = (props, {post, currentUser}) => {
         : ''
 
   if (voters.length > 0 && !onlyAuthorIsVoting) {
-    return <div className='meta voters'>
-      {meInVoters && <span>You{separator(1)}</span>}
+    return <span className='voters meta'>
+      {meInVoters && <span className='voter'>You</span>}
+      {meInVoters && separator(1)}
       {otherVoters.slice(0, numShown).map((person, index) =>
-        <span key={person.id}>
+        <span className='voter' key={person.id}>
           <a href={`/u/${person.id}`}>{person.name}</a>
           {index !== numShown - 1 && separator(2)}
         </span>)}
@@ -331,8 +342,7 @@ export const Voters = (props, {post, currentUser}) => {
           <PersonDropdownItem key={p.id} person={p}/>)}
       </Dropdown>}
       &nbsp;liked this.
-
-    </div>
+    </span>
   } else {
     return <span />
   }

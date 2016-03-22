@@ -130,7 +130,9 @@ describe('appHandler', () => {
           width: 99,
           height: 101
         }],
-        communities: [],
+        communities: [
+          {name: 'Foomunity'}
+        ],
         followers: [],
         user: {name: ''},
         created_at: new Date()

@@ -7,6 +7,7 @@ because they make more sense.
 */
 
 import React from 'react'
+import cx from 'classnames'
 import { filter, find, get, includes, isEmpty, startsWith } from 'lodash'
 import CommunityTagInput from './CommunityTagInput'
 import Dropdown from './Dropdown'
@@ -84,21 +85,20 @@ export class PostEditor extends React.Component {
 
   constructor (props) {
     super(props)
-    this.state = {communityChoiceTerm: ''}
+    this.state = {}
   }
 
   componentDidMount () {
     // initialize the communities list when opening the editor in a community
     let { community, postEdit: { communities } } = this.props
     if (community && isEmpty(communities)) this.addCommunity(community)
+    this.refs.name.focus()
   }
 
   updateStore (data) {
     let { id, dispatch } = this.props
     dispatch(updatePostEditor(data, id))
   }
-
-  selectType = (type) => this.updateStore({type: type})
 
   cancel = () => {
     let { dispatch, id, onCancel } = this.props
@@ -175,48 +175,42 @@ export class PostEditor extends React.Component {
         community,
         project
       })
+      this.cancel()
     })
   }
 
-  updateCommunityChoiceTerm = term => {
-    this.setState({communityChoiceTerm: term})
-  }
-
-  getCommunityChoices = term => {
-    if (!term) {
-      return []
+  goToDetails = event => {
+    if (event.which === 13) {
+      this.setState({showDetails: true})
+      this.refs.details.editor().focus()
     }
 
-    let { currentUser, postEdit: { communities } } = this.props
-    var match = c =>
-      startsWith(c.name.toLowerCase(), term.toLowerCase()) &&
-      !includes(communities, c.id)
-
-    return filter(currentUser.memberships.map(m => m.community), match)
-  }
-
-  goToDetails = event => {
-    if (event.which === 13) this.refs.details.editor().focus()
+    // TODO also jump to details if the length of the title exceeds a threshold;
+    // truncate the title at its last space and prepend the truncated portion to
+    // the details
   }
 
   render () {
     let { post, postEdit, dispatch, project, currentUser } = this.props
-    let { name, description, communities, type, location } = postEdit
-    let { communityChoiceTerm } = this.state
-    let communityChoices = this.getCommunityChoices(communityChoiceTerm)
+    let { name, description, communities, type } = postEdit
+    let { showDetails } = this.state
 
     if (!type) type = 'chat'
+    const typeLabel = `#${type === 'chat' ? 'all-topics' : type}`
+    const selectType = type => this.updateStore({type})
 
     return <div className='post-editor clearfix'>
       <PostEditorHeader person={currentUser}/>
 
-      <input type='text' ref='name' className='title' value={name}
-        placeholder='Start a conversation'
-        onFocus={this.expand}
-        onChange={this.set('name')}
-        onKeyUp={this.goToDetails}/>
+      <div className='title-wrapper'>
+        <input type='text' ref='name' className='title' value={name}
+          placeholder='Start a conversation'
+          onFocus={this.expand}
+          onChange={this.set('name')}
+          onKeyUp={this.goToDetails}/>
+      </div>
 
-      <RichTextEditor className='details'
+      <RichTextEditor className={cx('details', {empty: !description && !showDetails})}
         ref='details'
         content={description}
         onChange={this.set('description')}
@@ -225,20 +219,21 @@ export class PostEditor extends React.Component {
         mentionChoices={this.props.mentionChoices}
         mentionSelector='[data-user-id]'/>
 
-      {type === 'event' && <div className='input-row'>
-        <label>
-          <p>Location (Optional)</p>
-          <input type='text' ref='location' className='location form-control'
-            value={location}
-            onChange={this.set('location')}/>
-        </label>
-      </div>}
+      <div className='hashtag-selector'>
+        <span>{typeLabel}</span>&nbsp;
+          <Dropdown toggleChildren={
+              <button>#</button>
+            }>
+            <li><a onClick={() => selectType('request')}>#request</a></li>
+            <li><a onClick={() => selectType('offer')}>#offer</a></li>
+            <li><a onClick={() => selectType('chat')}>#all-topics</a></li>
+          </Dropdown>
+        </div>
 
       {!project && <div className='communities'>
         in&nbsp;
-        <CommunityTagInput ids={communities}
-          handleInput={this.updateCommunityChoiceTerm}
-          choices={communityChoices}
+        <CommunitySelector currentUser={currentUser}
+          communities={communities}
           onSelect={this.addCommunity}
           onRemove={this.removeCommunity}/>
       </div>}
@@ -261,6 +256,44 @@ export class PostEditor extends React.Component {
         <span className='glyphicon glyphicon-camera'></span>
       </div>
     </div>
+  }
+}
+
+class CommunitySelector extends React.Component {
+  constructor (props) {
+    super(props)
+    this.state = {term: ''}
+  }
+
+  static propTypes = {
+    currentUser: object.isRequired,
+    communities: array.isRequired,
+    onSelect: func.isRequired,
+    onRemove: func.isRequired
+  }
+
+  render () {
+    const { term } = this.state
+    const {
+      currentUser: { memberships },
+      communities,
+      onSelect,
+      onRemove
+    } = this.props
+
+    const match = c =>
+      startsWith(c.name.toLowerCase(), term.toLowerCase()) &&
+      !includes(communities, c.id)
+
+    const choices = term
+      ? filter(memberships.map(m => m.community), match)
+      : []
+
+    return <CommunityTagInput ids={communities}
+      handleInput={term => this.setState({term})}
+      choices={choices}
+      onSelect={onSelect}
+      onRemove={onRemove}/>
   }
 }
 

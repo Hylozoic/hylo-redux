@@ -256,14 +256,11 @@ class CommentSection extends React.Component {
     if (!comments) comments = []
     let displayedComments = expanded ? comments : comments.slice(0, 3)
     return <div className='comments-section post-section'>
-      {!isEmpty(comments) && <div className='divider' />}
       <a name={`post-${post.id}-comments`}></a>
         {displayedComments.map(c =>
           <Comment comment={{...c, post_id: post.id}} key={c.id}/>)}
       {comments.length > 3 && !expanded &&
         <a className='show-all' onClick={this.toggleExpanded}>Show all</a>}
-      {!commentingDisabled && <br />}
-      {!commentingDisabled && <div className='divider' />}
       {!commentingDisabled && <CommentForm postId={post.id}/>}
     </div>
   }

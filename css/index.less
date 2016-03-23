@@ -362,7 +362,6 @@ ul.posts {
     padding-left: @post-content-left-margin;
   }
 
-
   .vote {
     cursor: pointer;
 
@@ -397,15 +396,8 @@ ul.posts {
     }
   }
 
-  .divider {
-    border-top: 1px solid @input-border;
-    margin-bottom: -10px;
-    width: 100%;
-    left: 0px;
-    position: absolute;
-  }
-
   .comments-section {
+    border-top: 1px solid @post-border;
     padding-top: 1px;
     .show-all {
 
@@ -578,12 +570,12 @@ ul.posts {
     }
   }
 
-  .voting {
+  .post-section.voting {
     @vote-button-width: 18px;
     @vote-button-margin: 8px;
     padding-left: @post-content-left-margin - @vote-button-width - @vote-button-margin;
     margin-top: 25px;
-    margin-bottom: 0px !important;
+    margin-bottom: 27px;
     .voter {
       .proxima-nova-bold();
       color: #000;

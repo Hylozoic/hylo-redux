@@ -100,22 +100,24 @@ class Post extends React.Component {
         <Avatar person={person}/>
         {post.type === 'welcome'
           ? <WelcomePostHeader communities={communities}/>
-          : <span>
+          : <div>
               <A className='name' to={`/u/${person.id}`}>{person.name}</A>
               {spacer}
-              <A to={`/p/${post.id}`}>{nonbreaking(humanDate(createdAt))}</A>
-              &nbsp;in {community.name}
-            </span>}
+              <span className='meta'>
+                <A to={`/p/${post.id}`}>{nonbreaking(humanDate(createdAt))}</A>
+                &nbsp;in {community.name}
+              </span>
+            </div>}
       </div>
 
       <div className='post-section'><p className='title'>{title}</p></div>
 
-      {isEvent && <p title={eventTimeFull} className='event-time'>
+      {isEvent && <p title={eventTimeFull} className='post-section event-time'>
         <i className='glyphicon glyphicon-time'></i>
         {eventTime}
       </p>}
 
-      {post.location && <p title='location' className='post-location'>
+      {post.location && <p title='location' className='post-section post-location'>
         <i className='glyphicon glyphicon-map-marker'></i>
         {post.location}
       </p>}
@@ -149,7 +151,7 @@ export const UndecoratedPost = Post // for testing
 const WelcomePostHeader = ({ communities }, { post }) => {
   let person = post.relatedUsers[0]
   let community = communities[0]
-  return <span>
+  return <div>
     <strong><A to={`/u/${person.id}`}>{person.name}</A></strong> joined
     <span> </span>
     {community
@@ -163,7 +165,7 @@ const WelcomePostHeader = ({ communities }, { post }) => {
       : <span>
           a community that is no longer active.
         </span>}
-  </span>
+  </div>
 }
 
 WelcomePostHeader.contextTypes = {post: object}
@@ -254,7 +256,6 @@ class CommentSection extends React.Component {
     if (!comments) comments = []
     let displayedComments = expanded ? comments : comments.slice(0, 3)
     return <div className='comments-section post-section'>
-      {!isEmpty(comments) && <div className='divider' />}
       <a name={`post-${post.id}-comments`}></a>
         {displayedComments.map(c =>
           <Comment comment={{...c, post_id: post.id}} key={c.id}/>)}

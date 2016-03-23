@@ -39,6 +39,7 @@ export function present (text, opts) {
 }
 
 export function appendInP (text, appendor) {
+  text = text.trim()
   if (text.substr(text.length - 4) === '</p>') {
     return text.substr(0, text.length - 4) + appendor + '</p>'
   } else {

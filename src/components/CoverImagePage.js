@@ -1,6 +1,7 @@
 import React from 'react'
 
 const earthImage = '/img/earth_1920x1080.jpg'
+const spaceRainbowImage = 'http://i.imgur.com/G5WpY72.jpg'
 
 const CoverImage = ({ url }) =>
   <div id='cover-image'>

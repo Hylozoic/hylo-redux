@@ -23,31 +23,19 @@ let post = {
     id: 'x',
     name: 'Mr. X',
     avatar_url: '/img/mrx.png'
-  }
+  },
+  communities: ['f']
 }
 
-let state = {}
+let communities = [
+  {id: 'f', name: 'Foomunity'}
+]
 
-describe('UndecoratedPost', () => {
-  let component, node, expand
-  before(() => {
-    expand = spy(() => {})
-    component = <UndecoratedPost post={post} onExpand={expand}/>
-    node = renderIntoDocument(component)
-  })
-
-  it('renders', () => {
-    findRenderedDOMComponentWithClass(node, 'post offer')
-    let title = findRenderedDOMComponentWithClass(node, 'title')
-    expect(title.innerHTML).to.equal(post.name)
-  })
-
-  it('calls onExpand on click', () => {
-    let outerDiv = findRenderedDOMComponentWithClass(node, 'post offer')
-    Simulate.click(outerDiv)
-    expect(expand).to.have.been.called()
-  })
-})
+let state = {
+  communities: {
+    f: communities[0]
+  }
+}
 
 describe('Post', () => {
   it('renders expanded', () => {
@@ -57,7 +45,7 @@ describe('Post', () => {
     let node = renderIntoDocument(component)
     findRenderedDOMComponentWithClass(node, 'post offer expanded')
     let details = findRenderedDOMComponentWithClass(node, 'details')
-    expect(details.innerHTML).to.equal(`<p>${post.description}</p>`)
+    expect(details.innerHTML).to.equal(`<p>${post.description} <a class="hashtag">#offer</a></p>`)
   })
 })
 

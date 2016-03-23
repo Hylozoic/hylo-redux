@@ -316,23 +316,34 @@ ul.posts {
   }
 }
 
+@post-content-left-margin: 75px;
+
+.shared-post-header() {
+  margin-bottom: 6px;
+
+  > .avatar {
+    float: left;
+    margin-left: 26px;
+  }
+  > div:last-child {
+    margin-left: @post-content-left-margin;
+  }
+  .name {
+    color: @new-green;
+    .semibold;
+  }
+  .meta > a, .meta > div > a {
+    .meta-text;
+  }
+}
+
 .post {
-  padding: 25px 25px 5px 25px;
+  padding: 25px 25px 5px 0;
   margin-bottom: 15px;
   background-color: @card-background;
 
   .header {
-    .name {
-      color: @new-green;
-    }
-    .meta > a, .meta > div > a {
-      .meta-text;
-    }
-    > .avatar {
-      float: left;
-      margin-right: 10px;
-    }
-    margin-bottom: 6px;
+    .shared-post-header;
   }
 
   .image {
@@ -347,8 +358,8 @@ ul.posts {
     }
   }
 
-  .name {
-    .semibold;
+  .post-section {
+    padding-left: @post-content-left-margin;
   }
 
   .vote {
@@ -373,7 +384,6 @@ ul.posts {
     }
   }
 
-
   p.title {
     .post-title-text;
     margin-bottom: 0;
@@ -386,15 +396,8 @@ ul.posts {
     }
   }
 
-  .divider {
-    border-top: 1px solid @input-border;
-    margin-bottom: -10px;
-    width: 100%;
-    left: 0px;
-    position: absolute;
-  }
-
   .comments-section {
+    border-top: 1px solid @post-border;
     padding-top: 1px;
     .show-all {
       margin-top: 20px;
@@ -564,15 +567,16 @@ ul.posts {
     }
 
     .post-section {
-      margin-left: 44px;
       margin-bottom: @p-bottom-margin;
     }
   }
 
-  .voting {
-    margin-left: 14px !important;
+  .post-section.voting {
+    @vote-button-width: 18px;
+    @vote-button-margin: 5px;
+    padding-left: @post-content-left-margin - @vote-button-width - @vote-button-margin;
     margin-top: 25px;
-    margin-bottom: 0px !important;
+    margin-bottom: 27px;
     .voter {
       .proxima-nova-bold();
       color: #000;
@@ -580,14 +584,15 @@ ul.posts {
     .vote-button {
       color: @new-green !important;
       text-decoration: none;
+      width: @vote-button-width;
       i {
-        margin-right: 10px;
+        margin-right: @vote-button-margin;
         top: 2px;
         position: relative;
       }
     }
     .voters {
-      margin-left: 10px;
+      margin-left: 15px;
     }
   }
 
@@ -715,11 +720,14 @@ ul.tags {
   .text {
     color: @gray-text;
     .body-text;
-    p:first-child {
-      display: inline;
-    }
     p {
       margin-right: 5px;
+      &:first-child {
+        display: inline;
+      }
+      &:last-child {
+        margin-bottom: 0;
+      }
     }
   }
 
@@ -784,25 +792,39 @@ ul.tags {
 }
 
 .post-editor {
-  padding: 15px;
+  @content-right-margin: 15px;
+  padding: 22px 0 15px 0;
   background-color: #fff;
   margin-bottom: 15px;
   .mobile-full-bleed;
+  position: relative;
 
-  .post-types {
-    .no-bullets;
-    margin-bottom: @p-bottom-margin;
-    li {
-      .tag;
-      .post-type-text;
-      cursor: pointer;
-    }
+  .header {
+    .shared-post-header;
+  }
+
+  .prompt {
+    font-size: 24px;
+    color: #a9a9a9; // placeholder color
+    margin-left: @post-content-left-margin;
+  }
+
+  .title {
+    font-size: 24px;
+    display: block;
+    width: 100%;
+    border: none;
+    padding: 0;
+    padding-left: @post-content-left-margin;
+    padding-right: @content-right-margin;
+    outline: none;
   }
 
   .details {
-    iframe {
-      height: 22vh !important;
-    }
+    padding-left: @post-content-left-margin;
+    padding-right: @content-right-margin;
+    border-bottom: 2px dotted #e5e5e5;
+    margin-bottom: 5px;
   }
 
   .input-row {
@@ -810,10 +832,6 @@ ul.tags {
     p {
       margin-bottom: 5px;
     }
-  }
-
-  &.expanded input.title, .tag-list, .visibility {
-    margin-bottom: @p-bottom-margin;
   }
 
   .visibility {
@@ -826,10 +844,84 @@ ul.tags {
 
   label {
     font-weight: normal;
+    > span {
+      vertical-align: middle;
+    }
   }
 
   > h3:first-child {
     margin-top: 0;
+  }
+
+  .communities {
+    margin-left: @post-content-left-margin;
+    .meta-text;
+
+    > span {
+      position: absolute;
+      padding-top: 3px;
+    }
+
+    .tag-input {
+      border: 0;
+      box-shadow: none;
+      padding-top: 0;
+      padding-left: 0;
+      margin-left: 14px;
+      width: auto;
+
+      input[type="text"] {
+        padding-left: 0;
+        height: 23px;
+      }
+    }
+
+    .tag {
+      background-color: transparent;
+      padding: 0;
+      border: 0;
+      margin-right: 10px;
+      margin-bottom: 0;
+      &:hover {
+        border: 0;
+      }
+      .icon {
+        display: none;
+      }
+      span {
+        color: @damian-green;
+      }
+      .remove {
+        position: relative;
+        top: 1px;
+      }
+    }
+  }
+
+  .buttons {
+    margin-left: @post-content-left-margin;
+
+    div {
+      display: inline-block;
+    }
+
+    .save {
+      height: 40px;
+      line-height: 40px;
+      border-radius: 40px;
+      color: #fff;
+      background-color: @damian-green;
+      text-align: center;
+      padding: 0 32px;
+      margin-right: 10px;
+    }
+  }
+
+  .glyphicon-camera {
+    color: #bababa;
+    line-height: 40px;
+    font-size: 18px;
+    vertical-align: middle;
   }
 }
 
@@ -876,12 +968,10 @@ ul.tags {
 }
 
 .rich-text-editor {
-  .form-control;
   padding: 0;
   height: auto;
-  > .mce-container {
+  .mce-container {
     border: none;
-    border-radius: @border-radius-base;
     overflow: hidden;
   }
   > .dropdown {

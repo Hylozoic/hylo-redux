@@ -316,23 +316,34 @@ ul.posts {
   }
 }
 
+@post-content-left-margin: 75px;
+
+.shared-post-header() {
+  margin-bottom: 6px;
+
+  > .avatar {
+    float: left;
+    margin-left: 26px;
+  }
+  > div:last-child {
+    margin-left: @post-content-left-margin;
+  }
+  .name {
+    color: @new-green;
+    .semibold;
+  }
+  .meta > a, .meta > div > a {
+    .meta-text;
+  }
+}
+
 .post {
-  padding: 25px 25px 5px 25px;
+  padding: 25px 25px 5px 0;
   margin-bottom: 15px;
   background-color: @card-background;
 
   .header {
-    .name {
-      color: @new-green;
-    }
-    .meta > a, .meta > div > a {
-      .meta-text;
-    }
-    > .avatar {
-      float: left;
-      margin-right: 10px;
-    }
-    margin-bottom: 6px;
+    .shared-post-header;
   }
 
   .image {
@@ -347,9 +358,10 @@ ul.posts {
     }
   }
 
-  .name {
-    .semibold;
+  .post-section {
+    padding-left: @post-content-left-margin;
   }
+
 
   .vote {
     cursor: pointer;
@@ -372,7 +384,6 @@ ul.posts {
       color: #f8f;
     }
   }
-
 
   p.title {
     .post-title-text;
@@ -397,7 +408,7 @@ ul.posts {
   .comments-section {
     padding-top: 1px;
     .show-all {
-      
+
     }
   }
 
@@ -563,13 +574,14 @@ ul.posts {
     }
 
     .post-section {
-      margin-left: 44px;
       margin-bottom: @p-bottom-margin;
     }
   }
 
   .voting {
-    margin-left: 14px !important;
+    @vote-button-width: 18px;
+    @vote-button-margin: 8px;
+    padding-left: @post-content-left-margin - @vote-button-width - @vote-button-margin;
     margin-top: 25px;
     margin-bottom: 0px !important;
     .voter {
@@ -579,8 +591,9 @@ ul.posts {
     .vote-button {
       color: @new-green !important;
       text-decoration: none;
+      width: 18px;
       i {
-        margin-right: 10px;
+        margin-right: @vote-button-margin;
         top: 2px;
         position: relative;
       }
@@ -783,7 +796,6 @@ ul.tags {
 }
 
 .post-editor {
-  @content-left-margin: 80px;
   @content-right-margin: 15px;
   padding: 22px 0 15px 0;
   background-color: #fff;
@@ -791,20 +803,14 @@ ul.tags {
   .mobile-full-bleed;
   position: relative;
 
-  .name {
-    margin-left: @content-left-margin;
-    color: @damian-green;
-  }
-
-  .avatar {
-    position: absolute;
-    left: @content-left-margin - @avatar-size-default - 15px;
+  .header {
+    .shared-post-header;
   }
 
   .prompt {
     font-size: 24px;
     color: #a9a9a9; // placeholder color
-    margin-left: @content-left-margin;
+    margin-left: @post-content-left-margin;
   }
 
   .title {
@@ -813,13 +819,13 @@ ul.tags {
     width: 100%;
     border: none;
     padding: 0;
-    padding-left: @content-left-margin;
+    padding-left: @post-content-left-margin;
     padding-right: @content-right-margin;
     outline: none;
   }
 
   .details {
-    padding-left: @content-left-margin;
+    padding-left: @post-content-left-margin;
     padding-right: @content-right-margin;
     border-bottom: 2px dotted #e5e5e5;
     margin-bottom: 5px;
@@ -852,7 +858,7 @@ ul.tags {
   }
 
   .communities {
-    margin-left: @content-left-margin;
+    margin-left: @post-content-left-margin;
     .meta-text;
 
     > span {
@@ -897,7 +903,7 @@ ul.tags {
   }
 
   .buttons {
-    margin-left: @content-left-margin;
+    margin-left: @post-content-left-margin;
 
     div {
       display: inline-block;

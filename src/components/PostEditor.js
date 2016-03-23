@@ -12,6 +12,7 @@ import CommunityTagInput from './CommunityTagInput'
 import Dropdown from './Dropdown'
 import ImageAttachmentButton from './ImageAttachmentButton'
 import RichTextEditor from './RichTextEditor'
+import { NonLinkAvatar } from './Avatar'
 import { connect } from 'react-redux'
 import {
   typeahead, updatePostEditor, createPost, updatePost, cancelPostEdit,
@@ -207,8 +208,7 @@ export class PostEditor extends React.Component {
     if (!type) type = 'chat'
 
     return <div className='post-editor clearfix'>
-      <img src={currentUser.avatar_url} className='avatar'/>
-      <strong className='name'>{currentUser.name}</strong>
+      <PostEditorHeader person={currentUser}/>
 
       <input type='text' ref='name' className='title' value={name}
         placeholder='Start a conversation'
@@ -315,6 +315,14 @@ AttachmentButtons.propTypes = {
   path: string
 }
 
+const PostEditorHeader = ({ person }) =>
+  <div className='header'>
+    <NonLinkAvatar person={person}/>
+    <div>
+      <span className='name'>{person.name}</span>
+    </div>
+  </div>
+
 @connect(state => ({
   currentUser: state.people.current
 }), null, null, {withRef: true})
@@ -322,7 +330,8 @@ export default class PostEditorWrapper extends React.Component {
   static propTypes = {
     currentUser: object,
     post: object,
-    project: object
+    project: object,
+    community: object
   }
 
   constructor (props) {
@@ -338,8 +347,7 @@ export default class PostEditorWrapper extends React.Component {
     if (!this.state.expanded) {
       const { currentUser } = this.props
       return <div className='post-editor' onClick={this.toggle}>
-        <img src={currentUser.avatar_url} className='avatar'/>
-        <strong className='name'>{currentUser.name}</strong>
+        <PostEditorHeader person={currentUser}/>
         <div className='prompt'>Start a conversation</div>
       </div>
     }

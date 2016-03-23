@@ -572,7 +572,7 @@ ul.posts {
 
   .post-section.voting {
     @vote-button-width: 18px;
-    @vote-button-margin: 8px;
+    @vote-button-margin: 5px;
     padding-left: @post-content-left-margin - @vote-button-width - @vote-button-margin;
     margin-top: 25px;
     margin-bottom: 27px;
@@ -583,7 +583,7 @@ ul.posts {
     .vote-button {
       color: @new-green !important;
       text-decoration: none;
-      width: 18px;
+      width: @vote-button-width;
       i {
         margin-right: @vote-button-margin;
         top: 2px;
@@ -591,7 +591,7 @@ ul.posts {
       }
     }
     .voters {
-      margin-left: 10px;
+      margin-left: 15px;
     }
   }
 

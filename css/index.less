@@ -719,11 +719,14 @@ ul.tags {
   .text {
     color: @gray-text;
     .body-text;
-    p:first-child {
-      display: inline;
-    }
     p {
       margin-right: 5px;
+      &:first-child {
+        display: inline;
+      }
+      &:last-child {
+        margin-bottom: 0;
+      }
     }
   }
 

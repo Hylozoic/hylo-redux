@@ -196,12 +196,12 @@ const PostMenu = (props, { dispatch, post, currentUser }) => {
 PostMenu.contextTypes = {dispatch: func, post: object, currentUser: object}
 
 const PostDetails = (props, { post, currentUser, dispatch }) => {
-  let { comments, commentingDisabled, voters } = props
-  let image = find(post.media, m => m.type === 'image')
-  let description = present(appendInP(
-    sanitize(post.description),
-    ` <a class='hashtag'>#${post.type}</a>`))
-  let attachments = filter(post.media, m => m.type !== 'image')
+  const { comments, commentingDisabled, voters } = props
+  const image = find(post.media, m => m.type === 'image')
+  const typeLabel = `#${post.type === 'chat' ? 'all-topics' : post.type}`
+  const description = present(appendInP(
+    sanitize(post.description), ` <a class='hashtag'>${typeLabel}</a>`))
+  const attachments = filter(post.media, m => m.type !== 'image')
 
   return <div className='post-details'>
     {description && <ClickCatchingDiv className='details post-section'

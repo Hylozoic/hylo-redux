@@ -329,7 +329,7 @@ ul.posts {
     margin-left: @post-content-left-margin;
   }
   .name {
-    color: @new-green;
+    color: @damian-green;
     .semibold;
   }
   .meta > a, .meta > div > a {
@@ -392,7 +392,7 @@ ul.posts {
   .details {
     .body-text;
     .hashtag {
-      color: @new-green;
+      color: @damian-green;
     }
   }
 
@@ -574,14 +574,14 @@ ul.posts {
     @vote-button-width: 18px;
     @vote-button-margin: 5px;
     padding-left: @post-content-left-margin - @vote-button-width - @vote-button-margin;
-    margin-top: 25px;
+    margin-top: 20px;
     margin-bottom: 27px;
     .voter {
       .proxima-nova-bold();
       color: #000;
     }
     .vote-button {
-      color: @new-green !important;
+      color: @damian-green !important;
       text-decoration: none;
       width: @vote-button-width;
       i {
@@ -731,7 +731,7 @@ ul.tags {
   }
 
   .thanks {
-    color: @new-green;
+    color: @damian-green;
   }
 
   .date {
@@ -803,27 +803,38 @@ ul.tags {
   }
 
   .prompt {
-    font-size: 24px;
+    .post-title-text;
     color: #a9a9a9; // placeholder color
     margin-left: @post-content-left-margin;
   }
 
+  .title-wrapper {
+    margin-left: @post-content-left-margin;
+    margin-right: @content-right-margin;
+  }
+
   .title {
-    font-size: 24px;
+    .post-title-text;
     display: block;
     width: 100%;
     border: none;
     padding: 0;
-    padding-left: @post-content-left-margin;
-    padding-right: @content-right-margin;
     outline: none;
   }
 
   .details {
     padding-left: @post-content-left-margin;
     padding-right: @content-right-margin;
-    border-bottom: 2px dotted #e5e5e5;
-    margin-bottom: 5px;
+    margin-bottom: 0;
+    min-height: 30px;
+
+    &.empty {
+      display: none;
+
+      &:focus {
+        display: block;
+      }
+    }
   }
 
   .input-row {
@@ -848,12 +859,28 @@ ul.tags {
     }
   }
 
-  > h3:first-child {
-    margin-top: 0;
+  .hashtag-selector {
+    margin-left: @post-content-left-margin;
+    margin-bottom: @p-bottom-margin;
+    .meta-text;
+    .dropdown {
+      display: inline-block;
+    }
+    button {
+      height: 22px;
+      width: 22px;
+      border-radius: 22px;
+      text-align: center;
+      padding: 0;
+      color: @gray-text;
+    }
   }
 
   .communities {
-    margin-left: @post-content-left-margin;
+    padding-top: 5px;
+    padding-left: @post-content-left-margin;
+    border-top: 2px dotted #e5e5e5;
+
     .meta-text;
 
     > span {
@@ -898,7 +925,9 @@ ul.tags {
   }
 
   .buttons {
-    margin-left: @post-content-left-margin;
+    padding-left: @post-content-left-margin;
+    padding-top: 15px;
+    border-top: 1px solid @post-border;
 
     div {
       display: inline-block;

@@ -192,12 +192,11 @@ export class PostEditor extends React.Component {
 
   render () {
     let { post, postEdit, dispatch, project, currentUser } = this.props
-    let { name, description, communities, type, location } = postEdit
+    let { name, description, communities, type } = postEdit
     let { showDetails } = this.state
 
     if (!type) type = 'chat'
-    const typeLabel = `#${type === 'chat' ? 'all-topics' : post.type}`
-
+    const typeLabel = `#${type === 'chat' ? 'all-topics' : type}`
     const selectType = type => this.updateStore({type})
 
     return <div className='post-editor clearfix'>
@@ -234,7 +233,7 @@ export class PostEditor extends React.Component {
       {!project && <div className='communities'>
         in&nbsp;
         <CommunitySelector currentUser={currentUser}
-          communities={postEdit.communities}
+          communities={communities}
           onSelect={this.addCommunity}
           onRemove={this.removeCommunity}/>
       </div>}

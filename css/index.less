@@ -398,7 +398,15 @@ ul.posts {
 
   .comments-section {
     border-top: 1px solid @post-border;
-    padding-top: 1px;
+    margin-bottom: 5px !important;
+
+    &.empty {
+      .comment-form {
+        margin-top: 0px;
+        border: none;
+      }
+    }
+
     .show-all {
       margin-top: 20px;
       margin-left: 51px;
@@ -575,8 +583,8 @@ ul.posts {
     @vote-button-width: 18px;
     @vote-button-margin: 5px;
     padding-left: @post-content-left-margin - @vote-button-width - @vote-button-margin;
-    margin-top: 25px;
-    margin-bottom: 27px;
+    margin-top: 15px;
+    margin-bottom: 25px;
     .voter {
       .proxima-nova-bold();
       color: #000;
@@ -709,7 +717,7 @@ ul.tags {
 }
 
 .comment {
-  margin-top: 15px;
+  margin-bottom: 5px;
   padding-top: 15px;
   .has-left-side-avatar;
 
@@ -755,6 +763,9 @@ ul.tags {
   margin-top: 15px;
   margin-bottom: 0;
   .clearfix;
+
+  border-top: 1px solid #e8e8e8;
+  padding-top: 10px;
 
   .rich-text-editor {
     iframe {

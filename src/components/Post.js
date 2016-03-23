@@ -258,8 +258,9 @@ class CommentSection extends React.Component {
       <a name={`post-${post.id}-comments`}></a>
         {displayedComments.map(c =>
           <Comment comment={{...c, post_id: post.id}} key={c.id}/>)}
-      {comments.length > 3 && !expanded &&
-        <a className='show-all' onClick={this.toggleExpanded}>Show all</a>}
+      {comments.length > 3 && !expanded && <div className='show-all'>
+          <a onClick={this.toggleExpanded}>Show all</a>
+        </div>}
       {!commentingDisabled && <br />}
       {!commentingDisabled && <div className='divider' />}
       {!commentingDisabled && <CommentForm postId={post.id}/>}

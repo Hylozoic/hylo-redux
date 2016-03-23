@@ -245,7 +245,6 @@ class CommentSection extends React.Component {
   }
 
   toggleExpanded = () => {
-    console.log('togglin, ', !this.state.expanded)
     this.setState({expanded: !this.state.expanded})
   }
 

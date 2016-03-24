@@ -133,11 +133,13 @@ describe('appHandler', () => {
         communities: [
           {name: 'Foomunity'}
         ],
+        comments: [],
+        voters: [],
         followers: [],
         user: {name: ''},
         created_at: new Date()
       }
-      nock(HOST).get('/noo/post/1').reply(200, post)
+      nock(HOST).get('/noo/post/1?comments=true&votes=true').reply(200, post)
     })
 
     it('displays the post', () => {

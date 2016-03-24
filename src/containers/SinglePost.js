@@ -44,15 +44,15 @@ export default compose(
       if (!payload || payload.api) return
       const { name, description, media } = payload
       dispatch(setMetaTags(ogMetaTags(name, description, media[0])))
-    }),
+    })/*,
     dispatch(fetchComments(id))
     .then(({ error }) => {
       if (error || typeof window === 'undefined') return
 
       let anchor = get(window.location.hash.match(/#(comment-\d+$)/), '1')
       if (anchor) scrollToAnchor(anchor, 15)
-    }),
-    dispatch(fetchPeople({subject: 'voters', id}))
+    })
+    */
   ])),
   connect((state, { params }) => {
     const { communities, currentCommunityId } = state

@@ -243,9 +243,12 @@ export function clearCache (bucket, id) {
 }
 
 export function fetchPost (id) {
+  let querystring = cleanAndStringify({
+    comments: true,
+    votes: true})
   return {
     type: FETCH_POST,
-    payload: {api: true, path: `/noo/post/${id}`},
+    payload: {api: true, path: `/noo/post/${id}?${querystring}`},
     meta: {cache: {id, bucket: 'posts'}}
   }
 }

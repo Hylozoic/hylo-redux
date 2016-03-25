@@ -29,24 +29,11 @@ import { personTemplate } from '../util/mentions'
 import { ADDED_POST, EDITED_POST, trackEvent } from '../util/analytics'
 const { array, bool, func, object, string } = React.PropTypes
 
-const postTypes = ['chat', 'request', 'offer', 'intention', 'event']
-
-const postTypeData = {
-  intention: {
-    placeholder: 'What would you like to create?'
-  },
-  offer: {
-    placeholder: 'What would you like to share?'
-  },
-  request: {
-    placeholder: 'What are you looking for?'
-  },
-  chat: {
-    placeholder: 'What do you want to say?'
-  },
-  event: {
-    placeholder: "What is your event's name?"
-  }
+const prependText = (editor, text, skip_focus) => {
+  if (!text) return
+  editor.selection.setCursorLocation(null, 0)
+  const spacer = editor.getContent() ? ' ' : ''
+  editor.execCommand('mceInsertContent', false, text + spacer, {skip_focus})
 }
 
 @connect((state, { community, post, project }) => {
@@ -177,11 +164,19 @@ export class PostEditor extends React.Component {
     })
   }
 
+  // this method allows you to type as much as you want into the title field, by
+  // automatically truncating it to a specified length and prepending the
+  // removed portion to the details field.
   updateTitle (event) {
+    if (this.state.pendingTitleReshuffle) return
+
     const maxlength = 120
     const { value } = event.target
     const { length } = value
     if (length > maxlength || value.indexOf('\n') !== -1) {
+      const { title, details } = this.refs
+      const editor = details.editor()
+
       let splitIndex = length > maxlength
         ? value.lastIndexOf(' ', maxlength - 1)
         : value.indexOf('\n')
@@ -191,14 +186,34 @@ export class PostEditor extends React.Component {
 
       this.setState({name, showDetails: true})
       this.updateStore({name})
-      setTimeout(() => this.refs.title.resize())
 
-      const editor = this.refs.details.editor()
-      if (excess) {
-        editor.selection.setCursorLocation(null, 0)
-        editor.insertContent(excess)
+      const pos = title.textarea.selectionStart
+      if (length !== pos) {
+        prependText(editor, excess, true)
+
+        // when the above setState call lands, the cursor ends up jumping to the
+        // end of the text field. we can move it back, but not until the
+        // setState call is finished, so we use setTimeout.
+        //
+        // this introduces a small but significant gap of time, during which, if
+        // someone is typing in the middle of the title field while the title
+        // gets truncated, some of the characters they type could end up at the
+        // end of the field.
+        //
+        // we "pause" the editing of the field with `pendingTitleReshuffle` to
+        // avoid this. this is not great, because if your computer is slow
+        // enough and you're a fast enough typer, characters will simply
+        // disappear -- but to my mind, this is marginally better than having
+        // them show up in the wrong place.
+        this.setState({pendingTitleReshuffle: true})
+        setTimeout(() => {
+          this.setState({pendingTitleReshuffle: false})
+          title.setCursorLocation(pos)
+        })
+      } else {
+        prependText(editor, excess)
       }
-      editor.focus()
+      setTimeout(() => title.resize())
     } else {
       this.setState({name: value})
       if (!this.delayedUpdate) {
@@ -208,7 +223,7 @@ export class PostEditor extends React.Component {
     }
   }
 
-  handleDetailsKeyUp = ({ which }) => {
+  goBackToTitle = ({ which }) => {
     if (which === 8 || which === 46) {
       const value = this.refs.details.editor().getContent()
       if (!value) {
@@ -232,7 +247,8 @@ export class PostEditor extends React.Component {
       <PostEditorHeader person={currentUser}/>
 
       <div className='title-wrapper'>
-        <AutosizingTextarea type='text' ref='title' className='title' value={name}
+        <AutosizingTextarea type='text' ref='title' className='title'
+          value={name}
           placeholder='Start a conversation'
           onFocus={this.expand}
           onChange={event => this.updateTitle(event)}/>
@@ -242,7 +258,7 @@ export class PostEditor extends React.Component {
         ref='details'
         content={description}
         onChange={this.set('description')}
-        onKeyUp={this.handleDetailsKeyUp}
+        onKeyUp={this.goBackToTitle}
         mentionTemplate={personTemplate}
         mentionTypeahead={text => dispatch(typeahead(text, 'post'))}
         mentionChoices={this.props.mentionChoices}

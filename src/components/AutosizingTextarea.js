@@ -15,12 +15,17 @@ export default class AutosizingTextarea extends React.Component {
   }
 
   resize () {
-    this.area.style.height = 0
-    this.area.style.height = this.area.scrollHeight + 'px'
+    this.textarea.style.height = 0
+    this.textarea.style.height = this.textarea.scrollHeight + 'px'
   }
 
   focus () {
-    this.area.focus()
+    this.textarea.focus()
+  }
+
+  setCursorLocation (pos) {
+    this.textarea.selectionStart = pos
+    this.textarea.selectionEnd = pos
   }
 
   render () {
@@ -30,7 +35,7 @@ export default class AutosizingTextarea extends React.Component {
       if (handler) return handler(event)
     }
 
-    return <textarea ref={c => this.area = c}
+    return <textarea ref={c => this.textarea = c}
       onKeyUp={wrapHandler(onKeyUp)}
       onInput={wrapHandler(onInput)}
       {...props}/>

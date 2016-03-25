@@ -24,7 +24,7 @@ export default function (state = {}, action) {
       break
     case FETCH_POSTS:
       let commentsByPost = payload.posts.reduce((acc, post) => {
-        acc[post.id] = post.comments.map(c => c.id)
+        if (post.comments) acc[post.id] = post.comments.map(c => c.id)
         return acc
       }, {})
       return {...state, ...commentsByPost}

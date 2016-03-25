@@ -47,7 +47,7 @@ export default function (state = {}, action) {
         [payload.id]: payload
       }
     case FETCH_POSTS:
-      comments = payload.posts.reduce((acc, post) => acc.concat(post.comments), [])
+      comments = payload.posts.reduce((acc, post) => acc.concat(post.comments || []), [])
       return {
         ...state,
         ...hashBy(comments, 'id')

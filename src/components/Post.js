@@ -1,5 +1,5 @@
 import React from 'react'
-import { filter, find, first, get, isEmpty, map, pick, some, without } from 'lodash'
+import { filter, find, first, get, isEmpty, map, pick, some, without, includes } from 'lodash'
 const { array, bool, func, object } = React.PropTypes
 import cx from 'classnames'
 import { humanDate, nonbreaking, present, sanitize, timeRange, timeRangeFull, appendInP } from '../util/text'
@@ -13,17 +13,14 @@ import CommentForm from './CommentForm'
 import RSVPControl from './RSVPControl'
 import PersonDropdownItem from './PersonDropdownItem'
 import { connect } from 'react-redux'
-import { prefetch } from 'react-fetcher'
 import { compose } from 'redux'
 import {
   changeEventResponse,
-  fetchComments,
   followPost,
   removePost,
   startPostEdit,
   voteOnPost
 } from '../actions'
-import { fetchPeople } from '../actions/fetchPeople'
 import { same } from '../models'
 import decode from 'ent/decode'
 
@@ -38,8 +35,7 @@ class Post extends React.Component {
     commentsLoaded: bool,
     dispatch: func,
     commentingDisabled: bool,
-    currentUser: object,
-    voters: array
+    currentUser: object
   }
 
   static contextTypes = {
@@ -68,7 +64,7 @@ class Post extends React.Component {
   }
 
   render () {
-    let { post, communities, comments, commentingDisabled, voters } = this.props
+    let { post, communities, comments, commentingDisabled } = this.props
     let community
     if (this.context.community) {
       community = this.context.community
@@ -128,19 +124,14 @@ class Post extends React.Component {
 }
 
 export default compose(
-  prefetch(({ dispatch, params: { id } }) => Promise.all([
-    dispatch(fetchComments(id)),
-    dispatch(fetchPeople({subject: 'voters', id}))
-  ])),
   connect((state, { post }) => {
-    let { comments, commentsByPost, people, peopleByQuery, communities } = state
+    let { comments, commentsByPost, people, communities } = state
     let commentIds = get(commentsByPost, post.id)
     return {
       commentsLoaded: !!commentIds,
       comments: map(commentIds, id => comments[id]),
       currentUser: get(people, 'current'),
-      communities: map(post.communities, id => find(communities, same('id', {id}))),
-      voters: map(get(peopleByQuery, `subject=voters&id=${post.id}`), id => people[id])
+      communities: map(post.communities, id => find(communities, same('id', {id})))
     }
   })
 )(Post)
@@ -244,7 +235,6 @@ class CommentSection extends React.Component {
   }
 
   toggleExpanded = () => {
-    console.log('togglin, ', !this.state.expanded)
     this.setState({expanded: !this.state.expanded})
   }
 
@@ -254,12 +244,13 @@ class CommentSection extends React.Component {
     let { expanded } = this.state
     if (!comments) comments = []
     let displayedComments = expanded ? comments : comments.slice(0, 3)
-    return <div className='comments-section post-section'>
+    return <div className={cx('comments-section', 'post-section', {'empty': isEmpty(comments)})}>
       <a name={`post-${post.id}-comments`}></a>
         {displayedComments.map(c =>
           <Comment comment={{...c, post_id: post.id}} key={c.id}/>)}
-      {comments.length > 3 && !expanded &&
-        <a className='show-all' onClick={this.toggleExpanded}>Show all</a>}
+      {comments.length > 3 && !expanded && <div className='show-all'>
+          <a onClick={this.toggleExpanded}>Show all</a>
+        </div>}
       {!commentingDisabled && <CommentForm postId={post.id}/>}
     </div>
   }
@@ -276,17 +267,19 @@ const EventRSVP = ({ postId, responders }, { currentUser, dispatch }) => {
 
 EventRSVP.contextTypes = {currentUser: object, dispatch: func}
 
-export const VoteButton = (props, { post, dispatch }) => {
-  let vote = () => dispatch(voteOnPost(post))
+export const VoteButton = ({ post, currentUser, dispatch }) => {
+  let vote = () => dispatch(voteOnPost(post, currentUser))
+  let myVote = includes(map((post || {}).voters, 'id'), (currentUser || {}).id)
   return <a className='vote-button' onClick={vote}>
-    <i className={`icon-heart-new${post.myVote ? '-selected' : ''}`}></i>
-    {post.myVote ? 'Liked' : 'Like'}
+    <i className={`icon-heart-new${myVote ? '-selected' : ''}`}></i>
+    {myVote ? 'Liked' : 'Like'}
   </a>
 }
 
-VoteButton.contextTypes = {post: object, dispatch: func}
+VoteButton.contextTypes = {post: object, currentUser: object, dispatch: func}
 
-export const Voters = ({ voters }, { post, currentUser }) => {
+export const Voters = (props, { post, currentUser }) => {
+  let { voters } = post
   if (!voters) voters = []
 
   let onlyAuthorIsVoting = voters.length === 1 && same('id', first(voters), post.user)

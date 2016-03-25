@@ -243,9 +243,12 @@ export function clearCache (bucket, id) {
 }
 
 export function fetchPost (id) {
+  let querystring = cleanAndStringify({
+    comments: true,
+    votes: true})
   return {
     type: FETCH_POST,
-    payload: {api: true, path: `/noo/post/${id}`},
+    payload: {api: true, path: `/noo/post/${id}?${querystring}`},
     meta: {cache: {id, bucket: 'posts'}}
   }
 }
@@ -487,11 +490,11 @@ export function sendCommunityInvitation (communityId, params) {
   }
 }
 
-export function voteOnPost (post) {
+export function voteOnPost (post, currentUser) {
   return {
     type: VOTE_ON_POST,
     payload: {api: true, path: `/noo/post/${post.id}/vote`, method: 'POST'},
-    meta: {id: post.id, prevProps: post}
+    meta: {id: post.id, prevProps: post, currentUser: pick(currentUser, 'id', 'name', 'avatar_url')}
   }
 }
 

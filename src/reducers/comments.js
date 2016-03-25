@@ -3,6 +3,8 @@ import { filter, some } from 'lodash'
 import {
   FETCH_ACTIVITY,
   FETCH_COMMENTS,
+  FETCH_POST,
+  FETCH_POSTS,
   CREATE_COMMENT,
   THANK_PENDING
 } from '../actions'
@@ -43,6 +45,17 @@ export default function (state = {}, action) {
       return {
         ...state,
         [payload.id]: payload
+      }
+    case FETCH_POSTS:
+      comments = payload.posts.reduce((acc, post) => acc.concat(post.comments), [])
+      return {
+        ...state,
+        ...hashBy(comments, 'id')
+      }
+    case FETCH_POST:
+      return {
+        ...state,
+        ...hashBy(payload.comments, 'id')
       }
   }
 

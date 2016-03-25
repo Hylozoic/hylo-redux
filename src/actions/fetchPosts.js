@@ -4,7 +4,15 @@ import { FETCH_POSTS, CHECK_FRESHNESS_POSTS } from './index'
 export function fetchPosts (opts) {
   let { subject, id, limit, offset, type, sort, search, filter, cacheId } = opts
   if (!offset) offset = 0
-  let querystring = cleanAndStringify({offset, limit, type, sort, search, filter})
+  let querystring = cleanAndStringify({
+    offset,
+    limit,
+    type,
+    sort,
+    search,
+    filter,
+    comments: true,
+    votes: true})
   let payload = {api: true}
 
   switch (subject) {

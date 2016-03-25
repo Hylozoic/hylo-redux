@@ -490,11 +490,11 @@ export function sendCommunityInvitation (communityId, params) {
   }
 }
 
-export function voteOnPost (post) {
+export function voteOnPost (post, currentUser) {
   return {
     type: VOTE_ON_POST,
     payload: {api: true, path: `/noo/post/${post.id}/vote`, method: 'POST'},
-    meta: {id: post.id, prevProps: post}
+    meta: {id: post.id, prevProps: post, currentUser: pick(currentUser, 'id', 'name', 'avatar_url')}
   }
 }
 

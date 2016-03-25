@@ -1,5 +1,5 @@
 import React from 'react'
-import { filter, find, first, get, isEmpty, map, pick, some, without } from 'lodash'
+import { filter, find, first, get, isEmpty, map, pick, some, without, includes } from 'lodash'
 const { array, bool, func, object } = React.PropTypes
 import cx from 'classnames'
 import { humanDate, nonbreaking, present, sanitize, timeRange, timeRangeFull, appendInP } from '../util/text'
@@ -268,15 +268,16 @@ const EventRSVP = ({ postId, responders }, { currentUser, dispatch }) => {
 
 EventRSVP.contextTypes = {currentUser: object, dispatch: func}
 
-export const VoteButton = (props, { post, dispatch }) => {
-  let vote = () => dispatch(voteOnPost(post))
+export const VoteButton = (props, { post, currentUser, dispatch }) => {
+  let vote = () => dispatch(voteOnPost(post, currentUser))
+  let myVote = includes(map(post.voters, 'id'), currentUser.id)
   return <a className='vote-button' onClick={vote}>
-    <i className={`icon-heart-new${post.myVote ? '-selected' : ''}`}></i>
-    {post.myVote ? 'Liked' : 'Like'}
+    <i className={`icon-heart-new${myVote ? '-selected' : ''}`}></i>
+    {myVote ? 'Liked' : 'Like'}
   </a>
 }
 
-VoteButton.contextTypes = {post: object, dispatch: func}
+VoteButton.contextTypes = {post: object, currentUser: object, dispatch: func}
 
 export const Voters = (props, { post, currentUser }) => {
   let { voters } = post

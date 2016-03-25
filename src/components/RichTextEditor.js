@@ -22,6 +22,7 @@ const editorConfig = {
 export default class RichTextEditor extends React.Component {
   static propTypes = {
     onChange: func,
+    onKeyUp: func,
     className: string,
     mentionTemplate: func,
     mentionSelector: string,
@@ -64,6 +65,28 @@ export default class RichTextEditor extends React.Component {
 
   editor () {
     return window.tinymce.EditorManager.editors.find(e => e.id === this.editorId)
+  }
+
+  waitForEditor (callback) {
+    let attempts = 0
+    let interval = setInterval(() => {
+      const editor = this.editor()
+      if (editor) {
+        clearInterval(interval)
+        callback(editor)
+      }
+      attempts += 1
+      if (attempts > 10) {
+        console.error("couldn't get editor after 10 tries")
+        clearInterval(interval)
+      }
+    }, 50)
+  }
+
+  componentDidMount () {
+    this.waitForEditor(editor => {
+      if (this.props.onKeyUp) editor.on('keyup', this.props.onKeyUp)
+    })
   }
 
   render () {

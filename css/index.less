@@ -390,7 +390,7 @@ ul.posts {
 
   p.title {
     .post-title-text;
-    margin-bottom: 0;
+    padding-left: @post-content-left-margin;
   }
 
   .details {
@@ -469,10 +469,6 @@ ul.posts {
   }
 
   &.expanded {
-    p.title {
-      margin-bottom: @p-bottom-margin;
-    }
-
     .event-time {
       margin-top: 0;
       margin-bottom: @p-bottom-margin;
@@ -842,6 +838,8 @@ ul.tags {
     border: none;
     padding: 0;
     outline: none;
+    min-height: 31px;
+    overflow-x: hidden;
   }
 
   .details {

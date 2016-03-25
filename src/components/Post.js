@@ -106,7 +106,7 @@ class Post extends React.Component {
             </div>}
       </div>
 
-      <div className='post-section'><p className='title'>{title}</p></div>
+      <p className='title'>{title}</p>
 
       {isEvent && <p title={eventTimeFull} className='post-section event-time'>
         <i className='glyphicon glyphicon-time'></i>
@@ -118,8 +118,7 @@ class Post extends React.Component {
         {post.location}
       </p>}
 
-      <PostDetails
-        {...{comments, communities, commentingDisabled}}/>
+      <PostDetails {...{comments, communities, commentingDisabled}}/>
     </div>
   }
 }

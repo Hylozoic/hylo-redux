@@ -122,8 +122,7 @@ class Post extends React.Component {
         {post.location}
       </p>}
 
-      <PostDetails
-        {...{comments, communities, commentingDisabled, voters}}/>
+      <PostDetails {...{comments, communities, commentingDisabled, voters}}/>
     </div>
   }
 }

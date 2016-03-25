@@ -8,12 +8,13 @@ because they make more sense.
 
 import React from 'react'
 import cx from 'classnames'
-import { filter, find, get, includes, isEmpty, startsWith } from 'lodash'
+import { debounce, filter, find, get, includes, isEmpty, startsWith } from 'lodash'
 import CommunityTagInput from './CommunityTagInput'
 import Dropdown from './Dropdown'
 import ImageAttachmentButton from './ImageAttachmentButton'
 import RichTextEditor from './RichTextEditor'
 import { NonLinkAvatar } from './Avatar'
+import AutosizingTextarea from './AutosizingTextarea'
 import { connect } from 'react-redux'
 import {
   typeahead, updatePostEditor, createPost, updatePost, cancelPostEdit,
@@ -85,17 +86,17 @@ export class PostEditor extends React.Component {
 
   constructor (props) {
     super(props)
-    this.state = {}
+    this.state = {name: this.props.postEdit.name}
   }
 
   componentDidMount () {
     // initialize the communities list when opening the editor in a community
     let { community, postEdit: { communities } } = this.props
     if (community && isEmpty(communities)) this.addCommunity(community)
-    this.refs.name.focus()
+    this.refs.title.focus()
   }
 
-  updateStore (data) {
+  updateStore = (data) => {
     let { id, dispatch } = this.props
     dispatch(updatePostEditor(data, id))
   }
@@ -118,15 +119,12 @@ export class PostEditor extends React.Component {
     this.updateStore({communities: filter(communities, cid => cid !== community.id)})
   }
 
-  togglePublic = () =>
-    this.updateStore({public: !this.props.postEdit.public})
-
   validate () {
     let { postEdit, project } = this.props
 
     if (!postEdit.name) {
       window.alert('The title of a post cannot be blank.')
-      this.refs.name.focus()
+      this.refs.title.focus()
       return
     }
 
@@ -179,41 +177,72 @@ export class PostEditor extends React.Component {
     })
   }
 
-  goToDetails = event => {
-    if (event.which === 13) {
-      this.setState({showDetails: true})
-      this.refs.details.editor().focus()
-    }
+  updateTitle (event) {
+    const maxlength = 120
+    const { value } = event.target
+    const { length } = value
+    if (length > maxlength || value.indexOf('\n') !== -1) {
+      let splitIndex = length > maxlength
+        ? value.lastIndexOf(' ', maxlength - 1)
+        : value.indexOf('\n')
 
-    // TODO also jump to details if the length of the title exceeds a threshold;
-    // truncate the title at its last space and prepend the truncated portion to
-    // the details
+      const name = value.slice(0, splitIndex)
+      const excess = value.slice(splitIndex + 1).trim()
+
+      this.setState({name, showDetails: true})
+      this.updateStore({name})
+      setTimeout(() => this.refs.title.resize())
+
+      const editor = this.refs.details.editor()
+      if (excess) {
+        editor.selection.setCursorLocation(null, 0)
+        editor.insertContent(excess)
+      }
+      editor.focus()
+    } else {
+      this.setState({name: value})
+      if (!this.delayedUpdate) {
+        this.delayedUpdate = debounce(this.updateStore, 300)
+      }
+      this.delayedUpdate({name: value})
+    }
+  }
+
+  handleDetailsKeyUp = ({ which }) => {
+    if (which === 8 || which === 46) {
+      const value = this.refs.details.editor().getContent()
+      if (!value) {
+        this.setState({showDetails: false})
+        this.refs.title.focus()
+      }
+    }
   }
 
   render () {
     let { post, postEdit, dispatch, project, currentUser } = this.props
-    let { name, description, communities, type } = postEdit
-    let { showDetails } = this.state
+    let { description, communities, type } = postEdit
+    let { name, showDetails } = this.state
 
     if (!type) type = 'chat'
     const typeLabel = `#${type === 'chat' ? 'all-topics' : type}`
     const selectType = type => this.updateStore({type})
+    const togglePublic = () => this.updateStore({public: !postEdit.public})
 
     return <div className='post-editor clearfix'>
       <PostEditorHeader person={currentUser}/>
 
       <div className='title-wrapper'>
-        <input type='text' ref='name' className='title' value={name}
+        <AutosizingTextarea type='text' ref='title' className='title' value={name}
           placeholder='Start a conversation'
           onFocus={this.expand}
-          onChange={this.set('name')}
-          onKeyUp={this.goToDetails}/>
+          onChange={event => this.updateTitle(event)}/>
       </div>
 
       <RichTextEditor className={cx('details', {empty: !description && !showDetails})}
         ref='details'
         content={description}
         onChange={this.set('description')}
+        onKeyUp={this.handleDetailsKeyUp}
         mentionTemplate={personTemplate}
         mentionTypeahead={text => dispatch(typeahead(text, 'post'))}
         mentionChoices={this.props.mentionChoices}
@@ -233,7 +262,7 @@ export class PostEditor extends React.Component {
       {!project && <div className='communities'>
         in&nbsp;
         <CommunitySelector currentUser={currentUser}
-          communities={communities}
+          communities={communities || []}
           onSelect={this.addCommunity}
           onRemove={this.removeCommunity}/>
       </div>}
@@ -241,7 +270,7 @@ export class PostEditor extends React.Component {
       <div className='buttons'>
         <div className='right'>
           <label className='visibility'>
-            <input type='checkbox' value={postEdit.public} onChange={this.togglePublic}/>
+            <input type='checkbox' value={postEdit.public} onChange={togglePublic}/>
             &nbsp;
             Public
           </label>

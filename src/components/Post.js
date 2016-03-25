@@ -268,9 +268,9 @@ const EventRSVP = ({ postId, responders }, { currentUser, dispatch }) => {
 
 EventRSVP.contextTypes = {currentUser: object, dispatch: func}
 
-export const VoteButton = ({ post, currentUser, dispatch }) => {
+export const VoteButton = (props, { post, currentUser, dispatch }) => {
   let vote = () => dispatch(voteOnPost(post, currentUser))
-  let myVote = includes(map((post || {}).voters, 'id'), (currentUser || {}).id)
+  let myVote = includes(map(post.voters, 'id'), (currentUser || {}).id)
   return <a className='vote-button' onClick={vote}>
     <i className={`icon-heart-new${myVote ? '-selected' : ''}`}></i>
     {myVote ? 'Liked' : 'Like'}

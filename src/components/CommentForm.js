@@ -2,30 +2,60 @@ import React from 'react'
 import { get } from 'lodash'
 import { connect } from 'react-redux'
 import Avatar from './Avatar'
-import { createComment } from '../actions'
+import RichTextEditor from './RichTextEditor'
+import { createComment, typeahead } from '../actions'
 import { ADDED_COMMENT, trackEvent } from '../util/analytics'
-var { func, string, object } = React.PropTypes
+import { personTemplate } from '../util/mentions'
+var { array, func, object, string } = React.PropTypes
 
-@connect(state => ({currentUser: get(state, 'people.current')}))
+@connect(state => ({
+  currentUser: get(state, 'people.current'),
+  mentionChoices: state.typeaheadMatches.comment
+}))
 export default class CommentForm extends React.Component {
   static propTypes = {
     currentUser: object,
     dispatch: func,
-    postId: string
+    postId: string,
+    mentionChoices: array
+  }
+
+  constructor (props) {
+    super(props)
+    this.state = {}
   }
 
   submit = event => {
     let { dispatch, postId } = this.props
     event.preventDefault()
-    dispatch(createComment(postId, this.refs.editor.value))
+    dispatch(createComment(postId, this.state.text))
     trackEvent(ADDED_COMMENT, {post: {id: postId}})
-    this.refs.editor.value = ''
+    this.refs.editor.setContent('')
+    this.setState({text: ''})
   }
 
   render () {
-    let { currentUser } = this.props
+    const { currentUser, dispatch, mentionChoices } = this.props
+    const { editing } = this.state
+    const edit = () => this.setState({editing: true})
+    const setText = event => this.setState({text: event.target.value})
+
     return <form onSubmit={this.submit} className='comment-form'>
-      <Avatar person={currentUser}/><input type='text' ref='editor' placeholder='Add your comment'/>
+      <Avatar person={currentUser}/>
+      {editing
+        ? <div className='content'>
+            <RichTextEditor ref='editor'
+              onChange={setText}
+              mentionTemplate={personTemplate}
+              mentionTypeahead={text => dispatch(typeahead(text, 'comment'))}
+              mentionChoices={mentionChoices}
+              mentionSelector='[data-user-id]'
+              startFocused={true}/>
+            <input type='submit' value='Comment'/>
+          </div>
+        : <div className='content placeholder' onClick={edit}>
+            Add a comment...
+          </div>}
     </form>
   }
 }

@@ -5,7 +5,7 @@ import Mention from './Mention'
 import uuid from 'react-tinymce/lib/helpers/uuid'
 import { assetUrl } from '../util/assets'
 import { merge } from 'lodash'
-const { array, func, string } = React.PropTypes
+const { array, bool, func, string } = React.PropTypes
 
 const editorConfig = {
   menubar: false,
@@ -21,14 +21,15 @@ const editorConfig = {
 
 export default class RichTextEditor extends React.Component {
   static propTypes = {
-    onChange: func,
+    onChange: func.isRequired,
     onKeyUp: func,
     className: string,
     mentionTemplate: func,
     mentionSelector: string,
     mentionChoices: array,
     mentionTypeahead: func,
-    content: string
+    content: string,
+    startFocused: bool
   }
 
   constructor (props) {
@@ -76,16 +77,18 @@ export default class RichTextEditor extends React.Component {
         callback(editor)
       }
       attempts += 1
-      if (attempts > 10) {
-        console.error("couldn't get editor after 10 tries")
+      if (attempts > 100) {
+        console.error("couldn't get editor after 100 tries")
         clearInterval(interval)
       }
-    }, 50)
+    }, 30)
   }
 
   componentDidMount () {
+    const { onKeyUp, startFocused } = this.props
     this.waitForEditor(editor => {
-      if (this.props.onKeyUp) editor.on('keyup', this.props.onKeyUp)
+      if (onKeyUp) editor.on('keyup', onKeyUp)
+      if (startFocused) editor.focus()
     })
   }
 

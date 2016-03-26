@@ -279,42 +279,17 @@ ul.tabs {
 }
 
 .comment-form {
-  padding-left: @post-content-left-margin;
   .has-left-side-avatar;
+  .clearfix;
   margin-top: 15px;
   margin-bottom: 0;
-  .clearfix;
-
   border-top: 1px solid #e8e8e8;
   padding-top: 10px;
+  padding-left: @post-content-left-margin;
 
-  .rich-text-editor {
-    iframe {
-      height: 12vh;
-    }
-    margin-bottom: @p-bottom-margin;
-  }
-
-  input[type='text'] {
-    border: none;
-    width: 75%;
-    margin-top: 8px;
-    margin-left: 15px;
-    &:focus {
-      outline-width: 0;
-    }
-    &::-webkit-input-placeholder {
-      font-style: italic;
-    }
-    &:-moz-placeholder {
-      font-style: italic;
-    }
-    &::-moz-placeholder {
-      font-style: italic;
-    }
-    &:-ms-input-placeholder {
-      font-style: italic;
-    }
+  .placeholder {
+    font-style: italic;
+    color: @placeholder-color;
   }
 
   input[type='submit'] {

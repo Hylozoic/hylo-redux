@@ -57,12 +57,6 @@ class Post extends React.Component {
     return pick(this.props, 'currentUser', 'dispatch', 'post')
   }
 
-  componentDidMount () {
-    // TODO this is a hack because prefetch isn't doing what I want yet
-    // let { dispatch, post: {id} } = this.props
-    // dispatch(fetchComments(id))
-  }
-
   render () {
     let { post, communities, comments, commentingDisabled } = this.props
     let community
@@ -186,7 +180,7 @@ const PostMenu = (props, { dispatch, post, currentUser }) => {
     </li>
   </Dropdown>
 }
-PostMenu.contextTypes = {dispatch: func, post: object, currentUser: object}
+PostMenu.contextTypes = Post.childContextTypes
 
 const PostDetails = (props, { post, currentUser, dispatch }) => {
   const { comments, commentingDisabled, voters } = props
@@ -270,7 +264,7 @@ export const VoteButton = (props, { post, currentUser, dispatch }) => {
     {myVote ? 'Liked' : 'Like'}
   </a>
 }
-VoteButton.contextTypes = {post: object, currentUser: object, dispatch: func}
+VoteButton.contextTypes = Post.childContextTypes
 
 export const Voters = (props, { post, currentUser }) => {
   let { voters } = post

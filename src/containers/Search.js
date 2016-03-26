@@ -114,8 +114,7 @@ const Results = ({ results, dispatch, onTagClick, loadMore }) => {
 }
 
 const PostResult = ({ post, dispatch }) => {
-  post.communities = []
-  return <Post post={post} onExpand={() => dispatch(navigate(`/p/${post.id}`))}/>
+  return <Post post={post}/>
 }
 
 const PersonResult = ({ person, onTagClick }) => {
@@ -157,6 +156,6 @@ const CommentResult = ({ comment, dispatch }) => {
           : `"${post.name}"`}
       </A>
     </strong>
-    <Comment comment={comment} truncate={500} expand={visit}/>
+    <Comment comment={comment} truncate={400} expand={visit}/>
   </div>
 }

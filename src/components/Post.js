@@ -29,7 +29,6 @@ const spacer = <span>&nbsp; •&nbsp; </span>
 class Post extends React.Component {
   static propTypes = {
     post: object,
-    onExpand: func,
     communities: array,
     comments: array,
     commentsLoaded: bool,
@@ -101,15 +100,21 @@ class Post extends React.Component {
   }
 }
 
+export const UndecoratedPost = Post // for testing
+
 export default compose(
   connect((state, { post }) => {
-    let { comments, commentsByPost, people, communities } = state
-    let commentIds = get(commentsByPost, post.id)
+    const { comments, commentsByPost, people } = state
+    const commentIds = get(commentsByPost, post.id)
+    const communities = get(post.communities, '0.id')
+      ? post.communities
+      : map(post.communities, id => find(state.communities, same('id', {id})))
+
     return {
       commentsLoaded: !!commentIds,
       comments: map(commentIds, id => comments[id]),
       currentUser: get(people, 'current'),
-      communities: map(post.communities, id => find(communities, same('id', {id})))
+      communities
     }
   })
 )(Post)
@@ -134,8 +139,6 @@ const Location = (props, { post }) => {
   </p>
 }
 Location.contextTypes = {post: object}
-
-export const UndecoratedPost = Post // for testing
 
 const WelcomePostHeader = ({ communities }, { post }) => {
   let person = post.relatedUsers[0]

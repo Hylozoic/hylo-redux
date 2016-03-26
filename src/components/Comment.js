@@ -4,11 +4,12 @@ import A from './A'
 import {humanDate, sanitize, present} from '../util/text'
 import { commentUrl } from '../routes'
 import { thank } from '../actions'
+import truncateHtml from 'html-truncate'
 var { func, object } = React.PropTypes
 
 const spacer = <span>&nbsp;&nbsp;•&nbsp;&nbsp;</span>
 
-const Comment = ({ comment, expand }, { dispatch, currentUser }) => {
+const Comment = ({ comment, truncate, expand }, { dispatch, currentUser }) => {
   let person = comment.user
   let text = present(sanitize(comment.text))
   let { isThanked } = comment
@@ -18,7 +19,11 @@ const Comment = ({ comment, expand }, { dispatch, currentUser }) => {
     <Avatar person={person}/>
     <div className='content'>
       <strong className='name'>{person.name}</strong>
-      <span className='text' dangerouslySetInnerHTML={{__html: text}} />
+      {truncate
+        ? <span className='text'
+            dangerouslySetInnerHTML={{__html: truncateHtml(text, truncate)}}
+            onClick={expand}/>
+        : <span className='text' dangerouslySetInnerHTML={{__html: text}}/>}
       <div>
         {currentUser && <span>
           {currentUser.id !== person.id &&

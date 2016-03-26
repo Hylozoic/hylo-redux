@@ -131,6 +131,7 @@ const EventSection = (props, { post }) => {
     {eventTime}
   </p>
 }
+EventSection.contextTypes = {post: object}
 
 const Location = (props, { post }) => {
   return <p title='location' className='post-section post-location'>
@@ -138,6 +139,7 @@ const Location = (props, { post }) => {
     {post.location}
   </p>
 }
+Location.contextTypes = {post: object}
 
 export const UndecoratedPost = Post // for testing
 
@@ -160,7 +162,6 @@ const WelcomePostHeader = ({ communities }, { post }) => {
         </span>}
   </div>
 }
-
 WelcomePostHeader.contextTypes = {post: object}
 
 const PostMenu = (props, { dispatch, post, currentUser }) => {
@@ -185,7 +186,6 @@ const PostMenu = (props, { dispatch, post, currentUser }) => {
     </li>
   </Dropdown>
 }
-
 PostMenu.contextTypes = {dispatch: func, post: object, currentUser: object}
 
 const PostDetails = (props, { post, currentUser, dispatch }) => {
@@ -215,7 +215,6 @@ const PostDetails = (props, { post, currentUser, dispatch }) => {
     <CommentSection {...{post, comments, commentingDisabled}}/>
   </div>
 }
-
 PostDetails.contextTypes = Post.childContextTypes
 
 class CommentSection extends React.Component {
@@ -261,7 +260,6 @@ const EventRSVP = ({ postId, responders }, { currentUser, dispatch }) => {
 
   return <RSVPControl {...{responders, currentResponse, onPickResponse}}/>
 }
-
 EventRSVP.contextTypes = {currentUser: object, dispatch: func}
 
 export const VoteButton = (props, { post, currentUser, dispatch }) => {
@@ -272,7 +270,6 @@ export const VoteButton = (props, { post, currentUser, dispatch }) => {
     {myVote ? 'Liked' : 'Like'}
   </a>
 }
-
 VoteButton.contextTypes = {post: object, currentUser: object, dispatch: func}
 
 export const Voters = (props, { post, currentUser }) => {
@@ -316,5 +313,4 @@ export const Voters = (props, { post, currentUser }) => {
     return <span />
   }
 }
-
 Voters.contextTypes = {post: object, currentUser: object}

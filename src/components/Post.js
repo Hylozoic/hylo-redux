@@ -82,14 +82,6 @@ class Post extends React.Component {
       ? post.relatedUsers[0]
       : post.user
 
-    let isEvent = post.type === 'event'
-    if (isEvent) {
-      let start = new Date(post.start_time)
-      let end = post.end_time && new Date(post.end_time)
-      var eventTime = timeRange(start, end)
-      var eventTimeFull = timeRangeFull(start, end)
-    }
-
     return <div className={classes} onClick={this.expand}>
       <div className='header'>
         <PostMenu/>
@@ -107,17 +99,9 @@ class Post extends React.Component {
       </div>
 
       <p className='title'>{title}</p>
-
-      {isEvent && <p title={eventTimeFull} className='post-section event-time'>
-        <i className='glyphicon glyphicon-time'></i>
-        {eventTime}
-      </p>}
-
-      {post.location && <p title='location' className='post-section post-location'>
-        <i className='glyphicon glyphicon-map-marker'></i>
-        {post.location}
-      </p>}
-
+      {post.type === 'event' && <EventSection/>}
+      {post.location && <Location/>}
+      {image && <img src={image.url} className='post-section full-image'/>}
       <PostDetails {...{comments, communities, commentingDisabled}}/>
     </div>
   }
@@ -135,6 +119,25 @@ export default compose(
     }
   })
 )(Post)
+
+const EventSection = (props, { post }) => {
+  const start = new Date(post.start_time)
+  const end = post.end_time && new Date(post.end_time)
+  const eventTime = timeRange(start, end)
+  const eventTimeFull = timeRangeFull(start, end)
+
+  return <p title={eventTimeFull} className='post-section event-time'>
+    <i className='glyphicon glyphicon-time'></i>
+    {eventTime}
+  </p>
+}
+
+const Location = (props, { post }) => {
+  return <p title='location' className='post-section post-location'>
+    <i className='glyphicon glyphicon-map-marker'></i>
+    {post.location}
+  </p>
+}
 
 export const UndecoratedPost = Post // for testing
 
@@ -187,7 +190,6 @@ PostMenu.contextTypes = {dispatch: func, post: object, currentUser: object}
 
 const PostDetails = (props, { post, currentUser, dispatch }) => {
   const { comments, commentingDisabled, voters } = props
-  const image = find(post.media, m => m.type === 'image')
   const typeLabel = `#${post.type === 'chat' ? 'all-topics' : post.type}`
   const description = present(appendInP(
     sanitize(post.description), ` <a class='hashtag'>${typeLabel}</a>`))
@@ -196,10 +198,6 @@ const PostDetails = (props, { post, currentUser, dispatch }) => {
   return <div className='post-details'>
     {description && <ClickCatchingDiv className='details post-section'
       dangerouslySetInnerHTML={{__html: description}}/>}
-
-    {image && <div className='post-section'>
-       <img src={image.url} className='full-image'/>
-     </div>}
 
     {post.type === 'event' && <EventRSVP postId={post.id} responders={post.responders}/>}
     <div className='voting post-section'>
@@ -214,8 +212,7 @@ const PostDetails = (props, { post, currentUser, dispatch }) => {
         </a>)}
     </div>}
 
-    <CommentSection
-      {...{post, comments, commentingDisabled}}/>
+    <CommentSection {...{post, comments, commentingDisabled}}/>
   </div>
 }
 

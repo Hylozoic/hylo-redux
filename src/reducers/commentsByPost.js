@@ -29,6 +29,7 @@ export default function (state = {}, action) {
       }, {})
       return {...state, ...commentsByPost}
     case FETCH_POST:
+      if (!payload.comments) return state
       return {...state, [payload.id]: payload.comments.map(c => c.id)}
     case CREATE_COMMENT:
       let existing = state[meta.id] || []

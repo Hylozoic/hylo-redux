@@ -50,7 +50,7 @@ describe('Post', () => {
       <Post post={post} expanded={true}/>
     </Provider>
     let node = renderIntoDocument(component)
-    findRenderedDOMComponentWithClass(node, 'post offer expanded')
+    findRenderedDOMComponentWithClass(node, 'post offer')
     let details = findRenderedDOMComponentWithClass(node, 'details')
     expect(details.innerHTML).to.equal(`<p>${post.description} <a class="hashtag">#offer</a></p>`)
   })

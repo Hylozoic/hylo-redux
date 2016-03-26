@@ -377,21 +377,10 @@ ul.posts {
   background-color: @card-background;
   .shared-post-style;
 
-  .image {
-    background-size: cover;
-    background-position: center top;
-    width: 200px;
-    height: 122.6px;
-    margin-top: @p-bottom-margin;
-
-    @media (max-width: @screen-xs-max) {
-      width: 100%;
-    }
-  }
-
   .post-section {
     padding-left: @post-content-left-margin;
     padding-right: @post-content-right-margin;
+    margin-bottom: @p-bottom-margin;
   }
 
   .vote {
@@ -430,9 +419,7 @@ ul.posts {
 
   &.welcome {
     padding: 0 15px;
-    &, &.expanded {
-      border: 1px solid transparent;
-    }
+    border: 1px solid transparent;
     > div > .avatar {
       float: left;
       margin-right: 10px;
@@ -495,100 +482,87 @@ ul.posts {
     display: inline;
   }
 
-  &.expanded {
-    .event-time {
-      margin-top: 0;
-      margin-bottom: @p-bottom-margin;
-    }
+  .event-time {
+    margin-top: 0;
+    margin-bottom: @p-bottom-margin;
+  }
 
-    .post-location {
-      margin-top: 0;
-      margin-bottom: @p-bottom-margin;
-    }
+  .post-location {
+    margin-top: 0;
+    margin-bottom: @p-bottom-margin;
+  }
 
-    .image {
-      display: none;
-    }
+  .full-image {
+    width: 100%;
+  }
 
-    .full-image {
-      width: 100%;
-    }
+  .rsvp-controls {
+    padding-top: @p-bottom-margin;
+    padding-bottom: @p-bottom-margin;
+    border-top: 1px solid #ddd;
+    border-bottom: 1px solid #ddd;
 
-    .rsvp-controls {
-      padding-top: @p-bottom-margin;
-      padding-bottom: @p-bottom-margin;
-      border-top: 1px solid #ddd;
-      border-bottom: 1px solid #ddd;
+    .buttons {
+      margin-bottom: 10px;
 
-      .buttons {
-        margin-bottom: 10px;
+      button {
+        margin-right: 0px;
 
-        button {
-          margin-right: 0px;
-
-          &.rsvp-yes {
-            width: 100px;
-          }
-          &.rsvp-maybe {
-            width: 103px;
-          }
-          &.rsvp-no {
-            width: 115px;
-          }
+        &.rsvp-yes {
+          width: 100px;
         }
-      }
-
-      a.dropdown-toggle {
-        color: @dark-blue;
-      }
-
-      .responses-dropdown {
-
-        ul.dropdown-menu {
-          padding-top: 0px;
-          margin-top: 0px;
+        &.rsvp-maybe {
+          width: 103px;
         }
-
-        li {
-          padding: 0px 15px;
-        }
-
-        li.header {
-          padding: 5px 15px;
-          border-top: 1px solid #d9d9d9;
-          border-bottom: 1px solid #d9d9d9;
-        }
-
-        span.header {
-          font-size: 18px;
-          text-align: center;
-          margin-bottom: 0px;
-          display: block;
-          width: 100%;
-        }
-
-        a.person {
-          margin-left: 6px;
-          position: relative;
-          top: 50%;
-          transform: translateY(-60%);
-          display: inline-block;
-        }
-
-        span.person {
-          height: 100%;
-        }
-
-        .avatar {
-          display: inline-block;
+        &.rsvp-no {
+          width: 115px;
         }
       }
     }
 
-    .post-section {
-      margin-bottom: @p-bottom-margin;
-      .title {
-        padding-right: @post-text-right-margin;
+    a.dropdown-toggle {
+      color: @dark-blue;
+    }
+
+    .responses-dropdown {
+
+      ul.dropdown-menu {
+        padding-top: 0px;
+        margin-top: 0px;
+      }
+
+      li {
+        padding: 0px 15px;
+      }
+
+      li.header {
+        padding: 5px 15px;
+        border-top: 1px solid #d9d9d9;
+        border-bottom: 1px solid #d9d9d9;
+      }
+
+      span.header {
+        font-size: 18px;
+        text-align: center;
+        margin-bottom: 0px;
+        display: block;
+        width: 100%;
+      }
+
+      a.person {
+        margin-left: 6px;
+        position: relative;
+        top: 50%;
+        transform: translateY(-60%);
+        display: inline-block;
+      }
+
+      span.person {
+        height: 100%;
+      }
+
+      .avatar {
+        display: inline-block;
       }
     }
   }

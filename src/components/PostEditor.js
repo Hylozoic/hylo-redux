@@ -8,10 +8,9 @@ because they make more sense.
 
 import React from 'react'
 import cx from 'classnames'
-import { debounce, filter, find, get, includes, isEmpty, startsWith } from 'lodash'
+import { debounce, filter, find, get, includes, isEmpty, some, startsWith } from 'lodash'
 import CommunityTagInput from './CommunityTagInput'
 import Dropdown from './Dropdown'
-import ImageAttachmentButton from './ImageAttachmentButton'
 import RichTextEditor from './RichTextEditor'
 import { NonLinkAvatar } from './Avatar'
 import AutosizingTextarea from './AutosizingTextarea'
@@ -23,7 +22,6 @@ import {
 import { uploadImage } from '../actions/uploadImage'
 import { uploadDoc } from '../actions/uploadDoc'
 import { attachmentParams } from '../util/shims'
-import truncate from 'html-truncate'
 import { CREATE_POST, UPDATE_POST, UPLOAD_IMAGE } from '../actions'
 import { personTemplate } from '../util/mentions'
 import { ADDED_POST, EDITED_POST, trackEvent } from '../util/analytics'
@@ -54,7 +52,8 @@ const prependText = (editor, text, skip_focus) => {
     project,
     mentionChoices: state.typeaheadMatches.post,
     currentUser: state.people.current,
-    saving: state.pending[CREATE_POST] || state.pending[UPDATE_POST]
+    saving: state.pending[CREATE_POST] || state.pending[UPDATE_POST],
+    imagePending: state.pending[UPLOAD_IMAGE]
   }
 }, null, null, {withRef: true})
 export class PostEditor extends React.Component {
@@ -68,7 +67,8 @@ export class PostEditor extends React.Component {
     community: object,
     saving: bool,
     project: object,
-    onCancel: func
+    onCancel: func,
+    imagePending: bool
   }
 
   constructor (props) {
@@ -234,7 +234,7 @@ export class PostEditor extends React.Component {
   }
 
   render () {
-    let { post, postEdit, dispatch, project, currentUser } = this.props
+    let { post, postEdit, dispatch, project, currentUser, imagePending } = this.props
     let { description, communities, type } = postEdit
     let { name, showDetails } = this.state
 
@@ -285,23 +285,72 @@ export class PostEditor extends React.Component {
 
       <div className='buttons'>
         <div className='right'>
-          <label className='visibility'>
-            <input type='checkbox' value={postEdit.public} onChange={togglePublic}/>
-            &nbsp;
-            Public
-          </label>
           <button onClick={this.cancel}>Cancel</button>
-          <AttachmentButtons id={this.props.id} media={postEdit.media}
-            path={`user/${currentUser.id}/seeds`}/>
         </div>
+
         <button className='save' onClick={this.save}
           disabled={this.props.saving} ref='save'>
           {post ? 'Save Changes' : 'Post'}
         </button>
-        <span className='glyphicon glyphicon-camera'></span>
+        <AttachmentsDropdown id={this.props.id}
+          media={postEdit.media}
+          path={`user/${currentUser.id}/seeds`}
+          imagePending={imagePending}
+          dispatch={dispatch}/>
+        <label className='visibility'>
+          <input type='checkbox' value={postEdit.public} onChange={togglePublic}/>
+          &nbsp;
+          Public
+        </label>
       </div>
     </div>
   }
+}
+
+const AttachmentsDropdown = props => {
+  const { id, imagePending, media, dispatch, path } = props
+  const image = find(media, m => m.type === 'image')
+  const docs = filter(media, m => m.type === 'gdoc')
+  const length = (image ? 1 : 0) + docs.length
+
+  const attachDoc = () => dispatch(uploadDoc(id))
+  const attachImage = () => {
+    dispatch(uploadImage({
+      id, path, subject: 'post',
+      convert: {width: 800, format: 'jpg', fit: 'max', rotate: 'exif'}
+    }))
+  }
+
+  return <Dropdown className='attachments' toggleChildren={
+    <span>
+      <span className='glyphicon glyphicon-camera'></span>
+      {imagePending
+        ? ' Uploading...'
+        : length > 0 && ` (${length})`}
+    </span>
+  }>
+    <li>
+      <a onClick={attachImage}>
+        {image ? 'Change' : 'Attach'} Image
+      </a>
+    </li>
+    <li><a onClick={attachDoc}>Attach File with Google Drive</a></li>
+    {(image || some(docs)) && <li role='separator' className='divider'></li>}
+    {image && <li className='image'>
+      <a className='remove' onClick={() => dispatch(removeImage('post', id))}>
+        &times;
+      </a>
+      <img src={image.url}/>
+    </li>}
+    {image && some(docs) && <li role='separator' className='divider'></li>}
+    {docs.map(doc => <li key={doc.url} className='doc'>
+      <a target='_blank' href={doc.url}>
+        <img src={doc.thumbnail_url}/>
+        {doc.name}
+      </a>
+      <a className='remove' onClick={() => dispatch(removeDoc(doc, id))}>&times;</a>
+    </li>)}
+  </Dropdown>
 }
 
 class CommunitySelector extends React.Component {
@@ -340,57 +389,6 @@ class CommunitySelector extends React.Component {
       onSelect={onSelect}
       onRemove={onRemove}/>
   }
-}
-
-const AttachmentButtons = connect(state => ({
-  imagePending: state.pending[UPLOAD_IMAGE]
-}))(props => {
-  let { id, imagePending, media, dispatch, path } = props
-  let image = find(media, m => m.type === 'image')
-  let docs = filter(media, m => m.type === 'gdoc')
-
-  let attachImage = () => {
-    dispatch(uploadImage({
-      id, path, subject: 'post',
-      convert: {width: 800, format: 'jpg', fit: 'max', rotate: 'exif'}
-    }))
-  }
-
-  let removeImage = () => dispatch(removeImage('post', id))
-  let attachDoc = () => dispatch(uploadDoc(id))
-
-  return <div>
-    <ImageAttachmentButton pending={imagePending} image={image}
-      add={attachImage} remove={removeImage}/>
-
-    {!isEmpty(docs)
-      ? <Dropdown className='button change-docs' toggleChildren={
-          <span>
-            Attachments ({docs.length}) <span className='caret'></span>
-          </span>
-        }>
-          {docs.map(doc => <li key={doc.url}>
-            <a target='_blank' href={doc.url}>
-              <img src={doc.thumbnail_url}/>
-              {truncate(doc.name, 40)}
-            </a>
-            <a className='remove' onClick={() => dispatch(removeDoc(doc, id))}>&times;</a>
-          </li>)}
-          <li role='separator' className='divider'></li>
-          <li><a onClick={attachDoc}>Attach Another</a></li>
-        </Dropdown>
-      : <button onClick={attachDoc}>
-          Attach File with Google Drive
-        </button>}
-  </div>
-})
-
-AttachmentButtons.propTypes = {
-  imagePending: bool,
-  dispatch: func,
-  id: string,
-  media: array,
-  path: string
 }
 
 const PostEditorHeader = ({ person }) =>

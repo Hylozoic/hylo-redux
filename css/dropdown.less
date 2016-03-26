@@ -13,29 +13,30 @@
     > a {
       cursor: pointer;
 
-      &.remove {
-        float: right;
-        position: absolute;
-        top: 1px;
-        right: -4px;
-        font-size: 18px;
-        padding: 0 4px;
-        line-height: 26px;
-        height: 26px;
-        width: 19px;
-        &:hover {
-          font-weight: bold;
-          color: red;
-          background-color: transparent;
-        }
-      }
-
       img {
         margin-right: 5px;
       }
 
       > * {
         vertical-align: middle;
+      }
+    }
+
+    a.remove {
+      float: right;
+      position: absolute;
+      top: 1px;
+      right: -4px;
+      font-size: 20px;
+      padding: 0;
+      line-height: 26px;
+      height: 26px;
+      width: 26px;
+      text-align: center;
+      &:hover {
+        font-weight: bold;
+        color: red;
+        background-color: transparent;
       }
     }
 

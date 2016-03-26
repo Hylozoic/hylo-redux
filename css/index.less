@@ -864,10 +864,6 @@ ul.tags {
     }
   }
 
-  .visibility {
-    margin-top: @p-bottom-margin;
-  }
-
   input.location {
     margin-bottom: -5px;
   }
@@ -948,28 +944,72 @@ ul.tags {
     padding-left: @post-content-left-margin;
     padding-top: 15px;
     border-top: 1px solid @post-border;
+    line-height: 40px;
+    > *, span {
+      vertical-align: middle;
+    }
 
     div {
       display: inline-block;
     }
 
-    .save {
+    label {
+      margin-bottom: 0;
+      display: inline;
+    }
+
+    .right {
+      margin-right: 15px;
+    }
+
+    button {
       height: 40px;
-      line-height: 40px;
       border-radius: 40px;
-      color: #fff;
-      background-color: @damian-green;
+      line-height: 40px;
       text-align: center;
       padding: 0 32px;
+    }
+
+    .save {
+      color: #fff;
+      background-color: @damian-green;
+      border-color: @damian-green;
       margin-right: 10px;
     }
   }
 
   .glyphicon-camera {
     color: #bababa;
-    line-height: 40px;
     font-size: 18px;
-    vertical-align: middle;
+    position: relative;
+    top: -2px;
+  }
+
+  .attachments {
+    margin-right: 10px;
+    .dropdown-menu {
+      max-width: 300px;
+    }
+    .image {
+      position: relative;
+      img {
+        width: 100%;
+      }
+      .remove {
+        background-color: white;
+        height: 21px;
+        width: 21px;
+        line-height: 22px;
+        right: -1px;
+        top: 4px;
+        border-radius: 22px;
+      }
+    }
+    .doc a {
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
   }
 }
 

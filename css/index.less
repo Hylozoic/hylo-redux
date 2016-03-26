@@ -320,23 +320,30 @@ ul.posts {
 @post-content-right-margin: 25px;
 @post-text-right-margin: 45px;
 
-.shared-post-header() {
-  margin-bottom: 6px;
-  margin-right: @post-content-right-margin;
+.shared-post-style() {
+  .header {
+    margin-bottom: 6px;
+    margin-right: @post-content-right-margin;
 
-  > .avatar {
-    float: left;
-    margin-left: 26px;
+    > .avatar {
+      float: left;
+      margin-left: 26px;
+    }
+    > div:last-child {
+      margin-left: @post-content-left-margin;
+    }
+    .name {
+      color: @damian-green;
+      .semibold;
+    }
+    .meta > a, .meta > div > a {
+      .meta-text;
+    }
   }
-  > div:last-child {
-    margin-left: @post-content-left-margin;
-  }
-  .name {
-    color: @damian-green;
-    .semibold;
-  }
-  .meta > a, .meta > div > a {
-    .meta-text;
+
+  .title {
+    .post-title-text;
+    margin-bottom: @p-bottom-margin;
   }
 }
 
@@ -344,10 +351,7 @@ ul.posts {
   padding: 25px 0px 5px 0;
   margin-bottom: 15px;
   background-color: @card-background;
-
-  .header {
-    .shared-post-header;
-  }
+  .shared-post-style;
 
   .image {
     background-size: cover;
@@ -389,7 +393,6 @@ ul.posts {
   }
 
   p.title {
-    .post-title-text;
     padding-left: @post-content-left-margin;
   }
 
@@ -814,11 +817,8 @@ ul.tags {
   background-color: #fff;
   margin-bottom: 15px;
   .mobile-full-bleed;
+  .shared-post-style;
   position: relative;
-
-  .header {
-    .shared-post-header;
-  }
 
   .prompt {
     .post-title-text;
@@ -832,7 +832,6 @@ ul.tags {
   }
 
   .title {
-    .post-title-text;
     display: block;
     width: 100%;
     border: none;

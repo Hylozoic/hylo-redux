@@ -6,7 +6,8 @@
   "scripts": {
     "start": "./node_modules/.bin/gulp",
     "es5": "node src-es5/server",
-    "test": "./node_modules/.bin/babel-node ./node_modules/.bin/_mocha",
+    "test": "npm run test-server && npm run test-client",
+    "test-server": "./node_modules/.bin/babel-node ./node_modules/.bin/_mocha",
     "test-client": "./node_modules/.bin/babel-node ./node_modules/.bin/_mocha -- test/client/index.js",
     "cover": "./cover",
     "autotest": "./node_modules/.bin/gulp autotest",

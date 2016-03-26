@@ -28,10 +28,8 @@ import { ADDED_POST, EDITED_POST, trackEvent } from '../util/analytics'
 const { array, bool, func, object, string } = React.PropTypes
 
 const prependText = (editor, text, skip_focus) => {
-  if (!text) return
   editor.selection.setCursorLocation(null, 0)
-  const spacer = editor.getContent() ? ' ' : ''
-  editor.execCommand('mceInsertContent', false, text + spacer, {skip_focus})
+  editor.execCommand('mceInsertContent', false, text, {skip_focus})
 }
 
 @connect((state, { community, post, project }) => {
@@ -181,14 +179,14 @@ export class PostEditor extends React.Component {
         ? value.lastIndexOf(' ', maxlength - 1)
         : value.indexOf('\n')
 
-      const name = value.slice(0, splitIndex)
-      const excess = value.slice(splitIndex + 1).trim()
+      const name = value.slice(0, splitIndex + 1).replace(/\n$/, '')
+      const excess = value.slice(splitIndex + 1)
 
       this.setState({name, showDetails: true})
       this.updateStore({name})
 
       const pos = title.textarea.selectionStart
-      if (length !== pos) {
+      if (pos <= name.length) {
         prependText(editor, excess, true)
 
         // when the above setState call lands, the cursor ends up jumping to the
@@ -211,7 +209,11 @@ export class PostEditor extends React.Component {
           title.setCursorLocation(pos)
         })
       } else {
-        prependText(editor, excess)
+        if (excess) {
+          prependText(editor, excess)
+        } else {
+          editor.focus()
+        }
       }
       setTimeout(() => title.resize())
     } else {

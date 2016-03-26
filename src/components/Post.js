@@ -66,7 +66,7 @@ class Post extends React.Component {
     }
 
     let image = find(post.media, m => m.type === 'image')
-    var classes = cx('post', post.type, 'expanded', {image: !!image})
+    var classes = cx('post', post.type, {image: !!image})
 
     const createdAt = new Date(post.created_at)
 
@@ -75,7 +75,7 @@ class Post extends React.Component {
       ? post.relatedUsers[0]
       : post.user
 
-    return <div className={classes} onClick={this.expand}>
+    return <div className={classes}>
       <div className='header'>
         <PostMenu/>
         <Avatar person={person}/>

@@ -7,7 +7,7 @@
 @import 'dropdown';
 @import 'forms';
 @import 'tinymce';
-@import 'nav';
+@import 'layout';
 
 body {
   background-color: @page-background;
@@ -147,69 +147,6 @@ ul.tabs {
       }
     }
   }
-}
-
-.cover-image-container {
-  position: relative;
-  padding-top: 140px;
-  z-index: 0;
-}
-
-#cover-image {
-  width: 100%;
-  .shaded-background;
-  .fluid-height(28.8%);
-  // height: 24vw;
-  overflow: hidden;
-  position: absolute;
-  top: 0;
-  left: 0;
-
-  .background {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-position: center;
-    background-size: cover;
-    z-index: -1;
-  }
-}
-
-#cover-image-page-content, .simple-page {
-  max-width: 688px;
-  margin: 0 auto;
-  position: relative;
-}
-
-#cover-image-page-content {
-  .form-sections {
-    .section-label {
-      background-color: @list-controls-background;
-      padding: 15px;
-    }
-    .section {
-      background-color: @card-background;
-      padding: 15px;
-      margin-bottom: 15px;
-    }
-  }
-}
-
-.simple-page {
-  margin-top: 15px;
-  .list-controls {
-    background-color: transparent;
-  }
-  ul.tabs a.active:after {
-    background-color: @page-background !important;
-  }
-
-  .mobile({
-    margin-left: 15px;
-    margin-right: 15px;
-  })
 }
 
 .banner {

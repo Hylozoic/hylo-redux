@@ -186,7 +186,7 @@ const PostMenu = (props, { dispatch, post, currentUser }) => {
 PostMenu.contextTypes = Post.childContextTypes
 
 const PostDetails = (props, { post, currentUser, dispatch }) => {
-  const { comments, commentingDisabled, voters } = props
+  const { comments, commentingDisabled } = props
   const typeLabel = `#${post.type === 'chat' ? 'all-topics' : post.type}`
   const description = present(appendInP(
     sanitize(post.description), ` <a class='hashtag'>${typeLabel}</a>`))
@@ -198,7 +198,7 @@ const PostDetails = (props, { post, currentUser, dispatch }) => {
 
     {post.type === 'event' && <EventRSVP postId={post.id} responders={post.responders}/>}
     <div className='voting post-section'>
-      <VoteButton /><Voters voters={voters} />
+      <VoteButton /><Voters />
     </div>
 
     {!isEmpty(attachments) && <div className='post-section'>

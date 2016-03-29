@@ -2,7 +2,7 @@ import React from 'react'
 import { navigate } from '../actions'
 const { func } = React.PropTypes
 
-const ClickCatchingDiv = (props, { dispatch }) => {
+const ClickCatcher = ({ nodeType, ...props }, { dispatch }) => {
   const handleClick = event => {
     var node = event.target
     if (node.nodeName.toLowerCase() !== 'a') return
@@ -13,12 +13,22 @@ const ClickCatchingDiv = (props, { dispatch }) => {
       return
     }
   }
-
-  return <div {...props} onClick={handleClick}></div>
+  switch (nodeType) {
+    case 'div':
+      return <div {...props} onClick={handleClick}></div>
+    case 'span':
+      return <span {...props} onClick={handleClick}></span>
+  }
 }
 
-ClickCatchingDiv.contextTypes = {
+ClickCatcher.contextTypes = {
   dispatch: func.isRequired
 }
+
+const ClickCatchingDiv = (props, { dispatch }) =>
+  <ClickCatcher nodeType='div' {...props}/>
+
+export const ClickCatchingSpan = (props, { dispatch }) =>
+  <ClickCatcher nodeType='span' {...props}/>
 
 export default ClickCatchingDiv

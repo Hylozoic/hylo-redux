@@ -5,6 +5,7 @@ import {humanDate, sanitize, present} from '../util/text'
 import { commentUrl } from '../routes'
 import { thank } from '../actions'
 import truncateHtml from 'html-truncate'
+import { ClickCatchingSpan } from './ClickCatchingDiv'
 var { func, object } = React.PropTypes
 
 const spacer = <span>&nbsp;&nbsp;•&nbsp;&nbsp;</span>
@@ -19,11 +20,9 @@ const Comment = ({ comment, truncate, expand }, { dispatch, currentUser }) => {
     <Avatar person={person}/>
     <div className='content'>
       <strong className='name'>{person.name}</strong>
-      {truncate
-        ? <span className='text'
-            dangerouslySetInnerHTML={{__html: truncateHtml(text, truncate)}}
-            onClick={expand}/>
-        : <span className='text' dangerouslySetInnerHTML={{__html: text}}/>}
+      <ClickCatchingSpan className='text'
+        dangerouslySetInnerHTML={{__html: truncate ? truncateHtml(text, truncate) : text}}
+        onClick={() => truncate && expand()}/>
       <div>
         {currentUser && <span>
           {currentUser.id !== person.id &&

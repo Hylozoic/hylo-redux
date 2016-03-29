@@ -15,7 +15,6 @@ import posts from './posts'
 import projectsByQuery from './projectsByQuery'
 import projects from './projects'
 import projectEdits from './projectEdits'
-import { UPDATE_PATH } from 'redux-simple-router'
 import { appendUniq } from './util'
 
 import {

@@ -10,7 +10,7 @@ var { array, func, object, string } = React.PropTypes
 
 @connect(state => ({
   currentUser: get(state, 'people.current'),
-  mentionChoices: state.typeaheadMatches.comment
+  mentionChoices: get(state, 'typeaheadMatches.comment')
 }))
 export default class CommentForm extends React.Component {
   static propTypes = {

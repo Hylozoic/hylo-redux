@@ -6,6 +6,7 @@ import { compose } from 'redux'
 import { find, get } from 'lodash'
 import {
   FETCH_POST,
+  fetchComments,
   fetchPost,
   setCurrentCommunityId,
   setMetaTags
@@ -31,24 +32,36 @@ const SinglePost = props => {
 }
 
 export default compose(
-  prefetch(({ store, dispatch, params: { id } }) => Promise.all([
+  prefetch(({ store, dispatch, params: { id } }) =>
     dispatch(fetchPost(id))
-    .then(({ error, payload }) => {
-      if (error) return
+    .then(({ error, payload, cacheHit }) => {
+      if (error) return cacheHit
       const post = store.getState().posts[id]
       const communityId = get(post, 'communities.0') || 'all'
       dispatch(setCurrentCommunityId(communityId))
 
-      if (typeof window !== 'undefined') {
-        let anchor = get(window.location.hash.match(/#(comment-\d+$)/), '1')
-        if (anchor) scrollToAnchor(anchor, 15)
+      if (payload && !payload.api) {
+        const { name, description, media } = payload
+        dispatch(setMetaTags(ogMetaTags(name, description, media[0])))
       }
 
-      if (!payload || payload.api) return
-      const { name, description, media } = payload
-      dispatch(setMetaTags(ogMetaTags(name, description, media[0])))
+      return cacheHit
     })
-  ])),
+    .then(hit => {
+      // when this page is clicked into from a post list, fetchPost above will
+      // cause a cache hit; however, there may be more comments than the 3 that
+      // were included in the list, so we have to call fetchComments to retrieve
+      // the rest. but when fetchPost did not cause a cache hit, we know that
+      // its response contained all comments, so we can skip the additional
+      // call.
+      if (!hit) return
+      const post = store.getState().posts[id]
+      if (post.numComments > 3) return dispatch(fetchComments(id, {offset: 3}))
+    })
+    .then(() => {
+      let anchor = get(window.location.hash.match(/#(comment-\d+$)/), '1')
+      if (anchor) scrollToAnchor(anchor, 15)
+    })),
   connect((state, { params }) => {
     const { communities, currentCommunityId } = state
     return {

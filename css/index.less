@@ -243,18 +243,21 @@ ul.tabs {
   padding-top: 15px;
   .has-left-side-avatar;
 
-  .name {
-    margin-right: 10px;
+  .content {
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   .text {
     color: @gray-text;
     .body-text;
-    p {
-      &:first-child {
-        display: inline;
-      }
 
+    .name {
+      color: black;
+      margin-right: 0.75em;
+    }
+
+    p {
       &:nth-child(2) {
         margin-top: @p-bottom-margin;
       }

@@ -38,12 +38,21 @@ export function present (text, opts) {
   return text
 }
 
-export function appendInP (text, appendor) {
+export function appendInP (text, appendee) {
   text = text.trim()
   if (text.substr(text.length - 4) === '</p>') {
-    return text.substr(0, text.length - 4) + appendor + '</p>'
+    return text.substr(0, text.length - 4) + appendee + '</p>'
   } else {
-    return text + appendor
+    return text + appendee
+  }
+}
+
+export function prependInP (text, prependee) {
+  text = text.trim()
+  if (text.substr(0, 3) === '<p>') {
+    return '<p>' + prependee + text.substr(3)
+  } else {
+    return prependee + text
   }
 }
 

@@ -9,39 +9,20 @@
 // https://github.com/Kindling/react-tinymce-mention/blob/master/LICENSE
 
 import { renderToStaticMarkup } from 'react-dom/server'
-import { difference, includes, isEmpty, values } from 'lodash'
-import { debug } from '../util/logging'
+import { debounce, difference, includes, isEmpty, values } from 'lodash'
 
 const keyMap = {
   BACKSPACE: 8,
-  DELETE: 46,
-  DOWN: 40,
-  ENTER: 13,
   TAB: 9,
+  ENTER: 13,
+  ESC: 27,
+  SPACE: 32,
   UP: 38,
-  ESC: 27
+  DOWN: 40,
+  DELETE: 46
 }
 
 const delimiter = '@'
-
-function typedMentionStore () {
-  return {
-    value: '',
-
-    update (str) {
-      this.value = (this.value + str).trim()
-      return this.value
-    },
-    backspace () {
-      const val = this.value
-      this.value = val.substring(0, val.length - 1).trim()
-      return this.value
-    },
-    clear () {
-      this.value = ''
-    }
-  }
-}
 
 function getKeyCode (event) {
   return event.which || event.keyCode
@@ -52,6 +33,13 @@ function getLastChar (editor, negativeIndex = 1) {
   const text = editor.selection.getRng(true).startContainer.data || ''
   const character = text.substr(start - negativeIndex, 1)
   return character
+}
+
+const getCurrentTypedMention = editor => {
+  const words = editor.selection.getNode().innerHTML.split(' ')
+  const word = words[words.length - 1]
+  if (word[0] !== '@') throw new Error('getCurrentTypedMention got: ' + word)
+  return word.slice(1)
 }
 
 // TODO: Cleanup
@@ -77,7 +65,6 @@ function shouldIgnoreWhileFetching (keyCode) {
 function addNode (node, editor) {
   const re = new RegExp(delimiter + '\\S+(\n<p>)?___PLACEHOLDER___')
   const markup = renderToStaticMarkup(node)
-
   editor.insertContent('___PLACEHOLDER___&nbsp;<span id="cursor">&nbsp;</span>')
   editor.setContent(editor.getContent().replace(re, markup))
 
@@ -91,37 +78,16 @@ function addNode (node, editor) {
 
 export default class MentionController {
 
-  constructor (component, data) {
+  constructor (component, editor) {
     this.component = component
+    this.editor = editor
     this.active = false
-    this.typedMention = typedMentionStore()
-
-    // workaround: if TinyMCE plugins are not already loaded, they will be
-    // fetched the first time an editor is rendered, causing a delay.
-    let attempts = 0
-    let waitMs = 50
-    let interval = setInterval(() => {
-      this.editor = window.tinymce.EditorManager.editors.find(e => e.id === this.prop('editorId'))
-
-      if (!this.editor) {
-        attempts += 1
-        return
-      }
-
-      if (attempts > 0) debug(`found editor after ${attempts * waitMs} ms`)
-      clearInterval(interval)
-
-      this.editor.on('keypress', this.handleTopLevelEditorInput.bind(this))
-      this.editor.on('keydown', this.handleTopLevelActionKeys.bind(this))
-      this.editor.on('keyup', this.handleBackspace.bind(this))
-    }, waitMs)
+    this.editor.on('keypress', this.handleTopLevelEditorInput)
+    this.editor.on('keydown', this.handleTopLevelActionKeys)
+    this.editor.on('keyup', this.handleBackspace)
   }
 
-  prop (key) {
-    return this.component.props[key]
-  }
-
-  handleTopLevelEditorInput (event) {
+  handleTopLevelEditorInput = event => {
     const keyCode = getKeyCode(event)
     const character = String.fromCharCode(keyCode)
     const foundDelimiter = delimiter.indexOf(character) > -1
@@ -129,30 +95,27 @@ export default class MentionController {
     normalizeEditorInput(this.editor)
 
     if (!this.active && foundDelimiter) {
-      this.startListeningForInput()
+      this.activate()
     } else if (!this.active || character === ' ') {
-      this.stopListeningAndCleanup()
+      this.deactivate()
     }
   }
 
-  handleTopLevelActionKeys (event) {
+  handleTopLevelActionKeys = event => {
     const keyCode = getKeyCode(event)
 
     if (this.active && keyCode === keyMap.BACKSPACE || keyCode === keyMap.DELETE) {
       if (getLastChar(this.editor) === delimiter) {
-        this.stopListeningAndCleanup()
-      } else {
-        var text = this.updateMentionText(keyCode)
-        this.component.query(text)
+        this.deactivate()
       }
     }
   }
 
-  handleBackspace (event) {
+  handleBackspace = event => {
     const keyCode = getKeyCode(event)
     if (keyCode !== keyMap.BACKSPACE && keyCode !== keyMap.DELETE) return
 
-    const selector = this.prop('mentionSelector')
+    const selector = this.component.props.mentionSelector
     const $ = window.tinymce.dom.DomQuery
     const node = this.editor.selection.getNode()
     const foundMentionNode = $(node).closest(selector)[0]
@@ -160,83 +123,65 @@ export default class MentionController {
     if (foundMentionNode) {
       this.editor.selection.select(node)
     } else if (!this.editor.getContent({format: 'html'}).trim().length) {
-      this.stopListeningAndCleanup()
-    } else {
-      // TODO what's supposed to happen here?
-      // const mentionIds = collectMentionIds(editor, selector)
-      // store.dispatch(syncEditorState(mentionIds))
+      this.deactivate()
     }
   }
 
-  startListeningForInput () {
+  activate () {
     if (this.active) return
 
     this.active = true
-    this.keydownHandler = this.handleActionKeys.bind(this)
-    this.keypressHandler = this.handleKeyPress.bind(this)
-    this.editor.on('keydown', this.keydownHandler)
-    this.editor.on('keypress', this.keypressHandler)
+    this.editor.on('keydown', this.handleActionKeys)
+    this.editor.on('keyup', this.handleKeyUp)
   }
 
-  stopListeningAndCleanup () {
+  deactivate () {
     if (!this.active) return
 
     this.active = false
-    this.typedMention.clear()
     this.component.resetQuery()
-    this.editor.off('keydown', this.keydownHandler)
-    this.editor.off('keypress', this.keypressHandler)
+    this.editor.off('keydown', this.handleActionKeys)
+    this.editor.off('keyup', this.handleKeyUp)
   }
 
-  handleActionKeys (event) {
+  handleActionKeys = event => {
     const keyCode = getKeyCode(event)
 
-    if ((this.prop('fetching') && shouldIgnoreWhileFetching(keyCode)) ||
+    if ((this.component.props.fetching && shouldIgnoreWhileFetching(keyCode)) ||
       this.shouldSelectOrMove(keyCode, event)) {
       event.preventDefault()
       return false
     }
   }
 
-  handleKeyPress (event) {
-    const keyCode = getKeyCode(event)
-    setTimeout(() => {
-      var text = this.updateMentionText(keyCode)
-      this.component.query(text)
-    }, 0)
-  }
+  handleKeyUp = debounce(event => {
+    this.component.query(getCurrentTypedMention(this.editor))
+  }, 100)
 
   shouldSelectOrMove (keyCode, event) {
-    if (isEmpty(this.prop('choices'))) return false
-
-    if (keyCode === keyMap.BACKSPACE || keyCode === keyCode.DELETE) {
-      this.typedMention.update(keyCode)
-      return this.handleKeyPress(event)
-    }
-
     switch (keyCode) {
       case keyMap.ESC:
-        this.stopListeningAndCleanup()
+        this.deactivate()
         return true
+      case keyMap.SPACE:
+        this.deactivate()
+        return false
       case keyMap.TAB:
       case keyMap.ENTER:
       case keyMap.DOWN:
       case keyMap.UP:
-        this.component.handleKeys(event)
-        return true
+        if (isEmpty(this.component.props.options)) {
+          this.deactivate()
+          return false
+        } else {
+          this.component.handleKeys(event)
+          return true
+        }
     }
   }
 
-  updateMentionText (keyCode) {
-    const mentionText = keyCode !== keyMap.BACKSPACE && keyCode !== keyMap.DELETE
-      ? this.typedMention.update(getLastChar(this.editor))
-      : this.typedMention.backspace()
-
-    return mentionText
-  }
-
   addMention (node) {
-    this.stopListeningAndCleanup()
+    this.deactivate()
     addNode(node, this.editor)
   }
 }

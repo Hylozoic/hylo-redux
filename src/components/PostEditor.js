@@ -48,7 +48,7 @@ const prependText = (editor, text, skip_focus) => {
     id,
     postEdit,
     project,
-    mentionChoices: state.typeaheadMatches.post,
+    mentionOptions: state.typeaheadMatches.post,
     currentUser: state.people.current,
     saving: state.pending[CREATE_POST] || state.pending[UPDATE_POST],
     imagePending: state.pending[UPLOAD_IMAGE]
@@ -57,7 +57,7 @@ const prependText = (editor, text, skip_focus) => {
 export class PostEditor extends React.Component {
   static propTypes = {
     dispatch: func,
-    mentionChoices: array,
+    mentionOptions: array,
     currentUser: object,
     post: object,
     id: string.isRequired,
@@ -173,7 +173,7 @@ export class PostEditor extends React.Component {
     const { length } = value
     if (length > maxlength || value.indexOf('\n') !== -1) {
       const { title, details } = this.refs
-      const editor = details.editor()
+      const editor = details.editor
 
       let splitIndex = length > maxlength
         ? value.lastIndexOf(' ', maxlength - 1)
@@ -227,7 +227,7 @@ export class PostEditor extends React.Component {
 
   goBackToTitle = ({ which }) => {
     if (which === 8 || which === 46) {
-      const value = this.refs.details.editor().getContent()
+      const value = this.refs.details.editor.getContent()
       if (!value) {
         this.setState({showDetails: false})
         this.refs.title.focus()
@@ -263,7 +263,7 @@ export class PostEditor extends React.Component {
         onKeyUp={this.goBackToTitle}
         mentionTemplate={personTemplate}
         mentionTypeahead={text => dispatch(typeahead(text, 'post'))}
-        mentionChoices={this.props.mentionChoices}
+        mentionOptions={this.props.mentionOptions}
         mentionSelector='[data-user-id]'/>
 
       <div className='hashtag-selector'>

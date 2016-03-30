@@ -10,14 +10,14 @@ var { array, func, object, string } = React.PropTypes
 
 @connect(state => ({
   currentUser: get(state, 'people.current'),
-  mentionChoices: get(state, 'typeaheadMatches.comment')
+  mentionOptions: get(state, 'typeaheadMatches.comment')
 }))
 export default class CommentForm extends React.Component {
   static propTypes = {
     currentUser: object,
     dispatch: func,
     postId: string,
-    mentionChoices: array
+    mentionOptions: array
   }
 
   constructor (props) {
@@ -35,7 +35,7 @@ export default class CommentForm extends React.Component {
   }
 
   render () {
-    const { currentUser, dispatch, mentionChoices } = this.props
+    const { currentUser, dispatch, mentionOptions } = this.props
     const { editing } = this.state
     const edit = () => this.setState({editing: true})
     const setText = event => this.setState({text: event.target.value})
@@ -48,7 +48,7 @@ export default class CommentForm extends React.Component {
               onChange={setText}
               mentionTemplate={personTemplate}
               mentionTypeahead={text => dispatch(typeahead(text, 'comment'))}
-              mentionChoices={mentionChoices}
+              mentionOptions={mentionOptions}
               mentionSelector='[data-user-id]'
               startFocused={true}/>
             <input type='submit' value='Comment'/>

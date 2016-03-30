@@ -12,7 +12,7 @@ export default class Mention extends React.Component {
     fetching: bool,
 
     // choices for autocompleting the @-mention that is being typed.
-    choices: array,
+    options: array,
 
     // what HTML should be added to the editor when an item is selected.
     // takes one argument, the item.
@@ -25,15 +25,22 @@ export default class Mention extends React.Component {
 
     // the function to call when the text input changes.
     // takes one argument, the value of the text input.
-    typeahead: func
+    typeahead: func,
+
+    // a function that takes a callback, which it calls with the tinymce editor
+    // as the first argument.
+    getEditor: func
   }
 
   componentDidMount () {
-    this.controller = this.controller || new MentionController(this)
+    this.props.getEditor(editor => {
+      this.controller = new MentionController(this, editor)
+    })
   }
 
   select = (choice) => {
     this.controller.addMention(this.props.template(choice))
+    this.resetQuery()
   }
 
   handleKeys = event => {
@@ -45,15 +52,15 @@ export default class Mention extends React.Component {
   }
 
   resetQuery = () => {
-    return this.props.typeahead(null)
+    return this.query(null)
   }
 
   render () {
-    var { choices } = this.props
+    var { options } = this.props
 
     return <div className='dropdown mentions'>
-      {!isEmpty(choices) && <KeyControlledList className='dropdown-menu'
-        ref='list' items={choices} onChange={this.select}/>}
+      {!isEmpty(options) && <KeyControlledList className='dropdown-menu'
+        ref='list' items={options} onChange={this.select}/>}
     </div>
   }
 }

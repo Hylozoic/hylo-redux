@@ -26,7 +26,7 @@ export default class RichTextEditor extends React.Component {
     className: string,
     mentionTemplate: func,
     mentionSelector: string,
-    mentionChoices: array,
+    mentionOptions: array,
     mentionTypeahead: func,
     content: string,
     startFocused: bool
@@ -61,32 +61,39 @@ export default class RichTextEditor extends React.Component {
   }
 
   setContent (text) {
-    this.editor().setContent(text)
+    this.editor.setContent(text)
   }
 
-  editor () {
+  findEditor () {
     return window.tinymce.EditorManager.editors.find(e => e.id === this.editorId)
   }
 
-  waitForEditor (callback) {
-    let attempts = 0
-    let interval = setInterval(() => {
-      const editor = this.editor()
-      if (editor) {
-        clearInterval(interval)
-        callback(editor)
+  getEditor = callback => {
+    if (this.editor) return callback(this.editor)
+    if (!this.callbacks) this.callbacks = []
+    this.callbacks.push(callback)
+    if (this.getEditorLoop) return
+
+    const waitMs = 30
+    let attempts = 1
+    this.getEditorLoop = setInterval(() => {
+      this.editor = this.findEditor()
+      if (this.editor) {
+        console.log(`got ${this.editorId} after ${attempts * waitMs} ms; calling ${this.callbacks.length} callback(s)`)
+        clearInterval(this.getEditorLoop)
+        this.callbacks.forEach(c => c(this.editor))
       }
       attempts += 1
       if (attempts > 100) {
-        console.error("couldn't get editor after 100 tries")
-        clearInterval(interval)
+        console.error(`couldn't get ${this.editorId} after ${attempts * waitMs} ms`)
+        clearInterval(this.getEditorLoop)
       }
-    }, 30)
+    }, waitMs)
   }
 
   componentDidMount () {
     const { onKeyUp, startFocused } = this.props
-    this.waitForEditor(editor => {
+    this.getEditor(editor => {
       if (onKeyUp) editor.on('keyup', onKeyUp)
       if (startFocused) editor.focus()
     })
@@ -95,7 +102,7 @@ export default class RichTextEditor extends React.Component {
   render () {
     let {
       className, content,
-      mentionTemplate, mentionSelector, mentionChoices, mentionTypeahead
+      mentionTemplate, mentionSelector, mentionOptions, mentionTypeahead
     } = this.props
 
     return <div className={cx('rich-text-editor', className)}>
@@ -106,9 +113,9 @@ export default class RichTextEditor extends React.Component {
 
       <Mention template={mentionTemplate}
         mentionSelector={mentionSelector}
-        choices={mentionChoices}
+        options={mentionOptions}
         typeahead={mentionTypeahead}
-        editorId={this.editorId}/>
+        getEditor={this.getEditor}/>
     </div>
   }
 }

@@ -59,6 +59,7 @@ export default compose(
       if (post.numComments > 3) return dispatch(fetchComments(id, {offset: 3}))
     })
     .then(() => {
+      if (typeof window === 'undefined') return
       let anchor = get(window.location.hash.match(/#(comment-\d+$)/), '1')
       if (anchor) scrollToAnchor(anchor, 15)
     })),

@@ -109,3 +109,7 @@ export const markdown = marked
 export function nonbreaking (str) {
   return str.replace(/ /g, String.fromCharCode(160))
 }
+
+export function textLength (html) {
+  return html.replace(/<[^>]+>/g, '').length
+}

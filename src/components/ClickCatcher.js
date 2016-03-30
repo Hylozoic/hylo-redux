@@ -25,10 +25,8 @@ ClickCatcher.contextTypes = {
   dispatch: func.isRequired
 }
 
-const ClickCatchingDiv = (props, { dispatch }) =>
+export const ClickCatchingDiv = (props, { dispatch }) =>
   <ClickCatcher nodeType='div' {...props}/>
 
 export const ClickCatchingSpan = (props, { dispatch }) =>
   <ClickCatcher nodeType='span' {...props}/>
-
-export default ClickCatchingDiv

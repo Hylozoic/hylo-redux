@@ -11,7 +11,6 @@ import {
   setCurrentCommunityId,
   setMetaTags
 } from '../actions'
-import { fetchPeople } from '../actions/fetchPeople'
 import { ogMetaTags } from '../util'
 import PostEditor from '../components/PostEditor'
 import { scrollToAnchor } from '../util/scrolling'
@@ -28,7 +27,7 @@ const SinglePost = props => {
   return <CoverImagePage id='single-post' image={get(community, 'banner_url')}>
     {editing
       ? <PostEditor post={post} expanded={true}/>
-      : <Post post={post} expanded={true} showComments={true} commentingDisabled={!currentUser}/>}
+      : <Post post={post} expanded={true} commentingDisabled={!currentUser}/>}
   </CoverImagePage>
 }
 
@@ -41,18 +40,15 @@ export default compose(
       const communityId = get(post, 'communities.0') || 'all'
       dispatch(setCurrentCommunityId(communityId))
 
+      if (typeof window !== 'undefined') {
+        let anchor = get(window.location.hash.match(/#(comment-\d+$)/), '1')
+        if (anchor) scrollToAnchor(anchor, 15)
+      }
+
       if (!payload || payload.api) return
       const { name, description, media } = payload
       dispatch(setMetaTags(ogMetaTags(name, description, media[0])))
-    })/*,
-    dispatch(fetchComments(id))
-    .then(({ error }) => {
-      if (error || typeof window === 'undefined') return
-
-      let anchor = get(window.location.hash.match(/#(comment-\d+$)/), '1')
-      if (anchor) scrollToAnchor(anchor, 15)
     })
-    */
   ])),
   connect((state, { params }) => {
     const { communities, currentCommunityId } = state

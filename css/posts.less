@@ -19,7 +19,6 @@ ul.posts {
 
 @post-content-left-margin: 75px;
 @post-content-right-margin: 25px;
-@post-text-right-margin: 45px;
 
 .shared-post-style() {
   .header {
@@ -89,10 +88,17 @@ ul.posts {
 
   .details {
     .body-text;
-    padding-right: @post-text-right-margin;
+    padding-right: @post-content-right-margin + 15px;
     .hashtag {
       color: @damian-green;
     }
+    p:last-child {
+      display: inline;
+    }
+  }
+
+  &.expanded {
+    position: relative;
   }
 
   &.welcome {
@@ -251,6 +257,9 @@ ul.posts {
     padding-left: @post-content-left-margin - @vote-button-width - @vote-button-margin;
     margin-top: 15px;
     margin-bottom: 25px;
+    line-height: 20px;
+    .clearfix;
+    
     .voter {
       .proxima-nova-bold();
       color: #000;
@@ -258,15 +267,17 @@ ul.posts {
     .vote-button {
       color: @damian-green !important;
       text-decoration: none;
-      width: @vote-button-width;
+      float: left;
       i {
+        width: @vote-button-width;
         margin-right: @vote-button-margin;
         top: 2px;
         position: relative;
       }
     }
     .voters {
-      margin-left: 15px;
+      display: block;
+      margin-left: @vote-button-width + @vote-button-margin + @avatar-size-default + 15px;
     }
   }
 
@@ -280,11 +291,6 @@ ul.posts {
         margin-top: 0px;
         border: none;
       }
-    }
-
-    .show-all {
-      margin-top: 20px;
-      margin-left: 51px;
     }
   }
 

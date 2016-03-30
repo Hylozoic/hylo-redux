@@ -238,7 +238,7 @@ ul.tabs {
 
 .comment {
   padding-left: @post-content-left-margin;
-  padding-right: @post-content-right-margin + @post-text-right-margin;
+  padding-right: 15px;
   margin-bottom: 5px;
   padding-top: 15px;
   .has-left-side-avatar;
@@ -251,7 +251,6 @@ ul.tabs {
     color: @gray-text;
     .body-text;
     p {
-      margin-right: 5px;
       &:first-child {
         display: inline;
       }
@@ -262,6 +261,7 @@ ul.tabs {
 
       &:last-child {
         margin-bottom: 0;
+        display: inline;
       }
     }
   }
@@ -1112,4 +1112,13 @@ ul.tags {
 #about-community {
   background-color: @card-background;
   padding: 15px;
+}
+
+.backdrop {
+  position: fixed;
+  width: 100vw;
+  height: 100vh;
+  top: 0;
+  left: 0;
+  background-color: rgba(0, 0, 0, 0.25);
 }

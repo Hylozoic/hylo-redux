@@ -52,7 +52,8 @@ describe('Post', () => {
     let node = renderIntoDocument(component)
     findRenderedDOMComponentWithClass(node, 'post offer')
     let details = findRenderedDOMComponentWithClass(node, 'details')
-    expect(details.innerHTML).to.equal(`<p>${post.description} <a class="hashtag">#offer</a></p>`)
+    let expected = new RegExp(`<span [^>]*><p>${post.description}&nbsp;<\/p><\/span><a class="hashtag" [^>]*>#offer<\/a>`)
+    expect(details.innerHTML).to.match(expected)
   })
 })
 

@@ -182,10 +182,10 @@ export function navigate (path) {
   }
 }
 
-export function fetchComments (postId) {
+export function fetchComments (postId, opts = {}) {
   // these are ignored since the comment API doesn't do pagination yet
-  let limit = 100
-  let offset = 0
+  let limit = opts.limit || 1000
+  let offset = opts.offset || 0
 
   return {
     type: FETCH_COMMENTS,
@@ -243,9 +243,8 @@ export function clearCache (bucket, id) {
 }
 
 export function fetchPost (id) {
-  let querystring = cleanAndStringify({
-    comments: true,
-    votes: true})
+  let querystring = cleanAndStringify({comments: true, votes: true})
+
   return {
     type: FETCH_POST,
     payload: {api: true, path: `/noo/post/${id}?${querystring}`},

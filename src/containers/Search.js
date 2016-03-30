@@ -156,6 +156,6 @@ const CommentResult = ({ comment, dispatch }) => {
           : `"${post.name}"`}
       </A>
     </strong>
-    <Comment comment={comment} truncate={400} expand={visit}/>
+    <Comment comment={comment} truncate={true} expand={visit}/>
   </div>
 }

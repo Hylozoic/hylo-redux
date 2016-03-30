@@ -1,22 +1,34 @@
 import React from 'react'
-import { filter, find, first, get, isEmpty, map, pick, some, without, includes } from 'lodash'
+import { filter, find, first, get, includes, isEmpty, map, pick, some, sortBy, without } from 'lodash'
 const { array, bool, func, object } = React.PropTypes
 import cx from 'classnames'
-import { humanDate, nonbreaking, present, sanitize, timeRange, timeRangeFull, appendInP } from '../util/text'
+import {
+  humanDate,
+  nonbreaking,
+  present,
+  sanitize,
+  timeRange,
+  timeRangeFull,
+  textLength,
+  appendInP
+} from '../util/text'
 import truncate from 'html-truncate'
 import A from './A'
 import Avatar from './Avatar'
 import Dropdown from './Dropdown'
-import ClickCatchingDiv from './ClickCatchingDiv'
+import { ClickCatchingSpan } from './ClickCatcher'
 import Comment from './Comment'
 import CommentForm from './CommentForm'
 import RSVPControl from './RSVPControl'
 import PersonDropdownItem from './PersonDropdownItem'
+import { scrollToAnchor } from '../util/scrolling'
 import { connect } from 'react-redux'
 import { compose } from 'redux'
 import {
   changeEventResponse,
+  fetchComments,
   followPost,
+  notify,
   removePost,
   startPostEdit,
   voteOnPost
@@ -34,11 +46,9 @@ class Post extends React.Component {
     commentsLoaded: bool,
     dispatch: func,
     commentingDisabled: bool,
-    currentUser: object
-  }
-
-  static contextTypes = {
-    community: object
+    currentUser: object,
+    expanded: bool,
+    onExpand: func
   }
 
   static childContextTypes = {
@@ -47,55 +57,30 @@ class Post extends React.Component {
     post: object
   }
 
-  constructor (props) {
-    super(props)
-    this.state = {}
-  }
-
   getChildContext () {
     return pick(this.props, 'currentUser', 'dispatch', 'post')
   }
 
   render () {
-    let { post, communities, comments, commentingDisabled } = this.props
-    let community
-    if (this.context.community) {
-      community = this.context.community
-    } else {
-      community = communities[0]
-    }
-
-    let image = find(post.media, m => m.type === 'image')
-    var classes = cx('post', post.type, {image: !!image})
-
-    const createdAt = new Date(post.created_at)
-
-    let title = decode(post.name || '')
-    let person = post.type === 'welcome'
-      ? post.relatedUsers[0]
-      : post.user
+    const { post, communities, comments, commentingDisabled, expanded, onExpand } = this.props
+    const { type, media } = post
+    const image = find(media, m => m.type === 'image')
+    const classes = cx('post', type, {image, expanded})
+    const title = decode(post.name || '')
+    const typeLabel = `#${post.type === 'chat' ? 'all-topics' : post.type}`
 
     return <div className={classes}>
-      <div className='header'>
-        <PostMenu/>
-        <Avatar person={person}/>
-        {post.type === 'welcome'
-          ? <WelcomePostHeader communities={communities}/>
-          : <div>
-              <A className='name' to={`/u/${person.id}`}>{person.name}</A>
-              {spacer}
-              <span className='meta'>
-                <A to={`/p/${post.id}`}>{nonbreaking(humanDate(createdAt))}</A>
-                &nbsp;in {community.name}
-              </span>
-            </div>}
-      </div>
-
+      <Header communities={communities}/>
       <p className='title'>{title}</p>
-      {post.type === 'event' && <EventSection/>}
+      {type === 'event' && <EventSection/>}
       {post.location && <Location/>}
       {image && <img src={image.url} className='post-section full-image'/>}
-      <PostDetails {...{comments, communities, commentingDisabled}}/>
+      <Details {...{expanded, onExpand, typeLabel}}/>
+      {type === 'event' && <EventRSVP/>}
+      <div className='voting post-section'><VoteButton/><Voters/></div>
+      <Attachments/>
+      <CommentSection truncate={!expanded} expand={onExpand}
+        {...{comments, commentingDisabled}}/>
     </div>
   }
 }
@@ -119,6 +104,46 @@ export default compose(
   })
 )(Post)
 
+const Header = ({ communities }, { post, community }) => {
+  const { type } = post
+  const person = type === 'welcome' ? post.relatedUsers[0] : post.user
+  const createdAt = new Date(post.created_at)
+  if (!community) community = communities[0]
+
+  return <div className='header'>
+    <PostMenu/>
+    <Avatar person={person}/>
+    {type === 'welcome'
+      ? <WelcomePostHeader communities={communities}/>
+      : <div>
+          <A className='name' to={`/u/${person.id}`}>{person.name}</A>
+          {spacer}
+          <span className='meta'>
+            <A to={`/p/${post.id}`}>{nonbreaking(humanDate(createdAt))}</A>
+            &nbsp;in {community.name}
+          </span>
+        </div>}
+  </div>
+}
+Header.contextTypes = {post: object, community: object}
+
+const Details = ({ expanded, onExpand, typeLabel }, { post }) => {
+  let description = present(sanitize(post.description))
+  const truncated = !expanded && textLength(description) > 200
+  if (truncated) description = truncate(description, 200)
+  if (description !== '<p></p>') description = appendInP(description, '&nbsp;')
+
+  return <div className='post-section details'>
+    <ClickCatchingSpan dangerouslySetInnerHTML={{__html: description}}/>
+    {truncated && <span>
+      <a onClick={onExpand}>Show&nbsp;more</a>
+      &nbsp;
+    </span>}
+    <a className='hashtag'>{typeLabel}</a>
+  </div>
+}
+Details.contextTypes = {post: object}
+
 const EventSection = (props, { post }) => {
   const start = new Date(post.start_time)
   const end = post.end_time && new Date(post.end_time)
@@ -139,6 +164,20 @@ const Location = (props, { post }) => {
   </p>
 }
 Location.contextTypes = {post: object}
+
+const Attachments = (props, { post }) => {
+  const attachments = filter(post.media, m => m.type !== 'image')
+  if (isEmpty(attachments)) return <span/>
+
+  return <div className='post-section'>
+    {attachments.map((file, i) =>
+      <a key={i} className='attachment' href={file.url} target='_blank' title={file.name}>
+        <img src={file.thumbnail_url}/>
+        {truncate(file.name, 40)}
+      </a>)}
+  </div>
+}
+Attachments.contextTypes = {post: object}
 
 const WelcomePostHeader = ({ communities }, { post }) => {
   let person = post.relatedUsers[0]
@@ -185,79 +224,62 @@ const PostMenu = (props, { dispatch, post, currentUser }) => {
 }
 PostMenu.contextTypes = Post.childContextTypes
 
-const PostDetails = (props, { post, currentUser, dispatch }) => {
-  const { comments, commentingDisabled } = props
-  const typeLabel = `#${post.type === 'chat' ? 'all-topics' : post.type}`
-  const description = present(appendInP(
-    sanitize(post.description), ` <a class='hashtag'>${typeLabel}</a>`))
-  const attachments = filter(post.media, m => m.type !== 'image')
-
-  return <div className='post-details'>
-    {description && <ClickCatchingDiv className='details post-section'
-      dangerouslySetInnerHTML={{__html: description}}/>}
-
-    {post.type === 'event' && <EventRSVP postId={post.id} responders={post.responders}/>}
-    <div className='voting post-section'>
-      <VoteButton /><Voters />
-    </div>
-
-    {!isEmpty(attachments) && <div className='post-section'>
-      {attachments.map((file, i) =>
-        <a key={i} className='attachment' href={file.url} target='_blank' title={file.name}>
-          <img src={file.thumbnail_url}/>
-          {truncate(file.name, 40)}
-        </a>)}
-    </div>}
-
-    <CommentSection {...{post, comments, commentingDisabled}}/>
-  </div>
-}
-PostDetails.contextTypes = Post.childContextTypes
-
 class CommentSection extends React.Component {
   static propTypes = {
     comments: array,
-    commentingDisabled: bool
+    commentingDisabled: bool,
+    truncate: bool,
+    expand: func,
+    dispatch: func
   }
 
-  static contextTypes = {post: object}
-
-  constructor (props) {
-    super(props)
-    this.state = {expanded: false}
-  }
-
-  toggleExpanded = () => {
-    this.setState({expanded: !this.state.expanded})
-  }
+  static contextTypes = {post: object, dispatch: func}
 
   render () {
-    let { comments, commentingDisabled } = this.props
-    let { post } = this.context
-    let { expanded } = this.state
+    let { comments, commentingDisabled, truncate, expand } = this.props
+    const { dispatch, post } = this.context
     if (!comments) comments = []
-    let displayedComments = expanded ? comments : comments.slice(0, 3)
-    return <div className={cx('comments-section', 'post-section', {'empty': isEmpty(comments)})}>
+    comments = sortBy(comments, c => c.created_at)
+    if (truncate) comments = comments.slice(-3)
+
+    const expandComment = id => {
+      expand()
+      
+      // the offset below is ignored by the backend, but it causes the frontend
+      // to ignore the 3 comments that are already cached
+      dispatch(fetchComments(post.id, {offset: 3}))
+      .then(({ error }) => {
+        if (error) {
+          return dispatch(notify('Could not load comments. Please try again soon.', {type: 'error'}))
+        }
+        if (id) scrollToAnchor(`comment-${id}`, 15)
+      })
+    }
+
+    return <div className={cx('comments-section post-section', {empty: isEmpty(comments)})}>
       <a name={`post-${post.id}-comments`}></a>
-        {displayedComments.map(c =>
-          <Comment comment={{...c, post_id: post.id}} key={c.id}/>)}
-      {comments.length > 3 && !expanded && <div className='show-all'>
-          <a onClick={this.toggleExpanded}>Show all</a>
-        </div>}
+      {truncate && post.numComments > comments.length && <div className='comment show-all'>
+        <a onClick={() => expandComment()}>Show all {post.numComments} comments</a>
+      </div>}
+      {comments.map(c => <Comment comment={{...c, post_id: post.id}}
+        truncate={truncate}
+        expand={() => expandComment(c.id)}
+        key={c.id}/>)}
       {!commentingDisabled && <CommentForm postId={post.id}/>}
     </div>
   }
 }
 
-const EventRSVP = ({ postId, responders }, { currentUser, dispatch }) => {
+const EventRSVP = (props, { post, currentUser, dispatch }) => {
+  const { responders } = post
   let isCurrentUser = r => r.id === get(currentUser, 'id')
   let currentResponse = get(find(responders, isCurrentUser), 'response') || ''
   let onPickResponse = currentUser &&
-    (choice => dispatch(changeEventResponse(postId, choice, currentUser)))
+    (choice => dispatch(changeEventResponse(post.id, choice, currentUser)))
 
   return <RSVPControl {...{responders, currentResponse, onPickResponse}}/>
 }
-EventRSVP.contextTypes = {currentUser: object, dispatch: func}
+EventRSVP.contextTypes = Post.childContextTypes
 
 export const VoteButton = (props, { post, currentUser, dispatch }) => {
   let vote = () => dispatch(voteOnPost(post, currentUser))
@@ -288,7 +310,7 @@ export const Voters = (props, { post, currentUser }) => {
         : ''
 
   if (voters.length > 0 && !onlyAuthorIsVoting) {
-    return <span className='voters meta'>
+    return <div className='voters meta'>
       {meInVoters && <span className='voter'>You</span>}
       {meInVoters && separator(1)}
       {otherVoters.slice(0, numShown).map((person, index) =>
@@ -305,7 +327,7 @@ export const Voters = (props, { post, currentUser }) => {
           <PersonDropdownItem key={p.id} person={p}/>)}
       </Dropdown>}
       &nbsp;liked this.
-    </span>
+    </div>
   } else {
     return <span />
   }

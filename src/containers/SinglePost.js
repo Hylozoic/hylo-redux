@@ -6,7 +6,6 @@ import { compose } from 'redux'
 import { find, get } from 'lodash'
 import {
   FETCH_POST,
-  fetchComments,
   fetchPost,
   setCurrentCommunityId,
   setMetaTags

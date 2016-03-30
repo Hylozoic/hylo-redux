@@ -71,7 +71,7 @@ class Post extends React.Component {
 
     return <div className={classes}>
       <Header communities={communities}/>
-      <p className='title'>{title}</p>
+      <p className='title post-section'>{title}</p>
       {type === 'event' && <EventSection/>}
       {post.location && <Location/>}
       {image && <img src={image.url} className='post-section full-image'/>}
@@ -84,8 +84,6 @@ class Post extends React.Component {
     </div>
   }
 }
-
-export const UndecoratedPost = Post // for testing
 
 export default compose(
   connect((state, { post }) => {
@@ -103,6 +101,8 @@ export default compose(
     }
   })
 )(Post)
+
+export const UndecoratedPost = Post // for testing
 
 const Header = ({ communities }, { post, community }) => {
   const { type } = post
@@ -244,7 +244,7 @@ class CommentSection extends React.Component {
 
     const expandComment = id => {
       expand()
-      
+
       // the offset below is ignored by the backend, but it causes the frontend
       // to ignore the 3 comments that are already cached
       dispatch(fetchComments(post.id, {offset: 3}))

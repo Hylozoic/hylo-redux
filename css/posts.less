@@ -81,11 +81,6 @@ ul.posts {
     }
   }
 
-  p.title {
-    padding-left: @post-content-left-margin;
-    padding-right: @post-content-right-margin;
-  }
-
   .details {
     .body-text;
     padding-right: @post-content-right-margin + 15px;
@@ -95,10 +90,6 @@ ul.posts {
     p:last-child {
       display: inline;
     }
-  }
-
-  &.expanded {
-    position: relative;
   }
 
   &.welcome {
@@ -254,12 +245,12 @@ ul.posts {
   .post-section.voting {
     @vote-button-width: 18px;
     @vote-button-margin: 5px;
-    padding-left: @post-content-left-margin - @vote-button-width - @vote-button-margin;
+    margin-left: -@vote-button-margin - @vote-button-width;
     margin-top: 15px;
     margin-bottom: 25px;
     line-height: 20px;
     .clearfix;
-    
+
     .voter {
       .proxima-nova-bold();
       color: #000;
@@ -313,6 +304,39 @@ ul.posts {
 
     &:hover {
       background-color: @mid-gray-bg;
+    }
+  }
+
+  &.expanded {
+    position: relative;
+    @extra-margin: 15px;
+    margin-left: -@extra-margin;
+    margin-right: -@extra-margin;
+    .post-section {
+      padding-left: @post-content-left-margin + @extra-margin;
+      padding-right: @post-content-right-margin + @extra-margin;
+
+      &.comments-section {
+        padding-left: 0px;
+      }
+
+      .comment, .comment-form {
+        padding-left: @post-content-left-margin + @extra-margin;
+      }
+
+      .comment-form {
+        margin-right: -@post-content-right-margin - @extra-margin;
+      }
+    }
+
+    .header {
+      > div:last-child {
+        margin-left: @post-content-left-margin + @extra-margin;
+        margin-right: @post-content-right-margin + @extra-margin;
+      }
+      > .avatar {
+        margin-left: 26px + @extra-margin;
+      }
     }
   }
 }

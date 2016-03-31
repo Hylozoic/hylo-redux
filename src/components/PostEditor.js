@@ -135,7 +135,7 @@ export class PostEditor extends React.Component {
   reallySave () {
     let { dispatch, post, postEdit, project, id } = this.props
 
-    if (!postEdit.type) postEdit.type = 'chat'
+    if (!postEdit.tag) postEdit.tag = 'chat'
 
     let params = {
       ...postEdit,
@@ -153,7 +153,7 @@ export class PostEditor extends React.Component {
       trackEvent(post ? EDITED_POST : ADDED_POST, {
         post: {
           id: get(post, 'id'),
-          type: postEdit.type
+          tag: postEdit.tag
         },
         community,
         project
@@ -237,12 +237,12 @@ export class PostEditor extends React.Component {
 
   render () {
     let { post, postEdit, dispatch, project, currentUser, imagePending } = this.props
-    let { description, communities, type } = postEdit
+    let { description, communities, tag } = postEdit
     let { name, showDetails } = this.state
 
-    if (!type) type = 'chat'
-    const typeLabel = `#${type === 'chat' ? 'all-topics' : type}`
-    const selectType = type => this.updateStore({type})
+    if (!tag) tag = 'chat'
+    const tagLabel = `#${tag === 'chat' ? 'all-topics' : tag}`
+    const selectTag = tag => this.updateStore({tag})
     const togglePublic = () => this.updateStore({public: !postEdit.public})
 
     return <div className='post-editor clearfix'>
@@ -267,13 +267,13 @@ export class PostEditor extends React.Component {
         mentionSelector='[data-user-id]'/>
 
       <div className='hashtag-selector'>
-        <span>{typeLabel}</span>&nbsp;
+        <span>{tagLabel}</span>&nbsp;
           <Dropdown toggleChildren={
               <button>#</button>
             }>
-            <li><a onClick={() => selectType('request')}>#request</a></li>
-            <li><a onClick={() => selectType('offer')}>#offer</a></li>
-            <li><a onClick={() => selectType('chat')}>#all-topics</a></li>
+            <li><a onClick={() => selectTag('request')}>#request</a></li>
+            <li><a onClick={() => selectTag('offer')}>#offer</a></li>
+            <li><a onClick={() => selectTag('chat')}>#all-topics</a></li>
           </Dropdown>
         </div>
 
@@ -311,8 +311,8 @@ export class PostEditor extends React.Component {
 
 const AttachmentsDropdown = props => {
   const { id, imagePending, media, dispatch, path } = props
-  const image = find(media, m => m.type === 'image')
-  const docs = filter(media, m => m.type === 'gdoc')
+  const image = find(media, m => m.tag === 'image')
+  const docs = filter(media, m => m.tag === 'gdoc')
   const length = (image ? 1 : 0) + docs.length
 
   const attachDoc = () => dispatch(uploadDoc(id))

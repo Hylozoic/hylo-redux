@@ -151,7 +151,7 @@ const CommentResult = ({ comment, dispatch }) => {
       Comment on
       <span> </span>
       <A to={commentUrl(comment)}>
-        {post.type === 'welcome'
+        {post.tag === 'welcome'
           ? `${welcomedPerson.name}'s welcome post`
           : `"${post.name}"`}
       </A>

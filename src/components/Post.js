@@ -63,20 +63,20 @@ class Post extends React.Component {
 
   render () {
     const { post, communities, comments, commentingDisabled, expanded, onExpand } = this.props
-    const { type, media } = post
+    const { tag, media } = post
     const image = find(media, m => m.type === 'image')
-    const classes = cx('post', type, {image, expanded})
+    const classes = cx('post', tag, {image, expanded})
     const title = decode(post.name || '')
-    const typeLabel = `#${post.type === 'chat' ? 'all-topics' : post.type}`
+    const tagLabel = `#${post.tag === 'chat' ? 'all-topics' : post.tag}`
 
     return <div className={classes}>
       <Header communities={communities}/>
       <p className='title post-section'>{title}</p>
-      {type === 'event' && <EventSection/>}
+      {tag === 'event' && <EventSection/>}
       {post.location && <Location/>}
       {image && <img src={image.url} className='post-section full-image'/>}
-      <Details {...{expanded, onExpand, typeLabel}}/>
-      {type === 'event' && <EventRSVP/>}
+      <Details {...{expanded, onExpand, tagLabel}}/>
+      {tag === 'event' && <EventRSVP/>}
       <div className='voting post-section'><VoteButton/><Voters/></div>
       <Attachments/>
       <CommentSection truncate={!expanded} expand={onExpand}
@@ -105,15 +105,15 @@ export default compose(
 export const UndecoratedPost = Post // for testing
 
 const Header = ({ communities }, { post, community }) => {
-  const { type } = post
-  const person = type === 'welcome' ? post.relatedUsers[0] : post.user
+  const { tag } = post
+  const person = tag === 'welcome' ? post.relatedUsers[0] : post.user
   const createdAt = new Date(post.created_at)
   if (!community) community = communities[0]
 
   return <div className='header'>
     <PostMenu/>
     <Avatar person={person}/>
-    {type === 'welcome'
+    {tag === 'welcome'
       ? <WelcomePostHeader communities={communities}/>
       : <div>
           <A className='name' to={`/u/${person.id}`}>{person.name}</A>
@@ -127,7 +127,7 @@ const Header = ({ communities }, { post, community }) => {
 }
 Header.contextTypes = {post: object, community: object}
 
-const Details = ({ expanded, onExpand, typeLabel }, { post }) => {
+const Details = ({ expanded, onExpand, tagLabel }, { post }) => {
   let description = present(sanitize(post.description))
   const truncated = !expanded && textLength(description) > 200
   if (truncated) description = truncate(description, 200)
@@ -139,7 +139,7 @@ const Details = ({ expanded, onExpand, typeLabel }, { post }) => {
       <a onClick={onExpand}>Show&nbsp;more</a>
       &nbsp;
     </span>}
-    <a className='hashtag'>{typeLabel}</a>
+    <a className='hashtag'>{tagLabel}</a>
   </div>
 }
 Details.contextTypes = {post: object}

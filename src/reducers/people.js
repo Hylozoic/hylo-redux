@@ -1,4 +1,4 @@
-import { filter, merge } from 'lodash'
+import { filter, merge, pick, find, indexOf } from 'lodash'
 import { debug } from '../util/logging'
 import {
   CREATE_COMMUNITY,
@@ -19,6 +19,17 @@ import {
   USE_INVITATION
 } from '../actions'
 import { mergeList } from './util'
+
+var replaceInArray = (arr, oldVal, newVal) => {
+  var index = indexOf(arr, oldVal)
+  if (index) {
+    return arr.slice(0, index)
+    .concat([newVal])
+    .concat(arr.slice(index + 1))
+  } else {
+    return arr.concat([newVal])
+  }
+}
 
 export default function (state = {}, action) {
   let { type, error, payload, meta } = action
@@ -72,6 +83,21 @@ export default function (state = {}, action) {
           current: {...state.current, memberships}
         }
       }
+
+      var oldMembership = find(state.current.memberships, m => m.community.slug === meta.params.slug)
+      var newMembership = {
+        ...oldMembership,
+        community: {...oldMembership.community, ...pick(meta.params, 'name', 'slug', 'avatar_url')}
+      }
+
+      return {
+        ...state,
+        current: {
+          ...state.current,
+          memberships: replaceInArray(state.current.memberships, oldMembership, newMembership)
+        }
+      }
+
   }
 
   if (!payload) return state

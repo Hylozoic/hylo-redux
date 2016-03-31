@@ -6,17 +6,21 @@ import { LeftNav, leftNavWidth, leftNavEasing } from '../components/LeftNav'
 import Notifier from '../components/Notifier'
 import LiveStatusPoller from '../components/LiveStatusPoller'
 import PageTitleController from '../components/PageTitleController'
-import { logout, navigate, removeNotification, toggleMainMenu } from '../actions'
+import { logout, navigate, removeNotification, toggleMainMenu, updateUserSettings } from '../actions'
 import { makeUrl } from '../client/util'
 import { VelocityComponent } from 'velocity-react'
 import { canInvite, canModerate } from '../models/currentUser'
+import { isMobile } from '../util'
+import { get } from 'lodash'
 
 const App = connect((state, { params: { id } }) => {
   const { leftNavOpened, notifierMessages } = state
+  const currentUser = state.people.current
+  const settingsLeftNavOpen = get(currentUser, 'settings.leftNavOpen')
   return {
-    leftNavOpened,
+    leftNavOpened: settingsLeftNavOpen === undefined ? leftNavOpened : settingsLeftNavOpen,
     notifierMessages,
-    currentUser: state.people.current,
+    currentUser,
     community: find(state.communities, c => c.id === state.currentCommunityId),
     path: state.routing.path
   }
@@ -32,7 +36,14 @@ const App = connect((state, { params: { id } }) => {
   } = props
 
   const moveWithMenu = {marginLeft: leftNavOpened ? leftNavWidth : 0}
-  const toggleLeftNav = () => dispatch(toggleMainMenu())
+  const toggleLeftNav = open => {
+    dispatch(toggleMainMenu())
+    if (!isMobile() && currentUser) {
+      dispatch(updateUserSettings(currentUser.id, {settings: {leftNavOpen: open}}, {settings: {leftNavOpen: !open}}))
+    }
+  }
+  const openLeftNav = () => toggleLeftNav(true)
+  const closeLeftNav = () => toggleLeftNav(false)
   const doSearch = text => dispatch(navigate(makeUrl('/search', {q: text})))
   const visitCommunity = community => {
     const match = path.match(/(events|projects|members|about|invite)$/)
@@ -46,14 +57,14 @@ const App = connect((state, { params: { id } }) => {
       community={community}
       canModerate={canModerate(currentUser, community)}
       canInvite={canInvite(currentUser, community)}
-      close={toggleLeftNav}/>
+      close={closeLeftNav}/>
 
     <VelocityComponent animation={moveWithMenu} easing={leftNavEasing}>
       <div>
         <TopNav currentUser={currentUser}
           community={community}
           onChangeCommunity={visitCommunity}
-          openLeftNav={toggleLeftNav}
+          openLeftNav={openLeftNav}
           leftNavOpened={leftNavOpened}
           logout={() => dispatch(logout())}
           path={path}

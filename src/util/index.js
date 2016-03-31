@@ -15,3 +15,7 @@ export const ogMetaTags = (title, description, image) => {
   }
   return metaTags
 }
+
+export const isMobile = () => {
+  return document.documentElement.clientWidth < 480
+}

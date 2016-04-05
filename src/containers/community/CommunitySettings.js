@@ -4,7 +4,7 @@ import { prefetch } from 'react-fetcher'
 import cx from 'classnames'
 const { object, func } = React.PropTypes
 import { find, get, reduce, isEmpty } from 'lodash'
-import { markdown } from '../../util/text'
+import { markdown, sanitize } from '../../util/text'
 import {
   updateCommunitySettings,
   fetchCommunitySettings,
@@ -369,7 +369,7 @@ export default class CommunitySettings extends React.Component {
                   <div className='medium-avatar' style={{backgroundImage: `url(${community.leader.avatar_url})`}}></div>
                   <div className='name'>{community.leader.name}</div>
                 </div>}
-                <p>{community.welcome_message || '[Not set yet]'}</p>
+                <p dangerouslySetInnerHTML={{__html: markdown(sanitize(community.welcome_message) || '[Not set yet]')}}></p>
                 <div className='buttons'><button type='button' onClick={() => this.edit('welcome_message', 'leader')}>Change</button></div>
               </div>}
         </div>

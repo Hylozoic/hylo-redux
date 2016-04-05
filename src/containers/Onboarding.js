@@ -6,6 +6,7 @@ import { fetchOnboarding } from '../actions'
 import A from '../components/A'
 import { communityUrl } from '../routes'
 import { isEmpty } from 'lodash'
+import { markdown, sanitize } from '../util/text'
 
 const Onboarding = compose(
   prefetch(({ dispatch, params: { id }, currentUser }) =>
@@ -29,7 +30,7 @@ const Onboarding = compose(
         <span className='medium-avatar' {...bg(community.leader.avatar_url)}></span>
         {community.leader.name}
       </span>
-      <span className='message'>{community.welcome_message}</span>
+      <span className='message' dangerouslySetInnerHTML={{__html: markdown(sanitize(community.welcome_message))}}></span>
     </div>
 
     <A className='btn right btn-primary'

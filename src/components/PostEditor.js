@@ -277,16 +277,13 @@ export class PostEditor extends React.Component {
           More details
         </div>}
 
-      <div className='hashtag-selector'>
-        <span>{tagLabel}</span>&nbsp;
-          <Dropdown toggleChildren={
-              <button>#</button>
-            }>
-            <li><a onClick={() => selectTag('request')}>#request</a></li>
-            <li><a onClick={() => selectTag('offer')}>#offer</a></li>
-            <li><a onClick={() => selectTag('chat')}>#all-topics</a></li>
-          </Dropdown>
-        </div>
+      <Dropdown className='hashtag-selector' toggleChildren={
+        <button>{tagLabel} <span className='caret'></span></button>
+      }>
+        <li><a onClick={() => selectTag('request')}>#request</a></li>
+        <li><a onClick={() => selectTag('offer')}>#offer</a></li>
+        <li><a onClick={() => selectTag('chat')}>#all-topics</a></li>
+      </Dropdown>
 
       {!project && <div className='communities'>
         in&nbsp;

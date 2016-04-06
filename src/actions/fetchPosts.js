@@ -48,11 +48,15 @@ export function fetchPosts (opts) {
 }
 
 export function checkFreshness (subject, id, posts, query = {}) {
-  let { limit, offset, type, sort, search, filter } = query
+  let { limit, offset, type, sort, search, filter, communityId } = query
   let cacheId = createCacheId(subject, id, query)
   if (!offset) offset = 0
   let querystring = cleanAndStringify({offset, limit, type, sort, search, filter})
   let payload = {api: true, params: {posts}, path: `/noo/freshness/posts/${subject}/${id}`, method: 'POST'}
+
+  if (subject === 'tag') {
+    payload.path = `/noo/freshness/posts/tag/${communityId}/${id}`
+  }
 
   payload.path += '?' + querystring
 

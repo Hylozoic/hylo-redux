@@ -67,7 +67,7 @@ export const connectedListProps = (state, props, itemType) => {
   let hasFreshItems = (state[hasFreshItemKey] || {})[cacheId] || false
 
   return {
-    [itemType]: itemIds.map(getItem),
+    [itemType]: compact(itemIds.map(getItem)),
     total: state[itemCountKey][cacheId],
     pending: state.pending[actionType],
     stale: hasFreshItems

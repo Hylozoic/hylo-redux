@@ -17,6 +17,7 @@ import CommunityJoinLinkHandler from './containers/community/CommunityJoinLinkHa
 import InvitationHandler from './containers/community/InvitationHandler'
 import AboutCommunity from './containers/community/AboutCommunity'
 import CommunitySettings from './containers/community/CommunitySettings'
+import TagPosts from './containers/community/TagPosts'
 import Onboarding from './containers/Onboarding'
 import PersonProfile from './containers/person/PersonProfile'
 import PersonPosts from './containers/person/PersonPosts'
@@ -106,6 +107,7 @@ export default function makeRoutes (store) {
       <Route path='about' component={AboutCommunity}/>
       <Route path='settings' component={CommunitySettings} onEnter={requireLogin()}/>
       <Route path='invite' component={CommunityInvitations} onEnter={requireLogin()}/>
+      <Route path='tag/:tagName' component={TagPosts} onEnter={requireLogin()} />
     </Route>
     <Route path='p/:id' component={SinglePost}/>
     <Route path='project/new' component={ProjectEditor} onenter={requireLogin()}/>

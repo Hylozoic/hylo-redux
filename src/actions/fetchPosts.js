@@ -2,7 +2,8 @@ import { cleanAndStringify, createCacheId } from '../util/caching'
 import { FETCH_POSTS, CHECK_FRESHNESS_POSTS } from './index'
 
 export function fetchPosts (opts) {
-  let { subject, id, limit, offset, type, sort, search, filter, cacheId } = opts
+  // communityId is only used when fetching a tag
+  let { subject, id, limit, offset, type, sort, search, filter, cacheId, communityId } = opts
   if (!offset) offset = 0
   let querystring = cleanAndStringify({
     offset,
@@ -33,6 +34,9 @@ export function fetchPosts (opts) {
       break
     case 'network':
       payload.path = `/noo/network/${id}/posts`
+      break
+    case 'tag':
+      payload.path = `/noo/tag/${communityId}/${id}`
       break
   }
 

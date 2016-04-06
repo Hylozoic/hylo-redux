@@ -94,6 +94,8 @@ export class PostEditor extends React.Component {
 
   set = key => event => this.updateStore({[key]: event.target.value})
 
+  setDelayed = debounce((key, value) => this.updateStore({[key]: value}), 200)
+
   addCommunity = community => {
     let { communities } = this.props.postEdit
     this.updateStore({communities: (communities || []).concat(community.id)})
@@ -225,6 +227,11 @@ export class PostEditor extends React.Component {
     }
   }
 
+  goToDetails = () => {
+    this.setState({showDetails: true})
+    this.refs.details.editor.focus()
+  }
+
   goBackToTitle = ({ which }) => {
     if (which === 8 || which === 46) {
       const value = this.refs.details.editor.getContent()
@@ -259,7 +266,7 @@ export class PostEditor extends React.Component {
       <RichTextEditor className={cx('details', {empty: !description && !showDetails})}
         ref='details'
         content={description}
-        onChange={this.set('description')}
+        onChange={ev => this.setDelayed('description', ev.target.value)}
         onKeyUp={this.goBackToTitle}
         mentionTemplate={personTemplate}
         mentionTypeahead={text => dispatch(typeahead(text, 'post'))}

@@ -40,7 +40,6 @@ export default class Mention extends React.Component {
 
   select = (choice) => {
     this.controller.addMention(this.props.template(choice))
-    this.resetQuery()
   }
 
   handleKeys = event => {

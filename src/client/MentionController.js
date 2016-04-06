@@ -36,7 +36,7 @@ function getLastChar (editor, negativeIndex = 1) {
 }
 
 const getCurrentTypedMention = editor => {
-  const words = editor.selection.getNode().innerHTML.split(' ')
+  const words = editor.selection.getNode().innerHTML.split(/ |&/)
   const word = words[words.length - 1]
   if (word[0] !== '@') throw new Error('getCurrentTypedMention got: ' + word)
   return word.slice(1)
@@ -155,7 +155,8 @@ export default class MentionController {
   }
 
   handleKeyUp = debounce(event => {
-    this.component.query(getCurrentTypedMention(this.editor))
+    var typed = getCurrentTypedMention(this.editor)
+    if (typed) this.component.query(typed)
   }, 100)
 
   shouldSelectOrMove (keyCode, event) {

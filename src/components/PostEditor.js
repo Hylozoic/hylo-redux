@@ -265,6 +265,10 @@ export class PostEditor extends React.Component {
         mentionTypeahead={text => dispatch(typeahead(text, 'post'))}
         mentionOptions={this.props.mentionOptions}
         mentionSelector='[data-user-id]'/>
+      {!description && !showDetails &&
+        <div className='details-placeholder' onClick={this.goToDetails}>
+          More details
+        </div>}
 
       <div className='hashtag-selector'>
         <span>{tagLabel}</span>&nbsp;

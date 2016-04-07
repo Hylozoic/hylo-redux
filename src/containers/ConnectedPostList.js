@@ -5,7 +5,7 @@ import { fetchPosts, checkFreshness } from '../actions/fetchPosts'
 import { debug } from '../util/logging'
 import { clearCache } from '../actions'
 import { connectedListProps, fetchWithCache, createCacheId } from '../util/caching'
-import { compact, intersection, isEqual, keys, pick, differenceBy } from 'lodash'
+import { intersection, isEqual, isNull, keys, omitBy, pick, differenceBy } from 'lodash'
 const { array, bool, func, number, object, string } = React.PropTypes
 
 export const fetch = fetchWithCache(fetchPosts)
@@ -13,7 +13,7 @@ export const fetch = fetchWithCache(fetchPosts)
 @connect((state, props) => {
   let listProps = connectedListProps(state, props, 'posts')
   let editingPostIds = intersection(
-    keys(compact(state.postEdits)),
+    keys(omitBy(state.postEdits, isNull)),
     listProps.posts.map(p => p.id)
   )
 

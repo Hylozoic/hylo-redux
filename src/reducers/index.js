@@ -32,6 +32,7 @@ import {
   FETCH_PEOPLE,
   FETCH_POSTS,
   FETCH_PROJECTS,
+  FETCH_TAG,
   LOGIN,
   LOGOUT,
   MARK_ACTIVITY_READ,
@@ -520,6 +521,23 @@ export default combineReducers({
         break
       case FETCH_LIVE_STATUS:
         return updateTitle(state, payload.new_notification_count)
+    }
+    return state
+  },
+
+  tagsByCommunity: (state = {}, action) => {
+    // meta.id here is whatever params.id is in CommunityProfile
+    let { type, payload, meta } = action
+    switch (type) {
+      case FETCH_TAG:
+        let oldCommunityTags = state[meta.id] || {}
+        return {
+          ...state,
+          [meta.id]: {
+            ...oldCommunityTags,
+            [meta.tagName]: payload
+          }
+        }
     }
     return state
   }

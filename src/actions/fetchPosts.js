@@ -36,7 +36,7 @@ export function fetchPosts (opts) {
       payload.path = `/noo/network/${id}/posts`
       break
     case 'tag':
-      payload.path = `/noo/tag/${communityId}/${id}`
+      payload.path = `/noo/tag/${communityId}/${id}/posts`
       break
   }
 

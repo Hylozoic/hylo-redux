@@ -32,6 +32,7 @@ export const FETCH_POST = 'FETCH_POST'
 export const FETCH_POSTS = 'FETCH_POSTS'
 export const FETCH_PROJECT = 'FETCH_PROJECT'
 export const FETCH_PROJECTS = 'FETCH_PROJECTS'
+export const FETCH_TAG = 'FETCH_TAG'
 export const FOLLOW_POST = 'FOLLOW_POST'
 export const JOIN_COMMUNITY_WITH_CODE = 'JOIN_COMMUNITY_WITH_CODE'
 export const JOIN_PROJECT = 'JOIN_PROJECT'
@@ -562,4 +563,13 @@ export function followPost (id, person) {
 
 export function setCurrentCommunityId (id) {
   return {type: SET_CURRENT_COMMUNITY_ID, payload: id}
+}
+
+export function fetchTag (id, tagName) {
+  let path = `/noo/tag/${id}/${tagName}`
+  return {
+    type: FETCH_TAG,
+    payload: {api: true, path},
+    meta: {id, tagName}
+  }
 }

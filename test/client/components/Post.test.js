@@ -1,12 +1,11 @@
 require('../support')
 import { mocks, helpers } from '../../support'
-import { UndecoratedPost, Voters } from '../../../src/components/Post'
+import { Voters } from '../../../src/components/Post'
 import Post from '../../../src/components/Post'
 import React from 'react'
 import {
   findRenderedDOMComponentWithClass,
-  renderIntoDocument,
-  Simulate
+  renderIntoDocument
 } from 'react-addons-test-utils'
 import { Provider } from 'react-redux'
 import cheerio from 'cheerio'
@@ -17,6 +16,7 @@ let post = {
   name: 'i have something for you!',
   description: 'it is very special.',
   type: 'offer',
+  tag: 'offer',
   created_at: new Date(),
   updated_at: new Date(),
   user: {
@@ -50,7 +50,7 @@ describe('Post', () => {
       <Post post={post} expanded={true}/>
     </Provider>
     let node = renderIntoDocument(component)
-    findRenderedDOMComponentWithClass(node, 'post offer')
+    findRenderedDOMComponentWithClass(node, 'post')
     let details = findRenderedDOMComponentWithClass(node, 'details')
     let expected = new RegExp(`<span [^>]*><p>${post.description}&nbsp;<\/p><\/span><a class="hashtag" [^>]*>#offer<\/a>`)
     expect(details.innerHTML).to.match(expected)

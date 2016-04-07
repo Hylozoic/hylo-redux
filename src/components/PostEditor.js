@@ -94,7 +94,7 @@ export class PostEditor extends React.Component {
 
   set = key => event => this.updateStore({[key]: event.target.value})
 
-  setDelayed = debounce((key, value) => this.updateStore({[key]: value}), 200)
+  setDelayed = debounce((key, value) => this.updateStore({[key]: value}), 50)
 
   addCommunity = community => {
     let { communities } = this.props.postEdit
@@ -131,7 +131,7 @@ export class PostEditor extends React.Component {
     // click Save immediately after typing in the description field, we have to
     // wait for events from the description field to be handled so that the
     // store is up to date
-    setTimeout(() => this.reallySave())
+    setTimeout(() => this.reallySave(), 100)
   }
 
   reallySave () {

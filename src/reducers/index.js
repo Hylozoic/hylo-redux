@@ -33,6 +33,7 @@ import {
   FETCH_POSTS,
   FETCH_PROJECTS,
   FETCH_TAG,
+  FOLLOW_TAG_PENDING,
   LOGIN,
   LOGOUT,
   MARK_ACTIVITY_READ,
@@ -536,6 +537,16 @@ export default combineReducers({
           [meta.id]: {
             ...oldCommunityTags,
             [meta.tagName]: payload
+          }
+        }
+      case FOLLOW_TAG_PENDING:
+        oldCommunityTags = state[meta.id] || {}
+        var oldTag = oldCommunityTags[meta.tagName]
+        return {
+          ...state,
+          [meta.id]: {
+            ...oldCommunityTags,
+            [meta.tagName]: {...oldTag, followed: !oldTag.followed}
           }
         }
     }

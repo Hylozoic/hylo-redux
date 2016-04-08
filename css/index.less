@@ -469,10 +469,21 @@ ul.tags {
 }
 
 .list-controls.tag-header {
-  text-align: left;
-  padding-left: 20px;
   .tag-name {
     .tag-header-name-text;
+    position: absolute;
+    left: 20px;
+  }
+
+  button {
+    .round-button;
+     outline: none;
+  }
+
+  .follow {
+    color: #fff;
+    background-color: @damian-green;
+    border-color: @damian-green;
   }
 
 }

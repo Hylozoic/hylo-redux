@@ -265,13 +265,10 @@ export class PostEditor extends React.Component {
 
       <RichTextEditor className={cx('details', {empty: !description && !showDetails})}
         ref='details'
+        name='post'
         content={description}
         onChange={ev => this.setDelayed('description', ev.target.value)}
-        onKeyUp={this.goBackToTitle}
-        mentionTemplate={personTemplate}
-        mentionTypeahead={text => dispatch(typeahead(text, 'post'))}
-        mentionOptions={this.props.mentionOptions}
-        mentionSelector='[data-user-id]'/>
+        onKeyUp={this.goBackToTitle}/>
       {!description && !showDetails &&
         <div className='details-placeholder' onClick={this.goToDetails}>
           More details

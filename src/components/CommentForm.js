@@ -9,8 +9,7 @@ import { personTemplate } from '../util/mentions'
 var { array, func, object, string } = React.PropTypes
 
 @connect(state => ({
-  currentUser: get(state, 'people.current'),
-  mentionOptions: get(state, 'typeaheadMatches.comment')
+  currentUser: get(state, 'people.current')
 }))
 export default class CommentForm extends React.Component {
   static propTypes = {
@@ -44,12 +43,8 @@ export default class CommentForm extends React.Component {
       <Avatar person={currentUser}/>
       {editing
         ? <div className='content'>
-            <RichTextEditor ref='editor'
+            <RichTextEditor ref='editor' name='comment'
               onChange={setText}
-              mentionTemplate={personTemplate}
-              mentionTypeahead={text => dispatch(typeahead(text, 'comment'))}
-              mentionOptions={mentionOptions}
-              mentionSelector='[data-user-id]'
               startFocused={true}/>
             <input type='submit' value='Comment'/>
           </div>

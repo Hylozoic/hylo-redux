@@ -210,7 +210,7 @@ export function createComment (postId, text) {
 export function typeahead (text, id, params) {
   if (!text) return {type: CANCEL_TYPEAHEAD, meta: {id}}
 
-  let path = `/noo/autocomplete?${cleanAndStringify({...params, q: text})}`
+  const path = `/noo/autocomplete?${cleanAndStringify({...params, q: text})}`
 
   return {
     type: TYPEAHEAD,

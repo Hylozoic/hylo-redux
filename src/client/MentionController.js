@@ -1,3 +1,12 @@
+// alternate approach: when a trigger character (@ or #) is typed, we create a
+// new node and move the cursor inside of it, so it's easy to figure out what
+// the string for autocompleting is.
+//
+// - when space is typed, we exit the node
+// - when we backspace to the edge of the node, we enter it
+// - when we press enter or tab and there are options for autocomplete,
+//   select the option and replace the node with the selected content
+
 // This is based on react-tinymce-mention but has been significantly changed.
 // We keep the logic for managing interaction with the editor and tracking an
 // @-mention while in progress, but we swap the original implementation for a
@@ -10,17 +19,8 @@
 
 import { renderToStaticMarkup } from 'react-dom/server'
 import { debounce, difference, includes, isEmpty, values } from 'lodash'
-
-const keyMap = {
-  BACKSPACE: 8,
-  TAB: 9,
-  ENTER: 13,
-  ESC: 27,
-  SPACE: 32,
-  UP: 38,
-  DOWN: 40,
-  DELETE: 46
-}
+import { debug } from '../util/logging'
+import { keyMap } from '../util/tinymce'
 
 const delimiter = '@'
 
@@ -38,8 +38,8 @@ function getLastChar (editor, negativeIndex = 1) {
 const getCurrentTypedMention = editor => {
   const words = editor.selection.getNode().innerHTML.split(/ |&/)
   const word = words[words.length - 1]
-  if (word[0] !== '@') throw new Error('getCurrentTypedMention got: ' + word)
-  return word.slice(1)
+  debug(`typed mention: ${word}`)
+  return word
 }
 
 // TODO: Cleanup

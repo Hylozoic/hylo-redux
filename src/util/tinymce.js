@@ -24,7 +24,7 @@ export const replaceNode = (newContent, editor) => {
   const { selection } = editor
   selection.select(selection.getNode())
   removeCurrentNode(editor)
-  editor.insertContent(newContent)
+  editor.insertContent(newContent + '&nbsp;')
 }
 
 export const insertJSX = (component, editor) =>

@@ -34,6 +34,7 @@ export const FETCH_PROJECT = 'FETCH_PROJECT'
 export const FETCH_PROJECTS = 'FETCH_PROJECTS'
 export const FETCH_TAG = 'FETCH_TAG'
 export const FOLLOW_POST = 'FOLLOW_POST'
+export const FOLLOW_TAG = 'FOLLOW_TAG'
 export const JOIN_COMMUNITY_WITH_CODE = 'JOIN_COMMUNITY_WITH_CODE'
 export const JOIN_PROJECT = 'JOIN_PROJECT'
 export const JOIN_PROJECT_PENDING = JOIN_PROJECT + _PENDING
@@ -570,6 +571,14 @@ export function fetchTag (id, tagName) {
   return {
     type: FETCH_TAG,
     payload: {api: true, path},
+    meta: {id, tagName}
+  }
+}
+
+export function followTag (id, tagName) {
+  return {
+    type: FOLLOW_TAG,
+    payload: {api: true, path: `/noo/tag/${id}/${tagName}/follow`, method: 'POST'},
     meta: {id, tagName}
   }
 }

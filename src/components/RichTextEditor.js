@@ -1,4 +1,5 @@
 import React from 'react'
+import autoproxy from 'autoproxy'
 import { connect } from 'react-redux'
 import TinyMCE from 'react-tinymce'
 import cx from 'classnames'
@@ -31,9 +32,16 @@ const templateForChoice = choice => {
     : <a data-search={`#${name}`} data-tag-id={id}>#{name}</a>
 }
 
-@connect((state, { name }) => ({
+// @autoproxy allows the instance methods of the class to be accessible even
+// after it is decorated with @connect, which wouldn't otherwise be possible.
+// However, it doesn't do the same for instance variables. We handle those by
+// calling getWrappedInstance() below instead of naively using `this`, which is
+// the undecorated class in the constructor and componentDidMount but the
+// decorated class otherwise.
+//
+@autoproxy(connect((state, { name }) => ({
   typeaheadOptions: get(state, `typeaheadMatches.${name}`)
-}))
+}), null, null, {withRef: true}))
 export default class RichTextEditor extends React.Component {
   static propTypes = {
     onChange: func.isRequired,
@@ -65,8 +73,8 @@ export default class RichTextEditor extends React.Component {
       })
     } else {
       // do not use uuid() on the server, because it will keep a single count
-      // for all requests. this will break if we render a page on the server
-      // that has two or more editors on it.
+      // for all requests. this can be a dumb value because we don't expect the
+      // editor to work on the server anyway.
       this.editorId = 'react-tinymce-0'
     }
   }
@@ -78,32 +86,20 @@ export default class RichTextEditor extends React.Component {
   }
 
   setContent (text) {
-    this.editor.setContent(text)
+    this.getEditor().setContent(text)
   }
 
-  getEditor = callback => {
-    if (this.editor) return callback(this.editor)
-    if (!this.callbacks) this.callbacks = []
-    this.callbacks.push(callback)
-    if (this.getEditorLoop) return
+  // getting the editor is asynchronous because tinymce loads plugins and
+  // stylesheets from the network when the first editor is rendered
+  pollForEditor (callback) {
+    const self = this.getWrappedInstance ? this.getWrappedInstance() : this
+    if (self.editor) return callback(self.editor)
 
-    const waitMs = 30
-    let attempts = 1
-    this.getEditorLoop = setInterval(() => {
-      this.editor = window.tinymce.EditorManager.editors.find(e => e.id === this.editorId)
-      const elapsed = attempts * waitMs
-      if (this.editor) {
-        console.log(`got ${this.editorId} after ${elapsed} ms; ` +
-          `calling ${this.callbacks.length} callback(s)`)
-        clearInterval(this.getEditorLoop)
-        this.callbacks.forEach(c => c(this.editor))
-      }
-      attempts += 1
-      if (attempts > 100) {
-        console.error(`couldn't get ${this.editorId} after ${elapsed} ms`)
-        clearInterval(this.getEditorLoop)
-      }
-    }, waitMs)
+    if (!self.editorPoller) {
+      self.editorPoller = new EditorPoller(self, self.editorId, callback)
+    } else {
+      self.editorPoller.addCallback(callback)
+    }
   }
 
   handleListKey (event) {
@@ -123,7 +119,7 @@ export default class RichTextEditor extends React.Component {
   componentDidMount () {
     const { onReady, onKeyDown, onKeyUp, onKeyPress, startFocused } = this.props
 
-    this.getEditor(editor => {
+    this.pollForEditor(editor => {
       onReady && onReady(editor)
       startFocused && editor.focus()
 
@@ -154,14 +150,32 @@ export default class RichTextEditor extends React.Component {
 
   selectTypeahead = choice => {
     this.autocomplete(null)
-    replaceNodeWithJSX(templateForChoice(choice), this.editor)
+    replaceNodeWithJSX(templateForChoice(choice), this.getEditor())
+  }
+
+  focus () {
+    const editor = this.getEditor()
+    if (editor) return editor.focus()
+    this.pollForEditor(editor => editor.focus())
+  }
+
+  getContent () {
+    return this.getEditor().getContent()
+  }
+
+  getEditor () {
+    return this.self().editor
+  }
+
+  self () {
+    return this.getWrappedInstance ? this.getWrappedInstance() : this
   }
 
   render () {
     let { className, content, typeaheadOptions } = this.props
 
     return <div className={cx('rich-text-editor', className)}>
-      <TinyMCE config={editorConfig} id={this.editorId}
+      <TinyMCE config={editorConfig} id={this.self().editorId}
         onChange={this.handleChange}
         onSetContent={this.handleChange}
         content={content}/>
@@ -173,5 +187,40 @@ export default class RichTextEditor extends React.Component {
           onChange={this.selectTypeahead}/>
       </div>}
     </div>
+  }
+}
+
+class EditorPoller {
+  constructor (parent, editorId, callback) {
+    this.parent = parent
+    this.editorId = editorId
+    this.callbacks = [callback]
+    this.poll()
+  }
+
+  poll () {
+    const waitMs = 30
+    const { editors } = window.tinymce.EditorManager
+    let attempts = 1
+    this.pollInterval = setInterval(() => {
+      this.parent.editor = editors.find(e => e.id === this.editorId)
+      const elapsed = attempts * waitMs
+      if (this.parent.editor) {
+        console.log(`got ${this.editorId} after ${elapsed} ms; ` +
+          `calling ${this.callbacks.length} callback(s)`)
+        clearInterval(this.pollInterval)
+        this.callbacks.forEach(c => c(this.parent.editor))
+      } else {
+        attempts += 1
+        if (attempts > 100) {
+          console.error(`couldn't get ${this.editorId} after ${elapsed} ms`)
+          clearInterval(this.pollInterval)
+        }
+      }
+    }, waitMs)
+  }
+
+  addCallback (callback) {
+    this.callbacks.push(callback)
   }
 }

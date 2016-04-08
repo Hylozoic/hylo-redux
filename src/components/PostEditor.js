@@ -16,21 +16,16 @@ import { NonLinkAvatar } from './Avatar'
 import AutosizingTextarea from './AutosizingTextarea'
 import { connect } from 'react-redux'
 import {
-  typeahead, updatePostEditor, createPost, updatePost, cancelPostEdit,
+  updatePostEditor, createPost, updatePost, cancelPostEdit,
   removeImage, removeDoc
 } from '../actions'
 import { uploadImage } from '../actions/uploadImage'
 import { uploadDoc } from '../actions/uploadDoc'
 import { attachmentParams } from '../util/shims'
+import { prepend } from '../util/tinymce'
 import { CREATE_POST, UPDATE_POST, UPLOAD_IMAGE } from '../actions'
-import { personTemplate } from '../util/mentions'
 import { ADDED_POST, EDITED_POST, trackEvent } from '../util/analytics'
 const { array, bool, func, object, string } = React.PropTypes
-
-const prependText = (editor, text, skip_focus) => {
-  editor.selection.setCursorLocation(null, 0)
-  editor.execCommand('mceInsertContent', false, text, {skip_focus})
-}
 
 @connect((state, { community, post, project }) => {
   let id = post
@@ -175,7 +170,7 @@ export class PostEditor extends React.Component {
     const { length } = value
     if (length > maxlength || value.indexOf('\n') !== -1) {
       const { title, details } = this.refs
-      const editor = details.editor
+      const editor = details.getEditor()
 
       let splitIndex = length > maxlength
         ? value.lastIndexOf(' ', maxlength - 1)
@@ -189,7 +184,7 @@ export class PostEditor extends React.Component {
 
       const pos = title.textarea.selectionStart
       if (pos <= name.length) {
-        prependText(editor, excess, true)
+        prepend(excess, editor)
 
         // when the above setState call lands, the cursor ends up jumping to the
         // end of the text field. we can move it back, but not until the
@@ -211,11 +206,8 @@ export class PostEditor extends React.Component {
           title.setCursorLocation(pos)
         })
       } else {
-        if (excess) {
-          prependText(editor, excess)
-        } else {
-          editor.focus()
-        }
+        if (excess) prepend(excess, editor)
+        editor.focus()
       }
       setTimeout(() => title.resize())
     } else {
@@ -229,12 +221,12 @@ export class PostEditor extends React.Component {
 
   goToDetails = () => {
     this.setState({showDetails: true})
-    this.refs.details.editor.focus()
+    this.refs.details.focus()
   }
 
   goBackToTitle = ({ which }) => {
     if (which === 8 || which === 46) {
-      const value = this.refs.details.editor.getContent()
+      const value = this.refs.details.getContent()
       if (!value) {
         this.setState({showDetails: false})
         this.refs.title.focus()

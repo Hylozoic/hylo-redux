@@ -3,9 +3,8 @@ import { get } from 'lodash'
 import { connect } from 'react-redux'
 import Avatar from './Avatar'
 import RichTextEditor from './RichTextEditor'
-import { createComment, typeahead } from '../actions'
+import { createComment } from '../actions'
 import { ADDED_COMMENT, trackEvent } from '../util/analytics'
-import { personTemplate } from '../util/mentions'
 var { array, func, object, string } = React.PropTypes
 
 @connect(state => ({
@@ -34,7 +33,7 @@ export default class CommentForm extends React.Component {
   }
 
   render () {
-    const { currentUser, dispatch, mentionOptions } = this.props
+    const { currentUser } = this.props
     const { editing } = this.state
     const edit = () => this.setState({editing: true})
     const setText = event => this.setState({text: event.target.value})

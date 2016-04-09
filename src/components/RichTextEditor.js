@@ -148,13 +148,13 @@ export default class RichTextEditor extends React.Component {
   autocomplete = (term, node) => {
     const { dispatch, name } = this.props
     dispatch(typeahead(term, name))
-    if (!node) return
+    if (!node || !term) return
 
+    // position the dropdown under the cursor
     const nodePos = position(node)
     const editorPos = position(this.getEditor().iframeElement)
     const containerPos = position(this.refs.container)
     const lineHeight = 15
-
     this.setState({
       dropdown: {
         left: nodePos.x + editorPos.x - containerPos.x,
@@ -207,6 +207,8 @@ export default class RichTextEditor extends React.Component {
   }
 }
 
+// the need for this class may be removed if we pre-load all assets for TinyMCE
+// rather than having it fetch them on demand.
 class EditorPoller {
   constructor (parent, editorId, callback) {
     this._parent = parent

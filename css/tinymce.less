@@ -1,6 +1,22 @@
+.mce-container {
+  textarea {
+    display: none;
+  }
+}
+
 // these styles are applied inside the iframe that TinyMCE creates; the body tag
 // inside the iframe gets this id
 #tinymce {
-  padding: 6px 12px; // same as .form-control
+  // padding: 6px 12px; // same as .form-control
   .body-text;
+  padding: 0;
+  background-color: @card-background;
+
+  .hashtag {
+    font-weight: bold;
+  }
+
+  .mention {
+    font-weight: bold;
+  }
 }

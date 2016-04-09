@@ -85,7 +85,7 @@ export default class Signup extends React.Component {
 
     let { actionError, location: { query }, project, community } = this.props
 
-    return <div id='signup' className='login-signup'>
+    return <div id='signup' className='login-signup simple-page'>
       <form onSubmit={this.submit}>
         <h2>Sign up</h2>
         {project && <p>To join the project "{project.title}"</p>}

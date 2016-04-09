@@ -55,7 +55,7 @@ export function trackEvent (eventName, options = {}) {
     case EDITED_POST:
       track({
         post_id: post.id,
-        post_type: post.type,
+        post_tag: post.tag,
         community_id: community.id,
         project_id: get(project, 'id')
       })

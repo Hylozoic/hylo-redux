@@ -116,7 +116,7 @@ export default class Login extends React.Component {
     if (error === 'no user') error = 'Login was canceled or no user data was found.'
     if (error === 'no email') error = 'The user data did not include an email address.'
 
-    return <div id='login' className='login-signup'>
+    return <div id='login' className='login-signup simple-page'>
       <form onSubmit={this.submit}>
         <h2>Log in</h2>
         {project && <p>To join the project "{project.title}"</p>}

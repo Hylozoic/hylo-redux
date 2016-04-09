@@ -2,7 +2,7 @@ import React from 'react'
 import Post from './Post'
 import ScrollListener from './ScrollListener'
 import RefreshButton from './RefreshButton'
-import { position, positionInViewport } from '../util/scrolling'
+import { changeViewportTop, positionInViewport } from '../util/scrolling'
 import { includes } from 'lodash'
 import PostEditor from './PostEditor'
 
@@ -23,28 +23,30 @@ class PostList extends React.Component {
 
   constructor (props) {
     super(props)
-    this.state = {expanded: null}
+    this.state = {}
   }
 
   expand = (id) => {
     this.setState({expanded: id})
   }
 
-  componentWillUpdate (nextProps, nextState) {
-    let nextExpandedId = nextState.expanded
-    if (nextExpandedId && nextExpandedId !== this.state.expanded) {
-      let node = this.refs[nextExpandedId]
-      this.targetViewportY = positionInViewport(node).y
-    }
+  unexpand = event => {
+    this.setState({expanded: null})
   }
 
-  componentDidUpdate (prevProps, prevState) {
-    let expandedId = this.state.expanded
-    if (expandedId && expandedId !== prevState.expanded) {
-      let node = this.refs[expandedId]
-      let pos = position(node)
-      let newViewportTop = pos.y - this.targetViewportY
-      window.scrollTo(0, newViewportTop)
+  componentWillUpdate (nextProps, nextState) {
+    if (!this.state.expanded && nextState.expanded) {
+      const node = this.refs[nextState.expanded]
+      this.initialHeight = node.offsetHeight
+      return
+    }
+
+    if (this.state.expanded && nextState.expanded !== this.state.expanded) {
+      const node = this.refs[this.state.expanded]
+      const nodeY = positionInViewport(node).y
+      if (nodeY + this.initialHeight < 0) {
+        changeViewportTop(nodeY - 30)
+      }
     }
   }
 
@@ -63,7 +65,12 @@ class PostList extends React.Component {
       {posts.map(p => <li key={p.id} ref={p.id}>
         {includes(editingPostIds, p.id)
           ? <PostEditor post={p} expanded={true} project={project}/>
-          : <Post post={p} expanded={p.id === this.state.expanded} onExpand={this.expand}/>}
+          : p.id === this.state.expanded
+            ? <div>
+                <div className='backdrop' onClick={this.unexpand}/>
+                <Post post={p} expanded={true}/>
+              </div>
+            : <Post post={p} onExpand={() => this.expand(p.id)}/>}
       </li>)}
       <ScrollListener onBottom={loadMore}/>
     </ul>

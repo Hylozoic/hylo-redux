@@ -102,7 +102,7 @@ export default class ProjectProfile extends React.Component {
       if (expandable) details = truncated
     }
 
-    return <div id='project'>
+    return <div id='project' className='simple-page'>
       {!isPublished && canModerate && <div className='draft-header'>
         <button onClick={this.publish}>Publish</button>
         <strong>Draft Project</strong> &mdash; You can edit project details, add posts, and invite contributors until you are happy with how your project looks. Only you and other contributors will be able to see this project until it is published.

@@ -17,6 +17,7 @@ import CommunityJoinLinkHandler from './containers/community/CommunityJoinLinkHa
 import InvitationHandler from './containers/community/InvitationHandler'
 import AboutCommunity from './containers/community/AboutCommunity'
 import CommunitySettings from './containers/community/CommunitySettings'
+import TagPosts from './containers/community/TagPosts'
 import Onboarding from './containers/Onboarding'
 import PersonProfile from './containers/person/PersonProfile'
 import PersonPosts from './containers/person/PersonPosts'
@@ -37,27 +38,37 @@ import NetworkEditor from './containers/network/NetworkEditor'
 import Notifications from './containers/Notifications'
 import Search from './containers/Search'
 import Admin from './containers/Admin'
+import TestBench from './containers/TestBench'
 import { debug } from './util/logging'
 import { makeUrl } from './client/util'
+import { get, isEmpty } from 'lodash'
 
 export default function makeRoutes (store) {
   const requireLogin = (options = {}) => (nextState, replaceState) => {
     let { startAtSignup, addParams } = options
-    if (!store.getState().people.current) {
-      let start = startAtSignup ? 'signup' : 'login'
-      debug(`redirecting to ${start}`)
+    if (store.getState().people.current) return true
 
-      let params = {
-        next: nextState.location.pathname,
-        ...(addParams ? addParams(nextState) : null)
-      }
+    let start = startAtSignup ? 'signup' : 'login'
+    debug(`redirecting to ${start}`)
 
-      replaceState({}, makeUrl(`/${start}`, params))
+    let params = {
+      next: nextState.location.pathname,
+      ...(addParams ? addParams(nextState) : null)
+    }
+
+    replaceState({}, makeUrl(`/${start}`, params))
+  }
+
+  const requireCommunity = (options = {}) => (nextState, replaceState) => {
+    if (!requireLogin(options)(nextState, replaceState)) return
+
+    if (isEmpty(get(store.getState().people.current, 'memberships'))) {
+      replaceState({}, '/c/join')
     }
   }
 
   return <Route path='/' component={App}>
-    <IndexRoute component={AllPosts} onEnter={requireLogin()}/>
+    <IndexRoute component={AllPosts} onEnter={requireCommunity()}/>
     <Route path='signup' component={Signup}/>
     <Route path='login' component={Login}/>
     <Route path='settings' component={UserSettings} onEnter={requireLogin()}/>
@@ -97,6 +108,7 @@ export default function makeRoutes (store) {
       <Route path='about' component={AboutCommunity}/>
       <Route path='settings' component={CommunitySettings} onEnter={requireLogin()}/>
       <Route path='invite' component={CommunityInvitations} onEnter={requireLogin()}/>
+      <Route path='tag/:tagName' component={TagPosts} onEnter={requireLogin()} />
     </Route>
     <Route path='p/:id' component={SinglePost}/>
     <Route path='project/new' component={ProjectEditor} onenter={requireLogin()}/>
@@ -114,6 +126,8 @@ export default function makeRoutes (store) {
       <Route path='about' component={AboutNetwork}/>
     </Route>
     <Route path='n/:id/edit' component={NetworkEditor} onEnter={requireLogin()}/>
+
+    <Route path='testbench' component={TestBench}/>
   </Route>
 }
 

@@ -1,6 +1,6 @@
 import invariant from 'invariant'
 
-const _PENDING = '_PENDING'
+export const _PENDING = '_PENDING'
 export const ADD_COMMUNITY_MODERATOR = 'ADD_COMMUNITY_MODERATOR'
 export const ADD_COMMUNITY_MODERATOR_PENDING = ADD_COMMUNITY_MODERATOR + _PENDING
 export const CANCEL_POST_EDIT = 'CANCEL_POST_EDIT'
@@ -14,7 +14,6 @@ export const CREATE_COMMUNITY = 'CREATE_COMMUNITY'
 export const CREATE_POST = 'CREATE_POST'
 export const CREATE_PROJECT = 'CREATE_PROJECT'
 export const CREATE_NETWORK = 'CREATE_NETWORK'
-export const TOGGLE_USER_SETTINGS_SECTION = 'TOGGLE_USER_SETTINGS_SECTION'
 export const FETCH_ACTIVITY = 'FETCH_ACTIVITY'
 export const FETCH_COMMENTS = 'FETCH_COMMENTS'
 export const FETCH_COMMUNITY = 'FETCH_COMMUNITY'
@@ -33,6 +32,7 @@ export const FETCH_POST = 'FETCH_POST'
 export const FETCH_POSTS = 'FETCH_POSTS'
 export const FETCH_PROJECT = 'FETCH_PROJECT'
 export const FETCH_PROJECTS = 'FETCH_PROJECTS'
+export const FETCH_TAG = 'FETCH_TAG'
 export const FOLLOW_POST = 'FOLLOW_POST'
 export const JOIN_COMMUNITY_WITH_CODE = 'JOIN_COMMUNITY_WITH_CODE'
 export const JOIN_PROJECT = 'JOIN_PROJECT'
@@ -61,6 +61,7 @@ export const SEARCH = 'SEARCH'
 export const SEND_COMMUNITY_INVITATION = 'SEND_COMMUNITY_INVITATION'
 export const SEND_PROJECT_INVITE = 'SEND_PROJECT_INVITE'
 export const SEND_PROJECT_INVITE_PENDING = SEND_PROJECT_INVITE + _PENDING
+export const SET_CURRENT_COMMUNITY_ID = 'SET_CURRENT_COMMUNITY_ID'
 export const SET_LOGIN_ERROR = 'SET_LOGIN_ERROR'
 export const SET_META_TAGS = 'SET_META_TAGS'
 export const SET_SIGNUP_ERROR = 'SET_SIGNUP_ERROR'
@@ -71,7 +72,7 @@ export const THANK = 'THANK'
 export const THANK_PENDING = THANK + _PENDING
 export const TOGGLE_MAIN_MENU = 'TOGGLE_MAIN_MENU'
 export const TOGGLE_PROJECT_MODERATOR_ROLE = 'TOGGLE_PROJECT_MODERATOR_ROLE'
-export const TOGGLE_SHOW_ALL_COMMUNITIES = 'TOGGLE_SHOW_ALL_COMMUNITIES'
+export const TOGGLE_USER_SETTINGS_SECTION = 'TOGGLE_USER_SETTINGS_SECTION'
 export const TYPEAHEAD = 'TYPEAHEAD'
 export const UPDATE_COMMUNITY_EDITOR = 'UPDATE_COMMUNITY_EDITOR'
 export const UPDATE_INVITATION_EDITOR = 'UPDATE_INVITATION_EDITOR'
@@ -182,10 +183,10 @@ export function navigate (path) {
   }
 }
 
-export function fetchComments (postId) {
+export function fetchComments (postId, opts = {}) {
   // these are ignored since the comment API doesn't do pagination yet
-  let limit = 100
-  let offset = 0
+  let limit = opts.limit || 1000
+  let offset = opts.offset || 0
 
   return {
     type: FETCH_COMMENTS,
@@ -209,7 +210,7 @@ export function createComment (postId, text) {
 export function typeahead (text, id, params) {
   if (!text) return {type: CANCEL_TYPEAHEAD, meta: {id}}
 
-  let path = `/noo/autocomplete?${cleanAndStringify({...params, q: text})}`
+  const path = `/noo/autocomplete?${cleanAndStringify({...params, q: text})}`
 
   return {
     type: TYPEAHEAD,
@@ -243,9 +244,11 @@ export function clearCache (bucket, id) {
 }
 
 export function fetchPost (id) {
+  let querystring = cleanAndStringify({comments: true, votes: true})
+
   return {
     type: FETCH_POST,
-    payload: {api: true, path: `/noo/post/${id}`},
+    payload: {api: true, path: `/noo/post/${id}?${querystring}`},
     meta: {cache: {id, bucket: 'posts'}}
   }
 }
@@ -487,11 +490,11 @@ export function sendCommunityInvitation (communityId, params) {
   }
 }
 
-export function voteOnPost (post) {
+export function voteOnPost (post, currentUser) {
   return {
     type: VOTE_ON_POST,
     payload: {api: true, path: `/noo/post/${post.id}/vote`, method: 'POST'},
-    meta: {id: post.id, prevProps: post}
+    meta: {id: post.id, prevProps: post, currentUser: pick(currentUser, 'id', 'name', 'avatar_url')}
   }
 }
 
@@ -521,10 +524,6 @@ export function fetchOnboarding (userId, communityId) {
     type: FETCH_ONBOARDING,
     payload: {api: true, path}
   }
-}
-
-export function toggleShowAllCommunities () {
-  return {type: TOGGLE_SHOW_ALL_COMMUNITIES}
 }
 
 export function removePost (id) {
@@ -559,5 +558,18 @@ export function followPost (id, person) {
     type: FOLLOW_POST,
     payload: {api: true, path: `/noo/post/${id}/follow`, method: 'POST'},
     meta: {id, person: pick(person, 'id', 'name', 'avatar_url')}
+  }
+}
+
+export function setCurrentCommunityId (id) {
+  return {type: SET_CURRENT_COMMUNITY_ID, payload: id}
+}
+
+export function fetchTag (id, tagName) {
+  let path = `/noo/tag/${id}/${tagName}`
+  return {
+    type: FETCH_TAG,
+    payload: {api: true, path},
+    meta: {id, tagName}
   }
 }

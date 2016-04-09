@@ -17,7 +17,7 @@ export default class ServiceAuthButtons extends React.Component {
 
   componentDidMount () {
     let { dispatch, errorAction } = this.props
-    if (!window.popupDone) setupPopupCallback(dispatch, errorAction)
+    setupPopupCallback('login-signup', dispatch, errorAction)
   }
 
   render () {

@@ -7,45 +7,25 @@ because they make more sense.
 */
 
 import React from 'react'
-import { filter, find, get, includes, isEmpty, omit, startsWith } from 'lodash'
 import cx from 'classnames'
+import { debounce, filter, find, get, includes, isEmpty, some, startsWith } from 'lodash'
 import CommunityTagInput from './CommunityTagInput'
 import Dropdown from './Dropdown'
-import ImageAttachmentButton from './ImageAttachmentButton'
 import RichTextEditor from './RichTextEditor'
+import { NonLinkAvatar } from './Avatar'
+import AutosizingTextarea from './AutosizingTextarea'
 import { connect } from 'react-redux'
 import {
-  typeahead, updatePostEditor, createPost, updatePost, cancelPostEdit,
+  updatePostEditor, createPost, updatePost, cancelPostEdit,
   removeImage, removeDoc
 } from '../actions'
 import { uploadImage } from '../actions/uploadImage'
 import { uploadDoc } from '../actions/uploadDoc'
 import { attachmentParams } from '../util/shims'
-import truncate from 'html-truncate'
+import { prepend } from '../util/tinymce'
 import { CREATE_POST, UPDATE_POST, UPLOAD_IMAGE } from '../actions'
-import { personTemplate } from '../util/mentions'
 import { ADDED_POST, EDITED_POST, trackEvent } from '../util/analytics'
 const { array, bool, func, object, string } = React.PropTypes
-
-const postTypes = ['chat', 'request', 'offer', 'intention', 'event']
-
-const postTypeData = {
-  intention: {
-    placeholder: 'What would you like to create?'
-  },
-  offer: {
-    placeholder: 'What would you like to share?'
-  },
-  request: {
-    placeholder: 'What are you looking for?'
-  },
-  chat: {
-    placeholder: 'What do you want to say?'
-  },
-  event: {
-    placeholder: "What is your event's name?"
-  }
-}
 
 @connect((state, { community, post, project }) => {
   let id = post
@@ -57,62 +37,59 @@ const postTypeData = {
   // this object tracks the edits that are currently being made
   let postEdit = state.postEdits[id] || {}
 
-  // FIXME: this one attribute in postEdit isn't actually a post attribute
-  let { expanded } = postEdit
-
   if (!project && post) project = get(post, 'projects.0')
 
   return {
     id,
     postEdit,
     project,
-    expanded,
-    mentionChoices: state.typeaheadMatches.post,
+    mentionOptions: state.typeaheadMatches.post,
     currentUser: state.people.current,
-    saving: state.pending[CREATE_POST] || state.pending[UPDATE_POST]
+    saving: state.pending[CREATE_POST] || state.pending[UPDATE_POST],
+    imagePending: state.pending[UPLOAD_IMAGE]
   }
 }, null, null, {withRef: true})
-export default class PostEditor extends React.Component {
+export class PostEditor extends React.Component {
   static propTypes = {
-    expanded: bool,
     dispatch: func,
-    mentionChoices: array,
+    mentionOptions: array,
     currentUser: object,
     post: object,
     id: string.isRequired,
     postEdit: object,
     community: object,
     saving: bool,
-    project: object
+    project: object,
+    onCancel: func,
+    imagePending: bool
   }
 
   constructor (props) {
     super(props)
-    this.state = {communityChoiceTerm: ''}
+    this.state = {name: this.props.postEdit.name}
   }
 
-  updateStore (data) {
+  componentDidMount () {
+    // initialize the communities list when opening the editor in a community
+    let { community, postEdit: { communities } } = this.props
+    if (community && isEmpty(communities)) this.addCommunity(community)
+    this.refs.title.focus()
+  }
+
+  updateStore = (data) => {
     let { id, dispatch } = this.props
     dispatch(updatePostEditor(data, id))
   }
 
-  selectType = (type) => this.updateStore({type: type})
-
-  expand = () => {
-    if (this.props.expanded) return
-    this.updateStore({expanded: true})
-
-    // initialize the communities list when opening the editor in a community
-    let { community, postEdit: { communities } } = this.props
-    if (community && isEmpty(communities)) this.addCommunity(community)
-  }
-
   cancel = () => {
-    let { dispatch, id } = this.props
+    let { dispatch, id, onCancel } = this.props
     dispatch(cancelPostEdit(id))
+    if (typeof onCancel === 'function') onCancel()
   }
 
   set = key => event => this.updateStore({[key]: event.target.value})
+
+  setDelayed = debounce((key, value) => this.updateStore({[key]: value}), 50)
 
   addCommunity = community => {
     let { communities } = this.props.postEdit
@@ -124,15 +101,12 @@ export default class PostEditor extends React.Component {
     this.updateStore({communities: filter(communities, cid => cid !== community.id)})
   }
 
-  togglePublic = () =>
-    this.updateStore({public: !this.props.postEdit.public})
-
   validate () {
     let { postEdit, project } = this.props
 
     if (!postEdit.name) {
       window.alert('The title of a post cannot be blank.')
-      this.refs.name.focus()
+      this.refs.title.focus()
       return
     }
 
@@ -152,16 +126,13 @@ export default class PostEditor extends React.Component {
     // click Save immediately after typing in the description field, we have to
     // wait for events from the description field to be handled so that the
     // store is up to date
-    setTimeout(() => this.reallySave())
+    setTimeout(() => this.reallySave(), 100)
   }
 
   reallySave () {
     let { dispatch, post, postEdit, project, id } = this.props
 
-    postEdit = {
-      ...omit(postEdit, 'expanded'),
-      type: postEdit.type || 'chat'
-    }
+    if (!postEdit.tag) postEdit.tag = 'chat'
 
     let params = {
       ...postEdit,
@@ -179,151 +150,284 @@ export default class PostEditor extends React.Component {
       trackEvent(post ? EDITED_POST : ADDED_POST, {
         post: {
           id: get(post, 'id'),
-          type: postEdit.type
+          tag: postEdit.tag
         },
         community,
         project
       })
+      this.cancel()
     })
   }
 
-  updateCommunityChoiceTerm = term => {
-    this.setState({communityChoiceTerm: term})
+  // this method allows you to type as much as you want into the title field, by
+  // automatically truncating it to a specified length and prepending the
+  // removed portion to the details field.
+  updateTitle (event) {
+    if (this.state.pendingTitleReshuffle) return
+
+    const maxlength = 120
+    const { value } = event.target
+    const { length } = value
+    if (length > maxlength || value.indexOf('\n') !== -1) {
+      const { title, details } = this.refs
+      const editor = details.getEditor()
+
+      let splitIndex = length > maxlength
+        ? value.lastIndexOf(' ', maxlength - 1)
+        : value.indexOf('\n')
+
+      const name = value.slice(0, splitIndex + 1).replace(/\n$/, '')
+      const excess = value.slice(splitIndex + 1)
+
+      this.setState({name, showDetails: true})
+      this.updateStore({name})
+
+      const pos = title.textarea.selectionStart
+      if (pos <= name.length) {
+        prepend(excess, editor)
+
+        // when the above setState call lands, the cursor ends up jumping to the
+        // end of the text field. we can move it back, but not until the
+        // setState call is finished, so we use setTimeout.
+        //
+        // this introduces a small but significant gap of time, during which, if
+        // someone is typing in the middle of the title field while the title
+        // gets truncated, some of the characters they type could end up at the
+        // end of the field.
+        //
+        // we "pause" the editing of the field with `pendingTitleReshuffle` to
+        // avoid this. this is not great, because if your computer is slow
+        // enough and you're a fast enough typer, characters will simply
+        // disappear -- but to my mind, this is marginally better than having
+        // them show up in the wrong place.
+        this.setState({pendingTitleReshuffle: true})
+        setTimeout(() => {
+          this.setState({pendingTitleReshuffle: false})
+          title.setCursorLocation(pos)
+        })
+      } else {
+        if (excess) prepend(excess, editor)
+        editor.focus()
+      }
+      setTimeout(() => title.resize())
+    } else {
+      this.setState({name: value})
+      if (!this.delayedUpdate) {
+        this.delayedUpdate = debounce(this.updateStore, 300)
+      }
+      this.delayedUpdate({name: value})
+    }
   }
 
-  getCommunityChoices = term => {
-    if (!term) {
-      return []
+  goToDetails = () => {
+    this.setState({showDetails: true})
+    this.refs.details.focus()
+  }
+
+  goBackToTitle = ({ which }) => {
+    if (which === 8 || which === 46) {
+      const value = this.refs.details.getContent()
+      if (!value) {
+        this.setState({showDetails: false})
+        this.refs.title.focus()
+      }
     }
-
-    let { currentUser, postEdit: { communities } } = this.props
-    var match = c =>
-      startsWith(c.name.toLowerCase(), term.toLowerCase()) &&
-      !includes(communities, c.id)
-
-    return filter(currentUser.memberships.map(m => m.community), match)
   }
 
   render () {
-    let { expanded, post, postEdit, dispatch, project, currentUser } = this.props
-    let { name, description, communities, type, location } = postEdit
-    let { communityChoiceTerm } = this.state
-    let communityChoices = this.getCommunityChoices(communityChoiceTerm)
+    let { post, postEdit, dispatch, project, currentUser, imagePending } = this.props
+    let { description, communities, tag } = postEdit
+    let { name, showDetails } = this.state
 
-    if (!type) type = 'chat'
+    if (!tag) tag = 'chat'
+    const tagLabel = `#${tag === 'chat' ? 'all-topics' : tag}`
+    const selectTag = tag => this.updateStore({tag})
+    const togglePublic = () => this.updateStore({public: !postEdit.public})
 
-    return <div className={cx('post-editor', 'clearfix', {expanded})}>
-      {post && <h3>Editing Post</h3>}
-      <ul className='left post-types'>
-        {postTypes.map(t => <li key={t}
-          className={cx('post-type', t, {selected: t === type})}
-          onClick={() => this.selectType(t)}>
-          {t}
-        </li>)}
-      </ul>
+    return <div className='post-editor clearfix'>
+      <PostEditorHeader person={currentUser}/>
 
-      <input type='text' ref='name' className='title form-control'
-        placeholder={postTypeData[type].placeholder}
-        onFocus={this.expand} value={name} onChange={this.set('name')}/>
+      <div className='title-wrapper'>
+        <AutosizingTextarea type='text' ref='title' className='title'
+          value={name}
+          placeholder='Start a conversation'
+          onFocus={this.expand}
+          onChange={event => this.updateTitle(event)}/>
+      </div>
 
-      {expanded && <div>
-        <h3>Details</h3>
-        <RichTextEditor className='details'
-          content={description}
-          onChange={this.set('description')}
-          mentionTemplate={personTemplate}
-          mentionTypeahead={text => dispatch(typeahead(text, 'post'))}
-          mentionChoices={this.props.mentionChoices}
-          mentionSelector='[data-user-id]'/>
-
-        {type === 'event' && <div className='input-row'>
-          <label>
-            <p>Location (Optional)</p>
-            <input type='text' ref='location' className='location form-control'
-              value={location}
-              onChange={this.set('location')}/>
-          </label>
+      <RichTextEditor className={cx('details', {empty: !description && !showDetails})}
+        ref='details'
+        name='post'
+        content={description}
+        onChange={ev => this.setDelayed('description', ev.target.value)}
+        onKeyUp={this.goBackToTitle}/>
+      {!description && !showDetails &&
+        <div className='details-placeholder' onClick={this.goToDetails}>
+          More details
         </div>}
 
-        {!project && <div>
-          <h3 className='communities-header'>Communities</h3>
-          <CommunityTagInput ids={communities}
-            handleInput={this.updateCommunityChoiceTerm}
-            choices={communityChoices}
-            onSelect={this.addCommunity}
-            onRemove={this.removeCommunity}/>
-        </div>}
+      <Dropdown className='hashtag-selector' toggleChildren={
+        <button>{tagLabel} <span className='caret'></span></button>
+      }>
+        <li><a onClick={() => selectTag('request')}>#request</a></li>
+        <li><a onClick={() => selectTag('offer')}>#offer</a></li>
+        <li><a onClick={() => selectTag('chat')}>#all-topics</a></li>
+      </Dropdown>
 
-        <label className='visibility'>
-          <input type='checkbox' value={postEdit.public} onChange={this.togglePublic}/>
-          &nbsp;
-          Make this post publicly visible
-        </label>
-
-        <div className='buttons'>
-          <div className='right'>
-            <button onClick={this.cancel}>Cancel</button>
-            <button className='btn-primary' onClick={this.save}
-              disabled={this.props.saving} ref='save'>
-              {post ? 'Save Changes' : 'Post'}
-            </button>
-          </div>
-
-          <AttachmentButtons id={this.props.id} media={postEdit.media}
-            path={`user/${currentUser.id}/seeds`}/>
-        </div>
+      {!project && <div className='communities'>
+        in&nbsp;
+        <CommunitySelector currentUser={currentUser}
+          communities={communities || []}
+          onSelect={this.addCommunity}
+          onRemove={this.removeCommunity}/>
       </div>}
+
+      <div className='buttons'>
+        <div className='right'>
+          <button onClick={this.cancel}>Cancel</button>
+        </div>
+
+        <button className='save' onClick={this.save}
+          disabled={this.props.saving} ref='save'>
+          {post ? 'Save Changes' : 'Post'}
+        </button>
+        <AttachmentsDropdown id={this.props.id}
+          media={postEdit.media}
+          path={`user/${currentUser.id}/seeds`}
+          imagePending={imagePending}
+          dispatch={dispatch}/>
+        <label className='visibility'>
+          <input type='checkbox' value={postEdit.public} onChange={togglePublic}/>
+          &nbsp;
+          Public
+        </label>
+      </div>
     </div>
   }
 }
 
-const AttachmentButtons = connect(state => ({
-  imagePending: state.pending[UPLOAD_IMAGE]
-}))(props => {
-  let { id, imagePending, media, dispatch, path } = props
-  let image = find(media, m => m.type === 'image')
-  let docs = filter(media, m => m.type === 'gdoc')
+const AttachmentsDropdown = props => {
+  const { id, imagePending, media, dispatch, path } = props
+  const image = find(media, m => m.tag === 'image')
+  const docs = filter(media, m => m.tag === 'gdoc')
+  const length = (image ? 1 : 0) + docs.length
 
-  let attachImage = () => {
+  const attachDoc = () => dispatch(uploadDoc(id))
+  const attachImage = () => {
     dispatch(uploadImage({
       id, path, subject: 'post',
       convert: {width: 800, format: 'jpg', fit: 'max', rotate: 'exif'}
     }))
   }
 
-  let removeImage = () => dispatch(removeImage('post', id))
-  let attachDoc = () => dispatch(uploadDoc(id))
+  return <Dropdown className='attachments' toggleChildren={
+    <span>
+      <span className='glyphicon glyphicon-camera'></span>
+      {imagePending
+        ? ' Uploading...'
+        : length > 0 && ` (${length})`}
+    </span>
+  }>
+    <li>
+      <a onClick={attachImage}>
+        {image ? 'Change' : 'Attach'} Image
+      </a>
+    </li>
+    <li><a onClick={attachDoc}>Attach File with Google Drive</a></li>
+    {(image || some(docs)) && <li role='separator' className='divider'></li>}
+    {image && <li className='image'>
+      <a className='remove' onClick={() => dispatch(removeImage('post', id))}>
+        &times;
+      </a>
+      <img src={image.url}/>
+    </li>}
+    {image && some(docs) && <li role='separator' className='divider'></li>}
+    {docs.map(doc => <li key={doc.url} className='doc'>
+      <a target='_blank' href={doc.url}>
+        <img src={doc.thumbnail_url}/>
+        {doc.name}
+      </a>
+      <a className='remove' onClick={() => dispatch(removeDoc(doc, id))}>&times;</a>
+    </li>)}
+  </Dropdown>
+}
 
-  return <div>
-    <ImageAttachmentButton pending={imagePending} image={image}
-      add={attachImage} remove={removeImage}/>
+class CommunitySelector extends React.Component {
+  constructor (props) {
+    super(props)
+    this.state = {term: ''}
+  }
 
-    {!isEmpty(docs)
-      ? <Dropdown className='button change-docs' toggleChildren={
-          <span>
-            Attachments ({docs.length}) <span className='caret'></span>
-          </span>
-        }>
-          {docs.map(doc => <li key={doc.url}>
-            <a target='_blank' href={doc.url}>
-              <img src={doc.thumbnail_url}/>
-              {truncate(doc.name, 40)}
-            </a>
-            <a className='remove' onClick={() => dispatch(removeDoc(doc, id))}>&times;</a>
-          </li>)}
-          <li role='separator' className='divider'></li>
-          <li><a onClick={attachDoc}>Attach Another</a></li>
-        </Dropdown>
-      : <button onClick={attachDoc}>
-          Attach File with Google Drive
-        </button>}
+  static propTypes = {
+    currentUser: object.isRequired,
+    communities: array.isRequired,
+    onSelect: func.isRequired,
+    onRemove: func.isRequired
+  }
+
+  render () {
+    const { term } = this.state
+    const {
+      currentUser: { memberships },
+      communities,
+      onSelect,
+      onRemove
+    } = this.props
+
+    const match = c =>
+      startsWith(c.name.toLowerCase(), term.toLowerCase()) &&
+      !includes(communities, c.id)
+
+    const choices = term
+      ? filter(memberships.map(m => m.community), match)
+      : []
+
+    return <CommunityTagInput ids={communities}
+      handleInput={term => this.setState({term})}
+      choices={choices}
+      onSelect={onSelect}
+      onRemove={onRemove}/>
+  }
+}
+
+const PostEditorHeader = ({ person }) =>
+  <div className='header'>
+    <NonLinkAvatar person={person}/>
+    <div>
+      <span className='name'>{person.name}</span>
+    </div>
   </div>
-})
 
-AttachmentButtons.propTypes = {
-  imagePending: bool,
-  dispatch: func,
-  id: string,
-  media: array,
-  path: string
+@connect(state => ({
+  currentUser: state.people.current
+}), null, null, {withRef: true})
+export default class PostEditorWrapper extends React.Component {
+  static propTypes = {
+    currentUser: object,
+    post: object,
+    project: object,
+    community: object
+  }
+
+  constructor (props) {
+    super(props)
+    this.state = {expanded: props.expanded}
+  }
+
+  toggle = () => {
+    this.setState({expanded: !this.state.expanded})
+  }
+
+  render () {
+    if (!this.state.expanded) {
+      const { currentUser } = this.props
+      return <div className='post-editor' onClick={this.toggle}>
+        <PostEditorHeader person={currentUser}/>
+        <div className='prompt'>Start a conversation</div>
+      </div>
+    }
+
+    const { post, project, community } = this.props
+    return <PostEditor {...{post, project, community}} onCancel={this.toggle}/>
+  }
 }

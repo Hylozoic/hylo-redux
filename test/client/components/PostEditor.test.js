@@ -1,7 +1,7 @@
 require('../support')
 import { mocks, helpers } from '../../support'
 import { set } from 'lodash'
-import PostEditor from '../../../src/components/PostEditor'
+import { PostEditor } from '../../../src/components/PostEditor'
 import {
   findRenderedDOMComponentWithClass,
   renderIntoDocument,
@@ -49,9 +49,9 @@ describe('PostEditor', () => {
 
     it('renders', () => {
       let outerDiv = findRenderedDOMComponentWithClass(node, 'post-editor')
-      expect(outerDiv.className).to.equal('post-editor clearfix expanded')
+      expect(outerDiv.className).to.equal('post-editor clearfix')
 
-      let title = findRenderedDOMComponentWithClass(node, 'title form-control')
+      let title = findRenderedDOMComponentWithClass(node, 'title')
       expect(title.value).to.equal('hello!')
 
       let tag = findRenderedDOMComponentWithClass(node, 'tag')

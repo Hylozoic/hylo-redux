@@ -1,51 +1,55 @@
 import React from 'react'
-import RichTextEditor from './RichTextEditor'
 import { get } from 'lodash'
 import { connect } from 'react-redux'
-import { createComment, typeahead } from '../actions'
-import { personTemplate } from '../util/mentions'
+import Avatar from './Avatar'
+import RichTextEditor from './RichTextEditor'
+import { createComment } from '../actions'
 import { ADDED_COMMENT, trackEvent } from '../util/analytics'
-var { array, func, string } = React.PropTypes
+var { array, func, object, string } = React.PropTypes
 
-@connect(state => ({mentionChoices: get(state, 'typeaheadMatches.comment')}))
+@connect(state => ({
+  currentUser: get(state, 'people.current')
+}))
 export default class CommentForm extends React.Component {
   static propTypes = {
-    mentionChoices: array,
-    mentionTypeahead: func,
+    currentUser: object,
     dispatch: func,
-    postId: string
+    postId: string,
+    mentionOptions: array
   }
 
   constructor (props) {
     super(props)
-    this.state = {input: ''}
-  }
-
-  handleChange = event => {
-    this.setState({input: event.target.value})
+    this.state = {}
   }
 
   submit = event => {
     let { dispatch, postId } = this.props
     event.preventDefault()
-    dispatch(createComment(postId, this.state.input))
+    dispatch(createComment(postId, this.state.text))
     trackEvent(ADDED_COMMENT, {post: {id: postId}})
-    this.setState({input: ''})
     this.refs.editor.setContent('')
+    this.setState({text: ''})
   }
 
   render () {
-    let { dispatch } = this.props
+    const { currentUser } = this.props
+    const { editing } = this.state
+    const edit = () => this.setState({editing: true})
+    const setText = event => this.setState({text: event.target.value})
 
     return <form onSubmit={this.submit} className='comment-form'>
-      <RichTextEditor ref='editor'
-        content={this.state.input}
-        onChange={this.handleChange}
-        mentionTemplate={personTemplate}
-        mentionTypeahead={text => dispatch(typeahead(text, 'comment'))}
-        mentionChoices={this.props.mentionChoices}
-        mentionSelector='[data-user-id]'/>
-      <input type='submit' value='Comment'/>
+      <Avatar person={currentUser}/>
+      {editing
+        ? <div className='content'>
+            <RichTextEditor ref='editor' name='comment'
+              onChange={setText}
+              startFocused={true}/>
+            <input type='submit' value='Comment'/>
+          </div>
+        : <div className='content placeholder' onClick={edit}>
+            Add a comment...
+          </div>}
     </form>
   }
 }

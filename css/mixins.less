@@ -55,6 +55,25 @@
   }
 }
 
+.has-top-triangle(@color: @off-white, @border-color: @off-white, @side-length: 7px) {
+  &:after {
+    content: '';
+    display: block;
+    position: absolute;
+    left: 50%;
+    width: @side-length * 2;
+    height: @side-length * 2;
+    margin-left: -@side-length;
+    top: -@side-length;
+    border-top: 1px solid @border-color;
+    border-left: 1px solid @border-color;
+    background-color: @color;
+    transform: rotate(45deg);
+    -webkit-transform: rotate(45deg);
+    -ms-transform: rotate(45deg);
+  }
+}
+
 .has-left-side-avatar() {
   > .avatar {
     float: left;
@@ -181,4 +200,13 @@
 .card() {
   border: 1px solid @light-gray-border;
   border-radius: @border-radius-base;
+  background-color: @card-background;
+}
+
+.round-button() {
+  height: 40px;
+  border-radius: 40px;
+  line-height: 40px;
+  text-align: center;
+  padding: 0 32px;
 }

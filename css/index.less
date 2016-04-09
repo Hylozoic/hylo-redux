@@ -7,9 +7,11 @@
 @import 'dropdown';
 @import 'forms';
 @import 'tinymce';
+@import 'layout';
+@import 'posts';
 
 body {
-  background-color: @off-white;
+  background-color: @page-background;
   color: @off-black;
   .base-text;
 }
@@ -34,136 +36,7 @@ button, a.button, input[type=submit] {
   }
 }
 
-#app {
-  .container-fluid;
-}
-
-nav {
-  ul {
-    .no-bullets;
-  }
-
-  a.active {
-    font-weight: bold;
-  }
-}
-
-#topNav {
-  .make-md-column-offset(1);
-  .make-md-column(10);
-  border-bottom: 2px solid @hylo-teal;
-  padding: 15px 15px 5px;
-  line-height: 36px;
-  > ul {
-    > li {
-      display: inline-block;
-      margin-right: 15px;
-      &.visible-xs {
-        @media (max-width: @screen-xs-max) {
-          display: inline-block !important;
-        }
-      }
-    }
-
-    &.right {
-      > li {
-        margin-left: 15px;
-        margin-right: 0;
-      }
-    }
-  }
-
-  a {
-    cursor: pointer;
-    color: @off-black;
-
-    // FIXME this a workaround for the hover state not going away
-    // on touch devices -- probably fixable with whatever the React
-    // counterpart to ngTouch is
-    @media (max-width: @screen-xs-max) {
-      text-decoration: none;
-    }
-  }
-
-  .icon-hylo-script {
-    font-size: 36px;
-    vertical-align: middle;
-    position: relative;
-    color: @hylo-teal;
-    margin-right: 2px;
-  }
-
-  .mobile-menu-link {
-    .visible-xs;
-  }
-}
-
-#leftNav {
-  .make-sm-column(3);
-  .make-md-column(2);
-  .make-md-column-offset(1);
-  padding: 15px;
-  height: 100%;
-  font-size: 13px;
-  a {
-    padding: 3px;
-    display: block;
-    width: 100%;
-    margin-bottom: 5px;
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    line-height: 24px;
-    text-decoration: none;
-    cursor: pointer;
-    &:active {
-      font-weight: bold;
-    }
-    img {
-      height: 24px;
-      width: 24px;
-      margin-right: 5px;
-      float: left;
-    }
-    &:hover {
-      background-color: #ddd;
-    }
-    &.meta:hover {
-      background-color: transparent;
-    }
-  }
-
-  @media (max-width: @screen-xs-max) {
-    display: none;
-    &.open {
-      display: block;
-    }
-    border-bottom: 1px solid @light-gray-border;
-    margin-bottom: 15px;
-  }
-
-  .divider {
-    border-top: 1px solid @light-gray-border;
-    height: 7px;
-  }
-}
-
-#main {
-  .make-sm-column(9);
-  .make-md-column(8);
-  padding: 15px;
-
-  h2:first-child {
-    margin-top: 0;
-  }
-}
-
 .login-signup {
-  .make-row;
-  form {
-    .make-sm-column(8);
-    .make-md-column(6);
-  }
   label {
     margin-right: 5px;
   }
@@ -363,285 +236,76 @@ ul.tabs {
   .round-image-div(@avatar-size-large);
 }
 
-ul.posts {
-  .no-bullets;
+.comment {
+  padding-left: @post-content-left-margin;
+  padding-right: 15px;
+  margin-bottom: 5px;
+  padding-top: 15px;
+  .has-left-side-avatar;
 
-  .post {
-    .mobile-full-bleed;
-    .mobile({
-      border-left: none;
-      border-right: none;
-      border-bottom: none;
-      margin-bottom: 0;
-
-      &.welcome {
-        border-top: 1px solid @light-gray-border;
-      }
-    })
-  }
-}
-
-.post {
-  border: 1px solid @light-gray-border;
-  padding: 15px;
-  margin-bottom: 15px;
-
-  .header {
-    .meta > a, .meta > div > a {
-      .meta-text;
-    }
-    > .avatar {
-      float: left;
-      margin-right: 10px;
-    }
-    margin-bottom: 6px;
+  .content {
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
-  .image {
-    background-size: cover;
-    background-position: center top;
-    width: 200px;
-    height: 122.6px;
-    margin-top: @p-bottom-margin;
-
-    @media (max-width: @screen-xs-max) {
-      width: 100%;
-    }
-  }
-
-  .name {
-    .semibold;
-  }
-
-  .vote {
-    cursor: pointer;
-
-    i {
-      color: @dark-blue;
-      vertical-align: middle;
-      position: relative;
-      top: -1px;
-    }
-
-    &:hover {
-      text-decoration: none;
-      i {
-        color: #f8f;
-      }
-    }
-
-    .icon-heart-new-selected {
-      color: #f8f;
-    }
-  }
-
-
-  p.title {
-    .post-title-text;
-    margin-bottom: 0;
-  }
-
-  .details {
+  .text {
+    color: @gray-text;
     .body-text;
-  }
 
-  &.welcome {
-    padding: 0 15px;
-    &, &.expanded {
-      border: 1px solid transparent;
+    .name {
+      color: black;
+      margin-right: 0.75em;
     }
-    > div > .avatar {
-      float: left;
-      margin-right: 10px;
-    }
-    .header {
-      a.open-comments {
-        cursor: pointer;
-        text-decoration: underline;
+
+    p {
+      &:nth-child(2) {
+        margin-top: @p-bottom-margin;
+      }
+
+      &:last-child {
+        margin-bottom: 0;
+        display: inline;
       }
     }
-    .tag {
-      display: none;
-    }
-    .comments-section {
-      .clearfix;
-      margin-top: @p-bottom-margin;
-    }
-
-    .mobile({
-      background: @faint-gray-bg;
-      padding: 15px 15px @p-bottom-margin;
-      margin-bottom: 0;
-    })
   }
 
-  .event-time {
-    margin-bottom: 0;
-    margin-top: @p-bottom-margin;
-    i {
-      position: relative;
-      top: 2px;
-    }
+  .thanks {
+    color: @damian-green;
   }
 
-  .post-location {
-    margin-bottom: 0;
-    margin-top: @p-bottom-margin;
-    i {
-      position: relative;
-      top: 2px;
-    }
+  .date {
+    color: @mid-gray-bg;
   }
 
-  .post-menu {
-    float: right;
+  .meta a {
     .meta-text;
-    cursor: pointer;
-    > a:hover {
-      text-decoration: none;
-      color: @off-black;
-    }
   }
 
-  .share-post {
-    display: inline;
-  }
-
-  &.expanded {
-    border: 1px solid @dark-gray-border;
-    p.title {
-      margin-bottom: @p-bottom-margin;
-    }
-
-    .event-time {
-      margin-top: 0;
-      margin-bottom: @p-bottom-margin;
-    }
-
-    .post-location {
-      margin-top: 0;
-      margin-bottom: @p-bottom-margin;
-    }
-
-    .image {
-      display: none;
-    }
-
-    .full-image {
-      width: 100%;
-    }
-
-    .rsvp-controls {
-      padding-top: @p-bottom-margin;
-      padding-bottom: @p-bottom-margin;
-      border-top: 1px solid #ddd;
-      border-bottom: 1px solid #ddd;
-
-      .buttons {
-        margin-bottom: 10px;
-
-        button {
-          margin-right: 0px;
-
-          &.rsvp-yes {
-            width: 100px;
-          }
-          &.rsvp-maybe {
-            width: 103px;
-          }
-          &.rsvp-no {
-            width: 115px;
-          }
-        }
-      }
-
-      a.dropdown-toggle {
-        color: @dark-blue;
-      }
-
-      .responses-dropdown {
-
-        ul.dropdown-menu {
-          padding-top: 0px;
-          margin-top: 0px;
-        }
-
-        li {
-          padding: 0px 15px;
-        }
-
-        li.header {
-          padding: 5px 15px;
-          border-top: 1px solid #d9d9d9;
-          border-bottom: 1px solid #d9d9d9;
-        }
-
-        span.header {
-          font-size: 18px;
-          text-align: center;
-          margin-bottom: 0px;
-          display: block;
-          width: 100%;
-        }
-
-        a.person {
-          margin-left: 6px;
-          position: relative;
-          top: 50%;
-          transform: translateY(-60%);
-          display: inline-block;
-        }
-
-        span.person {
-          height: 100%;
-        }
-
-        .avatar {
-          display: inline-block;
-        }
-      }
-    }
-
-    .post-section {
-      margin-bottom: @p-bottom-margin;
-    }
-  }
-
-  .followers {
-    margin-bottom: 10px;
-  }
-
-  .attachment {
-    display: inline-block;
-    background-color: @light-gray-bg;
-    border: 1px solid @light-gray-border;
-    border-radius: @border-radius-base;
-    padding: 5px 8px;
-    margin-right: 5px;
-    text-decoration: none;
-    vertical-align: middle;
-
-    img {
-      margin-right: 5px;
-      position: relative;
-      top: -1px;
-    }
-
-    &:hover {
-      background-color: @mid-gray-bg;
-    }
+  .show-more {
+    .meta-text;
   }
 }
 
-.event-time {
-  i {
-    margin-right: 5px;
-  }
-}
+.comment-form {
+  .has-left-side-avatar;
+  .clearfix;
+  margin-top: 15px;
+  margin-bottom: 0;
+  border-top: 1px solid #e8e8e8;
+  padding-top: 15px;
+  padding-left: @post-content-left-margin;
+  margin-right: -25px;
+  padding-right: 25px;
 
-.post-location {
-  i {
-    margin-right: 5px;
+  .placeholder {
+    font-style: italic;
+    color: @placeholder-color;
+    min-height: 36px;
+    padding-top: 8px;
+  }
+
+  input[type='submit'] {
+    .round-button;
   }
 }
 
@@ -723,95 +387,6 @@ ul.tags {
   }
 }
 
-.comment {
-  margin-top: 15px;
-  border-top: 1px solid #ddd;
-  padding-top: 15px;
-  .has-left-side-avatar;
-
-  .text {
-    .body-text;
-  }
-
-  .meta a {
-    .meta-text;
-  }
-}
-
-.comment-form {
-  margin-top: 15px;
-  margin-bottom: 0;
-  .clearfix;
-
-  .rich-text-editor {
-    iframe {
-      height: 12vh;
-    }
-    margin-bottom: @p-bottom-margin;
-  }
-
-  input[type='text'] {
-    .form-control;
-    width: 61.8%;
-    display: inline-block;
-  }
-
-  input[type='submit'] {
-    float: right;
-    .btn-primary;
-  }
-}
-
-.post-editor {
-  padding: 15px;
-  background-color: @light-gray-bg;
-  margin-bottom: 15px;
-  .mobile-full-bleed;
-
-  .post-types {
-    .no-bullets;
-    margin-bottom: @p-bottom-margin;
-    li {
-      .tag;
-      .post-type-text;
-      cursor: pointer;
-    }
-  }
-
-  .details {
-    iframe {
-      height: 22vh !important;
-    }
-  }
-
-  .input-row {
-    margin-top: 10px;
-    p {
-      margin-bottom: 5px;
-    }
-  }
-
-  &.expanded input.title, .tag-list, .visibility {
-    margin-bottom: @p-bottom-margin;
-  }
-
-  .visibility {
-    margin-top: @p-bottom-margin;
-  }
-
-  input.location {
-    margin-bottom: -5px;
-  }
-
-  label {
-    font-weight: normal;
-  }
-
-  > h3:first-child {
-    margin-top: 0;
-  }
-}
-
 .image-attachment-button {
   padding-right: 35px !important;
   a {
@@ -855,16 +430,23 @@ ul.tags {
 }
 
 .rich-text-editor {
-  .form-control;
   padding: 0;
   height: auto;
-  > .mce-container {
+  position: relative;
+  .mce-container {
     border: none;
-    border-radius: @border-radius-base;
     overflow: hidden;
   }
   > .dropdown {
     overflow: visible;
+    &.active {
+      position: absolute;
+    }
+  }
+
+  .dropdown input[type="text"] {
+    position: absolute;
+    left: -20000px;
   }
 }
 
@@ -874,8 +456,9 @@ ul.tags {
 
 .list-controls {
   line-height: 34px;
-  margin-bottom: 15px;
   text-align: right;
+  background-color: @list-controls-background;
+  padding: 15px;
 
   > * {
     vertical-align: middle;
@@ -890,42 +473,53 @@ ul.tags {
   }
 }
 
-.tabbed-context {
-  .markdown {
-    img {
-      max-width: 100%;
-    }
+.list-controls + .masonry-container {
+  margin-top: 15px;
+}
+
+.list-controls.tag-header {
+  text-align: left;
+  padding-left: 20px;
+  .tag-name {
+    .tag-header-name-text;
   }
 
-  .markdown.description {
+}
+
+.markdown {
+  &.description {
     padding-top: 15px;
   }
+  img {
+    max-width: 100%;
+  }
+}
 
-  .members {
-    > ul {
-      .no-bullets;
+.members {
+  > ul {
+    .no-bullets;
+  }
+}
+
+.onboarding-questions {
+  border: 1px solid @hylo-teal;
+  border-radius: @border-radius-base;
+  background-color: @card-background;
+  margin-bottom: 15px;
+  .header {
+    background-color: @hylo-teal;
+    padding: 15px;
+    color: white;
+    h3 {
+      margin: 0;
     }
   }
+  .content {
+    padding: 15px;
+  }
 
-  .onboarding {
-    border: 1px solid @hylo-teal;
-    border-radius: @border-radius-base;
-    margin-bottom: 15px;
-    .header {
-      background-color: @hylo-teal;
-      padding: 15px;
-      color: white;
-      h3 {
-        margin: 0;
-      }
-    }
-    .content {
-      padding: 15px;
-    }
-
-    .tag-input {
-      margin-bottom: @p-bottom-margin;
-    }
+  .tag-input {
+    margin-bottom: @p-bottom-margin;
   }
 }
 
@@ -1016,6 +610,10 @@ ul.tags {
 }
 
 #person {
+  ul.tabs a.active:after {
+    background-color: @page-background;
+  }
+
   .about {
     padding: 15px;
     border: 1px solid @light-gray-border;
@@ -1055,13 +653,16 @@ ul.tags {
   float: left;
 }
 
+.project-card-container {
+  margin-top: 15px;
+}
+
 .project-card-container .masonry-item-wrapper {
-  width: 33.33%;
+  width: 50%;
 }
 
 .project-card {
-  border: 1px solid @light-gray-border;
-  border-radius: @border-radius-base;
+  .card;
   margin: 0;
 
   .image {
@@ -1437,6 +1038,15 @@ ul.tags {
 }
 
 #search {
+  .results > div {
+    background-color: @card-background;
+  }
+
+  .message {
+    padding: 15px;
+    background-color: @card-background;
+  }
+
   .person-result {
     margin-bottom: 15px;
     padding: 15px;
@@ -1509,7 +1119,7 @@ ul.tags {
   }
 }
 
-.single-post {
+#single-post {
   // prevent Intercom button from overlapping comment button
   margin-bottom: 70px;
 }
@@ -1517,7 +1127,20 @@ ul.tags {
 .comments-section {
   > a:first-child {
     margin-top: @p-bottom-margin;
-    display: inline-block;
     cursor: pointer;
   }
+}
+
+#about-community {
+  background-color: @card-background;
+  padding: 15px;
+}
+
+.backdrop {
+  position: fixed;
+  width: 100vw;
+  height: 100vh;
+  top: 0;
+  left: 0;
+  background-color: rgba(0, 0, 0, 0.25);
 }

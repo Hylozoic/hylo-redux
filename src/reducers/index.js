@@ -15,7 +15,6 @@ import posts from './posts'
 import projectsByQuery from './projectsByQuery'
 import projects from './projects'
 import projectEdits from './projectEdits'
-import { UPDATE_PATH } from 'redux-simple-router'
 import { appendUniq } from './util'
 
 import {
@@ -33,6 +32,7 @@ import {
   FETCH_PEOPLE,
   FETCH_POSTS,
   FETCH_PROJECTS,
+  FETCH_TAG,
   LOGIN,
   LOGOUT,
   MARK_ACTIVITY_READ,
@@ -46,12 +46,12 @@ import {
   SEARCH,
   SEND_COMMUNITY_INVITATION,
   SEND_PROJECT_INVITE,
+  SET_CURRENT_COMMUNITY_ID,
   SET_LOGIN_ERROR,
   SET_META_TAGS,
   SET_SIGNUP_ERROR,
   SIGNUP,
   TOGGLE_MAIN_MENU,
-  TOGGLE_SHOW_ALL_COMMUNITIES,
   TOGGLE_USER_SETTINGS_SECTION,
   TYPEAHEAD,
   UPDATE_COMMUNITY_EDITOR,
@@ -90,21 +90,25 @@ const keyedHasFreshItems = (actionType, bucket) =>
   }
 
 export default combineReducers({
-  showAllCommunities: (state = false, action) => {
-    if (action.type === TOGGLE_SHOW_ALL_COMMUNITIES) return !state
+  currentCommunityId: (state = null, action) => {
+    let { error, type, payload } = action
+    if (error) return state
+
+    switch (type) {
+      case SET_CURRENT_COMMUNITY_ID:
+        return payload
+    }
+
     return state
   },
 
-  mainMenuOpened: (state = false, action) => {
+  leftNavOpened: (state = true, action) => {
     let { error, type } = action
     if (error) return state
 
     switch (type) {
       case TOGGLE_MAIN_MENU:
         return !state
-      case NAVIGATE:
-      case UPDATE_PATH:
-        return false
     }
 
     return state
@@ -517,6 +521,23 @@ export default combineReducers({
         break
       case FETCH_LIVE_STATUS:
         return updateTitle(state, payload.new_notification_count)
+    }
+    return state
+  },
+
+  tagsByCommunity: (state = {}, action) => {
+    // meta.id here is whatever params.id is in CommunityProfile
+    let { type, payload, meta } = action
+    switch (type) {
+      case FETCH_TAG:
+        let oldCommunityTags = state[meta.id] || {}
+        return {
+          ...state,
+          [meta.id]: {
+            ...oldCommunityTags,
+            [meta.tagName]: payload
+          }
+        }
     }
     return state
   }

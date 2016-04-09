@@ -29,7 +29,7 @@ const Notifications = compose(
     ? () => dispatch(fetchActivity(offset))
     : () => {}
 
-  return <div>
+  return <div className='simple-page'>
     <div className='row'>
       <div className='col-sm-6'>
         <h2>Notifications</h2>
@@ -71,12 +71,12 @@ export default Notifications
 let actionText = (action, comment, post) => {
   switch (action) {
     case 'mention':
-      if (!comment) return `mentioned you in their ${post.type}`
+      if (!comment) return `mentioned you in their ${post.tag}`
       return 'mentioned you in a comment on'
     case 'comment':
       return 'commented on'
     case 'followAdd':
-      return `added you to the ${post.type}`
+      return `added you to the ${post.tag}`
     case 'follow':
       return 'followed'
     case 'unfollow':
@@ -99,7 +99,7 @@ const Activity = ({ activity, currentUser, dispatch }) => {
 
   let text = bodyText(action, comment, post)
 
-  let postName = post.type === 'welcome'
+  let postName = post.tag === 'welcome'
     ? `${post.relatedUsers[0].name}'s' welcoming post`
     : truncate(post.name, 140)
 

@@ -10,7 +10,7 @@ import {
   VOTE_ON_POST,
   VOTE_ON_POST_PENDING
 } from '../actions'
-import { omit, find, without } from 'lodash'
+import { omit, find, without, includes, map, filter } from 'lodash'
 import { cloneSet, mergeList } from './util'
 import { same } from '../models'
 
@@ -86,11 +86,14 @@ export default function (state = {}, action) {
       return {...state, [id]: changeEventResponse(post, response, user)}
     case VOTE_ON_POST_PENDING:
       post = state[id]
-      var newPost
-      if (post.myVote) {
-        newPost = {...post, myVote: false, votes: post.votes - 1}
+      let { currentUser } = meta
+      let newPost
+      let myVote = includes(map(post.voters, 'id'), currentUser.id)
+
+      if (myVote) {
+        newPost = {...post, voters: filter(post.voters, v => v.id !== currentUser.id)}
       } else {
-        newPost = {...post, myVote: true, votes: post.votes + 1}
+        newPost = {...post, voters: post.voters.concat(currentUser)}
       }
       return {...state, [id]: newPost}
     case REMOVE_POST:

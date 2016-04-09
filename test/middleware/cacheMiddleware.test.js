@@ -1,4 +1,4 @@
-require('../support')
+import support from '../support'
 import { cacheMiddleware } from '../../src/middleware'
 
 describe('cacheMiddleware', () => {
@@ -12,28 +12,40 @@ describe('cacheMiddleware', () => {
   })
 
   it('continues the chain if the cache bucket does not exist', () => {
-    let action = {meta: {cache: {bucket: 'foo', id: 'bar'}}}
+    let action = {type: 'FOO', meta: {cache: {bucket: 'foo', id: 'bar'}}}
     middleware(next)(action)
     expect(next).to.have.been.called()
   })
 
   it('calls next if a cache hit is not found', () => {
-    let action = {meta: {cache: {bucket: 'foo', id: 'bar'}}}
+    let action = {type: 'FOO', meta: {cache: {bucket: 'foo', id: 'bar'}}}
     state.foo = {baz: 'baz'}
     middleware(next)(action)
     expect(next).to.have.been.called()
   })
 
   it('stops the chain if a cache hit is found', () => {
-    let action = {meta: {cache: {bucket: 'foo', id: 'bar'}}}
+    let action = {type: 'FOO', meta: {cache: {bucket: 'foo', id: 'bar'}}}
     state.foo = {bar: 'bar'}
-    expect(middleware(next)(action)).to.deep.equal(Promise.resolve(action))
-    expect(next).not.to.have.been.called()
+    return middleware(next)(action)
+    .then(val => {
+      expect(val).to.deep.equal({...action, cacheHit: true})
+      expect(next).not.to.have.been.called()
+    })
   })
 
   it('continues the chain if refresh is set', () => {
-    let action = {meta: {cache: {bucket: 'foo', id: 'bar', refresh: true}}}
+    let action = {
+      type: 'FOO',
+      meta: {cache: {bucket: 'foo', id: 'bar', refresh: true}}
+    }
     state.foo = {bar: 'bar'}
+    middleware(next)(action)
+    expect(next).to.have.been.called()
+  })
+
+  it('continues the chain for a pending action', () => {
+    let action = {type: 'FOO_PENDING'}
     middleware(next)(action)
     expect(next).to.have.been.called()
   })
@@ -46,9 +58,12 @@ describe('cacheMiddleware', () => {
         b: {bar: 'bax'},
         c: {bar: 'bar'}
       }
-      let action = {meta: {cache: {bucket: 'foo', match}}}
-      expect(middleware(next)(action)).to.deep.equal(Promise.resolve(action))
-      expect(next).not.to.have.been.called()
+      let action = {type: 'FOO', meta: {cache: {bucket: 'foo', match}}}
+      return middleware(next)(action)
+      .then(val => {
+        expect(val).to.deep.equal({...action, cacheHit: true})
+        expect(next).not.to.have.been.called()
+      })
     })
 
     it('calls next if a cache hit is not found', () => {
@@ -58,7 +73,7 @@ describe('cacheMiddleware', () => {
         b: {bar: 'bax'},
         c: {bar: 'bad'}
       }
-      let action = {meta: {cache: {bucket: 'foo', match}}}
+      let action = {type: 'FOO', meta: {cache: {bucket: 'foo', match}}}
       middleware(next)(action)
       expect(next).to.have.been.called()
     })
@@ -66,14 +81,23 @@ describe('cacheMiddleware', () => {
 
   describe('with array=true', () => {
     it('counts a cache hit if the data is past the offset', () => {
-      let action = {meta: {cache: {bucket: 'foo', id: 'bar', array: true, offset: 5}}}
+      let action = {
+        type: 'FOO',
+        meta: {cache: {bucket: 'foo', id: 'bar', array: true, offset: 5}}
+      }
       state.foo = {bar: [1, 2, 3, 4, 5, 6]}
-      expect(middleware(next)(action)).to.deep.equal(Promise.resolve(action))
-      expect(next).not.to.have.been.called()
+      return middleware(next)(action)
+      .then(val => {
+        expect(val).to.deep.equal({...action, cacheHit: true})
+        expect(next).not.to.have.been.called()
+      })
     })
 
     it('counts a cache miss if the data is not past the offset', () => {
-      let action = {meta: {cache: {bucket: 'foo', id: 'bar', array: true, offset: 5}}}
+      let action = {
+        type: 'FOO',
+        meta: {cache: {bucket: 'foo', id: 'bar', array: true, offset: 5}}
+      }
       state.foo = {bar: [1, 2, 3, 4, 5]}
       middleware(next)(action)
       expect(next).to.have.been.called()

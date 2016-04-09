@@ -7,7 +7,7 @@ import uuid from 'react-tinymce/lib/helpers/uuid'
 import { assetUrl } from '../util/assets'
 import RichTextTagger from '../util/RichTextTagger'
 import KeyControlledList from '../components/KeyControlledList'
-import { get, isEmpty, merge } from 'lodash'
+import { debounce, get, isEmpty, merge } from 'lodash'
 import { typeahead } from '../actions'
 import { getKeyCode, keyMap, replaceNodeWithJSX } from '../util/tinymce'
 const { array, bool, func, string } = React.PropTypes
@@ -50,6 +50,7 @@ export default class RichTextEditor extends React.Component {
     onKeyDown: func,
     onKeyPress: func,
     onReady: func,
+    onAddTag: func,
     className: string,
     content: string,
     startFocused: bool,
@@ -145,7 +146,7 @@ export default class RichTextEditor extends React.Component {
     })
   }
 
-  autocomplete = (term, node) => {
+  autocomplete = debounce((term, node) => {
     const { dispatch, name } = this.props
     dispatch(typeahead(term, name))
     if (!node || !term) return
@@ -161,7 +162,7 @@ export default class RichTextEditor extends React.Component {
         top: nodePos.y + editorPos.y - containerPos.y + lineHeight
       }
     })
-  }
+  }, 200)
 
   setContent (text) {
     this.getEditor().setContent(text)
@@ -182,11 +183,12 @@ export default class RichTextEditor extends React.Component {
   }
 
   render () {
-    const { className, content, typeaheadOptions } = this.props
+    const { className, content, typeaheadOptions, onAddTag } = this.props
     const { dropdown: { left, top } } = this.state
 
     const selectTypeahead = choice => {
       this.autocomplete(null)
+      if (onAddTag) onAddTag(choice.name)
       replaceNodeWithJSX(templateForChoice(choice), this.getEditor())
     }
 

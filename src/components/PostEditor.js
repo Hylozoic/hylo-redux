@@ -234,6 +234,13 @@ export class PostEditor extends React.Component {
     }
   }
 
+  handleAddTag = tag => {
+    tag = tag.replace(/^#/, '')
+    if (includes(['request', 'offer'], tag)) {
+      this.updateStore({tag})
+    }
+  }
+
   render () {
     let { post, postEdit, dispatch, project, currentUser, imagePending } = this.props
     let { description, communities, tag } = postEdit
@@ -260,7 +267,8 @@ export class PostEditor extends React.Component {
         name='post'
         content={description}
         onChange={ev => this.setDelayed('description', ev.target.value)}
-        onKeyUp={this.goBackToTitle}/>
+        onKeyUp={this.goBackToTitle}
+        onAddTag={this.handleAddTag}/>
       {!description && !showDetails &&
         <div className='details-placeholder' onClick={this.goToDetails}>
           More details

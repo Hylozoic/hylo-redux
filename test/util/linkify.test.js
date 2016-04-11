@@ -21,4 +21,16 @@ describe('linkify', () => {
     let expected = '<p>hi<br><br>ok</p>'
     expect(linkify(source)).to.equal(expected)
   })
+
+  it('wraps unlinked hashtags', () => {
+    let source = '<p>and #foo</p>'
+    let expected = '<p>and <a href="/search?q=%23foo" class="linkified" data-search="#foo">#foo</a></p>'
+    expect(linkify(source)).to.equal(expected)
+  })
+
+  it('adds attributes to linked hashtags', () => {
+    let source = '<p>and <a>#foo</a></p>'
+    let expected = '<p>and <a href="/search?q=%23foo" data-search="#foo">#foo</a></p>'
+    expect(linkify(source)).to.equal(expected)
+  })
 })

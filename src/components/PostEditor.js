@@ -23,6 +23,7 @@ import { uploadImage } from '../actions/uploadImage'
 import { uploadDoc } from '../actions/uploadDoc'
 import { attachmentParams } from '../util/shims'
 import { prepend } from '../util/tinymce'
+import { prepareHashtagsForEditing } from '../util/linkify'
 import { CREATE_POST, UPDATE_POST, UPLOAD_IMAGE } from '../actions'
 import { ADDED_POST, EDITED_POST, trackEvent } from '../util/analytics'
 const { array, bool, func, object, string } = React.PropTypes
@@ -36,7 +37,6 @@ const { array, bool, func, object, string } = React.PropTypes
 
   // this object tracks the edits that are currently being made
   let postEdit = state.postEdits[id] || {}
-
   if (!project && post) project = get(post, 'projects.0')
 
   return {
@@ -245,6 +245,14 @@ export class PostEditor extends React.Component {
     let { post, postEdit, dispatch, project, currentUser, imagePending } = this.props
     let { description, communities, tag } = postEdit
     let { name, showDetails } = this.state
+
+    if (!this.preparedDescription) {
+      const editingDescription = prepareHashtagsForEditing(description)
+      if (editingDescription !== description) {
+        description = editingDescription
+      }
+      this.preparedDescription = true
+    }
 
     if (!tag) tag = 'chat'
     const tagLabel = `#${tag === 'chat' ? 'all-topics' : tag}`

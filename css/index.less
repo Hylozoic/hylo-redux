@@ -432,12 +432,16 @@ ul.tags {
 .rich-text-editor {
   padding: 0;
   height: auto;
+  position: relative;
   .mce-container {
     border: none;
     overflow: hidden;
   }
   > .dropdown {
     overflow: visible;
+    &.active {
+      position: absolute;
+    }
   }
 }
 

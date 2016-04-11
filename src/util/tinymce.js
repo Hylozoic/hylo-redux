@@ -54,6 +54,11 @@ export const removeCurrentNode = editor => {
   dom.remove(selection.getNode())
 }
 
+export const selectCurrentNode = editor => {
+  const { selection } = editor
+  selection.select(selection.getNode())
+}
+
 export const prepend = (text, editor) => {
   editor.selection.setCursorLocation(null, 0)
   editor.execCommand('mceInsertContent', false, text, {skip_focus: true})

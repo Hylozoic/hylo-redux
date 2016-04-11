@@ -1,17 +1,31 @@
 import React from 'react'
-import { exitNode, getKeyCode, insertJSX, keyMap, removeCurrentNode } from '../util/tinymce'
+import {
+  exitNode,
+  getKeyCode,
+  insertJSX,
+  keyMap,
+  removeCurrentNode,
+  replaceNodeWithJSX,
+  selectCurrentNode
+} from '../util/tinymce'
 import { includes, some } from 'lodash'
 
 const triggerKeyCodes = [keyMap.HASH, keyMap.AT_SIGN]
 const triggers = ['#', '@']
 const className = 'autocompleting-tag'
 
-const template = keyCode => {
-  const trigger = String.fromCharCode(keyCode)
-  return <span className={className}>{trigger}</span>
-}
+const template = keyCode =>
+  <a className={className}>{String.fromCharCode(keyCode)}</a>
 
-export default class RichTextTagger {
+const Mention = ({ person }) =>
+  <a className={className}
+    data-user-id={person.id}
+    href={'/u/' + person.id}
+    data-finalized={true}>
+    {person.name}
+  </a>
+
+export class RichTextTagger {
   constructor (editor, search) {
     this.editor = editor
     this.search = search
@@ -25,6 +39,10 @@ export default class RichTextTagger {
     return this.domNode().className === className
   }
 
+  isInReplacedTag () {
+    return !!this.domNode().getAttribute('data-user-id')
+  }
+
   tagValue () {
     return this.editor.selection.getNode().innerHTML
   }
@@ -33,13 +51,32 @@ export default class RichTextTagger {
     return some(triggers, t => t === this.tagValue())
   }
 
+  finishTag (choice) {
+    // sort of a dumb heuristic: users have avatar_urls and tags don't
+    if (choice.avatar_url) {
+      replaceNodeWithJSX(<Mention person={choice}/>, this.editor)
+    } else {
+      // for hashtags, we just update the text in the tag instead of replacing
+      // anything, so it can always be edited, autocompleted, or saved as a new
+      // hashtag as-is
+      this.domNode().textContent = '#' + choice.name
+    }
+  }
+
   handleKeyUp = event => {
+    const keyCode = getKeyCode(event)
+
+    // select the whole tag when backspacing up to it so it's easy to delete all
+    // at once
+    if (keyCode === keyMap.BACKSPACE && this.isInReplacedTag()) {
+      selectCurrentNode(this.editor)
+      return
+    }
+
+    // trigger or reset typeahead
     if (this.isInTag()) {
-      if (getKeyCode(event) === keyMap.ESC) {
-        this.search(null)
-      } else {
-        this.search(this.tagValue(), this.domNode())
-      }
+      const value = keyCode === keyMap.ESC ? null : this.tagValue()
+      this.search(value, this.domNode())
     }
   }
 
@@ -53,12 +90,14 @@ export default class RichTextTagger {
           exitNode(this.editor, keyCode)
           event.preventDefault()
         }
-    }
-
-    if (keyCode === keyMap.BACKSPACE && this.tagValueIsEmpty()) {
-      removeCurrentNode(this.editor)
-      this.search(null)
-      event.preventDefault()
+        break
+      case keyMap.BACKSPACE:
+        // remove the tag entirely if backspacing over its first character
+        if (this.tagValueIsEmpty()) {
+          removeCurrentNode(this.editor)
+          this.search(null)
+          event.preventDefault()
+        }
     }
   }
 
@@ -66,9 +105,12 @@ export default class RichTextTagger {
   // event.preventDefault()
   handleKeyPress = event => {
     const keyCode = getKeyCode(event)
+    // create an empty tag when a trigger character is typed
     if (includes(triggerKeyCodes, keyCode)) {
       insertJSX(template(keyCode), this.editor)
       event.preventDefault()
     }
   }
 }
+
+export default RichTextTagger

@@ -9,7 +9,7 @@ import RichTextTagger from '../util/RichTextTagger'
 import KeyControlledList from '../components/KeyControlledList'
 import { debounce, get, isEmpty, merge } from 'lodash'
 import { typeahead } from '../actions'
-import { getKeyCode, keyMap, replaceNodeWithJSX } from '../util/tinymce'
+import { getKeyCode, keyMap } from '../util/tinymce'
 const { array, bool, func, string } = React.PropTypes
 import { position } from '../util/scrolling'
 
@@ -23,14 +23,6 @@ const editorConfig = {
   resize: true,
   relative_urls: false,
   autoresize_bottom_margin: 0
-}
-
-const templateForChoice = choice => {
-  const { id, name, avatar_url } = choice
-  // sort of a dumb heuristic: users have avatar_urls and tags don't
-  return avatar_url
-    ? <a data-user-id={id} href={'/u/' + id}>{name}</a>
-    : <a data-search={`#${name}`} data-tag-id={id}>#{name}</a>
 }
 
 // @autoproxy allows the instance methods of the class to be accessible even
@@ -189,7 +181,7 @@ export default class RichTextEditor extends React.Component {
     const selectTypeahead = choice => {
       this.autocomplete(null)
       if (onAddTag) onAddTag(choice.name)
-      replaceNodeWithJSX(templateForChoice(choice), this.getEditor())
+      this.tagger.finishTag(choice)
     }
 
     return <div className={cx('rich-text-editor', className)} ref='container'>

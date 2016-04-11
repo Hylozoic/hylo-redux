@@ -58,6 +58,8 @@ export class RichTextTagger {
       // anything, so it can always be edited, autocompleted, or saved as a new
       // hashtag as-is
       this.domNode().textContent = '#' + choice.name
+      this.search(null)
+      exitNode(this.editor, keyMap.SPACE)
     }
   }
 

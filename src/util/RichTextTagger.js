@@ -24,13 +24,18 @@ const Mention = ({ person }) =>
   </a>
 
 export class RichTextTagger {
-  constructor (editor, search) {
+  constructor (editor, autocomplete) {
     this.editor = editor
-    this.search = search
+    this.autocomplete = autocomplete
   }
 
   domNode () {
     return this.editor.selection.getNode()
+  }
+
+  search (term) {
+    this.lastSearch = term
+    this.autocomplete(term, this.domNode())
   }
 
   isInTag () {
@@ -73,10 +78,13 @@ export class RichTextTagger {
       return
     }
 
-    // trigger or reset typeahead
     if (this.isInTag()) {
+      // trigger or reset typeahead
       const value = keyCode === keyMap.ESC ? null : this.tagValue()
-      this.search(value, this.domNode())
+      this.search(value)
+    } else {
+      // always reset typeahead if not inside a tag
+      if (this.lastSearch) this.search(null)
     }
   }
 

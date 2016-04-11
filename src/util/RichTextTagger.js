@@ -12,14 +12,12 @@ import { includes, some } from 'lodash'
 
 const triggerKeyCodes = [keyMap.HASH, keyMap.AT_SIGN]
 const triggers = ['#', '@']
-const className = 'autocompleting-tag'
 
 const template = keyCode =>
-  <a className={className}>{String.fromCharCode(keyCode)}</a>
+  <a data-autocompleting={true}>{String.fromCharCode(keyCode)}</a>
 
 const Mention = ({ person }) =>
-  <a className={className}
-    data-user-id={person.id}
+  <a data-user-id={person.id}
     href={'/u/' + person.id}
     data-finalized={true}>
     {person.name}
@@ -36,7 +34,7 @@ export class RichTextTagger {
   }
 
   isInTag () {
-    return this.domNode().className === className
+    return !!this.domNode().getAttribute('data-autocompleting')
   }
 
   isInReplacedTag () {

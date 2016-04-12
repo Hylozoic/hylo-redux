@@ -19,7 +19,7 @@ const { array, bool, func, object, string } = React.PropTypes
   const currentUser = state.people.current
   const settingsLeftNavOpen = get(currentUser, 'settings.leftNavOpen')
   const community = find(state.communities, c => c.id === state.currentCommunityId)
-  const tags = state.tagsByCommunity[community.slug]
+  const tags = community ? state.tagsByCommunity[community.slug] : {}
 
   return {
     leftNavOpened: settingsLeftNavOpen === undefined ? leftNavOpened : settingsLeftNavOpen,

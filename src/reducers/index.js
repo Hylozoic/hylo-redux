@@ -1,6 +1,6 @@
 import { combineReducers } from 'redux'
 import { routeReducer } from 'redux-simple-router'
-import { some, get, includes, omit, partition } from 'lodash'
+import { some, get, includes, omit, partition, merge } from 'lodash'
 import comments from './comments'
 import commentsByPost from './commentsByPost'
 import communities from './communities'
@@ -33,7 +33,7 @@ import {
   FETCH_POSTS,
   FETCH_PROJECTS,
   FETCH_TAG,
-  FETCH_FOLLOWED_TAGS,
+  FETCH_LEFT_NAV_TAGS,
   FOLLOW_TAG_PENDING,
   LOGIN,
   LOGOUT,
@@ -540,10 +540,12 @@ export default combineReducers({
             [meta.tagName]: payload
           }
         }
-      case FETCH_FOLLOWED_TAGS:
+      case FETCH_LEFT_NAV_TAGS:
+        let labeledTags = payload.followed.map(f => merge(f, {followed: true}))
+        .concat(payload.created.map(c => merge(c, {created: true})))
         return {
           ...state,
-          [meta.id]: mergeList(state[meta.id] || {}, payload, 'name')
+          [meta.id]: mergeList(state[meta.id] || {}, labeledTags, 'name')
         }
       case FOLLOW_TAG_PENDING:
         oldCommunityTags = state[meta.id] || {}

@@ -24,6 +24,7 @@ export const FETCH_COMMUNITY_SETTINGS = 'FETCH_COMMUNITY_SETTINGS'
 export const FETCH_CURRENT_USER = 'FETCH_CURRENT_USER'
 export const FETCH_FOLLOWED_TAGS = 'FETCH_FOLLOWED_TAGS'
 export const FETCH_INVITATIONS = 'FETCH_INVITATIONS'
+export const FETCH_LEFT_NAV_TAGS = 'FETCH_LEFT_NAV_TAGS'
 export const FETCH_LIVE_STATUS = 'FETCH_LIVE_STATUS'
 export const FETCH_NETWORK = 'FETCH_NETWORK'
 export const FETCH_ONBOARDING = 'FETCH_ONBOARDING'
@@ -585,10 +586,10 @@ export function followTag (id, tagName) {
   }
 }
 
-export function fetchFollowedTags (id) {
+export function fetchLeftNavTags (id) {
   return {
-    type: FETCH_FOLLOWED_TAGS,
-    payload: {api: true, path: `/noo/tags/${id}/followed`},
+    type: FETCH_LEFT_NAV_TAGS,
+    payload: {api: true, path: `/noo/tags/${id}/leftnav`},
     meta: {id}
   }
 }

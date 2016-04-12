@@ -1,7 +1,7 @@
 import { A, IndexA } from './A'
 import React from 'react'
 import { VelocityTransitionGroup } from 'velocity-react'
-import { isEmpty } from 'lodash'
+import { isEmpty, filter } from 'lodash'
 
 // this value is dupicated in CSS
 export const leftNavWidth = 208
@@ -30,7 +30,30 @@ export const MenuButton = ({ onClick, label }) =>
     <span>{label || 'Menu'}</span>
   </a>
 
-export const LeftNav = ({ opened, community, followedTags, close, canModerate, canInvite }) => {
+export const TopicList = ({ tags, slug }) => {
+  let followedTags = filter(tags, t => t.followed && !t.created)
+  let createdTags = filter(tags, t => t.created)
+
+  const TagLink = ({ name }) => {
+    var allTopics = name === 'all-topics'
+    var AComponent = allTopics ? IndexA : A
+    return <li>
+      <AComponent to={allTopics ? `/c/${slug}` : `/c/${slug}/tag/${name}`}>
+        •&nbsp;&nbsp;# {name}
+      </AComponent>
+    </li>
+  }
+
+  return <ul className='topic-list'>
+    {!isEmpty(followedTags) && <li className='subheading'><a>TOPICS ({followedTags.length})</a></li>}
+    {!isEmpty(followedTags) && <TagLink name='all-topics'/>}
+    {!isEmpty(followedTags) && followedTags.map(tag => <TagLink name={tag.name} key={tag.name} />)}
+    {!isEmpty(createdTags) && <li className='subheading'><a>TOPICS CREATED ({createdTags.length})</a></li>}
+    {!isEmpty(createdTags) && createdTags.map(tag => <TagLink name={tag.name} key={tag.name} />)}
+  </ul>
+}
+
+export const LeftNav = ({ opened, community, tags, close, canModerate, canInvite }) => {
   let { slug } = community || {}
 
   return <VelocityTransitionGroup {...animations}>
@@ -72,18 +95,8 @@ export const LeftNav = ({ opened, community, followedTags, close, canModerate, c
             <Icon name='cog'/> Settings
           </A>
         </li>}
-        {!isEmpty(followedTags) && <li className='subheading'><a>TOPICS</a></li>}
-        {!isEmpty(followedTags) && <li>
-          <A to={`/c/${slug}/`}>
-            • # all-topics
-          </A>
-        </li>}
-        {!isEmpty(followedTags) && followedTags.map(tag => <li key={tag.name}>
-          <A to={`/c/${slug}/tag/${tag.name}`}>
-            • # {tag.name}
-          </A>
-        </li>)}
-      </ul>
+        </ul>
+      {!isEmpty(tags) && <TopicList tags={tags} slug={slug} />}
     </nav>}
   </VelocityTransitionGroup>
 }

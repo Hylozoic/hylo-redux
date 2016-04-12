@@ -5,6 +5,7 @@ import { prefetch, defer } from 'react-fetcher'
 import { get, pick } from 'lodash'
 import {
   fetchCommunity,
+  fetchFollowedTags,
   navigate,
   setCurrentCommunityId,
   updateUserSettings
@@ -45,10 +46,13 @@ CommunityProfile.propTypes = {
 
 export default compose(
   prefetch(({ store, dispatch, params: { id } }) =>
-    dispatch(fetchCommunity(id))
+    dispatch(fetchFollowedTags(id))
+    .then(() => dispatch(fetchCommunity(id)))
     .then(() => {
       let community = store.getState().communities[id]
-      community && dispatch(setCurrentCommunityId(community.id))
+      if (community) {
+        dispatch(setCurrentCommunityId(community.id))
+      }
     })),
   defer(({ params: { id }, store }) => {
     let community = store.getState().communities[id]

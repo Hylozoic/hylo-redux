@@ -15,7 +15,7 @@ import posts from './posts'
 import projectsByQuery from './projectsByQuery'
 import projects from './projects'
 import projectEdits from './projectEdits'
-import { appendUniq } from './util'
+import { appendUniq, mergeList } from './util'
 
 import {
   CANCEL_TYPEAHEAD,
@@ -33,6 +33,7 @@ import {
   FETCH_POSTS,
   FETCH_PROJECTS,
   FETCH_TAG,
+  FETCH_FOLLOWED_TAGS,
   FOLLOW_TAG_PENDING,
   LOGIN,
   LOGOUT,
@@ -538,6 +539,11 @@ export default combineReducers({
             ...oldCommunityTags,
             [meta.tagName]: payload
           }
+        }
+      case FETCH_FOLLOWED_TAGS:
+        return {
+          ...state,
+          [meta.id]: mergeList(state[meta.id] || {}, payload, 'name')
         }
       case FOLLOW_TAG_PENDING:
         oldCommunityTags = state[meta.id] || {}

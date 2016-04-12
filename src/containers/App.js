@@ -11,18 +11,21 @@ import { makeUrl } from '../client/util'
 import { VelocityComponent } from 'velocity-react'
 import { canInvite, canModerate } from '../models/currentUser'
 import { isMobile } from '../util'
-import { get } from 'lodash'
+import { get, filter } from 'lodash'
 const { array, bool, func, object, string } = React.PropTypes
 
 @connect((state, { params: { id } }) => {
   const { leftNavOpened, notifierMessages } = state
   const currentUser = state.people.current
   const settingsLeftNavOpen = get(currentUser, 'settings.leftNavOpen')
+  const community = find(state.communities, c => c.id === state.currentCommunityId)
+  const followedTags = filter(state.tagsByCommunity[community.slug], t => t.followed)
   return {
     leftNavOpened: settingsLeftNavOpen === undefined ? leftNavOpened : settingsLeftNavOpen,
     notifierMessages,
     currentUser,
-    community: find(state.communities, c => c.id === state.currentCommunityId),
+    community,
+    followedTags,
     path: state.routing.path
   }
 })
@@ -32,6 +35,7 @@ export default class App extends React.Component {
     community: object,
     currentUser: object,
     leftNavOpened: bool,
+    followedTags: array,
     notifierMessages: array,
     path: string,
     dispatch: func
@@ -47,6 +51,7 @@ export default class App extends React.Component {
       community,
       currentUser,
       dispatch,
+      followedTags,
       leftNavOpened,
       notifierMessages,
       path
@@ -72,6 +77,7 @@ export default class App extends React.Component {
     return <div>
       <LeftNav opened={leftNavOpened}
         community={community}
+        followedTags={followedTags}
         canModerate={canModerate(currentUser, community)}
         canInvite={canInvite(currentUser, community)}
         close={closeLeftNav}/>

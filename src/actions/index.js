@@ -22,6 +22,7 @@ export const FETCH_COMMUNITY_FOR_INVITATION = 'FETCH_COMMUNITY_FOR_INVITATION'
 export const FETCH_COMMUNITY_MODERATORS = 'FETCH_COMMUNITY_MODERATORS'
 export const FETCH_COMMUNITY_SETTINGS = 'FETCH_COMMUNITY_SETTINGS'
 export const FETCH_CURRENT_USER = 'FETCH_CURRENT_USER'
+export const FETCH_FOLLOWED_TAGS = 'FETCH_FOLLOWED_TAGS'
 export const FETCH_INVITATIONS = 'FETCH_INVITATIONS'
 export const FETCH_LIVE_STATUS = 'FETCH_LIVE_STATUS'
 export const FETCH_NETWORK = 'FETCH_NETWORK'
@@ -581,5 +582,13 @@ export function followTag (id, tagName) {
     type: FOLLOW_TAG,
     payload: {api: true, path: `/noo/tag/${id}/${tagName}/follow`, method: 'POST'},
     meta: {id, tagName}
+  }
+}
+
+export function fetchFollowedTags (id) {
+  return {
+    type: FETCH_FOLLOWED_TAGS,
+    payload: {api: true, path: `/noo/tags/${id}/followed`},
+    meta: {id}
   }
 }

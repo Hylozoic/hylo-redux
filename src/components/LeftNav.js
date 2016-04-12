@@ -1,6 +1,7 @@
 import { A, IndexA } from './A'
 import React from 'react'
 import { VelocityTransitionGroup } from 'velocity-react'
+import { isEmpty } from 'lodash'
 
 // this value is dupicated in CSS
 export const leftNavWidth = 208
@@ -29,7 +30,7 @@ export const MenuButton = ({ onClick, label }) =>
     <span>{label || 'Menu'}</span>
   </a>
 
-export const LeftNav = ({ opened, community, close, canModerate, canInvite }) => {
+export const LeftNav = ({ opened, community, followedTags, close, canModerate, canInvite }) => {
   let { slug } = community || {}
 
   return <VelocityTransitionGroup {...animations}>
@@ -71,6 +72,17 @@ export const LeftNav = ({ opened, community, close, canModerate, canInvite }) =>
             <Icon name='cog'/> Settings
           </A>
         </li>}
+        {!isEmpty(followedTags) && <li className='subheading'><a>TOPICS</a></li>}
+        {!isEmpty(followedTags) && <li>
+          <A to={`/c/${slug}/`}>
+            • # all-topics
+          </A>
+        </li>}
+        {!isEmpty(followedTags) && followedTags.map(tag => <li key={tag.name}>
+          <A to={`/c/${slug}/tag/${tag.name}`}>
+            • # {tag.name}
+          </A>
+        </li>)}
       </ul>
     </nav>}
   </VelocityTransitionGroup>

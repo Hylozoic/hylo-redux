@@ -11,7 +11,7 @@ import { makeUrl } from '../client/util'
 import { VelocityComponent } from 'velocity-react'
 import { canInvite, canModerate } from '../models/currentUser'
 import { isMobile } from '../util'
-import { get } from 'lodash'
+import { get, pick } from 'lodash'
 const { array, bool, func, object, string } = React.PropTypes
 
 @connect((state, { params: { id } }) => {
@@ -38,7 +38,12 @@ export default class App extends React.Component {
   }
 
   static childContextTypes = {
-    dispatch: func
+    dispatch: func,
+    currentUser: object
+  }
+
+  getChildContext () {
+    return pick(this.props, 'dispatch', 'currentUser')
   }
 
   render () {

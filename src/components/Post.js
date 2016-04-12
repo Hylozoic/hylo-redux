@@ -7,8 +7,6 @@ import {
   nonbreaking,
   present,
   sanitize,
-  timeRange,
-  timeRangeFull,
   textLength,
   appendInP
 } from '../util/text'
@@ -19,13 +17,11 @@ import Dropdown from './Dropdown'
 import { ClickCatchingSpan } from './ClickCatcher'
 import Comment from './Comment'
 import CommentForm from './CommentForm'
-import RSVPControl from './RSVPControl'
 import PersonDropdownItem from './PersonDropdownItem'
 import { scrollToAnchor } from '../util/scrolling'
 import { connect } from 'react-redux'
 import { compose } from 'redux'
 import {
-  changeEventResponse,
   fetchComments,
   followPost,
   notify,
@@ -72,11 +68,9 @@ class Post extends React.Component {
     return <div className={classes}>
       <Header communities={communities}/>
       <p className='title post-section'>{title}</p>
-      {tag === 'event' && <EventSection/>}
       {post.location && <Location/>}
       {image && <img src={image.url} className='post-section full-image'/>}
       <Details {...{expanded, onExpand, tagLabel}}/>
-      {tag === 'event' && <EventRSVP/>}
       <div className='voting post-section'><VoteButton/><Voters/></div>
       <Attachments/>
       <CommentSection truncate={!expanded} expand={onExpand}
@@ -143,19 +137,6 @@ const Details = ({ expanded, onExpand, tagLabel }, { post }) => {
   </div>
 }
 Details.contextTypes = {post: object}
-
-const EventSection = (props, { post }) => {
-  const start = new Date(post.start_time)
-  const end = post.end_time && new Date(post.end_time)
-  const eventTime = timeRange(start, end)
-  const eventTimeFull = timeRangeFull(start, end)
-
-  return <p title={eventTimeFull} className='post-section event-time'>
-    <i className='glyphicon glyphicon-time'></i>
-    {eventTime}
-  </p>
-}
-EventSection.contextTypes = {post: object}
 
 const Location = (props, { post }) => {
   return <p title='location' className='post-section post-location'>
@@ -269,17 +250,6 @@ class CommentSection extends React.Component {
     </div>
   }
 }
-
-const EventRSVP = (props, { post, currentUser, dispatch }) => {
-  const { responders } = post
-  let isCurrentUser = r => r.id === get(currentUser, 'id')
-  let currentResponse = get(find(responders, isCurrentUser), 'response') || ''
-  let onPickResponse = currentUser &&
-    (choice => dispatch(changeEventResponse(post.id, choice, currentUser)))
-
-  return <RSVPControl {...{responders, currentResponse, onPickResponse}}/>
-}
-EventRSVP.contextTypes = Post.childContextTypes
 
 export const VoteButton = (props, { post, currentUser, dispatch }) => {
   let vote = () => dispatch(voteOnPost(post, currentUser))

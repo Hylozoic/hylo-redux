@@ -39,7 +39,7 @@ export const TopicList = ({ tags, slug }) => {
     var AComponent = allTopics ? IndexA : A
     return <li>
       <AComponent to={allTopics ? `/c/${slug}` : `/c/${slug}/tag/${name}`}>
-        •&nbsp;&nbsp;# {name}
+        <span className='bullet'>•</span>&nbsp;&nbsp;# {name}
       </AComponent>
     </li>
   }

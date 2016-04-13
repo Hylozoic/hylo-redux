@@ -79,6 +79,7 @@ export default class EventPost extends React.Component {
     const title = decode(name || '')
     const start = new Date(start_time)
     const end = end_time && new Date(end_time)
+    const image = imageUrl(post, false)
 
     return <div className='post event'>
       <Header communities={communities}/>
@@ -86,6 +87,9 @@ export default class EventPost extends React.Component {
       <p className='hashtag'>#hashtagTBD</p>
 
       <div className='event-details'>
+        {image && <div className='image'>
+          <img src={image}/>
+        </div>}
         <div className='attendees'>
           attendees
         </div>

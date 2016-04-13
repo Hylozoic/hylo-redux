@@ -38,6 +38,7 @@ import NetworkEditor from './containers/network/NetworkEditor'
 import Notifications from './containers/Notifications'
 import Search from './containers/Search'
 import Admin from './containers/Admin'
+import TestBench from './containers/TestBench'
 import { debug } from './util/logging'
 import { makeUrl } from './client/util'
 import { get, isEmpty } from 'lodash'
@@ -125,6 +126,8 @@ export default function makeRoutes (store) {
       <Route path='about' component={AboutNetwork}/>
     </Route>
     <Route path='n/:id/edit' component={NetworkEditor} onEnter={requireLogin()}/>
+
+    <Route path='testbench' component={TestBench}/>
   </Route>
 }
 

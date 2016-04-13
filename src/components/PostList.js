@@ -5,8 +5,9 @@ import RefreshButton from './RefreshButton'
 import { changeViewportTop, positionInViewport } from '../util/scrolling'
 import { includes } from 'lodash'
 import PostEditor from './PostEditor'
+import EventPost from './EventPost'
 
-const { array, bool, func, object } = React.PropTypes
+const { array, bool, func, object, string } = React.PropTypes
 
 class PostList extends React.Component {
   static propTypes = {
@@ -18,7 +19,8 @@ class PostList extends React.Component {
   }
 
   static contextTypes = {
-    project: object
+    project: object,
+    postDisplayMode: string
   }
 
   constructor (props) {
@@ -58,19 +60,31 @@ class PostList extends React.Component {
       return <div className='no-posts'>No posts to show.</div>
     }
 
+    const showPost = post => {
+      if (includes(editingPostIds, post.id)) {
+        return <PostEditor post={post} expanded={true} project={project}/>
+      }
+
+      if (post.id === this.state.expanded) {
+        return <div>
+          <div className='backdrop' onClick={this.unexpand}/>
+          <Post post={post} expanded={true}/>
+        </div>
+      }
+
+      if (post.type === 'event') {
+        return <EventPost post={post}/>
+      }
+
+      return <Post post={post} onExpand={() => this.expand(post.id)}/>
+    }
+
     return <span>
       <RefreshButton refresh={refreshPostList} />
       <ul className='posts'>
       {pending && <li className='loading'>Loading...</li>}
       {posts.map(p => <li key={p.id} ref={p.id}>
-        {includes(editingPostIds, p.id)
-          ? <PostEditor post={p} expanded={true} project={project}/>
-          : p.id === this.state.expanded
-            ? <div>
-                <div className='backdrop' onClick={this.unexpand}/>
-                <Post post={p} expanded={true}/>
-              </div>
-            : <Post post={p} onExpand={() => this.expand(p.id)}/>}
+        {showPost(p)}
       </li>)}
       <ScrollListener onBottom={loadMore}/>
     </ul>

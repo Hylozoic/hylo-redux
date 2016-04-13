@@ -121,15 +121,6 @@ ul.posts {
     })
   }
 
-  .event-time {
-    margin-bottom: 0;
-    margin-top: @p-bottom-margin;
-    i {
-      position: relative;
-      top: 2px;
-    }
-  }
-
   .post-location {
     margin-bottom: 0;
     margin-top: @p-bottom-margin;
@@ -158,11 +149,6 @@ ul.posts {
     display: inline;
   }
 
-  .event-time {
-    margin-top: 0;
-    margin-bottom: @p-bottom-margin;
-  }
-
   .post-location {
     margin-top: 0;
     margin-bottom: @p-bottom-margin;
@@ -170,77 +156,6 @@ ul.posts {
 
   .full-image {
     width: 100%;
-  }
-
-  .rsvp-controls {
-    padding-top: @p-bottom-margin;
-    padding-bottom: @p-bottom-margin;
-    border-top: 1px solid #ddd;
-    border-bottom: 1px solid #ddd;
-
-    .buttons {
-      margin-bottom: 10px;
-
-      button {
-        margin-right: 0px;
-
-        &.rsvp-yes {
-          width: 100px;
-        }
-        &.rsvp-maybe {
-          width: 103px;
-        }
-        &.rsvp-no {
-          width: 115px;
-        }
-      }
-    }
-
-    a.dropdown-toggle {
-      color: @dark-blue;
-    }
-
-    .responses-dropdown {
-
-      ul.dropdown-menu {
-        padding-top: 0px;
-        margin-top: 0px;
-      }
-
-      li {
-        padding: 0px 15px;
-      }
-
-      li.header {
-        padding: 5px 15px;
-        border-top: 1px solid #d9d9d9;
-        border-bottom: 1px solid #d9d9d9;
-      }
-
-      span.header {
-        font-size: 18px;
-        text-align: center;
-        margin-bottom: 0px;
-        display: block;
-        width: 100%;
-      }
-
-      a.person {
-        margin-left: 6px;
-        position: relative;
-        top: 50%;
-        transform: translateY(-60%);
-        display: inline-block;
-      }
-
-      span.person {
-        height: 100%;
-      }
-
-      .avatar {
-        display: inline-block;
-      }
-    }
   }
 
   .post-section.voting {
@@ -346,12 +261,6 @@ ul.posts {
   display: none;
 }
 
-.event-time {
-  i {
-    margin-right: 5px;
-  }
-}
-
 .post-location {
   i {
     margin-right: 5px;
@@ -371,6 +280,7 @@ ul.posts {
     .post-title-text;
     color: @placeholder-color;
     margin-left: @post-content-left-margin;
+    cursor: pointer;
   }
 
   .title-wrapper {
@@ -559,6 +469,67 @@ ul.posts {
       overflow: hidden;
       white-space: nowrap;
       text-overflow: ellipsis;
+    }
+  }
+}
+
+.post.event {
+  .clearfix;
+  padding: 25px;
+
+  .image {
+    .fluid-height(61.8%);
+    width: 38.2%;
+    background-color: #ccc;
+    float: left;
+    margin-right: 15px;
+    background-size: cover;
+  }
+
+  .title {
+    line-height: 1.28em;
+    font-size: 20px;
+  }
+
+  .content {
+    overflow: hidden;
+  }
+
+  .rsvp-controls {
+    padding-top: @p-bottom-margin;
+    padding-bottom: @p-bottom-margin;
+    display: inline-block;
+
+    .buttons {
+      margin-bottom: 10px;
+      button {
+        margin-right: 0px;
+        &.rsvp-yes {
+          width: 100px;
+        }
+        &.rsvp-maybe {
+          width: 103px;
+        }
+        &.rsvp-no {
+          width: 115px;
+        }
+      }
+    }
+
+    a.dropdown-toggle {
+      color: @dark-blue;
+    }
+
+    li.group-name {
+      padding: 5px 15px;
+      border-top: 1px solid #d9d9d9;
+      border-bottom: 1px solid #d9d9d9;
+      font-size: 16px;
+
+      &:first-child {
+        border-top: 0;
+        margin-top: -5px;
+      }
     }
   }
 }

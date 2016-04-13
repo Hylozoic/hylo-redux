@@ -30,6 +30,7 @@
     "stage": 0
   },
   "dependencies": {
+    "autoproxy": "^1.0.1",
     "aws-sdk": "^2.2.17",
     "babel": "^5.8.23",
     "babel-core": "^5.8.23",

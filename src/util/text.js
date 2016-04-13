@@ -94,6 +94,13 @@ export function timeRange (start, end) {
   }
 }
 
+export function timeRangeBrief (start, end) {
+  return moment(start).calendar(null, {sameElse: 'MMM D'}) +
+  (end && !sameDay(start, end)
+    ? ' - ' + moment(end).calendar(null, {sameElse: 'MMM D'})
+    : '')
+}
+
 export function timeRangeFull (start, end) {
   if (!end) {
     return moment(start).format('LLLL')

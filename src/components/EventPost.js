@@ -3,10 +3,11 @@ import { connect } from 'react-redux'
 import { timeRange, timeRangeBrief, timeRangeFull } from '../util/text'
 import { changeEventResponse } from '../actions'
 import A from './A'
+import Avatar from './Avatar'
+import Select from './Select'
 import Icon from './Icon'
-import RSVPControl from './RSVPControl'
 import { ClickCatchingSpan } from './ClickCatcher'
-import { get, find } from 'lodash'
+import { get, find, sortBy } from 'lodash'
 import { same } from '../models'
 import { getComments, getCommunities, imageUrl } from '../models/post'
 import { Header, CommentSection } from './Post'
@@ -37,21 +38,44 @@ export const EventPostCard = ({ post }) => {
       <A to={`/u/${user.id}`}>{user.name}</A>
     </div>
     <A className='title' to={url}>{name}</A>
-    <div className='attendees'>
-      <Attendance post={post}/>
-    </div>
+    <Attendance post={post}/>
   </div>
 }
 
 const Attendance = ({ post }, { currentUser, dispatch }) => {
   const { responders } = post
-  let currentResponse = get(find(responders, same('id', currentUser)), 'response') || ''
-  let onPickResponse = currentUser &&
-    (choice => dispatch(changeEventResponse(post.id, choice, currentUser)))
+  const currentResponse = get(find(responders, same('id', currentUser)), 'response') || ''
 
-  return <RSVPControl {...{responders, currentResponse, onPickResponse}}/>
+  const going = sortBy(
+    responders.filter(r => r.response === 'yes'),
+    p => same('id', p, currentUser) ? 'Aaa' : p.name
+  ).slice(0, 7)
+
+  return <div className='attendance'>
+    <div className='going'>
+      {going.map(person => <Avatar person={person} key={person.id}/>)}
+    </div>
+    {currentUser && <RSVPSelect post={post} currentResponse={currentResponse}/>}
+  </div>
 }
 Attendance.contextTypes = {currentUser: object, dispatch: func}
+
+const RSVPSelect = ({ post, currentResponse }, { currentUser, dispatch }) => {
+  const options = [
+    {name: "I'm Going", id: 'yes', className: 'yes'},
+    {name: "Can't Go", id: 'no'}
+  ]
+
+  const onPickResponse = choice =>
+    dispatch(changeEventResponse(post.id, choice.id, currentUser))
+
+  const selected = currentResponse === 'yes' ? options[0]
+    : currentResponse === 'no' ? options[1] : {name: 'RSVP'}
+
+  return <Select choices={options} selected={selected} alignRight={true}
+    onChange={onPickResponse}/>
+}
+RSVPSelect.contextTypes = {currentUser: object, dispatch: func}
 
 @connect((state, { post }) => ({
   comments: getComments(post, state),

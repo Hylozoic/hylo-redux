@@ -483,14 +483,21 @@ ul.posts {
     width: 38.2%;
     background-color: #ccc;
     float: left;
-    margin-right: 15px;
     background-size: cover;
+  }
+
+  .meta {
+    padding-left: 15px;
+    display: inline-block;
   }
 
   .title {
     line-height: 1.28em;
     font-size: 20px;
     text-decoration: none;
+    padding-left: 15px;
+    margin-bottom: @p-bottom-margin;
+    display: inline-block;
   }
 
   .hashtag {
@@ -501,42 +508,49 @@ ul.posts {
     overflow: hidden;
   }
 
-  .rsvp-controls {
-    padding-top: @p-bottom-margin;
-    padding-bottom: @p-bottom-margin;
+  .attendance {
+    width: 61.8%;
     display: inline-block;
+    padding-left: 15px;
 
-    .buttons {
-      margin-bottom: 10px;
+    .dropdown-toggle {
+      height: @avatar-size-default;
+      line-height: @avatar-size-default;
+      padding-top: 0;
+      padding-bottom: 0;
+    }
+
+    .dropdown {
+      vertical-align: top;
+      display: inline-block;
+      width: 30%;
       button {
-        margin-right: 0px;
-        &.rsvp-yes {
-          width: 100px;
-        }
-        &.rsvp-maybe {
-          width: 103px;
-        }
-        &.rsvp-no {
-          width: 115px;
-        }
+        width: 100%;
       }
     }
+  }
+}
 
-    a.dropdown-toggle {
-      color: @dark-blue;
-    }
+.attendance {
+  line-height: @avatar-size-default + 3px;
 
-    li.group-name {
-      padding: 5px 15px;
-      border-top: 1px solid #d9d9d9;
-      border-bottom: 1px solid #d9d9d9;
-      font-size: 16px;
+  .going {
+    width: 68%;
+    display: inline-block;
+    white-space: nowrap;
+    overflow: hidden;
+    margin-right: 2%;
+  }
 
-      &:first-child {
-        border-top: 0;
-        margin-top: -5px;
-      }
-    }
+  .avatar {
+    vertical-align: top;
+    display: inline-block;
+    border-radius: 0;
+    margin-right: 3px;
+  }
+  
+  .yes {
+    color: @damian-green;
   }
 }
 

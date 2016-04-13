@@ -6,8 +6,9 @@ import A from './A'
 import Avatar from './Avatar'
 import Select from './Select'
 import Icon from './Icon'
+import LinkedPersonSentence from './LinkedPersonSentence'
 import { ClickCatchingSpan } from './ClickCatcher'
-import { get, find, sortBy } from 'lodash'
+import { get, find, isEmpty, sortBy } from 'lodash'
 import { same } from '../models'
 import { getComments, getCommunities, imageUrl } from '../models/post'
 import { Header, CommentSection } from './Post'
@@ -38,29 +39,32 @@ export const EventPostCard = ({ post }) => {
       <A to={`/u/${user.id}`}>{user.name}</A>
     </div>
     <A className='title' to={url}>{name}</A>
-    <Attendance post={post}/>
+    <Attendance post={post} showButton={true} limit={7} alignRight={true}/>
   </div>
 }
 
-const Attendance = ({ post }, { currentUser, dispatch }) => {
+const Attendance = ({ post, limit, showButton, children }, { currentUser, dispatch }) => {
   const { responders } = post
-  const currentResponse = get(find(responders, same('id', currentUser)), 'response') || ''
 
   const going = sortBy(
     responders.filter(r => r.response === 'yes'),
     p => same('id', p, currentUser) ? 'Aaa' : p.name
-  ).slice(0, 7)
+  ).slice(0, limit)
 
   return <div className='attendance'>
     <div className='going'>
       {going.map(person => <Avatar person={person} key={person.id}/>)}
     </div>
-    {currentUser && <RSVPSelect post={post} currentResponse={currentResponse}/>}
+    {currentUser && showButton && <RSVPSelect post={post}/>}
+    {!isEmpty(going) && <LinkedPersonSentence people={going} className='blurb meta'>
+      are going.
+    </LinkedPersonSentence>}
+    {children}
   </div>
 }
 Attendance.contextTypes = {currentUser: object, dispatch: func}
 
-const RSVPSelect = ({ post, currentResponse }, { currentUser, dispatch }) => {
+const RSVPSelect = ({ post, alignRight }, { currentUser, dispatch }) => {
   const options = [
     {name: "I'm Going", id: 'yes', className: 'yes'},
     {name: "Can't Go", id: 'no'}
@@ -69,10 +73,13 @@ const RSVPSelect = ({ post, currentResponse }, { currentUser, dispatch }) => {
   const onPickResponse = choice =>
     dispatch(changeEventResponse(post.id, choice.id, currentUser))
 
-  const selected = currentResponse === 'yes' ? options[0]
-    : currentResponse === 'no' ? options[1] : {name: 'RSVP'}
+  const myResponse = find(post.responders, same('id', currentUser))
+  const myResponseValue = get(myResponse, 'response') || ''
+  const selected = myResponseValue === 'yes' ? options[0]
+    : myResponseValue === 'no' ? options[1] : {name: 'RSVP'}
 
-  return <Select choices={options} selected={selected} alignRight={true}
+  return <Select className='rsvp' choices={options} selected={selected}
+    alignRight={alignRight}
     onChange={onPickResponse}/>
 }
 RSVPSelect.contextTypes = {currentUser: object, dispatch: func}
@@ -114,9 +121,7 @@ export default class EventPost extends React.Component {
         {image && <div className='image'>
           <img src={image}/>
         </div>}
-        <div className='attendees'>
-          attendees
-        </div>
+        <Attendance post={post} limit={5} showButton={true}/>
         <div className='time'>
           <Icon name='time'/>
           <span title={timeRangeFull(start, end)}>

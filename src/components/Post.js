@@ -1,5 +1,5 @@
 import React from 'react'
-import { filter, find, first, get, includes, isEmpty, map, some, sortBy, without } from 'lodash'
+import { filter, find, first, includes, isEmpty, map, some, sortBy } from 'lodash'
 const { array, bool, func, object } = React.PropTypes
 import cx from 'classnames'
 import {
@@ -17,7 +17,7 @@ import Dropdown from './Dropdown'
 import { ClickCatchingSpan } from './ClickCatcher'
 import Comment from './Comment'
 import CommentForm from './CommentForm'
-import PersonDropdownItem from './PersonDropdownItem'
+import LinkedPersonSentence from './LinkedPersonSentence'
 import { scrollToAnchor } from '../util/scrolling'
 import { connect } from 'react-redux'
 import { compose } from 'redux'
@@ -236,44 +236,13 @@ export const VoteButton = (props, { post, currentUser, dispatch }) => {
 VoteButton.contextTypes = {post: object, currentUser: object, dispatch: func}
 
 export const Voters = (props, { post, currentUser }) => {
-  let { voters } = post
-  if (!voters) voters = []
+  const voters = post.voters || []
 
   let onlyAuthorIsVoting = voters.length === 1 && same('id', first(voters), post.user)
-  let meInVoters = find(voters, same('id', currentUser))
-  let otherVoters = meInVoters ? without(voters, meInVoters) : voters
-
-  let numShown = 2
-  let num = otherVoters.length
-  let hasHidden = num > numShown
-  let separator = threshold =>
-    num > threshold
-      ? ', '
-      : num === threshold
-        ? `${voters.length === 2 ? '' : ','} and `
-        : ''
-
-  if (voters.length > 0 && !onlyAuthorIsVoting) {
-    return <div className='voters meta'>
-      {meInVoters && <span className='voter'>You</span>}
-      {meInVoters && separator(1)}
-      {otherVoters.slice(0, numShown).map((person, index) =>
-        <span className='voter' key={person.id}>
-          <a href={`/u/${person.id}`}>{person.name}</a>
-          {index !== numShown - 1 && separator(2)}
-        </span>)}
-      {hasHidden && ', and '}
-      {hasHidden && <Dropdown className='inline'
-        toggleChildren={<span>
-          {num - numShown} other{num - numShown > 1 ? 's' : ''}
-        </span>}>
-        {otherVoters.slice(numShown).map(p =>
-          <PersonDropdownItem key={p.id} person={p}/>)}
-      </Dropdown>}
-      &nbsp;liked this.
-    </div>
-  } else {
-    return <span />
-  }
+  return voters.length > 0 && !onlyAuthorIsVoting
+    ? <LinkedPersonSentence people={voters} className='voters meta'>
+        liked this.
+      </LinkedPersonSentence>
+    : <span />
 }
 Voters.contextTypes = {post: object, currentUser: object}

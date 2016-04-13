@@ -41,7 +41,6 @@ class Post extends React.Component {
     comments: array,
     commentsLoaded: bool,
     dispatch: func,
-    commentingDisabled: bool,
     currentUser: object,
     expanded: bool,
     onExpand: func
@@ -58,7 +57,7 @@ class Post extends React.Component {
   }
 
   render () {
-    const { post, communities, comments, commentingDisabled, expanded, onExpand } = this.props
+    const { post, communities, comments, expanded, onExpand } = this.props
     const { tag, media } = post
     const image = find(media, m => m.type === 'image')
     const classes = cx('post', tag, {image, expanded})
@@ -68,13 +67,11 @@ class Post extends React.Component {
     return <div className={classes}>
       <Header communities={communities}/>
       <p className='title post-section'>{title}</p>
-      {post.location && <Location/>}
       {image && <img src={image.url} className='post-section full-image'/>}
       <Details {...{expanded, onExpand, tagLabel}}/>
       <div className='voting post-section'><VoteButton/><Voters/></div>
       <Attachments/>
-      <CommentSection truncate={!expanded} expand={onExpand}
-        {...{comments, commentingDisabled}}/>
+      <CommentSection truncate={!expanded} expand={onExpand} comments={comments}/>
     </div>
   }
 }
@@ -200,17 +197,16 @@ PostMenu.contextTypes = Post.childContextTypes
 class CommentSection extends React.Component {
   static propTypes = {
     comments: array,
-    commentingDisabled: bool,
     truncate: bool,
     expand: func,
     dispatch: func
   }
 
-  static contextTypes = {post: object, dispatch: func}
+  static contextTypes = {post: object, dispatch: func, currentUser: object}
 
   render () {
-    let { comments, commentingDisabled, truncate, expand } = this.props
-    const { dispatch, post } = this.context
+    let { comments, truncate, expand } = this.props
+    const { dispatch, post, currentUser } = this.context
     if (!comments) comments = []
     comments = sortBy(comments, c => c.created_at)
     if (truncate) comments = comments.slice(-3)
@@ -238,7 +234,7 @@ class CommentSection extends React.Component {
         truncate={truncate}
         expand={() => expandComment(c.id)}
         key={c.id}/>)}
-      {!commentingDisabled && <CommentForm postId={post.id}/>}
+      {currentUser && <CommentForm postId={post.id}/>}
     </div>
   }
 }

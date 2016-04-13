@@ -181,10 +181,10 @@ const WelcomePostHeader = ({ communities }, { post }) => {
 }
 WelcomePostHeader.contextTypes = {post: object}
 
-const PostMenu = (props, { dispatch, post, currentUser }) => {
-  let canEdit = same('id', currentUser, post.user)
-  let following = some(post.followers, same('id', currentUser))
-
+export const PostMenu = (props, { dispatch, post, currentUser }) => {
+  if (!post) post = props.post
+  const canEdit = same('id', currentUser, post.user)
+  const following = some(post.followers, same('id', currentUser))
   const edit = () => dispatch(startPostEdit(post))
   const remove = () => window.confirm('Are you sure? This cannot be undone.') &&
     dispatch(removePost(post.id))

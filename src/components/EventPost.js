@@ -6,6 +6,7 @@ import RSVPControl from './RSVPControl'
 import { get, find } from 'lodash'
 import { same } from '../models'
 import { imageUrl } from '../models/post'
+import { PostMenu } from './Post'
 const { func, object } = React.PropTypes
 
 const spacer = <span>&nbsp; •&nbsp; </span>
@@ -17,20 +18,19 @@ const EventPost = ({ post }) => {
   const time = timeRangeBrief(start, end)
   const timeFull = timeRangeFull(start, end)
 
-  const project = 'Stop Trump'
+  const hashtag = '#todo'
   const url = `/p/${id}`
   const backgroundImage = `url(${imageUrl(post)})`
 
   return <div className='post event'>
     <A className='image' to={url} style={{backgroundImage}}/>
+    <PostMenu post={post}/>
     <div className='meta'>
       <span title={timeFull}>{time}</span>
       {spacer}
-      {user.name}
-      {project && <span>
-        {spacer}
-        <a>{project}</a>
-      </span>}
+      <a className='hashtag'>{hashtag}</a>
+      {spacer}
+      <A to={`/u/${user.id}`}>{user.name}</A>
     </div>
     <A className='title' to={url}>{name}</A>
     <div className='attendees'>

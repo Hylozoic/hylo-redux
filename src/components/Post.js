@@ -138,14 +138,6 @@ const Details = ({ expanded, onExpand, tagLabel }, { post }) => {
 }
 Details.contextTypes = {post: object}
 
-const Location = (props, { post }) => {
-  return <p title='location' className='post-section post-location'>
-    <i className='glyphicon glyphicon-map-marker'></i>
-    {post.location}
-  </p>
-}
-Location.contextTypes = {post: object}
-
 const Attachments = (props, { post }) => {
   const attachments = filter(post.media, m => m.type !== 'image')
   if (isEmpty(attachments)) return <span/>

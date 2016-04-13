@@ -59,9 +59,10 @@ export default class App extends React.Component {
       dispatch,
       tags,
       leftNavOpened,
-      notifierMessages,
-      path
+      notifierMessages
     } = this.props
+
+    const path = this.props.path.split('?')[0]
 
     const moveWithMenu = {marginLeft: leftNavOpened ? leftNavWidth : 0}
     const toggleLeftNav = open => {

@@ -5,7 +5,7 @@ import RefreshButton from './RefreshButton'
 import { changeViewportTop, positionInViewport } from '../util/scrolling'
 import { includes } from 'lodash'
 import PostEditor from './PostEditor'
-import EventPost from './EventPost'
+import { EventPostCard } from './EventPost'
 
 const { array, bool, func, object, string } = React.PropTypes
 
@@ -73,7 +73,7 @@ class PostList extends React.Component {
       }
 
       if (post.type === 'event') {
-        return <EventPost post={post}/>
+        return <EventPostCard post={post}/>
       }
 
       return <Post post={post} onExpand={() => this.expand(post.id)}/>

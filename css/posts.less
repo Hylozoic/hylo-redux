@@ -17,8 +17,9 @@ ul.posts {
   }
 }
 
+@post-padding: 25px;
 @post-content-left-margin: 75px;
-@post-content-right-margin: 25px;
+@post-content-right-margin: @post-padding;
 
 .shared-post-style() {
   .header {
@@ -49,7 +50,7 @@ ul.posts {
 }
 
 .post {
-  padding: 25px 0 0;
+  padding: @post-padding 0 0;
   margin-bottom: 15px;
   background-color: @card-background;
   .shared-post-style;
@@ -473,9 +474,9 @@ ul.posts {
   }
 }
 
-.post.event {
+.post.event-summary {
   .clearfix;
-  padding: 25px;
+  padding: @post-padding;
 
   .image {
     .fluid-height(61.8%);
@@ -489,6 +490,11 @@ ul.posts {
   .title {
     line-height: 1.28em;
     font-size: 20px;
+    text-decoration: none;
+  }
+
+  .hashtag {
+    color: @damian-green;
   }
 
   .content {
@@ -529,6 +535,59 @@ ul.posts {
       &:first-child {
         border-top: 0;
         margin-top: -5px;
+      }
+    }
+  }
+}
+
+.event {
+  .title {
+    margin-bottom: 0;
+  }
+  .hashtag {
+    color: @damian-green;
+    margin-left: @post-content-left-margin;
+  }
+  .event-details {
+    border: 1px solid @post-border;
+    margin: 0 @post-padding @post-padding;
+    @attendees-width: 200px;
+
+    .time {
+      height: 50px;
+      border-bottom: 1px solid @post-border;
+      margin-right: @attendees-width;
+      .ellipsis;
+    }
+    .location {
+      margin-right: @attendees-width;
+      padding-right: 10px;
+      height: 50px;
+      line-height: 50px;
+      .ellipsis;
+    }
+    .glyphicon {
+      line-height: 50px;
+      vertical-align: middle;
+      width: 49px;
+      top: -2px;
+      padding-left: 18px;
+      color: @light-gray-text;
+    }
+    .attendees {
+      border-left: 1px solid @post-border;
+      padding: 10px;
+      float: right;
+      height: 100px;
+      width: @attendees-width;
+      background: white;
+    }
+    .detail-text {
+      .clearfix;
+      border-top: 1px solid @post-border;
+      padding: @post-padding;
+      p:last-child {
+        margin-bottom: 0;
       }
     }
   }

@@ -1,5 +1,5 @@
 import React from 'react'
-import { filter, find, first, get, includes, isEmpty, map, pick, some, sortBy, without } from 'lodash'
+import { filter, find, first, get, includes, isEmpty, map, some, sortBy, without } from 'lodash'
 const { array, bool, func, object } = React.PropTypes
 import cx from 'classnames'
 import {
@@ -30,6 +30,7 @@ import {
   voteOnPost
 } from '../actions'
 import { same } from '../models'
+import { getComments, getCommunities } from '../models/post'
 import decode from 'ent/decode'
 
 const spacer = <span>&nbsp; •&nbsp; </span>
@@ -39,21 +40,15 @@ class Post extends React.Component {
     post: object,
     communities: array,
     comments: array,
-    commentsLoaded: bool,
     dispatch: func,
-    currentUser: object,
     expanded: bool,
     onExpand: func
   }
 
-  static childContextTypes = {
-    currentUser: object,
-    dispatch: func,
-    post: object
-  }
+  static childContextTypes = {post: object}
 
   getChildContext () {
-    return pick(this.props, 'currentUser', 'dispatch', 'post')
+    return {post: this.props.post}
   }
 
   render () {
@@ -78,31 +73,23 @@ class Post extends React.Component {
 
 export default compose(
   connect((state, { post }) => {
-    const { comments, commentsByPost, people } = state
-    const commentIds = get(commentsByPost, post.id)
-    const communities = get(post.communities, '0.id')
-      ? post.communities
-      : map(post.communities, id => find(state.communities, same('id', {id})))
-
     return {
-      commentsLoaded: !!commentIds,
-      comments: map(commentIds, id => comments[id]),
-      currentUser: get(people, 'current'),
-      communities
+      comments: getComments(post, state),
+      communities: getCommunities(post, state)
     }
   })
 )(Post)
 
 export const UndecoratedPost = Post // for testing
 
-const Header = ({ communities }, { post, community }) => {
+export const Header = ({ communities }, { post, community }) => {
   const { tag } = post
   const person = tag === 'welcome' ? post.relatedUsers[0] : post.user
   const createdAt = new Date(post.created_at)
   if (!community) community = communities[0]
 
   return <div className='header'>
-    <PostMenu/>
+    <Menu/>
     <Avatar person={person}/>
     {tag === 'welcome'
       ? <WelcomePostHeader communities={communities}/>
@@ -170,8 +157,7 @@ const WelcomePostHeader = ({ communities }, { post }) => {
 }
 WelcomePostHeader.contextTypes = {post: object}
 
-export const PostMenu = (props, { dispatch, post, currentUser }) => {
-  if (!post) post = props.post
+export const Menu = (props, { dispatch, post, currentUser }) => {
   const canEdit = same('id', currentUser, post.user)
   const following = some(post.followers, same('id', currentUser))
   const edit = () => dispatch(startPostEdit(post))
@@ -192,9 +178,9 @@ export const PostMenu = (props, { dispatch, post, currentUser }) => {
     </li>
   </Dropdown>
 }
-PostMenu.contextTypes = Post.childContextTypes
+Menu.contextTypes = {post: object, currentUser: object, dispatch: func}
 
-class CommentSection extends React.Component {
+export class CommentSection extends React.Component {
   static propTypes = {
     comments: array,
     truncate: bool,
@@ -247,7 +233,7 @@ export const VoteButton = (props, { post, currentUser, dispatch }) => {
     {myVote ? 'Liked' : 'Like'}
   </a>
 }
-VoteButton.contextTypes = Post.childContextTypes
+VoteButton.contextTypes = {post: object, currentUser: object, dispatch: func}
 
 export const Voters = (props, { post, currentUser }) => {
   let { voters } = post

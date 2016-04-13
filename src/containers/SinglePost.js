@@ -17,6 +17,7 @@ import { scrollToAnchor } from '../util/scrolling'
 import { findError } from '../actions/util'
 import AccessErrorMessage from '../components/AccessErrorMessage'
 import CoverImagePage from '../components/CoverImagePage'
+import EventPost from '../components/EventPost'
 
 const SinglePost = props => {
   const { post, community, currentUser, editing, error } = props
@@ -27,9 +28,14 @@ const SinglePost = props => {
   return <CoverImagePage id='single-post' image={get(community, 'banner_url')}>
     {editing
       ? <PostEditor post={post} expanded={true}/>
-      : <Post post={post} expanded={true} commentingDisabled={!currentUser}/>}
+      : showPost(post, currentUser)}
   </CoverImagePage>
 }
+
+const showPost = (post, currentUser) =>
+  post.type === 'event'
+    ? <EventPost post={post}/>
+    : <Post post={post} expanded={true}/>
 
 export default compose(
   prefetch(({ store, dispatch, params: { id } }) =>

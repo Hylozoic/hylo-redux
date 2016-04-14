@@ -8,7 +8,8 @@ import {
   present,
   sanitize,
   textLength,
-  appendInP
+  appendInP,
+  formatPostTitle
 } from '../util/text'
 import truncate from 'html-truncate'
 import A from './A'
@@ -62,7 +63,7 @@ class Post extends React.Component {
     const { tag, media } = post
     const image = find(media, m => m.type === 'image')
     const classes = cx('post', tag, {image, expanded})
-    const title = decode(post.name || '')
+    const title = formatPostTitle(decode(post.name || ''), '')
     const tagLabel = `#${post.tag === 'chat' ? 'all-topics' : post.tag}`
 
     return <div className={classes}>
@@ -102,6 +103,7 @@ const Header = ({ communities }, { post, community }) => {
   const { tag } = post
   const person = tag === 'welcome' ? post.relatedUsers[0] : post.user
   const createdAt = new Date(post.created_at)
+
   if (!community) community = communities[0]
 
   return <div className='header'>
@@ -121,8 +123,9 @@ const Header = ({ communities }, { post, community }) => {
 }
 Header.contextTypes = {post: object, community: object}
 
-const Details = ({ expanded, onExpand, tagLabel }, { post }) => {
-  let description = present(sanitize(post.description))
+const Details = ({ expanded, onExpand, tagLabel }, { post, community }) => {
+  let slug = community ? community.slug : ''
+  let description = present(sanitize(post.description), {slug})
   const truncated = !expanded && textLength(description) > 200
   if (truncated) description = truncate(description, 200)
   if (description !== '<p></p>') description = appendInP(description, '&nbsp;')
@@ -136,7 +139,7 @@ const Details = ({ expanded, onExpand, tagLabel }, { post }) => {
     <a className='hashtag'>{tagLabel}</a>
   </div>
 }
-Details.contextTypes = {post: object}
+Details.contextTypes = {post: object, community: object}
 
 const Location = (props, { post }) => {
   return <p title='location' className='post-section post-location'>
@@ -214,11 +217,16 @@ class CommentSection extends React.Component {
     dispatch: func
   }
 
-  static contextTypes = {post: object, dispatch: func}
+  static contextTypes = {
+    post: object,
+    dispatch: func,
+    community: object
+  }
 
   render () {
     let { comments, commentingDisabled, truncate, expand } = this.props
-    const { dispatch, post } = this.context
+    const { dispatch, post, community } = this.context
+    let communitySlug = community ? community.slug : ''
     if (!comments) comments = []
     comments = sortBy(comments, c => c.created_at)
     if (truncate) comments = comments.slice(-3)
@@ -245,6 +253,7 @@ class CommentSection extends React.Component {
       {comments.map(c => <Comment comment={{...c, post_id: post.id}}
         truncate={truncate}
         expand={() => expandComment(c.id)}
+        communitySlug={communitySlug}
         key={c.id}/>)}
       {!commentingDisabled && <CommentForm postId={post.id}/>}
     </div>

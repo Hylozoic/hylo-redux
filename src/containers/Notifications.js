@@ -89,7 +89,7 @@ let bodyText = (action, comment, post) => {
     return ''
   }
   let text = get(comment, 'text') || get(post, 'description')
-  return present(text, {communityId: post.communities[0].id, maxlength: 200})
+  return present(text, {communityId: post.communities[0].id, slug: post.communities[0].slug, maxlength: 200})
 }
 
 const Activity = ({ activity, currentUser, dispatch }) => {

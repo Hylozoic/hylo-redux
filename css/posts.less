@@ -473,6 +473,34 @@ ul.posts {
       text-overflow: ellipsis;
     }
   }
+
+  .event-section {
+    padding-left: @post-content-left-margin;
+    .make-row;
+
+    > div {
+      .make-sm-column(6);
+      line-height: 29px;
+      margin-bottom: @p-bottom-margin;
+
+      .icon {
+        font-size: 18px;
+        color: @light-gray-text;
+        width: 33px;
+        display: inline-block;
+        height: 28px;
+        line-height: 25px;
+        vertical-align: middle;
+        text-align: center;
+        border-right: 1px solid @input-border;
+        margin-right: 10px;
+      }
+    }
+
+    .hashtag .icon {
+      font-size: 21px;
+    }
+  }
 }
 
 .post.event-summary {

@@ -1,5 +1,6 @@
-import { A, IndexA } from './A'
 import React from 'react'
+import { A, IndexA } from './A'
+import Icon from './Icon'
 import { VelocityTransitionGroup } from 'velocity-react'
 import { isEmpty, filter } from 'lodash'
 
@@ -102,6 +103,3 @@ export const LeftNav = ({ opened, community, tags, close, canModerate, canInvite
 }
 
 export default LeftNav
-
-const Icon = ({ name }) =>
-  <span className={`icon glyphicon glyphicon-${name}`}></span>

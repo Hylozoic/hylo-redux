@@ -31,6 +31,7 @@ import {
 } from '../actions'
 import { same } from '../models'
 import { getComments, getCommunities } from '../models/post'
+import { canEditPost } from '../models/currentUser'
 import decode from 'ent/decode'
 
 const spacer = <span>&nbsp; •&nbsp; </span>
@@ -158,7 +159,7 @@ const WelcomePostHeader = ({ communities }, { post }) => {
 WelcomePostHeader.contextTypes = {post: object}
 
 export const Menu = (props, { dispatch, post, currentUser }) => {
-  const canEdit = same('id', currentUser, post.user)
+  const canEdit = canEditPost(currentUser, post)
   const following = some(post.followers, same('id', currentUser))
   const edit = () => dispatch(startPostEdit(post))
   const remove = () => window.confirm('Are you sure? This cannot be undone.') &&

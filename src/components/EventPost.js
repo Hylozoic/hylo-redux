@@ -8,7 +8,7 @@ import Select from './Select'
 import Icon from './Icon'
 import LinkedPersonSentence from './LinkedPersonSentence'
 import { ClickCatchingSpan } from './ClickCatcher'
-import { get, find, isEmpty, sortBy } from 'lodash'
+import { get, find, isEmpty, some, sortBy } from 'lodash'
 import { same } from '../models'
 import { getComments, getCommunities, imageUrl } from '../models/post'
 import { Header, CommentSection } from './Post'
@@ -57,7 +57,8 @@ const Attendance = ({ post, limit, showButton, children }, { currentUser, dispat
     </div>
     {currentUser && showButton && <RSVPSelect post={post}/>}
     {!isEmpty(going) && <LinkedPersonSentence people={going} className='blurb meta'>
-      are going.
+      {going.length > 1 || some(going, same('id', currentUser)) ? 'are' : 'is'}
+      &nbsp;going.
     </LinkedPersonSentence>}
     {children}
   </div>

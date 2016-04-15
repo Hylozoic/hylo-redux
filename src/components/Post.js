@@ -39,6 +39,7 @@ class Post extends React.Component {
   static propTypes = {
     post: object,
     communities: array,
+    community: object,
     comments: array,
     commentsLoaded: bool,
     dispatch: func,
@@ -59,16 +60,16 @@ class Post extends React.Component {
   }
 
   render () {
-    const { post, communities, comments, commentingDisabled, expanded, onExpand } = this.props
+    const { post, communities, comments, commentingDisabled, expanded, onExpand, community } = this.props
     const { tag, media } = post
     const image = find(media, m => m.type === 'image')
     const classes = cx('post', tag, {image, expanded})
-    const title = formatPostTitle(decode(post.name || ''), '')
+    const title = formatPostTitle(decode(post.name || ''), (community || {}).slug)
     const tagLabel = `#${post.tag === 'chat' ? 'all-topics' : post.tag}`
 
     return <div className={classes}>
       <Header communities={communities}/>
-      <p className='title post-section'>{title}</p>
+      <p className='title post-section' dangerouslySetInnerHTML={{__html: title}}></p>
       {post.location && <Location/>}
       {image && <img src={image.url} className='post-section full-image'/>}
       <Details {...{expanded, onExpand, tagLabel}}/>
@@ -87,12 +88,14 @@ export default compose(
     const communities = get(post.communities, '0.id')
       ? post.communities
       : map(post.communities, id => find(state.communities, same('id', {id})))
+    const community = find(state.communities, c => c.id === state.currentCommunityId)
 
     return {
       commentsLoaded: !!commentIds,
       comments: map(commentIds, id => comments[id]),
       currentUser: get(people, 'current'),
-      communities
+      communities,
+      community
     }
   })
 )(Post)

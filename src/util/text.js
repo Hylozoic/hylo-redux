@@ -39,7 +39,7 @@ export function present (text, opts = {}) {
 }
 
 export function formatPostTitle (text, slug) {
-  return text
+  return linkify(sanitize(text), slug)
 }
 
 export function appendInP (text, appendee) {

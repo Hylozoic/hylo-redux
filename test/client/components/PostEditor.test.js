@@ -74,4 +74,12 @@ describe('PostEditor', () => {
       expect(window.alert).to.have.been.called.with('The title of a post cannot be blank.')
     })
   })
+
+  describe('with no post', () => {
+    it('renders', () => {
+      expect(() => {
+        render(state, {})
+      }).not.to.throw(Error)
+    })
+  })
 })

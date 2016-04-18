@@ -53,6 +53,8 @@ function recurse ($, el, fn) {
 }
 
 export function prepareHashtagsForEditing (text) {
+  if (!text) return
+
   var $ = cheerio.load(text)
   $('a').each((i, el) => {
     const $el = $(el)

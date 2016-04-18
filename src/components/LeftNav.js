@@ -67,7 +67,7 @@ export const LeftNav = ({ opened, community, tags, close, canModerate, canInvite
           </IndexA>
         </li>
         <li>
-          <A to={`/c/${slug}/events`}>
+          <A to={slug ? `/c/${slug}/events` : '/events'}>
             <Icon name='calendar'/> Events
           </A>
         </li>

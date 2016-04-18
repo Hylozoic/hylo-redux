@@ -38,6 +38,7 @@ import NetworkCommunities from './containers/network/NetworkCommunities'
 import NetworkEditor from './containers/network/NetworkEditor'
 import Notifications from './containers/Notifications'
 import Search from './containers/Search'
+import Events from './containers/Events'
 import Admin from './containers/Admin'
 import TestBench from './containers/TestBench'
 import { debug } from './util/logging'
@@ -75,6 +76,7 @@ export default function makeRoutes (store) {
     <Route path='settings' component={UserSettings} onEnter={requireLogin()}/>
     <Route path='my-posts' component={MyPosts} onEnter={requireLogin()}/>
     <Route path='followed-posts' component={FollowedPosts} onEnter={requireLogin()}/>
+    <Route path='events' component={Events} onEnter={requireLogin()}/>
     <Route path='projects' component={Projects} onEnter={requireLogin()}/>
     <Route path='notifications' component={Notifications} onEnter={requireLogin()}/>
     <Route path='search' component={Search} onEnter={requireLogin()}/>

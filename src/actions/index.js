@@ -570,10 +570,9 @@ export function setCurrentCommunityId (id) {
 }
 
 export function fetchTag (id, tagName) {
-  let path = `/noo/tag/${id}/${tagName}`
   return {
     type: FETCH_TAG,
-    payload: {api: true, path},
+    payload: {api: true, path: `/noo/tag/${id}/${tagName}`},
     meta: {id, tagName}
   }
 }

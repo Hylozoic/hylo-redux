@@ -4,6 +4,7 @@ import Signup from './containers/Signup'
 import Login from './containers/Login'
 import App from './containers/App'
 import { AllPosts, MyPosts, FollowedPosts } from './containers/home'
+import TagInAllCommunities from './containers/TagInAllCommunities'
 import Projects from './containers/Projects'
 import CommunityProfile from './containers/community/CommunityProfile'
 import CommunityPosts from './containers/community/CommunityPosts'
@@ -126,6 +127,10 @@ export default function makeRoutes (store) {
       <Route path='about' component={AboutNetwork}/>
     </Route>
     <Route path='n/:id/edit' component={NetworkEditor} onEnter={requireLogin()}/>
+
+    <Route path='tag/:tagName' component={TagInAllCommunities}>
+      <IndexRoute component={TagPosts}/>
+    </Route>
 
     <Route path='testbench' component={TestBench}/>
   </Route>

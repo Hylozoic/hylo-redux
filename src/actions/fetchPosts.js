@@ -36,7 +36,9 @@ export function fetchPosts (opts) {
       payload.path = `/noo/network/${id}/posts`
       break
     case 'tag':
-      payload.path = `/noo/tag/${communityId}/${id}/posts`
+      payload.path = communityId
+        ? `/noo/tag/${communityId}/${id}/posts`
+        : `/noo/tag-in-all-communities/${id}/posts`
       break
   }
 
@@ -55,7 +57,9 @@ export function checkFreshness (subject, id, posts, query = {}) {
   let payload = {api: true, params: {posts}, path: `/noo/freshness/posts/${subject}/${id}`, method: 'POST'}
 
   if (subject === 'tag') {
-    payload.path = `/noo/freshness/posts/tag/${communityId}/${id}`
+    payload.path = communityId
+      ? `/noo/freshness/posts/tag/${communityId}/${id}`
+      : `/noo/freshness/posts/tag-in-all-communities/${id}`
   }
 
   payload.path += '?' + querystring

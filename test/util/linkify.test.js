@@ -28,6 +28,13 @@ describe('linkify', () => {
     expect(linkify(source)).to.equal(expected)
   })
 
+  it('adds community slug when wrapping unlinked hashtags', () => {
+    let source = '<p>and #foo</p>'
+    let slug = 'bar'
+    let expected = '<p>and <a href="/c/bar/tag/foo" class="linkified" data-search="#foo" class="hashtag">#foo</a></p>'
+    expect(linkify(source, slug)).to.equal(expected)
+  })
+
   it('adds attributes to linked hashtags', () => {
     let source = '<p>and <a>#foo</a></p>'
     let expected = '<p>and <a href="/tag/foo" data-search="#foo" class="hashtag">#foo</a></p>'

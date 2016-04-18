@@ -9,24 +9,26 @@ export function hashtagHref (tagName, slug) {
   : `/tag/${tagName}`
 }
 
-// this handles old-style hashtags, which aren't wrapped in tags
-var linkifyjsOptions = {
-  formatHref: function (value, type) {
-    if (type === 'hashtag') {
-      return '/tag/' + value.substring(1)
-    }
-    return value
-  },
-  linkAttributes: function (value, type) {
-    if (type === 'hashtag') return {'data-search': value, class: 'hashtag'}
-  }
-}
-
 // unlike the linkifyjs module, this handles text that may already have html
 // tags in it. it does so by generating a DOM from the text and linkifying only
 // text nodes that aren't inside A tags.
 export default function linkify (text, slug) {
   var $ = cheerio.load(text)
+
+  // this handles old-style hashtags, which aren't wrapped in tags
+  var linkifyjsOptions = {
+    formatHref: function (value, type) {
+      if (type === 'hashtag') {
+        return slug
+          ? `/c/${slug}/tag/${value.substring(1)}`
+          : `/tag/${value.substring(1)}`
+      }
+      return value
+    },
+    linkAttributes: function (value, type) {
+      if (type === 'hashtag') return {'data-search': value, class: 'hashtag'}
+    }
+  }
 
   // caveat: this isn't intended to handle arbitrarily complex html
   var run = node =>

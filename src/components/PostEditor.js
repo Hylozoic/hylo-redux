@@ -11,6 +11,7 @@ import cx from 'classnames'
 import { debounce, filter, find, get, includes, isEmpty, some, startsWith } from 'lodash'
 import CommunityTagInput from './CommunityTagInput'
 import Dropdown from './Dropdown'
+import Icon from './Icon'
 import RichTextEditor from './RichTextEditor'
 import { NonLinkAvatar } from './Avatar'
 import AutosizingTextarea from './AutosizingTextarea'
@@ -61,7 +62,8 @@ export class PostEditor extends React.Component {
     saving: bool,
     project: object,
     onCancel: func,
-    imagePending: bool
+    imagePending: bool,
+    type: string
   }
 
   constructor (props) {
@@ -245,6 +247,7 @@ export class PostEditor extends React.Component {
     let { post, postEdit, dispatch, project, currentUser, imagePending } = this.props
     let { description, communities, tag } = postEdit
     let { name, showDetails } = this.state
+    const isEvent = (get(post, 'type') || this.props.type) === 'event'
 
     if (!this.preparedDescription) {
       const editingDescription = prepareHashtagsForEditing(description)
@@ -290,6 +293,8 @@ export class PostEditor extends React.Component {
         <li><a onClick={() => selectTag('chat')}>#all-topics</a></li>
       </Dropdown>
 
+      {isEvent && <EventSection/>}
+
       {!project && <div className='communities'>
         in&nbsp;
         <CommunitySelector currentUser={currentUser}
@@ -322,10 +327,39 @@ export class PostEditor extends React.Component {
   }
 }
 
+const EventSection = props => {
+  return <div className='event-section'>
+    <div className='start-time'>
+      <Icon name='calendar'/>
+      start time
+    </div>
+    <div className='end-time'>
+      <Icon name='calendar'/>
+      end time
+    </div>
+    <div className='location'>
+      <Icon name='map-marker'/>
+      location
+    </div>
+    <div className='hashtag'>
+      <span className='icon'>#</span>
+      hashtag
+    </div>
+      <div className='url'>
+      <Icon name='link'/>
+      {'http://'}
+    </div>
+    <div className='visibility'>
+      <Icon name='lock'/>
+      public?
+    </div>
+  </div>
+}
+
 const AttachmentsDropdown = props => {
   const { id, imagePending, media, dispatch, path } = props
-  const image = find(media, m => m.tag === 'image')
-  const docs = filter(media, m => m.tag === 'gdoc')
+  const image = find(media, m => m.type === 'image')
+  const docs = filter(media, m => m.type === 'gdoc')
   const length = (image ? 1 : 0) + docs.length
 
   const attachDoc = () => dispatch(uploadDoc(id))

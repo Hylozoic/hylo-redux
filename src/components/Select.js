@@ -46,12 +46,13 @@ export default class Select extends React.Component {
   }
 
   render () {
-    let { choices, selected, className, alignRight } = this.props
-    let { active } = this.state
+    const { choices, selected, className, alignRight } = this.props
+    const { active } = this.state
+    const buttonClasses = cx('btn btn-default dropdown-toggle', selected.className)
 
-    return <div className={cx('btn-group dropdown', className, {active: active})}>
-      <button className='btn btn-default dropdown-toggle'
-        onClick={this.toggle} onKeyDown={this.handleKeys}>
+    return <div className={cx('btn-group dropdown', className, {active})}>
+      <button className={buttonClasses} onClick={this.toggle}
+        onKeyDown={this.handleKeys}>
         {selected.name} <span className='caret'></span>
       </button>
       {active && <KeyControlledList ref='list' items={choices}

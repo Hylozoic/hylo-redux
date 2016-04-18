@@ -59,9 +59,10 @@ export default class App extends React.Component {
       dispatch,
       tags,
       leftNavIsOpen,
-      notifierMessages,
-      path
+      notifierMessages
     } = this.props
+
+    const path = this.props.path.split('?')[0]
 
     const moveWithMenu = {marginLeft: leftNavIsOpen ? leftNavWidth : 0}
     const toggleLeftNav = open => {
@@ -76,7 +77,7 @@ export default class App extends React.Component {
     const visitCommunity = community => {
       const match = path.match(/(events|projects|members|about|invite)$/)
       const pathStart = community ? `/c/${community.slug}` : ''
-      const pathEnd = match ? `/${match[1]}` : '/'
+      const pathEnd = match ? `/${match[1]}` : ''
       dispatch(navigate(pathStart + pathEnd))
     }
 

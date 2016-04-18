@@ -17,8 +17,9 @@ ul.posts {
   }
 }
 
+@post-padding: 25px;
 @post-content-left-margin: 75px;
-@post-content-right-margin: 25px;
+@post-content-right-margin: @post-padding;
 
 .shared-post-style() {
   .header {
@@ -52,7 +53,7 @@ ul.posts {
 }
 
 .post {
-  padding: 25px 0 0;
+  padding: @post-padding 0 0;
   margin-bottom: 15px;
   background-color: @card-background;
   .shared-post-style;
@@ -170,10 +171,6 @@ ul.posts {
     line-height: 20px;
     .clearfix;
 
-    .voter {
-      .proxima-nova-bold();
-      color: #000;
-    }
     .vote-button {
       color: @damian-green !important;
       text-decoration: none;
@@ -188,6 +185,11 @@ ul.posts {
     .voters {
       display: block;
       margin-left: @vote-button-width + @vote-button-margin + @avatar-size-default + 15px;
+
+     .person {
+        .semibold();
+        color: @off-black;
+      }
     }
   }
 
@@ -474,64 +476,190 @@ ul.posts {
       text-overflow: ellipsis;
     }
   }
+
+  .event-section {
+    padding-left: @post-content-left-margin;
+    .make-row;
+
+    > div {
+      .make-sm-column(6);
+      line-height: 29px;
+      margin-bottom: @p-bottom-margin;
+
+      .icon {
+        font-size: 18px;
+        color: @light-gray-text;
+        width: 33px;
+        display: inline-block;
+        height: 28px;
+        line-height: 25px;
+        vertical-align: middle;
+        text-align: center;
+        border-right: 1px solid @input-border;
+        margin-right: 10px;
+      }
+    }
+
+    .hashtag .icon {
+      font-size: 21px;
+    }
+  }
 }
 
-.post.event {
+.post.event-summary {
   .clearfix;
-  padding: 25px;
+  padding: @post-padding;
 
   .image {
     .fluid-height(61.8%);
     width: 38.2%;
     background-color: #ccc;
     float: left;
-    margin-right: 15px;
     background-size: cover;
   }
 
+  > .meta {
+    padding-left: 15px;
+    display: inline-block;
+  }
+
   .title {
+    display: block;
+    margin-left: 38.2%;
+    padding-left: 15px;
     line-height: 1.28em;
     font-size: 20px;
+    text-decoration: none;
+    margin-bottom: @p-bottom-margin;
+  }
+
+  .hashtag {
+    color: @damian-green;
   }
 
   .content {
     overflow: hidden;
   }
 
-  .rsvp-controls {
-    padding-top: @p-bottom-margin;
-    padding-bottom: @p-bottom-margin;
+  .attendance {
+    width: 61.8%;
     display: inline-block;
+    padding-left: 15px;
 
-    .buttons {
-      margin-bottom: 10px;
+    .going {
+      width: 68%;
+      display: inline-block;
+      white-space: nowrap;
+      overflow: hidden;
+      margin-right: 2%;
+    }
+
+    .rsvp {
+      vertical-align: top;
+      display: inline-block;
+      width: 30%;
       button {
-        margin-right: 0px;
-        &.rsvp-yes {
-          width: 100px;
-        }
-        &.rsvp-maybe {
-          width: 103px;
-        }
-        &.rsvp-no {
-          width: 115px;
-        }
+        width: 100%;
+      }
+      .dropdown-toggle {
+        height: @avatar-size-default;
+        line-height: @avatar-size-default;
+        padding-top: 0;
+        padding-bottom: 0;
       }
     }
+  }
+}
 
-    a.dropdown-toggle {
-      color: @dark-blue;
+@attendee-margin: 3px;
+
+.attendance {
+  line-height: @avatar-size-default + @attendee-margin;
+
+  .avatar {
+    vertical-align: top;
+    display: inline-block;
+    border-radius: 0;
+    margin-right: 3px;
+  }
+
+  .blurb {
+    line-height: normal;
+  }
+}
+
+.rsvp {
+  .yes {
+    color: @damian-green;
+  }
+}
+
+.event {
+  .title {
+    margin-bottom: 0;
+  }
+  .hashtag {
+    color: @damian-green;
+    margin-left: @post-content-left-margin;
+  }
+  .event-details {
+    border: 1px solid @post-border;
+    margin: 0 @post-padding @post-padding;
+    @attendance-width: (@avatar-size-default + @attendee-margin) * 5 + 21;
+    @row-height: 65px;
+
+    .image {
+      padding: 12px 12px 0;
+      img {
+        width: 100%;
+      }
     }
-
-    li.group-name {
-      padding: 5px 15px;
-      border-top: 1px solid #d9d9d9;
-      border-bottom: 1px solid #d9d9d9;
-      font-size: 16px;
-
-      &:first-child {
-        border-top: 0;
-        margin-top: -5px;
+    .time, .location, .rsvp-container {
+      position: relative;
+      height: @row-height;
+      margin-right: @attendance-width;
+      line-height: @row-height;
+    }
+    .time, .location {
+      .ellipsis;
+      padding-right: 10px;
+    }
+    .time {
+      border-bottom: 1px solid @post-border;
+    }
+    .rsvp-container {
+      border-bottom: 0;
+      padding-left: 18px;
+      button {
+        .round-button;
+        border-color: @damian-green;
+      }
+    }
+    .glyphicon {
+      line-height: @row-height;
+      vertical-align: middle;
+      width: 49px;
+      top: -2px;
+      padding-left: 18px;
+      color: @light-gray-text;
+    }
+    .attendance {
+      border-left: 1px solid @post-border;
+      padding: 10px;
+      float: right;
+      height: @row-height * 2;
+      width: @attendance-width;
+      background: white;
+      .blurb {
+        margin-top: 5px;
+      }
+    }
+    .detail-text {
+      .clearfix;
+      border-top: 1px solid @post-border;
+      padding: @post-padding;
+      p:last-child {
+        margin-bottom: 0;
       }
     }
   }

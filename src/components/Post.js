@@ -1,5 +1,5 @@
 import React from 'react'
-import { filter, find, first, get, includes, isEmpty, map, pick, some, sortBy, without } from 'lodash'
+import { filter, find, first, includes, isEmpty, map, some, sortBy } from 'lodash'
 const { array, bool, func, object } = React.PropTypes
 import cx from 'classnames'
 import {
@@ -18,7 +18,7 @@ import Dropdown from './Dropdown'
 import { ClickCatchingSpan } from './ClickCatcher'
 import Comment from './Comment'
 import CommentForm from './CommentForm'
-import PersonDropdownItem from './PersonDropdownItem'
+import LinkedPersonSentence from './LinkedPersonSentence'
 import { scrollToAnchor } from '../util/scrolling'
 import { connect } from 'react-redux'
 import { compose } from 'redux'
@@ -31,6 +31,8 @@ import {
   voteOnPost
 } from '../actions'
 import { same } from '../models'
+import { getComments, getCommunities } from '../models/post'
+import { canEditPost } from '../models/currentUser'
 import decode from 'ent/decode'
 
 const spacer = <span>&nbsp; •&nbsp; </span>
@@ -41,26 +43,19 @@ class Post extends React.Component {
     communities: array,
     community: object,
     comments: array,
-    commentsLoaded: bool,
     dispatch: func,
-    commentingDisabled: bool,
-    currentUser: object,
     expanded: bool,
     onExpand: func
   }
 
-  static childContextTypes = {
-    currentUser: object,
-    dispatch: func,
-    post: object
-  }
+  static childContextTypes = {post: object}
 
   getChildContext () {
-    return pick(this.props, 'currentUser', 'dispatch', 'post')
+    return {post: this.props.post}
   }
 
   render () {
-    const { post, communities, comments, commentingDisabled, expanded, onExpand, community } = this.props
+    const { post, communities, comments, expanded, onExpand, community } = this.props
     const { tag, media } = post
     const image = find(media, m => m.type === 'image')
     const classes = cx('post', tag, {image, expanded})
@@ -70,39 +65,28 @@ class Post extends React.Component {
     return <div className={classes}>
       <Header communities={communities}/>
       <p className='title post-section' dangerouslySetInnerHTML={{__html: title}}></p>
-      {post.location && <Location/>}
       {image && <img src={image.url} className='post-section full-image'/>}
       <Details {...{expanded, onExpand, tagLabel}}/>
       <div className='voting post-section'><VoteButton/><Voters/></div>
       <Attachments/>
-      <CommentSection truncate={!expanded} expand={onExpand}
-        {...{comments, commentingDisabled}}/>
+      <CommentSection truncate={!expanded} expand={onExpand} comments={comments}/>
     </div>
   }
 }
 
 export default compose(
   connect((state, { post }) => {
-    const { comments, commentsByPost, people } = state
-    const commentIds = get(commentsByPost, post.id)
-    const communities = get(post.communities, '0.id')
-      ? post.communities
-      : map(post.communities, id => find(state.communities, same('id', {id})))
-    const community = find(state.communities, c => c.id === state.currentCommunityId)
-
     return {
-      commentsLoaded: !!commentIds,
-      comments: map(commentIds, id => comments[id]),
-      currentUser: get(people, 'current'),
-      communities,
-      community
+      comments: getComments(post, state),
+      communities: getCommunities(post, state),
+      community: find(state.communities, c => c.id === state.currentCommunityId)
     }
   })
 )(Post)
 
 export const UndecoratedPost = Post // for testing
 
-const Header = ({ communities }, { post, community }) => {
+export const Header = ({ communities }, { post, community }) => {
   const { tag } = post
   const person = tag === 'welcome' ? post.relatedUsers[0] : post.user
   const createdAt = new Date(post.created_at)
@@ -110,7 +94,7 @@ const Header = ({ communities }, { post, community }) => {
   if (!community) community = communities[0]
 
   return <div className='header'>
-    <PostMenu/>
+    <Menu/>
     <Avatar person={person}/>
     {tag === 'welcome'
       ? <WelcomePostHeader communities={communities}/>
@@ -143,14 +127,6 @@ const Details = ({ expanded, onExpand, tagLabel }, { post, community }) => {
   </div>
 }
 Details.contextTypes = {post: object, community: object}
-
-const Location = (props, { post }) => {
-  return <p title='location' className='post-section post-location'>
-    <i className='glyphicon glyphicon-map-marker'></i>
-    {post.location}
-  </p>
-}
-Location.contextTypes = {post: object}
 
 const Attachments = (props, { post }) => {
   const attachments = filter(post.media, m => m.type !== 'image')
@@ -187,10 +163,9 @@ const WelcomePostHeader = ({ communities }, { post }) => {
 }
 WelcomePostHeader.contextTypes = {post: object}
 
-const PostMenu = (props, { dispatch, post, currentUser }) => {
-  let canEdit = same('id', currentUser, post.user)
-  let following = some(post.followers, same('id', currentUser))
-
+export const Menu = (props, { dispatch, post, currentUser }) => {
+  const canEdit = canEditPost(currentUser, post)
+  const following = some(post.followers, same('id', currentUser))
   const edit = () => dispatch(startPostEdit(post))
   const remove = () => window.confirm('Are you sure? This cannot be undone.') &&
     dispatch(removePost(post.id))
@@ -209,12 +184,11 @@ const PostMenu = (props, { dispatch, post, currentUser }) => {
     </li>
   </Dropdown>
 }
-PostMenu.contextTypes = Post.childContextTypes
+Menu.contextTypes = {post: object, currentUser: object, dispatch: func}
 
-class CommentSection extends React.Component {
+export class CommentSection extends React.Component {
   static propTypes = {
     comments: array,
-    commentingDisabled: bool,
     truncate: bool,
     expand: func,
     dispatch: func
@@ -223,13 +197,15 @@ class CommentSection extends React.Component {
   static contextTypes = {
     post: object,
     dispatch: func,
-    community: object
+    community: object,
+    currentUser: object
   }
 
   render () {
-    let { comments, commentingDisabled, truncate, expand } = this.props
-    const { dispatch, post, community } = this.context
+    let { comments, truncate, expand } = this.props
+    const { dispatch, post, currentUser, community } = this.context
     let communitySlug = community ? community.slug : ''
+
     if (!comments) comments = []
     comments = sortBy(comments, c => c.created_at)
     if (truncate) comments = comments.slice(-3)
@@ -258,7 +234,7 @@ class CommentSection extends React.Component {
         expand={() => expandComment(c.id)}
         communitySlug={communitySlug}
         key={c.id}/>)}
-      {!commentingDisabled && <CommentForm postId={post.id}/>}
+      {currentUser && <CommentForm postId={post.id}/>}
     </div>
   }
 }
@@ -271,47 +247,16 @@ export const VoteButton = (props, { post, currentUser, dispatch }) => {
     {myVote ? 'Liked' : 'Like'}
   </a>
 }
-VoteButton.contextTypes = Post.childContextTypes
+VoteButton.contextTypes = {post: object, currentUser: object, dispatch: func}
 
 export const Voters = (props, { post, currentUser }) => {
-  let { voters } = post
-  if (!voters) voters = []
+  const voters = post.voters || []
 
   let onlyAuthorIsVoting = voters.length === 1 && same('id', first(voters), post.user)
-  let meInVoters = find(voters, same('id', currentUser))
-  let otherVoters = meInVoters ? without(voters, meInVoters) : voters
-
-  let numShown = 2
-  let num = otherVoters.length
-  let hasHidden = num > numShown
-  let separator = threshold =>
-    num > threshold
-      ? ', '
-      : num === threshold
-        ? `${voters.length === 2 ? '' : ','} and `
-        : ''
-
-  if (voters.length > 0 && !onlyAuthorIsVoting) {
-    return <div className='voters meta'>
-      {meInVoters && <span className='voter'>You</span>}
-      {meInVoters && separator(1)}
-      {otherVoters.slice(0, numShown).map((person, index) =>
-        <span className='voter' key={person.id}>
-          <a href={`/u/${person.id}`}>{person.name}</a>
-          {index !== numShown - 1 && separator(2)}
-        </span>)}
-      {hasHidden && ', and '}
-      {hasHidden && <Dropdown className='inline'
-        toggleChildren={<span>
-          {num - numShown} other{num - numShown > 1 ? 's' : ''}
-        </span>}>
-        {otherVoters.slice(numShown).map(p =>
-          <PersonDropdownItem key={p.id} person={p}/>)}
-      </Dropdown>}
-      &nbsp;liked this.
-    </div>
-  } else {
-    return <span />
-  }
+  return voters.length > 0 && !onlyAuthorIsVoting
+    ? <LinkedPersonSentence people={voters} className='voters meta'>
+        liked this.
+      </LinkedPersonSentence>
+    : <span />
 }
 Voters.contextTypes = {post: object, currentUser: object}

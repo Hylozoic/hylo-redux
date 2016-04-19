@@ -10,7 +10,7 @@ import {
   textLength,
   appendInP
 } from '../util/text'
-import linkify from '../util/linkify'
+import { linkifyHashtags } from '../util/linkify'
 import truncate from 'html-truncate'
 import A from './A'
 import Avatar from './Avatar'
@@ -59,7 +59,7 @@ class Post extends React.Component {
     const { tag, media } = post
     const image = find(media, m => m.type === 'image')
     const classes = cx('post', tag, {image, expanded})
-    const title = linkify(sanitize(decode(post.name || '')), get(community, 'slug'))
+    const title = linkifyHashtags(sanitize(decode(post.name || '')), get(community, 'slug'))
     const tagLabel = `#${post.tag === 'chat' ? 'all-topics' : post.tag}`
 
     return <div className={classes}>

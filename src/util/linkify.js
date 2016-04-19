@@ -1,7 +1,7 @@
 require('linkifyjs/plugins/hashtag')(require('linkifyjs'))
 import linkifyString from 'linkifyjs/string'
 import cheerio from 'cheerio'
-import { isEmpty, toPairs } from 'lodash'
+import { isEmpty, toPairs, merge } from 'lodash'
 
 export function hashtagHref (tagName, slug) {
   return slug
@@ -12,16 +12,13 @@ export function hashtagHref (tagName, slug) {
 // unlike the linkifyjs module, this handles text that may already have html
 // tags in it. it does so by generating a DOM from the text and linkifying only
 // text nodes that aren't inside A tags.
-export default function linkify (text, slug) {
-  var $ = cheerio.load(text)
 
   // this handles old-style hashtags, which aren't wrapped in tags
-  var linkifyjsOptions = {
+function linkifyjsOptions (slug) {
+  return {
     formatHref: function (value, type) {
       if (type === 'hashtag') {
-        return slug
-          ? `/c/${slug}/tag/${value.substring(1)}`
-          : `/tag/${value.substring(1)}`
+        return hashtagHref(value.substring(1), slug)
       }
       return value
     },
@@ -29,17 +26,29 @@ export default function linkify (text, slug) {
       if (type === 'hashtag') return {'data-search': value, class: 'hashtag'}
     }
   }
+}
+
+export default function linkify (text, slug) {
+  var $ = cheerio.load(text)
 
   // caveat: this isn't intended to handle arbitrarily complex html
   var run = node =>
     node.contents().map((i, el) => {
-      if (el.type === 'text') return linkifyString(el.data, linkifyjsOptions)
+      if (el.type === 'text') return linkifyString(el.data, linkifyjsOptions(slug))
       if (el.name === 'br') return $.html(el)
       if (el.name === 'a') return setHashtagAttributes($, el, slug)
       return recurse($, el, run)
     }).get().join('')
 
   return run($.root())
+}
+
+export function linkifyHashtags (text, slug) {
+  // this takes plain text and returns html.
+  // It makes links out of hashtags but ignores urls
+  return linkifyString(text, merge(linkifyjsOptions(slug), {
+    validate: (value, type) => type === 'hashtag'
+  }))
 }
 
 function setHashtagAttributes ($, el, slug) {

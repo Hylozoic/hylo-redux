@@ -30,13 +30,14 @@ import { CREATE_POST, UPDATE_POST, UPLOAD_IMAGE } from '../actions'
 import { ADDED_POST, EDITED_POST, trackEvent } from '../util/analytics'
 const { array, bool, func, object, string } = React.PropTypes
 
-@connect((state, { community, post, project }) => {
+@connect((state, { community, post, project, type }) => {
   const id = post ? post.id
     : project ? `project-${project.id}-new` : 'new'
 
   // this object tracks the edits that are currently being made
   let postEdit = state.postEdits[id] || {}
   if (!project && post) project = get(post, 'projects.0')
+  if (type === 'event' && !postEdit.type) postEdit.type = 'event'
 
   return {
     id,
@@ -235,6 +236,7 @@ export class PostEditor extends React.Component {
   }
 
   handleAddTag = tag => {
+    if (this.props.postEdit.type === 'event') return
     tag = tag.replace(/^#/, '')
     if (includes(['request', 'offer'], tag)) {
       this.updateStore({tag})
@@ -247,7 +249,7 @@ export class PostEditor extends React.Component {
     } = this.props
     let { description, communities, tag } = postEdit
     let { name, showDetails } = this.state
-    const isEvent = (get(post, 'type') || this.props.type) === 'event'
+    const isEvent = postEdit.type === 'event'
 
     // FIXME this should be performed during the creation of the postEdits entry
     // in the store

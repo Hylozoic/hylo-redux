@@ -131,11 +131,9 @@ export class PostEditor extends React.Component {
   }
 
   save () {
-    let { dispatch, post, postEdit, project, id } = this.props
-
-    if (!postEdit.tag) postEdit.tag = 'chat'
-
-    let params = {
+    const { dispatch, post, postEdit, project, id } = this.props
+    const params = {
+      tag: 'chat',
       ...postEdit,
       ...attachmentParams(post && post.media, postEdit.media),
       projectId: project ? project.id : null
@@ -262,9 +260,7 @@ export class PostEditor extends React.Component {
     }
 
     if (!tag) tag = 'chat'
-    const tagLabel = `#${tag === 'chat' ? 'all-topics' : tag}`
     const selectTag = tag => this.updateStore({tag})
-    const togglePublic = () => this.updateStore({public: !postEdit.public})
 
     return <div className='post-editor clearfix'>
       <PostEditorHeader person={currentUser}/>
@@ -290,7 +286,10 @@ export class PostEditor extends React.Component {
         </div>}
 
       {!isEvent && <Dropdown className='hashtag-selector' toggleChildren={
-        <button>{tagLabel} <span className='caret'></span></button>
+        <button>
+          #{tag === 'chat' ? 'all-topics' : tag}&nbsp;
+          <span className='caret'></span>
+        </button>
       }>
         <li><a onClick={() => selectTag('request')}>#request</a></li>
         <li><a onClick={() => selectTag('offer')}>#offer</a></li>
@@ -323,7 +322,8 @@ export class PostEditor extends React.Component {
           imagePending={imagePending}
           dispatch={dispatch}/>
         <label className='visibility'>
-          <input type='checkbox' value={postEdit.public} onChange={togglePublic}/>
+          <input type='checkbox' value={postEdit.public}
+            onChange={() => this.updateStore({public: !postEdit.public})}/>
           &nbsp;
           Public
         </label>

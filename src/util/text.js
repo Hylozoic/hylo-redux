@@ -38,10 +38,6 @@ export function present (text, opts = {}) {
   return text
 }
 
-export function formatPostTitle (text, slug) {
-  return linkify(sanitize(text), slug)
-}
-
 export function appendInP (text, appendee) {
   text = text.trim()
   if (text.substr(text.length - 4) === '</p>') {

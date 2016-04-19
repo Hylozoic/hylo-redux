@@ -296,7 +296,7 @@ export class PostEditor extends React.Component {
       </Dropdown>}
 
       {isEvent && <EventSection postEdit={postEdit}
-        updateStore={this.updateStore}/>}
+        update={this.updateStore}/>}
 
       {!project && <div className='communities'>
         in&nbsp;
@@ -333,7 +333,7 @@ export class PostEditor extends React.Component {
 class EventSection extends React.Component {
   static propTypes = {
     postEdit: object,
-    updateStore: func.isRequired
+    update: func.isRequired
   }
 
   constructor (props) {
@@ -342,26 +342,29 @@ class EventSection extends React.Component {
   }
 
   render () {
-    const { postEdit, updateStore } = this.props
+    const { postEdit, update } = this.props
     const startTime = new Date(postEdit.start_time)
     const endTime = new Date(postEdit.end_time)
+    const updateSlowly = debounce(update, 200)
 
     return <div className='event-section'>
       <div className='start-time'>
         <Icon name='calendar'/>
         <DatetimePicker inputProps={{placeholder: 'start time'}}
           value={startTime}
-          onChange={m => updateStore({start_time: m.toISOString()})}/>
+          onChange={m => update({start_time: m.toISOString()})}/>
       </div>
       <div className='end-time'>
         <Icon name='calendar'/>
         <DatetimePicker inputProps={{placeholder: 'end time'}}
           value={endTime}
-          onChange={m => updateStore({end_time: m.toISOString()})}/>
+          onChange={m => update({end_time: m.toISOString()})}/>
       </div>
       <div className='location'>
         <Icon name='map-marker'/>
-        <input type='text' placeholder='location'/>
+        <input type='text' placeholder='location'
+          defaultValue={postEdit.location}
+          onChange={event => updateSlowly({location: event.target.value})}/>
       </div>
       <div className='hashtag'>
         <span className='icon'>#</span>
@@ -375,7 +378,8 @@ class EventSection extends React.Component {
         <Icon name='lock'/>
         <label>
           public
-          <input type='checkbox'/>
+          <input type='checkbox'
+            onChange={event => update({public: event.target.checked})}/>
         </label>
       </div>
     </div>

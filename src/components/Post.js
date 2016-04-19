@@ -1,5 +1,5 @@
 import React from 'react'
-import { filter, find, first, includes, isEmpty, map, some, sortBy } from 'lodash'
+import { filter, find, first, includes, isEmpty, map, some, sortBy, get } from 'lodash'
 const { array, bool, func, object } = React.PropTypes
 import cx from 'classnames'
 import {
@@ -59,7 +59,7 @@ class Post extends React.Component {
     const { tag, media } = post
     const image = find(media, m => m.type === 'image')
     const classes = cx('post', tag, {image, expanded})
-    const title = formatPostTitle(decode(post.name || ''), (community || {}).slug)
+    const title = formatPostTitle(decode(post.name || ''), get(community, 'slug'))
     const tagLabel = `#${post.tag === 'chat' ? 'all-topics' : post.tag}`
 
     return <div className={classes}>
@@ -111,7 +111,7 @@ export const Header = ({ communities }, { post, community }) => {
 Header.contextTypes = {post: object, community: object}
 
 const Details = ({ expanded, onExpand, tagLabel }, { post, community }) => {
-  let slug = community ? community.slug : ''
+  let slug = get(community, 'slug')
   let description = present(sanitize(post.description), {slug})
   const truncated = !expanded && textLength(description) > 200
   if (truncated) description = truncate(description, 200)
@@ -204,7 +204,7 @@ export class CommentSection extends React.Component {
   render () {
     let { comments, truncate, expand } = this.props
     const { dispatch, post, currentUser, community } = this.context
-    let communitySlug = community ? community.slug : ''
+    let communitySlug = get(community, 'slug')
 
     if (!comments) comments = []
     comments = sortBy(comments, c => c.created_at)

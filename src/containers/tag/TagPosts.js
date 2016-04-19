@@ -17,7 +17,7 @@ const TagPosts = props => {
       <span className='tag-name'>#{tagName}</span>
       {id && (tag.followed
         ? <button className='unfollow' onClick={() => dispatch(followTag(id, tagName))}>Unfollow</button>
-      : <button className='follow' onClick={() => dispatch(followTag(id, tagName))}>Follow</button>)}
+        : <button className='follow' onClick={() => dispatch(followTag(id, tagName))}>Follow</button>)}
     </div>
     <ConnectedPostList {...{subject, id: tagName, query: {...query, communityId: id}}}/>
   </div>

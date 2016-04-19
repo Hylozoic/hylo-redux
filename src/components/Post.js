@@ -1,5 +1,5 @@
 import React from 'react'
-import { filter, find, first, includes, isEmpty, map, some, sortBy } from 'lodash'
+import { filter, find, first, includes, isEmpty, map, some, sortBy, get } from 'lodash'
 const { array, bool, func, object } = React.PropTypes
 import cx from 'classnames'
 import {
@@ -10,6 +10,7 @@ import {
   textLength,
   appendInP
 } from '../util/text'
+import { linkifyHashtags } from '../util/linkify'
 import truncate from 'html-truncate'
 import A from './A'
 import Avatar from './Avatar'
@@ -40,6 +41,7 @@ class Post extends React.Component {
   static propTypes = {
     post: object,
     communities: array,
+    community: object,
     comments: array,
     dispatch: func,
     expanded: bool,
@@ -53,16 +55,16 @@ class Post extends React.Component {
   }
 
   render () {
-    const { post, communities, comments, expanded, onExpand } = this.props
+    const { post, communities, comments, expanded, onExpand, community } = this.props
     const { tag, media } = post
     const image = find(media, m => m.type === 'image')
     const classes = cx('post', tag, {image, expanded})
-    const title = decode(post.name || '')
+    const title = linkifyHashtags(sanitize(decode(post.name || '')), get(community, 'slug'))
     const tagLabel = `#${post.tag === 'chat' ? 'all-topics' : post.tag}`
 
     return <div className={classes}>
       <Header communities={communities}/>
-      <p className='title post-section'>{title}</p>
+      <p className='title post-section' dangerouslySetInnerHTML={{__html: title}}></p>
       {image && <img src={image.url} className='post-section full-image'/>}
       <Details {...{expanded, onExpand, tagLabel}}/>
       <div className='voting post-section'><VoteButton/><Voters/></div>
@@ -76,7 +78,8 @@ export default compose(
   connect((state, { post }) => {
     return {
       comments: getComments(post, state),
-      communities: getCommunities(post, state)
+      communities: getCommunities(post, state),
+      community: find(state.communities, c => c.id === state.currentCommunityId)
     }
   })
 )(Post)
@@ -87,6 +90,7 @@ export const Header = ({ communities }, { post, community }) => {
   const { tag } = post
   const person = tag === 'welcome' ? post.relatedUsers[0] : post.user
   const createdAt = new Date(post.created_at)
+
   if (!community) community = communities[0]
 
   return <div className='header'>
@@ -107,8 +111,9 @@ export const Header = ({ communities }, { post, community }) => {
 }
 Header.contextTypes = {post: object, community: object}
 
-const Details = ({ expanded, onExpand, tagLabel }, { post }) => {
-  let description = present(sanitize(post.description))
+const Details = ({ expanded, onExpand, tagLabel }, { post, community }) => {
+  let slug = get(community, 'slug')
+  let description = present(sanitize(post.description), {slug})
   const truncated = !expanded && textLength(description) > 200
   if (truncated) description = truncate(description, 200)
   if (description !== '<p></p>') description = appendInP(description, '&nbsp;')
@@ -122,7 +127,7 @@ const Details = ({ expanded, onExpand, tagLabel }, { post }) => {
     <a className='hashtag'>{tagLabel}</a>
   </div>
 }
-Details.contextTypes = {post: object}
+Details.contextTypes = {post: object, community: object}
 
 const Attachments = (props, { post }) => {
   const attachments = filter(post.media, m => m.type !== 'image')
@@ -190,11 +195,18 @@ export class CommentSection extends React.Component {
     dispatch: func
   }
 
-  static contextTypes = {post: object, dispatch: func, currentUser: object}
+  static contextTypes = {
+    post: object,
+    dispatch: func,
+    community: object,
+    currentUser: object
+  }
 
   render () {
     let { comments, truncate, expand } = this.props
-    const { dispatch, post, currentUser } = this.context
+    const { dispatch, post, currentUser, community } = this.context
+    let communitySlug = get(community, 'slug')
+
     if (!comments) comments = []
     comments = sortBy(comments, c => c.created_at)
     if (truncate) comments = comments.slice(-3)
@@ -221,6 +233,7 @@ export class CommentSection extends React.Component {
       {comments.map(c => <Comment comment={{...c, post_id: post.id}}
         truncate={truncate}
         expand={() => expandComment(c.id)}
+        communitySlug={communitySlug}
         key={c.id}/>)}
       {currentUser && <CommentForm postId={post.id}/>}
     </div>

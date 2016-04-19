@@ -11,10 +11,10 @@ var { func, object } = React.PropTypes
 const spacer = <span>&nbsp;&nbsp;•&nbsp;&nbsp;</span>
 const truncatedLength = 220
 
-const Comment = ({ comment, truncate, expand }, { dispatch, currentUser }) => {
+const Comment = ({ comment, truncate, expand, communitySlug }, { dispatch, currentUser }) => {
   const person = comment.user
   const { isThanked } = comment
-  let text = present(sanitize(comment.text))
+  let text = present(sanitize(comment.text), {slug: communitySlug})
   const truncated = truncate && textLength(text) > truncatedLength
   if (truncated) text = truncateHtml(text, truncatedLength)
   text = prependInP(text, `<strong class='name'>${person.name}</strong>`)

@@ -31,7 +31,7 @@ const TopNav = (props) => {
     currentUser,
     logout,
     openLeftNav,
-    leftNavOpened,
+    leftNavIsOpen,
     path,
     community,
     onChangeCommunity
@@ -50,7 +50,7 @@ const TopNav = (props) => {
 
   return <nav id='topNav' className='clearfix'>
     <VelocityTransitionGroup enter={{animation: 'fadeIn'}}>
-      {leftNavOpened || <MenuButton onClick={openLeftNav} label={label}/>}
+      {leftNavIsOpen || <MenuButton onClick={openLeftNav} label={label}/>}
     </VelocityTransitionGroup>
     {currentUser
     ? <ul className='right'>

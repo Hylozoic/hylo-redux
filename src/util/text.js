@@ -24,14 +24,14 @@ export function sanitize (text) {
   })
 }
 
-export function present (text, opts) {
+export function present (text, opts = {}) {
   if (!text) return '<p></p>'
 
   // wrap in a <p> tag
   if (text.substring(0, 3) !== '<p>') text = `<p>${text}</p>`
 
   // make links and hashtags
-  text = linkify(text)
+  text = linkify(text, opts.slug)
 
   if (opts && opts.maxlength) text = truncate(text, opts.maxlength)
 

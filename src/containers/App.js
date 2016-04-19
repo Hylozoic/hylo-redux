@@ -15,14 +15,14 @@ import { get, pick } from 'lodash'
 const { array, bool, func, object, string } = React.PropTypes
 
 @connect((state, { params: { id } }) => {
-  const { leftNavOpened, notifierMessages } = state
+  const { leftNavIsOpen, notifierMessages } = state
   const currentUser = state.people.current
-  const settingsLeftNavOpen = get(currentUser, 'settings.leftNavOpen')
+  const settingsleftNavIsOpen = get(currentUser, 'settings.leftNavIsOpen')
   const community = find(state.communities, c => c.id === state.currentCommunityId)
   const tags = community ? state.tagsByCommunity[community.slug] : {}
 
   return {
-    leftNavOpened: settingsLeftNavOpen === undefined ? leftNavOpened : settingsLeftNavOpen,
+    leftNavIsOpen: settingsleftNavIsOpen === undefined ? leftNavIsOpen : settingsleftNavIsOpen,
     notifierMessages,
     currentUser,
     community,
@@ -35,7 +35,7 @@ export default class App extends React.Component {
     children: object,
     community: object,
     currentUser: object,
-    leftNavOpened: bool,
+    leftNavIsOpen: bool,
     tags: object,
     notifierMessages: array,
     path: string,
@@ -58,17 +58,17 @@ export default class App extends React.Component {
       currentUser,
       dispatch,
       tags,
-      leftNavOpened,
+      leftNavIsOpen,
       notifierMessages
     } = this.props
 
     const path = this.props.path.split('?')[0]
 
-    const moveWithMenu = {marginLeft: leftNavOpened ? leftNavWidth : 0}
+    const moveWithMenu = {marginLeft: leftNavIsOpen ? leftNavWidth : 0}
     const toggleLeftNav = open => {
       dispatch(toggleMainMenu())
       if (!isMobile() && currentUser) {
-        dispatch(updateUserSettings(currentUser.id, {settings: {leftNavOpen: open}}, {settings: {leftNavOpen: !open}}))
+        dispatch(updateUserSettings(currentUser.id, {settings: {leftNavIsOpen: open}}, {settings: {leftNavIsOpen: !open}}))
       }
     }
     const openLeftNav = () => toggleLeftNav(true)
@@ -82,7 +82,7 @@ export default class App extends React.Component {
     }
 
     return <div>
-      <LeftNav opened={leftNavOpened}
+      <LeftNav opened={leftNavIsOpen}
         community={community}
         tags={tags}
         canModerate={canModerate(currentUser, community)}
@@ -95,7 +95,7 @@ export default class App extends React.Component {
             community={community}
             onChangeCommunity={visitCommunity}
             openLeftNav={openLeftNav}
-            leftNavOpened={leftNavOpened}
+            leftNavIsOpen={leftNavIsOpen}
             logout={() => dispatch(logout())}
             path={path}
             search={doSearch}/>

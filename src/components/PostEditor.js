@@ -345,8 +345,9 @@ class EventSection extends React.Component {
 
   render () {
     const { postEdit, update } = this.props
-    const startTime = new Date(postEdit.start_time)
-    const endTime = new Date(postEdit.end_time)
+    const { start_time, end_time } = postEdit
+    const startTime = start_time ? new Date(postEdit.start_time) : null
+    const endTime = end_time ? new Date(postEdit.end_time) : null
     const updateSlowly = debounce(update, 200)
 
     return <div className='event-section'>

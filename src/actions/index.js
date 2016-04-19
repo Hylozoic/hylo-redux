@@ -572,7 +572,7 @@ export function setCurrentCommunityId (id) {
 export function fetchTag (id, tagName) {
   return {
     type: FETCH_TAG,
-    payload: {api: true, path: `/noo/tag/${id}/${tagName}`},
+    payload: {api: true, path: `/noo/community/${id}/tag/${tagName}`},
     meta: {id, tagName}
   }
 }
@@ -580,7 +580,7 @@ export function fetchTag (id, tagName) {
 export function followTag (id, tagName) {
   return {
     type: FOLLOW_TAG,
-    payload: {api: true, path: `/noo/tag/${id}/${tagName}/follow`, method: 'POST'},
+    payload: {api: true, path: `/noo/community/${id}/tag/${tagName}/follow`, method: 'POST'},
     meta: {id, tagName}
   }
 }
@@ -588,7 +588,7 @@ export function followTag (id, tagName) {
 export function fetchLeftNavTags (id) {
   return {
     type: FETCH_LEFT_NAV_TAGS,
-    payload: {api: true, path: `/noo/tags/${id}/leftnav`},
+    payload: {api: true, path: `/noo/community/${id}/tags/leftnav`},
     meta: {id}
   }
 }

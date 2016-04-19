@@ -37,8 +37,8 @@ export function fetchPosts (opts) {
       break
     case 'tag':
       path = communityId
-        ? `/noo/tag/${communityId}/${id}/posts`
-        : `/noo/tag-in-all-communities/${id}/posts`
+        ? `/noo/community/${communityId}/tag/${id}/posts`
+        : `/noo/tag/${id}/posts`
       break
   }
   path += '?' + querystring
@@ -61,8 +61,8 @@ export function checkFreshness (subject, id, posts, query = {}) {
 
   if (subject === 'tag') {
     payload.path = communityId
-      ? `/noo/freshness/posts/tag/${communityId}/${id}`
-      : `/noo/freshness/posts/tag-in-all-communities/${id}`
+      ? `/noo/freshness/posts/community/${communityId}/tag/${id}`
+      : `/noo/freshness/posts/tag/${id}`
   }
 
   payload.path += '?' + querystring

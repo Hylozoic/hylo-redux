@@ -489,19 +489,45 @@ ul.posts {
       .icon {
         font-size: 18px;
         color: @light-gray-text;
-        width: 33px;
+        width: 27px;
         display: inline-block;
         height: 28px;
         line-height: 25px;
         vertical-align: middle;
         text-align: center;
         border-right: 1px solid @input-border;
+        padding-right: 8px;
         margin-right: 10px;
       }
     }
 
     .hashtag .icon {
       font-size: 21px;
+    }
+
+    input[type='text'], input[type='datetime'] {
+      border: none;
+    }
+
+    input[type='checkbox'] {
+      margin-left: 0.5em;
+    }
+
+    .rdt {
+      display: inline-block;
+      width: auto;
+      input[type='text'] {
+        padding-left: 0;
+        box-shadow: none;
+        height: auto;
+      }
+      .rdtPicker {
+        border: 1px solid @input-border;
+      }
+      .rdtPrev button, .rdtNext button {
+        padding: 0;
+        vertical-align: top;
+      }
     }
   }
 }

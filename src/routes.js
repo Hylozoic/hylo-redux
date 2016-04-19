@@ -4,6 +4,7 @@ import Signup from './containers/Signup'
 import Login from './containers/Login'
 import App from './containers/App'
 import { AllPosts, MyPosts, FollowedPosts } from './containers/home'
+import TagInAllCommunities from './containers/tag/TagInAllCommunities'
 import Projects from './containers/Projects'
 import CommunityProfile from './containers/community/CommunityProfile'
 import CommunityPosts from './containers/community/CommunityPosts'
@@ -17,7 +18,7 @@ import CommunityJoinLinkHandler from './containers/community/CommunityJoinLinkHa
 import InvitationHandler from './containers/community/InvitationHandler'
 import AboutCommunity from './containers/community/AboutCommunity'
 import CommunitySettings from './containers/community/CommunitySettings'
-import TagPosts from './containers/community/TagPosts'
+import TagPosts from './containers/tag//TagPosts'
 import Onboarding from './containers/Onboarding'
 import PersonProfile from './containers/person/PersonProfile'
 import PersonPosts from './containers/person/PersonPosts'
@@ -37,6 +38,7 @@ import NetworkCommunities from './containers/network/NetworkCommunities'
 import NetworkEditor from './containers/network/NetworkEditor'
 import Notifications from './containers/Notifications'
 import Search from './containers/Search'
+import Events from './containers/Events'
 import Admin from './containers/Admin'
 import TestBench from './containers/TestBench'
 import { debug } from './util/logging'
@@ -74,6 +76,7 @@ export default function makeRoutes (store) {
     <Route path='settings' component={UserSettings} onEnter={requireLogin()}/>
     <Route path='my-posts' component={MyPosts} onEnter={requireLogin()}/>
     <Route path='followed-posts' component={FollowedPosts} onEnter={requireLogin()}/>
+    <Route path='events' component={Events} onEnter={requireLogin()}/>
     <Route path='projects' component={Projects} onEnter={requireLogin()}/>
     <Route path='notifications' component={Notifications} onEnter={requireLogin()}/>
     <Route path='search' component={Search} onEnter={requireLogin()}/>
@@ -126,6 +129,10 @@ export default function makeRoutes (store) {
       <Route path='about' component={AboutNetwork}/>
     </Route>
     <Route path='n/:id/edit' component={NetworkEditor} onEnter={requireLogin()}/>
+
+    <Route path='tag/:tagName' component={TagInAllCommunities}>
+      <IndexRoute component={TagPosts}/>
+    </Route>
 
     <Route path='testbench' component={TestBench}/>
   </Route>

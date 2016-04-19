@@ -80,9 +80,10 @@ const sameDay = (t1, t2) =>
   t1.getDate() === t2.getDate()
 
 export function timeRange (start, end) {
-  let startText = moment(start).calendar(null, {
+  const calendarOptions = {
     sameElse: 'dddd, MMM D, YYYY [at] h:mm A'
-  })
+  }
+  let startText = moment(start).calendar(null, calendarOptions)
   if (!end) {
     return startText
   } else if (sameDay(start, end)) {
@@ -90,7 +91,7 @@ export function timeRange (start, end) {
     let endText = moment(end).format('h:mm A')
     return `${startText} to ${endText}`
   } else {
-    return `${startText} to ${moment(end).calendar()}`
+    return `${startText} to ${moment(end).calendar(null, calendarOptions)}`
   }
 }
 

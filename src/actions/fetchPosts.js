@@ -5,7 +5,7 @@ export function fetchPosts (opts) {
   // communityId is only used when fetching a tag
   let { subject, id, limit, offset, type, sort, search, filter, cacheId, communityId } = opts
   if (!offset) offset = 0
-  let querystring = cleanAndStringify({
+  const querystring = cleanAndStringify({
     offset,
     limit,
     type,
@@ -14,37 +14,42 @@ export function fetchPosts (opts) {
     filter,
     comments: true,
     votes: true})
-  let payload = {api: true}
+  let path
 
   switch (subject) {
     case 'community':
-      payload.path = `/noo/community/${id}/posts`
+      path = `/noo/community/${id}/posts`
       break
     case 'person':
-      payload.path = `/noo/user/${id}/posts`
+      path = `/noo/user/${id}/posts`
       break
     case 'all-posts':
-      payload.path = `/noo/user/${id}/all-community-posts`
+      path = `/noo/user/${id}/all-community-posts`
       break
     case 'followed-posts':
-      payload.path = `/noo/user/${id}/followed-posts`
+      path = `/noo/user/${id}/followed-posts`
       break
     case 'project':
-      payload.path = `/noo/project/${id}/posts`
+      path = `/noo/project/${id}/posts`
       break
     case 'network':
-      payload.path = `/noo/network/${id}/posts`
+      path = `/noo/network/${id}/posts`
       break
     case 'tag':
-      payload.path = `/noo/tag/${communityId}/${id}/posts`
+      path = communityId
+        ? `/noo/community/${communityId}/tag/${id}/posts`
+        : `/noo/tag/${id}/posts`
       break
   }
+  path += '?' + querystring
 
-  payload.path += '?' + querystring
-
-  var meta = {cache: {id: cacheId, bucket: 'postsByQuery', limit, offset, array: true}}
-
-  return {type: FETCH_POSTS, payload, meta}
+  return {
+    type: FETCH_POSTS,
+    payload: {api: true, path},
+    meta: {
+      cache: {id: cacheId, bucket: 'postsByQuery', limit, offset, array: true}
+    }
+  }
 }
 
 export function checkFreshness (subject, id, posts, query = {}) {
@@ -55,7 +60,9 @@ export function checkFreshness (subject, id, posts, query = {}) {
   let payload = {api: true, params: {posts}, path: `/noo/freshness/posts/${subject}/${id}`, method: 'POST'}
 
   if (subject === 'tag') {
-    payload.path = `/noo/freshness/posts/tag/${communityId}/${id}`
+    payload.path = communityId
+      ? `/noo/freshness/posts/community/${communityId}/tag/${id}`
+      : `/noo/freshness/posts/tag/${id}`
   }
 
   payload.path += '?' + querystring

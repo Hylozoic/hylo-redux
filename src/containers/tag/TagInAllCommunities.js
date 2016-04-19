@@ -2,9 +2,9 @@ import React from 'react'
 import { prefetch } from 'react-fetcher'
 import { compose } from 'redux'
 import { connect } from 'react-redux'
-import CoverImagePage from '../components/CoverImagePage'
-import TagPosts from './community/TagPosts'
-import { setCurrentCommunityId } from '../actions'
+import CoverImagePage from '../../components/CoverImagePage'
+import TagPosts from './TagPosts'
+import { setCurrentCommunityId } from '../../actions'
 
 const TagInAllCommunities = compose(
   prefetch(({ dispatch, params, currentUser: { id }, query }) =>

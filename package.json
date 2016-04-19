@@ -54,6 +54,7 @@
     "pretty-date": "^0.2.0",
     "querystring": "^0.2.0",
     "react": "^0.14.6",
+    "react-datetime": "^2.1.0",
     "react-dom": "^0.14.6",
     "react-fetcher": "^0.2.0",
     "react-masonry-component": "^3.0.0",

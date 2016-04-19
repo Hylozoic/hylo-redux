@@ -16,6 +16,7 @@ import RichTextEditor from './RichTextEditor'
 import { NonLinkAvatar } from './Avatar'
 import AutosizingTextarea from './AutosizingTextarea'
 import { connect } from 'react-redux'
+import DatetimePicker from 'react-datetime'
 import {
   updatePostEditor, createPost, updatePost, cancelPostEdit,
   removeImage, removeDoc
@@ -30,11 +31,8 @@ import { ADDED_POST, EDITED_POST, trackEvent } from '../util/analytics'
 const { array, bool, func, object, string } = React.PropTypes
 
 @connect((state, { community, post, project }) => {
-  let id = post
-    ? post.id
-    : project
-      ? `project-${project.id}-new`
-      : 'new'
+  const id = post ? post.id
+    : project ? `project-${project.id}-new` : 'new'
 
   // this object tracks the edits that are currently being made
   let postEdit = state.postEdits[id] || {}
@@ -120,7 +118,7 @@ export class PostEditor extends React.Component {
     return true
   }
 
-  save = () => {
+  saveIfValid = () => {
     if (!this.validate()) return
 
     // we use setTimeout here to avoid a race condition. the description field
@@ -128,10 +126,10 @@ export class PostEditor extends React.Component {
     // click Save immediately after typing in the description field, we have to
     // wait for events from the description field to be handled so that the
     // store is up to date
-    setTimeout(() => this.reallySave(), 100)
+    setTimeout(() => this.save(), 100)
   }
 
-  reallySave () {
+  save () {
     let { dispatch, post, postEdit, project, id } = this.props
 
     if (!postEdit.tag) postEdit.tag = 'chat'
@@ -244,11 +242,15 @@ export class PostEditor extends React.Component {
   }
 
   render () {
-    let { post, postEdit, dispatch, project, currentUser, imagePending } = this.props
+    let {
+      post, postEdit, dispatch, project, currentUser, imagePending, saving
+    } = this.props
     let { description, communities, tag } = postEdit
     let { name, showDetails } = this.state
     const isEvent = (get(post, 'type') || this.props.type) === 'event'
 
+    // FIXME this should be performed during the creation of the postEdits entry
+    // in the store
     if (!this.preparedDescription) {
       const editingDescription = prepareHashtagsForEditing(description)
       if (editingDescription !== description) {
@@ -268,7 +270,7 @@ export class PostEditor extends React.Component {
       <div className='title-wrapper'>
         <AutosizingTextarea type='text' ref='title' className='title'
           value={name}
-          placeholder='Start a conversation'
+          placeholder={placeholderText(isEvent)}
           onFocus={this.expand}
           onChange={event => this.updateTitle(event)}/>
       </div>
@@ -285,15 +287,16 @@ export class PostEditor extends React.Component {
           More details
         </div>}
 
-      <Dropdown className='hashtag-selector' toggleChildren={
+      {!isEvent && <Dropdown className='hashtag-selector' toggleChildren={
         <button>{tagLabel} <span className='caret'></span></button>
       }>
         <li><a onClick={() => selectTag('request')}>#request</a></li>
         <li><a onClick={() => selectTag('offer')}>#offer</a></li>
         <li><a onClick={() => selectTag('chat')}>#all-topics</a></li>
-      </Dropdown>
+      </Dropdown>}
 
-      {isEvent && <EventSection/>}
+      {isEvent && <EventSection postEdit={postEdit}
+        updateStore={this.updateStore}/>}
 
       {!project && <div className='communities'>
         in&nbsp;
@@ -308,8 +311,8 @@ export class PostEditor extends React.Component {
           <button onClick={this.cancel}>Cancel</button>
         </div>
 
-        <button className='save' onClick={this.save}
-          disabled={this.props.saving} ref='save'>
+        <button className='save' ref='save' onClick={this.saveIfValid}
+          disabled={saving}>
           {post ? 'Save Changes' : 'Post'}
         </button>
         <AttachmentsDropdown id={this.props.id}
@@ -327,33 +330,56 @@ export class PostEditor extends React.Component {
   }
 }
 
-const EventSection = props => {
-  return <div className='event-section'>
-    <div className='start-time'>
-      <Icon name='calendar'/>
-      start time
+class EventSection extends React.Component {
+  static propTypes = {
+    postEdit: object,
+    updateStore: func.isRequired
+  }
+
+  constructor (props) {
+    super(props)
+    this.state = {}
+  }
+
+  render () {
+    const { postEdit, updateStore } = this.props
+    const startTime = new Date(postEdit.start_time)
+    const endTime = new Date(postEdit.end_time)
+
+    return <div className='event-section'>
+      <div className='start-time'>
+        <Icon name='calendar'/>
+        <DatetimePicker inputProps={{placeholder: 'start time'}}
+          value={startTime}
+          onChange={m => updateStore({start_time: m.toISOString()})}/>
+      </div>
+      <div className='end-time'>
+        <Icon name='calendar'/>
+        <DatetimePicker inputProps={{placeholder: 'end time'}}
+          value={endTime}
+          onChange={m => updateStore({end_time: m.toISOString()})}/>
+      </div>
+      <div className='location'>
+        <Icon name='map-marker'/>
+        <input type='text' placeholder='location'/>
+      </div>
+      <div className='hashtag'>
+        <span className='icon'>#</span>
+        <input type='text' placeholder='hashtag'/>
+      </div>
+        <div className='url'>
+        <Icon name='link'/>
+        <input type='text' placeholder='http://'/>
+      </div>
+      <div className='visibility'>
+        <Icon name='lock'/>
+        <label>
+          public
+          <input type='checkbox'/>
+        </label>
+      </div>
     </div>
-    <div className='end-time'>
-      <Icon name='calendar'/>
-      end time
-    </div>
-    <div className='location'>
-      <Icon name='map-marker'/>
-      location
-    </div>
-    <div className='hashtag'>
-      <span className='icon'>#</span>
-      hashtag
-    </div>
-      <div className='url'>
-      <Icon name='link'/>
-      {'http://'}
-    </div>
-    <div className='visibility'>
-      <Icon name='lock'/>
-      public?
-    </div>
-  </div>
+  }
 }
 
 const AttachmentsDropdown = props => {
@@ -448,15 +474,16 @@ const PostEditorHeader = ({ person }) =>
     </div>
   </div>
 
-@connect(state => ({
-  currentUser: state.people.current
-}), null, null, {withRef: true})
 export default class PostEditorWrapper extends React.Component {
   static propTypes = {
-    currentUser: object,
     post: object,
     project: object,
-    community: object
+    community: object,
+    type: string
+  }
+
+  static contextTypes = {
+    currentUser: object
   }
 
   constructor (props) {
@@ -469,15 +496,22 @@ export default class PostEditorWrapper extends React.Component {
   }
 
   render () {
+    const { type, post, project, community } = this.props
+
     if (!this.state.expanded) {
-      const { currentUser } = this.props
+      const { currentUser } = this.context
       return <div className='post-editor' onClick={this.toggle}>
         <PostEditorHeader person={currentUser}/>
-        <div className='prompt'>Start a conversation</div>
+        <div className='prompt'>
+          {placeholderText(type === 'event')}
+        </div>
       </div>
     }
 
-    const { post, project, community } = this.props
-    return <PostEditor {...{post, project, community}} onCancel={this.toggle}/>
+    return <PostEditor {...{post, project, community, type}}
+      onCancel={this.toggle}/>
   }
 }
+
+const placeholderText = isEvent =>
+  isEvent ? 'Create an event' : 'Start a conversation'

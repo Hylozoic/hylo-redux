@@ -7,6 +7,7 @@ import cx from 'classnames'
 import { isMember } from '../../models/currentUser'
 const { func, object } = React.PropTypes
 import { setDefaults, toggleShowPast } from '../Events'
+import PostEditor from '../../components/PostEditor'
 
 const subject = 'community'
 
@@ -16,6 +17,7 @@ const CommunityEvents = props => {
   let showingPast = query.filter !== 'future'
 
   return <div>
+    <PostEditor community={community} type='event'/>
     <div className='list-controls'>
       <button className={cx({active: showingPast})}
         onClick={() => toggleShowPast(!showingPast, dispatch, location)}>

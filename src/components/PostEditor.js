@@ -45,6 +45,9 @@ const { array, bool, func, object, string } = React.PropTypes
   // this object tracks the edits that are currently being made
   let postEdit = state.postEdits[id] || {}
   if (!project && post) project = get(post, 'projects.0')
+
+  // this is technically a no-no because it's setting an attribute of an object
+  // in the store directly rather than dispatching an action
   if (type === 'event' && !postEdit.type) postEdit.type = 'event'
 
   return {
@@ -140,11 +143,12 @@ export class PostEditor extends React.Component {
 
   save () {
     const { dispatch, post, postEdit, project, id } = this.props
+    const tag = postEdit.tag || 'chat'
     const params = {
-      tag: 'chat',
       ...postEdit,
       ...attachmentParams(post && post.media, postEdit.media),
-      projectId: project ? project.id : null
+      projectId: project ? project.id : null,
+      tag
     }
 
     dispatch((post ? updatePost : createPost)(id, params))
@@ -153,13 +157,9 @@ export class PostEditor extends React.Component {
       // FIXME ideally we would pass name and slug along as well, to make
       // events more human-readable, but we're only passing around community
       // ids in this component
-      let community = {id: get(postEdit, 'communities.0')}
       trackEvent(post ? EDITED_POST : ADDED_POST, {
-        post: {
-          id: get(post, 'id'),
-          tag: postEdit.tag
-        },
-        community,
+        post: {id: get(post, 'id'), tag},
+        community: {id: get(postEdit, 'communities.0')},
         project
       })
       this.cancel()

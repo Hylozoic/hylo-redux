@@ -1,4 +1,4 @@
-import { uniq } from 'lodash'
+import { startCase, uniq } from 'lodash'
 import {
   CANCEL_POST_EDIT,
   CREATE_POST,
@@ -30,6 +30,21 @@ const stateWithoutDoc = (state, id, doc) => {
   }
 }
 
+const suggestedTag = text =>
+  startCase(text).split(' ').slice(0, 4).join('')
+
+const withSuggestedTag = (payload, state, id) => {
+  const postEdit = state[id] || {}
+  if (postEdit.id ||
+    postEdit.tagManuallyEdited ||
+    postEdit.type !== 'event') return payload
+
+  return {
+    ...payload,
+    tag: suggestedTag(payload.name)
+  }
+}
+
 export default function (state = {}, action) {
   if (action.error) return state
 
@@ -39,7 +54,7 @@ export default function (state = {}, action) {
     case UPDATE_POST_EDITOR:
       return {
         ...state,
-        [id]: {...state[id], ...payload}
+        [id]: {...state[id], ...withSuggestedTag(payload, state, id)}
       }
     case CREATE_POST:
     case UPDATE_POST:

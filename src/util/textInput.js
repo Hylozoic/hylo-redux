@@ -14,3 +14,5 @@ export const keyMap = {
 }
 
 export const getKeyCode = event => event.which || event.keyCode
+
+export const getCharacter = event => String.fromCharCode(getKeyCode(event))

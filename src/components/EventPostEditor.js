@@ -1,17 +1,12 @@
 import React from 'react'
-import { debounce, has, startCase } from 'lodash'
+import { debounce } from 'lodash'
 import Icon from './Icon'
 import DatetimePicker from 'react-datetime'
-import { getKeyCode, keyMap } from '../util/textInput'
+import { getCharacter } from '../util/textInput'
 const { func, object } = React.PropTypes
 
-const suggestedTag = text =>
-  startCase(text).split(' ').slice(0, 4).join('')
-
-const sanitize = event => {
-  const keyCode = getKeyCode(event)
-  if (keyCode === keyMap.SPACE) event.preventDefault()
-}
+const sanitizeTagInput = event =>
+  getCharacter(event).match(/^[A-Za-z0-9]$/) || event.preventDefault()
 
 export default class EventPostEditor extends React.Component {
   static propTypes = {
@@ -22,29 +17,21 @@ export default class EventPostEditor extends React.Component {
   constructor (props) {
     super(props)
     let tag = props.postEdit.tag
-    // don't set it at all if it's blank or the default value, because its
-    // absence is used below to determine whether we should show the suggested
-    // tag
-    if (tag && tag !== 'chat') {
-      this.state = {tag}
-    } else {
-      this.state = {}
-    }
+    this.state = {tag: tag !== 'chat' ? tag : null}
   }
 
   render () {
     const { postEdit, update } = this.props
-    const { name, start_time, end_time } = postEdit
+    const { start_time, end_time } = postEdit
     const startTime = start_time ? new Date(postEdit.start_time) : null
     const endTime = end_time ? new Date(postEdit.end_time) : null
     const updateSlowly = debounce(update, 200)
-
-    const tag = has(this.state, 'tag') ? this.state.tag : suggestedTag(name)
+    const tag = this.state.tag || postEdit.tag
 
     const updateTag = event => {
       const { target: { value } } = event
-      this.setState({changedTagField: true, tag: value})
-      updateSlowly({tag: value})
+      this.setState({tag: value})
+      updateSlowly({tag: value, tagManuallyEdited: true})
     }
 
     return <div className='event-section'>
@@ -69,8 +56,7 @@ export default class EventPostEditor extends React.Component {
       <div className='hashtag'>
         <span className='icon'>#</span>
         <input type='text' placeholder='hashtag' value={tag}
-          onKeyDown={sanitize}
-          onKeyUp={sanitize}
+          onKeyPress={sanitizeTagInput}
           onChange={updateTag}/>
       </div>
     </div>

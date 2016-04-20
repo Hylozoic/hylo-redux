@@ -279,7 +279,8 @@ export class PostEditor extends React.Component {
         content={description}
         onChange={ev => this.setDelayed('description', ev.target.value)}
         onKeyUp={this.goBackToTitle}
-        onAddTag={this.handleAddTag}/>
+        onAddTag={this.handleAddTag}
+        onBlur={() => this.setState({showDetails: false})}/>
       {!description && !showDetails &&
         <div className='details-placeholder' onClick={this.goToDetails}>
           More details

@@ -42,6 +42,7 @@ export default class RichTextEditor extends React.Component {
     onKeyDown: func,
     onKeyPress: func,
     onReady: func,
+    onBlur: func,
     onAddTag: func,
     className: string,
     content: string,
@@ -113,7 +114,14 @@ export default class RichTextEditor extends React.Component {
   }
 
   componentDidMount () {
-    const { onReady, onKeyDown, onKeyUp, onKeyPress, startFocused } = this.props
+    const {
+      onReady,
+      onKeyDown,
+      onKeyUp,
+      onKeyPress,
+      onBlur,
+      startFocused
+    } = this.props
 
     this._pollForEditor(editor => {
       onReady && onReady(editor)
@@ -135,6 +143,8 @@ export default class RichTextEditor extends React.Component {
         onKeyPress && onKeyPress(event)
         this.tagger.handleKeyPress(event)
       })
+
+      if (onBlur) editor.on('blur', onBlur)
     })
   }
 

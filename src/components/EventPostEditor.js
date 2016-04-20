@@ -4,9 +4,10 @@ import Icon from './Icon'
 import DatetimePicker from 'react-datetime'
 import { getCharacter } from '../util/textInput'
 const { func, object } = React.PropTypes
+import { hashtagCharacterRegex } from '../models/hashtag'
 
 const sanitizeTagInput = event =>
-  getCharacter(event).match(/^[A-Za-z0-9]$/) || event.preventDefault()
+  getCharacter(event).match(hashtagCharacterRegex) || event.preventDefault()
 
 export default class EventPostEditor extends React.Component {
   static propTypes = {

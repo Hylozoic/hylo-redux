@@ -4,6 +4,7 @@ import cheerio from 'cheerio'
 import { isEmpty, toPairs, merge } from 'lodash'
 import { hashtagAttribute } from './RichTextTagger'
 import { tagUrl } from '../routes'
+import { hashtagFullRegex } from '../models/hashtag'
 
 // unlike the linkifyjs module, this handles text that may already have html
 // tags in it. it does so by generating a DOM from the text and linkifying only
@@ -49,10 +50,10 @@ export function linkifyHashtags (text, slug) {
 
 function setHashtagAttributes ($, el, slug) {
   const $el = $(el)
-  const match = $el.text().match(/^(#(\w+))$/)
+  const match = $el.text().match(hashtagFullRegex)
   if (match) {
-    $el.attr('href', tagUrl(match[2], slug))
-    $el.attr('data-search', match[1])
+    $el.attr('href', tagUrl(match[1], slug))
+    $el.attr('data-search', match[0])
     $el.attr('class', 'hashtag')
   }
   return $.html(el)

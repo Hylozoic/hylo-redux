@@ -3,12 +3,7 @@ import linkifyString from 'linkifyjs/string'
 import cheerio from 'cheerio'
 import { isEmpty, toPairs, merge } from 'lodash'
 import { hashtagAttribute } from './RichTextTagger'
-
-export function hashtagHref (tagName, slug) {
-  return slug
-  ? `/c/${slug}/tag/${tagName}`
-  : `/tag/${tagName}`
-}
+import { tagUrl } from '../routes'
 
 // unlike the linkifyjs module, this handles text that may already have html
 // tags in it. it does so by generating a DOM from the text and linkifying only
@@ -19,7 +14,7 @@ function linkifyjsOptions (slug) {
   return {
     formatHref: function (value, type) {
       if (type === 'hashtag') {
-        return hashtagHref(value.substring(1), slug)
+        return tagUrl(value.substring(1), slug)
       }
       return value
     },
@@ -56,7 +51,7 @@ function setHashtagAttributes ($, el, slug) {
   const $el = $(el)
   const match = $el.text().match(/^(#(\w+))$/)
   if (match) {
-    $el.attr('href', hashtagHref(match[2], slug))
+    $el.attr('href', tagUrl(match[2], slug))
     $el.attr('data-search', match[1])
     $el.attr('class', 'hashtag')
   }

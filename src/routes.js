@@ -149,3 +149,6 @@ export const communityOnboardingUrl = community =>
 
 export const commentUrl = comment =>
   `/p/${comment.post_id}#comment-${comment.id}`
+
+export const tagUrl = (name, slug) =>
+  slug ? `/c/${slug}/tag/${name}` : `/tag/${name}`

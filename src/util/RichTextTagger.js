@@ -1,9 +1,8 @@
 import React from 'react'
+import { getKeyCode, keyMap } from '../util/textInput'
 import {
   exitNode,
-  getKeyCode,
   insertJSX,
-  keyMap,
   removeCurrentNode,
   replaceNodeWithJSX,
   selectCurrentNode

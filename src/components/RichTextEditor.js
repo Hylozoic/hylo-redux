@@ -9,7 +9,7 @@ import RichTextTagger from '../util/RichTextTagger'
 import KeyControlledList from '../components/KeyControlledList'
 import { debounce, get, isEmpty, merge } from 'lodash'
 import { typeahead } from '../actions'
-import { getKeyCode, keyMap } from '../util/tinymce'
+import { getKeyCode, keyMap } from '../util/textInput'
 const { array, bool, func, string } = React.PropTypes
 import { position } from '../util/scrolling'
 

@@ -37,38 +37,44 @@ const showPost = (post, currentUser) =>
     ? <EventPost post={post}/>
     : <Post post={post} expanded={true}/>
 
+const setCommunityAndMetaTags = (store, dispatch, id) =>
+  ({ error, payload, cacheHit }) => {
+    if (error) return cacheHit
+    const post = store.getState().posts[id]
+    const communityId = get(post, 'communities.0') || 'all'
+    dispatch(setCurrentCommunityId(communityId))
+
+    if (payload && !payload.api) {
+      const { name, description, media } = payload
+      dispatch(setMetaTags(ogMetaTags(name, description, media[0])))
+    }
+
+    return cacheHit
+  }
+
+const fetchMoreComments = (store, dispatch, id) => hit => {
+  // when this page is clicked into from a post list, fetchPost will cause a
+  // cache hit; however, there may be more comments than the 3 that were
+  // included in the list, so we have to call fetchComments to retrieve the
+  // rest. but when fetchPost did not cause a cache hit, we know that its
+  // response contained all comments, so we can skip the additional call.
+  if (!hit) return
+  const post = store.getState().posts[id]
+  if (post.numComments > 3) return dispatch(fetchComments(id, {offset: 3}))
+}
+
+const scroll = () => {
+  if (typeof window === 'undefined') return
+  let anchor = get(window.location.hash.match(/#(comment-\d+$)/), '1')
+  if (anchor) scrollToAnchor(anchor, 15)
+}
+
 export default compose(
   prefetch(({ store, dispatch, params: { id } }) =>
     dispatch(fetchPost(id))
-    .then(({ error, payload, cacheHit }) => {
-      if (error) return cacheHit
-      const post = store.getState().posts[id]
-      const communityId = get(post, 'communities.0') || 'all'
-      dispatch(setCurrentCommunityId(communityId))
-
-      if (payload && !payload.api) {
-        const { name, description, media } = payload
-        dispatch(setMetaTags(ogMetaTags(name, description, media[0])))
-      }
-
-      return cacheHit
-    })
-    .then(hit => {
-      // when this page is clicked into from a post list, fetchPost above will
-      // cause a cache hit; however, there may be more comments than the 3 that
-      // were included in the list, so we have to call fetchComments to retrieve
-      // the rest. but when fetchPost did not cause a cache hit, we know that
-      // its response contained all comments, so we can skip the additional
-      // call.
-      if (!hit) return
-      const post = store.getState().posts[id]
-      if (post.numComments > 3) return dispatch(fetchComments(id, {offset: 3}))
-    })
-    .then(() => {
-      if (typeof window === 'undefined') return
-      let anchor = get(window.location.hash.match(/#(comment-\d+$)/), '1')
-      if (anchor) scrollToAnchor(anchor, 15)
-    })),
+    .then(setCommunityAndMetaTags(store, dispatch, id))
+    // .then(fetchMoreComments(store, dispatch, id))
+    .then(scroll)),
   connect((state, { params }) => {
     const { communities, currentCommunityId } = state
     return {

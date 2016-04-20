@@ -18,7 +18,7 @@ import CommunityJoinLinkHandler from './containers/community/CommunityJoinLinkHa
 import InvitationHandler from './containers/community/InvitationHandler'
 import AboutCommunity from './containers/community/AboutCommunity'
 import CommunitySettings from './containers/community/CommunitySettings'
-import TagPosts from './containers/tag//TagPosts'
+import TagPosts from './containers/tag/TagPosts'
 import Onboarding from './containers/Onboarding'
 import PersonProfile from './containers/person/PersonProfile'
 import PersonPosts from './containers/person/PersonPosts'

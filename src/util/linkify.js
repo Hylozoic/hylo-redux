@@ -2,6 +2,7 @@ require('linkifyjs/plugins/hashtag')(require('linkifyjs'))
 import linkifyString from 'linkifyjs/string'
 import cheerio from 'cheerio'
 import { isEmpty, toPairs, merge } from 'lodash'
+import { hashtagAttribute } from './RichTextTagger'
 
 export function hashtagHref (tagName, slug) {
   return slug
@@ -77,7 +78,7 @@ export function prepareHashtagsForEditing (text) {
   $('a').each((i, el) => {
     const $el = $(el)
     const match = $el.text().match(/^(#(\w+))$/)
-    if (match) $el.attr('data-autocompleting', true)
+    if (match) $el.attr(hashtagAttribute, true)
   })
   return $.html()
 }

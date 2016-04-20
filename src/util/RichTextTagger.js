@@ -9,11 +9,14 @@ import {
 } from '../util/tinymce'
 import { includes, some } from 'lodash'
 
+export const hashtagAttribute = 'data-autocompleting'
+
 const triggerKeyCodes = [keyMap.HASH, keyMap.AT_SIGN]
 const triggers = ['#', '@']
-
 const template = keyCode =>
-  <a data-autocompleting={true}>{String.fromCharCode(keyCode)}</a>
+  <a {...{[hashtagAttribute]: true}}>
+    {String.fromCharCode(keyCode)}
+  </a>
 
 const Mention = ({ person }) =>
   <a data-user-id={person.id}
@@ -38,7 +41,7 @@ export class RichTextTagger {
   }
 
   isInTag () {
-    return !!this.domNode().getAttribute('data-autocompleting')
+    return !!this.domNode().getAttribute(hashtagAttribute)
   }
 
   isInReplacedTag () {
@@ -53,7 +56,23 @@ export class RichTextTagger {
     return some(triggers, t => t === this.tagValue())
   }
 
-  finishTag (choice) {
+  finishTag (choice, event) {
+    const keyCode = getKeyCode(event)
+    if (keyCode === keyMap.ENTER) {
+      // this is a workaround for the fact that we can't suppress the insertion
+      // of a new linebreak due to Enter in TinyMCE. (well, it's alleged that
+      // you can, but only by defining a callback when first initializing it.)
+      //
+      // so we assume a new paragraph has been inserted, backtrack to the node
+      // we were trying to replace, and remove the new paragraph.
+      const extraP = window.tinymce.$(this.domNode())
+      const origP = extraP.prev()
+      const node = origP.find(`[${hashtagAttribute}]`).last()[0]
+      origP.append(extraP.contents())
+      this.editor.dom.remove(extraP)
+      this.editor.selection.select(node)
+    }
+
     // sort of a dumb heuristic: users have avatar_urls and tags don't
     if (choice.avatar_url) {
       replaceNodeWithJSX(<Mention person={choice}/>, this.editor)
@@ -83,10 +102,8 @@ export class RichTextTagger {
   handleKeyDown = event => {
     const keyCode = getKeyCode(event)
     switch (keyCode) {
-      case keyMap.ENTER:
       case keyMap.SPACE:
         if (this.isInTag()) {
-          this.search(null)
           exitNode(this.editor, keyCode)
           event.preventDefault()
         }
@@ -95,7 +112,6 @@ export class RichTextTagger {
         // remove the tag entirely if backspacing over its first character
         if (this.tagValueIsEmpty()) {
           removeCurrentNode(this.editor)
-          this.search(null)
           event.preventDefault()
         }
     }

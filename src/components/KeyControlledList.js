@@ -1,6 +1,7 @@
 import React from 'react'
 import cx from 'classnames'
 import { indexOf, isEmpty } from 'lodash'
+import { getKeyCode, keyMap } from '../util/textInput'
 var { array, func, object } = React.PropTypes
 
 export default class KeyControlledList extends React.Component {
@@ -40,15 +41,15 @@ export default class KeyControlledList extends React.Component {
 
   // this method is called from other components
   handleKeys = event => {
-    switch (event.which) {
-      case 38: // up arrow
+    switch (getKeyCode(event)) {
+      case keyMap.UP:
         this.changeSelection(-1)
         return true
-      case 40: // down arrow
+      case keyMap.DOWN:
         this.changeSelection(1)
         return true
-      case 9: // tab
-      case 13: // enter
+      case keyMap.TAB:
+      case keyMap.ENTER:
         if (!isEmpty(this.props.items)) {
           var choice = this.props.items[this.state.selectedIndex]
           this.change(choice, event)
@@ -59,7 +60,7 @@ export default class KeyControlledList extends React.Component {
 
   change = (choice, event) => {
     event.preventDefault()
-    this.props.onChange(choice)
+    this.props.onChange(choice, event)
   }
 
   // FIXME use more standard props e.g. {label, value} instead of {id, name}, or

@@ -9,7 +9,6 @@ import RichTextTagger from '../util/RichTextTagger'
 import KeyControlledList from '../components/KeyControlledList'
 import { debounce, get, isEmpty, merge } from 'lodash'
 import { typeahead } from '../actions'
-import { getKeyCode, keyMap } from '../util/textInput'
 const { array, bool, func, string } = React.PropTypes
 import { position } from '../util/scrolling'
 
@@ -97,16 +96,6 @@ export default class RichTextEditor extends React.Component {
   }
 
   _handleListKey (event) {
-    // there's no way to prevent the insertion of a linebreak into the editor
-    // when Enter is pressed, unless the event handler is set during
-    // tinymce.init. until we can find a way to do that or some other
-    // workaround, we're disabling picking a tag with Enter. Tab and clicking
-    // still work.
-    if (getKeyCode(event) === keyMap.ENTER) {
-      this.autocomplete(null)
-      return
-    }
-
     if (this.refs.list && this.refs.list.handleKeys(event)) {
       event.preventDefault()
       return true
@@ -192,10 +181,10 @@ export default class RichTextEditor extends React.Component {
     const { className, content, typeaheadOptions, onAddTag } = this.props
     const { dropdown: { left, top } } = this.state
 
-    const selectTypeahead = choice => {
+    const selectTypeahead = (choice, event) => {
       this.autocomplete(null)
       if (onAddTag) onAddTag(choice.name)
-      this.tagger.finishTag(choice)
+      this.tagger.finishTag(choice, event)
     }
 
     return <div className={cx('rich-text-editor', className)} ref='container'>
@@ -226,7 +215,7 @@ class EditorPoller {
   }
 
   _poll () {
-    const waitMs = 30
+    const waitMs = 40
     const { editors } = window.tinymce.EditorManager
     let attempts = 1
     this.pollInterval = setInterval(() => {
@@ -239,7 +228,7 @@ class EditorPoller {
         this._callbacks.forEach(c => c(this._parent.editor))
       } else {
         attempts += 1
-        if (attempts > 100) {
+        if (attempts > 200) {
           console.error(`couldn't get ${this._editorId} after ${elapsed} ms`)
           clearInterval(this.pollInterval)
         }

@@ -25,7 +25,7 @@ class TagPosts extends React.Component {
   }
 
   getChildContext () {
-    let { community } = this.props
+    const { community } = this.props
     return {community}
   }
 

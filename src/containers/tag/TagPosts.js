@@ -2,7 +2,7 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { prefetch } from 'react-fetcher'
 import { fetch, ConnectedPostList } from '../ConnectedPostList'
-import { fetchTag, followTag } from '../../actions'
+import { fetchTag, followTag, navigate } from '../../actions'
 import { compose } from 'redux'
 import { get } from 'lodash'
 const { func, object } = React.PropTypes
@@ -55,10 +55,10 @@ class TagPosts extends React.Component {
 
 export default compose(
   prefetch(({ dispatch, params: { tagName, id }, query }) =>
-    Promise.all([
-      id && dispatch(fetchTag(id, tagName)),
-      dispatch(fetch(subject, tagName, {...query, communityId: id}))
-    ])),
+    dispatch(fetchTag(tagName, id))
+    .then(({ payload }) => payload.post
+      ? dispatch(navigate(`/p/${payload.post.id}`))
+      : dispatch(fetch(subject, tagName, {...query, communityId: id})))),
   connect((state, { params: { tagName, id } }) => ({
     tag: get(state, ['tagsByCommunity', id || 'all', tagName]),
     community: get(state, ['communities', id])

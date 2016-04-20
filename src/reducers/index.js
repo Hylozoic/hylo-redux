@@ -129,7 +129,7 @@ export default combineReducers({
     return {...state, [type]: {error, payload, meta}}
   },
 
-  routing: (state = {path: '/'}, action) => {
+  routing: (state = {path: ''}, action) => {
     if (action.error) return state
 
     switch (action.type) {

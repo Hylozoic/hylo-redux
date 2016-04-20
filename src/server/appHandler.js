@@ -27,6 +27,8 @@ const checkAPIErrors = ({ errors }) => {
   })
 }
 
+const getPath = location => location.pathname + location.search
+
 export default function (req, res) {
   info(cyan(`${req.method} ${req.originalUrl}`))
 
@@ -38,24 +40,19 @@ export default function (req, res) {
   .then(() => matchPromise({routes, location: req.originalUrl}))
   .then(([redirectLocation, renderProps]) => {
     if (redirectLocation) {
-      res.redirect(302, redirectLocation.pathname + redirectLocation.search)
-      return
+      return res.redirect(302, getPath(redirectLocation))
     }
 
     if (!renderProps) {
-      res.status(404).send('Not found')
-      return
+      return res.status(404).send('Not found')
     }
 
     return renderApp(res, renderProps, history, store)
-    .then(renderToStaticMarkup)
-    .then(html => res.status(200).send(`<!DOCTYPE html>\n${html}`))
-    .then(() => {
-      let state = store.getState()
-      checkAPIErrors(state)
-      if (!isEmpty(state.errors)) {
-        res.errors = state.errors
-      }
+    .then(app => {
+      if (app.shouldRedirect) return res.redirect(302, app.shouldRedirect)
+
+      const html = renderToStaticMarkup(app)
+      res.status(200).send('<!DOCTYPE html>' + html)
     })
   })
   .catch(err => {
@@ -71,17 +68,27 @@ function renderApp (res, renderProps, history, store) {
 
   return getPrefetchedData(components, locals)
   .then(() => {
+    const currentPath = getPath(renderProps.location)
+    const state = store.getState()
+    const { path } = state.routing
+
     // if this runs before getPrefetchedData it hangs -- infinite loop?
     history.transitionTo(renderProps.location)
     syncReduxAndRouter(history, store)
 
-    const markup = renderToString(
-      <Provider store={store}>
-        <RoutingContext location='history' {...renderProps}/>
-      </Provider>
-    )
+    // if navigate was called during prefetch, redirect.
+    if (path && path !== currentPath) {
+      return {shouldRedirect: path}
+    }
 
-    let state = store.getState()
+    checkAPIErrors(state)
+    if (!isEmpty(state.errors)) {
+      res.errors = state.errors
+    }
+
+    const markup = renderToString(<Provider store={store}>
+      <RoutingContext location='history' {...renderProps}/>
+    </Provider>)
 
     return React.createElement(Html, {
       markup: markup,

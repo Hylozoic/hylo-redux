@@ -144,6 +144,10 @@ export default class RichTextEditor extends React.Component {
         this.tagger.handleKeyPress(event)
       })
 
+      editor.on('nodeChange', event => {
+        this.tagger.updateSearch(event)
+      })
+
       if (onBlur) editor.on('blur', onBlur)
     })
   }

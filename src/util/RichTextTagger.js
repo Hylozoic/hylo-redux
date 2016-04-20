@@ -77,14 +77,7 @@ export class RichTextTagger {
       return
     }
 
-    if (this.isInTag()) {
-      // trigger or reset typeahead
-      const value = keyCode === keyMap.ESC ? null : this.tagValue()
-      this.search(value)
-    } else {
-      // always reset typeahead if not inside a tag
-      if (this.lastSearch) this.search(null)
-    }
+    this.updateSearch(event)
   }
 
   handleKeyDown = event => {
@@ -116,6 +109,18 @@ export class RichTextTagger {
     if (includes(triggerKeyCodes, keyCode)) {
       insertJSX(template(keyCode), this.editor)
       event.preventDefault()
+    }
+  }
+
+  updateSearch = event => {
+    const keyCode = getKeyCode(event)
+    if (this.isInTag()) {
+      // trigger or reset typeahead
+      const value = keyCode === keyMap.ESC ? null : this.tagValue()
+      this.search(value)
+    } else {
+      // always reset typeahead if not inside a tag
+      if (this.lastSearch) this.search(null)
     }
   }
 }

@@ -460,7 +460,11 @@ export default class PostEditorWrapper extends React.Component {
   }
 
   render () {
-    const { type, post, project, community, expanded } = this.props
+    const { type, post, project, community } = this.props
+    // if PostEditorWrapper is being initialized with expanded=true, we don't
+    // want to set up onCancel, because the entire component will probably be
+    // unmounted when canceling takes place
+    const onCancel = this.props.expanded ? () => {} : this.toggle
 
     if (!this.state.expanded) {
       const { currentUser } = this.context
@@ -472,11 +476,7 @@ export default class PostEditorWrapper extends React.Component {
       </div>
     }
 
-    // if PostEditorWrapper is being initialized with expanded=true, we don't
-    // want to set up onCancel, because the entire component will probably be
-    // unmounted when canceling takes place
-    return <PostEditor {...{post, project, community, type}}
-      onCancel={expanded || this.toggle}/>
+    return <PostEditor {...{post, project, community, type, onCancel}}/>
   }
 }
 

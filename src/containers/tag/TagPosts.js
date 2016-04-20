@@ -35,7 +35,7 @@ class TagPosts extends React.Component {
     return <div>
       <div className='list-controls tag-header'>
         <span className='tag-name'>#{tagName}</span>
-        {id && (tag.followed
+        {id && tag && (tag.followed
           ? <button className='unfollow' onClick={() => dispatch(followTag(id, tagName))}>Unfollow</button>
           : <button className='follow' onClick={() => dispatch(followTag(id, tagName))}>Follow</button>)}
       </div>

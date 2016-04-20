@@ -73,7 +73,7 @@ export default compose(
   prefetch(({ store, dispatch, params: { id } }) =>
     dispatch(fetchPost(id))
     .then(setCommunityAndMetaTags(store, dispatch, id))
-    // .then(fetchMoreComments(store, dispatch, id))
+    .then(fetchMoreComments(store, dispatch, id))
     .then(scroll)),
   connect((state, { params }) => {
     const { communities, currentCommunityId } = state

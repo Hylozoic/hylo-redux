@@ -501,8 +501,13 @@ ul.posts {
       }
     }
 
-    .hashtag .icon {
-      font-size: 21px;
+    .hashtag {
+      input[type='text'] {
+        color: @damian-green;
+      }
+      .icon {
+        font-size: 21px;
+      }
     }
 
     input[type='text'], input[type='datetime'] {
@@ -513,7 +518,7 @@ ul.posts {
       margin-left: 0.5em;
     }
 
-    .rdt {
+    .rdt { // react-datetime
       display: inline-block;
       width: auto;
       input[type='text'] {

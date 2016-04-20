@@ -8,15 +8,23 @@ because they make more sense.
 
 import React from 'react'
 import cx from 'classnames'
-import { debounce, filter, find, get, includes, isEmpty, some, startsWith } from 'lodash'
+import {
+  debounce,
+  filter,
+  find,
+  get,
+  includes,
+  isEmpty,
+  some,
+  startsWith
+} from 'lodash'
 import CommunityTagInput from './CommunityTagInput'
 import Dropdown from './Dropdown'
-import Icon from './Icon'
+import EventPostEditor from './EventPostEditor'
 import RichTextEditor from './RichTextEditor'
 import { NonLinkAvatar } from './Avatar'
 import AutosizingTextarea from './AutosizingTextarea'
 import { connect } from 'react-redux'
-import DatetimePicker from 'react-datetime'
 import {
   updatePostEditor, createPost, updatePost, cancelPostEdit,
   removeImage, removeDoc
@@ -234,11 +242,15 @@ export class PostEditor extends React.Component {
   }
 
   handleAddTag = tag => {
-    if (this.props.postEdit.type === 'event') return
+    if (this.isEvent()) return
     tag = tag.replace(/^#/, '')
     if (includes(['request', 'offer'], tag)) {
       this.updateStore({tag})
     }
+  }
+
+  isEvent () {
+    return this.props.postEdit.type === 'event'
   }
 
   render () {
@@ -247,7 +259,7 @@ export class PostEditor extends React.Component {
     } = this.props
     let { description, communities, tag } = postEdit
     let { name, showDetails } = this.state
-    const isEvent = postEdit.type === 'event'
+    const isEvent = this.isEvent()
 
     // FIXME this should be performed during the creation of the postEdits entry
     // in the store
@@ -297,7 +309,7 @@ export class PostEditor extends React.Component {
         <li><a onClick={() => selectTag('chat')}>#all-topics</a></li>
       </Dropdown>}
 
-      {isEvent && <EventSection postEdit={postEdit}
+      {isEvent && <EventPostEditor postEdit={postEdit}
         update={this.updateStore}/>}
 
       {!project && <div className='communities'>
@@ -327,63 +339,6 @@ export class PostEditor extends React.Component {
             onChange={() => this.updateStore({public: !postEdit.public})}/>
           &nbsp;
           Public
-        </label>
-      </div>
-    </div>
-  }
-}
-
-class EventSection extends React.Component {
-  static propTypes = {
-    postEdit: object,
-    update: func.isRequired
-  }
-
-  constructor (props) {
-    super(props)
-    this.state = {}
-  }
-
-  render () {
-    const { postEdit, update } = this.props
-    const { start_time, end_time } = postEdit
-    const startTime = start_time ? new Date(postEdit.start_time) : null
-    const endTime = end_time ? new Date(postEdit.end_time) : null
-    const updateSlowly = debounce(update, 200)
-
-    return <div className='event-section'>
-      <div className='start-time'>
-        <Icon name='calendar'/>
-        <DatetimePicker inputProps={{placeholder: 'start time'}}
-          value={startTime}
-          onChange={m => update({start_time: m.toISOString()})}/>
-      </div>
-      <div className='end-time'>
-        <Icon name='calendar'/>
-        <DatetimePicker inputProps={{placeholder: 'end time'}}
-          value={endTime}
-          onChange={m => update({end_time: m.toISOString()})}/>
-      </div>
-      <div className='location'>
-        <Icon name='map-marker'/>
-        <input type='text' placeholder='location'
-          defaultValue={postEdit.location}
-          onChange={event => updateSlowly({location: event.target.value})}/>
-      </div>
-      <div className='hashtag'>
-        <span className='icon'>#</span>
-        <input type='text' placeholder='hashtag'/>
-      </div>
-        <div className='url'>
-        <Icon name='link'/>
-        <input type='text' placeholder='http://'/>
-      </div>
-      <div className='visibility'>
-        <Icon name='lock'/>
-        <label>
-          public
-          <input type='checkbox'
-            onChange={event => update({public: event.target.checked})}/>
         </label>
       </div>
     </div>

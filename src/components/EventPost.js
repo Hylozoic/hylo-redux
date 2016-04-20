@@ -8,7 +8,7 @@ import Select from './Select'
 import Icon from './Icon'
 import LinkedPersonSentence from './LinkedPersonSentence'
 import { ClickCatchingSpan } from './ClickCatcher'
-import { get, find, isEmpty, some, sortBy } from 'lodash'
+import { get, find, includes, isEmpty, some, sortBy } from 'lodash'
 import { same } from '../models'
 import { getComments, getCommunities, imageUrl } from '../models/post'
 import { Header, CommentSection } from './Post'
@@ -18,14 +18,15 @@ const { array, func, object } = React.PropTypes
 
 const spacer = <span>&nbsp; •&nbsp; </span>
 
+const shouldShowTag = tag => !includes(['event', 'chat'], tag)
+
 export const EventPostCard = ({ post }) => {
-  const { start_time, end_time, user, id, name } = post
+  const { start_time, end_time, user, id, name, tag } = post
   const start = new Date(start_time)
   const end = end_time && new Date(end_time)
   const time = timeRangeBrief(start, end)
   const timeFull = timeRangeFull(start, end)
 
-  const hashtag = '#todo'
   const url = `/p/${id}`
   const backgroundImage = `url(${imageUrl(post)})`
 
@@ -34,8 +35,10 @@ export const EventPostCard = ({ post }) => {
     <div className='meta'>
       <span title={timeFull}>{time}</span>
       {spacer}
-      <a className='hashtag'>{hashtag}</a>
-      {spacer}
+      {shouldShowTag(tag) && <span>
+        <a className='hashtag'>#{tag}</a>
+        {spacer}
+      </span>}
       <A to={`/u/${user.id}`}>{user.name}</A>
     </div>
     <A className='title' to={url}>{name}</A>
@@ -106,7 +109,7 @@ export default class EventPost extends React.Component {
 
   render () {
     const { post, communities, comments } = this.props
-    const { name, start_time, end_time, location } = post
+    const { name, start_time, end_time, location, tag } = post
     const description = present(sanitize(post.description))
     const title = decode(name || '')
     const start = new Date(start_time)
@@ -116,7 +119,7 @@ export default class EventPost extends React.Component {
     return <div className='post event'>
       <Header communities={communities}/>
       <p className='title post-section'>{title}</p>
-      <p className='hashtag'>#hashtagTBD</p>
+      {shouldShowTag(tag) && <p className='hashtag'>#{tag}</p>}
 
       <div className='event-details'>
         {image && <div className='image'>

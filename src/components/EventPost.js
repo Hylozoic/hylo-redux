@@ -36,7 +36,7 @@ export const EventPostCard = ({ post }) => {
       <span title={timeFull}>{time}</span>
       {spacer}
       {shouldShowTag(tag) && <span>
-        <a className='hashtag'>#{tag}</a>
+        <A className='hashtag' to={url}>#{tag}</A>
         {spacer}
       </span>}
       <A to={`/u/${user.id}`}>{user.name}</A>

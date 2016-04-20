@@ -9,24 +9,39 @@ const { func, object } = React.PropTypes
 
 const subject = 'tag'
 
-const TagPosts = props => {
-  let { params: { tagName, id }, location: { query }, tag, dispatch } = props
+class TagPosts extends React.Component {
 
-  return <div>
-    <div className='list-controls tag-header'>
-      <span className='tag-name'>#{tagName}</span>
-      {id && (tag.followed
-        ? <button className='unfollow' onClick={() => dispatch(followTag(id, tagName))}>Unfollow</button>
-        : <button className='follow' onClick={() => dispatch(followTag(id, tagName))}>Follow</button>)}
+  static propTypes = {
+    dispatch: func,
+    params: object,
+    location: object,
+    tag: object,
+    community: object
+
+  }
+
+  static childContextTypes = {
+    community: object
+  }
+
+  getChildContext () {
+    let { community } = this.props
+    return {community}
+  }
+
+  render () {
+    let { params: { tagName, id }, location: { query }, tag, dispatch } = this.props
+
+    return <div>
+      <div className='list-controls tag-header'>
+        <span className='tag-name'>#{tagName}</span>
+        {id && (tag.followed
+          ? <button className='unfollow' onClick={() => dispatch(followTag(id, tagName))}>Unfollow</button>
+          : <button className='follow' onClick={() => dispatch(followTag(id, tagName))}>Follow</button>)}
+      </div>
+      <ConnectedPostList {...{subject, id: tagName, query: {...query, communityId: id}}}/>
     </div>
-    <ConnectedPostList {...{subject, id: tagName, query: {...query, communityId: id}}}/>
-  </div>
-}
-
-TagPosts.propTypes = {
-  dispatch: func,
-  params: object,
-  location: object
+  }
 }
 
 export default compose(
@@ -34,5 +49,8 @@ export default compose(
     if (id) dispatch(fetchTag(id, tagName))
     return dispatch(fetch(subject, tagName, {...query, communityId: id}))
   }),
-  connect((state, { params: { tagName, id } }) => ({tag: get(state, [`tagsByCommunity`, id || 'all', tagName])}))
+  connect((state, { params: { tagName, id } }) => ({
+    tag: get(state, ['tagsByCommunity', id || 'all', tagName]),
+    community: get(state, ['communities', id])
+  }))
 )(TagPosts)

@@ -25,7 +25,7 @@ export function sanitize (text) {
 }
 
 export function present (text, opts = {}) {
-  if (!text) return '<p></p>'
+  if (!text) return ''
 
   // wrap in a <p> tag
   if (text.substring(0, 3) !== '<p>') text = `<p>${text}</p>`

@@ -116,7 +116,7 @@ const Details = ({ expanded, onExpand, tagLabel }, { post, community }) => {
   let description = present(sanitize(post.description), {slug})
   const truncated = !expanded && textLength(description) > 200
   if (truncated) description = truncate(description, 200)
-  if (description !== '<p></p>') description = appendInP(description, '&nbsp;')
+  if (description) description = appendInP(description, '&nbsp;')
 
   return <div className='post-section details'>
     <ClickCatchingSpan dangerouslySetInnerHTML={{__html: description}}/>

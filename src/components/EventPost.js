@@ -136,9 +136,9 @@ export default class EventPost extends React.Component {
           <Icon name='map-marker'/>
           <span title={location}>{location}</span>
         </div>
-        <div className='detail-text'>
+        {description && <div className='detail-text'>
           <ClickCatchingSpan dangerouslySetInnerHTML={{__html: description}}/>
-        </div>
+        </div>}
       </div>
 
       <CommentSection comments={comments}/>

@@ -1,5 +1,7 @@
 @top-nav-height: 75px;
 @left-nav-width: 208px;
+@refresh-button-height: 36px;
+@refresh-button-width: 300px;
 
 #app {
   overflow-x: hidden;
@@ -324,4 +326,37 @@ nav {
     margin-left: 15px;
     margin-right: 15px;
   })
+}
+
+.refresh-button-container {
+  height: @refresh-button-height + 2;
+  margin-bottom: @p-bottom-margin;
+}
+
+.refresh-button {
+  line-height: @refresh-button-height;
+  border-radius: @refresh-button-height;
+  background-color: white;
+  border: 1px solid @damian-green;
+  color: @damian-green;
+  z-index: 1;
+  cursor: pointer;
+  text-align: center;
+  width: @refresh-button-width;
+
+  &.static {
+    margin: 0 auto;
+  }
+
+  &.floating {
+    position: fixed;
+    left: 50%;
+    margin-left: -@refresh-button-width/2;
+    top: 0;
+    margin-top: 5px;
+  }
+}
+
+.leftNavIsOpen .refresh-button.floating {
+  margin-left: -(@refresh-button-width - @left-nav-width)/2;
 }

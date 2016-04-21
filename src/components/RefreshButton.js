@@ -27,7 +27,7 @@ export default class RefreshButton extends React.Component {
   }, 50)
 
   componentDidMount () {
-    this.startingY = position(this.refs['placeholder']).y
+    this.startingY = position(this.refs.placeholder).y - 5
     this.setState({isStatic: viewportTop() < this.startingY})
     window.addEventListener('scroll', this.handleScrollEvents)
   }
@@ -37,15 +37,20 @@ export default class RefreshButton extends React.Component {
   }
 
   render () {
-    let { refresh } = this.props
-    let { isStatic } = this.state
-    return <span ref='placeholder'>
-      <VelocityTransitionGroup enter={{animation: 'slideDown'}} leave={{animation: 'slideUp'}}>
-        {refresh && <div onClick={refresh} className={cx('refresh-button', {'static': isStatic, 'floating': !isStatic})}
-          ref='refresh-button'>
-          New Posts are available. Refresh
+    const { refresh } = this.props
+    const { isStatic } = this.state
+    const classes = cx('refresh-button', {static: isStatic, floating: !isStatic})
+    return <div ref='placeholder'>
+      <VelocityTransitionGroup
+        enter={{animation: 'slideDown'}}
+        leave={{animation: 'slideUp'}}>
+        {refresh && <div className='refresh-button-container'>
+          <div onClick={refresh} className={classes}
+            ref='refresh-button'>
+            Show new and updated posts
+          </div>
         </div>}
       </VelocityTransitionGroup>
-    </span>
+    </div>
   }
 }

@@ -1,4 +1,5 @@
 import React from 'react'
+import cx from 'classnames'
 import { connect } from 'react-redux'
 import { find } from 'lodash'
 import TopNav from '../components/TopNav'
@@ -81,7 +82,7 @@ export default class App extends React.Component {
       dispatch(navigate(pathStart + pathEnd))
     }
 
-    return <div>
+    return <div className={cx({leftNavIsOpen})}>
       <LeftNav opened={leftNavIsOpen}
         community={community}
         tags={tags}

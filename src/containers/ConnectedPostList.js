@@ -42,12 +42,12 @@ export class ConnectedPostList extends React.Component {
   }
 
   setCheckFreshnessInterval (cachedPosts) {
-    let { dispatch, subject, id, query } = this.props
+    let { dispatch, subject, id, query, omit } = this.props
     var dispatchCheckFreshness = () => dispatch(checkFreshness(
       subject,
       id,
       cachedPosts.map(p => pick(p, ['id', 'updated_at'])),
-      {limit: 5, offset: 0, ...query}
+      {limit: 5, offset: 0, omit, ...query}
     ))
 
     if (this.intervalId) {

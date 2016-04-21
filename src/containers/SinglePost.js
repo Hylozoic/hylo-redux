@@ -41,7 +41,7 @@ const SinglePost = props => {
         Other posts for&nbsp;
         <span className='hashtag'>#{post.tag}</span>
       </p>
-      <ConnectedPostList subject={subject} id={post.tag}
+      <ConnectedPostList subject={subject} id={post.tag} omit={post.id}
         query={{...query, communityId: community.id}}/>
     </div>}
   </CoverImagePage>
@@ -87,7 +87,7 @@ const scroll = () => {
 const fetchTaggedPosts = (store, dispatch, query, id) => () => {
   const post = store.getState().posts[id]
   const communityId = get(post, 'communities.0') || 'all'
-  return dispatch(fetch(subject, post.tag, {...query, communityId}))
+  return dispatch(fetch(subject, post.tag, {...query, communityId, omit: post.id}))
 }
 
 export default compose(

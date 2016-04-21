@@ -29,14 +29,15 @@ export class ConnectedPostList extends React.Component {
     total: number,
     pending: bool,
     query: object,
-    editingPostIds: array
+    editingPostIds: array,
+    omit: string
   }
 
   loadMore = () => {
-    let { posts, dispatch, total, pending, subject, id, query } = this.props
+    let { posts, dispatch, total, pending, subject, id, query, omit } = this.props
     let offset = posts.length
     if (!pending && offset < total) {
-      dispatch(fetch(subject, id, {...query, offset}))
+      dispatch(fetch(subject, id, {...query, offset, omit}))
     }
   }
 

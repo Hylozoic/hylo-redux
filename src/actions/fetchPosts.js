@@ -3,8 +3,10 @@ import { FETCH_POSTS, CHECK_FRESHNESS_POSTS } from './index'
 
 export function fetchPosts (opts) {
   // communityId is only used when fetching a tag
-  let { subject, id, limit, offset, type, sort, search, filter, cacheId, communityId } = opts
-  if (!offset) offset = 0
+  const {
+    subject, id, limit, type, sort, search, filter, cacheId, communityId, omit
+  } = opts
+  const offset = opts.offset || 0
   const querystring = cleanAndStringify({
     offset,
     limit,
@@ -12,6 +14,7 @@ export function fetchPosts (opts) {
     sort,
     search,
     filter,
+    omit,
     comments: true,
     votes: true})
   let path

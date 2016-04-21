@@ -22,7 +22,9 @@ const CommunityProfile = props => {
 
   // we might have partial data for a community already; if this component
   // renders without banner_url, it'll cause a request to an invalid url
-  if (!community || !community.banner_url) return <div>Loading...</div>
+  if (!community || !community.banner_url) {
+    return <div className='loading'>Loading...</div>
+  }
 
   const showOnboarding = get(location, 'query.onboarding')
 

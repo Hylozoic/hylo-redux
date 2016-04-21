@@ -59,7 +59,7 @@ class Post extends React.Component {
     const { tag, media } = post
     const image = find(media, m => m.type === 'image')
     const classes = cx('post', tag, {image, expanded})
-    const title = linkifyHashtags(sanitize(decode(post.name || '')), get(community, 'slug'))
+    const title = linkifyHashtags(decode(sanitize(post.name || '')), get(community, 'slug'))
     const tagLabel = `#${post.tag === 'chat' ? 'all-topics' : post.tag}`
 
     return <div className={classes}>

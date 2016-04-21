@@ -426,7 +426,10 @@ export default combineReducers({
     if (type === SET_META_TAGS) {
       // remove closing script tags to prevent js error
       // https://groups.google.com/a/chromium.org/forum/#!topic/chromium-extensions/6bRq60rgBWk
-      return transform(payload, (acc, val, key) => acc[key] = val.replace('</script>', ''))
+      return transform(payload, (acc, val, key) =>
+        acc[key] = typeof val === 'string'
+          ? val.replace('</script>', '')
+          : val)
     }
 
     return state

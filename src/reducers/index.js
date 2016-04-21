@@ -1,6 +1,6 @@
 import { combineReducers } from 'redux'
 import { routeReducer } from 'redux-simple-router'
-import { some, get, includes, omit, partition, merge } from 'lodash'
+import { some, get, includes, omit, partition, merge, transform } from 'lodash'
 import comments from './comments'
 import commentsByPost from './commentsByPost'
 import communities from './communities'
@@ -424,7 +424,9 @@ export default combineReducers({
   metaTags: (state = {}, action) => {
     let { type, payload } = action
     if (type === SET_META_TAGS) {
-      return payload
+      // remove closing script tags to prevent js error
+      // https://groups.google.com/a/chromium.org/forum/#!topic/chromium-extensions/6bRq60rgBWk
+      return transform(payload, (acc, val, key) => acc[key] = val.replace('</script>', ''))
     }
 
     return state

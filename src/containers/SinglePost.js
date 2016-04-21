@@ -3,7 +3,7 @@ import Post from '../components/Post'
 import { prefetch } from 'react-fetcher'
 import { connect } from 'react-redux'
 import { compose } from 'redux'
-import { find, get } from 'lodash'
+import { find, get, includes } from 'lodash'
 import {
   FETCH_POST,
   fetchComments,
@@ -18,9 +18,15 @@ import { findError } from '../actions/util'
 import AccessErrorMessage from '../components/AccessErrorMessage'
 import CoverImagePage from '../components/CoverImagePage'
 import EventPost from '../components/EventPost'
+import { fetch, ConnectedPostList } from './ConnectedPostList'
+
+const subject = 'tag'
+
+const showTaggedPosts = post =>
+  post.type === 'event' && post.tag && !includes(['event', 'chat'], post.tag)
 
 const SinglePost = props => {
-  const { post, community, currentUser, editing, error } = props
+  const { post, community, currentUser, editing, error, location: { query } } = props
 
   if (error) return <AccessErrorMessage error={error}/>
   if (!post) return <div className='loading'>Loading...</div>
@@ -29,6 +35,15 @@ const SinglePost = props => {
     {editing
       ? <PostEditor post={post} expanded={true}/>
       : showPost(post, currentUser)}
+
+    {showTaggedPosts(post) && <div>
+      <p className='meta'>
+        Other posts for&nbsp;
+        <span className='hashtag'>#{post.tag}</span>
+      </p>
+      <ConnectedPostList subject={subject} id={post.tag}
+        query={{...query, communityId: community.id}}/>
+    </div>}
   </CoverImagePage>
 }
 
@@ -69,12 +84,19 @@ const scroll = () => {
   if (anchor) scrollToAnchor(anchor, 15)
 }
 
+const fetchTaggedPosts = (store, dispatch, query, id) => () => {
+  const post = store.getState().posts[id]
+  const communityId = get(post, 'communities.0') || 'all'
+  return dispatch(fetch(subject, post.tag, {...query, communityId}))
+}
+
 export default compose(
-  prefetch(({ store, dispatch, params: { id } }) =>
+  prefetch(({ store, dispatch, params: { id }, query }) =>
     dispatch(fetchPost(id))
     .then(setCommunityAndMetaTags(store, dispatch, id))
     .then(fetchMoreComments(store, dispatch, id))
-    .then(scroll)),
+    .then(scroll)
+    .then(fetchTaggedPosts(store, dispatch, query, id))),
   connect((state, { params }) => {
     const { communities, currentCommunityId } = state
     return {

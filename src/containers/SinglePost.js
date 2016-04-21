@@ -7,6 +7,7 @@ import { find, get, includes } from 'lodash'
 import {
   FETCH_POST,
   fetchComments,
+  fetchLeftNavTags,
   fetchPost,
   setCurrentCommunityId,
   setMetaTags
@@ -84,10 +85,15 @@ const scroll = () => {
   if (anchor) scrollToAnchor(anchor, 15)
 }
 
-const fetchTaggedPosts = (store, dispatch, query, id) => () => {
-  const post = store.getState().posts[id]
+const fetchYetMore = (store, dispatch, query, id) => () => {
+  const state = store.getState()
+  const post = state.posts[id]
   const communityId = get(post, 'communities.0') || 'all'
-  return dispatch(fetch(subject, post.tag, {...query, communityId, omit: post.id}))
+  const slug = get(state.communities, [communityId, 'slug'])
+  return Promise.all([
+    dispatch(fetch(subject, post.tag, {...query, communityId, omit: post.id})),
+    slug && dispatch(fetchLeftNavTags(slug))
+  ])
 }
 
 export default compose(
@@ -96,7 +102,7 @@ export default compose(
     .then(setCommunityAndMetaTags(store, dispatch, id))
     .then(fetchMoreComments(store, dispatch, id))
     .then(scroll)
-    .then(fetchTaggedPosts(store, dispatch, query, id))),
+    .then(fetchYetMore(store, dispatch, query, id))),
   connect((state, { params }) => {
     const { communities, currentCommunityId } = state
     return {

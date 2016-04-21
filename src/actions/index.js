@@ -595,6 +595,6 @@ export function fetchLeftNavTags (id) {
   return {
     type: FETCH_LEFT_NAV_TAGS,
     payload: {api: true, path: `/noo/community/${id}/tags/leftnav`},
-    meta: {id}
+    meta: {id, cache: {id, bucket: 'tagsByCommunity'}}
   }
 }

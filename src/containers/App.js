@@ -69,18 +69,16 @@ export default class App extends React.Component {
     const toggleLeftNav = open => {
       dispatch(toggleMainMenu())
       if (!isMobile() && currentUser) {
-        dispatch(updateUserSettings(currentUser.id, {settings: {leftNavIsOpen: open}}, {settings: {leftNavIsOpen: !open}}))
+        dispatch(updateUserSettings(currentUser.id,
+          {settings: {leftNavIsOpen: open}},
+          {settings: {leftNavIsOpen: !open}}))
       }
     }
     const openLeftNav = () => toggleLeftNav(true)
     const closeLeftNav = () => toggleLeftNav(false)
     const doSearch = text => dispatch(navigate(makeUrl('/search', {q: text})))
-    const visitCommunity = community => {
-      const match = path.match(/(events|projects|members|about|invite)$/)
-      const pathStart = community ? `/c/${community.slug}` : ''
-      const pathEnd = match ? `/${match[1]}` : ''
-      dispatch(navigate(pathStart + pathEnd))
-    }
+    const visitCommunity = community =>
+      dispatch(navigate(nextPath(path, community)))
 
     return <div className={cx({leftNavIsOpen})}>
       <LeftNav opened={leftNavIsOpen}
@@ -110,4 +108,11 @@ export default class App extends React.Component {
       <PageTitleController/>
     </div>
   }
+}
+
+const nextPath = (path, community) => {
+  const match = path.match(/(events|projects|members|about|invite|notifications)$/)
+  const pathStart = community ? `/c/${community.slug}` : ''
+  const pathEnd = match ? `/${match[1]}` : ''
+  return pathStart + pathEnd
 }

@@ -11,47 +11,49 @@ import truncate from 'html-truncate'
 import { present, humanDate } from '../util/text'
 import { VIEWED_NOTIFICATIONS, trackEvent } from '../util/analytics'
 import { commentUrl } from '../routes'
+import { getCurrentCommunity } from '../models/community'
 const { array, bool, func, number, object } = React.PropTypes
 
 const Notifications = compose(
-  prefetch(({ dispatch }) => dispatch(fetchActivity(0, true))),
-  connect(({ people, comments, activities, totalActivities, pending }) => ({
-    currentUser: people.current,
-    activities,
-    comments: filter(activities.map(a => a.comment_id)).reduce((acc, cid) => ({...acc, [cid]: comments[cid]}), {}),
-    total: Number(totalActivities),
-    pending: pending[FETCH_ACTIVITY]
-  })),
+  prefetch(({ dispatch, params: { id } }) => dispatch(fetchActivity(0, true, id))),
+  connect(state => {
+    const { activitiesByCommunity, totalActivities } = state
+    const community = getCurrentCommunity(state)
+    const activities = activitiesByCommunity[community.slug].map(id =>
+      state.activities[id])
+    const comments = filter(activities.map(a => a.comment_id))
+    .reduce((acc, cid) => ({...acc, [cid]: state.comments[cid]}), {})
+
+    return {
+      activities,
+      comments,
+      currentUser: state.people.current,
+      total: Number(totalActivities[community.slug]),
+      pending: state.pending[FETCH_ACTIVITY]
+    }
+  }),
   defer(() => trackEvent(VIEWED_NOTIFICATIONS))
-)(({ activities, comments, currentUser, dispatch, total, pending }) => {
-  let offset = activities.length
-  let loadMore = !pending && offset < total
-    ? () => dispatch(fetchActivity(offset))
+)(props => {
+  const { currentUser, dispatch, total, pending, params } = props
+  const offset = props.activities.length
+  const loadMore = !pending && offset < total
+    ? () => dispatch(fetchActivity(offset, false, params.id))
     : () => {}
 
-  return <div className='simple-page'>
-    <div className='row'>
-      <div className='col-sm-6'>
-        <h2>Notifications</h2>
-      </div>
-      <div className='col-sm-6'>
-        <div className='list-controls'>
-          <button onClick={() => dispatch(markAllActivitiesRead())}>
-            Mark all as read
-          </button>
-        </div>
-      </div>
+  const activities = props.activities.map(activity =>
+    activity.comment_id
+      ? {...activity, comment: props.comments[activity.comment_id]}
+      : activity)
+
+  return <div>
+    <div className='list-controls'>
+      <button onClick={() => dispatch(markAllActivitiesRead())}>
+        Mark all as read
+      </button>
     </div>
     <div className='activities'>
-      {activities.map(activity => {
-        if (activity.comment_id) {
-          activity = {
-            ...activity,
-            comment: comments[activity.comment_id]
-          }
-        }
-        return <Activity key={activity.id} {...{activity, currentUser, dispatch}}/>
-      })}
+      {activities.map(activity =>
+        <Activity key={activity.id} {...{activity, currentUser, dispatch}}/>)}
       <ScrollListener onBottom={loadMore}/>
     </div>
   </div>

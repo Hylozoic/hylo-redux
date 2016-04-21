@@ -13,6 +13,7 @@ export default class RefreshButton extends React.Component {
     super(props)
     this.state = {isStatic: true}
   }
+
   handleScrollEvents = throttle(event => {
     event.preventDefault()
     if (this.state.isStatic) {

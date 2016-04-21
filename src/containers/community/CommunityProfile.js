@@ -51,13 +51,11 @@ export default compose(
     dispatch(fetchLeftNavTags(id))
     .then(() => dispatch(fetchCommunity(id)))
     .then(() => {
-      let community = store.getState().communities[id]
-      if (community) {
-        dispatch(setCurrentCommunityId(community.id))
-      }
+      const community = store.getState().communities[id]
+      community && dispatch(setCurrentCommunityId(community.id))
     })),
   defer(({ params: { id }, store }) => {
-    let community = store.getState().communities[id]
+    const community = store.getState().communities[id]
     return trackEvent(VIEWED_COMMUNITY, {community})
   }),
   connect((state, props) => ({

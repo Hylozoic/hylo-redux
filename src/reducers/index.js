@@ -1,6 +1,7 @@
 import { combineReducers } from 'redux'
 import { routeReducer } from 'redux-simple-router'
-import { some, get, includes, omit, partition, merge } from 'lodash'
+import { some, get, includes, partition, merge } from 'lodash'
+import { activities, activitiesByCommunity } from './activities'
 import comments from './comments'
 import commentsByPost from './commentsByPost'
 import communities from './communities'
@@ -37,8 +38,6 @@ import {
   FOLLOW_TAG_PENDING,
   LOGIN,
   LOGOUT,
-  MARK_ACTIVITY_READ,
-  MARK_ALL_ACTIVITIES_READ_PENDING,
   NAVIGATE,
   NOTIFY,
   REMOVE_NOTIFICATION,
@@ -166,6 +165,8 @@ export default combineReducers({
     return state
   },
 
+  activities,
+  activitiesByCommunity,
   comments,
   commentsByPost,
   communities,
@@ -225,10 +226,13 @@ export default combineReducers({
 
   hasFreshPostsByQuery: keyedHasFreshItems(CHECK_FRESHNESS_POSTS, 'postsByQuery'),
 
+  totalActivities: keyedCounter(FETCH_ACTIVITY, 'total', 'meta.id'),
+  totalCommunitiesByQuery: keyedCounter(FETCH_COMMUNITIES, 'communities_total'),
+  totalInvitations: keyedCounter(FETCH_INVITATIONS, 'total', 'meta.communityId'),
   totalPostsByQuery: keyedCounter(FETCH_POSTS, 'posts_total'),
   totalPeopleByQuery: keyedCounter(FETCH_PEOPLE, 'people_total'),
   totalProjectsByQuery: keyedCounter(FETCH_PROJECTS, 'projects_total'),
-  totalCommunitiesByQuery: keyedCounter(FETCH_COMMUNITIES, 'communities_total'),
+  totalSearchResultsByQuery: keyedCounter(SEARCH, 'total'),
 
   communityValidation: (state = {}, action) => {
     let { type, payload, error, meta } = action
@@ -388,39 +392,6 @@ export default combineReducers({
     return state
   },
 
-  activities: (state = [], action) => {
-    let { type, payload, error, meta } = action
-    if (error) return state
-    let normalize = activity => {
-      let comment = activity.comment
-      if (!comment) {
-        return activity
-      }
-      return {...omit(activity, 'comment'), comment_id: comment.id}
-    }
-    var activityId
-    switch (type) {
-      case FETCH_ACTIVITY:
-        return state.concat(payload.items.map(normalize))
-      case MARK_ACTIVITY_READ:
-        activityId = meta.activityId
-        return state.map(a => a.id === activityId ? {...a, unread: false} : a)
-      case MARK_ALL_ACTIVITIES_READ_PENDING:
-        return state.map(a => ({...a, unread: false}))
-    }
-    return state
-  },
-
-  totalActivities: (state = 0, action) => {
-    let { type, payload, error } = action
-    if (error) return state
-    switch (type) {
-      case FETCH_ACTIVITY:
-        return payload.total
-    }
-    return state
-  },
-
   metaTags: (state = {}, action) => {
     let { type, payload } = action
     if (type === SET_META_TAGS) {
@@ -446,8 +417,6 @@ export default combineReducers({
 
     return state
   },
-
-  totalInvitations: keyedCounter(FETCH_INVITATIONS, 'total', 'meta.communityId'),
 
   invitationEditor: (state = {}, action) => {
     let { type, payload, error } = action
@@ -504,8 +473,6 @@ export default combineReducers({
     }
     return state
   },
-
-  totalSearchResultsByQuery: keyedCounter(SEARCH, 'total'),
 
   pageTitle: (state = 'Hylo', action) => {
     let updateTitle = (title, count) => {

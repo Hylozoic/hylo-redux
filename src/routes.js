@@ -4,7 +4,7 @@ import Signup from './containers/Signup'
 import Login from './containers/Login'
 import App from './containers/App'
 import { AllPosts, MyPosts, FollowedPosts } from './containers/home'
-import TagInAllCommunities from './containers/tag/TagInAllCommunities'
+import AllCommunities from './containers/AllCommunities'
 import Projects from './containers/Projects'
 import CommunityProfile from './containers/community/CommunityProfile'
 import CommunityPosts from './containers/community/CommunityPosts'
@@ -78,7 +78,6 @@ export default function makeRoutes (store) {
     <Route path='followed-posts' component={FollowedPosts} onEnter={requireLogin()}/>
     <Route path='events' component={Events} onEnter={requireLogin()}/>
     <Route path='projects' component={Projects} onEnter={requireLogin()}/>
-    <Route path='notifications' component={Notifications} onEnter={requireLogin()}/>
     <Route path='search' component={Search} onEnter={requireLogin()}/>
     <Route path='u/:id' component={PersonProfile} onEnter={requireLogin()}>
       <IndexRoute component={PersonPosts}/>
@@ -112,7 +111,9 @@ export default function makeRoutes (store) {
       <Route path='settings' component={CommunitySettings} onEnter={requireLogin()}/>
       <Route path='invite' component={CommunityInvitations} onEnter={requireLogin()}/>
       <Route path='tag/:tagName' component={TagPosts} onEnter={requireLogin()} />
+      <Route path='notifications' component={Notifications} onEnter={requireLogin()}/>
     </Route>
+
     <Route path='p/:id' component={SinglePost}/>
     <Route path='project/new' component={ProjectEditor} onenter={requireLogin()}/>
     <Route path='project/:id/edit' component={ProjectEditor} onenter={requireLogin()}/>
@@ -130,8 +131,9 @@ export default function makeRoutes (store) {
     </Route>
     <Route path='n/:id/edit' component={NetworkEditor} onEnter={requireLogin()}/>
 
-    <Route path='tag/:tagName' component={TagInAllCommunities}>
-      <IndexRoute component={TagPosts}/>
+    <Route component={AllCommunities}>
+      <Route path='tag/:tagName' component={TagPosts}/>
+      <Route path='notifications' component={Notifications} onEnter={requireLogin()}/>
     </Route>
 
     <Route path='testbench' component={TestBench}/>

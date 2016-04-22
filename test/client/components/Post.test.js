@@ -13,7 +13,7 @@ import decode from 'ent/decode'
 
 let post = {
   id: 'p',
-  name: 'i have something for you!',
+  name: 'i have &quot;something&quot; for you!',
   description: 'it is very special.',
   type: 'offer',
   tag: 'offer',
@@ -54,6 +54,8 @@ describe('Post', () => {
     let details = findRenderedDOMComponentWithClass(node, 'details')
     let expected = new RegExp(`<span [^>]*><p>${post.description}&nbsp;<\/p><\/span><a class="hashtag" [^>]*>#offer<\/a>`)
     expect(details.innerHTML).to.match(expected)
+    let title = findRenderedDOMComponentWithClass(node, 'title')
+    expect(title.innerHTML).to.equal('i have "something" for you!')
   })
 })
 

@@ -18,6 +18,6 @@ export default class LiveStatusPoller extends React.Component {
   }
 
   render () {
-    return <span />
+    return null
   }
 }

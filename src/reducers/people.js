@@ -1,4 +1,4 @@
-import { filter, merge, pick, find, indexOf, map } from 'lodash'
+import { filter, merge, pick, find, indexOf, map, sortBy } from 'lodash'
 import { debug } from '../util/logging'
 import {
   CREATE_COMMUNITY,
@@ -152,7 +152,14 @@ export default function (state = {}, action) {
       if (!state.current) return state
       return {
         ...state,
-        current: {...state.current, new_notification_count: payload.new_notification_count}
+        current: {
+          ...state.current,
+          new_notification_count: payload.new_notification_count,
+          memberships: merge([],
+            sortBy(state.current.memberships, 'id'),
+            sortBy(payload.memberships, 'id')
+          )
+        }
       }
   }
 

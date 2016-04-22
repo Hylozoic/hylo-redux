@@ -125,7 +125,7 @@ const Details = ({ expanded, onExpand, tagLabel }, { post, community }) => {
       <a onClick={onExpand}>Show&nbsp;more</a>
       &nbsp;
     </span>}
-    <a href={tagUrl(tagLabel.slice(1), slug)} className='hashtag'>{tagLabel}</a>
+    <a className='hashtag' href={tagUrl(tagLabel.slice(1), slug)}>{tagLabel}</a>
   </div>
 }
 Details.contextTypes = {post: object, community: object}

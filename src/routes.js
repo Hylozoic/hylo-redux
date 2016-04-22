@@ -152,5 +152,9 @@ export const communityOnboardingUrl = community =>
 export const commentUrl = comment =>
   `/p/${comment.post_id}#comment-${comment.id}`
 
-export const tagUrl = (name, slug) =>
-  slug ? `/c/${slug}/tag/${name}` : `/tag/${name}`
+export const tagUrl = (name, slug) => {
+  var result = ''
+  if (slug) result += `/c/${slug}`
+  if (name !== 'all-topics') result += `/tag/${name}`
+  return result
+}

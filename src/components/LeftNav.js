@@ -46,8 +46,8 @@ export const TopicList = ({ tags, slug }) => {
   }
 
   return <ul className='topic-list'>
-    {!isEmpty(followedTags) && <li className='subheading'><a>TOPICS ({followedTags.length})</a></li>}
-    {!isEmpty(followedTags) && <TagLink name='all-topics'/>}
+    <li className='subheading'><a>TOPICS ({followedTags.length})</a></li>
+    <TagLink name='all-topics'/>
     {!isEmpty(followedTags) && followedTags.map(tag => <TagLink name={tag.name} key={tag.name} />)}
     {!isEmpty(createdTags) && <li className='subheading'><a>TOPICS CREATED ({createdTags.length})</a></li>}
     {!isEmpty(createdTags) && createdTags.map(tag => <TagLink name={tag.name} key={tag.name} />)}

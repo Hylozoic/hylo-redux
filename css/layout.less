@@ -148,15 +148,12 @@ nav {
         vertical-align: middle;
       }
     }
+  }
 
-    .search, .glyphicon-bell {
-      border: 1px solid @input-border;
-      border-radius: @avatar-size-default;
-      height: @avatar-size-default;
-      line-height: @avatar-size-default;
-    }
+  .notifications {
+    position: relative;
 
-    .glyphicon-bell {
+    .icon {
       width: @avatar-size-default;
       vertical-align: middle;
       text-align: center;
@@ -164,28 +161,56 @@ nav {
       top: -1px;
     }
 
-    .search {
-      padding: 0 10px;
-      .glyphicon-search {
-        vertical-align: baseline;
-        position: relative;
-        top: 2px;
-      }
-      input {
-        margin-left: 8px;
-        margin-top: 2px;
-        border: 0;
-        background-color: transparent;
-        height: 30px;
-        line-height: 32px;
-        outline: none;
-      }
+    .badge {
+      position: absolute;
+      top: 20px;
+      right: -3px;
+      background-color: rgba(255, 0, 0, 0.7);
+      color: white;
+      @size: 22px;
+      padding: 0 6px;
+      height: @size;
+      width: auto;
+      line-height: @size;
+      border-radius: @size;
+      text-align: center;
+      vertical-align: middle;
     }
+  }
 
-    .user-menu {
-      .dropdown-menu {
-        margin-top: 6px;
-      }
+  .search, .icon {
+    border: 1px solid @input-border;
+    border-radius: @avatar-size-default;
+    height: @avatar-size-default;
+    line-height: @avatar-size-default;
+  }
+
+  a.active .icon {
+    color: @damian-green;
+    border-color: @damian-green;
+  }
+
+  .search {
+    padding: 0 10px;
+    .glyphicon-search {
+      vertical-align: baseline;
+      position: relative;
+      top: 2px;
+    }
+    input {
+      margin-left: 8px;
+      margin-top: 2px;
+      border: 0;
+      background-color: transparent;
+      height: 30px;
+      line-height: 32px;
+      outline: none;
+    }
+  }
+
+  .user-menu {
+    .dropdown-menu {
+      margin-top: 6px;
     }
   }
 }

@@ -1,4 +1,4 @@
-import { filter, merge, pick, find, indexOf } from 'lodash'
+import { filter, merge, pick, find, indexOf, map } from 'lodash'
 import { debug } from '../util/logging'
 import {
   CREATE_COMMUNITY,
@@ -129,9 +129,22 @@ export default function (state = {}, action) {
       }
     case FETCH_ACTIVITY:
       if (meta.resetCount) {
-        return {
-          ...state,
-          current: {...state.current, new_notification_count: 0}
+        if (meta.id === 'all') {
+          return {
+            ...state,
+            current: {...state.current, new_notification_count: 0}
+          }
+        } else {
+          return {
+            ...state,
+            current: {
+              ...state.current,
+              memberships: map(state.current.memberships, m =>
+                m.community.slug === meta.id
+                  ? {...m, new_notification_count: 0}
+                  : m)
+            }
+          }
         }
       }
       break

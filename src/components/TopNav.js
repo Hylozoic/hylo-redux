@@ -1,13 +1,14 @@
 import React from 'react'
 import { A } from './A'
+import Icon from './Icon'
 import { NonLinkAvatar } from './Avatar'
 import Dropdown from './Dropdown'
 import { isAdmin } from '../models/currentUser'
-import { filter, flow, get, map, sortBy } from 'lodash/fp'
+import { filter, find, flow, get, map, sortBy } from 'lodash/fp'
 import { same } from '../models'
 import { MenuButton } from './LeftNav'
 import { VelocityTransitionGroup } from 'velocity-react'
-const { func } = React.PropTypes
+const { func, object } = React.PropTypes
 
 const getLabel = path => {
   if (path.endsWith('events')) return 'Events'
@@ -25,28 +26,31 @@ const allCommunities = {
   name: 'All Communities'
 }
 
-const TopNav = (props) => {
-  let {
-    search,
-    currentUser,
-    logout,
-    openLeftNav,
-    leftNavIsOpen,
-    path,
-    community,
-    onChangeCommunity
-  } = props
-  if (!community) community = allCommunities
-
-  const lastViewed = m => -Date.parse(m.last_viewed_at || '2001-01-01')
-  const communities = [community].concat(flow(
+const getCommunities = (currentUser, community) =>
+  [community].concat(flow(
     get('memberships'),
-    sortBy(lastViewed),
+    sortBy(m => -Date.parse(m.last_viewed_at || '2001-01-01')),
     map('community'),
     filter(c => !same('id', community, c))
   )(currentUser))
 
+const getCurrentMembership = (currentUser, community) =>
+  flow(
+    get('memberships'),
+    find(m => m.community.id === community.id)
+  )(currentUser)
+
+const TopNav = (props, { currentUser }) => {
+  const {
+    search, logout, openLeftNav, leftNavIsOpen, path, onChangeCommunity
+  } = props
   const label = getLabel(path)
+  const community = props.community || allCommunities
+  const { slug } = community
+  const communities = getCommunities(currentUser, community)
+  const membership = getCurrentMembership(currentUser, community)
+  const newCount = get('new_notification_count',
+    community === allCommunities ? currentUser : membership)
 
   return <nav id='topNav' className='clearfix'>
     <VelocityTransitionGroup enter={{animation: 'fadeIn'}}>
@@ -60,9 +64,10 @@ const TopNav = (props) => {
             <Search onChange={search}/>
           </div>
         </li>
-        <li>
-          <A to='/notifications'>
-            <div className='glyphicon glyphicon-bell'></div>
+        <li className='notifications'>
+          <A to={`${slug ? '/c/' + slug : ''}/notifications`}>
+            <Icon name='bell'/>
+            {newCount > 0 && <div className='badge'>{newCount}</div>}
           </A>
         </li>
         <li>
@@ -83,6 +88,7 @@ const TopNav = (props) => {
     <CenterMenu {...{communities, onChangeCommunity}}/>
   </nav>
 }
+TopNav.contextTypes = {currentUser: object}
 
 export default TopNav
 

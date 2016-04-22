@@ -408,14 +408,12 @@ export function toggleUserSettingsSection (sectionName, forceOpen) {
   }
 }
 
-export function fetchActivity (offset = 0, resetCount, communityId = 'all') {
+export function fetchActivity (offset = 0, resetCount, id = 'all') {
   const limit = 20
   const query = cleanAndStringify({limit, offset, paginate: true, resetCount})
-  const path = communityId
-    ? `/noo/community/${communityId}/activity/?${query}`
+  const path = id !== 'all'
+    ? `/noo/community/${id}/activity/?${query}`
     : `/noo/activity?${query}`
-
-  const id = communityId || 'all'
 
   return {
     type: FETCH_ACTIVITY,

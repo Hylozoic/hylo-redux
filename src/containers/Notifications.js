@@ -26,8 +26,8 @@ const Notifications = compose(
   connect(state => {
     const { activitiesByCommunity, totalActivities } = state
     const community = getCurrentCommunity(state)
-    const activities = activitiesByCommunity[community.slug].map(id =>
-      state.activities[id])
+    const slug = community ? community.slug : 'all'
+    const activities = map(activitiesByCommunity[slug], id => state.activities[id])
     const comments = filter(activities.map(a => a.comment_id))
     .reduce((acc, cid) => ({...acc, [cid]: state.comments[cid]}), {})
 
@@ -35,7 +35,7 @@ const Notifications = compose(
       activities,
       comments,
       currentUser: state.people.current,
-      total: Number(totalActivities[community.slug]),
+      total: Number(totalActivities[slug]),
       pending: state.pending[FETCH_ACTIVITY]
     }
   }),

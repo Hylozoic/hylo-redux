@@ -436,10 +436,16 @@ export function markActivityRead (activityId) {
   }
 }
 
-export function markAllActivitiesRead () {
+// we don't keep track in an activity object which community (or communities) it
+// corresponds to, so we instead assume that this action is only dispatched from
+// a component which has a list of activities for the community that we want to
+// mark as read, and pass in those activities' IDs.
+export function markAllActivitiesRead (communityId, activityIds) {
+  const path = `/noo/activity/mark-all-read?communityId=${communityId}`
   return {
     type: MARK_ALL_ACTIVITIES_READ,
-    payload: {api: true, path: '/noo/activity/mark-all-read', method: 'POST'}
+    payload: {api: true, path, method: 'POST'},
+    meta: {communityId, activityIds}
   }
 }
 

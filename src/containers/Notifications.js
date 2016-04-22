@@ -2,8 +2,15 @@ import React from 'react'
 import { compose } from 'redux'
 import { connect } from 'react-redux'
 import { defer, prefetch } from 'react-fetcher'
-import { fetchActivity, FETCH_ACTIVITY, markActivityRead, markAllActivitiesRead, navigate, thank } from '../actions'
-import { filter, get, includes } from 'lodash'
+import {
+  FETCH_ACTIVITY,
+  fetchActivity,
+  markActivityRead,
+  markAllActivitiesRead,
+  navigate,
+  thank
+} from '../actions'
+import { filter, get, includes, map } from 'lodash'
 import cx from 'classnames'
 import ScrollListener from '../components/ScrollListener'
 import Avatar from '../components/Avatar'
@@ -45,9 +52,12 @@ const Notifications = compose(
       ? {...activity, comment: props.comments[activity.comment_id]}
       : activity)
 
+  const markAllRead = () =>
+    dispatch(markAllActivitiesRead(params.id, map(activities, 'id')))
+
   return <div>
     <div className='list-controls'>
-      <button onClick={() => dispatch(markAllActivitiesRead())}>
+      <button onClick={markAllRead}>
         Mark all as read
       </button>
     </div>

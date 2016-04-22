@@ -3,7 +3,7 @@ import {
   MARK_ACTIVITY_READ,
   MARK_ALL_ACTIVITIES_READ_PENDING
 } from '../actions'
-import { omit, map, transform } from 'lodash'
+import { includes, omit, map, transform } from 'lodash'
 import { mergeList } from './util'
 
 const normalize = activity => {
@@ -15,19 +15,23 @@ const normalize = activity => {
 export const activities = (state = {}, action) => {
   const { type, payload, error, meta } = action
   if (error) return state
-  var activityId
   switch (type) {
     case FETCH_ACTIVITY:
       return mergeList(state, payload.items.map(normalize), 'id')
     case MARK_ACTIVITY_READ:
-      activityId = meta.activityId
+      const id = meta.activityId
       return {
         ...state,
-        [activityId]: {...state[activityId], unread: false}
+        [id]: {...state[id], unread: false}
       }
     case MARK_ALL_ACTIVITIES_READ_PENDING:
+      const { communityId, activityIds } = meta
+      // if a community id is specified, mark as read only those activities
+      // whose ids have been explicitly passed in the action
       return transform(state, (s, act, k) => {
-        s[k] = {...act, unread: false}
+        s[k] = !communityId || includes(activityIds, act.id)
+          ? {...act, unread: false}
+          : act
       })
   }
   return state

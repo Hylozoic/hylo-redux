@@ -3,6 +3,7 @@ import { A, IndexA } from './A'
 import Icon from './Icon'
 import { VelocityTransitionGroup } from 'velocity-react'
 import { isEmpty, filter } from 'lodash'
+import { tagUrl } from '../routes'
 
 // this value is dupicated in CSS
 export const leftNavWidth = 208
@@ -39,15 +40,15 @@ export const TopicList = ({ tags, slug }) => {
     var allTopics = name === 'all-topics'
     var AComponent = allTopics ? IndexA : A
     return <li>
-      <AComponent to={allTopics ? `/c/${slug}` : `/c/${slug}/tag/${name}`}>
+      <AComponent to={tagUrl(name, slug)}>
         <span className='bullet'>•</span>&nbsp;&nbsp;# {name}
       </AComponent>
     </li>
   }
 
   return <ul className='topic-list'>
-    {!isEmpty(followedTags) && <li className='subheading'><a>TOPICS ({followedTags.length})</a></li>}
-    {!isEmpty(followedTags) && <TagLink name='all-topics'/>}
+    <li className='subheading'><a>TOPICS ({followedTags.length})</a></li>
+    <TagLink name='all-topics'/>
     {!isEmpty(followedTags) && followedTags.map(tag => <TagLink name={tag.name} key={tag.name} />)}
     {!isEmpty(createdTags) && <li className='subheading'><a>TOPICS CREATED ({createdTags.length})</a></li>}
     {!isEmpty(createdTags) && createdTags.map(tag => <TagLink name={tag.name} key={tag.name} />)}

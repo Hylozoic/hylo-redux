@@ -11,6 +11,7 @@ import {
   appendInP
 } from '../util/text'
 import { linkifyHashtags } from '../util/linkify'
+import { tagUrl } from '../routes'
 import truncate from 'html-truncate'
 import A from './A'
 import Avatar from './Avatar'
@@ -124,7 +125,7 @@ const Details = ({ expanded, onExpand, tagLabel }, { post, community }) => {
       <a onClick={onExpand}>Show&nbsp;more</a>
       &nbsp;
     </span>}
-    <a className='hashtag'>{tagLabel}</a>
+    <a className='hashtag' href={tagUrl(tagLabel.slice(1), slug)}>{tagLabel}</a>
   </div>
 }
 Details.contextTypes = {post: object, community: object}

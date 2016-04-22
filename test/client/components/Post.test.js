@@ -2,12 +2,10 @@ require('../support')
 import { mocks, helpers } from '../../support'
 import { Voters } from '../../../src/components/Post'
 import Post from '../../../src/components/Post'
-import React from 'react'
 import {
   findRenderedDOMComponentWithClass,
   renderIntoDocument
 } from 'react-addons-test-utils'
-import { Provider } from 'react-redux'
 import cheerio from 'cheerio'
 import decode from 'ent/decode'
 
@@ -46,9 +44,9 @@ let state = {
 
 describe('Post', () => {
   it('renders expanded', () => {
-    let component = <Provider store={mocks.redux.store(state)}>
-      <Post post={post} expanded={true}/>
-    </Provider>
+    const props = {post, expanded: true}
+    const context = {store: mocks.redux.store(state), dispatch: () => {}}
+    let component = helpers.createElement(Post, props, context)
     let node = renderIntoDocument(component)
     findRenderedDOMComponentWithClass(node, 'post')
     let details = findRenderedDOMComponentWithClass(node, 'details')
@@ -59,7 +57,7 @@ describe('Post', () => {
   })
 })
 
-describe('Followers', () => {
+describe('Voters', () => {
   const currentUser = {id: 'x'}
   const voters = [
     {id: 'y', name: 'Sneezy'},
@@ -87,27 +85,27 @@ describe('Followers', () => {
     expectTopText($, text)
   }
 
-  it('handles one follower',
+  it('handles one voter',
     test([voters[0]], 'Sneezy&nbsp;liked this.'))
 
-  it('handles the current user as a follower',
+  it('handles the current user as a voter',
     test([currentUser], 'You&nbsp;liked this.'))
 
-  it('handles the current user and one other follower',
+  it('handles the current user and one other voter',
     test([currentUser, voters[0]], 'You and Sneezy&nbsp;liked this.'))
 
-  it('handles 2 followers',
+  it('handles 2 voters',
     test(voters.slice(0, 2), 'Sneezy and Itchy&nbsp;liked this.'))
 
-  it('handles the current user and 2 other followers',
+  it('handles the current user and 2 other voters',
     test([currentUser, ...voters.slice(0, 2)], 'You, Sneezy, and Itchy&nbsp;liked this.'))
 
-  it('handles 3 followers',
+  it('handles 3 voters',
     test(voters.slice(0, 3), 'Sneezy, Itchy, and 1 other&nbsp;liked this.'))
 
-  it('handles 4 followers',
+  it('handles 4 voters',
     test(voters.slice(0, 4), 'Sneezy, Itchy, and 2 others&nbsp;liked this.'))
 
-  it('handles 5 followers',
+  it('handles 5 voters',
     test([currentUser, ...voters], 'You, Sneezy, Itchy, and 3 others&nbsp;liked this.'))
 })

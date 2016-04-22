@@ -78,7 +78,7 @@ describe('PostEditor', () => {
   describe('with no post', () => {
     it('renders', () => {
       expect(() => {
-        render(state, {})
+        render(state, null)
       }).not.to.throw(Error)
     })
   })

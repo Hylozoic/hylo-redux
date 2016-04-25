@@ -83,7 +83,7 @@ describe('postEdits', () => {
   describe('on UPDATE_POST_EDITOR', () => {
     const action = {
       type: UPDATE_POST_EDITOR,
-      payload: {name: 'Foo and some change as well'},
+      payload: {name: 'Foo and some! split-words as well'},
       meta: {id: 'x'}
     }
 
@@ -97,9 +97,9 @@ describe('postEdits', () => {
 
       const expected = {
         x: {
-          name: 'Foo and some change as well',
+          name: 'Foo and some! split-words as well',
           description: 'lol',
-          tag: 'FooAndSomeChange',
+          tag: 'FooAndSomeSplit',
           type: 'event'
         }
       }
@@ -116,7 +116,7 @@ describe('postEdits', () => {
 
       const expected = {
         x: {
-          name: 'Foo and some change as well',
+          name: 'Foo and some! split-words as well',
           description: 'lol'
         }
       }
@@ -136,7 +136,7 @@ describe('postEdits', () => {
       const expected = {
         x: {
           id: 'x',
-          name: 'Foo and some change as well',
+          name: 'Foo and some! split-words as well',
           description: 'lol',
           type: 'event'
         }
@@ -156,7 +156,7 @@ describe('postEdits', () => {
 
       const expected = {
         x: {
-          name: 'Foo and some change as well',
+          name: 'Foo and some! split-words as well',
           description: 'lol',
           tagManuallyEdited: true,
           type: 'event'

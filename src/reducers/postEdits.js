@@ -33,8 +33,8 @@ const stateWithoutDoc = (state, id, doc) => {
 
 const suggestedTag = text => {
   if (!text) return
-  return startCase(text.replace(invalidCharacterRegex, '')).split(' ')
-  .slice(0, 4).join('')
+  return startCase(text).split(' ').slice(0, 4).join('')
+  .replace(invalidCharacterRegex, '')
 }
 
 const withSuggestedTag = (payload, state, id) => {

@@ -1,6 +1,6 @@
 import React from 'react'
 import { connect } from 'react-redux'
-import { some, get, omit, toPairs } from 'lodash'
+import { some, get, includes, omit, toPairs } from 'lodash'
 import {
   CREATE_COMMUNITY,
   UPLOAD_IMAGE,
@@ -114,6 +114,8 @@ export default class CommunityEditor extends React.Component {
 
         if (!value) {
           this.resetValidation('beta_access_code')
+        } else if (includes(value, '/')) {
+          this.setError({codeInvalid: true})
         } else {
           return this.checkUnique('beta_access_code', value)
         }
@@ -215,6 +217,7 @@ export default class CommunityEditor extends React.Component {
           <div className='main-column'>
             <input ref='code' type='text' className='form-control' onChange={this.set('beta_access_code')}/>
             <p className='help'>People can use this code to join your community. (You will also be able to send email invitations to people directly, which do not require this code.)</p>
+            {errors.codeInvalid && <p className='help error'>The code may not contain the slash ("/") character.</p>}
             {errors.codeBlank && <p className='help error'>Please fill in a code.</p>}
             {errors.codeUsed && <p className='help error'>This code cannot be used; please choose another.</p>}
           </div>

@@ -111,8 +111,11 @@ export default class App extends React.Component {
 }
 
 const nextPath = (path, community) => {
-  const match = path.match(/(events|projects|members|about|invite|notifications)$/)
   const pathStart = community ? `/c/${community.slug}` : ''
+  const match = community
+    ? path.match(/(events|projects|members|about|invite|notifications)$/)
+    : path.match(/(events|projects|notifications)$/)
   const pathEnd = match ? `/${match[1]}` : ''
+
   return pathStart + pathEnd
 }

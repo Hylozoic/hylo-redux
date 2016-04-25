@@ -127,26 +127,31 @@ export class PostEditor extends React.Component {
     if (!postEdit.name) {
       window.alert('The title of a post cannot be blank.')
       this.refs.title.focus()
-      return
+      return Promise.resolve(false)
     }
 
     if (!project && isEmpty(postEdit.communities)) {
       window.alert('Please pick at least one community.')
-      return
+      return Promise.resolve(false)
     }
 
-    return true
+    if (this.isEvent()) {
+      return this.refs.eventEditor.validate()
+    }
+
+    return Promise.resolve(true)
   }
 
   saveIfValid = () => {
-    if (!this.validate()) return
-
-    // we use setTimeout here to avoid a race condition. the description field
-    // (tinymce) doesn't fire its change event until it loses focus, so if we
-    // click Save immediately after typing in the description field, we have to
-    // wait for events from the description field to be handled so that the
-    // store is up to date
-    setTimeout(() => this.save(), 100)
+    this.validate().then(valid => {
+      if (!valid) return
+      // we use setTimeout here to avoid a race condition. the description field
+      // (tinymce) doesn't fire its change event until it loses focus, so if we
+      // click Save immediately after typing in the description field, we have
+      // to wait for events from the description field to be handled so that the
+      // store is up to date
+      setTimeout(() => this.save(), 100)
+    })
   }
 
   save () {
@@ -318,7 +323,7 @@ export class PostEditor extends React.Component {
         <li><a onClick={() => selectTag('chat')}>#all-topics</a></li>
       </Dropdown>}
 
-      {isEvent && <EventPostEditor postEdit={postEdit}
+      {isEvent && <EventPostEditor ref='eventEditor' postEdit={postEdit}
         update={this.updateStore}/>}
 
       {!project && <div className='communities'>

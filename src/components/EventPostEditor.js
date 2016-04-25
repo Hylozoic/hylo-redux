@@ -5,6 +5,7 @@ import DatetimePicker from 'react-datetime'
 import { getCharacter } from '../util/textInput'
 const { func, object } = React.PropTypes
 import { hashtagCharacterRegex } from '../models/hashtag'
+import { fetchTag } from '../actions'
 
 const sanitizeTagInput = event =>
   getCharacter(event).match(hashtagCharacterRegex) || event.preventDefault()
@@ -15,10 +16,25 @@ export default class EventPostEditor extends React.Component {
     update: func.isRequired
   }
 
+  static contextTypes = {
+    dispatch: func
+  }
+
   constructor (props) {
     super(props)
     let tag = props.postEdit.tag
     this.state = {tag: tag !== 'chat' ? tag : null}
+  }
+
+  validate () {
+    const tag = this.state.tag || this.props.postEdit.tag
+    return this.context.dispatch(fetchTag(tag))
+    .then(({ payload, meta: { tagName } }) => {
+      if (!payload) return true
+
+      window.alert(`The tag "${tagName}" is already in use.`)
+      return false
+    })
   }
 
   render () {

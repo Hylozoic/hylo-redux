@@ -16,11 +16,12 @@ import {
   UPDATE_USER_SETTINGS_PENDING,
   UPDATE_USER_SETTINGS,
   UPDATE_COMMUNITY_SETTINGS_PENDING,
+  UPDATE_MEMBERSHIP_SETTINGS_PENDING,
   USE_INVITATION
 } from '../actions'
 import { mergeList } from './util'
 
-var replaceInArray = (arr, oldVal, newVal) => {
+const replaceInArray = (arr, oldVal, newVal) => {
   var index = indexOf(arr, oldVal)
   if (index) {
     return arr.slice(0, index)
@@ -29,6 +30,20 @@ var replaceInArray = (arr, oldVal, newVal) => {
   } else {
     return arr.concat([newVal])
   }
+}
+
+const updateOneMembershipsSettings = (memberships, communityId, settings) => {
+  let oldMembership = find(memberships, m => m.community_id === communityId)
+  return replaceInArray(
+    memberships,
+    oldMembership,
+    {
+      ...oldMembership,
+      settings: {
+        ...oldMembership.settings,
+        ...settings
+      }
+    })
 }
 
 export default function (state = {}, action) {
@@ -44,6 +59,18 @@ export default function (state = {}, action) {
         return {
           ...state,
           current: merge({...state.current}, meta.prevProps)
+        }
+      case UPDATE_MEMBERSHIP_SETTINGS_PENDING:
+        return {
+          ...state,
+          current: {
+            ...state.current,
+            memberships: updateOneMembershipsSettings(
+              state.current.memberships,
+              meta.communityId,
+              meta.params.settings
+            )
+          }
         }
       default:
         return state
@@ -74,6 +101,18 @@ export default function (state = {}, action) {
       return {
         ...state,
         current: {...state.current, memberships}
+      }
+    case UPDATE_MEMBERSHIP_SETTINGS_PENDING:
+      return {
+        ...state,
+        current: {
+          ...state.current,
+          memberships: updateOneMembershipsSettings(
+            state.current.memberships,
+            meta.communityId,
+            meta.params.settings
+          )
+        }
       }
     case UPDATE_COMMUNITY_SETTINGS_PENDING:
       if (meta.params.active === false) {

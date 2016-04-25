@@ -82,8 +82,10 @@ export const UPDATE_COMMUNITY_EDITOR = 'UPDATE_COMMUNITY_EDITOR'
 export const UPDATE_INVITATION_EDITOR = 'UPDATE_INVITATION_EDITOR'
 export const UPDATE_COMMUNITY_SETTINGS = 'UPDATE_COMMUNITY_SETTINGS'
 export const UPDATE_COMMUNITY_SETTINGS_PENDING = UPDATE_COMMUNITY_SETTINGS + _PENDING
+export const UPDATE_MEMBERSHIP_SETTINGS = 'UPDATE_MEMBERSHIP_SETTINGS'
+export const UPDATE_MEMBERSHIP_SETTINGS_PENDING = UPDATE_MEMBERSHIP_SETTINGS + _PENDING
 export const UPDATE_NETWORK = 'UPDATE_NETWORK'
-export const UPDATE_NETWORK_PENDING = 'UPDATE_NETWORK' + _PENDING
+export const UPDATE_NETWORK_PENDING = UPDATE_NETWORK + _PENDING
 export const UPDATE_NETWORK_EDITOR = 'UPDATE_NETWORK_EDITOR'
 export const UPDATE_POST = 'UPDATE_POST'
 export const UPDATE_POST_EDITOR = 'UPDATE_POST_EDITOR'
@@ -328,6 +330,14 @@ export function updateCommunitySettings (id, params, prevProps) {
     type: UPDATE_COMMUNITY_SETTINGS,
     payload: {api: true, params, path: `/noo/community/${id}`, method: 'POST'},
     meta: {slug: params.slug, params, prevProps}
+  }
+}
+
+export function updateMembershipSettings (communityId, params, prevProps) {
+  return {
+    type: UPDATE_MEMBERSHIP_SETTINGS,
+    payload: {api: true, params, path: `/noo/membership/${communityId}`, method: 'POST'},
+    meta: {communityId, params, prevProps}
   }
 }
 

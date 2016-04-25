@@ -6,6 +6,7 @@ import cx from 'classnames'
 const { func, object, string } = React.PropTypes
 import {
   UPLOAD_IMAGE,
+  updateMembershipSettings,
   updateUserSettings,
   leaveCommunity,
   toggleUserSettingsSection
@@ -122,6 +123,18 @@ export default class UserSettings extends React.Component {
   toggle (path) {
     let { currentUser } = this.props
     this.update(path, !get(currentUser, path))
+  }
+
+  updateMembership = (membership, path, value) => {
+    let { dispatch } = this.props
+    // this is so reversibleUpdate will be able to call membership.id and get the right value
+    membership.id = membership.community_id
+    dispatch(reversibleUpdate(updateMembershipSettings, membership, path, value))
+    this.trackEdit()
+  }
+
+  membershipToggle (membership, path) {
+    this.updateMembership(membership, path, !get(membership, path))
   }
 
   leaveCommunity (communityId) {
@@ -361,15 +374,35 @@ export default class UserSettings extends React.Component {
 
       <SectionLabel name='communities' label='Communities' {...{dispatch, expand}}/>
       {expand.communities && <Section className='communities'>
-        {memberships.map(membership => <Item key={membership.id}>
-          <div className='half-column'>
-            <label><A to={`/c/${membership.community.slug}`}>{membership.community.name}</A></label>
-            <div className='summary'>Joined: { formatDate(membership.created_at) }</div>
-          </div>
-          <div className='half-column right-align'>
-            <button onClick={() => this.leaveCommunity(membership.community_id)}>Leave</button>
-          </div>
-        </Item>)}
+        {memberships.map(membership => <span key={membership.id}>
+          <Item>
+            <div className='half-column'>
+              <label><A to={`/c/${membership.community.slug}`}>{membership.community.name}</A></label>
+              <div className='summary'>Joined: { formatDate(membership.created_at) }</div>
+            </div>
+            <div className='half-column right-align'>
+              <button onClick={() => this.leaveCommunity(membership.community_id)}>Leave</button>
+            </div>
+          </Item>
+          <Item>
+            <div className='half-column'>
+              <div>Receive Email notifications from {membership.community.name}</div>
+              <div className='summary'>Check the circle to get email updates from this community.</div>
+            </div>
+            <div className='half-column right-align'>
+              <input type='checkbox' checked={get(membership, 'settings.send_email')} onChange={() => this.membershipToggle(membership, 'settings.send_email')}/>
+            </div>
+          </Item>
+          <Item>
+            <div className='half-column'>
+              <div>Receive Mobile notifications from {membership.community.name}</div>
+            <div className='summary'>Check the circle to get mobile updates from this community.</div>
+            </div>
+            <div className='half-column right-align'>
+              <input type='checkbox' checked={get(membership, 'settings.send_push_notificaions')} onChange={() => this.membershipToggle(membership, 'settings.send_push_notificaions')}/>
+            </div>
+          </Item>
+        </span>)}
         {memberships.length === 0 && <Item>
           <div className='full-column'>
             <p>You do not belong to any communities yet.</p>

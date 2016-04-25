@@ -90,6 +90,27 @@ const keyedHasFreshItems = (actionType, bucket) =>
     return state
   }
 
+const storePayload = (...types) => (state = {}, action) => {
+  let { type, payload, error } = action
+  if (error) return state
+  if (includes(types, type)) return payload
+  return state
+}
+
+const storePayloadById = (...types) => (state = {}, action) => {
+  let { type, payload, error, meta } = action
+  let { id } = meta || {}
+  if (error) return state
+  if (includes(types, type)) {
+    return {
+      ...state,
+      [id]: {...state[id], ...payload}
+    }
+  }
+
+  return state
+}
+
 export default combineReducers({
   currentCommunityId: (state = null, action) => {
     let { error, type, payload } = action
@@ -234,6 +255,9 @@ export default combineReducers({
   totalProjectsByQuery: keyedCounter(FETCH_PROJECTS, 'projects_total'),
   totalSearchResultsByQuery: keyedCounter(SEARCH, 'total'),
 
+  onboarding: storePayload(FETCH_ONBOARDING),
+  projectInvite: storePayloadById(UPDATE_PROJECT_INVITE),
+
   communityValidation: (state = {}, action) => {
     let { type, payload, error, meta } = action
     if (error) return state
@@ -363,21 +387,6 @@ export default combineReducers({
     return state
   },
 
-  projectInvite: (state = {}, action) => {
-    let { type, payload, error, meta } = action
-    let { id } = meta || {}
-    if (error) return state
-    switch (type) {
-      case UPDATE_PROJECT_INVITE:
-        return {
-          ...state,
-          [id]: {...state[id], ...payload}
-        }
-    }
-
-    return state
-  },
-
   userSettingsEditor: (state = {}, action) => {
     let { type, payload, error, meta } = action
     if (error) return state
@@ -459,16 +468,6 @@ export default combineReducers({
     return state
   },
 
-  onboarding: (state = {}, action) => {
-    let { type, payload, error } = action
-    if (error) return state
-    switch (type) {
-      case FETCH_ONBOARDING:
-        return payload
-    }
-    return state
-  },
-
   searchResultsByQuery: (state = {}, action) => {
     let { type, payload, meta, error } = action
     if (error) return state
@@ -532,5 +531,4 @@ export default combineReducers({
     }
     return state
   }
-
 })

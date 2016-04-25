@@ -38,6 +38,8 @@ import { CREATE_POST, UPDATE_POST, UPLOAD_IMAGE } from '../actions'
 import { ADDED_POST, EDITED_POST, trackEvent } from '../util/analytics'
 const { array, bool, func, object, string } = React.PropTypes
 
+const specialTags = ['request', 'offer', 'intention']
+
 @connect((state, { community, post, project, type }) => {
   const id = post ? post.id
     : project ? `project-${project.id}-new` : 'new'
@@ -304,8 +306,9 @@ export class PostEditor extends React.Component {
           <span className='caret'></span>
         </button>
       }>
-        <li><a onClick={() => selectTag('request')}>#request</a></li>
-        <li><a onClick={() => selectTag('offer')}>#offer</a></li>
+        {specialTags.map(t => <li key={t}>
+          <a onClick={() => selectTag(t)}>#{t}</a>
+        </li>)}
         <li><a onClick={() => selectTag('chat')}>#all-topics</a></li>
       </Dropdown>}
 

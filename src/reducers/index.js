@@ -192,8 +192,10 @@ export default combineReducers({
   commentsByPost,
   communities,
   communitiesByQuery,
+  hasFreshPostsByQuery: keyedHasFreshItems(CHECK_FRESHNESS_POSTS, 'postsByQuery'),
   networks,
   networkEdits,
+  onboarding: storePayload(FETCH_ONBOARDING),
   people,
   peopleByQuery,
   posts,
@@ -202,6 +204,14 @@ export default combineReducers({
   projects,
   projectsByQuery,
   projectEdits,
+  projectInvite: storePayloadById(UPDATE_PROJECT_INVITE),
+  totalActivities: keyedCounter(FETCH_ACTIVITY, 'total', 'meta.id'),
+  totalCommunitiesByQuery: keyedCounter(FETCH_COMMUNITIES, 'communities_total'),
+  totalInvitations: keyedCounter(FETCH_INVITATIONS, 'total', 'meta.communityId'),
+  totalPostsByQuery: keyedCounter(FETCH_POSTS, 'posts_total'),
+  totalPeopleByQuery: keyedCounter(FETCH_PEOPLE, 'people_total'),
+  totalProjectsByQuery: keyedCounter(FETCH_PROJECTS, 'projects_total'),
+  totalSearchResultsByQuery: keyedCounter(SEARCH, 'total'),
 
   pending: (state = {}, action) => {
     let { type, meta } = action
@@ -244,19 +254,6 @@ export default combineReducers({
 
     return state
   },
-
-  hasFreshPostsByQuery: keyedHasFreshItems(CHECK_FRESHNESS_POSTS, 'postsByQuery'),
-
-  totalActivities: keyedCounter(FETCH_ACTIVITY, 'total', 'meta.id'),
-  totalCommunitiesByQuery: keyedCounter(FETCH_COMMUNITIES, 'communities_total'),
-  totalInvitations: keyedCounter(FETCH_INVITATIONS, 'total', 'meta.communityId'),
-  totalPostsByQuery: keyedCounter(FETCH_POSTS, 'posts_total'),
-  totalPeopleByQuery: keyedCounter(FETCH_PEOPLE, 'people_total'),
-  totalProjectsByQuery: keyedCounter(FETCH_PROJECTS, 'projects_total'),
-  totalSearchResultsByQuery: keyedCounter(SEARCH, 'total'),
-
-  onboarding: storePayload(FETCH_ONBOARDING),
-  projectInvite: storePayloadById(UPDATE_PROJECT_INVITE),
 
   communityValidation: (state = {}, action) => {
     let { type, payload, error, meta } = action

@@ -50,7 +50,13 @@ const specialTags = ['request', 'offer', 'intention']
 
   // this is technically a no-no because it's setting an attribute of an object
   // in the store directly rather than dispatching an action
-  if (type === 'event' && !postEdit.type) postEdit.type = 'event'
+  if (type === 'event' && !postEdit.type) {
+    postEdit.type = 'event'
+  } else if (type !== 'event' && postEdit.type === 'event') {
+    // this covers the edge case in which the user switches from editing a new
+    // event to editing a new post
+    postEdit.type = null
+  }
 
   return {
     id,

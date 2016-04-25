@@ -11,6 +11,7 @@ import {
   UPLOAD_IMAGE
 } from '../actions'
 import { updateMedia } from './util'
+import { invalidCharacterRegex } from '../models/hashtag'
 
 const stateWithDoc = (state, id, doc) => {
   let obj = state[id]
@@ -30,8 +31,11 @@ const stateWithoutDoc = (state, id, doc) => {
   }
 }
 
-const suggestedTag = text =>
-  startCase(text).split(' ').slice(0, 4).join('')
+const suggestedTag = text => {
+  if (!text) return
+  return startCase(text.replace(invalidCharacterRegex, '')).split(' ')
+  .slice(0, 4).join('')
+}
 
 const withSuggestedTag = (payload, state, id) => {
   const postEdit = state[id] || {}

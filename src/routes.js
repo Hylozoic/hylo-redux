@@ -61,6 +61,11 @@ export default function makeRoutes (store) {
     replaceState({}, makeUrl(`/${start}`, params))
   }
 
+  const requireAdmin = (nextState, replaceState) => {
+    const currentUser = store.getState().people.current
+    if (!get(currentUser, 'is_admin')) replaceState({}, '/login')
+  }
+
   const requireCommunity = (options = {}) => (nextState, replaceState) => {
     if (!requireLogin(options)(nextState, replaceState)) return
 
@@ -86,7 +91,7 @@ export default function makeRoutes (store) {
     <Route path='c/new' component={CommunityEditor} onEnter={requireLogin()}/>
     <Route path='c/join' component={CommunityJoinForm} onEnter={requireLogin()}/>
 
-    <Route path='admin' component={Admin}/>
+    <Route path='admin' component={Admin} onEnter={requireAdmin}/>
 
     <Route path='h/use-invitation' component={InvitationHandler}
       onEnter={requireLogin({

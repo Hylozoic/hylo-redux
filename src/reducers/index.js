@@ -17,6 +17,7 @@ import projectsByQuery from './projectsByQuery'
 import projects from './projects'
 import projectEdits from './projectEdits'
 import { appendUniq, mergeList } from './util'
+import { admin } from './admin'
 
 import {
   CANCEL_TYPEAHEAD,
@@ -188,6 +189,7 @@ export default combineReducers({
 
   activities,
   activitiesByCommunity,
+  admin,
   comments,
   commentsByPost,
   communities,

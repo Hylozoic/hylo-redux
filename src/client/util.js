@@ -35,3 +35,23 @@ export function locationWithoutParams (...names) {
   let params = qs.parse(window.location.search.replace(/^\?/, ''))
   return makeUrl(window.location.pathname, omit(params, ...names))
 }
+
+export const loadScript = url => {
+  var script = document.createElement('script')
+  script.src = url
+  const promise = new Promise((resolve, reject) => {
+    script.onload = resolve
+  })
+  document.head.appendChild(script)
+  return promise
+}
+
+export const loadStylesheet = url => {
+  const head = document.getElementsByTagName('head')[0]
+  const link = document.createElement('link')
+  link.rel = 'stylesheet'
+  link.type = 'text/css'
+  link.href = url
+  link.media = 'all'
+  head.appendChild(link)
+}

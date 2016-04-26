@@ -44,8 +44,9 @@ const makeChart = curry((minX, community) => {
     y_accessor: ['users', 'posts', 'comments'],
     legend: ['users', 'posts', 'comments'],
     missing_is_hidden: true,
-    top: 20,
-    bottom: 0
+    top: 15,
+    bottom: 25,
+    buffer: 0
   })
 })
 

@@ -399,7 +399,7 @@ export default class UserSettings extends React.Component {
             <div className='summary'>Check the circle to get mobile updates from this community.</div>
             </div>
             <div className='half-column right-align'>
-              <input type='checkbox' checked={get(membership, 'settings.send_push_notificaions')} onChange={() => this.membershipToggle(membership, 'settings.send_push_notificaions')}/>
+              <input type='checkbox' checked={get(membership, 'settings.send_push_notifications')} onChange={() => this.membershipToggle(membership, 'settings.send_push_notifications')}/>
             </div>
           </Item>
         </span>)}

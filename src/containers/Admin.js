@@ -1,6 +1,6 @@
 import React from 'react'
 import { curry, find, sortBy, values } from 'lodash'
-import { flatten, flow, get, map, minBy } from 'lodash/fp'
+import { flatten, flow, get, map, maxBy, minBy } from 'lodash/fp'
 import { connect } from 'react-redux'
 import { loadScript, loadStylesheet } from '../client/util'
 import { fetchRawMetrics } from '../actions/admin'
@@ -32,7 +32,7 @@ const aggregateData = events => {
   }, [])
 }
 
-const makeChart = curry((minX, community) => {
+const makeChart = curry((minX, maxX, community) => {
   const data = aggregateData(community.events)
   window.MG.data_graphic({
     data,
@@ -41,6 +41,7 @@ const makeChart = curry((minX, community) => {
     target: '#' + chartDomID(community),
     linked: true,
     min_x: minX,
+    max_x: maxX,
     y_accessor: ['users', 'posts', 'comments'],
     legend: ['users', 'posts', 'comments'],
     missing_is_hidden: true,
@@ -84,14 +85,13 @@ export default class Admin extends React.Component {
 
     const { metrics } = this.props
     const communities = sortBy(values(metrics), c => -c.events.length).slice(0, 20)
-    const minDate = flow(
+    const [ minDate, maxDate ] = flow(
       map('events'),
       flatten,
-      minBy('time'),
-      get('time'),
-      val => moment(val).startOf('day').toDate()
+      vals => [minBy('time', vals), maxBy('time', vals)],
+      map(val => moment(val.time).startOf('day').toDate())
     )(communities)
-    setTimeout(() => communities.forEach(makeChart(minDate)))
+    setTimeout(() => communities.forEach(makeChart(minDate, maxDate)))
 
     return <div className='simple-page' id='admin-page'>
       {communities.map(c => <div key={c.id} className='community'>

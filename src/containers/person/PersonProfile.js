@@ -16,10 +16,26 @@ const defaultBanner = 'https://d3ngex8q79bk55.cloudfront.net/misc/default_user_b
 const spacer = <span>&nbsp;&nbsp;•&nbsp;&nbsp;</span>
 const subject = 'person'
 
+const getFetchOpts = query => {
+  switch (query.show) {
+    case 'request':
+      return {tag: 'request', type: null}
+    case 'offer':
+      return {tag: 'offer', type: null}
+    case 'event':
+      return {tag: null, type: 'event'}
+    case 'thank':
+      // TODO
+      // return {tag: null, type: 'event'}
+    default:
+      return {tag: null, type: null}
+  }
+}
+
 @prefetch(({ dispatch, params: { id }, query }) =>
   Promise.all([
     dispatch(fetchPerson(id)),
-    dispatch(fetch(subject, id, query))
+    dispatch(fetch(subject, id, getFetchOpts(query)))
   ]))
 @defer(({ store, params: { id } }) => {
   let state = store.getState()
@@ -53,8 +69,8 @@ export default class PersonProfile extends React.Component {
     if (error) return <AccessErrorMessage error={error}/>
     if (!person) return <div>Loading...</div>
 
-    const { params: { id }, location } = this.props
-    const { query } = location
+    const { params: { id }, location: { query } } = this.props
+    const category = query.show
     const { banner_url, bio, tags } = person
 
     const website = 'www.theglint.com'
@@ -81,23 +97,22 @@ export default class PersonProfile extends React.Component {
         {tags.map(t => <a className='skill'>#{t}</a>)}
       </div>
       <div className='section-links'>
-        <TabLink type='offer' count={offerCount}/>
-        <TabLink type='request' count={requestCount}/>
-        <TabLink type='thank' count={person.thank_count}/>
-        <TabLink type='event' count={person.event_count}/>
+        <TabLink category='offer' count={offerCount}/>
+        <TabLink category='request' count={requestCount}/>
+        <TabLink category='thank' count={person.thank_count}/>
+        <TabLink category='event' count={person.event_count}/>
       </div>
-      {!query.type && person.recent_request && <div>
+      {!category && person.recent_request && <div>
         <p className='section-label'>Recent request</p>
         <Post post={person.recent_request}/>
       </div>}
-      {!query.type && person.recent_offer && <div>
+      {!category && person.recent_offer && <div>
         <p className='section-label'>Recent offer</p>
         <Post post={person.recent_offer}/>
       </div>}
-      <ListLabel type={query.type}/>
-      {query.type === 'thank'
-        ? null
-        : <ConnectedPostList {...{subject, id, query}}/>}
+      <ListLabel category={category}/>
+      {category !== 'thank' &&
+        <ConnectedPostList {...{subject, id, query: getFetchOpts(query)}}/>}
     </CoverImagePage>
   }
 }
@@ -106,22 +121,22 @@ const setupTabLink = (props) => {
   const { location, dispatch } = props
   const { query } = location
 
-  const TabLink = ({ type, count }) => {
-    const isActive = type === query.type
+  const TabLink = ({ category, count }) => {
+    const isActive = category === query.show
     const toggle = () =>
-      dispatch(refetch({type: isActive ? null : type}, location))
+      dispatch(refetch({show: isActive ? null : category}, location))
 
     return <a className={isActive ? 'active' : null} onClick={toggle}>
-      {count} {capitalize(type)}{Number(count) === 1 ? '' : 's'}
+      {count} {capitalize(category)}{Number(count) === 1 ? '' : 's'}
     </a>
   }
 
   return TabLink
 }
 
-const ListLabel = ({ type }) => {
+const ListLabel = ({ category }) => {
   let label
-  switch (type) {
+  switch (category) {
     case 'offer': label = 'Offers'; break
     case 'request': label = 'Requests'; break
     case 'thank': label = 'Thanks'; break

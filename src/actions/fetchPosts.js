@@ -4,19 +4,13 @@ import { FETCH_POSTS, CHECK_FRESHNESS_POSTS } from './index'
 export function fetchPosts (opts) {
   // communityId is only used when fetching a tag
   const {
-    subject, id, limit, type, sort, search, filter, cacheId, communityId, omit
+    subject, id, limit, type, tag, sort, search, filter, cacheId, communityId,
+    omit
   } = opts
   const offset = opts.offset || 0
   const querystring = cleanAndStringify({
-    offset,
-    limit,
-    type,
-    sort,
-    search,
-    filter,
-    omit,
-    comments: true,
-    votes: true})
+    offset, limit, type, tag, sort, search, filter, omit,
+    comments: true, votes: true})
   let path
 
   switch (subject) {

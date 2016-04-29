@@ -21,8 +21,6 @@ import CommunitySettings from './containers/community/CommunitySettings'
 import TagPosts from './containers/tag/TagPosts'
 import Onboarding from './containers/Onboarding'
 import PersonProfile from './containers/person/PersonProfile'
-import PersonPosts from './containers/person/PersonPosts'
-import AboutPerson from './containers/person/AboutPerson'
 import UserSettings from './containers/user/UserSettings'
 import SinglePost from './containers/SinglePost'
 import ProjectProfile from './containers/project/ProjectProfile'
@@ -84,10 +82,7 @@ export default function makeRoutes (store) {
     <Route path='events' component={Events} onEnter={requireLogin()}/>
     <Route path='projects' component={Projects} onEnter={requireLogin()}/>
     <Route path='search' component={Search} onEnter={requireLogin()}/>
-    <Route path='u/:id' component={PersonProfile} onEnter={requireLogin()}>
-      <IndexRoute component={PersonPosts}/>
-      <Route path='about' component={AboutPerson}/>
-    </Route>
+    <Route path='u/:id' component={PersonProfile} onEnter={requireLogin()}/>
     <Route path='c/new' component={CommunityEditor} onEnter={requireLogin()}/>
     <Route path='c/join' component={CommunityJoinForm} onEnter={requireLogin()}/>
 

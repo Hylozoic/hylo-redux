@@ -10,6 +10,8 @@ import { refetch } from '../../util/caching'
 import AccessErrorMessage from '../../components/AccessErrorMessage'
 import CoverImagePage from '../../components/CoverImagePage'
 import Post from '../../components/Post'
+import { parse } from 'url'
+import moment from 'moment'
 const { func, object } = React.PropTypes
 
 const defaultBanner = 'https://d3ngex8q79bk55.cloudfront.net/misc/default_user_banner.jpg'
@@ -71,11 +73,9 @@ export default class PersonProfile extends React.Component {
 
     const { params: { id }, location: { query } } = this.props
     const category = query.show
-    const { banner_url, bio, tags } = person
+    const { banner_url, bio, tags, location, url, created_at } = person
 
-    const website = 'www.theglint.com'
-    const joinDate = 'November 2011'
-    const geolocation = 'San Francisco'
+    const joinDate = moment(created_at).format('MMMM YYYY')
     const requestCount = person.grouped_post_count.request || 0
     const offerCount = person.grouped_post_count.offer || 0
     const TabLink = setupTabLink(this.props)
@@ -86,8 +86,11 @@ export default class PersonProfile extends React.Component {
           style={{backgroundImage: `url(${person.avatar_url})`}}/>
         <h2>{person.name}</h2>
         <p className='meta'>
-          {geolocation && <span>{geolocation}{spacer}</span>}
-          {website && <span>{website}{spacer}</span>}
+          {location && <span>{location}{spacer}</span>}
+          {url && <span>
+            <a href={url} target='_blank'>{parse(url).hostname}</a>
+            {spacer}
+          </span>}
           Joined {joinDate}
         </p>
         <p className='bio'>{bio}</p>

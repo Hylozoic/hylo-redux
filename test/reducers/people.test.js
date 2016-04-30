@@ -43,6 +43,7 @@ describe('people', () => {
         type: UPDATE_USER_SETTINGS,
         error: true,
         meta: {
+          id: 'j',
           prevProps: {
             settings: {digest_frequency: 'weekly'},
             name: 'Joe!'
@@ -52,6 +53,12 @@ describe('people', () => {
 
       let state = {
         current: {
+          id: 'j',
+          email: 'joe@bar.com',
+          settings: {digest_frequency: 'daily', receives_email_prompts: true}
+        },
+        j: {
+          id: 'j',
           email: 'joe@bar.com',
           settings: {digest_frequency: 'daily', receives_email_prompts: true}
         }
@@ -59,6 +66,13 @@ describe('people', () => {
 
       let expectedState = {
         current: {
+          id: 'j',
+          email: 'joe@bar.com',
+          settings: {digest_frequency: 'weekly', receives_email_prompts: true},
+          name: 'Joe!'
+        },
+        j: {
+          id: 'j',
           email: 'joe@bar.com',
           settings: {digest_frequency: 'weekly', receives_email_prompts: true},
           name: 'Joe!'
@@ -92,7 +106,7 @@ describe('people', () => {
     it('updates the current user', () => {
       let action = {
         type: UPDATE_USER_SETTINGS_PENDING,
-        meta: {params: {email: 'joe@bar.com', id: user1.id}}
+        meta: {id: user1.id, params: {email: 'joe@bar.com'}}
       }
 
       let state = {

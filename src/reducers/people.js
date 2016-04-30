@@ -53,7 +53,8 @@ export default function (state = {}, action) {
       case UPDATE_USER_SETTINGS:
         return {
           ...state,
-          current: merge({...state.current}, meta.prevProps)
+          current: merge({...state.current}, meta.prevProps),
+          [meta.id]: merge({...state[meta.id]}, meta.prevProps)
         }
       case LEAVE_COMMUNITY:
         return {
@@ -94,7 +95,7 @@ export default function (state = {}, action) {
       return {
         ...state,
         current: {...state.current, ...params},
-        [id]: {...state[params.id], ...params}
+        [id]: {...state[id], ...params}
       }
     case LEAVE_COMMUNITY_PENDING:
       let memberships = filter(state.current.memberships, m => m.community_id !== meta.communityId)

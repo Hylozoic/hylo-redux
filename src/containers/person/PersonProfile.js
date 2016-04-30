@@ -2,7 +2,7 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { prefetch, defer } from 'react-fetcher'
 import { FETCH_PERSON, fetchPerson } from '../../actions'
-import { capitalize, get } from 'lodash'
+import { capitalize, get, some } from 'lodash'
 import { VIEWED_PERSON, VIEWED_SELF, trackEvent } from '../../util/analytics'
 import { findError } from '../../actions/util'
 import { fetch, ConnectedPostList } from '../ConnectedPostList'
@@ -95,10 +95,10 @@ export default class PersonProfile extends React.Component {
         </p>
         <p className='bio'>{bio}</p>
       </div>
-      <div className='skills'>
+      {some(tags) && <div className='skills'>
         <h3>Skills</h3>
         {tags.map(t => <a className='skill'>#{t}</a>)}
-      </div>
+      </div>}
       <div className='section-links'>
         <TabLink category='offer' count={offerCount}/>
         <TabLink category='request' count={requestCount}/>

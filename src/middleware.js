@@ -51,6 +51,19 @@ export function apiMiddleware (req) {
       if (meta && meta.then) {
         promise = promise.then(meta.then)
       }
+
+      // TODO
+      // here, we could check for a flag in the action that indicates that the
+      // API response will contain entities that should be added to the store
+      // according to a standard pattern.
+      //
+      // we could respond to this flag by dispatching another action with a type
+      // like ADD_DATA_TO_STORE. this would simplify the reducers, because they
+      // wouldn't have to listen to a dozen different actions, just one.
+      //
+      // the flag could have values like "append", "merge", "replace", etc. to
+      // trigger different behavior.
+
       return next({...action, payload: promise})
     }
     return next(action)

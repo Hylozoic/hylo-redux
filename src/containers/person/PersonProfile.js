@@ -69,7 +69,7 @@ export default class PersonProfile extends React.Component {
   render () {
     const { person, error } = this.props
     if (error) return <AccessErrorMessage error={error}/>
-    if (!person) return <div>Loading...</div>
+    if (!person || !person.grouped_post_count) return <div>Loading...</div>
 
     const { params: { id }, location: { query } } = this.props
     const category = query.show

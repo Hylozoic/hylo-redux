@@ -174,8 +174,7 @@ export default class UserSettings extends React.Component {
     let { editing, edited, errors } = this.state
     let { avatar_url, banner_url } = currentUser
     let {
-      bio, work, intention, extra_info,
-      facebook_url, twitter_name, linkedin_url
+      bio, location, url, facebook_url, twitter_name, linkedin_url
     } = {...currentUser, ...editing}
 
     return <div id='user-settings' className='form-sections simple-page'>
@@ -239,38 +238,23 @@ export default class UserSettings extends React.Component {
         </Item>
         <Item>
           <div className='full-column'>
-            <label>What I'm doing</label>
-            <textarea className='form-control short' value={work}
-              onChange={this.updateTyped('work')}></textarea>
-          </div>
-        </Item>
-        <Item>
-          <div className='full-column'>
-            <label>What I'd like to do</label>
-            <textarea className='form-control short' value={intention}
-              onChange={this.updateTyped('intention')}></textarea>
-          </div>
-        </Item>
-        <Item>
-          <div className='full-column'>
             <label>Skills</label>
-            <ListItemTagInput type='skills' person={currentUser} update={this.update}/>
+            <ListItemTagInput type='skills' person={currentUser}
+              update={this.update}/>
           </div>
         </Item>
         <Item>
           <div className='full-column'>
-            <label>Affiliations</label>
-            <ListItemTagInput type='organizations' person={currentUser} update={this.update}/>
+            <label>Website</label>
+            <input className='form-control' type='text'
+              defaultValue={url} onChange={this.updateTyped('url')}/>
           </div>
         </Item>
         <Item>
           <div className='full-column'>
-            <label>Other information</label>
-            <textarea className='form-control' value={extra_info}
-              onChange={this.updateTyped('extra_info')}></textarea>
-            <span className='meta'>
-              <a href='http://cdn.hylo.com/misc/markdown.html' target='_blank'>Markdown</a> is supported.
-            </span>
+            <label>Location</label>
+            <input className='form-control' type='text'
+              defaultValue={location} onChange={this.updateTyped('location')}/>
           </div>
         </Item>
       </Section>}

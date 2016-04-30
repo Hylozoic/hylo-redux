@@ -144,7 +144,9 @@ export function fetchPerson (id) {
   return {
     type: FETCH_PERSON,
     payload: {api: true, path: `/noo/user/${id}`},
-    meta: {cache: {bucket: 'people', id}}
+    meta: {
+      cache: {bucket: 'people', id, requiredProp: 'grouped_post_count'}
+    }
   }
 }
 
@@ -312,7 +314,7 @@ export function updateUserSettings (id, params, prevProps) {
   return {
     type: UPDATE_USER_SETTINGS,
     payload: {api: true, params, path: `/noo/user/${id}`, method: 'POST'},
-    meta: {params, prevProps}
+    meta: {id, params, prevProps}
   }
 }
 

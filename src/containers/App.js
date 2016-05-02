@@ -69,9 +69,7 @@ export default class App extends React.Component {
     const toggleLeftNav = open => {
       dispatch(toggleMainMenu())
       if (!isMobile() && currentUser) {
-        dispatch(updateUserSettings(currentUser.id,
-          {settings: {leftNavIsOpen: open}},
-          {settings: {leftNavIsOpen: !open}}))
+        dispatch(updateUserSettings(currentUser.id, {settings: {leftNavIsOpen: open}}))
       }
     }
     const openLeftNav = () => toggleLeftNav(true)

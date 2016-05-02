@@ -1,4 +1,5 @@
 import { filter, get, merge, pick, find, indexOf, map, sortBy } from 'lodash'
+import { isNull, omitBy } from 'lodash/fp'
 import { debug } from '../util/logging'
 import {
   CREATE_COMMUNITY,
@@ -47,13 +48,13 @@ const updateOneMembershipsSettings = (memberships, communityId, settings) => {
 }
 
 const normalize = person => {
-  return {
+  return omitBy(isNull, {
     ...person,
     recent_request: null,
     recent_offer: null,
     recent_request_id: get(person.recent_request, 'id'),
     recent_offer_id: get(person.recent_offer, 'id')
-  }
+  })
 }
 
 export default function (state = {}, action) {

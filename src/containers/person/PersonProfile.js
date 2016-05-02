@@ -3,7 +3,7 @@ import { connect } from 'react-redux'
 import { prefetch, defer } from 'react-fetcher'
 import { FETCH_PERSON, fetchPerson } from '../../actions'
 import { capitalize, compact, get, some } from 'lodash'
-import { map } from 'lodash/fp'
+import { isNull, map, omitBy } from 'lodash/fp'
 import { VIEWED_PERSON, VIEWED_SELF, trackEvent } from '../../util/analytics'
 import { findError } from '../../actions/util'
 import PostList from '../../components/PostList'
@@ -54,13 +54,13 @@ const getFetchOpts = query => {
 })
 @connect((state, { params: { id } }) => {
   const person = state.people[id]
-  return {
+  return omitBy(isNull, {
     person,
     currentUser: state.people.current,
     error: findError(state.errors, FETCH_PERSON, 'people', id),
     recentRequest: getPost(get(person, 'recent_request_id'), state),
     recentOffer: getPost(get(person, 'recent_offer_id'), state)
-  }
+  })
 })
 export default class PersonProfile extends React.Component {
   static propTypes = {

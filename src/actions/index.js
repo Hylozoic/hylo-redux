@@ -36,6 +36,7 @@ export const FETCH_PROJECT = 'FETCH_PROJECT'
 export const FETCH_PROJECTS = 'FETCH_PROJECTS'
 export const FETCH_RAW_ADMIN_METRICS = 'FETCH_RAW_ADMIN_METRICS'
 export const FETCH_TAG = 'FETCH_TAG'
+export const FETCH_THANKS = 'FETCH_THANKS'
 export const FOLLOW_POST = 'FOLLOW_POST'
 export const FOLLOW_TAG = 'FOLLOW_TAG'
 export const FOLLOW_TAG_PENDING = FOLLOW_TAG + '_PENDING'
@@ -436,6 +437,14 @@ export function fetchActivity (offset = 0, resetCount, id = 'all') {
       resetCount,
       id
     }
+  }
+}
+
+export function fetchThanks (id, offset = 0) {
+  return {
+    type: FETCH_THANKS,
+    payload: {api: true, path: `/noo/user/${id}/thanks?offset=${offset}`},
+    meta: {id}
   }
 }
 

@@ -142,12 +142,13 @@
   .social-media {
     display: inline-block;
     position: absolute;
+    margin-top: -2px;
     a {
       margin-left: 10px;
       display: inline-block;
       color: white;
       background-color: @light-gray-bg-2;
-      @size: 22px;
+      @size: 21px;
       height: @size;
       line-height: @size + 2;
       width: @size;
@@ -155,12 +156,30 @@
       text-align: center;
       vertical-align: middle;
       text-decoration: none;
-      font-size: 13px;
+      font-size: 12px;
       &.facebook {
-        font-size: 15px;
+        font-size: 14px;
       }
       &:hover {
         background-color: @mid-gray-bg;
+      }
+    }
+  }
+
+  .thanks > div {
+    background-color: white;
+    padding: 25px;
+    margin-bottom: @p-bottom-margin;
+    > span > a {
+      font-weight: bold;
+    }
+    .comment {
+      padding-left: 15px;
+    }
+    .comment-result strong {
+      font-weight: normal;
+      a {
+        font-weight: bold;
       }
     }
   }

@@ -27,6 +27,7 @@ import {
   CREATE_POST,
   CREATE_NETWORK,
   FETCH_ACTIVITY,
+  FETCH_LEFT_NAV_TAGS,
   FETCH_LIVE_STATUS,
   FETCH_COMMUNITIES,
   FETCH_INVITATIONS,
@@ -35,7 +36,7 @@ import {
   FETCH_POSTS,
   FETCH_PROJECTS,
   FETCH_TAG,
-  FETCH_LEFT_NAV_TAGS,
+  FETCH_THANKS,
   FOLLOW_TAG_PENDING,
   LOGIN,
   LOGOUT,
@@ -111,6 +112,14 @@ const storePayloadById = (...types) => (state = {}, action) => {
 
   return state
 }
+
+const appendPayloadByPath = (actionType, statePath, payloadPath) =>
+  (state = {}, action) => {
+    let { type, payload, error } = action
+    if (error || type !== actionType) return state
+    const data = payloadPath ? get(payload, payloadPath) : payload
+    return appendUniq(state, get(action, statePath), data)
+  }
 
 export default combineReducers({
   currentCommunityId: (state = null, action) => {
@@ -207,6 +216,8 @@ export default combineReducers({
   projectsByQuery,
   projectEdits,
   projectInvite: storePayloadById(UPDATE_PROJECT_INVITE),
+  searchResultsByQuery: appendPayloadByPath(SEARCH, 'meta.cache.id', 'items'),
+  thanks: appendPayloadByPath(FETCH_THANKS, 'meta.id'),
   totalActivities: keyedCounter(FETCH_ACTIVITY, 'total', 'meta.id'),
   totalCommunitiesByQuery: keyedCounter(FETCH_COMMUNITIES, 'communities_total'),
   totalInvitations: keyedCounter(FETCH_INVITATIONS, 'total', 'meta.communityId'),
@@ -464,16 +475,6 @@ export default combineReducers({
         return state.filter(n => n.id !== payload)
     }
 
-    return state
-  },
-
-  searchResultsByQuery: (state = {}, action) => {
-    let { type, payload, meta, error } = action
-    if (error) return state
-    switch (type) {
-      case SEARCH:
-        return appendUniq(state, meta.cache.id, payload.items)
-    }
     return state
   },
 

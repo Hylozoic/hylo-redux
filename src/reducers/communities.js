@@ -1,4 +1,4 @@
-import { flatten, uniq, filter, merge, union, omit } from 'lodash'
+import { compact, flatten, uniq, filter, merge, union, omit } from 'lodash'
 import { debug } from '../util/logging'
 import {
   CREATE_COMMUNITY,
@@ -8,6 +8,7 @@ import {
   FETCH_COMMUNITY_SETTINGS,
   FETCH_COMMUNITY_MODERATORS,
   FETCH_COMMUNITIES,
+  FETCH_PERSON,
   FETCH_POST,
   FETCH_CURRENT_USER,
   UPDATE_COMMUNITY_SETTINGS,
@@ -58,6 +59,9 @@ export default function (state = {}, action) {
       return mergeList(state, communities, 'slug')
     case FETCH_POST:
       return mergeList(state, payload.communities, 'slug')
+    case FETCH_PERSON:
+      const newPosts = compact([payload.recent_request, payload.recent_offer])
+      return mergeList(state, newPosts.map(p => p.communities), 'slug')
     case FETCH_CURRENT_USER:
       if (payload && payload.memberships) {
         return mergeList(state, payload.memberships.map(m => m.community), 'slug')

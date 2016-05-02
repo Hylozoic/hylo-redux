@@ -4,13 +4,14 @@ import {
   CREATE_POST,
   FETCH_POST,
   FETCH_POSTS,
+  FETCH_PERSON,
   FOLLOW_POST,
   REMOVE_POST,
   UPDATE_POST,
   VOTE_ON_POST,
   VOTE_ON_POST_PENDING
 } from '../actions'
-import { omit, find, without, includes, map, filter } from 'lodash'
+import { compact, omit, find, without, includes, map, filter } from 'lodash'
 import { cloneSet, mergeList } from './util'
 import { same } from '../models'
 
@@ -102,6 +103,9 @@ export default function (state = {}, action) {
       return addOrRemoveFollower(state, id, meta.person)
     case CREATE_COMMENT:
       return addFollower(state, id, payload.user)
+    case FETCH_PERSON:
+      const newPosts = compact([payload.recent_request, payload.recent_offer])
+      return mergeList(state, newPosts.map(normalize), 'id')
   }
   return state
 }

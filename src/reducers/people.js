@@ -1,4 +1,4 @@
-import { filter, merge, pick, find, indexOf, map, sortBy } from 'lodash'
+import { filter, get, merge, pick, find, indexOf, map, sortBy } from 'lodash'
 import { debug } from '../util/logging'
 import {
   CREATE_COMMUNITY,
@@ -44,6 +44,16 @@ const updateOneMembershipsSettings = (memberships, communityId, settings) => {
         ...settings
       }
     })
+}
+
+const normalize = person => {
+  return {
+    ...person,
+    recent_request: null,
+    recent_offer: null,
+    recent_request_id: get(person.recent_request, 'id'),
+    recent_offer_id: get(person.recent_offer, 'id')
+  }
 }
 
 export default function (state = {}, action) {
@@ -147,19 +157,20 @@ export default function (state = {}, action) {
       debug('caching person:', payload.id)
       return {
         ...state,
-        [payload.id]: payload
+        [payload.id]: normalize(payload)
       }
     case LOGIN:
     case SIGNUP:
     case FETCH_CURRENT_USER:
       debug('caching person:', payload.id)
+      const normalized = normalize(payload)
       return {
         ...state,
-        [payload.id]: payload,
-        current: payload
+        [payload.id]: normalized,
+        current: normalized
       }
     case FETCH_PEOPLE:
-      return mergeList(state, payload.people, 'id')
+      return mergeList(state, payload.people.map(normalize), 'id')
     case CREATE_COMMUNITY:
     case JOIN_COMMUNITY_WITH_CODE:
     case USE_INVITATION:

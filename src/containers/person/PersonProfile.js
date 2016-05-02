@@ -2,16 +2,18 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { prefetch, defer } from 'react-fetcher'
 import { FETCH_PERSON, fetchPerson } from '../../actions'
-import { capitalize, get, some } from 'lodash'
+import { capitalize, compact, get, some } from 'lodash'
+import { map } from 'lodash/fp'
 import { VIEWED_PERSON, VIEWED_SELF, trackEvent } from '../../util/analytics'
 import { findError } from '../../actions/util'
+import PostList from '../../components/PostList'
 import { fetch, ConnectedPostList } from '../ConnectedPostList'
 import { refetch } from '../../util/caching'
 import AccessErrorMessage from '../../components/AccessErrorMessage'
 import CoverImagePage from '../../components/CoverImagePage'
-import Post from '../../components/Post'
 import { parse } from 'url'
 import moment from 'moment'
+import { getPost } from '../../models/post'
 const { func, object } = React.PropTypes
 
 const defaultBanner = 'https://d3ngex8q79bk55.cloudfront.net/misc/default_user_banner.jpg'
@@ -50,11 +52,16 @@ const getFetchOpts = query => {
     return trackEvent(VIEWED_PERSON, {person})
   }
 })
-@connect(({ people, errors }, { params: { id } }) => ({
-  person: people[id],
-  currentUser: people.current,
-  error: findError(errors, FETCH_PERSON, 'people', id)
-}))
+@connect((state, { params: { id } }) => {
+  const person = state.people[id]
+  return {
+    person,
+    currentUser: state.people.current,
+    error: findError(state.errors, FETCH_PERSON, 'people', id),
+    recentRequest: getPost(get(person, 'recent_request_id'), state),
+    recentOffer: getPost(get(person, 'recent_offer_id'), state)
+  }
+})
 export default class PersonProfile extends React.Component {
   static propTypes = {
     params: object,
@@ -63,7 +70,9 @@ export default class PersonProfile extends React.Component {
     currentUser: object,
     error: object,
     location: object,
-    dispatch: func
+    dispatch: func,
+    recentRequest: object,
+    recentOffer: object
   }
 
   render () {
@@ -71,7 +80,9 @@ export default class PersonProfile extends React.Component {
     if (error) return <AccessErrorMessage error={error}/>
     if (!person || !person.grouped_post_count) return <div>Loading...</div>
 
-    const { params: { id }, location: { query } } = this.props
+    const {
+      params: { id }, location: { query }, recentRequest, recentOffer
+    } = this.props
     const category = query.show
     const { banner_url, bio, tags, location, url, created_at } = person
 
@@ -97,7 +108,7 @@ export default class PersonProfile extends React.Component {
       </div>
       {some(tags) && <div className='skills'>
         <h3>Skills</h3>
-        {tags.map(t => <a className='skill'>#{t}</a>)}
+        {tags.map(t => <a className='skill' key={t}>#{t}</a>)}
       </div>}
       <div className='section-links'>
         <TabLink category='offer' count={offerCount}/>
@@ -105,17 +116,18 @@ export default class PersonProfile extends React.Component {
         <TabLink category='thank' count={person.thank_count}/>
         <TabLink category='event' count={person.event_count}/>
       </div>
-      {!category && person.recent_request && <div>
+      {!category && recentRequest && <div>
         <p className='section-label'>Recent request</p>
-        <Post post={person.recent_request}/>
+        <PostList posts={[recentRequest]}/>
       </div>}
-      {!category && person.recent_offer && <div>
+      {!category && recentOffer && <div>
         <p className='section-label'>Recent offer</p>
-        <Post post={person.recent_offer}/>
+        <PostList posts={[recentOffer]}/>
       </div>}
       <ListLabel category={category}/>
       {category !== 'thank' &&
-        <ConnectedPostList {...{subject, id, query: getFetchOpts(query)}}/>}
+        <ConnectedPostList {...{subject, id, query: getFetchOpts(query)}}
+          hide={map('id', compact([recentRequest, recentOffer]))}/>}
     </CoverImagePage>
   }
 }

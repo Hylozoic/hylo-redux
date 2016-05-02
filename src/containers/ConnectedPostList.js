@@ -5,20 +5,14 @@ import { fetchPosts, checkFreshness } from '../actions/fetchPosts'
 import { debug } from '../util/logging'
 import { clearCache } from '../actions'
 import { connectedListProps, fetchWithCache, createCacheId } from '../util/caching'
-import { intersection, isEqual, isNull, keys, omitBy, pick, differenceBy } from 'lodash'
+import { isEqual, pick, differenceBy } from 'lodash'
 const { array, bool, func, number, object, string } = React.PropTypes
 
 export const fetch = fetchWithCache(fetchPosts)
 
-@connect((state, props) => {
-  let listProps = connectedListProps(state, props, 'posts')
-  let editingPostIds = intersection(
-    keys(omitBy(state.postEdits, isNull)),
-    listProps.posts.map(p => p.id)
-  )
-
-  return {...listProps, editingPostIds}
-})
+@connect((state, props) => ({
+  ...connectedListProps(state, props, 'posts')
+}))
 export class ConnectedPostList extends React.Component {
   static propTypes = {
     subject: string.isRequired,
@@ -29,8 +23,8 @@ export class ConnectedPostList extends React.Component {
     total: number,
     pending: bool,
     query: object,
-    editingPostIds: array,
-    omit: string
+    omit: string, // omit posts with this id from the query
+    hide: array // just hide posts with this id from the results
   }
 
   loadMore = () => {
@@ -76,7 +70,9 @@ export class ConnectedPostList extends React.Component {
   }
 
   render () {
-    let { dispatch, stale, posts, total, pending, editingPostIds, subject, id, query } = this.props
+    const {
+      dispatch, stale, posts, total, pending, subject, id, query, hide
+    } = this.props
 
     let refreshPostList
     if (stale) {
@@ -86,9 +82,9 @@ export class ConnectedPostList extends React.Component {
       }
     }
 
-    if (!posts) posts = []
-    debug(`posts: ${posts.length} / ${total || '??'}`)
-    return <PostList {...{posts, editingPostIds, pending, refreshPostList}} loadMore={this.loadMore}/>
+    debug(`posts: ${posts ? posts.length : 0} / ${total || '??'}`)
+    return <PostList posts={posts || []} {...{pending, refreshPostList}}
+      loadMore={this.loadMore} hide={hide}/>
   }
 }
 

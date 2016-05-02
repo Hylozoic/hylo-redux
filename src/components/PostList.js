@@ -1,21 +1,27 @@
 import React from 'react'
+import { connect } from 'react-redux'
 import Post from './Post'
 import ScrollListener from './ScrollListener'
 import RefreshButton from './RefreshButton'
 import { changeViewportTop, positionInViewport } from '../util/scrolling'
-import { includes } from 'lodash'
+import { filter, includes } from 'lodash/fp'
 import PostEditor from './PostEditor'
 import { EventPostCard } from './EventPost'
+import { getEditingPostIds } from '../models/post'
 
 const { array, bool, func, object, string } = React.PropTypes
 
+@connect((state, props) => ({
+  editingPostIds: getEditingPostIds(props.posts, state)
+}))
 class PostList extends React.Component {
   static propTypes = {
     posts: array,
     loadMore: func,
     refreshPostList: func,
     pending: bool,
-    editingPostIds: array
+    editingPostIds: array,
+    hide: array
   }
 
   static contextTypes = {
@@ -53,7 +59,8 @@ class PostList extends React.Component {
   }
 
   render () {
-    let { posts, editingPostIds, pending, loadMore, refreshPostList } = this.props
+    let { hide, editingPostIds, pending, loadMore, refreshPostList } = this.props
+    const posts = filter(p => !includes(p.id, hide), this.props.posts)
     let { project } = this.context
 
     if (!pending && posts.length === 0) {
@@ -61,7 +68,7 @@ class PostList extends React.Component {
     }
 
     const showPost = post => {
-      if (includes(editingPostIds, post.id)) {
+      if (includes(post.id, editingPostIds)) {
         return <PostEditor post={post} expanded={true} project={project}/>
       }
 
@@ -86,7 +93,7 @@ class PostList extends React.Component {
       {posts.map(p => <li key={p.id} ref={p.id}>
         {showPost(p)}
       </li>)}
-      <ScrollListener onBottom={loadMore}/>
+      {loadMore && <ScrollListener onBottom={loadMore}/>}
     </ul>
     </span>
   }

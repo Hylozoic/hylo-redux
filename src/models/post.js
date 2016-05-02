@@ -1,5 +1,5 @@
 import { assetUrl } from '../util/assets'
-import { find, get, map } from 'lodash'
+import { find, get, intersection, isNull, keys, map, omitBy } from 'lodash'
 import { same } from './index'
 
 const fallbackImageUrl = assetUrl('/img/axolotl.jpg')
@@ -19,3 +19,8 @@ export const getComments = (post, state) => {
   const commentIds = get(commentsByPost, post.id)
   return map(commentIds, id => comments[id])
 }
+
+export const getEditingPostIds = (posts, state) =>
+  intersection(keys(omitBy(state.postEdits, isNull)), posts.map(p => p.id))
+
+export const getPost = (id, state) => id ? get(state.posts, id) : null

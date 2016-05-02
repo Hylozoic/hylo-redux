@@ -1,10 +1,10 @@
 import React from 'react'
 import { curry, isEmpty } from 'lodash'
 import KeyControlledList from './KeyControlledList'
-var {array, bool, string, func} = React.PropTypes
+import { getKeyCode, keyMap } from '../util/textInput'
+const { array, bool, string, func } = React.PropTypes
 
 export default class TagInput extends React.Component {
-
   static propTypes = {
     tags: array,
     type: string,
@@ -12,7 +12,9 @@ export default class TagInput extends React.Component {
     handleInput: func.isRequired,
     onSelect: func,
     onRemove: func,
-    allowNewTags: bool
+    allowNewTags: bool,
+    placeholder: string,
+    filter: func
   }
 
   resetInput () {
@@ -21,7 +23,8 @@ export default class TagInput extends React.Component {
   }
 
   handleKeys = event => {
-    let { allowNewTags, onSelect, handleInput } = this.props
+    let { allowNewTags, onSelect, handleInput, filter } = this.props
+    const keyCode = getKeyCode(event)
 
     if (this.refs.list) {
       this.refs.list.handleKeys(event)
@@ -30,12 +33,16 @@ export default class TagInput extends React.Component {
       // the tag as-is rather than choosing a search result, you can press
       // Escape to clear the results, then press Enter to select what you've
       // typed
-      if (allowNewTags && event.which === 27) handleInput('')
-    } else if (allowNewTags && event.which === 13) {
+      if (allowNewTags && keyCode === keyMap.ESC) handleInput('')
+      return
+    } else if (allowNewTags && keyCode === keyMap.ENTER) {
       let { value } = event.target
       onSelect({id: value, name: value})
       this.resetInput()
+      return
     }
+
+    if (filter) filter(event)
   }
 
   select = choice => {

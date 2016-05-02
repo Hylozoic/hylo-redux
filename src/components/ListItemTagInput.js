@@ -7,7 +7,7 @@ const { func, object, string } = React.PropTypes
 
 const ListItemTagInput = connect(
   ({ typeaheadMatches }, { type }) => ({matches: get(typeaheadMatches, type)})
-)(({ dispatch, matches, type, person, update }) => {
+)(({ dispatch, matches, type, person, update, filter }) => {
   let list = person[type] || []
   let tags = list.map(x => ({id: x, name: x}))
   let add = item => update(type, list.concat(item.name))
@@ -19,7 +19,8 @@ const ListItemTagInput = connect(
     allowNewTags={true}
     handleInput={value => dispatch(typeahead(value, type, {type}))}
     onSelect={add}
-    onRemove={remove}/>
+    onRemove={remove}
+    filter={filter}/>
 })
 
 ListItemTagInput.propTypes = {

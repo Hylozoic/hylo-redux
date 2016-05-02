@@ -20,6 +20,12 @@ import { avatarUploadSettings, bannerUploadSettings } from '../../models/person'
 import { openPopup, setupPopupCallback, PROFILE_CONTEXT } from '../../util/auth'
 import { EDITED_USER_SETTINGS, trackEvent } from '../../util/analytics'
 import { reversibleUpdate } from '../../util/forms'
+import { getKeyCode, keyMap } from '../../util/textInput'
+
+const noSpaces = event => {
+  const keyCode = getKeyCode(event)
+  if (keyCode === keyMap.SPACE) event.preventDefault()
+}
 
 @prefetch(({ dispatch, params: { id }, query }) => {
   switch (query.expand) {
@@ -238,21 +244,21 @@ export default class UserSettings extends React.Component {
         </Item>
         <Item>
           <div className='full-column'>
-            <label>Skills</label>
-            <ListItemTagInput type='skills' person={currentUser}
-              update={this.update}/>
+            <label>My skills</label>
+            <ListItemTagInput type='tags' person={currentUser}
+              update={this.update} filter={noSpaces}/>
           </div>
         </Item>
         <Item>
           <div className='full-column'>
-            <label>Website</label>
+            <label>My website</label>
             <input className='form-control' type='text'
               defaultValue={url} onChange={this.updateTyped('url')}/>
           </div>
         </Item>
         <Item>
           <div className='full-column'>
-            <label>Location</label>
+            <label>My geographical location</label>
             <input className='form-control' type='text'
               defaultValue={location} onChange={this.updateTyped('location')}/>
           </div>

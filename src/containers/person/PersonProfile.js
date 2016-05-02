@@ -1,16 +1,19 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { prefetch, defer } from 'react-fetcher'
+import { tagUrl } from '../../routes'
 import { FETCH_PERSON, fetchPerson } from '../../actions'
 import { capitalize, compact, get, some } from 'lodash'
 import { isNull, map, omitBy } from 'lodash/fp'
 import { VIEWED_PERSON, VIEWED_SELF, trackEvent } from '../../util/analytics'
 import { findError } from '../../actions/util'
 import PostList from '../../components/PostList'
+import A from '../../components/A'
 import { fetch, ConnectedPostList } from '../ConnectedPostList'
 import { refetch } from '../../util/caching'
 import AccessErrorMessage from '../../components/AccessErrorMessage'
 import CoverImagePage from '../../components/CoverImagePage'
+import Icon from '../../components/Icon'
 import { parse } from 'url'
 import moment from 'moment'
 import { getPost } from '../../models/post'
@@ -84,7 +87,10 @@ export default class PersonProfile extends React.Component {
       params: { id }, location: { query }, recentRequest, recentOffer
     } = this.props
     const category = query.show
-    const { banner_url, bio, tags, location, url, created_at } = person
+    const {
+      banner_url, bio, tags, location, url, created_at,
+      facebook_url, linkedin_url, twitter_name
+    } = person
 
     const joinDate = moment(created_at).format('MMMM YYYY')
     const requestCount = person.grouped_post_count.request || 0
@@ -95,7 +101,14 @@ export default class PersonProfile extends React.Component {
       <div className='opener'>
         <div className='avatar'
           style={{backgroundImage: `url(${person.avatar_url})`}}/>
-        <h2>{person.name}</h2>
+        <h2>
+          {person.name}
+          <div className='social-media'>
+            {facebook_url && <SocialMediaIcon type='facebook' value={facebook_url}/>}
+            {twitter_name && <SocialMediaIcon type='twitter' value={twitter_name}/>}
+            {linkedin_url && <SocialMediaIcon type='linkedin' value={linkedin_url}/>}
+          </div>
+        </h2>
         <p className='meta'>
           {location && <span>{location}{spacer}</span>}
           {url && <span>
@@ -108,7 +121,9 @@ export default class PersonProfile extends React.Component {
       </div>
       {some(tags) && <div className='skills'>
         <h3>Skills</h3>
-        {tags.map(t => <a className='skill' key={t}>#{t}</a>)}
+        {tags.map(tag => <A key={tag} to={tagUrl(tag)}>
+          #{tag}
+        </A>)}
       </div>}
       <div className='section-links'>
         <TabLink category='offer' count={offerCount}/>
@@ -159,4 +174,20 @@ const ListLabel = ({ category }) => {
     default: label = 'Recent posts'
   }
   return <p className='section-label'>{label}</p>
+}
+
+const SocialMediaIcon = ({ type, value }) => {
+  let href
+  switch (type) {
+    case 'facebook':
+    case 'linkedin':
+      href = value
+      break
+    case 'twitter':
+      href = `http://twitter.com/${value}`
+  }
+
+  return <a target='_blank' className={type} href={href}>
+    <Icon name={type}/>
+  </a>
 }

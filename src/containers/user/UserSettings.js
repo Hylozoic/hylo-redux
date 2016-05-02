@@ -21,6 +21,7 @@ import { openPopup, setupPopupCallback, PROFILE_CONTEXT } from '../../util/auth'
 import { EDITED_USER_SETTINGS, trackEvent } from '../../util/analytics'
 import { reversibleUpdate } from '../../util/forms'
 import { getKeyCode, keyMap } from '../../util/textInput'
+import Icon from '../../components/Icon'
 
 const noSpaces = event => {
   const keyCode = getKeyCode(event)
@@ -426,4 +427,6 @@ const Item = ({className, children}) =>
   <div className={cx('section-item', className)}>{children}</div>
 
 const LinkButton = ({ href, icon, ...props }) =>
-  <a {...props} className='button' href={href} target='_blank'><i className={`icon-${icon}`}></i></a>
+  <a {...props} className='button' href={href} target='_blank'>
+    <Icon name={icon}/>
+  </a>

@@ -1,0 +1,167 @@
+.person-cards {
+  .make-row;
+}
+
+.person-cards .masonry-item-wrapper {
+  width: 33.33%;
+}
+
+.person-card {
+  .card;
+  padding: 15px 0;
+  text-align: center;
+  position: relative;
+
+  .large-avatar {
+    display: inline-block;
+    border: 1px solid @light-gray-border;
+  }
+
+  .name {
+    .proxima-nova-semibold;
+  }
+
+  .moderator {
+    .meta-text;
+  }
+
+  .details {
+    text-align: left;
+    padding: @p-bottom-margin 15px 0;
+  }
+
+  .caret-menu {
+    display: none;
+  }
+
+  &:hover .caret-menu {
+    display: block;
+    position: absolute;
+    top: 5px;
+    right: 4px;
+  }
+}
+
+#person {
+  .opener {
+    text-align: center;
+    background-color: white;
+    padding: 0 25px 25px;
+    margin-top: 45px;
+
+    .avatar {
+      @size: 150px;
+      width: @size;
+      height: @size;
+      .image-div(@size);
+      border-radius: 0;
+      display: inline-block;
+      margin-top: -@size*2/3;
+      border: 4px solid white;
+      box-shadow: 0px 2px rgba(0, 0, 0, 0.2);
+    }
+  }
+
+  .skills {
+    *:first-child {
+      margin-top: 0;
+    }
+    border-top: 1px solid @list-controls-background;
+    background-color: white;
+    text-align: center;
+    padding: 25px;
+    a {
+      display: inline-block;
+      border-radius: 34px;
+      height: 34px;
+      line-height: 34px;
+      padding: 0 12px;
+      border: 1px solid @faint-gray-border;
+      margin: 0 4px 8px;
+      color: @damian-green;
+      text-decoration: none;
+      &:hover {
+        border-color: @damian-green;
+      }
+    }
+  }
+
+  .section-links {
+    border-top: 1px solid @list-controls-background;
+    background-color: white;
+    text-align: center;
+    padding: 15px 0;
+
+    a {
+      width: 25%;
+      border-right: 1px solid @list-controls-background;
+      display: inline-block;
+      vertical-align: middle;
+      line-height: 40px;
+      &:last-child {
+        border-right: none;
+      }
+
+      &.active {
+        font-weight: bold;
+      }
+    }
+  }
+
+  .section-label {
+    margin: 25px 25px @p-bottom-margin;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+  }
+
+  .about {
+    padding: 15px;
+    border: 1px solid @light-gray-border;
+    section {
+      margin-bottom: 30px;
+      &:first-child {
+        h4 {
+          margin-top: 0;
+        }
+      }
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+
+    .social-media {
+      .button {
+        margin-right: 5px;
+        &:last-child {
+          margin-right: 0;
+        }
+      }
+    }
+  }
+
+  .social-media {
+    display: inline-block;
+    position: absolute;
+    a {
+      margin-left: 10px;
+      display: inline-block;
+      color: white;
+      background-color: @light-gray-bg-2;
+      @size: 22px;
+      height: @size;
+      line-height: @size + 2;
+      width: @size;
+      border-radius: @size;
+      text-align: center;
+      vertical-align: middle;
+      text-decoration: none;
+      font-size: 13px;
+      &.facebook {
+        font-size: 15px;
+      }
+      &:hover {
+        background-color: @mid-gray-bg;
+      }
+    }
+  }
+}

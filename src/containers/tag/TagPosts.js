@@ -39,7 +39,7 @@ class TagPosts extends React.Component {
 
     // we check tag.id here because tag will be non-null if we're clicking a
     // link in the left nav, but it won't have an id until fetchTag returns
-    if (!tag.id || redirecting) {
+    if (!tag || !tag.id || redirecting) {
       return <div className='loading'>Please wait...</div>
     }
 

@@ -33,9 +33,6 @@ const getFetchOpts = query => {
       return {tag: 'offer', type: null}
     case 'event':
       return {tag: null, type: 'event'}
-    case 'thank':
-      // TODO
-      // return {tag: null, type: 'event'}
     default:
       return {tag: null, type: null}
   }
@@ -94,6 +91,7 @@ const PersonProfile = compose(
   const requestCount = person.grouped_post_count.request || 0
   const offerCount = person.grouped_post_count.offer || 0
   const TabLink = setupTabLink(props)
+  const postsToHide = category ? [] : map('id', compact([recentRequest, recentOffer]))
 
   return <CoverImagePage id='person' image={banner_url || defaultBanner}>
     <div className='opener'>
@@ -141,7 +139,7 @@ const PersonProfile = compose(
     {category === 'thank'
       ? <Thanks person={person}/>
       : <ConnectedPostList {...{subject, id, query: getFetchOpts(query)}}
-          hide={map('id', compact([recentRequest, recentOffer]))}/>}
+          hide={postsToHide}/>}
   </CoverImagePage>
 })
 

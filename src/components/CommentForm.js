@@ -5,6 +5,7 @@ import Avatar from './Avatar'
 import RichTextEditor from './RichTextEditor'
 import { createComment } from '../actions'
 import { ADDED_COMMENT, trackEvent } from '../util/analytics'
+import { textLength } from '../util/text'
 var { array, func, object, string } = React.PropTypes
 
 @connect(state => ({
@@ -24,8 +25,11 @@ export default class CommentForm extends React.Component {
   }
 
   submit = event => {
-    let { dispatch, postId } = this.props
+    const { dispatch, postId } = this.props
+    const { text } = this.state
     event.preventDefault()
+    if (!text || textLength(text) < 2) return
+
     dispatch(createComment(postId, this.state.text))
     trackEvent(ADDED_COMMENT, {post: {id: postId}})
     this.refs.editor.setContent('')

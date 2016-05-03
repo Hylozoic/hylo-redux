@@ -64,7 +64,7 @@ class PostList extends React.Component {
     let { project } = this.context
 
     if (!pending && posts.length === 0) {
-      return <div className='no-posts'>No posts to show.</div>
+      return <div className='no-results'>No posts to show.</div>
     }
 
     const showPost = post => {

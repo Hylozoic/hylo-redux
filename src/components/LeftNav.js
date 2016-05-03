@@ -34,7 +34,7 @@ export const MenuButton = ({ onClick, label }) =>
 
 export const TopicList = ({ tags, slug }) => {
   let followedTags = filter(tags, t => t.followed && !t.created)
-  let createdTags = filter(tags, t => t.created)
+  let createdTags = filter(tags, t => t.created && t.name !== 'chat')
 
   const TagLink = ({ name }) => {
     var allTopics = name === 'all-topics'

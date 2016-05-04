@@ -14,6 +14,7 @@ describe('postEdits', () => {
         payload: {
           id: 'a',
           name: 'foo',
+          type: 'event',
           media: [
             {type: 'image', url: 'http://foo.com/foo.gif'}
           ]
@@ -26,6 +27,7 @@ describe('postEdits', () => {
         a: {
           id: 'a',
           name: 'foo',
+          type: 'event',
           media: [
             {type: 'image', url: 'http://foo.com/foo.gif'}
           ],

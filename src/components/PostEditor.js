@@ -42,21 +42,12 @@ const specialTags = ['request', 'offer', 'intention']
 
 @connect((state, { community, post, project, type }) => {
   const id = post ? post.id
-    : project ? `project-${project.id}-new` : 'new'
+    : project ? `project-${project.id}-new`
+    : type === 'event' ? 'new-event' : 'new'
 
   // this object tracks the edits that are currently being made
   let postEdit = state.postEdits[id] || {}
   if (!project && post) project = get(post, 'projects.0')
-
-  // this is technically a no-no because it's setting an attribute of an object
-  // in the store directly rather than dispatching an action
-  if (type === 'event' && !postEdit.type) {
-    postEdit.type = 'event'
-  } else if (type !== 'event' && postEdit.type === 'event') {
-    // this covers the edge case in which the user switches from editing a new
-    // event to editing a new post
-    postEdit.type = null
-  }
 
   return {
     id,
@@ -263,7 +254,8 @@ export class PostEditor extends React.Component {
   }
 
   isEvent () {
-    return this.props.postEdit.type === 'event'
+    const { postEdit, type } = this.props
+    return postEdit.type === 'event' || type === 'event'
   }
 
   render () {
@@ -475,6 +467,7 @@ export default class PostEditorWrapper extends React.Component {
 
   render () {
     const { type, post, project, community } = this.props
+
     // if PostEditorWrapper is being initialized with expanded=true, we don't
     // want to set up onCancel, because the entire component will probably be
     // unmounted when canceling takes place

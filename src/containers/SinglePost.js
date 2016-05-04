@@ -88,6 +88,7 @@ const scroll = () => {
 const fetchYetMore = (store, dispatch, query, id) => () => {
   const state = store.getState()
   const post = state.posts[id]
+  if (!post) return
   const communityId = get(post, 'communities.0') || 'all'
   const slug = get(state.communities, [communityId, 'slug'])
   return Promise.all([

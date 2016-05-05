@@ -1,4 +1,4 @@
-import { find } from 'lodash'
+import { find } from 'lodash/fp'
 
 export const MemberRole = {DEFAULT: 0, MODERATOR: 1}
 
@@ -17,7 +17,7 @@ export const bannerUploadSettings = community => ({
 })
 
 export const getCommunity = (state, idOrSlug) =>
-  state.communities[idOrSlug] || find(state.communities, c => c.id === idOrSlug)
+  state.communities[idOrSlug] || find(c => c.id === idOrSlug, state.communities)
 
 export const getCurrentCommunity = state =>
   getCommunity(state, state.currentCommunityId)

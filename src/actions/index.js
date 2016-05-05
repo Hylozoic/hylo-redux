@@ -254,7 +254,7 @@ export function clearCache (bucket, id) {
 }
 
 export function fetchPost (id) {
-  let querystring = cleanAndStringify({comments: true, votes: true})
+  let querystring = cleanAndStringify({comments: 1, votes: 1, children: 1})
 
   return {
     type: FETCH_POST,

@@ -1,26 +1,27 @@
 import { assetUrl } from '../util/assets'
-import { find, get, intersection, isNull, keys, map, omitBy } from 'lodash'
+import { intersection, isNull, keys } from 'lodash'
+import { find, get, map, omitBy } from 'lodash/fp'
 import { same } from './index'
 
 const fallbackImageUrl = assetUrl('/img/axolotl.jpg')
 
 export const imageUrl = (post, fallback = true) => {
-  const url = get(find(post.media, m => m.type === 'image'), 'url')
+  const url = get('url', find(m => m.type === 'image', post.media))
   return url || (fallback ? fallbackImageUrl : null)
 }
 
 export const getCommunities = (post, state) =>
-  get(post.communities, '0.id')
-    ? post.communities
-    : map(post.communities, id => find(state.communities, same('id', {id})))
+  !post ? []
+    : get('0.id', post.communities) ? post.communities
+    : map(id => find(same('id', {id}), state.communities), post.communities)
 
 export const getComments = (post, state) => {
+  if (!post) return []
   const { comments, commentsByPost } = state
-  const commentIds = get(commentsByPost, post.id)
-  return map(commentIds, id => comments[id])
+  return map(id => comments[id], get(post.id, commentsByPost))
 }
 
 export const getEditingPostIds = (posts, state) =>
-  intersection(keys(omitBy(state.postEdits, isNull)), posts.map(p => p.id))
+  intersection(keys(omitBy(isNull, state.postEdits)), map('id', posts))
 
-export const getPost = (id, state) => id ? get(state.posts, id) : null
+export const getPost = (id, state) => id ? get(id, state.posts) : null

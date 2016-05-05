@@ -1,5 +1,6 @@
 import React from 'react'
-import { filter, find, first, includes, isEmpty, map, some, sortBy, get } from 'lodash'
+import { filter, first, includes, isEmpty, map, some, sortBy, get } from 'lodash'
+import { find } from 'lodash/fp'
 const { array, bool, func, object } = React.PropTypes
 import cx from 'classnames'
 import {
@@ -33,10 +34,14 @@ import {
 } from '../actions'
 import { same } from '../models'
 import { getComments, getCommunities } from '../models/post'
+import { getCurrentCommunity } from '../models/community'
 import { canEditPost } from '../models/currentUser'
 import decode from 'ent/decode'
 
 const spacer = <span>&nbsp; •&nbsp; </span>
+
+export const presentDescription = (post, community) =>
+  present(sanitize(post.description), {slug: get(community, 'slug')})
 
 class Post extends React.Component {
   static propTypes = {
@@ -58,7 +63,7 @@ class Post extends React.Component {
   render () {
     const { post, communities, comments, expanded, onExpand, community } = this.props
     const { tag, media } = post
-    const image = find(media, m => m.type === 'image')
+    const image = find(m => m.type === 'image', media)
     const classes = cx('post', tag, {image, expanded})
     const title = linkifyHashtags(decode(sanitize(post.name || '')), get(community, 'slug'))
     const tagLabel = `#${post.tag === 'chat' ? 'all-topics' : post.tag}`
@@ -80,7 +85,7 @@ export default compose(
     return {
       comments: getComments(post, state),
       communities: getCommunities(post, state),
-      community: find(state.communities, c => c.id === state.currentCommunityId)
+      community: getCurrentCommunity(state)
     }
   })
 )(Post)
@@ -113,8 +118,8 @@ export const Header = ({ communities }, { post, community }) => {
 Header.contextTypes = {post: object, community: object}
 
 const Details = ({ expanded, onExpand, tagLabel }, { post, community }) => {
-  let slug = get(community, 'slug')
-  let description = present(sanitize(post.description), {slug})
+  const slug = get(community, 'slug')
+  let description = presentDescription(post, community)
   const truncated = !expanded && textLength(description) > 200
   if (truncated) description = truncate(description, 200)
   if (description) description = appendInP(description, '&nbsp;')
@@ -131,7 +136,7 @@ const Details = ({ expanded, onExpand, tagLabel }, { post, community }) => {
 Details.contextTypes = {post: object, community: object}
 
 const Attachments = (props, { post }) => {
-  const attachments = filter(post.media, m => m.type !== 'image')
+  const attachments = filter(post.media, m => m.type === 'gdoc')
   if (isEmpty(attachments)) return <span/>
 
   return <div className='post-section'>

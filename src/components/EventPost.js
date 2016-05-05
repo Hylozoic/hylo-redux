@@ -1,5 +1,4 @@
 import React from 'react'
-import { connect } from 'react-redux'
 import { timeRange, timeRangeBrief, timeRangeFull } from '../util/text'
 import { changeEventResponse } from '../actions'
 import A from './A'
@@ -10,10 +9,9 @@ import LinkedPersonSentence from './LinkedPersonSentence'
 import { ClickCatchingSpan } from './ClickCatcher'
 import { get, find, includes, isEmpty, some, sortBy } from 'lodash'
 import { same } from '../models'
-import { getComments, getCommunities, imageUrl } from '../models/post'
-import { Header, CommentSection } from './Post'
+import { imageUrl } from '../models/post'
+import { Header, CommentSection, presentDescription } from './Post'
 import decode from 'ent/decode'
-import { present, sanitize } from '../util/text'
 const { array, func, object } = React.PropTypes
 
 const spacer = <span>&nbsp; •&nbsp; </span>
@@ -52,11 +50,12 @@ const Attendance = ({ post, limit, showButton, children }, { currentUser, dispat
   const going = sortBy(
     responders.filter(r => r.response === 'yes'),
     p => same('id', p, currentUser) ? 'Aaa' : p.name
-  ).slice(0, limit)
+  )
 
   return <div className='attendance'>
-    <div className='going'>
-      {going.map(person => <Avatar person={person} key={person.id}/>)}
+    <div className='going avatar-list'>
+      {going.slice(0, limit).map(person =>
+        <Avatar person={person} key={person.id}/>)}
     </div>
     {currentUser && showButton && <RSVPSelect post={post}/>}
     {!isEmpty(going) && <LinkedPersonSentence people={going} className='blurb meta'>
@@ -88,40 +87,28 @@ const RSVPSelect = ({ post, alignRight }, { currentUser, dispatch }) => {
 }
 RSVPSelect.contextTypes = {currentUser: object, dispatch: func}
 
-@connect((state, { post }) => ({
-  comments: getComments(post, state),
-  communities: getCommunities(post, state)
-}))
 export default class EventPost extends React.Component {
-  static propTypes = {
+  static contextTypes = {
     post: object,
     communities: array,
     comments: array
   }
 
-  static childContextTypes = {
-    post: object
-  }
-
-  getChildContext () {
-    return {post: this.props.post}
-  }
-
   render () {
-    const { post, communities, comments } = this.props
+    const { post, community, communities, comments } = this.context
     const { name, start_time, end_time, location, tag } = post
-    const description = present(sanitize(post.description))
+    const description = presentDescription(post, community)
     const title = decode(name || '')
     const start = new Date(start_time)
     const end = end_time && new Date(end_time)
     const image = imageUrl(post, false)
 
-    return <div className='post event'>
+    return <div className='post event boxy-post'>
       <Header communities={communities}/>
       <p className='title post-section'>{title}</p>
       {shouldShowTag(tag) && <p className='hashtag'>#{tag}</p>}
 
-      <div className='event-details'>
+      <div className='box'>
         {image && <div className='image'>
           <img src={image}/>
         </div>}
@@ -136,7 +123,7 @@ export default class EventPost extends React.Component {
           <Icon name='map-marker'/>
           <span title={location}>{location}</span>
         </div>
-        {description && <div className='detail-text'>
+        {description && <div className='details'>
           <ClickCatchingSpan dangerouslySetInnerHTML={{__html: description}}/>
         </div>}
       </div>

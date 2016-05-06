@@ -1,5 +1,6 @@
 import React from 'react'
 import { debounce } from 'lodash'
+import { get } from 'lodash/fp'
 import Icon from './Icon'
 import DatetimePicker from 'react-datetime'
 import { getCharacter } from '../util/textInput'
@@ -13,6 +14,7 @@ const sanitizeTagInput = event =>
 export default class EventPostEditor extends React.Component {
   static propTypes = {
     postEdit: object,
+    post: object,
     update: func.isRequired
   }
 
@@ -27,10 +29,12 @@ export default class EventPostEditor extends React.Component {
   }
 
   validate () {
-    const tag = this.state.tag || this.props.postEdit.tag
+    const { tag } = this.props.postEdit
+    if (tag === this.props.post.tag) return true
+
     return this.context.dispatch(fetchTag(tag))
-    .then(({ payload, meta: { tagName } }) => {
-      if (!payload) return true
+    .then(({ payload, error, meta: { tagName } }) => {
+      if (error && get('response.status', payload) === 404) return true
 
       window.alert(`The tag "${tagName}" is already in use.`)
       return false
@@ -39,7 +43,9 @@ export default class EventPostEditor extends React.Component {
 
   render () {
     const { postEdit, update } = this.props
-    const { start_time, end_time } = postEdit
+    const { start_time, end_time, type } = postEdit
+    if (type !== 'event') setTimeout(() => update({type: 'event'}))
+
     const startTime = start_time ? new Date(postEdit.start_time) : null
     const endTime = end_time ? new Date(postEdit.end_time) : null
     const updateSlowly = debounce(update, 200)

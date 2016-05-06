@@ -127,7 +127,7 @@ export class PostEditor extends React.Component {
     }
 
     if (this.isEvent()) {
-      return this.refs.eventEditor.validate()
+      return Promise.resolve(this.refs.eventEditor.validate())
     }
 
     return Promise.resolve(true)
@@ -147,8 +147,9 @@ export class PostEditor extends React.Component {
 
   save () {
     const { dispatch, post, postEdit, project, id } = this.props
-    const tag = postEdit.tag || 'chat'
+    const tag = postEdit.tag
     const params = {
+      type: this.isEvent() ? 'event' : null,
       ...postEdit,
       ...attachmentParams(post && post.media, postEdit.media),
       projectId: project ? project.id : null,
@@ -315,7 +316,8 @@ export class PostEditor extends React.Component {
         <li><a onClick={() => selectTag('chat')}>#all-topics</a></li>
       </Dropdown>}
 
-      {isEvent && <EventPostEditor ref='eventEditor' postEdit={postEdit}
+      {isEvent && <EventPostEditor ref='eventEditor' post={post}
+        postEdit={postEdit}
         update={this.updateStore}/>}
 
       {!project && <div className='communities'>

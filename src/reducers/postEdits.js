@@ -45,7 +45,7 @@ const withSuggestedTag = (payload, state, id) => {
 
   return {
     ...payload,
-    tag: suggestedTag(payload.name)
+    tag: suggestedTag(payload.name || postEdit.name)
   }
 }
 

@@ -16,7 +16,8 @@ export default class CommentForm extends React.Component {
     currentUser: object,
     dispatch: func,
     postId: string,
-    mentionOptions: array
+    mentionOptions: array,
+    placeholder: string
   }
 
   constructor (props) {
@@ -41,6 +42,7 @@ export default class CommentForm extends React.Component {
     const { editing } = this.state
     const edit = () => this.setState({editing: true})
     const setText = event => this.setState({text: event.target.value})
+    const placeholder = this.props.placeholder || 'Add a comment...'
 
     return <form onSubmit={this.submit} className='comment-form'>
       <Avatar person={currentUser}/>
@@ -52,7 +54,7 @@ export default class CommentForm extends React.Component {
             <input type='submit' value='Comment'/>
           </div>
         : <div className='content placeholder' onClick={edit}>
-            Add a comment...
+            {placeholder}
           </div>}
     </form>
   }

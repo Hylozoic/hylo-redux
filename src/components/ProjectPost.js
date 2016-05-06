@@ -16,7 +16,7 @@ import LinkedPersonSentence from './LinkedPersonSentence'
 import A from './A'
 import { ClickCatchingSpan } from './ClickCatcher'
 import { fetchPost, followPost } from '../actions'
-const { array, func, object } = React.PropTypes
+const { array, bool, func, object } = React.PropTypes
 
 const ProjectPost = (props, context) => {
   const { post, community, comments, communities, currentUser, dispatch } = context
@@ -107,6 +107,14 @@ class ProjectRequest extends React.Component {
     dispatch: func
   }
 
+  static childContextTypes = {
+    isProjectRequest: bool
+  }
+
+  getChildContext () {
+    return {isProjectRequest: true}
+  }
+
   constructor (props) {
     super(props)
     this.state = {}
@@ -138,7 +146,7 @@ class ProjectRequest extends React.Component {
         <A to={`/p/${id}`}>Show&nbsp;more</A>
       </span>}
       <div className='meta'>
-        <a className='help button has-icon'>
+        <a className='help button has-icon' onClick={zoom}>
           <Icon name='plus-sign'/>
           Offer to help
         </a>

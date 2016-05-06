@@ -205,12 +205,13 @@ export class CommentSection extends React.Component {
     post: object,
     dispatch: func,
     community: object,
-    currentUser: object
+    currentUser: object,
+    isProjectRequest: bool
   }
 
   render () {
     let { comments, truncate, expand } = this.props
-    const { dispatch, post, currentUser, community } = this.context
+    const { dispatch, post, currentUser, community, isProjectRequest } = this.context
     let communitySlug = get(community, 'slug')
 
     if (!comments) comments = []
@@ -231,6 +232,8 @@ export class CommentSection extends React.Component {
       })
     }
 
+    const placeholder = isProjectRequest ? 'How can you help?' : null
+
     return <div className={cx('comments-section post-section', {empty: isEmpty(comments)})}>
       <a name={`post-${post.id}-comments`}></a>
       {truncate && post.numComments > comments.length && <div className='comment show-all'>
@@ -241,7 +244,7 @@ export class CommentSection extends React.Component {
         expand={() => expandComment(c.id)}
         communitySlug={communitySlug}
         key={c.id}/>)}
-      {currentUser && <CommentForm postId={post.id}/>}
+      {currentUser && <CommentForm postId={post.id} {...{placeholder}}/>}
     </div>
   }
 }

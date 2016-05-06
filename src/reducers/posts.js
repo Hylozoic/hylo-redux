@@ -12,16 +12,13 @@ import {
   VOTE_ON_POST_PENDING
 } from '../actions'
 import { compact, omit, find, without, includes, map, filter } from 'lodash'
-import { get, isArray, isEmpty, isNull, omitBy } from 'lodash/fp'
+import { get, isNull, omitBy } from 'lodash/fp'
 import { cloneSet, mergeList } from './util'
 import { same } from '../models'
 
-// can't just check isEmpty because isEmpty(Number) is true
-const isNullOrEmpty = x => isNull(x) || (isArray(x) && isEmpty(x))
-
-const normalize = post => omitBy(isNullOrEmpty, {
+const normalize = post => omitBy(isNull, {
   ...post,
-  children: map(post.children, c => c.id),
+  children: post.children ? map(post.children, c => c.id) : null,
   communities: map(post.communities, c => c.id),
   numComments: post.num_comments || post.numComments,
   num_comments: null

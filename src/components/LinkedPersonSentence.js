@@ -34,8 +34,7 @@ const LinkedPersonSentence = ({ people, children, className }, { currentUser }) 
       </span>}>
       {others.slice(numShown).map(p =>
         <PersonDropdownItem key={p.id} person={p}/>)}
-    </Dropdown>}
-    &nbsp;{children}
+    </Dropdown>} {children}
   </div>
 }
 LinkedPersonSentence.contextTypes = {currentUser: object}

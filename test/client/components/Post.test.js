@@ -86,26 +86,26 @@ describe('Voters', () => {
   }
 
   it('handles one voter',
-    test([voters[0]], 'Sneezy&nbsp;liked this.'))
+    test([voters[0]], 'Sneezy liked this.'))
 
   it('handles the current user as a voter',
-    test([currentUser], 'You&nbsp;liked this.'))
+    test([currentUser], 'You liked this.'))
 
   it('handles the current user and one other voter',
-    test([currentUser, voters[0]], 'You and Sneezy&nbsp;liked this.'))
+    test([currentUser, voters[0]], 'You and Sneezy liked this.'))
 
   it('handles 2 voters',
-    test(voters.slice(0, 2), 'Sneezy and Itchy&nbsp;liked this.'))
+    test(voters.slice(0, 2), 'Sneezy and Itchy liked this.'))
 
   it('handles the current user and 2 other voters',
-    test([currentUser, ...voters.slice(0, 2)], 'You, Sneezy, and Itchy&nbsp;liked this.'))
+    test([currentUser, ...voters.slice(0, 2)], 'You, Sneezy, and Itchy liked this.'))
 
   it('handles 3 voters',
-    test(voters.slice(0, 3), 'Sneezy, Itchy, and 1 other&nbsp;liked this.'))
+    test(voters.slice(0, 3), 'Sneezy, Itchy, and 1 other liked this.'))
 
   it('handles 4 voters',
-    test(voters.slice(0, 4), 'Sneezy, Itchy, and 2 others&nbsp;liked this.'))
+    test(voters.slice(0, 4), 'Sneezy, Itchy, and 2 others liked this.'))
 
   it('handles 5 voters',
-    test([currentUser, ...voters], 'You, Sneezy, Itchy, and 3 others&nbsp;liked this.'))
+    test([currentUser, ...voters], 'You, Sneezy, Itchy, and 3 others liked this.'))
 })

@@ -9,7 +9,6 @@ import Projects from './containers/Projects'
 import CommunityProfile from './containers/community/CommunityProfile'
 import CommunityPosts from './containers/community/CommunityPosts'
 import CommunityMembers from './containers/community/CommunityMembers'
-import CommunityEvents from './containers/community/CommunityEvents'
 import CommunityEditor from './containers/community/CommunityEditor'
 import CommunityInvitations from './containers/community/CommunityInvitations'
 import CommunityJoinForm from './containers/community/CommunityJoinForm'
@@ -78,7 +77,6 @@ export default function makeRoutes (store) {
     <Route path='settings' component={UserSettings} onEnter={requireLogin()}/>
     <Route path='my-posts' component={MyPosts} onEnter={requireLogin()}/>
     <Route path='followed-posts' component={FollowedPosts} onEnter={requireLogin()}/>
-    <Route path='events' component={Events} onEnter={requireLogin()}/>
     <Route path='search' component={Search} onEnter={requireLogin()}/>
     <Route path='u/:id' component={PersonProfile} onEnter={requireLogin()}/>
     <Route path='c/new' component={CommunityEditor} onEnter={requireLogin()}/>
@@ -103,7 +101,7 @@ export default function makeRoutes (store) {
     <Route path='c/:id' component={CommunityProfile}>
       <IndexRoute component={CommunityPosts}/>
       <Route path='members' component={CommunityMembers} onEnter={requireLogin()}/>
-      <Route path='events' component={CommunityEvents}/>
+      <Route path='events' component={Events}/>
       <Route path='projects' component={Projects}/>
       <Route path='about' component={AboutCommunity}/>
       <Route path='settings' component={CommunitySettings} onEnter={requireLogin()}/>
@@ -133,6 +131,7 @@ export default function makeRoutes (store) {
       <Route path='tag/:tagName' component={TagPosts}/>
       <Route path='notifications' component={Notifications} onEnter={requireLogin()}/>
       <Route path='projects' component={Projects} onEnter={requireLogin()}/>
+      <Route path='events' component={Events} onEnter={requireLogin()}/>
     </Route>
 
     <Route path='testbench' component={TestBench}/>

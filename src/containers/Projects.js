@@ -6,7 +6,7 @@ import { refetch } from '../util/caching'
 const { func, object } = React.PropTypes
 
 const querystringDefaults = ({type: 'project', filter: 'all'})
-export const setDefaults = query => ({...query, type: 'project'})
+const setDefaults = query => ({...query, type: 'project'})
 
 const fetchParams = (location, params, currentUser) => {
   const isInCommunity = location.pathname.startsWith('/c/')
@@ -16,35 +16,22 @@ const fetchParams = (location, params, currentUser) => {
   }
 }
 
-@prefetch(({ dispatch, location, params, query, currentUser }) => {
+const Projects = prefetch(({ dispatch, location, params, query, currentUser }) => {
   const { subject, id } = fetchParams(location, params, currentUser)
   return dispatch(fetch(subject, id, setDefaults(query)))
+})(({ location, params }, { currentUser, dispatch }) => {
+  const { subject, id } = fetchParams(location, params, currentUser)
+  const query = setDefaults(location.query)
+  const { filter, search } = query || {}
+  const changeQuery = opts =>
+    dispatch(refetch(opts, location, querystringDefaults))
+
+  return <div>
+    <ProjectListControls onChange={changeQuery} search={search} filter={filter}/>
+    <ConnectedPostList {...{subject, id, query}}/>
+  </div>
 })
-export default class Projects extends React.Component {
-  static propTypes = {
-    location: object,
-    params: object
-  }
+Projects.propTypes = {location: object, params: object}
+Projects.contextTypes = {dispatch: func, currentUser: object}
 
-  static contextTypes = {
-    dispatch: func,
-    currentUser: object
-  }
-
-  changeQuery = opts => {
-    this.context.dispatch(refetch(opts, this.props.location, querystringDefaults))
-  }
-
-  render () {
-    const { currentUser } = this.context
-    const { location, params } = this.props
-    const { subject, id } = fetchParams(location, params, currentUser)
-    const query = setDefaults(location.query)
-    const { filter, search } = query || {}
-
-    return <div>
-      <ProjectListControls onChange={this.changeQuery} search={search} filter={filter}/>
-      <ConnectedPostList {...{subject, id, query}}/>
-    </div>
-  }
-}
+export default Projects

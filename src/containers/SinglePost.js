@@ -45,7 +45,7 @@ const showTaggedPosts = post =>
     communities: getCommunities(post, state),
     comments: getComments(post, state),
     currentUser: state.people.current,
-    editing: state.postEdits[id],
+    editing: !!state.postEdits[id],
     error: findError(state.errors, FETCH_POST, 'posts', id)
   }
 })

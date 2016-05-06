@@ -606,13 +606,17 @@ ul.posts {
   }
 }
 
-.avatar-list .avatar {
-  vertical-align: top;
-  display: inline-block;
-  border-radius: 0;
-  margin-right: 3px;
-  margin-bottom: 3px;
-  background-color: #f3f3f3;
+.avatar-list {
+  white-space: nowrap;
+  overflow-x: scroll;
+
+  .avatar {
+    vertical-align: top;
+    display: inline-block;
+    border-radius: 0;
+    margin-right: 3px;
+    background-color: #f3f3f3;
+  }
 }
 
 .rsvp {
@@ -625,10 +629,12 @@ ul.posts {
   .title {
     margin-bottom: 0;
   }
-  .hashtag {
+
+  > .hashtag {
     color: @damian-green;
     margin-left: @post-content-left-margin;
   }
+
   .box {
     border: 1px solid @post-border;
     margin: 0 @post-padding @post-padding;
@@ -695,25 +701,9 @@ ul.posts {
 }
 
 .post.project {
-  .hashtag {
-    color: @damian-green;
-    margin-left: @post-content-left-margin;
-  }
-
   .box {
     padding: 12px 12px 0;
     font-size: 0; // to remove inline-block spacing
-
-    .main-col {
-      .make-sm-column(8);
-      border-right: 1px solid @post-border;
-      padding: 12px 0 12px 3px;
-    }
-
-    .side-col {
-      .make-sm-column(4);
-      padding: 14px 15px 12px 12px;
-    }
 
     > * {
       font-size: 14px;
@@ -726,6 +716,24 @@ ul.posts {
     .location, .details, .leads {
       padding-left: 13px;
       padding-right: 13px;
+    }
+  }
+
+  .main-col {
+    .make-sm-column(8);
+    border-right: 1px solid @post-border;
+    padding: 12px 0 12px 3px;
+  }
+
+  .supporters {
+    .make-sm-column(4);
+    padding: 14px 15px 12px 12px;
+    .avatar-list {
+      margin-bottom: 4px;
+    }
+
+    .blurb {
+      margin-bottom: @p-bottom-margin;
     }
   }
 
@@ -776,6 +784,30 @@ ul.posts {
     }
   }
 
+  @button-size: 30px;
+
+  .button {
+    height: @button-size + 1px;
+    line-height: @button-size;
+    border-radius: @button-size;
+    padding: 0 12px;
+    .semibold;
+
+    &.has-icon {
+      padding-left: 8px;
+    }
+
+    &.support {
+      color: @damian-green;
+    }
+
+    .icon {
+      margin-right: 5px;
+      position: relative;
+      top: 2px;
+    }
+  }
+
   .requests {
     border-top: 1px solid @post-border;
     margin-top: 25px;
@@ -785,14 +817,13 @@ ul.posts {
       margin-bottom: 0;
     }
 
-    .request {
+    .nested-request {
       padding: 25px;
       border-bottom: 1px solid @post-border;
+      position: relative;
       &:last-child {
         border-bottom: 0;
       }
-
-      @button-size: 30px;
 
       div.meta {
         line-height: @button-size;
@@ -803,13 +834,16 @@ ul.posts {
       }
 
       .help.button {
-        height: @button-size + 2px;
-        line-height: @button-size;
-        border-radius: @button-size;
-        padding: 0 10px;
         margin-right: 10px;
         color: @damian-orange;
-        .semibold;
+      }
+
+      .zoomed {
+        position: absolute;
+        top: -34px;
+        left: 0;
+        z-index: 5;
+        width: 100%;
       }
     }
   }

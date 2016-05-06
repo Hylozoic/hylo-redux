@@ -12,12 +12,19 @@ import {
   VOTE_ON_POST_PENDING
 } from '../actions'
 import { compact, omit, find, without, includes, map, filter } from 'lodash'
+import { get, isArray, isEmpty, isNull, omitBy } from 'lodash/fp'
 import { cloneSet, mergeList } from './util'
 import { same } from '../models'
 
-const normalize = post => ({
+// can't just check isEmpty because isEmpty(Number) is true
+const isNullOrEmpty = x => isNull(x) || (isArray(x) && isEmpty(x))
+
+const normalize = post => omitBy(isNullOrEmpty, {
   ...post,
-  communities: post.communities.map(c => c.id)
+  children: map(post.children, c => c.id),
+  communities: map(post.communities, c => c.id),
+  numComments: post.num_comments || post.numComments,
+  num_comments: null
 })
 
 const normalizeUpdate = (post, params) => {
@@ -71,22 +78,24 @@ export default function (state = {}, action) {
   }
 
   let { id } = meta || {}
+  let post = state[id]
 
   switch (type) {
     case FETCH_POSTS:
       return mergeList(state, payload.posts.map(normalize), 'id')
     case CREATE_POST:
     case FETCH_POST:
-      return {...state, [payload.id]: normalize(payload)}
+      let posts = [normalize(payload)]
+      if (payload.children) {
+        posts = posts.concat(payload.children.map(normalize))
+      }
+      return mergeList(state, posts, 'id')
     case UPDATE_POST:
-      let post = state[id]
       return {...state, [id]: normalizeUpdate(post, meta.params)}
     case CHANGE_EVENT_RESPONSE_PENDING:
-      post = state[id]
       var { response, user } = meta
       return {...state, [id]: changeEventResponse(post, response, user)}
     case VOTE_ON_POST_PENDING:
-      post = state[id]
       let { currentUser } = meta
       let newPost
       let myVote = includes(map(post.voters, 'id'), currentUser.id)
@@ -102,7 +111,14 @@ export default function (state = {}, action) {
     case FOLLOW_POST:
       return addOrRemoveFollower(state, id, meta.person)
     case CREATE_COMMENT:
-      return addFollower(state, id, payload.user)
+      const withFollower = addFollower(state, id, payload.user)
+      return {
+        ...withFollower,
+        [id]: {
+          ...withFollower[id],
+          numComments: (get('comments.length', post) || 0) + 1
+        }
+      }
     case FETCH_PERSON:
       const newPosts = compact([payload.recent_request, payload.recent_offer])
       return mergeList(state, newPosts.map(normalize), 'id')

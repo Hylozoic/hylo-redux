@@ -46,7 +46,6 @@ export const EventPostCard = ({ post }) => {
 
 const Attendance = ({ post, limit, showButton, children }, { currentUser, dispatch }) => {
   const { responders } = post
-
   const going = sortBy(
     responders.filter(r => r.response === 'yes'),
     p => same('id', p, currentUser) ? 'Aaa' : p.name

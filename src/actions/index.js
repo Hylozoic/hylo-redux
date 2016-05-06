@@ -259,7 +259,7 @@ export function fetchPost (id) {
   return {
     type: FETCH_POST,
     payload: {api: true, path: `/noo/post/${id}?${querystring}`},
-    meta: {cache: {id, bucket: 'posts'}}
+    meta: {cache: {id, bucket: 'posts', requiredProp: 'comments'}}
   }
 }
 

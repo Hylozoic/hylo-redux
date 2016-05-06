@@ -7,7 +7,7 @@ import { textLength } from '../util/text'
 import { isEmpty } from 'lodash'
 import { find, some } from 'lodash/fp'
 import { same } from '../models'
-import { getPost } from '../models/post'
+import { getPost, imageUrl } from '../models/post'
 import Icon from './Icon'
 import Post from './Post'
 import Video from './Video'
@@ -19,15 +19,13 @@ import { fetchPost, followPost } from '../actions'
 const { array, bool, func, object } = React.PropTypes
 
 const ProjectPost = (props, context) => {
-  const { post, community, comments, communities, currentUser, dispatch } = context
-  const { tag, media, location, user, followers } = post
+  const { post, community, comments, communities } = context
+  const { tag, media, location, user } = post
   const title = decode(post.name || '')
   const video = find(m => m.type === 'video', media)
   const image = find(m => m.type === 'image', media)
   const description = presentDescription(post, community)
-  const requests = post.children
-  const isFollowing = some(same('id', currentUser), followers)
-  const follow = () => dispatch(followPost(post.id, currentUser))
+  const requests = post.children || []
 
   return <div className='post project boxy-post'>
     <Header communities={communities}/>
@@ -36,7 +34,7 @@ const ProjectPost = (props, context) => {
     <div className='box'>
       {video
         ? <div className='video-wrapper'><Video url={video.url}/></div>
-        : image && <div className='image'><img src={image}/></div>}
+      : image && <div className='image'><img src={image.url}/></div>}
       <div className='row'>
         <div className='main-col'>
           {location && <div className='meta location'>
@@ -56,43 +54,49 @@ const ProjectPost = (props, context) => {
             </div>
           </div>
         </div>
-        <div className='supporters'>
-          <h3>{followers.length} supporters</h3>
-          <div className='avatar-list'>
-            {followers.map(person => <Avatar person={person} key={person.id}/>)}
-          </div>
-          {!isEmpty(followers) && <LinkedPersonSentence people={followers} className='blurb meta'>
-            support{followers.length > 1 || some(same('id', currentUser), followers) ? '' : 's'}
-            <span>&nbsp;this.</span>
-          </LinkedPersonSentence>}
-          <a className='support button has-icon' onClick={follow}>
-            <Icon name={isFollowing ? 'ok-sign' : 'plus-sign'}/>
-            {isFollowing ? 'Supporting' : 'Support this'}
-          </a>
-        </div>
+        <Supporters post={post}/>
       </div>
     </div>
-    <div className='requests'>
+    {requests.length > 0 && <div className='requests'>
       <h3>
-        {requests.length} requests&nbsp;
+        {requests.length} request{requests.length === 1 ? '' : 's'}&nbsp;
         <span className='soft'>to make this happen</span>
       </h3>
       {requests.map(id => <ProjectRequest key={id} {...{id, community}}/>)}
-    </div>
+    </div>}
     <CommentSection comments={comments}/>
   </div>
 }
-
 ProjectPost.contextTypes = {
   community: object,
   communities: array,
   post: object,
-  comments: array,
-  currentUser: object,
-  dispatch: func
+  comments: array
 }
 
 export default ProjectPost
+
+const Supporters = ({ post, simple }, { currentUser, dispatch }) => {
+  const { followers } = post
+  const isFollowing = some(same('id', currentUser), followers)
+  const follow = () => dispatch(followPost(post.id, currentUser))
+
+  return <div className='supporters'>
+    {!simple && <h3>{followers.length} supporters</h3>}
+    <div className='avatar-list'>
+      {followers.map(person => <Avatar person={person} key={person.id}/>)}
+    </div>
+    {!isEmpty(followers) && <LinkedPersonSentence people={followers} className='blurb meta'>
+      support{followers.length > 1 || some(same('id', currentUser), followers) ? '' : 's'}
+      <span>&nbsp;this.</span>
+    </LinkedPersonSentence>}
+    {!simple && <a className='support button has-icon' onClick={follow}>
+      <Icon name={isFollowing ? 'ok-sign' : 'plus-sign'}/>
+      {isFollowing ? 'Supporting' : 'Support this'}
+    </a>}
+  </div>
+}
+Supporters.contextTypes = {currentUser: object, dispatch: func}
 
 @connect((state, { id }) => ({
   post: getPost(id, state)
@@ -157,4 +161,25 @@ class ProjectRequest extends React.Component {
       </div>
     </div>
   }
+}
+
+const spacer = <span>&nbsp; •&nbsp; </span>
+
+export const ProjectPostCard = ({ post }) => {
+  const { name, user, tag } = post
+  const url = `/p/${post.id}`
+  const backgroundImage = `url(${imageUrl(post)})`
+
+  return <div className='post project-summary'>
+    <A className='image' to={url} style={{backgroundImage}}/>
+    <div className='meta'>
+      {tag && <span>
+        <A className='hashtag' to={url}>#{tag}</A>
+        {spacer}
+      </span>}
+      <A to={`/u/${user.id}`}>{user.name}</A>
+    </div>
+    <A className='title' to={url}>{name}</A>
+    <Supporters post={post} simple={true}/>
+  </div>
 }

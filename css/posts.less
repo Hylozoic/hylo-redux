@@ -534,7 +534,7 @@ ul.posts {
   }
 }
 
-.post.event-summary {
+.special-post-summary-card() {
   .clearfix;
   padding: @post-padding;
 
@@ -564,6 +564,10 @@ ul.posts {
   .content {
     overflow: hidden;
   }
+}
+
+.post.event-summary {
+  .special-post-summary-card;
 
   .attendance {
     width: 61.8%;
@@ -638,6 +642,12 @@ ul.posts {
   .box {
     border: 1px solid @post-border;
     margin: 0 @post-padding @post-padding;
+
+    .image {
+      img {
+        width: 100%;
+      }
+    }
   }
 }
 
@@ -648,23 +658,24 @@ ul.posts {
 
     .image {
       padding: 12px 12px 0;
-      img {
-        width: 100%;
-      }
     }
+
     .time, .location, .rsvp-container {
       position: relative;
       height: @row-height;
       margin-right: @attendance-width;
       line-height: @row-height;
     }
+
     .time, .location {
       .ellipsis;
       padding-right: 10px;
     }
+
     .time {
       border-bottom: 1px solid @post-border;
     }
+
     .rsvp-container {
       border-bottom: 0;
       padding-left: 18px;
@@ -673,6 +684,7 @@ ul.posts {
         border-color: @damian-green;
       }
     }
+
     .glyphicon {
       line-height: @row-height;
       vertical-align: middle;
@@ -681,6 +693,7 @@ ul.posts {
       padding-left: 18px;
       color: @light-gray-text;
     }
+
     .attendance {
       border-left: 1px solid @post-border;
       padding: 10px;
@@ -692,10 +705,32 @@ ul.posts {
         margin-top: 5px;
       }
     }
+
     .details {
       .clearfix;
       border-top: 1px solid @post-border;
       padding: @post-padding;
+    }
+  }
+}
+
+.post.project, .post.project-summary {
+  h3 {
+    text-transform: uppercase;
+    font-size: 13px;
+    .semibold;
+    letter-spacing: 0.08em;
+    &:first-child {
+      margin-top: 0;
+    }
+
+    .soft {
+      color: @gray-text;
+    }
+  }
+  .supporters {
+    .avatar-list {
+      margin-bottom: 4px;
     }
   }
 }
@@ -727,10 +762,7 @@ ul.posts {
 
   .supporters {
     .make-sm-column(4);
-    padding: 14px 15px 12px 12px;
-    .avatar-list {
-      margin-bottom: 4px;
-    }
+    padding: 12px 15px 12px 12px;
 
     .blurb {
       margin-bottom: @p-bottom-margin;
@@ -750,20 +782,6 @@ ul.posts {
       position: absolute;
       width: 100%;
       height: 100%;
-    }
-  }
-
-  h3 {
-    text-transform: uppercase;
-    font-size: 13px;
-    .semibold;
-    letter-spacing: 0.08em;
-    &:first-child {
-      margin-top: 0;
-    }
-
-    .soft {
-      color: @gray-text;
     }
   }
 
@@ -847,4 +865,8 @@ ul.posts {
       }
     }
   }
+}
+
+.post.project-summary {
+  .special-post-summary-card;
 }

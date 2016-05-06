@@ -1,39 +1,50 @@
 import React from 'react'
-import { connect } from 'react-redux'
 import { prefetch } from 'react-fetcher'
-import { fetch, ConnectedProjectList } from './ConnectedProjectList'
+import { fetch, ConnectedPostList } from './ConnectedPostList'
 import ProjectListControls from '../components/ProjectListControls'
 import { refetch } from '../util/caching'
-import CoverImagePage from '../components/CoverImagePage'
-import { setCurrentCommunityId } from '../actions'
 const { func, object } = React.PropTypes
 
-const subject = 'all'
-const id = 'me' // just a placeholder; value isn't meaningful
+const querystringDefaults = ({type: 'project', filter: 'all'})
+export const setDefaults = query => ({...query, type: 'project'})
 
-@connect()
-@prefetch(({ dispatch, params, query }) => {
-  dispatch(setCurrentCommunityId('all'))
-  return dispatch(fetch(subject, id, query))
+const fetchParams = (location, params, currentUser) => {
+  const isInCommunity = location.pathname.startsWith('/c/')
+  return {
+    subject: isInCommunity ? 'community' : 'all-posts',
+    id: isInCommunity ? params.id : currentUser.id
+  }
+}
+
+@prefetch(({ dispatch, location, params, query, currentUser }) => {
+  const { subject, id } = fetchParams(location, params, currentUser)
+  return dispatch(fetch(subject, id, setDefaults(query)))
 })
 export default class Projects extends React.Component {
   static propTypes = {
+    location: object,
+    params: object
+  }
+
+  static contextTypes = {
     dispatch: func,
-    location: object
+    currentUser: object
   }
 
   changeQuery = opts => {
-    let { dispatch, location } = this.props
-    dispatch(refetch(opts, location))
+    this.context.dispatch(refetch(opts, this.props.location, querystringDefaults))
   }
 
   render () {
-    let { location: { query } } = this.props
-    let { type, search } = query || {}
+    const { currentUser } = this.context
+    const { location, params } = this.props
+    const { subject, id } = fetchParams(location, params, currentUser)
+    const query = setDefaults(location.query)
+    const { filter, search } = query || {}
 
-    return <CoverImagePage>
-      <ProjectListControls onChange={this.changeQuery} search={search} type={type}/>
-      <ConnectedProjectList {...{subject, id, query}}/>
-    </CoverImagePage>
+    return <div>
+      <ProjectListControls onChange={this.changeQuery} search={search} filter={filter}/>
+      <ConnectedPostList {...{subject, id, query}}/>
+    </div>
   }
 }

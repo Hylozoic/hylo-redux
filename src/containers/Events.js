@@ -1,12 +1,11 @@
 import React from 'react'
-import { compose } from 'redux'
-import { connect } from 'react-redux'
 import { prefetch } from 'react-fetcher'
 import { fetch, ConnectedPostList } from './ConnectedPostList'
 import { refetch } from '../util/caching'
 import CoverImagePage from '../components/CoverImagePage'
 import { setCurrentCommunityId } from '../actions'
 import cx from 'classnames'
+const { func, object } = React.PropTypes
 
 const subject = 'all-posts'
 
@@ -30,27 +29,28 @@ export const toggleShowPast = (showPast, dispatch, location) => {
   dispatch(refetch(setDefaults({filter}), location, querystringDefaults))
 }
 
-const Events = compose(
-  connect(({ people }) => ({
-    currentUser: people.current
-  })),
-  prefetch(({ dispatch, params, query, currentUser: { id } }) => {
-    dispatch(setCurrentCommunityId('all'))
-    return dispatch(fetch(subject, id, setDefaults(query)))
-  })
-)(props => {
-  const { dispatch, location, currentUser: { id } } = props
+const Events = prefetch(({ dispatch, params, query, currentUser: { id } }) => {
+  dispatch(setCurrentCommunityId('all'))
+  return dispatch(fetch(subject, id, setDefaults(query)))
+})((props, { currentUser: { id } }) => {
+  const { location } = props
   const query = setDefaults(location.query)
-  const showingPast = query.filter !== 'future'
   return <CoverImagePage>
-    <div className='list-controls'>
-      <button className={cx({active: showingPast})}
-        onClick={() => toggleShowPast(!showingPast, dispatch, location)}>
-        Show past events
-      </button>
-    </div>
+    <EventListControls query={query} location={location}/>
     <ConnectedPostList {...{subject, id, query}}/>
   </CoverImagePage>
 })
+Events.contextTypes = {currentUser: object}
+
+export const EventListControls = ({ query, location }, { dispatch }) => {
+  const showingPast = query.filter !== 'future'
+  return <div className='list-controls'>
+    <button className={cx({active: showingPast})}
+      onClick={() => toggleShowPast(!showingPast, dispatch, location)}>
+      Show past events
+    </button>
+  </div>
+}
+EventListControls.contextTypes = {dispatch: func}
 
 export default Events

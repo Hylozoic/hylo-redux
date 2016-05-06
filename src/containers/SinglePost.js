@@ -73,7 +73,7 @@ export default class SinglePost extends React.Component {
     const { post, community, editing, error, location: { query } } = this.props
 
     if (error) return <AccessErrorMessage error={error}/>
-    if (!post) return <div className='loading'>Loading...</div>
+    if (!post || !community) return <div className='loading'>Loading...</div>
 
     return <CoverImagePage id='single-post' image={get(community, 'banner_url')}>
       {editing

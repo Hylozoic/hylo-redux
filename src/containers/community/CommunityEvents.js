@@ -3,45 +3,39 @@ import { prefetch } from 'react-fetcher'
 import { connect } from 'react-redux'
 import { compose } from 'redux'
 import { fetch, ConnectedPostList } from '../../containers/ConnectedPostList'
-import cx from 'classnames'
 import { isMember } from '../../models/currentUser'
-const { func, object } = React.PropTypes
-import { setDefaults, toggleShowPast } from '../Events'
+import { getCommunity } from '../../models/community'
+const { object } = React.PropTypes
+import { setDefaults, EventListControls } from '../Events'
 import PostEditor from '../../components/PostEditor'
 
 const subject = 'community'
 
-const CommunityEvents = props => {
-  let { params: { id }, location, dispatch, currentUser, community } = props
+const CommunityEvents = (props, { currentUser }) => {
+  let { params: { id }, location, community } = props
   let query = setDefaults(location.query)
-  let showingPast = query.filter !== 'future'
 
   return <div>
     <PostEditor community={community} type='event'/>
-    <div className='list-controls'>
-      <button className={cx({active: showingPast})}
-        onClick={() => toggleShowPast(!showingPast, dispatch, location)}>
-        Show past events
-      </button>
-    </div>
+    <EventListControls query={query} location={location}/>
     <ConnectedPostList {...{subject, id, query}}/>
-    {!isMember(currentUser, community) && <div className='meta'>
+    {!isMember(currentUser, community) && <div className='meta footer-meta'>
       You are not a member of this community, so you are shown only posts that are marked as public.
     </div>}
   </div>
 }
 
 CommunityEvents.propTypes = {
-  dispatch: func,
   params: object,
-  community: object,
-  currentUser: object
+  community: object
 }
 
+CommunityEvents.contextTypes = {currentUser: object}
+
 export default compose(
-  prefetch(({ dispatch, params, query }) => dispatch(fetch(subject, params.id, setDefaults(query)))),
-  connect(({ people, communities }, { params }) => ({
-    community: communities[params.id],
-    currentUser: people.current
+  prefetch(({ dispatch, params: { id }, query }) =>
+    dispatch(fetch(subject, id, setDefaults(query)))),
+  connect((state, { params: { id } }) => ({
+    community: getCommunity(id, state)
   }))
 )(CommunityEvents)

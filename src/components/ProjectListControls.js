@@ -3,14 +3,16 @@ import Select from './Select'
 import A from './A'
 import { debounce } from 'lodash'
 
-const projectTypes = [
+const filters = [
   {name: 'All projects', id: 'all'},
   {name: 'Projects I started or joined', id: 'mine'}
 ]
 
 const ProjectListControls = props => {
-  let { onChange, type, search } = props
-  let selectedType = type ? projectTypes.find(t => t.id === type) : projectTypes[0]
+  const { onChange, filter, search } = props
+  const selectedFilter = filter ? filters.find(t => t.id === filter) : filters[0]
+  const changeSearch = ({ target: { value } }) => delaySearch(value)
+  const delaySearch = debounce(search => onChange({search}), 500)
 
   return <div className='list-controls'>
     <A className='button' to='/project/new'>
@@ -19,10 +21,10 @@ const ProjectListControls = props => {
     </A>
     <input type='text' className='form-control search'
       placeholder='Search' defaultValue={search}
-      onChange={debounce(event => onChange({search: event.target.value}), 500)}/>
+      onChange={changeSearch}/>
 
-    <Select className='type' choices={projectTypes} selected={selectedType}
-      onChange={t => onChange({type: t.id})} alignRight={true}/>
+    <Select className='type' choices={filters} selected={selectedFilter}
+      onChange={t => onChange({filter: t.id})} alignRight={true}/>
   </div>
 }
 

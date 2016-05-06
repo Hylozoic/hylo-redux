@@ -10,7 +10,6 @@ import CommunityProfile from './containers/community/CommunityProfile'
 import CommunityPosts from './containers/community/CommunityPosts'
 import CommunityMembers from './containers/community/CommunityMembers'
 import CommunityEvents from './containers/community/CommunityEvents'
-import CommunityProjects from './containers/community/CommunityProjects'
 import CommunityEditor from './containers/community/CommunityEditor'
 import CommunityInvitations from './containers/community/CommunityInvitations'
 import CommunityJoinForm from './containers/community/CommunityJoinForm'
@@ -80,7 +79,6 @@ export default function makeRoutes (store) {
     <Route path='my-posts' component={MyPosts} onEnter={requireLogin()}/>
     <Route path='followed-posts' component={FollowedPosts} onEnter={requireLogin()}/>
     <Route path='events' component={Events} onEnter={requireLogin()}/>
-    <Route path='projects' component={Projects} onEnter={requireLogin()}/>
     <Route path='search' component={Search} onEnter={requireLogin()}/>
     <Route path='u/:id' component={PersonProfile} onEnter={requireLogin()}/>
     <Route path='c/new' component={CommunityEditor} onEnter={requireLogin()}/>
@@ -106,7 +104,7 @@ export default function makeRoutes (store) {
       <IndexRoute component={CommunityPosts}/>
       <Route path='members' component={CommunityMembers} onEnter={requireLogin()}/>
       <Route path='events' component={CommunityEvents}/>
-      <Route path='projects' component={CommunityProjects}/>
+      <Route path='projects' component={Projects}/>
       <Route path='about' component={AboutCommunity}/>
       <Route path='settings' component={CommunitySettings} onEnter={requireLogin()}/>
       <Route path='invite' component={CommunityInvitations} onEnter={requireLogin()}/>
@@ -134,6 +132,7 @@ export default function makeRoutes (store) {
     <Route component={AllCommunities}>
       <Route path='tag/:tagName' component={TagPosts}/>
       <Route path='notifications' component={Notifications} onEnter={requireLogin()}/>
+      <Route path='projects' component={Projects} onEnter={requireLogin()}/>
     </Route>
 
     <Route path='testbench' component={TestBench}/>

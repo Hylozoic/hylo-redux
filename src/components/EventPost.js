@@ -16,7 +16,7 @@ const { array, func, object } = React.PropTypes
 
 const spacer = <span>&nbsp; •&nbsp; </span>
 
-const shouldShowTag = tag => !includes(['event', 'chat'], tag)
+const shouldShowTag = tag => tag && !includes(['event', 'chat'], tag)
 
 export const EventPostCard = ({ post }) => {
   const { start_time, end_time, user, id, name, tag } = post

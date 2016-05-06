@@ -1,14 +1,17 @@
 import { assetUrl } from '../util/assets'
 import { intersection, isNull, keys } from 'lodash'
-import { find, get, map, omitBy } from 'lodash/fp'
+import { curry, find, get, map, omitBy } from 'lodash/fp'
 import { same } from './index'
 
 const fallbackImageUrl = assetUrl('/img/axolotl.jpg')
 
-export const imageUrl = (post, fallback = true) => {
-  const url = get('url', find(m => m.type === 'image', post.media))
-  return url || (fallback ? fallbackImageUrl : null)
-}
+const media = curry((type, post) => find(m => m.type === type, post.media))
+const getVideo = media('video')
+const getImage = media('image')
+
+export const imageUrl = (post, fallback = true) =>
+  get('thumbnail_url', getVideo(post)) || get('url', getImage(post)) ||
+    (fallback && fallbackImageUrl) || null
 
 export const getCommunities = (post, state) =>
   !post ? []

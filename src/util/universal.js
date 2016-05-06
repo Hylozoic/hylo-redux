@@ -1,6 +1,7 @@
 import qs from 'querystring'
 
 export const localsForPrefetch = ({ location, params }, store) => ({
+  location,
   params,
   store,
   path: location.pathname,

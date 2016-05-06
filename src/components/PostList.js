@@ -7,6 +7,7 @@ import { changeViewportTop, positionInViewport } from '../util/scrolling'
 import { filter, includes } from 'lodash/fp'
 import PostEditor from './PostEditor'
 import { EventPostCard } from './EventPost'
+import { ProjectPostCard } from './ProjectPost'
 import { getEditingPostIds } from '../models/post'
 
 const { array, bool, func, object, string } = React.PropTypes
@@ -79,8 +80,11 @@ class PostList extends React.Component {
         </div>
       }
 
-      if (post.type === 'event') {
-        return <EventPostCard post={post}/>
+      switch (post.type) {
+        case 'event':
+          return <EventPostCard post={post}/>
+        case 'project':
+          return <ProjectPostCard post={post}/>
       }
 
       return <Post post={post} onExpand={() => this.expand(post.id)}/>

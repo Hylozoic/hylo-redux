@@ -40,7 +40,7 @@ describe('posts', () => {
       }
 
       let expectedState = {
-        a: {id: 'a', name: 'hi', description: 'hello'}
+        a: {id: 'a', name: 'hi', description: 'hello', communities: []}
       }
 
       expect(posts(state, action)).to.deep.equal(expectedState)

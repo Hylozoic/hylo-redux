@@ -1,27 +1,24 @@
 import { cloneDeep, filter, isEqual, merge, set, some, transform, uniq } from 'lodash'
 
-export function appendUniq (state, key, values) {
-  let existing = state[key] || []
-  return concatUniq(state, key, existing, values)
-}
+export const appendUniq = (state, key, values) =>
+  concatUniq(state, key, state[key] || [], values)
 
-export function prependUniq (state, key, values) {
-  let existing = state[key] || []
-  return concatUniq(state, key, values, existing)
-}
+export const prependUniq = (state, key, values) =>
+  concatUniq(state, key, values, state[key] || [])
 
-export function concatUniq (state, key, first, second) {
-  return {
-    ...state,
-    [key]: uniq(first.concat(second))
-  }
-}
+export const concatUniq = (state, key, first, second) => ({
+  ...state,
+  [key]: uniq(first.concat(second))
+})
 
-export const hashBy = (objects, prop) => {
-  let fn = typeof prop === 'function'
-    ? (r, n) => r[prop(n)] = n
-    : (r, n) => r[n[prop]] = n
-  return transform(objects, fn, {})
+// given a list of items, produce an object where each item is keyed by the
+// value of the iteratee (lodash's term for a function to apply or a property
+// name to look up) for it
+export const hashBy = (arr, iteratee) => {
+  let fn = typeof iteratee === 'function'
+    ? (r, n) => r[iteratee(n)] = n
+    : (r, n) => r[n[iteratee]] = n
+  return transform(arr, fn, {})
 }
 
 // for modifying a post, project, or other object with a list of media; set an

@@ -1,22 +1,13 @@
 import React from 'react'
-import { get } from 'lodash/fp'
 import Icon from './Icon'
 import DatetimePicker from 'react-datetime'
 import { sanitizeTagInput } from '../util/textInput'
-import { fetchTag } from '../actions'
+import { validateTag } from './EventPostEditor'
+import { get } from 'lodash/fp'
+import { getVideo } from '../models/post'
 const { func, object } = React.PropTypes
 
-export const validateTag = (tag, dispatch) => {
-  return dispatch(fetchTag(tag))
-  .then(({ payload, error, meta: { tagName } }) => {
-    if (error && get('response.status', payload) === 404) return true
-
-    window.alert(`The tag "${tagName}" is already in use.`)
-    return false
-  })
-}
-
-export default class EventPostEditor extends React.Component {
+export default class ProjectPostEditor extends React.Component {
   static propTypes = {
     postEdit: object,
     post: object,
@@ -33,23 +24,22 @@ export default class EventPostEditor extends React.Component {
 
   render () {
     const { postEdit, update } = this.props
-    const { start_time, end_time, tag, type } = postEdit
-    if (type !== 'event') setTimeout(() => update({type: 'event'})) // smelly
-
-    const startTime = start_time ? new Date(start_time) : null
+    const { end_time, tag, type } = postEdit
     const endTime = end_time ? new Date(end_time) : null
     const updateTag = tag => update({tag, tagEdited: true})
+    const videoUrl = get('url', getVideo(postEdit))
+    if (type !== 'project') setTimeout(() => update({type: 'project'}))
 
     return <div className='more-fields'>
-      <div className='start-time'>
-        <Icon name='calendar'/>
-        <DatetimePicker inputProps={{placeholder: 'start time'}}
-          value={startTime}
-          onChange={m => update({start_time: m.toISOString()})}/>
+      <div className='video'>
+        <Icon name='film'/>
+        <input type='text' placeholder='youtube or vimeo url'
+          value={videoUrl}
+          onChange={event => update({video: event.target.value})}/>
       </div>
-      <div className='end-time'>
+      <div className='deadline'>
         <Icon name='calendar'/>
-        <DatetimePicker inputProps={{placeholder: 'end time'}}
+        <DatetimePicker inputProps={{placeholder: 'deadline'}}
           value={endTime}
           onChange={m => update({end_time: m.toISOString()})}/>
       </div>

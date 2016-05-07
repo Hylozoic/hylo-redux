@@ -1,3 +1,5 @@
+import { hashtagCharacterRegex } from '../models/hashtag'
+
 export const keyMap = {
   BACKSPACE: 8,
   TAB: 9,
@@ -16,3 +18,6 @@ export const keyMap = {
 export const getKeyCode = event => event.which || event.keyCode
 
 export const getCharacter = event => String.fromCharCode(getKeyCode(event))
+
+export const sanitizeTagInput = event =>
+  getCharacter(event).match(hashtagCharacterRegex) || event.preventDefault()

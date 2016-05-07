@@ -152,7 +152,7 @@ describe('postEdits', () => {
         x: {
           description: 'lol',
           type: 'event',
-          tagManuallyEdited: true
+          tagEdited: true
         }
       }
 
@@ -160,7 +160,7 @@ describe('postEdits', () => {
         x: {
           name: 'Foo and some! split-words as well',
           description: 'lol',
-          tagManuallyEdited: true,
+          tagEdited: true,
           type: 'event'
         }
       }

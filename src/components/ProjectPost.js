@@ -82,7 +82,9 @@ const Supporters = ({ post, simple }, { currentUser, dispatch }) => {
   const follow = () => dispatch(followPost(post.id, currentUser))
 
   return <div className='supporters'>
-    {!simple && <h3>{followers.length} supporters</h3>}
+    {!simple && <h3>
+      {followers.length} supporter{followers.length === 1 ? '' : 's'}
+    </h3>}
     <div className='avatar-list'>
       {followers.map(person => <Avatar person={person} key={person.id}/>)}
     </div>

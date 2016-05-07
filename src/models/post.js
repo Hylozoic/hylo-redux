@@ -6,8 +6,8 @@ import { same } from './index'
 const fallbackImageUrl = assetUrl('/img/axolotl.jpg')
 
 const media = curry((type, post) => find(m => m.type === type, post.media))
-const getVideo = media('video')
-const getImage = media('image')
+export const getVideo = media('video')
+export const getImage = media('image')
 
 export const imageUrl = (post, fallback = true) =>
   get('thumbnail_url', getVideo(post)) || get('url', getImage(post)) ||

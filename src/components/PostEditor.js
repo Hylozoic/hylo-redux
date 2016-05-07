@@ -9,18 +9,12 @@ because they make more sense.
 import React from 'react'
 import cx from 'classnames'
 import {
-  debounce,
-  filter,
-  find,
-  get,
-  includes,
-  isEmpty,
-  some,
-  startsWith
+  debounce, filter, find, get, includes, isEmpty, some, startsWith
 } from 'lodash'
 import CommunityTagInput from './CommunityTagInput'
 import Dropdown from './Dropdown'
 import EventPostEditor from './EventPostEditor'
+import ProjectPostEditor from './ProjectPostEditor'
 import RichTextEditor from './RichTextEditor'
 import { NonLinkAvatar } from './Avatar'
 import AutosizingTextarea from './AutosizingTextarea'
@@ -42,17 +36,15 @@ const specialTags = ['request', 'offer', 'intention']
 
 @connect((state, { community, post, project, type }) => {
   const id = post ? post.id
-    : project ? `project-${project.id}-new`
+    : type === 'project' ? 'new-project'
     : type === 'event' ? 'new-event' : 'new'
 
   // this object tracks the edits that are currently being made
   let postEdit = state.postEdits[id] || {}
-  if (!project && post) project = get(post, 'projects.0')
 
   return {
     id,
     postEdit,
-    project,
     mentionOptions: state.typeaheadMatches.post,
     currentUser: state.people.current,
     saving: state.pending[CREATE_POST] || state.pending[UPDATE_POST],
@@ -69,7 +61,6 @@ export class PostEditor extends React.Component {
     postEdit: object,
     community: object,
     saving: bool,
-    project: object,
     onCancel: func,
     imagePending: bool,
     type: string
@@ -113,7 +104,7 @@ export class PostEditor extends React.Component {
   }
 
   validate () {
-    let { postEdit, project } = this.props
+    let { postEdit } = this.props
 
     if (!postEdit.name) {
       window.alert('The title of a post cannot be blank.')
@@ -121,13 +112,13 @@ export class PostEditor extends React.Component {
       return Promise.resolve(false)
     }
 
-    if (!project && isEmpty(postEdit.communities)) {
+    if (isEmpty(postEdit.communities)) {
       window.alert('Please pick at least one community.')
       return Promise.resolve(false)
     }
 
-    if (this.isEvent()) {
-      return Promise.resolve(this.refs.eventEditor.validate())
+    if (this.refs.subeditor) {
+      return Promise.resolve(this.refs.subeditor.validate())
     }
 
     return Promise.resolve(true)
@@ -146,13 +137,12 @@ export class PostEditor extends React.Component {
   }
 
   save () {
-    const { dispatch, post, postEdit, project, id } = this.props
+    const { dispatch, post, postEdit, id } = this.props
     const tag = postEdit.tag
     const params = {
-      type: this.isEvent() ? 'event' : null,
+      type: this.editorType(),
       ...postEdit,
       ...attachmentParams(post && post.media, postEdit.media),
-      projectId: project ? project.id : null,
       tag
     }
 
@@ -164,8 +154,7 @@ export class PostEditor extends React.Component {
       // ids in this component
       trackEvent(post ? EDITED_POST : ADDED_POST, {
         post: {id: get(post, 'id'), tag},
-        community: {id: get(postEdit, 'communities.0')},
-        project
+        community: {id: get(postEdit, 'communities.0')}
       })
       this.cancel()
     })
@@ -247,25 +236,29 @@ export class PostEditor extends React.Component {
   }
 
   handleAddTag = tag => {
-    if (this.isEvent()) return
+    if (this.editorType()) return
     tag = tag.replace(/^#/, '')
     if (includes(['request', 'offer'], tag)) {
       this.updateStore({tag})
     }
   }
 
-  isEvent () {
-    const { postEdit, type } = this.props
-    return postEdit.type === 'event' || type === 'event'
+  editorType () {
+    const type = this.props.postEdit.type || this.props.type
+    return includes(['event', 'project'], type) ? type : null
   }
 
   render () {
     let {
-      post, postEdit, dispatch, project, currentUser, imagePending, saving
+      post, postEdit, dispatch, currentUser, imagePending, saving
     } = this.props
     let { description, communities, tag } = postEdit
     let { name, showDetails } = this.state
-    const isEvent = this.isEvent()
+    const editorType = this.editorType()
+    const shouldSelectTag = !includes(['event', 'project'], editorType)
+    const selectTag = tag => this.updateStore({tag})
+    const Subeditor = editorType === 'event' ? EventPostEditor
+      : editorType === 'project' ? ProjectPostEditor : null
 
     // FIXME this should be performed during the creation of the postEdits entry
     // in the store
@@ -277,16 +270,13 @@ export class PostEditor extends React.Component {
       this.preparedDescription = true
     }
 
-    if (!tag) tag = 'chat'
-    const selectTag = tag => this.updateStore({tag})
-
     return <div className='post-editor clearfix'>
       <PostEditorHeader person={currentUser}/>
 
       <div className='title-wrapper'>
         <AutosizingTextarea type='text' ref='title' className='title'
           value={name}
-          placeholder={placeholderText(isEvent)}
+          placeholder={placeholderText(this.editorType())}
           onFocus={this.expand}
           onChange={event => this.updateTitle(event)}/>
       </div>
@@ -304,9 +294,9 @@ export class PostEditor extends React.Component {
           More details
         </div>}
 
-      {!isEvent && <Dropdown className='hashtag-selector' toggleChildren={
+      {shouldSelectTag && <Dropdown className='hashtag-selector' toggleChildren={
         <button>
-          #{tag === 'chat' ? 'all-topics' : tag}&nbsp;
+          #{tag || 'all-topics'}&nbsp;
           <span className='caret'></span>
         </button>
       }>
@@ -316,17 +306,16 @@ export class PostEditor extends React.Component {
         <li><a onClick={() => selectTag('chat')}>#all-topics</a></li>
       </Dropdown>}
 
-      {isEvent && <EventPostEditor ref='eventEditor' post={post}
-        postEdit={postEdit}
-        update={this.updateStore}/>}
+      {Subeditor && <Subeditor ref='subeditor'
+        {...{post, postEdit, update: this.updateStore}}/>}
 
-      {!project && <div className='communities'>
+      <div className='communities'>
         in&nbsp;
         <CommunitySelector currentUser={currentUser}
           communities={communities || []}
           onSelect={this.addCommunity}
           onRemove={this.removeCommunity}/>
-      </div>}
+      </div>
 
       <div className='buttons'>
         <div className='right'>
@@ -337,11 +326,13 @@ export class PostEditor extends React.Component {
           disabled={saving}>
           {post ? 'Save Changes' : 'Post'}
         </button>
+
         <AttachmentsDropdown id={this.props.id}
           media={postEdit.media}
           path={`user/${currentUser.id}/seeds`}
           imagePending={imagePending}
           dispatch={dispatch}/>
+
         <label className='visibility'>
           <input type='checkbox' value={postEdit.public}
             onChange={() => this.updateStore({public: !postEdit.public})}/>
@@ -448,7 +439,6 @@ const PostEditorHeader = ({ person }) =>
 export default class PostEditorWrapper extends React.Component {
   static propTypes = {
     post: object,
-    project: object,
     community: object,
     type: string,
     expanded: bool
@@ -468,7 +458,7 @@ export default class PostEditorWrapper extends React.Component {
   }
 
   render () {
-    const { type, post, project, community } = this.props
+    const { type, post, community } = this.props
 
     // if PostEditorWrapper is being initialized with expanded=true, we don't
     // want to set up onCancel, because the entire component will probably be
@@ -480,14 +470,16 @@ export default class PostEditorWrapper extends React.Component {
       return <div className='post-editor' onClick={this.toggle}>
         <PostEditorHeader person={currentUser}/>
         <div className='prompt'>
-          {placeholderText(type === 'event')}
+          {placeholderText(type)}
         </div>
       </div>
     }
 
-    return <PostEditor {...{post, project, community, type, onCancel}}/>
+    return <PostEditor {...{post, community, type, onCancel}}/>
   }
 }
 
-const placeholderText = isEvent =>
-  isEvent ? 'Create an event' : 'Start a conversation'
+const placeholderText = type =>
+  type === 'event' ? 'Create an event'
+    : type === 'project' ? 'Start a project'
+    : 'Start a conversation'

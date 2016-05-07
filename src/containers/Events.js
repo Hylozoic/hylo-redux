@@ -3,11 +3,12 @@ import { compose } from 'redux'
 import { connect } from 'react-redux'
 import { prefetch } from 'react-fetcher'
 import { fetch, ConnectedPostList } from './ConnectedPostList'
-import { refetch } from '../util/caching'
+import { paramsForFetch, refetch } from '../util/caching'
 import cx from 'classnames'
 import { isMember } from '../models/currentUser'
 import { getCommunity } from '../models/community'
 import PostEditor from '../components/PostEditor'
+import { isInCommunity } from '../util'
 const { func, object } = React.PropTypes
 
 const setDefaults = query => {
@@ -15,17 +16,8 @@ const setDefaults = query => {
   return {...query, filter, type: 'event', sort: 'start_time'}
 }
 
-const isInCommunity = ({ pathname }) => pathname.startsWith('/c/')
-
-const fetchParams = (location, params, currentUser) => {
-  return {
-    subject: isInCommunity(location) ? 'community' : 'all-posts',
-    id: isInCommunity(location) ? params.id : currentUser.id
-  }
-}
-
 const Events = ({ location, params, community }, { currentUser }) => {
-  const { subject, id } = fetchParams(location, params, currentUser)
+  const { subject, id } = paramsForFetch(location, params, currentUser)
   const query = setDefaults(location.query)
   return <div>
     {community && <PostEditor community={community} type='event'/>}
@@ -40,7 +32,7 @@ Events.contextTypes = {currentUser: object}
 
 export default compose(
   prefetch(({ dispatch, location, params, query, currentUser }) => {
-    const { subject, id } = fetchParams(location, params, currentUser)
+    const { subject, id } = paramsForFetch(location, params, currentUser)
     return dispatch(fetch(subject, id, setDefaults(query)))
   }),
   connect((state, { location, params: { id } }) => ({

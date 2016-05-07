@@ -1,5 +1,5 @@
 import qs from 'querystring'
-
+import { isInCommunity } from './index'
 import { compact, includes, omitBy, upperFirst } from 'lodash'
 import {
   navigate,
@@ -84,4 +84,11 @@ export const refetch = (opts, location, defaults) => {
   let newQuery = cleanAndStringify({...query, ...opts}, defaults)
   let newPath = `${pathname}${newQuery ? '?' + newQuery : ''}`
   return navigate(newPath)
+}
+
+export const paramsForFetch = (location, params, currentUser) => {
+  return {
+    subject: isInCommunity(location) ? 'community' : 'all-posts',
+    id: isInCommunity(location) ? params.id : currentUser.id
+  }
 }

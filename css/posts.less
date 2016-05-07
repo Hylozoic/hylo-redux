@@ -474,7 +474,7 @@ ul.posts {
     }
   }
 
-  .event-section {
+  .more-fields {
     padding-left: @post-content-left-margin;
     .make-row;
 
@@ -542,8 +542,9 @@ ul.posts {
     .fluid-height(61.8%);
     width: 38.2%;
     background-color: #ccc;
-    float: left;
     background-size: cover;
+    background-position: center;
+    float: left;
     margin-right: 15px;
   }
 
@@ -737,7 +738,7 @@ ul.posts {
 
 .post.project {
   .box {
-    padding: 12px 12px 0;
+    padding: 0 12px;
     font-size: 0; // to remove inline-block spacing
 
     > * {
@@ -746,6 +747,12 @@ ul.posts {
 
     .location {
       margin-bottom: 25px;
+    }
+
+    .details {
+      margin-bottom: 25px;
+      padding-bottom: 25px;
+      border-bottom: 1px solid @post-border;
     }
 
     .location, .details, .leads {
@@ -776,6 +783,8 @@ ul.posts {
   }
 
   .video-wrapper {
+    background-color: @faint-gray-bg;
+    margin-top: 12px;
     width: 100%;
     .fluid-height(61.2%);
     iframe {
@@ -786,9 +795,6 @@ ul.posts {
   }
 
   .leads {
-    margin-top: 25px;
-    padding-top: 25px;
-    border-top: 1px solid @post-border;
     .avatar {
       float: left;
       margin-right: 10px;

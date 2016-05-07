@@ -19,3 +19,5 @@ export const ogMetaTags = (title, description, image) => {
 export const isMobile = () => {
   return document.documentElement.clientWidth < 480
 }
+
+export const isInCommunity = ({ pathname }) => pathname.startsWith('/c/')

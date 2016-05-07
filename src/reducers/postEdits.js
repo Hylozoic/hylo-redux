@@ -1,4 +1,4 @@
-import { startCase, uniq } from 'lodash'
+import { includes, startCase, uniq } from 'lodash'
 import {
   CANCEL_POST_EDIT,
   CREATE_POST,
@@ -40,12 +40,12 @@ const suggestedTag = text => {
 const withSuggestedTag = (payload, state, id) => {
   const postEdit = state[id] || {}
   if (postEdit.id ||
-    postEdit.tagManuallyEdited ||
-    postEdit.type !== 'event') return payload
+    postEdit.tagEdited ||
+    !includes(['event', 'project'], postEdit.type)) return payload
 
   return {
-    ...payload,
-    tag: suggestedTag(payload.name || postEdit.name)
+    tag: suggestedTag(payload.name || postEdit.name),
+    ...payload
   }
 }
 
@@ -56,6 +56,12 @@ export default function (state = {}, action) {
   let { subject, id } = meta || {}
   switch (type) {
     case UPDATE_POST_EDITOR:
+      if (payload.video) {
+        return {
+          ...state,
+          [id]: updateMedia(state[id], 'video', payload.video)
+        }
+      }
       return {
         ...state,
         [id]: {...state[id], ...withSuggestedTag(payload, state, id)}

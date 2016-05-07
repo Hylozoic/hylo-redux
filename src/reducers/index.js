@@ -31,7 +31,6 @@ import {
   FETCH_ONBOARDING,
   FETCH_PEOPLE,
   FETCH_POSTS,
-  FETCH_PROJECTS,
   FETCH_TAG,
   FETCH_THANKS,
   FOLLOW_TAG_PENDING,
@@ -45,7 +44,6 @@ import {
   RESET_NETWORK_VALIDATION,
   SEARCH,
   SEND_COMMUNITY_INVITATION,
-  SEND_PROJECT_INVITE,
   SET_CURRENT_COMMUNITY_ID,
   SET_LOGIN_ERROR,
   SET_META_TAGS,
@@ -215,7 +213,6 @@ export default combineReducers({
   totalInvitations: keyedCounter(FETCH_INVITATIONS, 'total', 'meta.communityId'),
   totalPostsByQuery: keyedCounter(FETCH_POSTS, 'posts_total'),
   totalPeopleByQuery: keyedCounter(FETCH_PEOPLE, 'people_total'),
-  totalProjectsByQuery: keyedCounter(FETCH_PROJECTS, 'projects_total'),
   totalSearchResultsByQuery: keyedCounter(SEARCH, 'total'),
 
   pending: (state = {}, action) => {
@@ -233,14 +230,12 @@ export default combineReducers({
       toggle(UPLOAD_IMAGE, true) ||
       toggle(CREATE_POST) ||
       toggle(UPDATE_POST) ||
-      toggle(FETCH_PROJECTS) ||
       toggle(CREATE_COMMUNITY) ||
       toggle(CREATE_NETWORK) ||
       toggle(FETCH_ACTIVITY) ||
       toggle(SEND_COMMUNITY_INVITATION) ||
       toggle(FETCH_INVITATIONS) ||
       toggle(FETCH_COMMUNITIES) ||
-      toggle(SEND_PROJECT_INVITE) ||
       toggle(SEARCH) ||
       state
   },

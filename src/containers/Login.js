@@ -30,12 +30,9 @@ export const prefetchForNext = prefetch(({ query, dispatch }) => {
 export const connectForNext = section =>
   connect((state, { location: { query } }) => {
     let { action, token, id } = query || {}
-    let project, community, actionError
+    let community, actionError
 
     switch (action) {
-      case 'join-project':
-        project = state.projects[id]
-        break
       case 'join-community':
         community = state.communities[id]
         break
@@ -56,7 +53,6 @@ export const connectForNext = section =>
     return {
       ...state[section],
       currentUser: state.people.current,
-      project,
       community,
       actionError
     }
@@ -85,11 +81,10 @@ export default class Login extends React.Component {
     location: object,
     dispatch: func,
     currentUser: object,
-    project: object,
     community: object,
 
-    // this is set when something is wrong with the data for the project,
-    // community, etc. that should be loaded after login
+    // this is set when something is wrong with the data for the community, etc.
+    // that should be loaded after login
     actionError: string
   }
 
@@ -108,7 +103,7 @@ export default class Login extends React.Component {
   }
 
   render () {
-    let { error, actionError, location: { query }, project, community } = this.props
+    let { error, actionError, location: { query }, community } = this.props
 
     if (error === 'no user') error = 'Login was canceled or no user data was found.'
     if (error === 'no email') error = 'The user data did not include an email address.'
@@ -116,7 +111,6 @@ export default class Login extends React.Component {
     return <div id='login' className='login-signup simple-page'>
       <form onSubmit={this.submit}>
         <h2>Log in</h2>
-        {project && <p>To join the project "{project.title}"</p>}
         {community && <p>To join {community.name}</p>}
         {actionError && <div className='alert alert-danger'>{actionError}</div>}
         {error && <div className='alert alert-danger'>{error}</div>}

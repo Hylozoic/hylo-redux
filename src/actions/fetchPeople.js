@@ -13,10 +13,6 @@ export function fetchPeople (opts) {
       querystring = cleanAndStringify({search, limit, offset})
       path = `/noo/community/${id}/members?${querystring}`
       break
-    case 'project':
-      querystring = cleanAndStringify({search, limit, offset, paginate: true})
-      path = `/noo/project/${id}/users?${querystring}`
-      break
     case 'network':
       querystring = cleanAndStringify({search, limit, offset})
       path = `/noo/network/${id}/members?${querystring}`

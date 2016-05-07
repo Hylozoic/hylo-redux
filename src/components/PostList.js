@@ -10,7 +10,7 @@ import { EventPostCard } from './EventPost'
 import { ProjectPostCard } from './ProjectPost'
 import { getEditingPostIds } from '../models/post'
 
-const { array, bool, func, object, string } = React.PropTypes
+const { array, bool, func, string } = React.PropTypes
 
 @connect((state, props) => ({
   editingPostIds: getEditingPostIds(props.posts, state)
@@ -26,7 +26,6 @@ class PostList extends React.Component {
   }
 
   static contextTypes = {
-    project: object,
     postDisplayMode: string
   }
 
@@ -62,7 +61,6 @@ class PostList extends React.Component {
   render () {
     let { hide, editingPostIds, pending, loadMore, refreshPostList } = this.props
     const posts = filter(p => !includes(p.id, hide), this.props.posts)
-    let { project } = this.context
 
     if (!pending && posts.length === 0) {
       return <div className='no-results'>No posts to show.</div>
@@ -70,7 +68,7 @@ class PostList extends React.Component {
 
     const showPost = post => {
       if (includes(post.id, editingPostIds)) {
-        return <PostEditor post={post} expanded={true} project={project}/>
+        return <PostEditor post={post} expanded={true}/>
       }
 
       if (post.id === this.state.expanded) {

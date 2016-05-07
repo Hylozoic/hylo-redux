@@ -2,12 +2,9 @@ import { get, partial } from 'lodash'
 import { mostRecentCommunity } from '../models/person'
 
 // These strings were not used prior to hylo-redux
-export const ADDED_PROJECT = 'Add project'
 export const ADDED_COMMUNITY = 'Add community'
-export const EDITED_PROJECT = 'Edit project'
 export const EDITED_USER_SETTINGS = 'Edit user settings'
 export const INVITED_COMMUNITY_MEMBERS = 'Invited community members'
-export const INVITED_PROJECT_CONTRIBUTORS = 'Invited project contributors'
 
 // These strings correspond to the names of events in Mixpanel with historical
 // data, so they should be changed with care
@@ -29,14 +26,6 @@ export function trackEvent (eventName, options = {}) {
   let { person, post, community, project, ...otherOptions } = options
   let track = partial(window.analytics.track, eventName)
   switch (eventName) {
-    case ADDED_PROJECT:
-    case EDITED_PROJECT:
-    case INVITED_PROJECT_CONTRIBUTORS:
-      track({
-        project_id: project.id,
-        community_slug: project.community.slug
-      })
-      break
     case ADDED_COMMUNITY:
     case VIEWED_COMMUNITY:
     case INVITED_COMMUNITY_MEMBERS:

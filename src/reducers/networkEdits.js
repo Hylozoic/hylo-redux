@@ -1,5 +1,4 @@
 import {
-  CREATE_PROJECT,
   REMOVE_IMAGE,
   UPDATE_NETWORK,
   UPDATE_NETWORK_EDITOR,
@@ -28,7 +27,6 @@ export default function (state = {}, action) {
         }
       }
       break
-    case CREATE_PROJECT:
     case UPDATE_NETWORK:
       return {
         ...state,

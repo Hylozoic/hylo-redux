@@ -21,10 +21,10 @@ export const hashBy = (arr, iteratee) => {
   return transform(arr, fn, {})
 }
 
-// for modifying a post, project, or other object with a list of media; set an
-// item of specified type if url is set, and remove it otherwise. assumes that
-// there is can be only one item of specified type, so it should be used with
-// images and videos in the current implementation but not docs.
+// for modifying a post or other object with a list of media; set an item of
+// specified type if url is set, and remove it otherwise. assumes that there is
+// can be only one item of specified type, so it should be used with images and
+// videos in the current implementation but not docs.
 export function updateMedia (obj, type, url) {
   let media = filter(obj && obj.media, m => m.type !== type)
   if (url) media = media.concat({type, url})

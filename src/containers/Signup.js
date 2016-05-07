@@ -19,11 +19,10 @@ export default class Signup extends React.Component {
     location: object,
     error: string,
     currentUser: object,
-    project: object,
     community: object,
 
-    // this is set when something is wrong with the data for the project,
-    // community, etc. that should be loaded after login
+    // this is set when something is wrong with the data for the community, etc.
+    // that should be loaded after login
     actionError: string
   }
 
@@ -83,12 +82,11 @@ export default class Signup extends React.Component {
       }
     }
 
-    let { actionError, location: { query }, project, community } = this.props
+    let { actionError, location: { query }, community } = this.props
 
     return <div id='signup' className='login-signup simple-page'>
       <form onSubmit={this.submit}>
         <h2>Sign up</h2>
-        {project && <p>To join the project "{project.title}"</p>}
         {community && <p>To join {community.name}</p>}
         {actionError && <div className='alert alert-danger'>{actionError}</div>}
         {error && <div className='alert alert-danger'>{error}</div>}

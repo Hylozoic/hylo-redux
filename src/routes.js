@@ -126,9 +126,6 @@ export default function makeRoutes (store) {
   </Route>
 }
 
-export const projectUrl = project =>
-  `/project/${project.id}/${project.slug}`
-
 export const communityUrl = (community, params) =>
   makeUrl(`/c/${community.slug}`, params)
 

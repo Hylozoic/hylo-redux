@@ -12,7 +12,6 @@ export const CLEAR_CACHE = 'CLEAR_CACHE'
 export const CREATE_COMMENT = 'CREATE_COMMENT'
 export const CREATE_COMMUNITY = 'CREATE_COMMUNITY'
 export const CREATE_POST = 'CREATE_POST'
-export const CREATE_PROJECT = 'CREATE_PROJECT'
 export const CREATE_NETWORK = 'CREATE_NETWORK'
 export const FETCH_ACTIVITY = 'FETCH_ACTIVITY'
 export const FETCH_COMMENTS = 'FETCH_COMMENTS'
@@ -225,7 +224,7 @@ export function updatePostEditor (payload, id) {
   }
 }
 
-// id refers to the id of the editing context, e.g. 'project-5-new'
+// id refers to the id of the editing context, e.g. 'new-event'
 export function createPost (id, params) {
   return {
     type: CREATE_POST,

@@ -5,7 +5,6 @@ import {
   navigate,
   FETCH_COMMUNITIES,
   FETCH_POSTS,
-  FETCH_PROJECTS,
   FETCH_PEOPLE,
   SEARCH
 } from '../actions'
@@ -38,9 +37,6 @@ export const connectedListProps = (state, props, itemType) => {
   switch (itemType) {
     case 'posts':
       actionType = FETCH_POSTS
-      break
-    case 'projects':
-      actionType = FETCH_PROJECTS
       break
     case 'people':
       actionType = FETCH_PEOPLE

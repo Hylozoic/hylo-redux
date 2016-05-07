@@ -13,9 +13,6 @@ import peopleByQuery from './peopleByQuery'
 import postEdits from './postEdits'
 import postsByQuery from './postsByQuery'
 import posts from './posts'
-import projectsByQuery from './projectsByQuery'
-import projects from './projects'
-import projectEdits from './projectEdits'
 import { appendUniq, mergeList } from './util'
 import { admin } from './admin'
 
@@ -61,7 +58,6 @@ import {
   UPDATE_NETWORK_EDITOR,
   UPDATE_INVITATION_EDITOR,
   UPDATE_POST,
-  UPDATE_PROJECT_INVITE,
   UPLOAD_IMAGE,
   VALIDATE_COMMUNITY_ATTRIBUTE,
   VALIDATE_COMMUNITY_ATTRIBUTE_PENDING,
@@ -212,10 +208,6 @@ export default combineReducers({
   posts,
   postsByQuery,
   postEdits,
-  projects,
-  projectsByQuery,
-  projectEdits,
-  projectInvite: storePayloadById(UPDATE_PROJECT_INVITE),
   searchResultsByQuery: appendPayloadByPath(SEARCH, 'meta.cache.id', 'items'),
   thanks: appendPayloadByPath(FETCH_THANKS, 'meta.id'),
   totalActivities: keyedCounter(FETCH_ACTIVITY, 'total', 'meta.id'),

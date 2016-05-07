@@ -170,53 +170,6 @@ describe('appHandler', () => {
     })
   })
 
-  describe('on project profile page', () => {
-    beforeEach(() => {
-      let project = {
-        id: 1,
-        title: 'A test project',
-        details: 'The project details',
-        media: [{
-          type: 'image',
-          url: 'http://foo.com/bar.jog',
-          width: 99,
-          height: 101
-        }],
-        slug: 'slug',
-        community: {name: '', avatar_url: ''},
-        user: {name: ''},
-        created_at: new Date()
-      }
-      nock(HOST).get('/noo/project/1').reply(200, project)
-    })
-
-    it('displays the project', () => {
-      req = support.mocks.request('/project/1/slug')
-      return appHandler(req, res)
-      .then(() => {
-        checkError(res)
-        expect(res.status).to.have.been.called.with(200)
-        expect(res.body).to.contain('A test project')
-      })
-    })
-
-    it('sets the metatags', () => {
-      req = support.mocks.request('/project/1/slug')
-      return appHandler(req, res)
-      .then(() => {
-        checkError(res)
-        expect(res.status).to.have.been.called.with(200)
-
-        var $ = cheerio.load(res.body)
-        expect($('meta[property="og:title"]').attr('content')).to.equal('A test project')
-        expect($('meta[property="og:description"]').attr('content')).to.equal('The project details')
-        expect($('meta[property="og:image"]').attr('content')).to.equal('http://foo.com/bar.jog')
-        expect($('meta[property="og:image:width"]').attr('content')).to.equal('99')
-        expect($('meta[property="og:image:height"]').attr('content')).to.equal('101')
-      })
-    })
-  })
-
   describe('on a page that redirects during prefetch', () => {
     beforeEach(() => {
       nock(HOST).get('/noo/user/me').reply(200, {id: 1, name: 'cat'})

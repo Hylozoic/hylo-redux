@@ -32,8 +32,6 @@ export const FETCH_PEOPLE = 'FETCH_PEOPLE'
 export const FETCH_PERSON = 'FETCH_PERSON'
 export const FETCH_POST = 'FETCH_POST'
 export const FETCH_POSTS = 'FETCH_POSTS'
-export const FETCH_PROJECT = 'FETCH_PROJECT'
-export const FETCH_PROJECTS = 'FETCH_PROJECTS'
 export const FETCH_RAW_ADMIN_METRICS = 'FETCH_RAW_ADMIN_METRICS'
 export const FETCH_TAG = 'FETCH_TAG'
 export const FETCH_THANKS = 'FETCH_THANKS'
@@ -41,8 +39,6 @@ export const FOLLOW_POST = 'FOLLOW_POST'
 export const FOLLOW_TAG = 'FOLLOW_TAG'
 export const FOLLOW_TAG_PENDING = FOLLOW_TAG + '_PENDING'
 export const JOIN_COMMUNITY_WITH_CODE = 'JOIN_COMMUNITY_WITH_CODE'
-export const JOIN_PROJECT = 'JOIN_PROJECT'
-export const JOIN_PROJECT_PENDING = JOIN_PROJECT + _PENDING
 export const LEAVE_COMMUNITY = 'LEAVE_COMMUNITY'
 export const LEAVE_COMMUNITY_PENDING = LEAVE_COMMUNITY + _PENDING
 export const LOGIN = 'LOGIN'
@@ -59,25 +55,20 @@ export const REMOVE_DOC = 'REMOVE_DOC'
 export const REMOVE_IMAGE = 'REMOVE_IMAGE'
 export const REMOVE_NOTIFICATION = 'REMOVE_NOTIFICATION'
 export const REMOVE_POST = 'REMOVE_POST'
-export const REMOVE_PROJECT_CONTRIBUTOR = 'REMOVE_PROJECT_CONTRIBUTOR'
 export const RESET_COMMUNITY_VALIDATION = 'RESET_COMMUNITY_VALIDATION'
 export const RESET_ERROR = 'RESET_ERROR'
 export const RESET_NETWORK_VALIDATION = 'RESET_NETWORK_VALIDATION'
 export const SEARCH = 'SEARCH'
 export const SEND_COMMUNITY_INVITATION = 'SEND_COMMUNITY_INVITATION'
-export const SEND_PROJECT_INVITE = 'SEND_PROJECT_INVITE'
-export const SEND_PROJECT_INVITE_PENDING = SEND_PROJECT_INVITE + _PENDING
 export const SET_CURRENT_COMMUNITY_ID = 'SET_CURRENT_COMMUNITY_ID'
 export const SET_LOGIN_ERROR = 'SET_LOGIN_ERROR'
 export const SET_META_TAGS = 'SET_META_TAGS'
 export const SET_SIGNUP_ERROR = 'SET_SIGNUP_ERROR'
 export const SIGNUP = 'SIGNUP'
 export const START_POST_EDIT = 'START_POST_EDIT'
-export const START_PROJECT_EDIT = 'START_PROJECT_EDIT'
 export const THANK = 'THANK'
 export const THANK_PENDING = THANK + _PENDING
 export const TOGGLE_MAIN_MENU = 'TOGGLE_MAIN_MENU'
-export const TOGGLE_PROJECT_MODERATOR_ROLE = 'TOGGLE_PROJECT_MODERATOR_ROLE'
 export const TOGGLE_USER_SETTINGS_SECTION = 'TOGGLE_USER_SETTINGS_SECTION'
 export const TYPEAHEAD = 'TYPEAHEAD'
 export const UPDATE_COMMUNITY_EDITOR = 'UPDATE_COMMUNITY_EDITOR'
@@ -91,9 +82,6 @@ export const UPDATE_NETWORK_PENDING = UPDATE_NETWORK + _PENDING
 export const UPDATE_NETWORK_EDITOR = 'UPDATE_NETWORK_EDITOR'
 export const UPDATE_POST = 'UPDATE_POST'
 export const UPDATE_POST_EDITOR = 'UPDATE_POST_EDITOR'
-export const UPDATE_PROJECT = 'UPDATE_PROJECT'
-export const UPDATE_PROJECT_EDITOR = 'UPDATE_PROJECT_EDITOR'
-export const UPDATE_PROJECT_INVITE = 'UPDATE_PROJECT_INVITE'
 export const UPDATE_USER_SETTINGS = 'UPDATE_USER_SETTINGS'
 export const UPDATE_USER_SETTINGS_PENDING = UPDATE_USER_SETTINGS + _PENDING
 export const UPLOAD_DOC = 'UPLOAD_DOC'
@@ -381,22 +369,6 @@ export function updateCommunityEditor (subtree, changes) {
     type: UPDATE_COMMUNITY_EDITOR,
     payload: changes,
     meta: {subtree}
-  }
-}
-
-export function updateProjectInvite (payload, id) {
-  return {
-    type: UPDATE_PROJECT_INVITE,
-    payload,
-    meta: {id}
-  }
-}
-
-export function sendProjectInvite (params, id) {
-  return {
-    type: SEND_PROJECT_INVITE,
-    payload: {api: true, params, path: `/noo/project/${id}/invite`, method: 'POST'},
-    meta: {id}
   }
 }
 

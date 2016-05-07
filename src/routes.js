@@ -21,11 +21,6 @@ import Onboarding from './containers/Onboarding'
 import PersonProfile from './containers/person/PersonProfile'
 import UserSettings from './containers/user/UserSettings'
 import SinglePost from './containers/SinglePost'
-import ProjectProfile from './containers/project/ProjectProfile'
-import ProjectPosts from './containers/project/ProjectPosts'
-import ProjectContributors from './containers/project/ProjectContributors'
-import ProjectInvite from './containers/project/ProjectInvite'
-import ProjectEditor from './containers/project/ProjectEditor'
 import NetworkProfile from './containers/network/NetworkProfile'
 import NetworkPosts from './containers/network/NetworkPosts'
 import NetworkMembers from './containers/network/NetworkMembers'
@@ -111,13 +106,6 @@ export default function makeRoutes (store) {
     </Route>
 
     <Route path='p/:id' component={SinglePost}/>
-    <Route path='project/new' component={ProjectEditor} onenter={requireLogin()}/>
-    <Route path='project/:id/edit' component={ProjectEditor} onenter={requireLogin()}/>
-    <Route path='project/:id/:slug' component={ProjectProfile}>
-      <IndexRoute component={ProjectPosts}/>
-      <Route path='contributors' component={ProjectContributors}/>
-    </Route>
-    <Route path='project/:id/:slug/invite' component={ProjectInvite}/>
     <Route path='n/new' component={NetworkEditor} onEnter={requireLogin()}/>
     <Route path='n/:id' component={NetworkProfile} onEnter={requireLogin()}>
       <IndexRoute component={NetworkPosts}/>

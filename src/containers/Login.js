@@ -11,7 +11,6 @@ import {
   navigate,
   setLoginError
 } from '../actions'
-import { fetchProject } from '../actions/project'
 import { LOGGED_IN, STARTED_LOGIN, trackEvent } from '../util/analytics'
 import { Link } from 'react-router'
 import ServiceAuthButtons from '../components/ServiceAuthButtons'
@@ -21,8 +20,6 @@ const { func, object, string } = React.PropTypes
 
 export const prefetchForNext = prefetch(({ query, dispatch }) => {
   switch (query.action) {
-    case 'join-project':
-      return dispatch(fetchProject(query.id))
     case 'join-community':
       return dispatch(fetchCommunity(query.id))
     case 'use-invitation':

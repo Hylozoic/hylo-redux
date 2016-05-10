@@ -121,14 +121,16 @@ class ProjectRequestEditor extends React.Component {
     this.refs.details.focus()
   }
 
+  delayedUpdate = debounce(function (attr, value) {
+    return this.props.update(attr, value)
+  }, 100)
+
   render () {
-    const { update } = this.props
     const { showDetails, name, description } = this.state
-    const delayedUpdate = debounce(update, 250)
     const handleChange = attr => event => {
       const { value } = event.target
       this.setState({[attr]: value})
-      delayedUpdate(attr, value)
+      this.delayedUpdate(attr, value)
     }
 
     return <div>

@@ -130,11 +130,13 @@ export class PostEditor extends React.Component {
     this.validate().then(valid => {
       if (!valid) return
       // we use setTimeout here to avoid a race condition. the description field
-      // (tinymce) doesn't fire its change event until it loses focus, so if we
-      // click Save immediately after typing in the description field, we have
-      // to wait for events from the description field to be handled so that the
-      // store is up to date
-      setTimeout(() => this.save(), 100)
+      // (tinymce) doesn't fire its change event until it loses focus, and
+      // there's an additional delay due to the use of setDelayed.
+      //
+      // so if we click Save immediately after typing in the description
+      // field, we have to wait for events from the description field to be
+      // handled, otherwise the last edit will be lost.
+      setTimeout(() => this.save(), 200)
     })
   }
 

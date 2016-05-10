@@ -18,7 +18,9 @@ class Html extends React.Component {
       <head>
         <title>{pageTitle}</title>
         <link rel='stylesheet' type='text/css' href={assetUrl('/index.css')}/>
-        <link rel='shortcut icon' href='/favicon.ico?z' />
+        { process.env.NODE_ENV === 'production'
+        ? <link rel='shortcut icon' href='/favicon.png?v=2' />
+      : <link rel='shortcut icon' href='/faviconDev.png?v=2' />}
         <script type='text/javascript' async src='https://platform.twitter.com/widgets.js'></script>
         <meta name='viewport' content='width=device-width, initial-scale=1.0, user-scalable=no'/>
         {map(metaTags, (val, key) => <meta property={key} content={val} key={key} />)}

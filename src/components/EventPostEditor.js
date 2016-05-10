@@ -25,7 +25,7 @@ export default class EventPostEditor extends React.Component {
 
   static contextTypes = {dispatch: func}
 
-  validate () {
+  validate = () => {
     const { postEdit: { tag }, post } = this.props
     return tag === get('tag', post) ? true
       : validateTag(tag, this.context.dispatch)

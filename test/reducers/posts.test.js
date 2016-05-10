@@ -51,6 +51,7 @@ describe('posts', () => {
     it('updates attributes', () => {
       let action = {
         type: UPDATE_POST,
+        payload: {},
         meta: {
           id: 'a',
           params: {name: 'through the woods'}
@@ -73,6 +74,7 @@ describe('posts', () => {
     it('updates an existing image', () => {
       let action = {
         type: UPDATE_POST,
+        payload: {},
         meta: {
           id: 'a',
           params: {
@@ -112,6 +114,7 @@ describe('posts', () => {
     it('removes an image', () => {
       let action = {
         type: UPDATE_POST,
+        payload: {},
         meta: {
           id: 'a',
           params: {media: [{type: 'gdoc', url: 'http://bar.com/doc.txt'}]}
@@ -145,6 +148,7 @@ describe('posts', () => {
     it('adds an image', () => {
       let action = {
         type: UPDATE_POST,
+        payload: {},
         meta: {
           id: 'a',
           params: {media: [{type: 'image', url: 'http://new.com/new.png'}]}

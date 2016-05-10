@@ -11,7 +11,7 @@ import {
   VOTE_ON_POST,
   VOTE_ON_POST_PENDING
 } from '../actions'
-import { compact, omit, find, without, includes, map, filter } from 'lodash'
+import { compact, omit, find, some, without, includes, map, filter } from 'lodash'
 import { get, isNull, omitBy } from 'lodash/fp'
 import { cloneSet, mergeList } from './util'
 import { same } from '../models'
@@ -24,11 +24,20 @@ const normalize = post => omitBy(isNull, {
   num_comments: null
 })
 
-const normalizeUpdate = (post, params) => {
-  return {
+const normalizeUpdate = (post, params, payload) => {
+  const normalized = {
     ...post,
     ...omit(params, 'imageUrl', 'imageRemoved', 'docs', 'removedDocs')
   }
+  if (some(payload.children)) {
+    normalized.children = map(payload.children, c => c.id)
+  }
+  return normalized
+}
+
+const listWithChildren = (post, payload) => {
+  if (payload.children) return [post].concat(payload.children.map(normalize))
+  return [post]
 }
 
 const changeEventResponse = (post, response, user) => {
@@ -82,13 +91,10 @@ export default function (state = {}, action) {
       return mergeList(state, payload.posts.map(normalize), 'id')
     case CREATE_POST:
     case FETCH_POST:
-      let posts = [normalize(payload)]
-      if (payload.children) {
-        posts = posts.concat(payload.children.map(normalize))
-      }
-      return mergeList(state, posts, 'id')
+      return mergeList(state, listWithChildren(normalize(payload), payload), 'id')
     case UPDATE_POST:
-      return {...state, [id]: normalizeUpdate(post, meta.params)}
+      post = normalizeUpdate(post, meta.params, payload)
+      return mergeList(state, listWithChildren(post, payload), 'id')
     case CHANGE_EVENT_RESPONSE_PENDING:
       var { response, user } = meta
       return {...state, [id]: changeEventResponse(post, response, user)}

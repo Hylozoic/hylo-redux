@@ -246,14 +246,14 @@ export function fetchPost (id) {
   return {
     type: FETCH_POST,
     payload: {api: true, path: `/noo/post/${id}?${querystring}`},
-    meta: {cache: {id, bucket: 'posts', requiredProp: 'comments'}}
+    meta: {cache: {id, bucket: 'posts', requiredProp: 'children'}}
   }
 }
 
 export function startPostEdit (post) {
   let fields = [
     'id', 'name', 'type', 'description', 'location', 'communities', 'public',
-    'media', 'start_time', 'end_time', 'tag'
+    'media', 'start_time', 'end_time', 'tag', 'children'
   ]
   let payload = cloneDeep(pick(post, fields))
   return {type: START_POST_EDIT, payload}

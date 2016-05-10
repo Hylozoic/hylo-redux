@@ -1,4 +1,6 @@
-import { cloneDeep, filter, isEqual, merge, set, some, transform, uniq } from 'lodash'
+import {
+  cloneDeep, filter, isArray, isEqual, mergeWith, set, some, transform, uniq
+} from 'lodash'
 
 export const appendUniq = (state, key, values) =>
   concatUniq(state, key, state[key] || [], values)
@@ -31,13 +33,19 @@ export function updateMedia (obj, type, url) {
   return {...obj, media}
 }
 
-// merge a list of items with existing data so that within an item, we don't
-// replace a long list of properties with a shorter one, but we do pick up
-// recent changes
+// update state with a set of items. items that already exist in the state get
+// new properties, update the values of existing properties, and do not lose any
+// existing properties that aren't contained in their new counterpart.
 export const mergeList = (state, items, key) => {
   let mergedItems = items.reduce((m, x) => {
-    let id = x[key]
-    m[id] = merge({...state[id]}, x)
+    const id = x[key]
+    m[id] = mergeWith({...state[id]}, x, (objValue, srcValue) => {
+      // we don't want to perform the default behavior of merge when working
+      // with arrays, because that concatenates them. e.g. with the list of
+      // media for a post, that creates duplicate values. so we replace the old
+      // value with the new one instead.
+      if (isArray(objValue) && isArray(srcValue)) return srcValue
+    })
     return m
   }, {})
 

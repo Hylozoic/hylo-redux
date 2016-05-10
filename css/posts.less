@@ -715,7 +715,7 @@ ul.posts {
   }
 }
 
-.post.project, .post.project-summary {
+.post.project, .post.project-summary, .project-editor {
   h3 {
     text-transform: uppercase;
     font-size: 13px;
@@ -727,6 +727,11 @@ ul.posts {
 
     .soft {
       color: @gray-text;
+      &.normal {
+        text-transform: none;
+        letter-spacing: normal;
+        font-weight: normal;
+      }
     }
   }
   .supporters {
@@ -875,4 +880,41 @@ ul.posts {
 
 .post.project-summary {
   .special-post-summary-card;
+}
+
+.project-editor {
+  border-top: 1px solid @post-border;
+  margin-top: 25px;
+  padding-top: @p-bottom-margin;
+
+  h3, .add-request {
+    padding-left: @post-content-left-margin;
+  }
+
+  .add-request {
+    color: @damian-green;
+  }
+
+  .more-fields {
+  }
+
+  .requests {
+    border-bottom: 1px solid @post-border;
+    padding-bottom: 25px;
+    margin-bottom: 25px;
+
+    > div {
+      margin-left: @post-content-left-margin;
+      margin-right: @post-content-right-margin;
+      border-bottom: 1px solid @faint-gray-border;
+      margin-bottom: 25px;
+
+      .title-wrapper, .details, .details-placeholder {
+        margin-left: 0;
+        padding-left: 0;
+        margin-right: 0;
+        padding-right: 0;
+      }
+    }
+  }
 }

@@ -156,10 +156,9 @@ class ProjectRequest extends React.Component {
           <Icon name='plus-sign'/>
           Offer to help
         </a>
-        <a onClick={zoom}>
-          Comments
-          {numComments > 0 && ` (${numComments})`}
-        </a>
+        {numComments > 0 && <a onClick={zoom}>
+          {numComments} comment{numComments === 1 ? '' : 's'}
+        </a>}
       </div>
     </div>
   }

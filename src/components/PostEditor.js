@@ -105,10 +105,11 @@ export class PostEditor extends React.Component {
 
   validate () {
     let { postEdit } = this.props
+    const { title, subeditor } = this.refs
 
     if (!postEdit.name) {
       window.alert('The title of a post cannot be blank.')
-      this.refs.title.focus()
+      title.focus()
       return Promise.resolve(false)
     }
 
@@ -117,8 +118,9 @@ export class PostEditor extends React.Component {
       return Promise.resolve(false)
     }
 
-    if (this.refs.subeditor) {
-      return Promise.resolve(this.refs.subeditor.validate())
+    if (subeditor) {
+      const subvalidate = subeditor.validate || subeditor.getWrappedInstance().validate
+      return Promise.resolve(subvalidate())
     }
 
     return Promise.resolve(true)
@@ -277,7 +279,6 @@ export class PostEditor extends React.Component {
         <AutosizingTextarea type='text' ref='title' className='title'
           value={name}
           placeholder={placeholderText(this.editorType())}
-          onFocus={this.expand}
           onChange={event => this.updateTitle(event)}/>
       </div>
 

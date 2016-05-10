@@ -9,6 +9,8 @@ import PostEditor from './PostEditor'
 import { EventPostCard } from './EventPost'
 import { ProjectPostCard } from './ProjectPost'
 import { getEditingPostIds } from '../models/post'
+import { isMobile } from '../util'
+import { navigate } from '../actions'
 
 const { array, bool, func, string } = React.PropTypes
 
@@ -22,7 +24,8 @@ class PostList extends React.Component {
     refreshPostList: func,
     pending: bool,
     editingPostIds: array,
-    hide: array
+    hide: array,
+    dispatch: func
   }
 
   static contextTypes = {
@@ -35,7 +38,13 @@ class PostList extends React.Component {
   }
 
   expand = (id) => {
-    this.setState({expanded: id})
+    let { dispatch } = this.props
+
+    if (isMobile()) {
+      dispatch(navigate(`/p/${id}`))
+    } else {
+      this.setState({expanded: id})
+    }
   }
 
   unexpand = event => {

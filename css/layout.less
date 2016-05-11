@@ -3,7 +3,7 @@
 @refresh-button-height: 36px;
 @refresh-button-width: 300px;
 
-@mobile-top-nav-height: 55px;
+@mobile-top-nav-height: 60px;
 @mobile-side-margin: 15px;
 
 #app {
@@ -83,7 +83,8 @@ nav {
     }
 
     .mobile({
-      width: 170px;
+      width: auto;
+      border-right: 0;
       padding-right: 0;
     });
   }
@@ -129,15 +130,14 @@ nav {
       overflow-y: visible;
       max-height: none;
       padding: @border-radius-base 0 0 0;
-      .non-mobile({
-        .has-top-triangle(#fff, #fff, 5px);
-        &:after {
-          left: 50px;
-        }
-      });
+      .has-top-triangle(#fff, #fff, 5px);
+      &:after {
+        left: 50px;
+      }
 
       li {
         border-bottom: 1px solid @center-menu-list-item-border;
+        width: 100%;
         &:last-child {
           border-bottom: 0;
         }
@@ -147,11 +147,17 @@ nav {
       }
 
       .mobile({
+        &:after {
+          left: auto;
+          right: 78.5px;
+        }
+
         position: fixed;
-        top: @mobile-top-nav-height;
-        margin-top: 0;
-        border-radius: 0;
+        top: 0;
         left: -1px;
+        margin-top: @mobile-top-nav-height - 1;
+        border-radius: 0;
+
         li {
           width: 100vw;
         }
@@ -170,6 +176,10 @@ nav {
       li:last-child {
         padding-bottom: 50px;
       }
+
+      .mobile({
+        max-height: 80vh;
+      });
     }
 
     .join-or-start {
@@ -206,7 +216,7 @@ nav {
 
     > li {
       float: left;
-      margin-left: 10px;
+      margin-left: 15px;
 
       > * {
         display: inline-block;

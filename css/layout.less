@@ -377,6 +377,13 @@ nav {
   position: relative;
   padding-top: 140px;
   z-index: 0;
+  .mobile({
+    padding-top: 1px;
+
+    .post-editor {
+      display: none;
+    }
+  });
 }
 
 #cover-image {
@@ -399,6 +406,10 @@ nav {
     background-size: cover;
     z-index: -1;
   }
+
+  .mobile({
+    display: none;
+  });
 }
 
 #cover-image-page-content, .simple-page {

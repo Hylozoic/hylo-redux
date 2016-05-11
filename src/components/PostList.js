@@ -9,7 +9,7 @@ import PostEditor from './PostEditor'
 import { EventPostCard } from './EventPost'
 import { ProjectPostCard } from './ProjectPost'
 import { getEditingPostIds } from '../models/post'
-import { isMobile } from '../util'
+import { isMobile } from '../client/util'
 import { navigate } from '../actions'
 
 const { array, bool, func, string } = React.PropTypes

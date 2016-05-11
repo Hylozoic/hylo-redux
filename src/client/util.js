@@ -1,6 +1,10 @@
 import qs from 'querystring'
 import { isEmpty, omit, omitBy } from 'lodash'
 
+export const isMobile = () => {
+  return document.documentElement.clientWidth < 480
+}
+
 export function isiOSApp () {
   return window.navigator.userAgent.indexOf('Hylo-App') > -1
 }

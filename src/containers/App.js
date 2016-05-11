@@ -11,7 +11,7 @@ import { logout, navigate, removeNotification, toggleMainMenu, updateUserSetting
 import { makeUrl } from '../client/util'
 import { VelocityComponent } from 'velocity-react'
 import { canInvite, canModerate } from '../models/currentUser'
-import { isMobile } from '../util'
+import { isMobile } from '../client/util'
 import { get, pick } from 'lodash'
 const { array, bool, func, object, string } = React.PropTypes
 

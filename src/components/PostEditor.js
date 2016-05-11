@@ -313,7 +313,7 @@ export class PostEditor extends React.Component {
         {...{post, postEdit, update: this.updateStore}}/>}
 
       <div className='communities'>
-        in&nbsp;
+        <span>in&nbsp;</span>
         <CommunitySelector currentUser={currentUser}
           communities={communities || []}
           onSelect={this.addCommunity}

@@ -192,7 +192,7 @@ export const ProjectPostCard = ({ post }) => {
         <Deadline time={end_time}/>
         {spacer}
       </span>}
-      {tag && <span>
+      {tag && <span className='hashtag-segment'>
         <A className='hashtag' to={url}>#{tag}</A>
         {spacer}
       </span>}

@@ -3,20 +3,15 @@ import { prefetch } from 'react-fetcher'
 import { compose } from 'redux'
 import { connect } from 'react-redux'
 import { fetch, ConnectedPostList } from './ConnectedPostList'
-import { refetch } from '../util/caching'
 import PostEditor from '../components/PostEditor'
-import PostListControls from '../components/PostListControls'
 import CoverImagePage from '../components/CoverImagePage'
 import { setCurrentCommunityId } from '../actions'
 
 const makeComponent = (subject, title, showEditor) => props => {
-  let { dispatch, location: { query }, currentUser: { id } } = props
-  let { type, sort, search } = query
+  const { location: { query }, currentUser: { id } } = props
 
   return <CoverImagePage>
     {showEditor && <PostEditor/>}
-    <PostListControls onChange={opts => dispatch(refetch(opts, props.location))}
-      type={type} sort={sort} search={search}/>
     <ConnectedPostList {...{subject, id, query}}/>
   </CoverImagePage>
 }

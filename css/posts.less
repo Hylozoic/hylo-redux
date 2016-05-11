@@ -7,7 +7,6 @@ ul.posts {
       border-left: none;
       border-right: none;
       border-bottom: none;
-      margin-bottom: 0;
 
       &.welcome {
         border-top: 1px solid @light-gray-border;
@@ -556,6 +555,7 @@ ul.posts {
     padding-left: 15px;
     line-height: 1.28em;
     font-size: 20px;
+    .regular;
     text-decoration: none;
     margin-bottom: @p-bottom-margin;
   }
@@ -563,6 +563,26 @@ ul.posts {
   .content {
     overflow: hidden;
   }
+
+  .mobile({
+    padding: @mobile-side-margin;
+
+    .image {
+      .fluid-height(100%);
+      width: 28%;
+    }
+
+    .title, .supporters, .attendance {
+      margin-left: 28% !important;
+      padding-left: 15px !important;
+      display: block !important;
+    }
+
+    .avatar-list, .rsvp, .hashtag-segment {
+      display: none !important;
+    }
+
+  });
 }
 
 .post.event-summary {

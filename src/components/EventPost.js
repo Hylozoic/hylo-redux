@@ -33,7 +33,7 @@ export const EventPostCard = ({ post }) => {
     <div className='meta'>
       <span title={timeFull}>{time}</span>
       {spacer}
-      {shouldShowTag(tag) && <span>
+      {shouldShowTag(tag) && <span className='hashtag-segment'>
         <A className='hashtag' to={url}>#{tag}</A>
         {spacer}
       </span>}

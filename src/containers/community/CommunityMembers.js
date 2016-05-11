@@ -73,10 +73,10 @@ export default class CommunityMembers extends React.Component {
         <input type='text' className='form-control search'
           placeholder='Search'
           defaultValue={search}
-          onChange={debounce(event => this.updateQuery({search: event.target.value}), 500)}/>
+          onChange={debounce(event => this.updateQuery({search: event.target.value}))} />
       </div>
       {pending && <div className='loading'>Loading...</div>}
-      <PersonCards people={peopleWithModeratorFlag} />
+      <PersonCards people={peopleWithModeratorFlag} slug={community.slug}/>
       <ScrollListener onBottom={this.loadMore}/>
     </div>
   }

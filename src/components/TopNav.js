@@ -6,7 +6,9 @@ import Dropdown from './Dropdown'
 import { isAdmin } from '../models/currentUser'
 import { filter, find, flow, get, map, sortBy } from 'lodash/fp'
 import { same } from '../models'
-import { MenuButton } from './LeftNav'
+import { MenuButton, leftNavEasing, leftNavWidth } from './LeftNav'
+import { VelocityComponent } from 'velocity-react'
+import { isMobile } from '../client/util'
 const { func, object } = React.PropTypes
 
 const getLabel = path => {
@@ -40,7 +42,7 @@ const getCurrentMembership = (currentUser, community) =>
   )(currentUser)
 
 const TopNav = (props, { currentUser }) => {
-  const { search, logout, openLeftNav, path, onChangeCommunity } = props
+  const { search, logout, openLeftNav, path, onChangeCommunity, opened } = props
   const label = getLabel(path)
   const community = props.community || allCommunities
   const { slug } = community
@@ -49,8 +51,13 @@ const TopNav = (props, { currentUser }) => {
   const newCount = get('new_notification_count',
     community === allCommunities ? currentUser : membership)
 
+  const moveAgainstMenu = isMobile() ? null
+    : {marginLeft: opened ? -leftNavWidth : 0}
+
   return <nav id='topNav' className='clearfix'>
-    <MenuButton onClick={openLeftNav} label={label}/>
+    <VelocityComponent animation={moveAgainstMenu} easing={leftNavEasing}>
+      <MenuButton onClick={openLeftNav} label={label}/>
+    </VelocityComponent>
     {currentUser
     ? <ul className='right'>
         <li className='notifications'>

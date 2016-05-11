@@ -8,23 +8,20 @@ import Notifier from '../components/Notifier'
 import LiveStatusPoller from '../components/LiveStatusPoller'
 import PageTitleController from '../components/PageTitleController'
 import { logout, navigate, removeNotification, toggleMainMenu, updateUserSettings } from '../actions'
-import { makeUrl } from '../client/util'
+import { isMobile, makeUrl } from '../client/util'
 import { VelocityComponent } from 'velocity-react'
 import { canInvite, canModerate } from '../models/currentUser'
-import { isMobile } from '../client/util'
 import { get, pick } from 'lodash'
 const { array, bool, func, object, string } = React.PropTypes
 
 @connect((state, { params: { id } }) => {
-  const { notifierMessages } = state
+  const { leftNavIsOpen, notifierMessages } = state
   const currentUser = state.people.current
-  const leftNavSetting = get(currentUser, 'settings.leftNavIsOpen')
   const community = find(state.communities, c => c.id === state.currentCommunityId)
   const tags = community ? state.tagsByCommunity[community.slug] : {}
-  const leftNavIsOpen = isMobile() || leftNavSetting === undefined
-    ? state.leftNavIsOpen : leftNavSetting
 
   return {
+    leftNavSetting: get(currentUser, 'settings.leftNavIsOpen'),
     leftNavIsOpen,
     notifierMessages,
     currentUser,
@@ -39,6 +36,7 @@ export default class App extends React.Component {
     community: object,
     currentUser: object,
     leftNavIsOpen: bool,
+    leftNavSetting: bool,
     tags: object,
     notifierMessages: array,
     path: string,
@@ -62,6 +60,7 @@ export default class App extends React.Component {
       dispatch,
       tags,
       leftNavIsOpen,
+      leftNavSetting,
       notifierMessages
     } = this.props
 
@@ -69,10 +68,8 @@ export default class App extends React.Component {
 
     const moveWithMenu = {marginLeft: leftNavIsOpen ? leftNavWidth : 0}
     const toggleLeftNav = open => {
-      dispatch(toggleMainMenu())
-      if (!isMobile() && currentUser) {
-        dispatch(updateUserSettings(currentUser.id, {settings: {leftNavIsOpen: open}}))
-      }
+      if (leftNavIsOpen !== open) dispatch(toggleMainMenu())
+      dispatch(updateUserSettings(currentUser.id, {settings: {leftNavIsOpen: open}}))
     }
     const openLeftNav = () => toggleLeftNav(true)
     const closeLeftNav = () => toggleLeftNav(false)
@@ -81,14 +78,6 @@ export default class App extends React.Component {
       dispatch(navigate(nextPath(path, community)))
 
     return <div className={cx({leftNavIsOpen})}>
-      <TopNav currentUser={currentUser}
-        community={community}
-        onChangeCommunity={visitCommunity}
-        openLeftNav={openLeftNav}
-        leftNavIsOpen={leftNavIsOpen}
-        logout={() => dispatch(logout())}
-        path={path}
-        search={doSearch}/>
       <LeftNav opened={leftNavIsOpen}
         community={community}
         tags={tags}
@@ -97,13 +86,25 @@ export default class App extends React.Component {
         close={closeLeftNav}/>
 
       <VelocityComponent animation={moveWithMenu} easing={leftNavEasing}>
-        {children}
+        <div id='main'>
+          <TopNav currentUser={currentUser}
+            community={community}
+            onChangeCommunity={visitCommunity}
+            openLeftNav={openLeftNav}
+            leftNavIsOpen={leftNavIsOpen}
+            logout={() => dispatch(logout())}
+            path={path}
+            search={doSearch}
+            opened={leftNavIsOpen}/>
+          {children}
+        </div>
       </VelocityComponent>
 
       <Notifier messages={notifierMessages}
         remove={id => dispatch(removeNotification(id))}/>
       <LiveStatusPoller/>
       <PageTitleController/>
+      <LeftNavOpener shouldOpen={leftNavSetting} open={openLeftNav}/>
     </div>
   }
 }
@@ -116,4 +117,19 @@ const nextPath = (path, community) => {
   const pathEnd = match ? `/${match[1]}` : ''
 
   return pathStart + pathEnd
+}
+
+class LeftNavOpener extends React.Component {
+  static propTypes = {
+    shouldOpen: bool,
+    open: func
+  }
+
+  componentDidMount () {
+    if (!isMobile() && this.props.shouldOpen) this.props.open()
+  }
+
+  render () {
+    return null
+  }
 }

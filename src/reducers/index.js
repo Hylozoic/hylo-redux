@@ -128,7 +128,7 @@ export default combineReducers({
     return state
   },
 
-  leftNavIsOpen: (state = true, action) => {
+  leftNavIsOpen: (state = false, action) => {
     let { error, type } = action
     if (error) return state
 

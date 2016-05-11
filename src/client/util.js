@@ -2,6 +2,7 @@ import qs from 'querystring'
 import { isEmpty, omit, omitBy } from 'lodash'
 
 export const isMobile = () => {
+  if (typeof window === 'undefined') return
   return document.documentElement.clientWidth < 480
 }
 

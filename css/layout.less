@@ -106,7 +106,7 @@ nav {
     .mobile({
       padding: 0;
       border: 0;
-      margin-left: 7px;
+      float: right;
       img {
         width: @avatar-size-default;
         height: @avatar-size-default;
@@ -129,10 +129,12 @@ nav {
       overflow-y: visible;
       max-height: none;
       padding: @border-radius-base 0 0 0;
-      .has-top-triangle(#fff, #fff, 5px);
-      &:after {
-        left: 50px;
-      }
+      .non-mobile({
+        .has-top-triangle(#fff, #fff, 5px);
+        &:after {
+          left: 50px;
+        }
+      });
 
       li {
         border-bottom: 1px solid @center-menu-list-item-border;
@@ -147,10 +149,9 @@ nav {
       .mobile({
         position: fixed;
         top: @mobile-top-nav-height;
+        margin-top: 0;
+        border-radius: 0;
         left: -1px;
-        &:after {
-          left: 196px;
-        }
         li {
           width: 100vw;
         }
@@ -240,6 +241,10 @@ nav {
       text-align: center;
       vertical-align: middle;
     }
+
+    .mobile({
+      display: none;
+    });
   }
 
   .search, .icon {

@@ -16,14 +16,16 @@ import { get, pick } from 'lodash'
 const { array, bool, func, object, string } = React.PropTypes
 
 @connect((state, { params: { id } }) => {
-  const { leftNavIsOpen, notifierMessages } = state
+  const { notifierMessages } = state
   const currentUser = state.people.current
-  const settingsleftNavIsOpen = get(currentUser, 'settings.leftNavIsOpen')
+  const leftNavSetting = get(currentUser, 'settings.leftNavIsOpen')
   const community = find(state.communities, c => c.id === state.currentCommunityId)
   const tags = community ? state.tagsByCommunity[community.slug] : {}
+  const leftNavIsOpen = isMobile() || leftNavSetting === undefined
+    ? state.leftNavIsOpen : leftNavSetting
 
   return {
-    leftNavIsOpen: settingsleftNavIsOpen === undefined ? leftNavIsOpen : settingsleftNavIsOpen,
+    leftNavIsOpen,
     notifierMessages,
     currentUser,
     community,

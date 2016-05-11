@@ -7,7 +7,6 @@ import { isAdmin } from '../models/currentUser'
 import { filter, find, flow, get, map, sortBy } from 'lodash/fp'
 import { same } from '../models'
 import { MenuButton } from './LeftNav'
-import { VelocityTransitionGroup } from 'velocity-react'
 const { func, object } = React.PropTypes
 
 const getLabel = path => {
@@ -41,9 +40,7 @@ const getCurrentMembership = (currentUser, community) =>
   )(currentUser)
 
 const TopNav = (props, { currentUser }) => {
-  const {
-    search, logout, openLeftNav, leftNavIsOpen, path, onChangeCommunity
-  } = props
+  const { search, logout, openLeftNav, path, onChangeCommunity } = props
   const label = getLabel(path)
   const community = props.community || allCommunities
   const { slug } = community
@@ -53,17 +50,9 @@ const TopNav = (props, { currentUser }) => {
     community === allCommunities ? currentUser : membership)
 
   return <nav id='topNav' className='clearfix'>
-    <VelocityTransitionGroup enter={{animation: 'fadeIn'}}>
-      {leftNavIsOpen || <MenuButton onClick={openLeftNav} label={label}/>}
-    </VelocityTransitionGroup>
+    <MenuButton onClick={openLeftNav} label={label}/>
     {currentUser
     ? <ul className='right'>
-        <li>
-          <div className='search'>
-            <span className='glyphicon glyphicon-search'></span>
-            <Search onChange={search}/>
-          </div>
-        </li>
         <li className='notifications'>
           <A to={`${slug ? '/c/' + slug : ''}/notifications`}>
             <Icon name='bell'/>
@@ -85,7 +74,13 @@ const TopNav = (props, { currentUser }) => {
         <li><A to='/signup'>Sign up</A></li>
         <li><A to='/login'>Log in</A></li>
       </ul>}
-    <CenterMenu {...{communities, onChangeCommunity}}/>
+
+    <CommunityMenu {...{communities, onChangeCommunity}}/>
+
+    <div className='search'>
+      <span className='glyphicon glyphicon-search'></span>
+      <Search onChange={search}/>
+    </div>
   </nav>
 }
 TopNav.contextTypes = {currentUser: object}
@@ -112,7 +107,7 @@ class Search extends React.Component {
   }
 }
 
-const CenterMenu = ({ communities, onChangeCommunity }) =>
+const CommunityMenu = ({ communities, onChangeCommunity }) =>
   <Dropdown className='communities'
     backdrop={true}
     toggleChildren={<div>

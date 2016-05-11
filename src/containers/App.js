@@ -79,6 +79,14 @@ export default class App extends React.Component {
       dispatch(navigate(nextPath(path, community)))
 
     return <div className={cx({leftNavIsOpen})}>
+      <TopNav currentUser={currentUser}
+        community={community}
+        onChangeCommunity={visitCommunity}
+        openLeftNav={openLeftNav}
+        leftNavIsOpen={leftNavIsOpen}
+        logout={() => dispatch(logout())}
+        path={path}
+        search={doSearch}/>
       <LeftNav opened={leftNavIsOpen}
         community={community}
         tags={tags}
@@ -87,17 +95,7 @@ export default class App extends React.Component {
         close={closeLeftNav}/>
 
       <VelocityComponent animation={moveWithMenu} easing={leftNavEasing}>
-        <div>
-          <TopNav currentUser={currentUser}
-            community={community}
-            onChangeCommunity={visitCommunity}
-            openLeftNav={openLeftNav}
-            leftNavIsOpen={leftNavIsOpen}
-            logout={() => dispatch(logout())}
-            path={path}
-            search={doSearch}/>
-          {children}
-        </div>
+        {children}
       </VelocityComponent>
 
       <Notifier messages={notifierMessages}

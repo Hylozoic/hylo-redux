@@ -112,7 +112,9 @@ const CommunityMenu = ({ communities, onChangeCommunity }) =>
     backdrop={true}
     toggleChildren={<div>
       <img src={communities[0].avatar_url}/>
-      {communities[0].name} <span className='caret'></span>
+      <span className='name'>
+        {communities[0].name} <span className='caret'></span>
+      </span>
     </div>}>
     <li>
       <ul className='inner-list dropdown-menu'>

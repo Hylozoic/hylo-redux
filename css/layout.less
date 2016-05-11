@@ -3,6 +3,9 @@
 @refresh-button-height: 36px;
 @refresh-button-width: 300px;
 
+@mobile-top-nav-height: 55px;
+@mobile-side-margin: 15px;
+
 #app {
   overflow-x: hidden;
   min-height: 100vh;
@@ -14,10 +17,19 @@ nav {
   }
 }
 
-.menu-button {
-  display: block;
+.has-nav-height(@fudge: 0) {
   height: @top-nav-height;
-  line-height: @top-nav-height - 1;
+  line-height: @top-nav-height - @fudge;
+
+  .mobile({
+    height: @mobile-top-nav-height;
+    line-height: @mobile-top-nav-height - 1;
+  });
+}
+
+.menu-button {
+  .has-nav-height(1);
+  display: block;
   width: @left-nav-width;
   padding-left: 30px;
   padding-right: 30px;
@@ -39,16 +51,24 @@ nav {
       }
     }
   }
+
+  .mobile({
+    padding-left: @mobile-side-margin;
+  });
 }
 
 #topNav {
+  .has-nav-height;
   width: 100%;
   background-color: @top-nav-background;
-  line-height: @top-nav-height;
-  height: @top-nav-height;
   border-bottom: 1px solid #fff;
   position: relative;
   z-index: 10;
+
+  .mobile({
+    height: @mobile-top-nav-height;
+    line-height: @mobile-top-nav-height;
+  });
 
   .menu-button {
     float: left;
@@ -61,6 +81,11 @@ nav {
     .bar {
       background-color: @damian-green;
     }
+
+    .mobile({
+      width: 170px;
+      padding-right: 0;
+    });
   }
 
   .communities {
@@ -78,6 +103,20 @@ nav {
       margin-right: 10px;
     }
 
+    .mobile({
+      padding: 0;
+      border: 0;
+      margin-left: 7px;
+      img {
+        width: @avatar-size-default;
+        height: @avatar-size-default;
+        margin-right: 0;
+      }
+      .dropdown-toggle .name {
+        display: none;
+      }
+    });
+
     .dropdown-toggle {
       .medium;
       span {
@@ -86,14 +125,15 @@ nav {
     }
 
     > .dropdown-menu {
-      .has-top-triangle(#fff, #fff, 5px);
-      &:after {
-        left: 50px;
-      }
       margin-top: 9px;
       overflow-y: visible;
       max-height: none;
       padding: @border-radius-base 0 0 0;
+      .has-top-triangle(#fff, #fff, 5px);
+      &:after {
+        left: 50px;
+      }
+
       li {
         border-bottom: 1px solid @center-menu-list-item-border;
         &:last-child {
@@ -103,6 +143,18 @@ nav {
           padding: 13px 15px;
         }
       }
+
+      .mobile({
+        position: fixed;
+        top: @mobile-top-nav-height;
+        left: -1px;
+        &:after {
+          left: 196px;
+        }
+        li {
+          width: 100vw;
+        }
+      });
     }
 
     .inner-list {
@@ -146,6 +198,10 @@ nav {
 
   ul.right {
     margin-right: 30px;
+
+    .mobile({
+      margin-right: @mobile-side-margin;
+    });
 
     > li {
       float: left;
@@ -217,6 +273,10 @@ nav {
       line-height: 32px;
       outline: none;
     }
+
+    .mobile({
+      display: none;
+    });
   }
 
   .user-menu {

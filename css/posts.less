@@ -37,6 +37,7 @@ ul.posts {
     .name {
       color: @damian-green;
       .semibold;
+      margin-right: 0.8em;
     }
     .meta > a, .meta > div > a {
       .meta-text;
@@ -636,8 +637,8 @@ ul.posts {
   }
 
   > .hashtag {
-    color: @damian-green;
     margin-left: @post-content-left-margin;
+    color: @damian-green;
   }
 
   .box {
@@ -734,9 +735,25 @@ ul.posts {
       }
     }
   }
+
   .supporters {
     .avatar-list {
       margin-bottom: 4px;
+    }
+
+    .top {
+      h3 {
+        margin-bottom: 0;
+      }
+      margin-bottom: @p-bottom-margin;
+    }
+  }
+
+  .deadline {
+    .meta-text;
+
+    &.soon {
+      color: @damian-red;
     }
   }
 }

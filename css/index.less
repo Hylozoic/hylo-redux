@@ -29,6 +29,7 @@ a {
 button, a.button, input[type=submit] {
   .btn;
   .btn-default;
+  .light;
 
   .icon-add-01 {
     position: relative;
@@ -175,20 +176,6 @@ ul.tabs {
     background-position: center;
     background-size: cover;
     z-index: -1;
-  }
-
-  .corner {
-    position: absolute;
-    top: 0;
-    right: 0;
-    padding: 15px;
-    a {
-      .outlined-text(rgba(0, 0, 0, 0.7));
-      color: @off-white;
-      &.active {
-        font-weight: bold;
-      }
-    }
   }
 
   .logo {
@@ -366,7 +353,7 @@ ul.tags {
   .remove {
     margin-left: 5px;
     color: @gray-text;
-    font-weight: bold;
+    .bold;
     cursor: pointer;
     position: relative;
     text-decoration: none;
@@ -554,7 +541,7 @@ ul.tags {
     }
 
     .name {
-      .semibold;
+      .medium;
       font-size: 18px;
     }
   }

@@ -17,7 +17,8 @@ nav {
 .menu-button {
   display: block;
   height: @top-nav-height;
-  line-height: @top-nav-height;
+  line-height: @top-nav-height - 1;
+  width: @left-nav-width;
   padding-left: 30px;
   padding-right: 30px;
   &:hover {
@@ -51,19 +52,23 @@ nav {
 
   .menu-button {
     float: left;
+    display: block;
     border-bottom: 1px solid #fff;
+    border-right: 1px solid @post-border;
     background-color: @top-nav-background;
     color: @off-black;
-    font-weight: bold;
+    .medium;
     .bar {
       background-color: @damian-green;
     }
   }
 
   .communities {
-    margin: 0 auto;
-    text-align: center;
-    &, .dropdown-menu li {
+    display: inline-block;
+    padding: 0 30px;
+    border-right: 1px solid @post-border;
+
+    .dropdown-menu li {
       width: 30vw;
     }
 
@@ -74,7 +79,7 @@ nav {
     }
 
     .dropdown-toggle {
-      font-weight: bold;
+      .medium;
       span {
         vertical-align: middle;
       }
@@ -82,6 +87,9 @@ nav {
 
     > .dropdown-menu {
       .has-top-triangle(#fff, #fff, 5px);
+      &:after {
+        left: 50px;
+      }
       margin-top: 9px;
       overflow-y: visible;
       max-height: none;
@@ -131,7 +139,7 @@ nav {
         color: @damian-green;
         display: inline;
         padding: 0 !important;
-        font-weight: bold;
+        .medium;
       }
     }
   }
@@ -191,7 +199,10 @@ nav {
   }
 
   .search {
+    margin-left: 30px;
     padding: 0 10px;
+    display: inline-block;
+
     .glyphicon-search {
       vertical-align: baseline;
       position: relative;
@@ -258,7 +269,7 @@ nav {
       background-color: @left-nav-hover-link-background;
       border-radius: 12px;
       color: @damian-green;
-      font-weight: normal;
+      .light;
     }
     .glyphicon {
       margin-right: 8px;

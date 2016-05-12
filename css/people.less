@@ -71,7 +71,6 @@
       .semibold;
       font-size: 16px;
     }
-
     .role {
       .aktiv-grotesk(500);
       color: @faint-gray-text;
@@ -125,7 +124,7 @@
   }
 
   .bio {
-    .light;
+    .hairline;
     font-size: 26px;
     margin-bottom: 0;
   }
@@ -171,7 +170,7 @@
       }
 
       &.active {
-        font-weight: bold;
+        .medium;
       }
     }
   }
@@ -239,16 +238,20 @@
     padding: 25px;
     margin-bottom: @p-bottom-margin;
     > span > a {
-      font-weight: bold;
+      .medium;
     }
     .comment {
       padding-left: 15px;
     }
-    .comment-result strong {
-      font-weight: normal;
-      a {
-        font-weight: bold;
-      }
-    }
   }
+
+  .mobile({
+    #cover-image {
+      display: block;
+      .fluid-height(38.2%);
+    }
+    .opener {
+      margin-top: 0;
+    }
+  });
 }

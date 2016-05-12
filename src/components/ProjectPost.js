@@ -16,7 +16,18 @@ import LinkedPersonSentence from './LinkedPersonSentence'
 import A from './A'
 import { ClickCatchingSpan } from './ClickCatcher'
 import { fetchPost, followPost } from '../actions'
+import moment from 'moment'
 const { array, bool, func, object } = React.PropTypes
+
+const Deadline = ({ time }) => {
+  const then = moment(time)
+  const now = moment()
+  const classes = ['deadline']
+  if (then.diff(now, 'days') < 10) classes.push('soon')
+  return <span className={classes.join(' ')} title={then.format('LLLL')}>
+    {moment(time).toNow(true)} to go
+  </span>
+}
 
 const ProjectPost = (props, context) => {
   const { post, community, comments, communities } = context
@@ -77,14 +88,17 @@ ProjectPost.contextTypes = {
 export default ProjectPost
 
 const Supporters = ({ post, simple }, { currentUser, dispatch }) => {
-  const { followers } = post
+  const { followers, end_time } = post
   const isFollowing = some(same('id', currentUser), followers)
   const follow = () => dispatch(followPost(post.id, currentUser))
 
   return <div className='supporters'>
-    {!simple && <h3>
-      {followers.length} supporter{followers.length === 1 ? '' : 's'}
-    </h3>}
+    {!simple && <div className='top'>
+      <h3>
+        {followers.length} supporter{followers.length === 1 ? '' : 's'}
+      </h3>
+      {end_time && <Deadline time={end_time}/>}
+    </div>}
     <div className='avatar-list'>
       {followers.map(person => <Avatar person={person} key={person.id}/>)}
     </div>
@@ -167,14 +181,18 @@ class ProjectRequest extends React.Component {
 const spacer = <span>&nbsp; •&nbsp; </span>
 
 export const ProjectPostCard = ({ post }) => {
-  const { name, user, tag } = post
+  const { name, user, tag, end_time } = post
   const url = `/p/${post.id}`
   const backgroundImage = `url(${imageUrl(post)})`
 
   return <div className='post project-summary'>
     <A className='image' to={url} style={{backgroundImage}}/>
     <div className='meta'>
-      {tag && <span>
+      {end_time && <span>
+        <Deadline time={end_time}/>
+        {spacer}
+      </span>}
+      {tag && <span className='hashtag-segment'>
         <A className='hashtag' to={url}>#{tag}</A>
         {spacer}
       </span>}

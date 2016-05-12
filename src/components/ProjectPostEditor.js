@@ -126,12 +126,16 @@ class ProjectRequestEditor extends React.Component {
   }, 100)
 
   render () {
-    const { showDetails, name, description } = this.state
+    const { post: { id } } = this.props
+    const { name, description } = this.state
     const handleChange = attr => event => {
       const { value } = event.target
       this.setState({[attr]: value})
       this.delayedUpdate(attr, value)
     }
+
+    const showDetails = this.state.showDetails || !!description
+    const editorClass = cx('details', {empty: !showDetails})
 
     return <div>
       <div className='title-wrapper'>
@@ -141,13 +145,11 @@ class ProjectRequestEditor extends React.Component {
           onChange={handleChange('name')}/>
       </div>
 
-      <RichTextEditor className={cx('details', {empty: !description && !showDetails})}
-        ref='details'
-        name='post'
+      <RichTextEditor className={editorClass} ref='details' name={`post-${id}`}
         content={description}
         onChange={handleChange('description')}
         onBlur={() => this.setState({showDetails: false})}/>
-      {!description && !showDetails &&
+      {!showDetails &&
         <div className='details-placeholder' onClick={this.goToDetails}>
           More details
         </div>}

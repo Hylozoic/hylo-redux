@@ -2,9 +2,7 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { prefetch } from 'react-fetcher'
 import { fetch, ConnectedPostList } from '../ConnectedPostList'
-import { refetch } from '../../util/caching'
 import PostEditor from '../../components/PostEditor'
-import PostListControls from '../../components/PostListControls'
 import { compose } from 'redux'
 import { isMember } from '../../models/currentUser'
 const { func, object } = React.PropTypes
@@ -31,13 +29,10 @@ class CommunityPosts extends React.Component {
   }
 
   render () {
-    let { dispatch, community, params: { id }, location: { query }, currentUser } = this.props
-    let { type, sort, search } = query
+    let { community, params: { id }, location: { query }, currentUser } = this.props
 
     return <div>
       <PostEditor community={community}/>
-      <PostListControls onChange={opts => dispatch(refetch(opts, this.props.location))} includeWelcome={true}
-        type={type} sort={sort} search={search}/>
       <ConnectedPostList {...{subject, id, query}}/>
       {!isMember(currentUser, community) && <div className='meta'>
         You are not a member of this community, so you are shown only posts that are marked as public.

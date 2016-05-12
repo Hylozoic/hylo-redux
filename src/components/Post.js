@@ -107,7 +107,6 @@ export const Header = ({ communities }, { post, community }) => {
       : <div>
           <A className='name' to={`/u/${person.id}`}>{person.name}</A>
           <span className='meta'>
-            {spacer}
             <A to={`/p/${post.id}`}>{nonbreaking(humanDate(createdAt))}</A>
             &nbsp;in {community.name}
             {post.public && <span>{spacer}Public</span>}

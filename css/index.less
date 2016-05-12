@@ -26,9 +26,14 @@ a {
   cursor: pointer;
 }
 
+b, strong {
+  .medium;
+}
+
 button, a.button, input[type=submit] {
   .btn;
   .btn-default;
+  .light;
 
   .icon-add-01 {
     position: relative;
@@ -159,7 +164,6 @@ ul.tabs {
   margin-bottom: 15px;
   text-align: center;
   .shaded-background;
-  .mobile-full-bleed;
 
   .mobile({
     padding-left: 5px;
@@ -175,20 +179,6 @@ ul.tabs {
     background-position: center;
     background-size: cover;
     z-index: -1;
-  }
-
-  .corner {
-    position: absolute;
-    top: 0;
-    right: 0;
-    padding: 15px;
-    a {
-      .outlined-text(rgba(0, 0, 0, 0.7));
-      color: @off-white;
-      &.active {
-        font-weight: bold;
-      }
-    }
   }
 
   .logo {
@@ -239,79 +229,6 @@ ul.tabs {
 
 .hashtag {
   color: @damian-green;
-}
-
-.comment {
-  padding-left: @post-content-left-margin;
-  padding-right: 15px;
-  margin-bottom: 5px;
-  padding-top: 15px;
-  .has-left-side-avatar;
-
-  .content {
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .text {
-    color: @gray-text;
-    .body-text;
-
-    .name {
-      color: black;
-      margin-right: 0.75em;
-    }
-
-    p {
-      &:nth-child(2) {
-        margin-top: @p-bottom-margin;
-      }
-
-      &:last-child {
-        margin-bottom: 0;
-        display: inline;
-      }
-    }
-  }
-
-  .thanks {
-    color: @damian-green;
-  }
-
-  .date {
-    color: @mid-gray-bg;
-  }
-
-  .meta a {
-    .meta-text;
-  }
-
-  .show-more {
-    .meta-text;
-  }
-}
-
-.comment-form {
-  .has-left-side-avatar;
-  .clearfix;
-  margin-top: 15px;
-  margin-bottom: 0;
-  border-top: 1px solid #e8e8e8;
-  padding-top: 15px;
-  padding-left: @post-content-left-margin;
-  margin-right: -25px;
-  padding-right: 25px;
-
-  .placeholder {
-    font-style: italic;
-    color: @placeholder-color;
-    min-height: 36px;
-    padding-top: 8px;
-  }
-
-  input[type='submit'] {
-    .round-button;
-  }
 }
 
 .meta {
@@ -366,7 +283,7 @@ ul.tags {
   .remove {
     margin-left: 5px;
     color: @gray-text;
-    font-weight: bold;
+    .bold;
     cursor: pointer;
     position: relative;
     text-decoration: none;
@@ -555,7 +472,7 @@ ul.tags {
     }
 
     .name {
-      .semibold;
+      .medium;
       font-size: 18px;
     }
   }
@@ -684,6 +601,10 @@ ul.tags {
 
 .sent-invitations {
   padding: 10px 0 0 !important;
+
+  .mobile({
+    overflow-y: scroll;
+  });
 
   table {
     width: 100%;

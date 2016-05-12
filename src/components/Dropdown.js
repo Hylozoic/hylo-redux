@@ -1,6 +1,7 @@
 import React from 'react'
 import cx from 'classnames'
 import { isEmpty } from 'lodash'
+import { isMobile } from '../client/util'
 import { VelocityTransitionGroup } from 'velocity-react'
 const { array, bool, func, object, string } = React.PropTypes
 
@@ -33,15 +34,21 @@ export default class Dropdown extends React.Component {
   }
 
   hide = event => {
-    if (this.state.active) this.setState({active: false})
+    if (this.state.active) {
+      // without this delay, the dropdown sometimes closes without registering a
+      // click on a link in its list
+      setTimeout(() => this.setState({active: false}), 10)
+    }
+    return true
   }
 
   componentDidMount () {
-    window.addEventListener('click', this.hide)
+    this.touchEvent = isMobile() ? 'touchend' : 'click'
+    window.addEventListener(this.touchEvent, this.hide)
   }
 
   componentWillUnmount () {
-    window.removeEventListener('click', this.hide)
+    window.removeEventListener(this.touchEvent, this.hide)
   }
 
   render () {
@@ -56,7 +63,7 @@ export default class Dropdown extends React.Component {
         {children}
       </ul>
       <VelocityTransitionGroup
-        enter={{animation: 'fadeIn', duration: 100}} 
+        enter={{animation: 'fadeIn', duration: 100}}
         leave={{animation: 'fadeOut', duration: 100}}>
         {backdrop && active && <div className='backdrop'/>}
       </VelocityTransitionGroup>

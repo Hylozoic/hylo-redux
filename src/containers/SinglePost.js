@@ -81,7 +81,7 @@ export default class SinglePost extends React.Component {
         : showPost(post)}
 
       {showTaggedPosts(post) && <div>
-        <p className='meta'>
+        <p className='meta other-posts-label'>
           Other posts for&nbsp;
           <span className='hashtag'>#{post.tag}</span>
         </p>

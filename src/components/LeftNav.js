@@ -4,10 +4,9 @@ import Icon from './Icon'
 import { VelocityTransitionGroup } from 'velocity-react'
 import { isEmpty, filter } from 'lodash'
 import { tagUrl } from '../routes'
+import { isMobile } from '../client/util'
 
-// this value is dupicated in CSS
-export const leftNavWidth = 208
-
+export const leftNavWidth = 208 // this value is dupicated in CSS
 export const leftNavEasing = [70, 25]
 
 const animations = {
@@ -15,7 +14,6 @@ const animations = {
     animation: {translateX: [0, '-100%']},
     easing: leftNavEasing
   },
-
   leave: {
     animation: {translateX: '-100%'},
     easing: leftNavEasing
@@ -56,11 +54,15 @@ export const TopicList = ({ tags, slug }) => {
 }
 
 export const LeftNav = ({ opened, community, tags, close, canModerate, canInvite }) => {
-  let { slug } = community || {}
+  const { slug } = community || {}
+  const onMenuClick = event => {
+    close()
+    event.stopPropagation()
+  }
 
   return <VelocityTransitionGroup {...animations}>
-    {opened && <nav id='leftNav'>
-      <MenuButton onClick={close}/>
+    {opened && <nav id='leftNav' onClick={() => isMobile() && close()}>
+      <MenuButton onClick={onMenuClick}/>
       <ul>
         <li>
           <IndexA to={slug ? `/c/${slug}` : '/'}>

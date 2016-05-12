@@ -13,6 +13,7 @@ import ScrollListener from '../components/ScrollListener'
 import Tags from '../components/Tags'
 import CoverImagePage from '../components/CoverImagePage'
 import { commentUrl } from '../routes'
+import decode from 'ent/decode'
 const { array, bool, func, number, object } = React.PropTypes
 
 const types = [
@@ -153,7 +154,7 @@ const CommentResult = ({ comment, dispatch }) => {
       <A to={commentUrl(comment)}>
         {post.tag === 'welcome'
           ? `${welcomedPerson.name}'s welcome post`
-          : `"${post.name}"`}
+          : `"${decode(post.name)}"`}
       </A>
     </strong>
     <Comment comment={comment} truncate={true} expand={visit}/>

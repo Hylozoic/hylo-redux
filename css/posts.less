@@ -1,14 +1,11 @@
-
 ul.posts {
   .no-bullets;
 
   .post {
-    .mobile-full-bleed;
     .mobile({
       border-left: none;
       border-right: none;
       border-bottom: none;
-      margin-bottom: 0;
 
       &.welcome {
         border-top: 1px solid @light-gray-border;
@@ -21,22 +18,57 @@ ul.posts {
 @post-content-left-margin: 75px;
 @post-content-right-margin: @post-padding;
 
+@mobile-post-content-left-margin: 65px;
+@mobile-post-content-right-margin: 15px;
+
+.post-left-margin() {
+  margin-left: @post-content-left-margin;
+  .mobile({
+    margin-left: @mobile-post-content-left-margin;
+  });
+}
+
+.post-right-margin() {
+  margin-right: @post-content-right-margin;
+  .mobile({
+    margin-right: @mobile-post-content-right-margin;
+  });
+}
+
+.post-left-padding(@mobile-padding: @mobile-post-content-left-margin) {
+  padding-left: @post-content-left-margin;
+  .mobile({
+    padding-left: @mobile-padding;
+  });
+}
+
+.post-right-padding(@mobile-padding: @mobile-post-content-right-margin) {
+  padding-right: @post-content-right-margin;
+  .mobile({
+    padding-right: @mobile-padding;
+  });
+}
+
 .shared-post-style() {
   .header {
     margin-bottom: 6px;
-    margin-right: @post-content-right-margin;
+    .post-right-margin;
 
     > .avatar {
       float: left;
       margin-left: 26px;
+      .mobile({
+        margin-left: @mobile-side-margin;
+      })
     }
     > div:last-child {
-      margin-left: @post-content-left-margin;
+      .post-left-margin;
       padding-top: 8px;
     }
     .name {
       color: @damian-green;
-      .semibold;
+      .medium;
+      margin-right: 0.8em;
     }
     .meta > a, .meta > div > a {
       .meta-text;
@@ -59,8 +91,8 @@ ul.posts {
   .shared-post-style;
 
   .post-section {
-    padding-left: @post-content-left-margin;
-    padding-right: @post-content-right-margin;
+    .post-left-padding;
+    .post-right-padding;
     margin-bottom: @p-bottom-margin;
   }
 
@@ -88,7 +120,9 @@ ul.posts {
 
   .details {
     .body-text;
-    padding-right: @post-content-right-margin + 15px;
+    .non-mobile({
+      padding-right: @post-content-right-margin + 15px;
+    });
     p:last-child {
       display: inline;
     }
@@ -132,14 +166,19 @@ ul.posts {
   }
 
   .post-menu {
+    float: right;
+    .meta-text;
+    cursor: pointer;
+    .mobile({
+      margin-top: 8px;
+      margin-left: 5px;
+    });
+
     i {
       font-size: 20px;
       color: @gray-text;
     }
 
-    float: right;
-    .meta-text;
-    cursor: pointer;
     > a:hover {
       text-decoration: none;
       color: @off-black;
@@ -184,7 +223,7 @@ ul.posts {
       margin-left: @vote-button-width + @vote-button-margin + @avatar-size-default + 15px;
 
      .person {
-        .semibold();
+        .medium();
         color: @off-black;
       }
     }
@@ -226,36 +265,38 @@ ul.posts {
   }
 
   &.expanded {
-    position: relative;
-    @extra-margin: 15px;
-    margin-left: -@extra-margin;
-    margin-right: -@extra-margin;
-    .post-section {
-      padding-left: @post-content-left-margin + @extra-margin;
-      padding-right: @post-content-right-margin + @extra-margin;
-
-      &.comments-section {
-        padding-left: 0px;
-      }
-
-      .comment, .comment-form {
+    .non-mobile({
+      position: relative;
+      @extra-margin: 15px;
+      margin-left: -@extra-margin;
+      margin-right: -@extra-margin;
+      .post-section {
         padding-left: @post-content-left-margin + @extra-margin;
+        padding-right: @post-content-right-margin + @extra-margin;
+
+        &.comments-section {
+          padding-left: 0px;
+        }
+
+        .comment, .comment-form {
+          padding-left: @post-content-left-margin + @extra-margin;
+        }
+
+        .comment-form {
+          margin-right: -@post-content-right-margin - @extra-margin;
+        }
       }
 
-      .comment-form {
-        margin-right: -@post-content-right-margin - @extra-margin;
+      .header {
+        > div:last-child {
+          margin-left: @post-content-left-margin + @extra-margin;
+          margin-right: @post-content-right-margin + @extra-margin;
+        }
+        > .avatar {
+          margin-left: 26px + @extra-margin;
+        }
       }
-    }
-
-    .header {
-      > div:last-child {
-        margin-left: @post-content-left-margin + @extra-margin;
-        margin-right: @post-content-right-margin + @extra-margin;
-      }
-      > .avatar {
-        margin-left: 26px + @extra-margin;
-      }
-    }
+    });
   }
 }
 
@@ -274,7 +315,6 @@ ul.posts {
   padding: 22px 0 15px 0;
   background-color: #fff;
   margin-bottom: 15px;
-  .mobile-full-bleed;
   .shared-post-style;
   position: relative;
 
@@ -390,14 +430,13 @@ ul.posts {
       border: 0;
       margin-right: 10px;
       margin-bottom: 0;
+      color: @damian-green;
+
       &:hover {
         border: 0;
       }
       .icon {
         display: none;
-      }
-      span {
-        color: @damian-green;
       }
       .remove {
         position: relative;
@@ -558,6 +597,7 @@ ul.posts {
     padding-left: 15px;
     line-height: 1.28em;
     font-size: 20px;
+    .regular;
     text-decoration: none;
     margin-bottom: @p-bottom-margin;
   }
@@ -565,6 +605,26 @@ ul.posts {
   .content {
     overflow: hidden;
   }
+
+  .mobile({
+    padding: @mobile-side-margin;
+
+    .image {
+      .fluid-height(100%);
+      width: 28%;
+    }
+
+    .title, .supporters, .attendance {
+      margin-left: 28% !important;
+      padding-left: 15px !important;
+      display: block !important;
+    }
+
+    .avatar-list, .rsvp, .hashtag-segment {
+      display: none !important;
+    }
+
+  });
 }
 
 .post.event-summary {
@@ -636,15 +696,18 @@ ul.posts {
   }
 
   > .hashtag {
+    .post-left-margin;
     color: @damian-green;
-    margin-left: @post-content-left-margin;
   }
 
   .box {
-    border: 1px solid @post-border;
-    margin: 0 @post-padding @post-padding;
+    .non-mobile({
+      border: 1px solid @post-border;
+      margin: 0 @post-padding @post-padding;
+    });
 
     .image {
+      padding-top: 12px;
       img {
         width: 100%;
       }
@@ -658,13 +721,18 @@ ul.posts {
     @row-height: 65px;
 
     .image {
-      padding: 12px 12px 0;
+      .non-mobile({
+        padding-left: 12px;
+        padding-right: 12px;
+      });
     }
 
     .time, .location, .rsvp-container {
       position: relative;
       height: @row-height;
-      margin-right: @attendance-width;
+      .non-mobile({
+        margin-right: @attendance-width;
+      });
       line-height: @row-height;
     }
 
@@ -689,19 +757,34 @@ ul.posts {
     .glyphicon {
       line-height: @row-height;
       vertical-align: middle;
-      width: 49px;
       top: -2px;
-      padding-left: 18px;
       color: @light-gray-text;
+      .non-mobile({
+        width: 49px;
+        padding-left: 18px;
+      });
+      .mobile({
+        width: 31px;
+      })
     }
 
     .attendance {
-      border-left: 1px solid @post-border;
-      padding: 10px;
-      float: right;
-      height: @row-height * 2;
-      width: @attendance-width;
       background: white;
+      .non-mobile({
+        float: right;
+        border-left: 1px solid @post-border;
+        width: @attendance-width;
+        padding: 10px;
+        height: @row-height * 2;
+      });
+      .mobile({
+        padding-bottom: @p-bottom-margin !important;
+        border-bottom: 1px solid @post-border;
+        &.no-image {
+          border-top: 1px solid @post-border;
+          margin-top: 25px;
+        }
+      });
       .blurb {
         margin-top: 5px;
       }
@@ -711,7 +794,19 @@ ul.posts {
       .clearfix;
       border-top: 1px solid @post-border;
       padding: @post-padding;
+      .mobile({
+        padding: @mobile-side-margin;
+      })
     }
+
+    .mobile({
+      .attendance, .time, .location {
+        padding: 0 @mobile-side-margin;
+      }
+      .attendance {
+        padding-top: 12px;
+      }
+    });
   }
 }
 
@@ -719,7 +814,7 @@ ul.posts {
   h3 {
     text-transform: uppercase;
     font-size: 13px;
-    .semibold;
+    .medium;
     letter-spacing: 0.08em;
     &:first-child {
       margin-top: 0;
@@ -730,21 +825,39 @@ ul.posts {
       &.normal {
         text-transform: none;
         letter-spacing: normal;
-        font-weight: normal;
+        .light;
       }
     }
   }
+
   .supporters {
     .avatar-list {
       margin-bottom: 4px;
+    }
+
+    .top {
+      h3 {
+        margin-bottom: 0;
+      }
+      margin-bottom: @p-bottom-margin;
+    }
+  }
+
+  .deadline {
+    .meta-text;
+
+    &.soon {
+      color: @damian-red;
     }
   }
 }
 
 .post.project {
   .box {
-    padding: 0 12px;
     font-size: 0; // to remove inline-block spacing
+    .non-mobile({
+      padding: 0 12px;
+    });
 
     > * {
       font-size: 14px;
@@ -763,18 +876,38 @@ ul.posts {
     .location, .details, .leads {
       padding-left: 13px;
       padding-right: 13px;
+      .mobile({
+        padding-left: @mobile-side-margin;
+        padding-right: @mobile-side-margin;
+      });
     }
   }
 
   .main-col {
     .make-sm-column(8);
-    border-right: 1px solid @post-border;
-    padding: 12px 0 12px 3px;
+    .non-mobile({
+      border-right: 1px solid @post-border;
+    });
+    padding: 12px 0 @post-padding 3px;
   }
+
+  .mobile({
+    .row {
+      margin: 0;
+    }
+
+    .main-col {
+      padding-left: 0;
+    }
+  });
 
   .supporters {
     .make-sm-column(4);
     padding: 12px 15px 12px 12px;
+    .mobile({
+      padding: 25px @mobile-side-margin;
+      border-top: 1px solid @post-border;
+    });
 
     .blurb {
       margin-bottom: @p-bottom-margin;
@@ -805,6 +938,7 @@ ul.posts {
       margin-right: 10px;
     }
     .person-info {
+      min-height: @avatar-size-default;
       display: block;
       overflow: hidden;
       .name {
@@ -820,7 +954,7 @@ ul.posts {
     line-height: @button-size;
     border-radius: @button-size;
     padding: 0 12px;
-    .semibold;
+    .medium;
 
     &.has-icon {
       padding-left: 8px;
@@ -839,15 +973,23 @@ ul.posts {
 
   .requests {
     border-top: 1px solid @post-border;
-    margin-top: 25px;
+    .non-mobile({
+      margin-top: 25px;
+    });
     h3 {
       margin-top: 25px;
-      padding: 0 25px;
+      padding: 0 @post-padding;
+      .mobile({
+        padding: 0 @mobile-side-margin;
+      });
       margin-bottom: 0;
     }
 
     .nested-request {
-      padding: 25px;
+      padding: @post-padding;
+      .mobile({
+        padding: @post-padding @mobile-side-margin;
+      });
       border-bottom: 1px solid @post-border;
       position: relative;
       &:last-child {
@@ -917,4 +1059,85 @@ ul.posts {
       }
     }
   }
+}
+
+.comment {
+  .post-left-padding(@mobile-side-margin);
+  .non-mobile({
+    padding-right: 15px;
+  });
+  margin-bottom: 5px;
+  padding-top: 15px;
+  .has-left-side-avatar;
+
+  .content {
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .text {
+    .body-text;
+
+    .name {
+      color: black;
+      margin-right: 0.75em;
+    }
+
+    p {
+      &:nth-child(2) {
+        margin-top: @p-bottom-margin;
+      }
+
+      &:last-child {
+        margin-bottom: 0;
+        display: inline;
+      }
+    }
+  }
+
+  .thanks {
+    color: @damian-green;
+  }
+
+  .date {
+    color: @mid-gray-bg;
+  }
+
+  .meta a {
+    .meta-text;
+  }
+
+  .show-more {
+    .meta-text;
+  }
+}
+
+.comment-form {
+  .has-left-side-avatar;
+  .clearfix;
+  margin-top: 15px;
+  margin-bottom: 0;
+  border-top: 1px solid #e8e8e8;
+  padding-top: 15px;
+  .post-left-padding(@mobile-side-margin);
+  padding-right: @post-content-right-margin;
+  margin-right: -@post-content-right-margin;
+
+  .placeholder {
+    font-style: italic;
+    color: @placeholder-color;
+    min-height: 36px;
+    padding-top: 8px;
+  }
+
+  input[type='submit'] {
+    .round-button;
+  }
+}
+
+.other-posts-label {
+  .mobile({
+    margin-left: @mobile-side-margin;
+    margin-right: @mobile-side-margin;
+  });
 }

@@ -12,6 +12,7 @@ import { same } from '../models'
 import { imageUrl } from '../models/post'
 import { Header, CommentSection, presentDescription } from './Post'
 import decode from 'ent/decode'
+import cx from 'classnames'
 const { array, func, object } = React.PropTypes
 
 const spacer = <span>&nbsp; •&nbsp; </span>
@@ -33,7 +34,7 @@ export const EventPostCard = ({ post }) => {
     <div className='meta'>
       <span title={timeFull}>{time}</span>
       {spacer}
-      {shouldShowTag(tag) && <span>
+      {shouldShowTag(tag) && <span className='hashtag-segment'>
         <A className='hashtag' to={url}>#{tag}</A>
         {spacer}
       </span>}
@@ -44,14 +45,14 @@ export const EventPostCard = ({ post }) => {
   </div>
 }
 
-const Attendance = ({ post, limit, showButton, children }, { currentUser, dispatch }) => {
+const Attendance = ({ post, limit, showButton, ...props }, { currentUser }) => {
   const { responders } = post
   const going = sortBy(
     responders.filter(r => r.response === 'yes'),
     p => same('id', p, currentUser) ? 'Aaa' : p.name
   )
 
-  return <div className='attendance'>
+  return <div className={cx('attendance', props.className)}>
     <div className='going avatar-list'>
       {going.slice(0, limit).map(person =>
         <Avatar person={person} key={person.id}/>)}
@@ -61,10 +62,10 @@ const Attendance = ({ post, limit, showButton, children }, { currentUser, dispat
       {going.length > 1 || some(going, same('id', currentUser)) ? 'are' : 'is'}
       &nbsp;going.
     </LinkedPersonSentence>}
-    {children}
+    {props.children}
   </div>
 }
-Attendance.contextTypes = {currentUser: object, dispatch: func}
+Attendance.contextTypes = {currentUser: object}
 
 const RSVPSelect = ({ post, alignRight }, { currentUser, dispatch }) => {
   const options = [
@@ -86,48 +87,48 @@ const RSVPSelect = ({ post, alignRight }, { currentUser, dispatch }) => {
 }
 RSVPSelect.contextTypes = {currentUser: object, dispatch: func}
 
-export default class EventPost extends React.Component {
-  static contextTypes = {
-    post: object,
-    communities: array,
-    comments: array
-  }
+const EventPost = (props, context) => {
+  const { post, community, communities, comments } = context
+  const { name, start_time, end_time, location, tag } = post
+  const description = presentDescription(post, community)
+  const title = decode(name || '')
+  const start = new Date(start_time)
+  const end = end_time && new Date(end_time)
+  const image = imageUrl(post, false)
 
-  render () {
-    const { post, community, communities, comments } = this.context
-    const { name, start_time, end_time, location, tag } = post
-    const description = presentDescription(post, community)
-    const title = decode(name || '')
-    const start = new Date(start_time)
-    const end = end_time && new Date(end_time)
-    const image = imageUrl(post, false)
+  return <div className='post event boxy-post'>
+    <Header communities={communities}/>
+    <p className='title post-section'>{title}</p>
+    {shouldShowTag(tag) && <p className='hashtag'>#{tag}</p>}
 
-    return <div className='post event boxy-post'>
-      <Header communities={communities}/>
-      <p className='title post-section'>{title}</p>
-      {shouldShowTag(tag) && <p className='hashtag'>#{tag}</p>}
-
-      <div className='box'>
-        {image && <div className='image'>
-          <img src={image}/>
-        </div>}
-        <Attendance post={post} limit={5} showButton={true}/>
-        <div className='time'>
-          <Icon name='time'/>
-          <span title={timeRangeFull(start, end)}>
-            {timeRange(start, end)}
-          </span>
-        </div>
-        <div className='location'>
-          <Icon name='map-marker'/>
-          <span title={location}>{location}</span>
-        </div>
-        {description && <div className='details'>
-          <ClickCatchingSpan dangerouslySetInnerHTML={{__html: description}}/>
-        </div>}
+    <div className='box'>
+      {image && <div className='image'>
+        <img src={image}/>
+      </div>}
+      <Attendance post={post} limit={5} showButton={true}
+        className={cx({'no-image': !image})}/>
+      <div className='time'>
+        <Icon name='time'/>
+        <span title={timeRangeFull(start, end)}>
+          {timeRange(start, end)}
+        </span>
       </div>
-
-      <CommentSection comments={comments}/>
+      <div className='location'>
+        <Icon name='map-marker'/>
+        <span title={location}>{location}</span>
+      </div>
+      {description && <div className='details'>
+        <ClickCatchingSpan dangerouslySetInnerHTML={{__html: description}}/>
+      </div>}
     </div>
-  }
+
+    <CommentSection comments={comments}/>
+  </div>
 }
+EventPost.contextTypes = {
+  post: object,
+  communities: array,
+  comments: array
+}
+
+export default EventPost

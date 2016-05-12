@@ -86,48 +86,47 @@ const RSVPSelect = ({ post, alignRight }, { currentUser, dispatch }) => {
 }
 RSVPSelect.contextTypes = {currentUser: object, dispatch: func}
 
-export default class EventPost extends React.Component {
-  static contextTypes = {
-    post: object,
-    communities: array,
-    comments: array
-  }
+const EventPost = (props, context) => {
+  const { post, community, communities, comments } = context
+  const { name, start_time, end_time, location, tag } = post
+  const description = presentDescription(post, community)
+  const title = decode(name || '')
+  const start = new Date(start_time)
+  const end = end_time && new Date(end_time)
+  const image = imageUrl(post, false)
 
-  render () {
-    const { post, community, communities, comments } = this.context
-    const { name, start_time, end_time, location, tag } = post
-    const description = presentDescription(post, community)
-    const title = decode(name || '')
-    const start = new Date(start_time)
-    const end = end_time && new Date(end_time)
-    const image = imageUrl(post, false)
+  return <div className='post event boxy-post'>
+    <Header communities={communities}/>
+    <p className='title post-section'>{title}</p>
+    {shouldShowTag(tag) && <p className='hashtag'>#{tag}</p>}
 
-    return <div className='post event boxy-post'>
-      <Header communities={communities}/>
-      <p className='title post-section'>{title}</p>
-      {shouldShowTag(tag) && <p className='hashtag'>#{tag}</p>}
-
-      <div className='box'>
-        {image && <div className='image'>
-          <img src={image}/>
-        </div>}
-        <Attendance post={post} limit={5} showButton={true}/>
-        <div className='time'>
-          <Icon name='time'/>
-          <span title={timeRangeFull(start, end)}>
-            {timeRange(start, end)}
-          </span>
-        </div>
-        <div className='location'>
-          <Icon name='map-marker'/>
-          <span title={location}>{location}</span>
-        </div>
-        {description && <div className='details'>
-          <ClickCatchingSpan dangerouslySetInnerHTML={{__html: description}}/>
-        </div>}
+    <div className='box'>
+      {image && <div className='image'>
+        <img src={image}/>
+      </div>}
+      <Attendance post={post} limit={5} showButton={true}/>
+      <div className='time'>
+        <Icon name='time'/>
+        <span title={timeRangeFull(start, end)}>
+          {timeRange(start, end)}
+        </span>
       </div>
-
-      <CommentSection comments={comments}/>
+      <div className='location'>
+        <Icon name='map-marker'/>
+        <span title={location}>{location}</span>
+      </div>
+      {description && <div className='details'>
+        <ClickCatchingSpan dangerouslySetInnerHTML={{__html: description}}/>
+      </div>}
     </div>
-  }
+
+    <CommentSection comments={comments}/>
+  </div>
 }
+EventPost.contextTypes = {
+  post: object,
+  communities: array,
+  comments: array
+}
+
+export default EventPost

@@ -37,7 +37,7 @@ import { makeUrl } from './client/util'
 import { get, isEmpty } from 'lodash'
 
 export default function makeRoutes (store) {
-  const requireLogin = (options = {}) => (nextState, replaceState) => {
+  const requireLoginWithOptions = (options = {}) => (nextState, replaceState) => {
     let { startAtSignup, addParams } = options
     if (store.getState().people.current) return true
 
@@ -52,13 +52,15 @@ export default function makeRoutes (store) {
     replaceState({}, makeUrl(`/${start}`, params))
   }
 
+  const requireLogin = requireLoginWithOptions()
+
   const requireAdmin = (nextState, replaceState) => {
     const currentUser = store.getState().people.current
     if (!get(currentUser, 'is_admin')) replaceState({}, '/login')
   }
 
   const requireCommunity = (options = {}) => (nextState, replaceState) => {
-    if (!requireLogin(options)(nextState, replaceState)) return
+    if (!requireLoginWithOptions(options)(nextState, replaceState)) return
 
     if (isEmpty(get(store.getState().people.current, 'memberships'))) {
       replaceState({}, '/c/join')
@@ -69,57 +71,57 @@ export default function makeRoutes (store) {
     <IndexRoute component={AllPosts} onEnter={requireCommunity()}/>
     <Route path='signup' component={Signup}/>
     <Route path='login' component={Login}/>
-    <Route path='settings' component={UserSettings} onEnter={requireLogin()}/>
-    <Route path='my-posts' component={MyPosts} onEnter={requireLogin()}/>
-    <Route path='followed-posts' component={FollowedPosts} onEnter={requireLogin()}/>
-    <Route path='search' component={Search} onEnter={requireLogin()}/>
-    <Route path='u/:id' component={PersonProfile} onEnter={requireLogin()}/>
-    <Route path='c/new' component={CommunityEditor} onEnter={requireLogin()}/>
-    <Route path='c/join' component={CommunityJoinForm} onEnter={requireLogin()}/>
+    <Route path='settings' component={UserSettings} onEnter={requireLogin}/>
+    <Route path='my-posts' component={MyPosts} onEnter={requireLogin}/>
+    <Route path='followed-posts' component={FollowedPosts} onEnter={requireLogin}/>
+    <Route path='search' component={Search} onEnter={requireLogin}/>
+    <Route path='u/:id' component={PersonProfile} onEnter={requireLogin}/>
+    <Route path='c/new' component={CommunityEditor} onEnter={requireLogin}/>
+    <Route path='c/join' component={CommunityJoinForm} onEnter={requireLogin}/>
 
     <Route path='admin' component={Admin} onEnter={requireAdmin}/>
 
     <Route path='h/use-invitation' component={InvitationHandler}
-      onEnter={requireLogin({
+      onEnter={requireLoginWithOptions({
         startAtSignup: true,
         addParams: ({ location: { query: { token } } }) => ({token, action: 'use-invitation'})
       })}/>
 
     <Route path='c/:id/join/:code' component={CommunityJoinLinkHandler}
-      onEnter={requireLogin({
+      onEnter={requireLoginWithOptions({
         startAtSignup: true,
         addParams: ({ params: { id } }) => ({id, action: 'join-community'})
       })}/>
 
-    <Route path='c/:id/onboarding' component={Onboarding} onEnter={requireLogin()}/>
+    <Route path='c/:id/onboarding' component={Onboarding} onEnter={requireLogin}/>
 
     <Route path='c/:id' component={CommunityProfile}>
       <IndexRoute component={CommunityPosts}/>
-      <Route path='members' component={CommunityMembers} onEnter={requireLogin()}/>
+      <Route path='members' component={CommunityMembers} onEnter={requireLogin}/>
       <Route path='events' component={Events}/>
       <Route path='projects' component={Projects}/>
       <Route path='about' component={AboutCommunity}/>
-      <Route path='settings' component={CommunitySettings} onEnter={requireLogin()}/>
-      <Route path='invite' component={CommunityInvitations} onEnter={requireLogin()}/>
-      <Route path='tag/:tagName' component={TagPosts} onEnter={requireLogin()} />
-      <Route path='notifications' component={Notifications} onEnter={requireLogin()}/>
+      <Route path='settings' component={CommunitySettings} onEnter={requireLogin}/>
+      <Route path='invite' component={CommunityInvitations} onEnter={requireLogin}/>
+      <Route path='tag/:tagName' component={TagPosts} onEnter={requireLogin} />
+      <Route path='notifications' component={Notifications} onEnter={requireLogin}/>
     </Route>
 
     <Route path='p/:id' component={SinglePost}/>
-    <Route path='n/new' component={NetworkEditor} onEnter={requireLogin()}/>
-    <Route path='n/:id' component={NetworkProfile} onEnter={requireLogin()}>
+    <Route path='n/new' component={NetworkEditor} onEnter={requireLogin}/>
+    <Route path='n/:id' component={NetworkProfile} onEnter={requireLogin}>
       <IndexRoute component={NetworkPosts}/>
       <Route path='communities' component={NetworkCommunities}/>
       <Route path='members' component={NetworkMembers}/>
       <Route path='about' component={AboutNetwork}/>
     </Route>
-    <Route path='n/:id/edit' component={NetworkEditor} onEnter={requireLogin()}/>
+    <Route path='n/:id/edit' component={NetworkEditor} onEnter={requireLogin}/>
 
     <Route component={AllCommunities}>
       <Route path='tag/:tagName' component={TagPosts}/>
-      <Route path='notifications' component={Notifications} onEnter={requireLogin()}/>
-      <Route path='projects' component={Projects} onEnter={requireLogin()}/>
-      <Route path='events' component={Events} onEnter={requireLogin()}/>
+      <Route path='notifications' component={Notifications} onEnter={requireLogin}/>
+      <Route path='projects' component={Projects} onEnter={requireLogin}/>
+      <Route path='events' component={Events} onEnter={requireLogin}/>
     </Route>
 
     <Route path='testbench' component={TestBench}/>

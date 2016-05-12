@@ -23,9 +23,13 @@ const PersonCards = ({ people, menus, subtitles, slug }) => {
 export default PersonCards
 
 export const PersonCard = ({ person, menu, subtitle, slug }) => {
-  let { id, avatar_url, name, bio, isModerator, joined_at, createdTags } = person
+  let { id, avatar_url, name, bio, isModerator, joined_at, createdTags, offerCount } = person
   var role_and_age = isModerator ? 'Moderator' : 'Member'
   role_and_age += ` since ${humanDate(joined_at)}`
+
+  const offersText = Number(offerCount) > 0
+  ? `•${offerCount} offer${Number(offerCount) > 1 ? 's' : ''}`
+  : null
 
   return <div className='person-card'>
     {menu && <Dropdown className='caret-menu' alignRight={true}
@@ -41,6 +45,7 @@ export const PersonCard = ({ person, menu, subtitle, slug }) => {
       {isModerator && <div className='moderator'>Moderator</div>}
       {subtitle && <div className='subtitle'>{subtitle}</div>}
       {bio && <div className='details'>{bio}</div>}
+      {offersText && <div className='offerCount'>{offersText}</div>}
       {!isEmpty(createdTags) && createdTags.map(tag =>
         <a className='hashtag' href={tagUrl(tag.name, slug)}>#{tag.name}&nbsp;</a>)}
     </div>

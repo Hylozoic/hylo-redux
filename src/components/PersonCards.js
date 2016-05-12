@@ -42,7 +42,6 @@ export const PersonCard = ({ person, menu, subtitle, slug }) => {
     <div className='person-body'>
       <A className='name' to={`/u/${id}`}>{name}</A>
       <div className='role'>{role_and_age}</div>
-      {isModerator && <div className='moderator'>Moderator</div>}
       {subtitle && <div className='subtitle'>{subtitle}</div>}
       {bio && <div className='details'>{bio}</div>}
       {offersText && <div className='offerCount'>{offersText}</div>}

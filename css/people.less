@@ -3,6 +3,42 @@
   margin-right: 30px;
 }
 
+.members {
+  .search-bar {
+    padding-left: 30px;
+    height: 70px;
+    line-height: 70px;
+    vertical-align: middle;
+    border-bottom: 2px solid @faint-gray-border;
+    input {
+      padding-left: 10px;
+      font-size: 24px;
+      width: 90%;
+      height: 100%;
+      border: none;
+      &:focus {
+        outline: 0;
+        -webkit-box-shadow: none;
+        box-shadow: none;
+      }
+    }
+    .glyphicon-search {
+      color: @faint-gray-text;
+      font-size: 20px;
+    }
+  }
+  .member-controls {
+    height: 60px;
+    line-height: 60px;
+    vertical-align: middle;
+    padding-left: 30px;
+    a {
+      color: @damian-green;
+      margin-left: 15px;
+    }
+  }
+}
+
 .person-cards {
   .make-row;
   margin-left: 15px;

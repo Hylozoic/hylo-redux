@@ -780,6 +780,10 @@ ul.posts {
       .mobile({
         padding-bottom: @p-bottom-margin !important;
         border-bottom: 1px solid @post-border;
+        &.no-image {
+          border-top: 1px solid @post-border;
+          margin-top: 25px;
+        }
       });
       .blurb {
         margin-top: 5px;

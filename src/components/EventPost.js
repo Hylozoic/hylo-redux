@@ -12,6 +12,7 @@ import { same } from '../models'
 import { imageUrl } from '../models/post'
 import { Header, CommentSection, presentDescription } from './Post'
 import decode from 'ent/decode'
+import cx from 'classnames'
 const { array, func, object } = React.PropTypes
 
 const spacer = <span>&nbsp; •&nbsp; </span>
@@ -44,14 +45,14 @@ export const EventPostCard = ({ post }) => {
   </div>
 }
 
-const Attendance = ({ post, limit, showButton, children }, { currentUser, dispatch }) => {
+const Attendance = ({ post, limit, showButton, ...props }, { currentUser }) => {
   const { responders } = post
   const going = sortBy(
     responders.filter(r => r.response === 'yes'),
     p => same('id', p, currentUser) ? 'Aaa' : p.name
   )
 
-  return <div className='attendance'>
+  return <div className={cx('attendance', props.className)}>
     <div className='going avatar-list'>
       {going.slice(0, limit).map(person =>
         <Avatar person={person} key={person.id}/>)}
@@ -61,10 +62,10 @@ const Attendance = ({ post, limit, showButton, children }, { currentUser, dispat
       {going.length > 1 || some(going, same('id', currentUser)) ? 'are' : 'is'}
       &nbsp;going.
     </LinkedPersonSentence>}
-    {children}
+    {props.children}
   </div>
 }
-Attendance.contextTypes = {currentUser: object, dispatch: func}
+Attendance.contextTypes = {currentUser: object}
 
 const RSVPSelect = ({ post, alignRight }, { currentUser, dispatch }) => {
   const options = [
@@ -104,7 +105,8 @@ const EventPost = (props, context) => {
       {image && <div className='image'>
         <img src={image}/>
       </div>}
-      <Attendance post={post} limit={5} showButton={true}/>
+      <Attendance post={post} limit={5} showButton={true}
+        className={cx({'no-image': !image})}/>
       <div className='time'>
         <Icon name='time'/>
         <span title={timeRangeFull(start, end)}>

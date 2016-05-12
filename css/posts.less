@@ -66,9 +66,10 @@ ul.posts {
       padding-top: 8px;
     }
     .name {
-      color: @damian-green;
       .medium;
+      color: @damian-green;
       margin-right: 0.8em;
+      display: inline-block;
     }
     .meta > a, .meta > div > a {
       .meta-text;
@@ -326,7 +327,7 @@ ul.posts {
   }
 
   .title-wrapper {
-    margin-left: @post-content-left-margin;
+    .post-left-margin;
     margin-right: @content-right-margin;
   }
 
@@ -341,7 +342,7 @@ ul.posts {
   }
 
   .details {
-    padding-left: @post-content-left-margin;
+    .post-left-padding;
     padding-right: @content-right-margin;
     margin-bottom: 0;
     min-height: 30px;
@@ -400,7 +401,7 @@ ul.posts {
 
   .communities {
     padding-top: 5px;
-    padding-left: @post-content-left-margin;
+    .post-left-padding;
     border-top: 2px dotted #e5e5e5;
 
     .meta-text;

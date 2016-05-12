@@ -30,6 +30,7 @@ import NetworkEditor from './containers/network/NetworkEditor'
 import Notifications from './containers/Notifications'
 import Search from './containers/Search'
 import Events from './containers/Events'
+import StandalonePostEditor from './containers/StandalonePostEditor'
 import Admin from './containers/Admin'
 import TestBench from './containers/TestBench'
 import { debug } from './util/logging'
@@ -108,6 +109,7 @@ export default function makeRoutes (store) {
     </Route>
 
     <Route path='p/:id' component={SinglePost}/>
+    <Route path='p/:id/edit' component={StandalonePostEditor} onEnter={requireLogin}/>
     <Route path='n/new' component={NetworkEditor} onEnter={requireLogin}/>
     <Route path='n/:id' component={NetworkProfile} onEnter={requireLogin}>
       <IndexRoute component={NetworkPosts}/>

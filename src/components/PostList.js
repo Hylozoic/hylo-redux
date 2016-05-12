@@ -15,7 +15,7 @@ import { navigate } from '../actions'
 const { array, bool, func, string } = React.PropTypes
 
 @connect((state, props) => ({
-  editingPostIds: getEditingPostIds(props.posts, state)
+  editingPostIds: isMobile() ? [] : getEditingPostIds(props.posts, state)
 }))
 class PostList extends React.Component {
   static propTypes = {

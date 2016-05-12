@@ -4,12 +4,7 @@ import { find } from 'lodash/fp'
 const { array, bool, func, object } = React.PropTypes
 import cx from 'classnames'
 import {
-  humanDate,
-  nonbreaking,
-  present,
-  sanitize,
-  textLength,
-  appendInP
+  humanDate, nonbreaking, present, sanitize, textLength, appendInP
 } from '../util/text'
 import { linkifyHashtags } from '../util/linkify'
 import { tagUrl } from '../routes'
@@ -25,17 +20,14 @@ import { scrollToAnchor } from '../util/scrolling'
 import { connect } from 'react-redux'
 import { compose } from 'redux'
 import {
-  fetchComments,
-  followPost,
-  notify,
-  removePost,
-  startPostEdit,
+  fetchComments, followPost, navigate, notify, removePost, startPostEdit,
   voteOnPost
 } from '../actions'
 import { same } from '../models'
 import { getComments, getCommunities } from '../models/post'
 import { getCurrentCommunity } from '../models/community'
 import { canEditPost } from '../models/currentUser'
+import { isMobile } from '../client/util'
 import decode from 'ent/decode'
 
 const spacer = <span>&nbsp; •&nbsp; </span>
@@ -172,7 +164,10 @@ WelcomePostHeader.contextTypes = {post: object}
 export const Menu = (props, { dispatch, post, currentUser }) => {
   const canEdit = canEditPost(currentUser, post)
   const following = some(post.followers, same('id', currentUser))
-  const edit = () => dispatch(startPostEdit(post))
+  const edit = () => {
+    dispatch(startPostEdit(post))
+    if (isMobile()) dispatch(navigate(`/p/${post.id}/edit`))
+  }
   const remove = () => window.confirm('Are you sure? This cannot be undone.') &&
     dispatch(removePost(post.id))
 

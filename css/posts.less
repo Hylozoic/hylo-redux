@@ -696,15 +696,18 @@ ul.posts {
   }
 
   > .hashtag {
-    margin-left: @post-content-left-margin;
+    .post-left-margin;
     color: @damian-green;
   }
 
   .box {
-    border: 1px solid @post-border;
-    margin: 0 @post-padding @post-padding;
+    .non-mobile({
+      border: 1px solid @post-border;
+      margin: 0 @post-padding @post-padding;
+    });
 
     .image {
+      padding-top: 12px;
       img {
         width: 100%;
       }
@@ -718,13 +721,18 @@ ul.posts {
     @row-height: 65px;
 
     .image {
-      padding: 12px 12px 0;
+      .non-mobile({
+        padding-left: 12px;
+        padding-right: 12px;
+      });
     }
 
     .time, .location, .rsvp-container {
       position: relative;
       height: @row-height;
-      margin-right: @attendance-width;
+      .non-mobile({
+        margin-right: @attendance-width;
+      });
       line-height: @row-height;
     }
 
@@ -749,19 +757,30 @@ ul.posts {
     .glyphicon {
       line-height: @row-height;
       vertical-align: middle;
-      width: 49px;
       top: -2px;
-      padding-left: 18px;
       color: @light-gray-text;
+      .non-mobile({
+        width: 49px;
+        padding-left: 18px;
+      });
+      .mobile({
+        width: 31px;
+      })
     }
 
     .attendance {
-      border-left: 1px solid @post-border;
-      padding: 10px;
-      float: right;
-      height: @row-height * 2;
-      width: @attendance-width;
       background: white;
+      .non-mobile({
+        float: right;
+        border-left: 1px solid @post-border;
+        width: @attendance-width;
+        padding: 10px;
+        height: @row-height * 2;
+      });
+      .mobile({
+        padding-bottom: @p-bottom-margin !important;
+        border-bottom: 1px solid @post-border;
+      });
       .blurb {
         margin-top: 5px;
       }
@@ -771,7 +790,19 @@ ul.posts {
       .clearfix;
       border-top: 1px solid @post-border;
       padding: @post-padding;
+      .mobile({
+        padding: @mobile-side-margin;
+      })
     }
+
+    .mobile({
+      .attendance, .time, .location {
+        padding: 0 @mobile-side-margin;
+      }
+      .attendance {
+        padding-top: 12px;
+      }
+    });
   }
 }
 
@@ -819,8 +850,10 @@ ul.posts {
 
 .post.project {
   .box {
-    padding: 0 12px;
     font-size: 0; // to remove inline-block spacing
+    .non-mobile({
+      padding: 0 12px;
+    });
 
     > * {
       font-size: 14px;
@@ -839,18 +872,38 @@ ul.posts {
     .location, .details, .leads {
       padding-left: 13px;
       padding-right: 13px;
+      .mobile({
+        padding-left: @mobile-side-margin;
+        padding-right: @mobile-side-margin;
+      });
     }
   }
 
   .main-col {
     .make-sm-column(8);
-    border-right: 1px solid @post-border;
+    .non-mobile({
+      border-right: 1px solid @post-border;
+    });
     padding: 12px 0 12px 3px;
   }
+
+  .mobile({
+    .row {
+      margin: 0;
+    }
+
+    .main-col {
+      padding-left: 0;
+    }
+  });
 
   .supporters {
     .make-sm-column(4);
     padding: 12px 15px 12px 12px;
+    .mobile({
+      padding: 25px @mobile-side-margin;
+      border-top: 1px solid @post-border;
+    });
 
     .blurb {
       margin-bottom: @p-bottom-margin;
@@ -915,15 +968,23 @@ ul.posts {
 
   .requests {
     border-top: 1px solid @post-border;
-    margin-top: 25px;
+    .non-mobile({
+      margin-top: 25px;
+    });
     h3 {
       margin-top: 25px;
-      padding: 0 25px;
+      padding: 0 @post-padding;
+      .mobile({
+        padding: 0 @mobile-side-margin;
+      });
       margin-bottom: 0;
     }
 
     .nested-request {
-      padding: 25px;
+      padding: @post-padding;
+      .mobile({
+        padding: @post-padding @mobile-side-margin;
+      });
       border-bottom: 1px solid @post-border;
       position: relative;
       &:last-child {
@@ -1068,4 +1129,11 @@ ul.posts {
   input[type='submit'] {
     .round-button;
   }
+}
+
+.other-posts-label {
+  .mobile({
+    margin-left: @mobile-side-margin;
+    margin-right: @mobile-side-margin;
+  });
 }

@@ -1,6 +1,7 @@
 import React from 'react'
 import { assetUrl } from '../util/assets'
 import { map } from 'lodash'
+import { environment } from '../config'
 var { string, object } = React.PropTypes
 
 class Html extends React.Component {
@@ -13,14 +14,14 @@ class Html extends React.Component {
   }
 
   render () {
-    let { pageTitle, markup, state, assetManifest, metaTags } = this.props
+    const { pageTitle, markup, state, assetManifest, metaTags } = this.props
+    const isProd = environment === 'production'
+
     return <html>
       <head>
         <title>{pageTitle}</title>
         <link rel='stylesheet' type='text/css' href={assetUrl('/index.css')}/>
-        { process.env.NODE_ENV === 'production'
-        ? <link rel='shortcut icon' href='/favicon.png?v=2' />
-      : <link rel='shortcut icon' href='/faviconDev.png?v=2' />}
+        <link rel='shortcut icon' href={`/favicon${isProd ? '' : 'Dev'}.png?v=2`}/>
         <script type='text/javascript' async src='https://platform.twitter.com/widgets.js'></script>
         <meta name='viewport' content='width=device-width, initial-scale=1.0, user-scalable=no'/>
         {map(metaTags, (val, key) => <meta property={key} content={val} key={key} />)}

@@ -38,10 +38,12 @@ export default class Dropdown extends React.Component {
 
   componentDidMount () {
     window.addEventListener('click', this.hide)
+    window.addEventListener('touchend', this.hide)
   }
 
   componentWillUnmount () {
     window.removeEventListener('click', this.hide)
+    window.removeEventListener('touchend', this.hide)
   }
 
   render () {
@@ -56,7 +58,7 @@ export default class Dropdown extends React.Component {
         {children}
       </ul>
       <VelocityTransitionGroup
-        enter={{animation: 'fadeIn', duration: 100}} 
+        enter={{animation: 'fadeIn', duration: 100}}
         leave={{animation: 'fadeOut', duration: 100}}>
         {backdrop && active && <div className='backdrop'/>}
       </VelocityTransitionGroup>

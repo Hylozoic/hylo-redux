@@ -65,6 +65,7 @@ export default class App extends React.Component {
     } = this.props
 
     const path = this.props.path.split('?')[0]
+    const hideTopNav = path.match(/^\/p\/\d+\/edit$/)
 
     const moveWithMenu = {marginLeft: leftNavIsOpen ? leftNavWidth : 0}
     const toggleLeftNav = open => {
@@ -87,7 +88,7 @@ export default class App extends React.Component {
 
       <VelocityComponent animation={moveWithMenu} easing={leftNavEasing}>
         <div id='main'>
-          <TopNav currentUser={currentUser}
+          {!hideTopNav && <TopNav currentUser={currentUser}
             community={community}
             onChangeCommunity={visitCommunity}
             openLeftNav={openLeftNav}
@@ -95,7 +96,7 @@ export default class App extends React.Component {
             logout={() => dispatch(logout())}
             path={path}
             search={doSearch}
-            opened={leftNavIsOpen}/>
+            opened={leftNavIsOpen}/>}
           {children}
         </div>
       </VelocityComponent>

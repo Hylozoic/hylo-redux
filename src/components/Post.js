@@ -164,10 +164,9 @@ WelcomePostHeader.contextTypes = {post: object}
 export const Menu = (props, { dispatch, post, currentUser }) => {
   const canEdit = canEditPost(currentUser, post)
   const following = some(post.followers, same('id', currentUser))
-  const edit = () => {
-    dispatch(startPostEdit(post))
-    if (isMobile()) dispatch(navigate(`/p/${post.id}/edit`))
-  }
+  const edit = () => isMobile()
+    ? dispatch(navigate(`/p/${post.id}/edit`))
+    : dispatch(startPostEdit(post))
   const remove = () => window.confirm('Are you sure? This cannot be undone.') &&
     dispatch(removePost(post.id))
 

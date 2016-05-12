@@ -418,20 +418,24 @@ ul.posts {
       padding-left: 0;
       margin-left: 14px;
       width: auto;
+      margin-bottom: 5px;
 
       input[type="text"] {
         padding-left: 0;
         height: 23px;
+        vertical-align: top;
       }
     }
 
     .tag {
+      height: 23px;
       background-color: transparent;
       padding: 0;
       border: 0;
       margin-right: 10px;
       margin-bottom: 0;
       color: @damian-green;
+      vertical-align: middle;
 
       &:hover {
         border: 0;
@@ -569,6 +573,64 @@ ul.posts {
       .rdtPrev button, .rdtNext button {
         padding: 0;
         vertical-align: top;
+      }
+    }
+  }
+}
+
+.standalone-post-editor {
+  margin-top: @mobile-top-nav-height;
+
+  .top-menu {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: @mobile-top-nav-height;
+    line-height: @mobile-top-nav-height;
+    background-color: white;
+    border-bottom: 1px solid @post-border;
+    z-index: 11;
+    padding: 0 @mobile-side-margin;
+
+    .title {
+      width: 100%;
+      text-align: center;
+      z-index: -1;
+      position: absolute;
+      top: 0;
+      left: 0;
+      color: @gray-text;
+    }
+
+    a {
+      text-decoration: none;
+      .regular;
+    }
+
+    .left-angle-bracket {
+      margin-left: -7px;
+      margin-right: 3px;
+    }
+
+    .save {
+      float: right;
+      color: @damian-green;
+    }
+  }
+  .post-editor {
+    > .header {
+      display: none;
+    }
+    .title-wrapper, .hashtag-selector {
+      margin-left: @mobile-side-margin;
+    }
+    .details, .details-placeholder, .communities, .buttons {
+      padding-left: @mobile-side-margin;
+    }
+    .buttons {
+      .save, .right {
+        display: none;
       }
     }
   }

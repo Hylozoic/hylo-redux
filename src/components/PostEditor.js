@@ -8,6 +8,7 @@ because they make more sense.
 
 import React from 'react'
 import cx from 'classnames'
+import autoproxy from 'autoproxy'
 import {
   debounce, filter, find, get, includes, isEmpty, some, startsWith
 } from 'lodash'
@@ -34,7 +35,7 @@ const { array, bool, func, object, string } = React.PropTypes
 
 const specialTags = ['request', 'offer', 'intention']
 
-@connect((state, { community, post, project, type }) => {
+@autoproxy(connect((state, { community, post, project, type }) => {
   const id = post ? post.id
     : type === 'project' ? 'new-project'
     : type === 'event' ? 'new-event' : 'new'
@@ -50,7 +51,7 @@ const specialTags = ['request', 'offer', 'intention']
     saving: state.pending[CREATE_POST] || state.pending[UPDATE_POST],
     imagePending: state.pending[UPLOAD_IMAGE]
   }
-}, null, null, {withRef: true})
+}, null, null, {withRef: true}))
 export class PostEditor extends React.Component {
   static propTypes = {
     dispatch: func,
@@ -83,8 +84,12 @@ export class PostEditor extends React.Component {
     dispatch(updatePostEditor(data, id))
   }
 
-  cancel = () => {
-    let { dispatch, id, onCancel } = this.props
+  _self () {
+    return this.getWrappedInstance ? this.getWrappedInstance() : this
+  }
+
+  cancel () {
+    let { dispatch, id, onCancel } = this._self().props
     dispatch(cancelPostEdit(id))
     if (typeof onCancel === 'function') onCancel()
   }
@@ -322,7 +327,7 @@ export class PostEditor extends React.Component {
 
       <div className='buttons'>
         <div className='right'>
-          <button onClick={this.cancel}>Cancel</button>
+          <button onClick={() => this.cancel()}>Cancel</button>
         </div>
 
         <button className='save' ref='save' onClick={this.saveIfValid}

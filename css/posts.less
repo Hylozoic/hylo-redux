@@ -21,17 +21,10 @@ ul.posts {
 @mobile-post-content-left-margin: 65px;
 @mobile-post-content-right-margin: 15px;
 
-.post-left-margin() {
+.post-left-margin(@mobile-margin: @mobile-post-content-left-margin) {
   margin-left: @post-content-left-margin;
   .mobile({
-    margin-left: @mobile-post-content-left-margin;
-  });
-}
-
-.post-right-margin() {
-  margin-right: @post-content-right-margin;
-  .mobile({
-    margin-right: @mobile-post-content-right-margin;
+    margin-left: @mobile-margin;
   });
 }
 
@@ -42,10 +35,17 @@ ul.posts {
   });
 }
 
-.post-right-padding(@mobile-padding: @mobile-post-content-right-margin) {
+.post-right-margin() {
+  margin-right: @post-content-right-margin;
+  .mobile({
+    margin-right: @mobile-post-content-right-margin;
+  });
+}
+
+.post-right-padding() {
   padding-right: @post-content-right-margin;
   .mobile({
-    padding-right: @mobile-padding;
+    padding-right: @mobile-post-content-right-margin;
   });
 }
 
@@ -519,7 +519,7 @@ ul.posts {
   }
 
   .more-fields {
-    padding-left: @post-content-left-margin;
+    .post-left-padding(@mobile-side-margin);
     .make-row;
 
     > div {
@@ -1093,7 +1093,7 @@ ul.posts {
   padding-top: @p-bottom-margin;
 
   h3, .add-request {
-    padding-left: @post-content-left-margin;
+    .post-left-padding(@mobile-side-margin);
   }
 
   .add-request {
@@ -1109,8 +1109,8 @@ ul.posts {
     margin-bottom: 25px;
 
     > div {
-      margin-left: @post-content-left-margin;
-      margin-right: @post-content-right-margin;
+      .post-left-margin(@mobile-side-margin);
+      .post-right-margin;
       border-bottom: 1px solid @faint-gray-border;
       margin-bottom: 25px;
 

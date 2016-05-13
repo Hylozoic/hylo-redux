@@ -131,8 +131,9 @@ export class PostEditor extends React.Component {
     return Promise.resolve(true)
   }
 
-  saveIfValid = () => {
-    this.validate().then(valid => {
+  saveIfValid () {
+    const self = this._self()
+    self.validate().then(valid => {
       if (!valid) return
       // we use setTimeout here to avoid a race condition. the description field
       // (tinymce) doesn't fire its change event until it loses focus, and
@@ -141,7 +142,7 @@ export class PostEditor extends React.Component {
       // so if we click Save immediately after typing in the description
       // field, we have to wait for events from the description field to be
       // handled, otherwise the last edit will be lost.
-      setTimeout(() => this.save(), 200)
+      setTimeout(() => self.save(), 200)
     })
   }
 
@@ -330,7 +331,7 @@ export class PostEditor extends React.Component {
           <button onClick={() => this.cancel()}>Cancel</button>
         </div>
 
-        <button className='save' ref='save' onClick={this.saveIfValid}
+        <button className='save' ref='save' onClick={() => this.saveIfValid()}
           disabled={saving}>
           {post ? 'Save Changes' : 'Post'}
         </button>
@@ -342,7 +343,7 @@ export class PostEditor extends React.Component {
           dispatch={dispatch}/>
 
         <label className='visibility'>
-          <input type='checkbox' value={postEdit.public}
+          <input type='checkbox' value={postEdit.public || false}
             onChange={() => this.updateStore({public: !postEdit.public})}/>
           &nbsp;
           Public

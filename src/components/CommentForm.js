@@ -34,7 +34,7 @@ export default class CommentForm extends React.Component {
     dispatch(createComment(postId, this.state.text))
     trackEvent(ADDED_COMMENT, {post: {id: postId}})
     this.refs.editor.setContent('')
-    this.setState({text: ''})
+    this.setState({text: '', editing: false})
   }
 
   render () {

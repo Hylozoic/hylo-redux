@@ -84,6 +84,11 @@ export const LeftNav = ({ opened, community, tags, close, canModerate, canInvite
             <Icon name='user'/> Members
           </A>
         </li>}
+        {isMobile && <li>
+          <A to={slug ? `/c/${slug}/notifications` : '/notifications'}>
+            <Icon name='bell'/> Notifications
+          </A>
+        </li>}
         {community && <li>
           <A to={`/c/${slug}/about`}>
             <Icon name='question-sign'/> About

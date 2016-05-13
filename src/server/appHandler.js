@@ -15,6 +15,7 @@ import { fetchCurrentUser } from '../actions'
 import { localsForPrefetch } from '../util/universal'
 import { getManifest } from '../util/assets'
 import { some, isEmpty, toPairs } from 'lodash'
+import { parse } from 'url'
 
 const matchPromise = promisify(match, {multiArgs: true})
 
@@ -58,7 +59,10 @@ export default function (req, res) {
   .catch(err => {
     res.errors = [err]
     res.setHeader('Content-Type', 'text/plain')
-    res.status(500).send(err.stack)
+    const state = parse(req.url, true).query.verboseErrorPage
+      ? JSON.stringify(store.getState(), null, 2)
+      : ''
+    res.status(500).send(`${err.stack}\n\n${state}`)
   })
 }
 

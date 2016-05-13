@@ -35,6 +35,8 @@ const { array, bool, func, object, string } = React.PropTypes
 
 const specialTags = ['request', 'offer', 'intention']
 
+export const newPostId = 'new'
+
 @autoproxy(connect((state, { community, post, project, type }) => {
   const id = post ? post.id
     : type === 'project' ? 'new-project'

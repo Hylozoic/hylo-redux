@@ -1,35 +1,58 @@
 import React from 'react'
 import { prefetch } from 'react-fetcher'
 import { connect } from 'react-redux'
-import { fetchPost, navigate, startPostEdit } from '../actions'
+import { capitalize } from 'lodash'
+import { fetchCommunity, fetchPost, navigate, startPostEdit } from '../actions'
 import { getCommunities, getPost } from '../models/post'
-import { PostEditor } from '../components/PostEditor'
+import { getCommunity } from '../models/community'
+import { PostEditor, newPostId } from '../components/PostEditor'
 import createHistory from 'history/lib/createBrowserHistory'
 const { func, object } = React.PropTypes
 
-@prefetch(({ store, dispatch, params: { id } }) =>
-  dispatch(fetchPost(id))
-  .then(() => {
-    const post = getPost(id, store.getState())
-    return dispatch(startPostEdit(post))
-  }))
-@connect((state, { params: { id } }) => {
-  const post = getPost(id, state)
-  return {
-    post,
-    postEdit: state.postEdits[id],
-    communities: getCommunities(post, state)
+export const editorUrl = (slug, type) => {
+  const start = `${slug ? `/c/${slug}` : '/p'}`
+  const end = `${type ? `/${type}s` : ''}/new`
+  return start + end
+}
+
+export const matchEditorUrl = path =>
+  path.match(/^\/p\/\d+\/edit$/) ||
+  path.match(/^\/(c\/[^\/]+|p)\/((events|projects)\/)?new$/)
+
+@prefetch(({ store, routes, dispatch, params: { id } }) =>
+  (routes.slice(-1)[0].community
+    ? dispatch(fetchCommunity(id))
+    : dispatch(fetchPost(id))
+      .then(() => {
+        const post = getPost(id, store.getState())
+        return dispatch(startPostEdit(post))
+      })))
+@connect((state, { route, params: { id } }) => {
+  if (route.community) {
+    return {
+      postEdit: state.postEdits[newPostId] || {},
+      community: getCommunity(id, state)
+    }
+  } else {
+    const post = getPost(id, state)
+    return {
+      post,
+      postEdit: state.postEdits[id],
+      communities: getCommunities(post, state)
+    }
   }
 })
 export default class StandalonePostEditor extends React.Component {
   static propTypes = {
     post: object,
     postEdit: object,
-    dispatch: func
+    dispatch: func,
+    community: object,
+    route: object
   }
 
   render () {
-    const { post, postEdit, dispatch } = this.props
+    const { post, postEdit, dispatch, community, route: { type } } = this.props
     const { editor } = this.refs
     if (!postEdit) return <div className='loading'>Loading...</div>
 
@@ -47,9 +70,12 @@ export default class StandalonePostEditor extends React.Component {
           <span className='left-angle-bracket'>&#x3008;</span>
           Back
         </a>
-        <div className='title'>Editing post</div>
+        <div className='title'>
+          {post ? 'Editing' : 'New'} {capitalize(type || 'post')}
+        </div>
       </div>
-      <PostEditor post={post} ref='editor' onCancel={goBack}/>
+      <PostEditor post={post} community={community} type={type} ref='editor'
+        onCancel={goBack}/>
     </div>
   }
 }

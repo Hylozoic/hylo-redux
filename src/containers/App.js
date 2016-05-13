@@ -13,6 +13,7 @@ import { makeUrl } from '../client/util'
 import { VelocityComponent } from 'velocity-react'
 import { canInvite, canModerate } from '../models/currentUser'
 import { get, pick } from 'lodash'
+import { matchEditorUrl } from './StandalonePostEditor'
 const { array, bool, func, object, string } = React.PropTypes
 
 @prefetch(({ store, dispatch }) => {
@@ -66,7 +67,7 @@ export default class App extends React.Component {
     } = this.props
 
     const path = this.props.path.split('?')[0]
-    const hideTopNav = path.match(/^\/p\/\d+\/edit$/)
+    const hideTopNav = matchEditorUrl(path)
 
     const moveWithMenu = {marginLeft: leftNavIsOpen ? leftNavWidth : 0}
     const toggleLeftNav = open => {

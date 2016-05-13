@@ -8,7 +8,13 @@ import { filter, find, flow, get, map, sortBy } from 'lodash/fp'
 import { same } from '../models'
 import { MenuButton, leftNavEasing, leftNavWidth } from './LeftNav'
 import { VelocityComponent } from 'velocity-react'
+import { editorUrl } from '../containers/StandalonePostEditor'
 const { func, object } = React.PropTypes
+
+const getPostType = path => {
+  if (path.endsWith('events')) return 'event'
+  if (path.endsWith('projects')) return 'project'
+}
 
 const getLabel = path => {
   if (path.endsWith('events')) return 'Events'
@@ -83,7 +89,11 @@ const TopNav = (props, { currentUser }) => {
         <li><A to='/login'>Log in</A></li>
       </ul>}
 
-    <CommunityMenu {...{communities, onChangeCommunity}}/>
+    {currentUser && <CommunityMenu {...{communities, onChangeCommunity}}/>}
+    {currentUser && isMobile &&
+      <A to={editorUrl(slug, getPostType(path))} className='compose'>
+        <Icon name='edit'/>
+      </A>}
 
     <div className='search'>
       <Icon name='search'/>

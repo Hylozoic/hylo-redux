@@ -47,6 +47,7 @@ import {
   SET_CURRENT_COMMUNITY_ID,
   SET_LOGIN_ERROR,
   SET_META_TAGS,
+  SET_MOBILE_DEVICE,
   SET_SIGNUP_ERROR,
   SIGNUP,
   TOGGLE_MAIN_MENU,
@@ -116,6 +117,10 @@ const appendPayloadByPath = (actionType, statePath, payloadPath) =>
   }
 
 export default combineReducers({
+  isMobile: (state = false, action) => {
+    return action.type === SET_MOBILE_DEVICE ? true : state
+  },
+
   currentCommunityId: (state = null, action) => {
     let { error, type, payload } = action
     if (error) return state

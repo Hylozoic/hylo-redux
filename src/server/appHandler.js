@@ -11,11 +11,12 @@ import { syncReduxAndRouter } from 'redux-simple-router'
 import { getPrefetchedData } from 'react-fetcher'
 import { cyan, red } from 'chalk'
 import { info, debug } from '../util/logging'
-import { fetchCurrentUser } from '../actions'
+import { fetchCurrentUser, setMobileDevice } from '../actions'
 import { localsForPrefetch } from '../util/universal'
 import { getManifest } from '../util/assets'
 import { some, isEmpty, toPairs } from 'lodash'
 import { parse } from 'url'
+import MobileDetect from 'mobile-detect'
 
 const matchPromise = promisify(match, {multiArgs: true})
 
@@ -36,6 +37,8 @@ export default function (req, res) {
   const store = configureStore({}, req)
   const routes = makeRoutes(store)
   const history = createHistory()
+  const md = new MobileDetect(req.headers['user-agent'])
+  if (md.phone()) store.dispatch(setMobileDevice())
 
   return store.dispatch(fetchCurrentUser())
   .then(() => matchPromise({routes, location: req.originalUrl}))

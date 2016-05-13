@@ -1,5 +1,6 @@
 import React from 'react'
 import cx from 'classnames'
+import { prefetch } from 'react-fetcher'
 import { connect } from 'react-redux'
 import { find } from 'lodash'
 import TopNav from '../components/TopNav'
@@ -8,20 +9,26 @@ import Notifier from '../components/Notifier'
 import LiveStatusPoller from '../components/LiveStatusPoller'
 import PageTitleController from '../components/PageTitleController'
 import { logout, navigate, removeNotification, toggleMainMenu, updateUserSettings } from '../actions'
-import { isMobile, makeUrl } from '../client/util'
+import { makeUrl } from '../client/util'
 import { VelocityComponent } from 'velocity-react'
 import { canInvite, canModerate } from '../models/currentUser'
 import { get, pick } from 'lodash'
 const { array, bool, func, object, string } = React.PropTypes
 
+@prefetch(({ store, dispatch }) => {
+  const { isMobile, people } = store.getState()
+  if (!isMobile && get(people.current, 'settings.leftNavIsOpen')) {
+    return dispatch(toggleMainMenu())
+  }
+})
 @connect((state, { params: { id } }) => {
-  const { leftNavIsOpen, notifierMessages } = state
+  const { isMobile, leftNavIsOpen, notifierMessages } = state
   const currentUser = state.people.current
   const community = find(state.communities, c => c.id === state.currentCommunityId)
   const tags = community ? state.tagsByCommunity[community.slug] : {}
 
   return {
-    leftNavSetting: get(currentUser, 'settings.leftNavIsOpen'),
+    isMobile,
     leftNavIsOpen,
     notifierMessages,
     currentUser,
@@ -36,11 +43,11 @@ export default class App extends React.Component {
     community: object,
     currentUser: object,
     leftNavIsOpen: bool,
-    leftNavSetting: bool,
     tags: object,
     notifierMessages: array,
     path: string,
-    dispatch: func
+    dispatch: func,
+    isMobile: bool
   }
 
   static childContextTypes = {
@@ -54,14 +61,8 @@ export default class App extends React.Component {
 
   render () {
     const {
-      children,
-      community,
-      currentUser,
-      dispatch,
-      tags,
-      leftNavIsOpen,
-      leftNavSetting,
-      notifierMessages
+      children, community, currentUser, dispatch, tags,
+      leftNavIsOpen, notifierMessages, isMobile
     } = this.props
 
     const path = this.props.path.split('?')[0]
@@ -70,7 +71,12 @@ export default class App extends React.Component {
     const moveWithMenu = {marginLeft: leftNavIsOpen ? leftNavWidth : 0}
     const toggleLeftNav = open => {
       if (leftNavIsOpen !== open) dispatch(toggleMainMenu())
-      dispatch(updateUserSettings(currentUser.id, {settings: {leftNavIsOpen: open}}))
+      if (!isMobile) {
+        setTimeout(() => {
+          const settings = {leftNavIsOpen: open}
+          dispatch(updateUserSettings(currentUser.id, {settings}))
+        }, 1000)
+      }
     }
     const openLeftNav = () => toggleLeftNav(true)
     const closeLeftNav = () => toggleLeftNav(false)
@@ -96,7 +102,8 @@ export default class App extends React.Component {
             logout={() => dispatch(logout())}
             path={path}
             search={doSearch}
-            opened={leftNavIsOpen}/>}
+            opened={leftNavIsOpen}
+            isMobile={isMobile}/>}
           {children}
         </div>
       </VelocityComponent>
@@ -105,7 +112,6 @@ export default class App extends React.Component {
         remove={id => dispatch(removeNotification(id))}/>
       <LiveStatusPoller/>
       <PageTitleController/>
-      <LeftNavOpener shouldOpen={leftNavSetting} open={openLeftNav}/>
     </div>
   }
 }
@@ -118,19 +124,4 @@ const nextPath = (path, community) => {
   const pathEnd = match ? `/${match[1]}` : ''
 
   return pathStart + pathEnd
-}
-
-class LeftNavOpener extends React.Component {
-  static propTypes = {
-    shouldOpen: bool,
-    open: func
-  }
-
-  componentDidMount () {
-    if (!isMobile() && this.props.shouldOpen) this.props.open()
-  }
-
-  render () {
-    return null
-  }
 }

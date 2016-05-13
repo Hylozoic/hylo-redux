@@ -22,7 +22,7 @@ const PersonCards = ({ people, menus, slug }) => {
 export default PersonCards
 
 export const PersonCard = ({ person, menu, slug }) => {
-  let { id, avatar_url, name, bio, isModerator, joined_at, createdTags, offerCount } = person
+  let { id, avatar_url, name, bio, isModerator, joined_at, tags, offerCount } = person
 
   const offersText = Number(offerCount) > 0
   ? `•${offerCount} offer${Number(offerCount) > 1 ? 's' : ''}`
@@ -43,7 +43,7 @@ export const PersonCard = ({ person, menu, slug }) => {
       </div>
       {bio && <div className='details'>{bio}</div>}
       {offersText && <div className='offerCount'>{offersText}</div>}
-      {!isEmpty(createdTags) && createdTags.map(tag =>
+      {!isEmpty(tags) && tags.map(tag =>
         <a className='hashtag' href={tagUrl(tag.name, slug)}>#{tag.name}&nbsp;</a>)}
     </div>
   </div>

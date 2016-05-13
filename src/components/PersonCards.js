@@ -39,7 +39,7 @@ export const PersonCard = ({ person, menu, slug }) => {
     <div className='person-body'>
       <A className='name' to={`/u/${id}`}>{name}</A>
       <div className='role'>
-        {(isModerator ? 'Moderator' : 'Member') + ` since ${humanDate(joined_at)}`}
+        {(isModerator ? 'Moderator' : 'Member')} since {humanDate(joined_at)}
       </div>
       {bio && <div className='details'>{bio}</div>}
       {offersText && <div className='offerCount'>{offersText}</div>}

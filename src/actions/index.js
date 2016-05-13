@@ -62,6 +62,7 @@ export const SEND_COMMUNITY_INVITATION = 'SEND_COMMUNITY_INVITATION'
 export const SET_CURRENT_COMMUNITY_ID = 'SET_CURRENT_COMMUNITY_ID'
 export const SET_LOGIN_ERROR = 'SET_LOGIN_ERROR'
 export const SET_META_TAGS = 'SET_META_TAGS'
+export const SET_MOBILE_DEVICE = 'SET_MOBILE_DEVICE'
 export const SET_SIGNUP_ERROR = 'SET_SIGNUP_ERROR'
 export const SIGNUP = 'SIGNUP'
 export const START_POST_EDIT = 'START_POST_EDIT'
@@ -601,4 +602,8 @@ export function fetchLeftNavTags (id) {
     payload: {api: true, path: `/noo/community/${id}/tags/leftnav`},
     meta: {id, cache: {id, bucket: 'tagsByCommunity'}}
   }
+}
+
+export function setMobileDevice () {
+  return {type: SET_MOBILE_DEVICE}
 }

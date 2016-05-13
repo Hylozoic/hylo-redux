@@ -61,14 +61,17 @@ nav {
   .has-nav-height;
   width: 100%;
   background-color: @top-nav-background;
-  border-bottom: 1px solid #fff;
   position: relative;
   z-index: 10;
+  .mobile({
+    position: fixed;
+    top: 0;
+    border-bottom: 1px solid @post-border;
+  });
 
   .menu-button {
     float: left;
     display: block;
-    border-bottom: 1px solid #fff;
     border-right: 1px solid @post-border;
     background-color: @top-nav-background;
     color: @off-black;
@@ -81,6 +84,7 @@ nav {
       width: auto;
       border-right: 0;
       padding-right: 0;
+      border-bottom: 1px solid @post-border;
     });
   }
 
@@ -249,7 +253,7 @@ nav {
     });
   }
 
-  .search, .icon {
+  .search, a > .icon {
     border: 1px solid @input-border;
     border-radius: @avatar-size-default;
     height: @avatar-size-default;
@@ -289,6 +293,20 @@ nav {
   .user-menu {
     .dropdown-menu {
       margin-top: 6px;
+    }
+  }
+
+  .compose {
+    float: right;
+    margin-right: 15px;
+    width: 36px;
+    text-align: center;
+    font-size: 24px;
+    line-height: 60px;
+    .icon {
+      position: relative;
+      top: 3px;
+      border: 0;
     }
   }
 }
@@ -366,6 +384,7 @@ nav {
 #main {
   .mobile({
     width: 100vw;
+    margin-top: @mobile-top-nav-height;
   });
 }
 
@@ -374,7 +393,7 @@ nav {
   padding-top: 140px;
   z-index: 0;
   .mobile({
-    padding-top: 1px;
+    padding-top: 0;
 
     .post-editor-wrapper {
       display: none;

@@ -6,13 +6,12 @@ import { humanDate } from '../util/text'
 import { tagUrl } from '../routes'
 import { isEmpty } from 'lodash'
 
-const PersonCards = ({ people, menus, subtitles, slug }) => {
+const PersonCards = ({ people, menus, slug }) => {
   return <div className='person-cards masonry-container'>
     <Masonry options={{transitionDuration: 0}}>
       {people.map(person => <div key={person.id} className='masonry-item-wrapper'>
         <PersonCard person={person}
           menu={menus && menus[person.id]}
-          subtitle={subtitles && subtitles[person.id]}
           slug={slug}
           />
       </div>)}
@@ -22,10 +21,8 @@ const PersonCards = ({ people, menus, subtitles, slug }) => {
 
 export default PersonCards
 
-export const PersonCard = ({ person, menu, subtitle, slug }) => {
+export const PersonCard = ({ person, menu, slug }) => {
   let { id, avatar_url, name, bio, isModerator, joined_at, createdTags, offerCount } = person
-  var role_and_age = isModerator ? 'Moderator' : 'Member'
-  role_and_age += ` since ${humanDate(joined_at)}`
 
   const offersText = Number(offerCount) > 0
   ? `•${offerCount} offer${Number(offerCount) > 1 ? 's' : ''}`
@@ -41,8 +38,9 @@ export const PersonCard = ({ person, menu, subtitle, slug }) => {
     </A>
     <div className='person-body'>
       <A className='name' to={`/u/${id}`}>{name}</A>
-      <div className='role'>{role_and_age}</div>
-      {subtitle && <div className='subtitle'>{subtitle}</div>}
+      <div className='role'>
+        {(isModerator ? 'Moderator' : 'Member') + ` since ${humanDate(joined_at)}`}
+      </div>
       {bio && <div className='details'>{bio}</div>}
       {offersText && <div className='offerCount'>{offersText}</div>}
       {!isEmpty(createdTags) && createdTags.map(tag =>

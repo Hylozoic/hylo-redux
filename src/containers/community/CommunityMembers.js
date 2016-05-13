@@ -56,7 +56,7 @@ export default class CommunityMembers extends React.Component {
   }
 
   render () {
-    let { pending, people, moderatorIds, location: { query }, community, currentUser, error } = this.props
+    let { pending, people, moderatorIds, location: { query }, community, currentUser, error, total } = this.props
     if (error) return <AccessErrorMessage error={error}/>
     if (!currentUser) return <div>Loading...</div>
     let { search } = query
@@ -66,17 +66,21 @@ export default class CommunityMembers extends React.Component {
     }))
 
     return <div className='members'>
-      <div className='list-controls'>
-        {canInvite(currentUser, community) && <A className='button' to={`/c/${community.slug}/invite`}>
-          Invite members
-        </A>}
-        <input type='text' className='form-control search'
+      <div className='search-bar'>
+        <span className='glyphicon glyphicon-search'></span>
+        <input type='text'
           placeholder='Search'
           defaultValue={search}
-          onChange={debounce(event => this.updateQuery({search: event.target.value}), 500)}/>
+          onChange={event => debounce(this.updateQuery({search: event.target.value}))} />
+      </div>
+      <div className='member-controls'>
+        {total} members
+        {canInvite(currentUser, community) && <A to={`/c/${community.slug}/invite`}>
+          Invite members
+        </A>}
       </div>
       {pending && <div className='loading'>Loading...</div>}
-      <PersonCards people={peopleWithModeratorFlag} />
+      <PersonCards people={peopleWithModeratorFlag} slug={community.slug}/>
       <ScrollListener onBottom={this.loadMore}/>
     </div>
   }

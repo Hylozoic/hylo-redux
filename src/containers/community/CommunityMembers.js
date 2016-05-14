@@ -50,10 +50,10 @@ export default class CommunityMembers extends React.Component {
     }
   }
 
-  updateQuery = opts => {
+  updateQuery = debounce(opts => {
     let { dispatch, location } = this.props
     dispatch(refetch(opts, location))
-  }
+  }, 200)
 
   render () {
     let { pending, people, moderatorIds, location: { query }, community, currentUser, error, total } = this.props
@@ -71,7 +71,7 @@ export default class CommunityMembers extends React.Component {
         <input type='text'
           placeholder='Search'
           defaultValue={search}
-          onChange={event => debounce(this.updateQuery({search: event.target.value}))} />
+          onChange={event => this.updateQuery({search: event.target.value})} />
       </div>
       <div className='member-controls'>
         {total} members

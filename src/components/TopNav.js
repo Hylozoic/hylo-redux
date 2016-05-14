@@ -150,7 +150,7 @@ const UserMenu = ({ isMobile, slug, logout, newCount, currentUser }) => {
       <Dropdown className='user-menu' alignRight={true} toggleChildren={
         <div>
           <NonLinkAvatar person={currentUser}/>
-          {newCount > 0 && <div className='dot-badge'/>}
+          {isMobile && newCount > 0 && <div className='dot-badge'/>}
         </div>
       }>
         <li><A to={`/u/${currentUser.id}`}>My profile</A></li>

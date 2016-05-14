@@ -25,6 +25,7 @@ import NetworkProfile from './containers/network/NetworkProfile'
 import NetworkPosts from './containers/network/NetworkPosts'
 import NetworkMembers from './containers/network/NetworkMembers'
 import AboutNetwork from './containers/network/AboutNetwork'
+import IconTest from './containers/IconTest'
 import NetworkCommunities from './containers/network/NetworkCommunities'
 import NetworkEditor from './containers/network/NetworkEditor'
 import Notifications from './containers/Notifications'
@@ -130,6 +131,7 @@ export default function makeRoutes (store) {
     </Route>
 
     <Route path='testbench' component={TestBench}/>
+    <Route path='icontest' component={IconTest}/>
   </Route>
 }
 

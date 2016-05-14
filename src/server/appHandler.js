@@ -38,7 +38,7 @@ export default function (req, res) {
   const routes = makeRoutes(store)
   const history = createHistory()
   const md = new MobileDetect(req.headers['user-agent'])
-  if (md.phone()) store.dispatch(setMobileDevice())
+  if (md.mobile()) store.dispatch(setMobileDevice())
 
   return store.dispatch(fetchCurrentUser())
   .then(() => matchPromise({routes, location: req.originalUrl}))

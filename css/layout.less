@@ -246,10 +246,6 @@ nav {
       text-align: center;
       vertical-align: middle;
     }
-
-    .mobile({
-      display: none;
-    });
   }
 
   .search, a > .icon {
@@ -296,6 +292,18 @@ nav {
     .dropdown-menu {
       margin-top: 6px;
     }
+
+    .badge {
+      height: 17px;
+      border-radius: 17px;
+      vertical-align: baseline;
+      background-color: @damian-red;
+      color: white;
+      padding: 0 6px;
+      margin-left: 5px;
+      font-size: 12px;
+      display: inline-block;
+    }
   }
 
   .compose {
@@ -310,6 +318,17 @@ nav {
       top: 3px;
       border: 0;
     }
+  }
+
+  .dot-badge {
+    @size: 4px;
+    border-radius: @size;
+    width: @size;
+    height: @size;
+    background-color: @damian-red;
+    position: absolute;
+    bottom: -(@size + 3px);
+    left: @avatar-size-default / 2 - @size / 2;
   }
 }
 

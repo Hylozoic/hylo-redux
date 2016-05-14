@@ -66,24 +66,7 @@ const TopNav = (props, { currentUser }) => {
       <MenuButton onClick={openLeftNav} label={label}/>
     </VelocityComponent>
     {currentUser
-    ? <ul className='right'>
-        <li className='notifications'>
-          <A to={`${slug ? '/c/' + slug : ''}/notifications`}>
-            <Icon name='bell'/>
-            {newCount > 0 && <div className='badge'>{newCount}</div>}
-          </A>
-        </li>
-        <li>
-          <Dropdown className='user-menu' alignRight={true} toggleChildren={
-            <NonLinkAvatar person={currentUser}/>
-          }>
-            <li><A to={`/u/${currentUser.id}`}>My profile</A></li>
-            <li><A to={'/settings'}>Settings</A></li>
-            {isAdmin(currentUser) && <li><A to={'/admin'}>Admin</A></li>}
-            <li><a href='#' onClick={logout}>Log out</a></li>
-          </Dropdown>
-        </li>
-      </ul>
+    ? <UserMenu {...{logout, currentUser, newCount, slug, isMobile}}/>
     : <ul className='right'>
         <li><A to='/signup'>Sign up</A></li>
         <li><A to='/login'>Log in</A></li>
@@ -154,3 +137,33 @@ const CommunityMenu = ({ communities, onChangeCommunity }) =>
       </div>
     </li>
   </Dropdown>
+
+const UserMenu = ({ isMobile, slug, logout, newCount, currentUser }) => {
+  return <ul className='right'>
+    {!isMobile && <li className='notifications'>
+      <A to={`${slug ? '/c/' + slug : ''}/notifications`}>
+        <Icon name='bell'/>
+        {newCount > 0 && <div className='badge'>{newCount}</div>}
+      </A>
+    </li>}
+    <li>
+      <Dropdown className='user-menu' alignRight={true} toggleChildren={
+        <div>
+          <NonLinkAvatar person={currentUser}/>
+          {newCount > 0 && <div className='dot-badge'/>}
+        </div>
+      }>
+        <li><A to={`/u/${currentUser.id}`}>My profile</A></li>
+        {isMobile && <li>
+          <A to={slug ? `/c/${slug}/notifications` : '/notifications'}>
+            Notifications
+            {newCount > 0 && <span className='badge'>{newCount}</span>}
+          </A>
+        </li>}
+        <li><A to={'/settings'}>Settings</A></li>
+        {isAdmin(currentUser) && <li><A to={'/admin'}>Admin</A></li>}
+        <li><a href='#' onClick={logout}>Log out</a></li>
+      </Dropdown>
+    </li>
+  </ul>
+}

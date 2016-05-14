@@ -32,7 +32,6 @@ nav {
   display: block;
   width: @left-nav-width;
   padding-left: 30px;
-  padding-right: 30px;
   &:hover {
     text-decoration: none;
   }
@@ -269,15 +268,18 @@ nav {
     margin-left: 30px;
     padding: 0 10px;
     display: inline-block;
+    vertical-align: middle;
 
-    .glyphicon-search {
+    .icon {
       vertical-align: baseline;
       position: relative;
       top: 2px;
     }
     input {
-      margin-left: 8px;
-      margin-top: 2px;
+      position: relative;
+      top: -1px;
+      margin: 0 0 0 8px;
+      padding: 0;
       border: 0;
       background-color: transparent;
       height: 30px;

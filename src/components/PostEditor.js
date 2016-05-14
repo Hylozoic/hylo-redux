@@ -178,7 +178,7 @@ export class PostEditor extends React.Component {
   updateTitle (event) {
     if (this.state.pendingTitleReshuffle) return
 
-    const maxlength = 120
+    const maxlength = 80
     const { value } = event.target
     const { length } = value
     if (length > maxlength || value.indexOf('\n') !== -1) {

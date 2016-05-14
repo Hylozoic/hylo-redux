@@ -18,7 +18,8 @@ const { array, bool, func, object, string } = React.PropTypes
 
 @prefetch(({ store, dispatch }) => {
   const { isMobile, people } = store.getState()
-  if (!isMobile && get(people.current, 'settings.leftNavIsOpen')) {
+  if (!isMobile && typeof window === 'undefined' &&
+    get(people.current, 'settings.leftNavIsOpen')) {
     return dispatch(toggleMainMenu())
   }
 })

@@ -49,7 +49,7 @@ const ProjectPost = (props, context) => {
       <div className='row'>
         <div className='main-col'>
           {location && <div className='meta location'>
-            <Icon name='map-marker'/>
+            <Icon name='map-marker' glyphicon={true}/>
             <span title={location}>{location}</span>
           </div>}
           {description && <div className='details'>
@@ -107,7 +107,7 @@ const Supporters = ({ post, simple }, { currentUser, dispatch }) => {
       <span>&nbsp;this.</span>
     </LinkedPersonSentence>}
     {!simple && <a className='support button has-icon' onClick={follow}>
-      <Icon name={isFollowing ? 'ok-sign' : 'plus-sign'}/>
+      <Icon name={isFollowing ? 'ok-sign' : 'plus-sign'} glyphicon={true}/>
       {isFollowing ? 'Supporting' : 'Support this'}
     </a>}
   </div>
@@ -167,7 +167,7 @@ class ProjectRequest extends React.Component {
       </span>}
       <div className='meta'>
         <a className='help button has-icon' onClick={zoom}>
-          <Icon name='plus-sign'/>
+          <Icon name='plus-sign' glyphicon={true}/>
           Offer to help
         </a>
         {numComments > 0 && <a onClick={zoom}>

@@ -86,7 +86,7 @@ export default class App extends React.Component {
     const visitCommunity = community =>
       dispatch(navigate(nextPath(path, community)))
 
-    return <div className={cx({leftNavIsOpen})}>
+    return <div className={cx({leftNavIsOpen, isMobile})}>
       <LeftNav opened={leftNavIsOpen}
         community={community}
         tags={tags}

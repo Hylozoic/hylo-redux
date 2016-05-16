@@ -14,6 +14,7 @@ import { fetch, ConnectedPostList } from '../ConnectedPostList'
 import { refetch } from '../../util/caching'
 import AccessErrorMessage from '../../components/AccessErrorMessage'
 import CoverImagePage from '../../components/CoverImagePage'
+import Icon from '../../components/Icon'
 import Comment from '../../components/Comment'
 import { parse } from 'url'
 import moment from 'moment'
@@ -197,7 +198,7 @@ const SocialMediaIcon = ({ type, value }) => {
   }
 
   return <a target='_blank' className={type} href={href}>
-    <span className={`icon-${type}`}/>
+    <Icon name={type}/>
   </a>
 }
 

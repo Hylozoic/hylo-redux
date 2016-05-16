@@ -42,19 +42,19 @@ export default class EventPostEditor extends React.Component {
 
     return <div className='more-fields'>
       <div className='start-time'>
-        <Icon name='calendar'/>
+        <Icon name='Calendar'/>
         <DatetimePicker inputProps={{placeholder: 'start time'}}
           value={startTime}
           onChange={m => update({start_time: m.toISOString()})}/>
       </div>
       <div className='end-time'>
-        <Icon name='calendar'/>
+        <Icon name='Calendar'/>
         <DatetimePicker inputProps={{placeholder: 'end time'}}
           value={endTime}
           onChange={m => update({end_time: m.toISOString()})}/>
       </div>
       <div className='location'>
-        <Icon name='map-marker'/>
+        <Icon name='map-marker' glyphicon={true} />
         <input type='text' placeholder='location'
           defaultValue={postEdit.location}
           onChange={event => update({location: event.target.value})}/>

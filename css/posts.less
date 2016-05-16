@@ -97,25 +97,26 @@ ul.posts {
     margin-bottom: @p-bottom-margin;
   }
 
+  .icon-Heart {
+    font-size: 16px;
+    vertical-align: middle;
+    position: relative;
+    top: -1px;
+    padding-right: 5px;
+  }
+
+  .icon-Heart.selected {
+    color: #f8f;
+  }
+
   .vote {
     cursor: pointer;
-
-    i {
-      color: @dark-blue;
-      vertical-align: middle;
-      position: relative;
-      top: -1px;
-    }
 
     &:hover {
       text-decoration: none;
       i {
         color: #f8f;
       }
-    }
-
-    .icon-heart-new-selected {
-      color: #f8f;
     }
   }
 
@@ -175,9 +176,9 @@ ul.posts {
       margin-left: 5px;
     });
 
-    i {
+    .icon-More {
       font-size: 20px;
-      color: @gray-text;
+      color: @off-black;
     }
 
     > a:hover {
@@ -488,8 +489,8 @@ ul.posts {
     }
   }
 
-  .glyphicon-camera {
-    color: #bababa;
+  .icon-Camera {
+    color: #333;
     font-size: 18px;
     position: relative;
     top: -2px;
@@ -821,11 +822,12 @@ ul.posts {
       }
     }
 
-    .glyphicon {
+    .icon {
+      display: inline;
+      padding-right: 10px;
       line-height: @row-height;
       vertical-align: middle;
       top: -2px;
-      color: @light-gray-text;
       .non-mobile({
         width: 49px;
         padding-left: 18px;

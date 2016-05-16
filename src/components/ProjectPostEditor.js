@@ -73,19 +73,19 @@ export default class ProjectPostEditor extends React.Component {
       </div>
       <div className='more-fields'>
         <div className='video'>
-          <Icon name='film'/>
+          <Icon name='film' glyphicon={true}/>
           <input type='text' placeholder='youtube or vimeo url'
             value={videoUrl}
             onChange={event => update({video: event.target.value})}/>
         </div>
         <div className='deadline'>
-          <Icon name='calendar'/>
+          <Icon name='Calendar'/>
           <DatetimePicker inputProps={{placeholder: 'deadline'}}
             value={endTime}
             onChange={m => update({end_time: m.toISOString()})}/>
         </div>
         <div className='location'>
-          <Icon name='map-marker'/>
+          <Icon name='map-marker' glyphicon={true}/>
           <input type='text' placeholder='location'
             defaultValue={postEdit.location}
             onChange={event => update({location: event.target.value})}/>

@@ -371,7 +371,7 @@ const AttachmentsDropdown = props => {
 
   return <Dropdown className='attachments' toggleChildren={
     <span>
-      <span className='glyphicon glyphicon-camera'></span>
+      <span className='icon-Camera'></span>
       {imagePending
         ? ' Uploading...'
         : length > 0 && ` (${length})`}

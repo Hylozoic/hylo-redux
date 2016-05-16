@@ -108,13 +108,13 @@ const EventPost = (props, context) => {
       <Attendance post={post} limit={5} showButton={true}
         className={cx({'no-image': !image})}/>
       <div className='time'>
-        <Icon name='time'/>
+        <Icon name='Calendar'/>
         <span title={timeRangeFull(start, end)}>
           {timeRange(start, end)}
         </span>
       </div>
       <div className='location'>
-        <Icon name='map-marker'/>
+        <Icon name='map-marker' glyphicon={true}/>
         <span title={location}>{location}</span>
       </div>
       {description && <div className='details'>

@@ -66,37 +66,37 @@ export const LeftNav = ({ opened, community, tags, close, canModerate, canInvite
       <ul>
         <li>
           <IndexA to={slug ? `/c/${slug}` : '/'}>
-            <Icon name='th-list'/> Conversations
+            <Icon name='Comment-Alt'/> Conversations
           </IndexA>
         </li>
         <li>
           <A to={slug ? `/c/${slug}/events` : '/events'}>
-            <Icon name='calendar'/> Events
+            <Icon name='Calendar'/> Events
           </A>
         </li>
         <li>
           <A to={slug ? `/c/${slug}/projects` : '/projects'}>
-            <Icon name='road'/> Projects
+            <Icon name='road' glyphicon={true}/> Projects
           </A>
         </li>
         {community && <li>
           <A to={`/c/${slug}/members`}>
-            <Icon name='user'/> Members
+            <Icon name='Users'/> Members
           </A>
         </li>}
         {community && <li>
           <A to={`/c/${slug}/about`}>
-            <Icon name='question-sign'/> About
+            <Icon name='question-sign' glyphicon={true}/> About
           </A>
         </li>}
         {canInvite && <li>
           <A to={`/c/${slug}/invite`}>
-            <Icon name='sunglasses'/> Invite
+            <Icon name='Mail'/> Invite
           </A>
         </li>}
         {canModerate && <li>
           <A to={`/c/${slug}/settings`}>
-            <Icon name='cog'/> Settings
+            <Icon name='cog' glyphicon={true}/> Settings
           </A>
         </li>}
         </ul>

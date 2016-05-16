@@ -1,4 +1,3 @@
-import { upstreamHost } from '../config'
 import { fetchCurrentUser, navigate } from '../actions'
 import { get } from 'lodash'
 import qs from 'querystring'
@@ -32,7 +31,7 @@ export function openPopup (service, authContext) {
   }
 
   popup = window.open(
-    `${upstreamHost}/noo/login/${service}?${qs.stringify(params)}`,
+    `/noo/login/${service}?${qs.stringify(params)}`,
     `${service}Auth`,
     `width=${width}, height=${height}, left=${left}, top=${top}, titlebar=no, toolbar=no, menubar=no`
   )
@@ -73,5 +72,4 @@ export function setupPopupCallback (name, dispatch, errorAction) {
   window.addEventListener('message', ({ data }) => {
     if (data.type === 'third party auth') window.popupDone(data)
   })
-
 }

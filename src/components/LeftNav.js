@@ -66,12 +66,12 @@ export const LeftNav = ({ opened, community, tags, close, canModerate, canInvite
       <ul>
         <li>
           <IndexA to={slug ? `/c/${slug}` : '/'}>
-            <Icon name='th-list'/> Conversations
+            <span className='icon-Comment icon'/> Conversations
           </IndexA>
         </li>
         <li>
           <A to={slug ? `/c/${slug}/events` : '/events'}>
-            <Icon name='calendar'/> Events
+            <span className='icon-Calendar icon'/> Events
           </A>
         </li>
         <li>
@@ -81,7 +81,7 @@ export const LeftNav = ({ opened, community, tags, close, canModerate, canInvite
         </li>
         {community && <li>
           <A to={`/c/${slug}/members`}>
-            <Icon name='user'/> Members
+            <span className='icon-Users icon'/> Members
           </A>
         </li>}
         {community && <li>
@@ -91,7 +91,7 @@ export const LeftNav = ({ opened, community, tags, close, canModerate, canInvite
         </li>}
         {canInvite && <li>
           <A to={`/c/${slug}/invite`}>
-            <Icon name='sunglasses'/> Invite
+            <span className='icon-Mail icon'/> Invite
           </A>
         </li>}
         {canModerate && <li>

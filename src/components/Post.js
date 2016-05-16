@@ -171,7 +171,7 @@ export const Menu = (props, { dispatch, post, currentUser }) => {
     dispatch(removePost(post.id))
 
   return <Dropdown className='post-menu' alignRight={true}
-    toggleChildren={<i className='glyphicon glyphicon-option-horizontal'></i>}>
+    toggleChildren={<span className='icon-More'></span>}>
     {canEdit && <li><a onClick={edit}>Edit</a></li>}
     {canEdit && <li><a onClick={remove}>Remove</a></li>}
     <li>
@@ -246,7 +246,7 @@ export const VoteButton = (props, { post, currentUser, dispatch }) => {
   let vote = () => dispatch(voteOnPost(post, currentUser))
   let myVote = includes(map(post.voters, 'id'), (currentUser || {}).id)
   return <a className='vote-button' onClick={vote}>
-    <i className={`icon-heart-new${myVote ? '-selected' : ''}`}></i>
+    <span className={cx('icon-Heart', {selected: myVote})}></span>
     {myVote ? 'Liked' : 'Like'}
   </a>
 }

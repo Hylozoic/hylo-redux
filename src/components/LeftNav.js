@@ -66,7 +66,7 @@ export const LeftNav = ({ opened, community, tags, close, canModerate, canInvite
       <ul>
         <li>
           <IndexA to={slug ? `/c/${slug}` : '/'}>
-            <span className='icon-Comment icon'/> Conversations
+            <span className='icon-Comment-Alt icon'/> Conversations
           </IndexA>
         </li>
         <li>

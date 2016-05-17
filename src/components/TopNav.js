@@ -79,7 +79,7 @@ const TopNav = (props, { currentUser }) => {
       </A>}
 
     <div className='search'>
-      <Icon name='search'/>
+      <Icon name='Loupe'/>
       <Search onChange={search}/>
     </div>
   </nav>

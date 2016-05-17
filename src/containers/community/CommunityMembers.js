@@ -5,6 +5,7 @@ import { debounce, includes } from 'lodash'
 import { FETCH_PEOPLE } from '../../actions'
 import { fetchPeople } from '../../actions/fetchPeople'
 import { createCacheId, connectedListProps, fetchWithCache, refetch } from '../../util/caching'
+import Icon from '../../components/Icon'
 import ScrollListener from '../../components/ScrollListener'
 import PersonCards from '../../components/PersonCards'
 import AccessErrorMessage from '../../components/AccessErrorMessage'
@@ -67,7 +68,7 @@ export default class CommunityMembers extends React.Component {
 
     return <div className='members'>
       <div className='search-bar'>
-        <span className='glyphicon glyphicon-search'></span>
+        <Icon name='Loupe' />
         <input type='text'
           placeholder='Search'
           defaultValue={search}

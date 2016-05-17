@@ -130,13 +130,13 @@ class MobileSearch extends React.Component {
   }
 
   componentDidMount () {
-    this.refs.mobileSearch.style.height = '40px'
+    this.refs.mobileSearch.className = 'mobile-search'
     changeViewportTop(40)
   }
 
   render () {
     const { search } = this.props
-    return <div className='mobile-search' ref='mobileSearch' style={{height: '0px'}}>
+    return <div className='mobile-search hidden' ref='mobileSearch'>
       <Icon name='Loupe'/>
       <Search onChange={search}/>
     </div>

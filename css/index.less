@@ -24,6 +24,10 @@ p {
 
 a {
   cursor: pointer;
+  text-decoration: none;
+  &:hover {
+    text-decoration: underline;
+  }
 }
 
 b, strong {
@@ -773,10 +777,7 @@ ul.tags {
 #about-community {
   background-color: @card-background;
   padding: 15px;
-
-  a {
-    text-decoration: underline;
-  }
+  .body-text;
 }
 
 .backdrop {

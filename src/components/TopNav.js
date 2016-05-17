@@ -11,6 +11,7 @@ import { same } from '../models'
 import { MenuButton, leftNavEasing, leftNavWidth } from './LeftNav'
 import { VelocityComponent } from 'velocity-react'
 import { editorUrl } from '../containers/StandalonePostEditor'
+import { assetUrl } from '../util/assets'
 const { object, func, string, bool } = React.PropTypes
 import { viewportTop } from '../util/scrolling'
 import cx from 'classnames'
@@ -30,11 +31,11 @@ const getLabel = path => {
   return 'Menu'
 }
 
-const allCommunities = {
+const allCommunities = () => ({
   id: null,
-  avatar_url: '/img/all-communities-logo.jpg',
+  avatar_url: assetUrl('/img/hylo-merkaba-300x300.png'),
   name: 'All Communities'
-}
+})
 
 const getCommunities = (currentUser, community) =>
   [community].concat(flow(
@@ -104,12 +105,12 @@ export default class TopNav extends React.Component {
     } = this.props
     const { currentUser } = this.context
     const label = getLabel(path)
-    const community = this.props.community || allCommunities
+    const community = this.props.community || allCommunities()
     const { slug } = community
     const communities = getCommunities(currentUser, community)
     const membership = getCurrentMembership(currentUser, community)
     const newCount = get('new_notification_count',
-      community === allCommunities ? currentUser : membership)
+      community.id ? membership : currentUser)
 
     const moveAgainstMenu = isMobile ? null
       : {marginLeft: opened ? -leftNavWidth : 0}
@@ -152,7 +153,7 @@ const CommunityMenu = ({ communities, onChangeCommunity }) =>
       <ul className='inner-list dropdown-menu'>
         <li key='all'>
           <a onClick={() => onChangeCommunity()}>
-            <img src={allCommunities.avatar_url}/> All Communities
+            <img src={allCommunities().avatar_url}/> All Communities
           </a>
         </li>
         {communities.slice(1).map(community => <li key={community.id}>

@@ -62,11 +62,12 @@ nav {
   background-color: @top-nav-background;
   position: relative;
   z-index: 10;
-  .mobile({
-    position: fixed;
-    top: 0;
-    border-bottom: 1px solid @post-border;
-  });
+  position: fixed;
+  top: 0;
+  border-bottom: 1px solid @post-border;
+  &.scrolling {
+    opacity: 0.98;
+  }
 
   .menu-button {
     float: left;

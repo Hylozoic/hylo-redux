@@ -6,11 +6,14 @@ import Dropdown from './Dropdown'
 import Search from './Search'
 import { isAdmin } from '../models/currentUser'
 import { filter, find, flow, get, map, sortBy } from 'lodash/fp'
+import { throttle } from 'lodash'
 import { same } from '../models'
 import { MenuButton, leftNavEasing, leftNavWidth } from './LeftNav'
 import { VelocityComponent } from 'velocity-react'
 import { editorUrl } from '../containers/StandalonePostEditor'
-const { object } = React.PropTypes
+const { object, func, string, bool } = React.PropTypes
+import { viewportTop } from '../util/scrolling'
+import cx from 'classnames'
 
 const getPostType = path => {
   if (path.endsWith('events')) return 'event'
@@ -47,47 +50,94 @@ const getCurrentMembership = (currentUser, community) =>
     find(m => m.community.id === community.id)
   )(currentUser)
 
-const TopNav = (props, { currentUser }) => {
-  const {
-    search, logout, openLeftNav, path, onChangeCommunity, opened, isMobile
-  } = props
-  const label = getLabel(path)
-  const community = props.community || allCommunities
-  const { slug } = community
-  const communities = getCommunities(currentUser, community)
-  const membership = getCurrentMembership(currentUser, community)
-  const newCount = get('new_notification_count',
-    community === allCommunities ? currentUser : membership)
+export default class TopNav extends React.Component {
+  static propTypes = {
+    refresh: func,
+    search: func,
+    path: string,
+    logout: func,
+    openLeftNav: func,
+    onChangeCommunity: func,
+    opened: bool,
+    isMobile: bool,
+    community: object
+  }
 
-  const moveAgainstMenu = isMobile ? null
-    : {marginLeft: opened ? -leftNavWidth : 0}
+  static contextTypes = {
+    currentUser: object
+  }
 
-  return <nav id='topNav' className='clearfix'>
-    <VelocityComponent animation={moveAgainstMenu} easing={leftNavEasing}>
-      <MenuButton onClick={openLeftNav} label={label}/>
-    </VelocityComponent>
-    {currentUser
-    ? <UserMenu {...{logout, currentUser, newCount, slug, isMobile}}/>
-    : <ul className='right'>
-        <li><A to='/signup'>Sign up</A></li>
-        <li><A to='/login'>Log in</A></li>
-      </ul>}
+  constructor (props) {
+    super(props)
+    this.state = {isScrolling: false}
+  }
 
-    {currentUser && <CommunityMenu {...{communities, onChangeCommunity}}/>}
-    {currentUser && isMobile &&
-      <A to={editorUrl(slug, getPostType(path))} className='compose'>
-        <Icon name='edit'/>
-      </A>}
+  handleScrollEvents = throttle(event => {
+    event.preventDefault()
+    if (this.state.isScrolling) {
+      if (viewportTop() === 0) {
+        this.setState({isScrolling: false})
+      }
+    } else {
+      if (viewportTop() > 0) {
+        this.setState({isScrolling: true})
+      }
+    }
+  }, 50)
 
-    <div className='search'>
-      <Icon name='Loupe'/>
-      <Search onChange={search}/>
-    </div>
-  </nav>
+  componentDidMount () {
+    if (!this.props.isMobile) {
+      this.setState({isScrolling: viewportTop() > 0})
+      window.addEventListener('scroll', this.handleScrollEvents)
+    }
+  }
+
+  componentWillUnmount () {
+    if (!this.props.isMobile) {
+      window.removeEventListener('scroll', this.handleScrollEvents)
+    }
+  }
+
+  render () {
+    const {
+      search, logout, openLeftNav, path, onChangeCommunity, opened, isMobile
+    } = this.props
+    const { currentUser } = this.context
+    const label = getLabel(path)
+    const community = this.props.community || allCommunities
+    const { slug } = community
+    const communities = getCommunities(currentUser, community)
+    const membership = getCurrentMembership(currentUser, community)
+    const newCount = get('new_notification_count',
+      community === allCommunities ? currentUser : membership)
+
+    const moveAgainstMenu = isMobile ? null
+      : {marginLeft: opened ? -leftNavWidth : 0}
+
+    return <nav id='topNav' className={cx('clearfix', {scrolling: this.state.isScrolling})}>
+      <VelocityComponent animation={moveAgainstMenu} easing={leftNavEasing}>
+        <MenuButton onClick={openLeftNav} label={label}/>
+      </VelocityComponent>
+      {currentUser
+      ? <UserMenu {...{logout, currentUser, newCount, slug, isMobile}}/>
+      : <ul className='right'>
+          <li><A to='/signup'>Sign up</A></li>
+          <li><A to='/login'>Log in</A></li>
+        </ul>}
+
+      {currentUser && <CommunityMenu {...{communities, onChangeCommunity}}/>}
+      {currentUser && isMobile &&
+        <A to={editorUrl(slug, getPostType(path))} className='compose'>
+          <Icon name='edit'/>
+        </A>}
+
+      <div className='search'>
+        <Icon name='Loupe'/>
+        <Search onChange={search}/>
+      </div>
+    </nav>
+  }
 }
-TopNav.contextTypes = {currentUser: object}
-
-export default TopNav
 
 const CommunityMenu = ({ communities, onChangeCommunity }) =>
   <Dropdown className='communities'

@@ -282,9 +282,8 @@ nav {
       line-height: 32px;
       outline: none;
     }
-
     .mobile({
-      display: none;
+      display:none;
     });
   }
 
@@ -454,6 +453,29 @@ nav {
   .mobile({
     display: none;
   });
+}
+
+.mobile-search {
+  height: 40px;
+  margin-left: 15px;
+  .icon {
+    position: relative;
+    top: 5px;
+    font-size: 25px;
+    color: @gray-text;
+  }
+  input {
+    padding-left: 23px;
+    width: 90%;
+    height: 100%;
+    border: none;
+    background-color: @page-background;
+    &:focus {
+      outline: 0;
+      -webkit-box-shadow: none;
+      box-shadow: none;
+    }
+  }
 }
 
 #cover-image-page-content, .simple-page {

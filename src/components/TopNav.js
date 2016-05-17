@@ -3,13 +3,14 @@ import { A } from './A'
 import Icon from './Icon'
 import { NonLinkAvatar } from './Avatar'
 import Dropdown from './Dropdown'
+import Search from './Search'
 import { isAdmin } from '../models/currentUser'
 import { filter, find, flow, get, map, sortBy } from 'lodash/fp'
 import { same } from '../models'
 import { MenuButton, leftNavEasing, leftNavWidth } from './LeftNav'
 import { VelocityComponent } from 'velocity-react'
 import { editorUrl } from '../containers/StandalonePostEditor'
-const { func, object } = React.PropTypes
+const { object } = React.PropTypes
 
 const getPostType = path => {
   if (path.endsWith('events')) return 'event'
@@ -79,7 +80,7 @@ const TopNav = (props, { currentUser }) => {
       </A>}
 
     <div className='search'>
-      <Icon name='search'/>
+      <Icon name='Loupe'/>
       <Search onChange={search}/>
     </div>
   </nav>
@@ -87,26 +88,6 @@ const TopNav = (props, { currentUser }) => {
 TopNav.contextTypes = {currentUser: object}
 
 export default TopNav
-
-class Search extends React.Component {
-  constructor (props) {
-    super(props)
-    this.state = {}
-  }
-
-  static propTypes = {
-    onChange: func.isRequired
-  }
-
-  render () {
-    const handleChange = ({ target: { value } }) => this.setState({value})
-    const handleKeyUp = ({ which }) =>
-      which === 13 && this.props.onChange(this.state.value)
-
-    return <input type='text' placeholder='Search'
-      onKeyUp={handleKeyUp} onChange={handleChange}/>
-  }
-}
 
 const CommunityMenu = ({ communities, onChangeCommunity }) =>
   <Dropdown className='communities'

@@ -4,6 +4,8 @@ import { prefetch } from 'react-fetcher'
 import { connect } from 'react-redux'
 import { find } from 'lodash'
 import TopNav from '../components/TopNav'
+import Search from '../components/Search'
+import Icon from '../components/Icon'
 import { LeftNav, leftNavWidth, leftNavEasing } from '../components/LeftNav'
 import Notifier from '../components/Notifier'
 import LiveStatusPoller from '../components/LiveStatusPoller'
@@ -106,6 +108,7 @@ export default class App extends React.Component {
             search={doSearch}
             opened={leftNavIsOpen}
             isMobile={isMobile}/>}
+          {isMobile && <MobileSearch search={doSearch} />}
           {children}
         </div>
       </VelocityComponent>
@@ -116,6 +119,13 @@ export default class App extends React.Component {
       <PageTitleController/>
     </div>
   }
+}
+
+const MobileSearch = ({ search }) => {
+  return <div className='mobile-search'>
+    <Icon name='Loupe'/>
+    <Search onChange={search}/>
+  </div>
 }
 
 const nextPath = (path, community) => {

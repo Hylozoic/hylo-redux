@@ -65,14 +65,6 @@ export default class App extends React.Component {
     return pick(this.props, 'dispatch', 'currentUser')
   }
 
-  componentDidMount () {
-    const { isMobile, path } = this.props
-    if (isMobile && !isSearchUrl(path)) {
-      console.log('changing viewportTop!')
-      changeViewportTop(40)
-    }
-  }
-
   render () {
     const {
       children, community, currentUser, dispatch, tags,
@@ -132,11 +124,23 @@ export default class App extends React.Component {
   }
 }
 
-const MobileSearch = ({ search }) => {
-  return <div className='mobile-search'>
-    <Icon name='Loupe'/>
-    <Search onChange={search}/>
-  </div>
+class MobileSearch extends React.Component {
+  static propTypes = {
+    search: func
+  }
+
+  componentDidMount () {
+    this.refs.mobileSearch.style.height = '40px'
+    changeViewportTop(40)
+  }
+
+  render () {
+    const { search } = this.props
+    return <div className='mobile-search' ref='mobileSearch' style={{height: '0px'}}>
+      <Icon name='Loupe'/>
+      <Search onChange={search}/>
+    </div>
+  }
 }
 
 const nextPath = (path, community) => {

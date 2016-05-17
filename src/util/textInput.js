@@ -1,4 +1,5 @@
 import { hashtagCharacterRegex } from '../models/hashtag'
+import { has } from 'lodash'
 
 export const keyMap = {
   BACKSPACE: 8,
@@ -14,6 +15,9 @@ export const keyMap = {
   HASH: 35,
   AT_SIGN: 64
 }
+
+export const isKey = (event, keyName) =>
+  has(keyMap, keyName) && getKeyCode(event) === keyMap[keyName]
 
 export const getKeyCode = event => event.which || event.keyCode
 

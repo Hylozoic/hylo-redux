@@ -28,6 +28,7 @@ import { uploadImage } from '../actions/uploadImage'
 import { uploadDoc } from '../actions/uploadDoc'
 import { attachmentParams } from '../util/shims'
 import { prepend } from '../util/tinymce'
+import { isKey } from '../util/textInput'
 import { prepareHashtagsForEditing } from '../util/linkify'
 import { CREATE_POST, UPDATE_POST, UPLOAD_IMAGE } from '../actions'
 import { ADDED_POST, EDITED_POST, trackEvent } from '../util/analytics'
@@ -237,6 +238,13 @@ export class PostEditor extends React.Component {
     this.refs.details.focus()
   }
 
+  tabToDetails = event => {
+    if (isKey(event, 'TAB')) {
+      event.preventDefault()
+      this.goToDetails()
+    }
+  }
+
   goBackToTitle = ({ which }) => {
     if (which === 8 || which === 46) {
       const value = this.refs.details.getContent()
@@ -289,6 +297,7 @@ export class PostEditor extends React.Component {
         <AutosizingTextarea type='text' ref='title' className='title'
           value={name}
           placeholder={placeholderText(this.editorType())}
+          onKeyDown={this.tabToDetails}
           onChange={event => this.updateTitle(event)}/>
       </div>
 

@@ -123,8 +123,8 @@ const Details = ({ expanded, onExpand, tag }, { post, community }) => {
       <a onClick={onExpand}>Show&nbsp;more</a>
       &nbsp;
     </span>}
-    {tag !== 'chat' && <a className='hashtag' href={tagUrl(tag.slice(1), slug)}>
-      {tag}
+    {tag !== 'chat' && <a className='hashtag' href={tagUrl(tag, slug)}>
+      {`#${tag}`}
     </a>}
   </div>
 }

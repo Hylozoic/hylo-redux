@@ -23,7 +23,7 @@ const classNames = [
   'icon-Clock',
   'icon-Cloud-Download',
   'icon-Cloud-Upload',
-  'icon-Pin-2',
+  'icon-Pin-1',
   'icon-Loupe',
   'icon-View',
   'icon-More-Alt',

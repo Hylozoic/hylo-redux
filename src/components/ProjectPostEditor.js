@@ -85,7 +85,7 @@ export default class ProjectPostEditor extends React.Component {
             onChange={m => update({end_time: m.toISOString()})}/>
         </div>
         <div className='location'>
-          <Icon name='Pin-2'/>
+          <Icon name='Pin-1'/>
           <input type='text' placeholder='location'
             defaultValue={postEdit.location}
             onChange={event => update({location: event.target.value})}/>

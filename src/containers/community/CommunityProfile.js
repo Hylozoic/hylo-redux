@@ -15,6 +15,7 @@ import { VIEWED_COMMUNITY, trackEvent } from '../../util/analytics'
 import { VelocityTransitionGroup } from 'velocity-react'
 import ListItemTagInput from '../../components/ListItemTagInput'
 import CoverImagePage from '../../components/CoverImagePage'
+import { preventSpaces } from '../../util/textInput'
 const { func, object } = React.PropTypes
 
 const CommunityProfile = props => {
@@ -75,13 +76,12 @@ const OnboardingQuestions = ({ person, dispatch }) => {
       <h3>Let's get started</h3>
     </div>
     <div className='content'>
-      <p>Tell us a little about yourself!</p>
-      <p>What <strong>groups or organizations</strong> are you part of?</p>
-      <ListItemTagInput person={person} type='organizations' update={update}/>
-      <br/>
-      <p>Are there any <strong>skills, passions, or hobbies</strong> you'd like to be known for in your community?</p>
-      <ListItemTagInput person={person} type='skills' update={update}/>
-      <p className='meta'>Type names, pressing Enter after each one. This information will be searchable and shown on your profile, helping other members discover opportunities to collaborate with you. You can change it later.</p>
+      <p>Tell us a little about yourself! Are there any <strong>skills, passions, or hobbies</strong> you'd like to be known for in your community?</p>
+      <ListItemTagInput type='tags' person={person} update={update}
+        filter={preventSpaces}/>
+      <p className='meta'>
+        Type words, pressing Enter after each one. You can type phrases "like-this" or LikeThis. These tags will be searchable and visible on your profile, and can be edited later. They help you and your fellow community members discover opportunities to do more together.
+      </p>
       <div className='align-right'>
         <button onClick={close} className='btn-primary'>Done</button>
       </div>

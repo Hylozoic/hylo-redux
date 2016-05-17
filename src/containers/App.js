@@ -16,6 +16,7 @@ import { VelocityComponent } from 'velocity-react'
 import { canInvite, canModerate } from '../models/currentUser'
 import { get, pick } from 'lodash'
 import { matchEditorUrl } from './StandalonePostEditor'
+import { changeViewportTop } from '../util/scrolling'
 const { array, bool, func, object, string } = React.PropTypes
 
 @prefetch(({ store, dispatch }) => {
@@ -61,6 +62,14 @@ export default class App extends React.Component {
 
   getChildContext () {
     return pick(this.props, 'dispatch', 'currentUser')
+  }
+
+  componentDidMount () {
+    const { isMobile } = this.props
+    if (isMobile) {
+      console.log('changing viewportTop!')
+      changeViewportTop(40)
+    }
   }
 
   render () {

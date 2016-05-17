@@ -25,7 +25,7 @@ const { array, bool, func, object, string } = React.PropTypes
     return dispatch(toggleMainMenu())
   }
 })
-@connect((state, { params: { id } }) => {
+@connect((state, { params }) => {
   const { isMobile, leftNavIsOpen, notifierMessages } = state
   const currentUser = state.people.current
   const community = find(state.communities, c => c.id === state.currentCommunityId)
@@ -71,6 +71,7 @@ export default class App extends React.Component {
 
     const path = this.props.path.split('?')[0]
     const hideTopNav = matchEditorUrl(path)
+    const hideMobileSearch = path === '/search'
 
     const moveWithMenu = {marginLeft: leftNavIsOpen ? leftNavWidth : 0}
     const toggleLeftNav = open => {
@@ -108,7 +109,7 @@ export default class App extends React.Component {
             search={doSearch}
             opened={leftNavIsOpen}
             isMobile={isMobile}/>}
-          {isMobile && <MobileSearch search={doSearch} />}
+          {isMobile && !hideMobileSearch && <MobileSearch search={doSearch} />}
           {children}
         </div>
       </VelocityComponent>

@@ -54,7 +54,7 @@ export default class EventPostEditor extends React.Component {
           onChange={m => update({end_time: m.toISOString()})}/>
       </div>
       <div className='location'>
-        <Icon name='map-marker' glyphicon={true} />
+        <Icon name='Pin-2'/>
         <input type='text' placeholder='location'
           defaultValue={postEdit.location}
           onChange={event => update({location: event.target.value})}/>

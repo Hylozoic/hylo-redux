@@ -67,10 +67,15 @@ export function humanDate (date, short) {
     // client side, it's "N+1 seconds ago"
     let match = ret.match(/(\d+) seconds? ago/)
     if (match) {
-      if (Number(match[1]) >= 50) return '1 minute ago'
+      if (Number(match[1]) >= 50) return '1m ago'
       return 'just now'
     }
   }
+  ret = ret.replace(/ minutes?/, 'm')
+  .replace(/ hours?/, 'h')
+  .replace(/ days?/, 'd')
+  .replace(/ weeks?/, 'w')
+  .replace(/ month(s?)/, ' mo$1')
   return ret
 }
 

@@ -114,7 +114,7 @@ const EventPost = (props, context) => {
         </span>
       </div>
       <div className='location'>
-        <Icon name='map-marker' glyphicon={true}/>
+        <Icon name='Pin-2'/>
         <span title={location}>{location}</span>
       </div>
       {description && <div className='details'>

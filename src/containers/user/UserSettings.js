@@ -20,13 +20,8 @@ import { avatarUploadSettings, bannerUploadSettings } from '../../models/person'
 import { openPopup, setupPopupCallback, PROFILE_CONTEXT } from '../../util/auth'
 import { EDITED_USER_SETTINGS, trackEvent } from '../../util/analytics'
 import { reversibleUpdate } from '../../util/forms'
-import { getKeyCode, keyMap } from '../../util/textInput'
+import { preventSpaces } from '../../util/textInput'
 import Icon from '../../components/Icon'
-
-const noSpaces = event => {
-  const keyCode = getKeyCode(event)
-  if (keyCode === keyMap.SPACE) event.preventDefault()
-}
 
 @prefetch(({ dispatch, params: { id }, query }) => {
   switch (query.expand) {
@@ -247,7 +242,7 @@ export default class UserSettings extends React.Component {
           <div className='full-column'>
             <label>My skills</label>
             <ListItemTagInput type='tags' person={currentUser}
-              update={this.update} filter={noSpaces}/>
+              update={this.update} filter={preventSpaces}/>
           </div>
         </Item>
         <Item>

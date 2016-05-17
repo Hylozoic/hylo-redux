@@ -21,3 +21,8 @@ export const getCharacter = event => String.fromCharCode(getKeyCode(event))
 
 export const sanitizeTagInput = event =>
   getCharacter(event).match(hashtagCharacterRegex) || event.preventDefault()
+
+export const preventSpaces = event => {
+  const keyCode = getKeyCode(event)
+  if (keyCode === keyMap.SPACE) event.preventDefault()
+}

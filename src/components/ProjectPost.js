@@ -49,7 +49,7 @@ const ProjectPost = (props, context) => {
       <div className='row'>
         <div className='main-col'>
           {location && <div className='meta location'>
-            <Icon name='map-marker' glyphicon={true}/>
+            <Icon name='Pin-2'/>
             <span title={location}>{location}</span>
           </div>}
           {description && <div className='details'>

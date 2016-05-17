@@ -1,7 +1,8 @@
 import React from 'react'
-import { curry, isEmpty } from 'lodash'
+import { debounce, isEmpty } from 'lodash'
 import KeyControlledList from './KeyControlledList'
 import { getKeyCode, keyMap } from '../util/textInput'
+import { NonLinkAvatar } from './Avatar'
 const { array, bool, string, func } = React.PropTypes
 
 export default class TagInput extends React.Component {
@@ -50,7 +51,7 @@ export default class TagInput extends React.Component {
     this.resetInput()
   }
 
-  remove = (tag, event) => {
+  remove = tag => event => {
     this.props.onRemove(tag)
     event.preventDefault()
   }
@@ -58,6 +59,10 @@ export default class TagInput extends React.Component {
   focus = () => {
     this.refs.input.focus()
   }
+
+  handleChange = debounce(value => {
+    this.props.handleInput(value)
+  }, 200)
 
   render () {
     let { choices, tags, placeholder } = this.props
@@ -67,14 +72,14 @@ export default class TagInput extends React.Component {
     return <div className='tag-input' onClick={this.focus}>
       <ul>
         {tags.map(t => <li key={t.id} className='tag'>
-          {t.avatar_url && <div className='icon' style={{backgroundImage: `url(${t.avatar_url})`}}/>}
+          {t.avatar_url && <NonLinkAvatar person={t}/>}
           {t.name}
-          <a onClick={curry(this.remove)(t)} className='remove'>&times;</a>
+          <a onClick={this.remove(t)} className='remove'>&times;</a>
         </li>)}
       </ul>
 
       <input ref='input' type='text' placeholder={placeholder}
-        onChange={event => this.props.handleInput(event.target.value)}
+        onChange={event => this.handleChange(event.target.value)}
         onKeyDown={this.handleKeys}/>
 
       {!isEmpty(choices) && <div className='dropdown'>

@@ -150,3 +150,7 @@ export const tagUrl = (name, slug) => {
   if (name !== 'all-topics') result += `/tag/${name}`
   return result
 }
+
+export const isSearchUrl = (path) => {
+  return path.split('?')[0] === '/search'
+}

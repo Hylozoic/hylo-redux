@@ -4,6 +4,8 @@ import { prefetch } from 'react-fetcher'
 import { connect } from 'react-redux'
 import { find } from 'lodash'
 import TopNav from '../components/TopNav'
+import Search from '../components/Search'
+import Icon from '../components/Icon'
 import { LeftNav, leftNavWidth, leftNavEasing } from '../components/LeftNav'
 import Notifier from '../components/Notifier'
 import LiveStatusPoller from '../components/LiveStatusPoller'
@@ -14,6 +16,8 @@ import { VelocityComponent } from 'velocity-react'
 import { canInvite, canModerate } from '../models/currentUser'
 import { get, pick } from 'lodash'
 import { matchEditorUrl } from './StandalonePostEditor'
+import { changeViewportTop } from '../util/scrolling'
+import { isSearchUrl } from '../routes'
 const { array, bool, func, object, string } = React.PropTypes
 
 @prefetch(({ store, dispatch }) => {
@@ -23,7 +27,7 @@ const { array, bool, func, object, string } = React.PropTypes
     return dispatch(toggleMainMenu())
   }
 })
-@connect((state, { params: { id } }) => {
+@connect((state, { params }) => {
   const { isMobile, leftNavIsOpen, notifierMessages } = state
   const currentUser = state.people.current
   const community = find(state.communities, c => c.id === state.currentCommunityId)
@@ -69,6 +73,7 @@ export default class App extends React.Component {
 
     const path = this.props.path.split('?')[0]
     const hideTopNav = matchEditorUrl(path)
+    const hideMobileSearch = isSearchUrl(this.props.path)
 
     const moveWithMenu = {marginLeft: leftNavIsOpen ? leftNavWidth : 0}
     const toggleLeftNav = open => {
@@ -106,6 +111,7 @@ export default class App extends React.Component {
             search={doSearch}
             opened={leftNavIsOpen}
             isMobile={isMobile}/>}
+          {isMobile && !hideMobileSearch && <MobileSearch search={doSearch} />}
           {children}
         </div>
       </VelocityComponent>
@@ -114,6 +120,25 @@ export default class App extends React.Component {
         remove={id => dispatch(removeNotification(id))}/>
       <LiveStatusPoller/>
       <PageTitleController/>
+    </div>
+  }
+}
+
+class MobileSearch extends React.Component {
+  static propTypes = {
+    search: func
+  }
+
+  componentDidMount () {
+    this.refs.mobileSearch.className = 'mobile-search'
+    changeViewportTop(40)
+  }
+
+  render () {
+    const { search } = this.props
+    return <div className='mobile-search hidden' ref='mobileSearch'>
+      <Icon name='Loupe'/>
+      <Search onChange={search}/>
     </div>
   }
 }

@@ -15,6 +15,7 @@ import Dropdown from './Dropdown'
 import { ClickCatchingSpan } from './ClickCatcher'
 import Comment from './Comment'
 import CommentForm from './CommentForm'
+import Icon from './Icon'
 import LinkedPersonSentence from './LinkedPersonSentence'
 import { scrollToAnchor } from '../util/scrolling'
 import { connect } from 'react-redux'
@@ -246,7 +247,7 @@ export const VoteButton = (props, { post, currentUser, dispatch }) => {
   let vote = () => dispatch(voteOnPost(post, currentUser))
   let myVote = includes(map(post.voters, 'id'), (currentUser || {}).id)
   return <a className='vote-button' onClick={vote}>
-    <span className={cx('icon-Heart', {selected: myVote})}></span>
+    {myVote ? <Icon name='Heart2' /> : <Icon name='Heart' />}
     {myVote ? 'Liked' : 'Like'}
   </a>
 }

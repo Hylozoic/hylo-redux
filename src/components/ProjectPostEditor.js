@@ -73,7 +73,7 @@ export default class ProjectPostEditor extends React.Component {
       </div>
       <div className='more-fields'>
         <div className='video'>
-          <Icon name='film' glyphicon={true}/>
+          <Icon name='VideoCamera'/>
           <input type='text' placeholder='youtube or vimeo url'
             value={videoUrl}
             onChange={event => update({video: event.target.value})}/>
@@ -85,13 +85,13 @@ export default class ProjectPostEditor extends React.Component {
             onChange={m => update({end_time: m.toISOString()})}/>
         </div>
         <div className='location'>
-          <Icon name='map-marker' glyphicon={true}/>
+          <Icon name='Pin-2'/>
           <input type='text' placeholder='location'
             defaultValue={postEdit.location}
             onChange={event => update({location: event.target.value})}/>
         </div>
         <div className='hashtag'>
-          <span className='icon'>#</span>
+          <Icon name='Tag' />
           <input type='text' placeholder='hashtag' value={tag}
             onKeyPress={sanitizeTagInput}
             onChange={event => updateTag(event.target.value)}/>

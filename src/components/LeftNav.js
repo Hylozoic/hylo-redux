@@ -76,7 +76,7 @@ export const LeftNav = ({ opened, community, tags, close, canModerate, canInvite
         </li>
         <li>
           <A to={slug ? `/c/${slug}/projects` : '/projects'}>
-            <Icon name='road' glyphicon={true}/> Projects
+            <Icon name='ProjectorScreen'/> Projects
           </A>
         </li>
         {community && <li>
@@ -86,7 +86,7 @@ export const LeftNav = ({ opened, community, tags, close, canModerate, canInvite
         </li>}
         {community && <li>
           <A to={`/c/${slug}/about`}>
-            <Icon name='question-sign' glyphicon={true}/> About
+            <Icon name='Help'/> About
           </A>
         </li>}
         {canInvite && <li>
@@ -96,7 +96,7 @@ export const LeftNav = ({ opened, community, tags, close, canModerate, canInvite
         </li>}
         {canModerate && <li>
           <A to={`/c/${slug}/settings`}>
-            <Icon name='cog' glyphicon={true}/> Settings
+            <Icon name='Settings'/> Settings
           </A>
         </li>}
         </ul>

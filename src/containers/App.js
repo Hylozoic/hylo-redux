@@ -17,6 +17,7 @@ import { canInvite, canModerate } from '../models/currentUser'
 import { get, pick } from 'lodash'
 import { matchEditorUrl } from './StandalonePostEditor'
 import { changeViewportTop } from '../util/scrolling'
+import { isSearchUrl } from '../routes'
 const { array, bool, func, object, string } = React.PropTypes
 
 @prefetch(({ store, dispatch }) => {
@@ -65,8 +66,8 @@ export default class App extends React.Component {
   }
 
   componentDidMount () {
-    const { isMobile } = this.props
-    if (isMobile) {
+    const { isMobile, path } = this.props
+    if (isMobile && !isSearchUrl(path)) {
       console.log('changing viewportTop!')
       changeViewportTop(40)
     }
@@ -80,7 +81,7 @@ export default class App extends React.Component {
 
     const path = this.props.path.split('?')[0]
     const hideTopNav = matchEditorUrl(path)
-    const hideMobileSearch = path === '/search'
+    const hideMobileSearch = isSearchUrl(this.props.path)
 
     const moveWithMenu = {marginLeft: leftNavIsOpen ? leftNavWidth : 0}
     const toggleLeftNav = open => {

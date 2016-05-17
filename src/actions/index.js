@@ -48,6 +48,7 @@ export const MARK_ALL_ACTIVITIES_READ = 'MARK_ALL_ACTIVITIES_READ'
 export const MARK_ALL_ACTIVITIES_READ_PENDING = MARK_ALL_ACTIVITIES_READ + _PENDING
 export const NAVIGATE = 'NAVIGATE'
 export const NOTIFY = 'NOTIFY'
+export const REMOVE_COMMENT = 'REMOVE_COMMENT'
 export const REMOVE_COMMUNITY_MODERATOR = 'REMOVE_COMMUNITY_MODERATOR'
 export const REMOVE_COMMUNITY_MODERATOR_PENDING = REMOVE_COMMUNITY_MODERATOR + _PENDING
 export const REMOVE_DOC = 'REMOVE_DOC'
@@ -606,4 +607,12 @@ export function fetchLeftNavTags (id) {
 
 export function setMobileDevice () {
   return {type: SET_MOBILE_DEVICE}
+}
+
+export function removeComment (id) {
+  return {
+    type: REMOVE_COMMENT,
+    payload: {api: true, path: `/noo/comment/${id}`, method: 'DELETE'},
+    meta: {id}
+  }
 }

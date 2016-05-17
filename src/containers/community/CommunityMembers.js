@@ -5,6 +5,7 @@ import { debounce, includes } from 'lodash'
 import { FETCH_PEOPLE } from '../../actions'
 import { fetchPeople } from '../../actions/fetchPeople'
 import { createCacheId, connectedListProps, fetchWithCache, refetch } from '../../util/caching'
+import Icon from '../../components/Icon'
 import ScrollListener from '../../components/ScrollListener'
 import PersonCards from '../../components/PersonCards'
 import AccessErrorMessage from '../../components/AccessErrorMessage'
@@ -13,6 +14,8 @@ const { array, bool, func, number, object } = React.PropTypes
 import { canInvite } from '../../models/currentUser'
 import { findError } from '../../actions/util'
 import qs from 'querystring'
+import { NonLinkAvatar } from '../../components/Avatar'
+import { humanDate } from '../../util/text'
 
 const subject = 'community'
 const fetch = fetchWithCache(fetchPeople)
@@ -25,7 +28,8 @@ const fetch = fetchWithCache(fetchPeople)
     community: state.communities[id],
     currentUser: state.people.current,
     error: findError(state.errors, FETCH_PEOPLE, 'peopleByQuery', cacheId),
-    moderatorIds: state.peopleByQuery[qs.stringify({subject: 'community-moderators', id})] || []
+    moderatorIds: state.peopleByQuery[qs.stringify({subject: 'community-moderators', id})] || [],
+    isMobile: state.isMobile
   }
 })
 export default class CommunityMembers extends React.Component {
@@ -39,7 +43,8 @@ export default class CommunityMembers extends React.Component {
     location: object,
     community: object,
     currentUser: object,
-    error: object
+    error: object,
+    isMobile: bool
   }
 
   loadMore = () => {
@@ -56,32 +61,49 @@ export default class CommunityMembers extends React.Component {
   }, 200)
 
   render () {
-    let { pending, people, moderatorIds, location: { query }, community, currentUser, error, total } = this.props
+    const {
+      pending, moderatorIds, location: { query }, community, currentUser, error,
+      total, isMobile
+    } = this.props
     if (error) return <AccessErrorMessage error={error}/>
     if (!currentUser) return <div>Loading...</div>
     let { search } = query
-    let peopleWithModeratorFlag = people.map(person => ({
+    const people = this.props.people.map(person => ({
       ...person,
       isModerator: includes(moderatorIds, person.id)
     }))
 
     return <div className='members'>
       <div className='search-bar'>
-        <span className='glyphicon glyphicon-search'></span>
+        <Icon name='Loupe' />
         <input type='text'
           placeholder='Search'
           defaultValue={search}
           onChange={event => this.updateQuery({search: event.target.value})} />
       </div>
       <div className='member-controls'>
-        {total} members
+        {total} member{total === 1 ? '' : 's'}
         {canInvite(currentUser, community) && <A to={`/c/${community.slug}/invite`}>
           Invite members
         </A>}
       </div>
       {pending && <div className='loading'>Loading...</div>}
-      <PersonCards people={peopleWithModeratorFlag} slug={community.slug}/>
+      {isMobile
+        ? people.map(person => <PersonRow person={person} key={person.id}/>)
+        : <PersonCards people={people} slug={community.slug}/>}
       <ScrollListener onBottom={this.loadMore}/>
     </div>
   }
+}
+
+const PersonRow = ({ person }) => {
+  const { id, name, joined_at, isModerator } = person
+  return <A className='person-row' to={`/u/${id}`}>
+    <NonLinkAvatar person={person}/>
+    <span className='name'>{name}</span>
+    <span className='subtitle'>
+      {isModerator ? 'Moderator' : 'Member'}
+      {joined_at && <span>&nbsp;since {humanDate(joined_at)}</span>}
+    </span>
+  </A>
 }

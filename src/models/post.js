@@ -1,9 +1,9 @@
 import { assetUrl } from '../util/assets'
-import { intersection, isNull, keys } from 'lodash'
+import { compact, intersection, isNull, keys } from 'lodash'
 import { curry, find, get, map, omitBy } from 'lodash/fp'
 import { same } from './index'
 
-const fallbackImageUrl = assetUrl('/img/axolotl.jpg')
+const fallbackImageUrl = () => assetUrl('/img/axolotl.jpg')
 
 const media = curry((type, post) => find(m => m.type === type, post.media))
 export const getVideo = media('video')
@@ -11,7 +11,7 @@ export const getImage = media('image')
 
 export const imageUrl = (post, fallback = true) =>
   get('thumbnail_url', getVideo(post)) || get('url', getImage(post)) ||
-    (fallback && fallbackImageUrl) || null
+    (fallback && fallbackImageUrl()) || null
 
 export const getCommunities = (post, state) =>
   !post ? []
@@ -21,7 +21,7 @@ export const getCommunities = (post, state) =>
 export const getComments = (post, state) => {
   if (!post) return []
   const { comments, commentsByPost } = state
-  return map(id => comments[id], get(post.id, commentsByPost))
+  return compact(map(id => comments[id], get(post.id, commentsByPost)))
 }
 
 export const getEditingPostIds = (posts, state) =>

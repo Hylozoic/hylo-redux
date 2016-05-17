@@ -1,6 +1,8 @@
 import React from 'react'
 import Avatar from './Avatar'
 import A from './A'
+import { some } from 'lodash'
+import { same } from '../models'
 import { humanDate, sanitize, prependInP, present, textLength } from '../util/text'
 import { commentUrl } from '../routes'
 import { removeComment, thank } from '../actions'
@@ -14,7 +16,8 @@ const truncatedLength = 220
 
 const Comment = ({ comment, truncate, expand, communitySlug }, { dispatch, currentUser }) => {
   const person = comment.user
-  const { isThanked } = comment
+  const { thanks } = comment
+  const isThanked = comment.isThanked || some(thanks, same('id', currentUser))
   let text = present(sanitize(comment.text), {slug: communitySlug})
   const truncated = truncate && textLength(text) > truncatedLength
   if (truncated) text = truncateHtml(text, truncatedLength)

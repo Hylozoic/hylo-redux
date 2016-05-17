@@ -59,13 +59,12 @@ class Post extends React.Component {
     const image = find(m => m.type === 'image', media)
     const classes = cx('post', tag, {image, expanded})
     const title = linkifyHashtags(decode(sanitize(post.name || '')), get(community, 'slug'))
-    const tagLabel = `#${post.tag === 'chat' ? 'all-topics' : post.tag}`
 
     return <div className={classes}>
       <Header communities={communities}/>
       <p className='title post-section' dangerouslySetInnerHTML={{__html: title}}></p>
       {image && <img src={image.url} className='post-section full-image'/>}
-      <Details {...{expanded, onExpand, tagLabel}}/>
+      <Details {...{expanded, onExpand, tag}}/>
       <div className='voting post-section'><VoteButton/><Voters/></div>
       <Attachments/>
       <CommentSection truncate={!expanded} expand={onExpand} comments={comments}/>
@@ -109,7 +108,7 @@ export const Header = ({ communities }, { post, community }) => {
 }
 Header.contextTypes = {post: object, community: object}
 
-const Details = ({ expanded, onExpand, tagLabel }, { post, community }) => {
+const Details = ({ expanded, onExpand, tag }, { post, community }) => {
   const slug = get(community, 'slug')
   let description = presentDescription(post, community)
   const truncated = !expanded && textLength(description) > 200
@@ -122,7 +121,9 @@ const Details = ({ expanded, onExpand, tagLabel }, { post, community }) => {
       <a onClick={onExpand}>Show&nbsp;more</a>
       &nbsp;
     </span>}
-    <a className='hashtag' href={tagUrl(tagLabel.slice(1), slug)}>{tagLabel}</a>
+    {tag !== 'chat' && <a className='hashtag' href={tagUrl(tag.slice(1), slug)}>
+      {tag}
+    </a>}
   </div>
 }
 Details.contextTypes = {post: object, community: object}

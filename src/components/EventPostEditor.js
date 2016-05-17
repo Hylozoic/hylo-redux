@@ -60,8 +60,8 @@ export default class EventPostEditor extends React.Component {
           onChange={event => update({location: event.target.value})}/>
       </div>
       <div className='hashtag'>
-        <span className='icon'>#</span>
-        <input type='text' placeholder='hashtag' value={tag}
+          <Icon name='Tag' />
+          <input type='text' placeholder='hashtag' value={tag}
           onKeyPress={sanitizeTagInput}
           onChange={event => updateTag(event.target.value)}/>
       </div>

@@ -6,6 +6,7 @@ import {
   FETCH_POST,
   FETCH_POSTS,
   CREATE_COMMENT,
+  REMOVE_COMMENT,
   THANK_PENDING
 } from '../actions'
 
@@ -56,6 +57,11 @@ export default function (state = {}, action) {
       return {
         ...state,
         ...hashBy(payload.comments, 'id')
+      }
+    case REMOVE_COMMENT:
+      return {
+        ...state,
+        [meta.id]: null
       }
   }
 

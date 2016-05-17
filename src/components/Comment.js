@@ -3,9 +3,10 @@ import Avatar from './Avatar'
 import A from './A'
 import { humanDate, sanitize, prependInP, present, textLength } from '../util/text'
 import { commentUrl } from '../routes'
-import { thank } from '../actions'
+import { removeComment, thank } from '../actions'
 import truncateHtml from 'html-truncate'
 import { ClickCatchingSpan } from './ClickCatcher'
+import { canEditComment } from '../models/currentUser'
 var { func, object } = React.PropTypes
 
 const spacer = <span>&nbsp;&nbsp;•&nbsp;&nbsp;</span>
@@ -18,8 +19,12 @@ const Comment = ({ comment, truncate, expand, communitySlug }, { dispatch, curre
   const truncated = truncate && textLength(text) > truncatedLength
   if (truncated) text = truncateHtml(text, truncatedLength)
   text = prependInP(text, `<strong class='name'>${person.name}</strong>`)
+  const remove = () => window.confirm('Delete this comment? This cannot be undone.') &&
+    dispatch(removeComment(comment.id))
 
   return <div className='comment' data-comment-id={comment.id}>
+    {canEditComment(currentUser, comment) &&
+      <a className='delete' onClick={remove}>&times;</a>}
     <a name={`comment-${comment.id}`}></a>
     <Avatar person={person}/>
     <div className='content'>

@@ -235,6 +235,12 @@ ul.posts {
     padding-left: 0px;
     border-top: 1px solid @post-border;
     padding-bottom: 15px;
+    padding-right: 0 !important;
+
+    > a:first-child {
+      margin-top: @p-bottom-margin;
+      cursor: pointer;
+    }
 
     &.empty {
       .comment-form {
@@ -282,10 +288,6 @@ ul.posts {
 
         .comment, .comment-form {
           padding-left: @post-content-left-margin + @extra-margin;
-        }
-
-        .comment-form {
-          margin-right: -@post-content-right-margin - @extra-margin;
         }
       }
 
@@ -584,8 +586,6 @@ ul.posts {
 }
 
 .standalone-post-editor {
-  margin-top: @mobile-top-nav-height;
-
   .top-menu {
     position: fixed;
     top: 0;
@@ -1138,6 +1138,7 @@ ul.posts {
   margin-bottom: 5px;
   padding-top: 15px;
   .has-left-side-avatar;
+  position: relative;
 
   .content {
     overflow: hidden;
@@ -1179,6 +1180,25 @@ ul.posts {
   .show-more {
     .meta-text;
   }
+
+  .delete {
+    position: absolute;
+    right: 0;
+    .post-right-margin;
+    text-decoration: none;
+    display: none;
+    &:hover {
+      .bold;
+    }
+  }
+
+  &:hover .delete {
+    display: inline;
+  }
+}
+
+.isMobile .comment .delete {
+  display: inline;
 }
 
 .comment-form {
@@ -1189,8 +1209,7 @@ ul.posts {
   border-top: 1px solid #e8e8e8;
   padding-top: 15px;
   .post-left-padding(@mobile-side-margin);
-  padding-right: @post-content-right-margin;
-  margin-right: -@post-content-right-margin;
+  padding-right: 15px;
 
   .placeholder {
     font-style: italic;

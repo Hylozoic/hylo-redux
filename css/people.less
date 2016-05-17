@@ -257,3 +257,31 @@
     }
   });
 }
+
+.person-row {
+  padding: @mobile-side-margin;
+  border-bottom: 1px solid @faint-gray-border;
+  position: relative;
+  display: block;
+
+  .avatar {
+    float: left;
+    margin-right: 10px;
+  }
+  .name {
+    .bold;
+    display: block;
+  }
+  .subtitle {
+    .meta-text;
+  }
+
+  &:after {
+    content: '〉';
+    position: absolute;
+    right: 5px;
+    top: 22px;
+    font-size: 20px;
+    color: @faint-gray-text;
+  }
+}

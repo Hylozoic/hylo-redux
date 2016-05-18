@@ -6,6 +6,7 @@ import appHandler from './appHandler'
 import { info } from '../util/logging'
 import { setManifest } from '../util/assets'
 import { parse } from 'url'
+import { handleStaticPages } from './proxy'
 
 const port = process.env.PORT || 9000
 const upstreamHostname = parse(upstreamHost).hostname
@@ -13,6 +14,7 @@ const fixHeaders = headers => ({...headers, host: upstreamHostname})
 
 const server = express()
 server.use(express.static('public'))
+handleStaticPages(server)
 
 server.post('/login', function (req, res) {
   let headers = fixHeaders(req.headers)

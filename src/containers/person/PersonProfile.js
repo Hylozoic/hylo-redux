@@ -138,7 +138,7 @@ const PersonProfile = compose(
     <ListLabel category={category}/>
     {category === 'thank'
       ? <Thanks person={person}/>
-      : <ConnectedPostList {...{subject, id, query: getFetchOpts(query)}}
+      : <ConnectedPostList {...{subject, id, query: getFetchOpts(query), hideMobileSearch: true}}
           hide={postsToHide}/>}
   </CoverImagePage>
 })

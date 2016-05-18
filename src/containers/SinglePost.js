@@ -139,7 +139,7 @@ const fetchYetMore = (store, dispatch, query, id) => () => {
   const communityId = get(post, 'communities.0') || 'all'
   const slug = get(state.communities, [communityId, 'slug'])
   return Promise.all([
-    dispatch(fetch(subject, post.tag, {...query, communityId, omit: post.id})),
+    showTaggedPosts(post) && dispatch(fetch(subject, post.tag, {...query, communityId, omit: post.id})),
     slug && dispatch(fetchLeftNavTags(slug))
   ])
 }

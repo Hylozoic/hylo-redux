@@ -104,6 +104,7 @@ export default class RichTextEditor extends React.Component {
   }
 
   componentDidMount () {
+    this._isMounted = true
     const {
       onReady,
       onKeyDown,
@@ -138,8 +139,17 @@ export default class RichTextEditor extends React.Component {
         this.tagger.updateSearch(event)
       })
 
-      if (onBlur) editor.on('blur', onBlur)
+      if (onBlur) {
+        editor.on('blur', event => {
+          if (!this._isMounted) return
+          return onBlur(event)
+        })
+      }
     })
+  }
+
+  componentWillUnmount () {
+    this._isMounted = false
   }
 
   autocomplete = debounce((term, node) => {

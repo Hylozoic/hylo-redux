@@ -64,16 +64,13 @@ nav {
   z-index: 10;
   position: fixed;
   top: 0;
+  box-shadow: 0 0 2px @shadow-color;
+  
   &.scrolling {
     opacity: 0.98;
   }
 
-  .mobile({
-    border-bottom: 1px solid @faint-gray-border;
-  });
-
   .non-mobile({
-    box-shadow: 0 0 4px rgba(128, 128, 128, 0.3);
     left: 0;
   });
 
@@ -85,7 +82,7 @@ nav {
     color: @off-black;
     .medium;
     .bar {
-      background-color: @damian-green;
+      background-color: black;
     }
 
     .mobile({

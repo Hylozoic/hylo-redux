@@ -120,6 +120,7 @@ const Details = ({ expanded, onExpand, tag }, { post, community }) => {
   return <div className='post-section details'>
     <ClickCatchingSpan dangerouslySetInnerHTML={{__html: description}}/>
     {truncated && <span>
+      <wbr/>
       <a onClick={onExpand} className='show-more'>Show&nbsp;more</a>
       &nbsp;
     </span>}

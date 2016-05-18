@@ -8,11 +8,12 @@ import { isAdmin } from '../models/currentUser'
 import { filter, find, flow, get, map, sortBy } from 'lodash/fp'
 import { throttle } from 'lodash'
 import { same } from '../models'
-import { MenuButton } from './LeftNav'
+import { MenuButton, leftNavWidth, leftNavEasing } from './LeftNav'
 import { editorUrl } from '../containers/StandalonePostEditor'
 import { assetUrl } from '../util/assets'
 const { object, func, string, bool } = React.PropTypes
 import { viewportTop } from '../util/scrolling'
+import { VelocityComponent } from 'velocity-react'
 import cx from 'classnames'
 
 const getPostType = path => {
@@ -60,7 +61,8 @@ export default class TopNav extends React.Component {
     onChangeCommunity: func,
     opened: bool,
     isMobile: bool,
-    community: object
+    community: object,
+    leftNavIsOpen: bool
   }
 
   static contextTypes = {
@@ -100,7 +102,8 @@ export default class TopNav extends React.Component {
 
   render () {
     const {
-      search, logout, openLeftNav, path, onChangeCommunity, isMobile
+      search, logout, openLeftNav, leftNavIsOpen, path, onChangeCommunity,
+      isMobile
     } = this.props
     const { currentUser } = this.context
     const label = getLabel(path)
@@ -111,26 +114,32 @@ export default class TopNav extends React.Component {
     const newCount = get('new_notification_count',
       community.id ? membership : currentUser)
 
-    return <nav id='topNav' className={cx('clearfix', {scrolling: this.state.isScrolling})}>
-      <MenuButton onClick={openLeftNav} label={label}/>
-      {currentUser
-      ? <UserMenu {...{logout, currentUser, newCount, slug, isMobile}}/>
-      : <ul className='right'>
-          <li><A to='/signup'>Sign up</A></li>
-          <li><A to='/login'>Log in</A></li>
-        </ul>}
+    const moveWithMenu = isMobile
+      ? {marginLeft: leftNavIsOpen ? leftNavWidth : 0}
+      : {}
 
-      {currentUser && <CommunityMenu {...{communities, onChangeCommunity}}/>}
-      {currentUser && isMobile &&
-        <A to={editorUrl(slug, getPostType(path))} className='compose'>
-          <Icon name='Compose'/>
-        </A>}
+    return <VelocityComponent animation={moveWithMenu} easing={leftNavEasing}>
+      <nav id='topNav' className={cx('clearfix', {scrolling: this.state.isScrolling})}>
+        <MenuButton onClick={openLeftNav} label={label}/>
+        {currentUser
+        ? <UserMenu {...{logout, currentUser, newCount, slug, isMobile}}/>
+        : <ul className='right'>
+            <li><A to='/signup'>Sign up</A></li>
+            <li><A to='/login'>Log in</A></li>
+          </ul>}
 
-      <div className='search'>
-        <Icon name='Loupe'/>
-        <Search onChange={search}/>
-      </div>
-    </nav>
+        {currentUser && <CommunityMenu {...{communities, onChangeCommunity}}/>}
+        {currentUser && isMobile &&
+          <A to={editorUrl(slug, getPostType(path))} className='compose'>
+            <Icon name='Compose'/>
+          </A>}
+
+        <div className='search'>
+          <Icon name='Loupe'/>
+          <Search onChange={search}/>
+        </div>
+      </nav>
+    </VelocityComponent>
   }
 }
 

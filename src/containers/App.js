@@ -94,18 +94,19 @@ export default class App extends React.Component {
         canInvite={canInvite(currentUser, community)}
         close={closeLeftNav}/>
 
+      {!hideTopNav && <TopNav currentUser={currentUser}
+        community={community}
+        onChangeCommunity={visitCommunity}
+        openLeftNav={openLeftNav}
+        leftNavIsOpen={leftNavIsOpen}
+        logout={() => dispatch(logout())}
+        path={path}
+        search={doSearch}
+        opened={leftNavIsOpen}
+        isMobile={isMobile}/>}
+
       <VelocityComponent animation={moveWithMenu} easing={leftNavEasing}>
         <div id='main'>
-          {!hideTopNav && <TopNav currentUser={currentUser}
-            community={community}
-            onChangeCommunity={visitCommunity}
-            openLeftNav={openLeftNav}
-            leftNavIsOpen={leftNavIsOpen}
-            logout={() => dispatch(logout())}
-            path={path}
-            search={doSearch}
-            opened={leftNavIsOpen}
-            isMobile={isMobile}/>}
           {children}
         </div>
       </VelocityComponent>

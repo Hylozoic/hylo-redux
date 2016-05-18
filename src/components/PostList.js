@@ -9,13 +9,16 @@ import PostEditor from './PostEditor'
 import { EventPostCard } from './EventPost'
 import { ProjectPostCard } from './ProjectPost'
 import { getEditingPostIds } from '../models/post'
-import { isMobile } from '../client/util'
+import { isMobile, makeUrl } from '../client/util'
 import { navigate } from '../actions'
+import Search from './Search'
+import Icon from './Icon'
 
 const { array, bool, func, string } = React.PropTypes
 
 @connect((state, props) => ({
-  editingPostIds: isMobile() ? [] : getEditingPostIds(props.posts, state)
+  editingPostIds: isMobile() ? [] : getEditingPostIds(props.posts, state),
+  isMobile: state.isMobile
 }))
 class PostList extends React.Component {
   static propTypes = {
@@ -25,7 +28,9 @@ class PostList extends React.Component {
     pending: bool,
     editingPostIds: array,
     hide: array,
-    dispatch: func
+    dispatch: func,
+    hideMobileSearch: bool,
+    isMobile: bool
   }
 
   static contextTypes = {
@@ -68,11 +73,15 @@ class PostList extends React.Component {
   }
 
   render () {
-    let { hide, editingPostIds, pending, loadMore, refreshPostList } = this.props
+    let { hide, editingPostIds, pending, loadMore, refreshPostList, dispatch, hideMobileSearch, isMobile } = this.props
     const posts = filter(p => !includes(p.id, hide), this.props.posts)
+    const doSearch = text => dispatch(navigate(makeUrl('/search', {q: text})))
 
     if (!pending && posts.length === 0) {
-      return <div className='no-results'>No posts to show.</div>
+      return <span>
+        {isMobile() && !hideMobileSearch && <MobileSearch search={doSearch}/>}
+        <div className='no-results'>No posts to show.</div>
+        </span>
     }
 
     const showPost = post => {
@@ -98,6 +107,7 @@ class PostList extends React.Component {
     }
 
     return <span>
+      {isMobile && <MobileSearch search={doSearch}/>}
       <RefreshButton refresh={refreshPostList} />
       <ul className='posts'>
       {pending && <li className='loading'>Loading...</li>}
@@ -111,3 +121,22 @@ class PostList extends React.Component {
 }
 
 export default PostList
+
+class MobileSearch extends React.Component {
+  static propTypes = {
+    search: func
+  }
+
+  componentDidMount () {
+    changeViewportTop(40)
+    this.refs.mobileSearch.className = 'mobile-search'
+  }
+
+  render () {
+    const { search } = this.props
+    return <div className='mobile-search hidden' ref='mobileSearch'>
+      <Icon name='Loupe'/>
+      <Search onChange={search}/>
+    </div>
+  }
+}

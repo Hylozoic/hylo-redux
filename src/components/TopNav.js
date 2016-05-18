@@ -8,8 +8,7 @@ import { isAdmin } from '../models/currentUser'
 import { filter, find, flow, get, map, sortBy } from 'lodash/fp'
 import { throttle } from 'lodash'
 import { same } from '../models'
-import { MenuButton, leftNavEasing, leftNavWidth } from './LeftNav'
-import { VelocityComponent } from 'velocity-react'
+import { MenuButton } from './LeftNav'
 import { editorUrl } from '../containers/StandalonePostEditor'
 import { assetUrl } from '../util/assets'
 const { object, func, string, bool } = React.PropTypes
@@ -101,7 +100,7 @@ export default class TopNav extends React.Component {
 
   render () {
     const {
-      search, logout, openLeftNav, path, onChangeCommunity, opened, isMobile
+      search, logout, openLeftNav, path, onChangeCommunity, isMobile
     } = this.props
     const { currentUser } = this.context
     const label = getLabel(path)
@@ -112,13 +111,8 @@ export default class TopNav extends React.Component {
     const newCount = get('new_notification_count',
       community.id ? membership : currentUser)
 
-    const moveAgainstMenu = isMobile ? null
-      : {marginLeft: opened ? -leftNavWidth : 0}
-
     return <nav id='topNav' className={cx('clearfix', {scrolling: this.state.isScrolling})}>
-      <VelocityComponent animation={moveAgainstMenu} easing={leftNavEasing}>
-        <MenuButton onClick={openLeftNav} label={label}/>
-      </VelocityComponent>
+      <MenuButton onClick={openLeftNav} label={label}/>
       {currentUser
       ? <UserMenu {...{logout, currentUser, newCount, slug, isMobile}}/>
       : <ul className='right'>

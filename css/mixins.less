@@ -12,11 +12,14 @@
 
 .body-text() {
   a {
-    color: black;
     .medium;
+    color: black;
     text-decoration: none;
     &:hover {
       text-decoration: underline;
+    }
+    &[data-user-id] {
+      color: @damian-green;
     }
   }
 

@@ -22,7 +22,7 @@ const editorConfig = {
   resize: true,
   relative_urls: false,
   autoresize_bottom_margin: 0,
-  autoresize_min_height: 20
+  autoresize_min_height: 90
 }
 
 // @autoproxy allows the instance methods of the class to be accessible even

@@ -123,7 +123,7 @@ export default class TopNav extends React.Component {
       {currentUser && <CommunityMenu {...{communities, onChangeCommunity}}/>}
       {currentUser && isMobile &&
         <A to={editorUrl(slug, getPostType(path))} className='compose'>
-          <Icon name='edit'/>
+          <Icon name='Compose'/>
         </A>}
 
       <div className='search'>

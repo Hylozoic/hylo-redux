@@ -28,7 +28,7 @@ export const attachmentParams = (prevMedia, media) => {
   const video = find(isType('video'), media)
   if (video && (!prevVideo || !same('url', video, prevVideo))) {
     params.videoUrl = video.url
-  } else {
+  } else if (prevVideo && !video) {
     params.videoRemoved = true
   }
 

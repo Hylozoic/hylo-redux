@@ -64,6 +64,7 @@ export const SET_CURRENT_COMMUNITY_ID = 'SET_CURRENT_COMMUNITY_ID'
 export const SET_LOGIN_ERROR = 'SET_LOGIN_ERROR'
 export const SET_META_TAGS = 'SET_META_TAGS'
 export const SET_MOBILE_DEVICE = 'SET_MOBILE_DEVICE'
+export const SET_PASSWORD = 'SET_PASSWORD'
 export const SET_SIGNUP_ERROR = 'SET_SIGNUP_ERROR'
 export const SIGNUP = 'SIGNUP'
 export const START_POST_EDIT = 'START_POST_EDIT'
@@ -128,6 +129,13 @@ export function signup (name, email, password) {
 
 export function setSignupError (message) {
   return {type: SET_SIGNUP_ERROR, payload: message}
+}
+
+export function setPassword (email) {
+  return {
+    type: SET_PASSWORD,
+    payload: {api: true, path: '/noo/user/password', params: {email}, method: 'post'}
+  }
 }
 
 export function fetchPerson (id) {

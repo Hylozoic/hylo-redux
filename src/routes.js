@@ -2,6 +2,7 @@ import React from 'react'
 import { Route, IndexRoute } from 'react-router'
 import Signup from './containers/Signup'
 import Login from './containers/Login'
+import SetPassword from './containers/SetPassword'
 import App from './containers/App'
 import { AllPosts, MyPosts, FollowedPosts } from './containers/home'
 import AllCommunities from './containers/AllCommunities'
@@ -72,9 +73,10 @@ export default function makeRoutes (store) {
   return <Route path='/' component={App}>
     <IndexRoute component={AllPosts} onEnter={requireCommunity()}/>
     // /app route is for compatibility with iOS v1.6 and Android v1.0.10
-    <Route path='/app' component={AllPosts} onEnter={requireCommunity()}/>
+    <Route path='app' component={AllPosts} onEnter={requireCommunity()}/>
     <Route path='signup' component={Signup}/>
     <Route path='login' component={Login}/>
+    <Route path='set-password' component={SetPassword}/>
     <Route path='settings' component={UserSettings} onEnter={requireLogin}/>
     <Route path='my-posts' component={MyPosts} onEnter={requireLogin}/>
     <Route path='followed-posts' component={FollowedPosts} onEnter={requireLogin}/>

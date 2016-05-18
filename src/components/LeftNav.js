@@ -70,7 +70,9 @@ export const LeftNav = ({ opened, community, tags, close, canModerate, canInvite
       <MenuButton onClick={onMenuClick}/>
       <ul>
         <li>
-          <IndexA to={url('')}><Icon name='Comment-Alt'/> Conversations</IndexA>
+          <IndexA to={slug ? `/c/${slug}` : '/app'}>
+            <Icon name='Comment-Alt'/> Conversations
+          </IndexA>
         </li>
         <li>
           <A to={url('events')}><Icon name='Calendar'/> Events</A>

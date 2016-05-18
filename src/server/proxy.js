@@ -7,7 +7,7 @@ const url = require('url')
 const cache = LRU(50)
 
 const staticPages = [
-  '/',
+  '',
   '/help',
   '/help/markdown',
   '/about',
@@ -80,5 +80,8 @@ const handlePage = page => (req, res) => {
 }
 
 export const handleStaticPages = server => {
-  staticPages.forEach(page => server.get(page, handlePage(page)))
+  staticPages.forEach(page => {
+    if (page === '') page = '/'
+    server.get(page, handlePage(page))
+  })
 }

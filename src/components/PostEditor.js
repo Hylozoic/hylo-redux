@@ -36,12 +36,12 @@ const { array, bool, func, object, string } = React.PropTypes
 
 const specialTags = ['request', 'offer', 'intention']
 
-export const newPostId = 'new'
+export const newPostId = 'new-post'
 
 @autoproxy(connect((state, { community, post, project, type }) => {
   const id = post ? post.id
     : type === 'project' ? 'new-project'
-    : type === 'event' ? 'new-event' : 'new'
+    : type === 'event' ? 'new-event' : newPostId
 
   // this object tracks the edits that are currently being made
   let postEdit = state.postEdits[id] || {}
@@ -270,7 +270,7 @@ export class PostEditor extends React.Component {
 
   render () {
     let {
-      post, postEdit, dispatch, currentUser, imagePending, saving
+      post, postEdit, dispatch, currentUser, imagePending, saving, id
     } = this.props
     let { description, communities, tag } = postEdit
     let { name, showDetails } = this.state
@@ -303,7 +303,7 @@ export class PostEditor extends React.Component {
 
       <RichTextEditor className={cx('details', {empty: !description && !showDetails})}
         ref='details'
-        name='post'
+        name={post ? `post${id}` : id}
         content={description}
         onChange={ev => this.setDelayed('description', ev.target.value)}
         onKeyUp={this.goBackToTitle}

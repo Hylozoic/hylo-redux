@@ -17,6 +17,7 @@ import { appendUniq, mergeList } from './util'
 import { admin } from './admin'
 
 import {
+  CANCEL_POST_EDIT,
   CANCEL_TYPEAHEAD,
   CHECK_FRESHNESS_POSTS,
   CLEAR_CACHE,
@@ -246,15 +247,15 @@ export default combineReducers({
   },
 
   typeaheadMatches: (state = {}, action) => {
-    let { error, type } = action
-    if (error || !includes([TYPEAHEAD, CANCEL_TYPEAHEAD], type)) return state
+    let { error, type, payload, meta } = action
+    if (error) return state
 
-    let { payload, meta: { id } } = action
     switch (type) {
       case TYPEAHEAD:
-        return {...state, [id]: payload}
+        return {...state, [meta.id]: payload}
       case CANCEL_TYPEAHEAD:
-        return {...state, [id]: []}
+      case CANCEL_POST_EDIT:
+        return {...state, [meta.id]: []}
     }
 
     return state

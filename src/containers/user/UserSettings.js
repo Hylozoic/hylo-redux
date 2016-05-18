@@ -26,6 +26,8 @@ import Icon from '../../components/Icon'
 @prefetch(({ dispatch, params: { id }, query }) => {
   switch (query.expand) {
     case 'password':
+      dispatch(toggleUserSettingsSection('account', true))
+      return dispatch(toggleUserSettingsSection('password', true))
     case 'prompts':
       return dispatch(toggleUserSettingsSection('account', true))
     case undefined:
@@ -56,6 +58,12 @@ export default class UserSettings extends React.Component {
 
   componentDidMount () {
     setupPopupCallback('settings', this.props.dispatch)
+    if (this.props.expand.password) {
+      this.setState({editing: {
+        ...this.state.editing,
+        password: true
+      }})
+    }
   }
 
   validate () {

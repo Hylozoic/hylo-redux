@@ -47,9 +47,13 @@ export const TopicList = ({ tags, slug }) => {
   return <ul className='topic-list'>
     <li className='subheading'><a>TOPICS ({followedTags.length + 1})</a></li>
     <TagLink name='all-topics'/>
-    {!isEmpty(followedTags) && followedTags.map(tag => <TagLink name={tag.name} key={tag.name} />)}
-    {!isEmpty(createdTags) && <li className='subheading'><a>TOPICS CREATED ({createdTags.length})</a></li>}
-    {!isEmpty(createdTags) && createdTags.map(tag => <TagLink name={tag.name} key={tag.name} />)}
+    {!isEmpty(followedTags) && followedTags.map(tag =>
+      <TagLink name={tag.name} key={tag.name} />)}
+    {!isEmpty(createdTags) && <li className='subheading'>
+      <a>TOPICS CREATED ({createdTags.length})</a>
+    </li>}
+    {!isEmpty(createdTags) && createdTags.map(tag =>
+      <TagLink name={tag.name} key={tag.name} />)}
   </ul>
 }
 
@@ -59,48 +63,35 @@ export const LeftNav = ({ opened, community, tags, close, canModerate, canInvite
     close()
     event.stopPropagation()
   }
+  const url = slug ? suffix => `/c/${slug}/${suffix}` : suffix => '/' + suffix
 
   return <VelocityTransitionGroup {...animations}>
     {opened && <nav id='leftNav' onClick={() => isMobile() && close()}>
       <MenuButton onClick={onMenuClick}/>
       <ul>
         <li>
-          <IndexA to={slug ? `/c/${slug}` : '/'}>
-            <Icon name='Comment-Alt'/> Conversations
-          </IndexA>
+          <IndexA to={url('')}><Icon name='Comment-Alt'/> Conversations</IndexA>
         </li>
         <li>
-          <A to={slug ? `/c/${slug}/events` : '/events'}>
-            <Icon name='Calendar'/> Events
-          </A>
+          <A to={url('events')}><Icon name='Calendar'/> Events</A>
         </li>
         <li>
-          <A to={slug ? `/c/${slug}/projects` : '/projects'}>
-            <Icon name='ProjectorScreen'/> Projects
-          </A>
+          <A to={url('projects')}><Icon name='ProjectorScreen'/> Projects</A>
         </li>
         {community && <li>
-          <A to={`/c/${slug}/members`}>
-            <Icon name='Users'/> Members
-          </A>
+          <A to={url('members')}><Icon name='Users'/> Members</A>
         </li>}
         {community && <li>
-          <A to={`/c/${slug}/about`}>
-            <Icon name='Help'/> About
-          </A>
+          <A to={url('about')}><Icon name='Help'/> About</A>
         </li>}
         {canInvite && <li>
-          <A to={`/c/${slug}/invite`}>
-            <Icon name='Mail'/> Invite
-          </A>
+          <A to={url('invite')}><Icon name='Mail'/> Invite</A>
         </li>}
         {canModerate && <li>
-          <A to={`/c/${slug}/settings`}>
-            <Icon name='Settings'/> Settings
-          </A>
+          <A to={url('settings')}><Icon name='Settings'/> Settings</A>
         </li>}
         </ul>
-      {!isEmpty(tags) && <TopicList tags={tags} slug={slug} />}
+      {!isEmpty(tags) && <TopicList tags={tags} slug={slug}/>}
     </nav>}
   </VelocityTransitionGroup>
 }

@@ -71,6 +71,8 @@ export default function makeRoutes (store) {
 
   return <Route path='/' component={App}>
     <IndexRoute component={AllPosts} onEnter={requireCommunity()}/>
+    // /app route is for compatibility with iOS v1.6 and Android v1.0.10
+    <Route path='/app' component={AllPosts} onEnter={requireCommunity()}/>
     <Route path='signup' component={Signup}/>
     <Route path='login' component={Login}/>
     <Route path='settings' component={UserSettings} onEnter={requireLogin}/>

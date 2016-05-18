@@ -229,13 +229,19 @@ nav {
 
   .notifications {
     position: relative;
+    display: block;
 
     .icon {
+      display: block;
       width: @avatar-size-default;
       vertical-align: middle;
       text-align: center;
-      position: relative;
-      top: -1px;
+      font-size: 16px;
+      color: black;
+      &:before {
+        top: -1px;
+        position: relative;
+      }
     }
 
     .badge {
@@ -276,7 +282,8 @@ nav {
     .icon {
       vertical-align: baseline;
       position: relative;
-      top: 2px;
+      top: 3px;
+      font-size: 18px;
     }
     input {
       position: relative;
@@ -370,6 +377,10 @@ nav {
     display: block;
     margin-bottom: 6px;
     text-decoration: none;
+    color: @medium-gray-text-2;
+    font-size: 13px;
+    .regular;
+    letter-spacing: 0.03em;
     .ellipsis;
     > * {
       vertical-align: baseline;
@@ -379,16 +390,12 @@ nav {
     }
     &.active {
       background-color: @left-nav-hover-link-background;
-      border-radius: 12px;
+      border-radius: 24px;
       color: @damian-green;
-      .light;
+      .regular;
     }
-    .glyphicon {
-      margin-right: 8px;
-      position: relative;
-      top: 1px;
-    }
-    .icon {
+    .glyphicon, .icon {
+      font-size: 16px;
       margin-right: 8px;
       position: relative;
       top: 1px;
@@ -403,13 +410,15 @@ nav {
     border-top: 1px @dark-gray-bg solid;
     .subheading {
       padding-top: 5px;
+      font-size: 11px;
+      .medium;
+      letter-spacing: 0.1em;
+      color: @medium-gray-text;
     }
     .bullet {
-      font-size: 30px;
-      top: 3px;
-      position: relative;
+      font-size: 20px;
       line-height: 16px;
-      vertical-align: baseline;
+      vertical-align: middle;
       display: inline-block;
     }
   }

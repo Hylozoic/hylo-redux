@@ -32,7 +32,7 @@ const Comment = ({ comment, truncate, expand, communitySlug }, { dispatch, curre
     <Avatar person={person}/>
     <div className='content'>
       <ClickCatchingSpan className='text' dangerouslySetInnerHTML={{__html: text}}/>
-      {truncated && <span> <a onClick={expand}>Show&nbsp;more</a></span>}
+      {truncated && <span> <a onClick={expand} className='show-more'>Show&nbsp;more</a></span>}
       <div>
         {currentUser && <span>
           {currentUser.id !== person.id &&

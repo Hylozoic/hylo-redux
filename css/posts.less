@@ -67,6 +67,8 @@ ul.posts {
     }
     .name {
       .medium;
+      font-size: 13px;
+      letter-spacing: 0.03em;
       margin-right: 0.8em;
       display: inline-block;
     }
@@ -373,7 +375,7 @@ ul.posts {
   .details-placeholder {
     padding-left: @post-content-left-margin;
     color: @placeholder-color;
-    margin-bottom: @p-bottom-margin;
+    margin-bottom: 70px;
     cursor: pointer;
   }
 
@@ -409,7 +411,8 @@ ul.posts {
       vertical-align: middle;
       text-align: center;
       padding: 0 10px;
-      color: @gray-text;
+      color: @faint-gray-text;
+      border: 1px solid @faint-gray-border;
     }
   }
 
@@ -589,6 +592,12 @@ ul.posts {
         vertical-align: top;
       }
     }
+  }
+
+  .visibility {
+    color: @medium-gray-text-3;
+    .light;
+    font-size: 13px;
   }
 }
 
@@ -1143,7 +1152,7 @@ ul.posts {
 
     .name {
       color: black;
-      margin-right: 0.75em;
+      margin-right: 0.4em;
     }
 
     p {
@@ -1167,10 +1176,6 @@ ul.posts {
   }
 
   .meta a {
-    .meta-text;
-  }
-
-  .show-more {
     .meta-text;
   }
 
@@ -1221,4 +1226,9 @@ ul.posts {
     margin-left: @mobile-side-margin;
     margin-right: @mobile-side-margin;
   });
+}
+
+.show-more {
+  color: black;
+  .medium;
 }

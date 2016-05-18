@@ -120,7 +120,7 @@ const Details = ({ expanded, onExpand, tag }, { post, community }) => {
   return <div className='post-section details'>
     <ClickCatchingSpan dangerouslySetInnerHTML={{__html: description}}/>
     {truncated && <span>
-      <a onClick={onExpand}>Show&nbsp;more</a>
+      <a onClick={onExpand} className='show-more'>Show&nbsp;more</a>
       &nbsp;
     </span>}
     {tag !== 'chat' && <a className='hashtag' href={tagUrl(tag, slug)}>

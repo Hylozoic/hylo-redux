@@ -168,7 +168,7 @@ const UserMenu = ({ isMobile, slug, logout, newCount, currentUser }) => {
   return <ul className='right'>
     {!isMobile && <li className='notifications'>
       <A to={`${slug ? '/c/' + slug : ''}/notifications`}>
-        <Icon name='bell' glyphicon={true}/>
+        <Icon name='Bell'/>
         {newCount > 0 && <div className='badge'>{newCount}</div>}
       </A>
     </li>}

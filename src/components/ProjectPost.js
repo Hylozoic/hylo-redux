@@ -163,7 +163,7 @@ class ProjectRequest extends React.Component {
       {description && <ClickCatchingSpan className='details'
         dangerouslySetInnerHTML={{__html: description}}/>}
       {truncated && <span>
-        <A to={`/p/${id}`}>Show&nbsp;more</A>
+        <A to={`/p/${id}`} className='show-more'>Show&nbsp;more</A>
       </span>}
       <div className='meta'>
         <a className='help button has-icon' onClick={zoom}>

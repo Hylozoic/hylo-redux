@@ -79,7 +79,7 @@ class PostList extends React.Component {
 
     if (!pending && posts.length === 0) {
       return <span>
-        {isMobile() && !hideMobileSearch && <MobileSearch search={doSearch}/>}
+        {isMobile && !hideMobileSearch && <MobileSearch search={doSearch}/>}
         <div className='no-results'>No posts to show.</div>
         </span>
     }

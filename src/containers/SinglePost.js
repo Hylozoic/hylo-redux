@@ -5,10 +5,7 @@ import { connect } from 'react-redux'
 import { get, includes } from 'lodash'
 import { pick } from 'lodash/fp'
 import {
-  FETCH_POST,
-  fetchComments,
-  fetchLeftNavTags,
-  fetchPost,
+  FETCH_POST, fetchComments, fetchLeftNavTags, fetchPost, navigate,
   setCurrentCommunityId,
   setMetaTags
 } from '../actions'
@@ -33,10 +30,8 @@ const showTaggedPosts = post =>
 
 @prefetch(({ store, dispatch, params: { id }, query }) =>
   dispatch(fetchPost(id))
-  .then(setCommunityAndMetaTags(store, dispatch, id))
-  .then(fetchMoreComments(store, dispatch, id))
-  .then(scroll)
-  .then(fetchYetMore(store, dispatch, query, id)))
+  .then(action =>
+    redirectToParent(store, id) || setupPage(store, id, query, action)))
 @connect((state, { params: { id } }) => {
   const post = getPost(id, state)
   return {
@@ -100,46 +95,52 @@ const showPost = (post) => {
   return <Post post={post} expanded={true}/>
 }
 
-const setCommunityAndMetaTags = (store, dispatch, id) =>
-  ({ error, payload, cacheHit }) => {
-    if (error) return cacheHit
-    const post = store.getState().posts[id]
-    const communityId = get(post, 'communities.0') || 'all'
-    dispatch(setCurrentCommunityId(communityId))
+const redirectToParent = (store, id) => {
+  const post = store.getState().posts[id]
+  if (get(post, 'parent_post_id')) {
+    store.dispatch(navigate(`/p/${post.parent_post_id}`))
+    return true
+  }
+}
 
-    if (payload && !payload.api) {
-      const { name, description, media } = payload
-      dispatch(setMetaTags(ogMetaTags(name, description, media[0])))
-    }
+const setupPage = (store, id, query, action) => {
+  const { error, payload, cacheHit } = action
+  const { dispatch } = store
+  if (error) return
+  const state = store.getState()
+  const post = state.posts[id]
+  if (!post) return
 
-    return cacheHit
+  const communityId = get(post, 'communities.0') || 'all'
+  const slug = get(state.communities, [communityId, 'slug'])
+  dispatch(setCurrentCommunityId(communityId))
+
+  if (payload && !payload.api) {
+    const { name, description, media } = payload
+    dispatch(setMetaTags(ogMetaTags(name, description, media[0])))
   }
 
-const fetchMoreComments = (store, dispatch, id) => hit => {
-  // when this page is clicked into from a post list, fetchPost will cause a
-  // cache hit; however, there may be more comments than the 3 that were
-  // included in the list, so we have to call fetchComments to retrieve the
-  // rest. but when fetchPost did not cause a cache hit, we know that its
-  // response contained all comments, so we can skip the additional call.
-  if (!hit) return
-  const post = store.getState().posts[id]
-  if (post.numComments > 3) return dispatch(fetchComments(id, {offset: 3}))
+  return Promise.all([
+    // when this page is clicked into from a post list, fetchPost will cause a
+    // cache hit; however, there may be more comments than the 3 that were
+    // included in the list, so we have to call fetchComments to retrieve the
+    // rest. but when fetchPost did not cause a cache hit, we know that its
+    // response contained all comments, so we can skip the additional call.
+    cacheHit && post.numComments > 3 && dispatch(fetchComments(id, {offset: 3})),
+
+    // if this is an event or project, fetch the first page of results for
+    // tagged posts.
+    showTaggedPosts(post) && dispatch(fetch(subject, post.tag, {...query, communityId, omit: post.id})),
+
+    // FIXME this should be done elsewhere since it needs to happen for every
+    // page for a community, not just single-post views.
+    slug && dispatch(fetchLeftNavTags(slug))
+  ])
+  .then(scroll) // must be deferred until after comments are loaded
 }
 
 const scroll = () => {
   if (typeof window === 'undefined') return
   let anchor = get(window.location.hash.match(/#(comment-\d+$)/), '1')
   if (anchor) scrollToAnchor(anchor, 15)
-}
-
-const fetchYetMore = (store, dispatch, query, id) => () => {
-  const state = store.getState()
-  const post = state.posts[id]
-  if (!post) return
-  const communityId = get(post, 'communities.0') || 'all'
-  const slug = get(state.communities, [communityId, 'slug'])
-  return Promise.all([
-    showTaggedPosts(post) && dispatch(fetch(subject, post.tag, {...query, communityId, omit: post.id})),
-    slug && dispatch(fetchLeftNavTags(slug))
-  ])
 }

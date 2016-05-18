@@ -426,7 +426,7 @@ ul.tags {
   border: 1px solid @hylo-teal;
   border-radius: @border-radius-base;
   background-color: @card-background;
-  margin-bottom: 15px;
+  margin-bottom: @card-bottom-margin;
   .header {
     background-color: @hylo-teal;
     padding: 15px;
@@ -554,7 +554,7 @@ ul.tags {
   .activity {
     border-bottom: 1px solid @light-gray-border;
     padding: 15px;
-    margin-bottom: 15px;
+    margin-bottom: @card-bottom-margin;
     background-color: white;
 
     &.unread {
@@ -719,7 +719,7 @@ ul.tags {
   }
 
   .person-result {
-    margin-bottom: 15px;
+    margin-bottom: @card-bottom-margin;
     padding: 15px;
     border: 1px solid @light-gray-border;
     .clearfix;
@@ -760,7 +760,7 @@ ul.tags {
   }
 
   .comment-result {
-    margin-bottom: 15px;
+    margin-bottom: @card-bottom-margin;
     padding: 15px;
     border: 1px solid @light-gray-border;
     .text p:last-child {

@@ -2,10 +2,9 @@ import React from 'react'
 import { compose } from 'redux'
 import { prefetch } from 'react-fetcher'
 import { connect } from 'react-redux'
-import { debounce } from 'lodash'
 import { fetchCommunities } from '../../actions/fetchCommunities'
 import { FETCH_COMMUNITIES } from '../../actions'
-import { fetchWithCache, connectedListProps, refetch } from '../../util/caching'
+import { fetchWithCache, connectedListProps } from '../../util/caching'
 import ScrollListener from '../../components/ScrollListener'
 import CommunityCards from '../../components/CommunityCards'
 const { array, bool, func, number, object } = React.PropTypes
@@ -24,9 +23,8 @@ const NetworkCommunities = compose(
     }
   })
 )(props => {
-  let { pending, communities, location: { query }, currentUser } = props
+  let { pending, communities, currentUser } = props
   if (!currentUser) return <div>Loading...</div>
-  let { search } = query
 
   let loadMore = () => {
     let { communities, dispatch, total, pending, params: { id }, location: { query } } = props
@@ -36,20 +34,7 @@ const NetworkCommunities = compose(
     }
   }
 
-  let updateQuery = opts => {
-    let { dispatch, location } = props
-    dispatch(refetch(opts, location))
-  }
-
   return <div className='communities'>
-    <div className='list-controls'>
-      <input type='text' className='form-control search'
-        placeholder='Search'
-        defaultValue={search}
-        onChange={debounce(event => {
-          updateQuery({search: event.target.value})
-        }, 500)}/>
-    </div>
     {pending && <div className='loading'>Loading...</div>}
     <CommunityCards communities={communities}/>
     <ScrollListener onBottom={loadMore}/>

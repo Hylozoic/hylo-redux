@@ -142,5 +142,5 @@ const setupPage = (store, id, query, action) => {
 const scroll = () => {
   if (typeof window === 'undefined') return
   let anchor = get(window.location.hash.match(/#(comment-\d+$)/), '1')
-  if (anchor) scrollToAnchor(anchor, 15)
+  if (anchor) scrollToAnchor(anchor, 90)
 }

@@ -12,6 +12,10 @@ const ClickCatcher = ({ tag, ...props }, { dispatch }) => {
       dispatch(navigate(node.getAttribute('href')))
       return
     }
+
+    if (node.getAttribute('target') !== '_blank') {
+      node.setAttribute('target', '_blank')
+    }
   }
   switch (tag) {
     case 'div':

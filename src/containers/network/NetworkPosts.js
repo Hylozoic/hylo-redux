@@ -2,20 +2,15 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { prefetch } from 'react-fetcher'
 import { fetch, ConnectedPostList } from '../ConnectedPostList'
-import { refetch } from '../../util/caching'
-import PostListControls from '../../components/PostListControls'
 import { compose } from 'redux'
 const { func, object } = React.PropTypes
 
 const subject = 'network'
 
 const NetworkPosts = props => {
-  let { dispatch, params: { id }, location: { query } } = props
-  let { type, sort, search } = query
+  let { params: { id }, location: { query } } = props
 
   return <div>
-    <PostListControls onChange={opts => dispatch(refetch(opts, props.location))} includeWelcome={true}
-      type={type} sort={sort} search={search}/>
     <ConnectedPostList {...{subject, id, query}}/>
   </div>
 }

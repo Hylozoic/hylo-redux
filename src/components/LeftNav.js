@@ -58,7 +58,7 @@ export const TopicList = ({ tags, slug }) => {
 }
 
 export const LeftNav = ({ opened, community, tags, close, canModerate, canInvite }) => {
-  const { slug } = community || {}
+  const { slug, network } = community || {}
   const onMenuClick = event => {
     close()
     event.stopPropagation()
@@ -88,6 +88,9 @@ export const LeftNav = ({ opened, community, tags, close, canModerate, canInvite
         </li>}
         {canInvite && <li>
           <A to={url('invite')}><Icon name='Mail'/> Invite</A>
+        </li>}
+        {network && <li>
+          <A to={`/n/${network.slug}`}><Icon name='merkaba'/>{network.name}</A>
         </li>}
         {canModerate && <li>
           <A to={url('settings')}><Icon name='Settings'/> Settings</A>

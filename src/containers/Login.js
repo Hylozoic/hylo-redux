@@ -152,8 +152,11 @@ export default class Login extends React.Component {
         <div className='form-group'>
           <input type='submit' value='Go'/>
         </div>
-        <div><Link to='/set-password'>Forgot your password?</Link></div>
-        <div>Or <Link to={makeUrl('/signup', pick(query, 'next', 'action', 'id', 'token'))}>sign up</Link></div>
+        <div>
+          <Link to={makeUrl('/signup', pick(query, 'next', 'action', 'id', 'token'))}>Sign up</Link>
+          &nbsp;&nbsp;•&nbsp;&nbsp;
+          <Link to='/set-password'>Forgot your password?</Link>
+        </div>
       </form>
     </div>
   }

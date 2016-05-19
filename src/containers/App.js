@@ -2,7 +2,7 @@ import React from 'react'
 import cx from 'classnames'
 import { prefetch } from 'react-fetcher'
 import { connect } from 'react-redux'
-import { find } from 'lodash'
+import { find, includes } from 'lodash'
 import TopNav from '../components/TopNav'
 import { LeftNav, leftNavWidth, leftNavEasing } from '../components/LeftNav'
 import Notifier from '../components/Notifier'
@@ -68,7 +68,9 @@ export default class App extends React.Component {
     } = this.props
 
     const path = this.props.path.split('?')[0]
-    const hideTopNav = matchEditorUrl(path)
+    const hideTopNav = matchEditorUrl(path) || includes([
+      '/login', '/signup', '/set-password'
+    ], path)
 
     const moveWithMenu = {marginLeft: leftNavIsOpen ? leftNavWidth : 0}
     const toggleLeftNav = open => {

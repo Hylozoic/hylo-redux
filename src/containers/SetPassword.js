@@ -1,6 +1,7 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { setPassword } from '../actions'
+import { Link } from 'react-router'
 const { func } = React.PropTypes
 
 @connect()
@@ -42,6 +43,11 @@ export default class SetPassword extends React.Component {
         </div>
         <div className='form-group'>
           <input type='submit' value='Go'/>
+        </div>
+        <div>
+          <Link to='/signup'>Sign up</Link>
+          &nbsp;&nbsp;•&nbsp;&nbsp;
+          <Link to='/login'>Log in</Link>
         </div>
       </form>
     </div>

@@ -1,6 +1,6 @@
 import React from 'react'
 import { defer, prefetch } from 'react-fetcher'
-import { get, pick } from 'lodash'
+import { get, pick, uniq } from 'lodash'
 import { makeUrl } from '../client/util'
 import { connect } from 'react-redux'
 import {
@@ -72,6 +72,31 @@ export const goToNext = (currentUser, query) => {
   return navigate(makeUrl(next, params))
 }
 
+const displayError = error => {
+  if (!error) return
+
+  if (error === 'no user') return 'Login was canceled or no user data was found.'
+  if (error === 'no email') return 'The user data did not include an email address.'
+
+  const noPasswordMatch = error.match(/password account not found. available: \[(.*)\]/)
+  if (noPasswordMatch) {
+    var options = uniq(noPasswordMatch[1].split(',')
+    .map(option => ({
+      'google': 'Google',
+      'google-token': 'Google',
+      'facebook': 'Facebook',
+      'facebook-token': 'Facebook',
+      'linkedin': 'LinkedIn',
+      'linkedin-token': 'LinkedIn'
+    }[option])))
+    return <span>
+      Your account has no password set. <a href='/set-password'>Set your password here.</a>
+    {options[0] && <span><br />Or log in with {options.join(' or ')}.</span>}
+    </span>
+  }
+  return error
+}
+
 @prefetchForNext
 @connectForNext('login')
 @defer(() => trackEvent(STARTED_LOGIN))
@@ -105,8 +130,7 @@ export default class Login extends React.Component {
   render () {
     let { error, actionError, location: { query }, community } = this.props
 
-    if (error === 'no user') error = 'Login was canceled or no user data was found.'
-    if (error === 'no email') error = 'The user data did not include an email address.'
+    error = displayError(error)
 
     return <div id='login' className='login-signup simple-page'>
       <form onSubmit={this.submit}>
@@ -128,7 +152,8 @@ export default class Login extends React.Component {
         <div className='form-group'>
           <input type='submit' value='Go'/>
         </div>
-        Or <Link to={makeUrl('/signup', pick(query, 'next', 'action', 'id', 'token'))}>sign up</Link>
+        <div><Link to='/set-password'>Forgot your password?</Link></div>
+        <div>Or <Link to={makeUrl('/signup', pick(query, 'next', 'action', 'id', 'token'))}>sign up</Link></div>
       </form>
     </div>
   }

@@ -130,6 +130,8 @@ export default combineReducers({
     switch (type) {
       case SET_CURRENT_COMMUNITY_ID:
         return payload
+      case SET_CURRENT_NETWORK_ID:
+        return null
     }
 
     return state
@@ -142,8 +144,10 @@ export default combineReducers({
     switch (type) {
       case SET_CURRENT_NETWORK_ID:
         return payload
+      case SET_CURRENT_COMMUNITY_ID:
+        return null
     }
-
+    
     return state
   },
 

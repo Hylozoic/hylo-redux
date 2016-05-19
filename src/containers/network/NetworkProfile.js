@@ -30,7 +30,7 @@ export default class NetworkProfile extends React.Component {
     // renders without banner_url, it'll cause a request to an invalid url
     if (!network || !network.banner_url) return <div>Loading...</div>
 
-    return <CoverImagePage id='community' image={network.banner_url}>
+    return <CoverImagePage image={network.banner_url}>
       {children}
     </CoverImagePage>
   }

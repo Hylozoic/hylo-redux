@@ -3,9 +3,15 @@ import { A, IndexA } from '../../components/A'
 import { connect } from 'react-redux'
 import { prefetch } from 'react-fetcher'
 import { fetchNetwork } from '../../actions/network'
+import { setCurrentNetworkId } from '../../actions'
 const { func, object } = React.PropTypes
 
-@prefetch(({ dispatch, params: { id } }) => dispatch(fetchNetwork(id)))
+@prefetch(({ store, dispatch, params: { id } }) =>
+  dispatch(fetchNetwork(id))
+  .then(() => {
+    const network = store.getState().networks[id]
+    network && dispatch(setCurrentNetworkId(network.id))
+  }))
 @connect((state, props) => ({
   network: state.networks[props.params.id],
   currentUser: state.people.current

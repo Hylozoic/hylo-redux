@@ -46,6 +46,7 @@ import {
   SEARCH,
   SEND_COMMUNITY_INVITATION,
   SET_CURRENT_COMMUNITY_ID,
+  SET_CURRENT_NETWORK_ID,
   SET_LOGIN_ERROR,
   SET_META_TAGS,
   SET_MOBILE_DEVICE,
@@ -128,6 +129,18 @@ export default combineReducers({
 
     switch (type) {
       case SET_CURRENT_COMMUNITY_ID:
+        return payload
+    }
+
+    return state
+  },
+
+  currentNetworkId: (state = null, action) => {
+    let { error, type, payload } = action
+    if (error) return state
+
+    switch (type) {
+      case SET_CURRENT_NETWORK_ID:
         return payload
     }
 

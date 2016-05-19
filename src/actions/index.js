@@ -61,6 +61,7 @@ export const RESET_NETWORK_VALIDATION = 'RESET_NETWORK_VALIDATION'
 export const SEARCH = 'SEARCH'
 export const SEND_COMMUNITY_INVITATION = 'SEND_COMMUNITY_INVITATION'
 export const SET_CURRENT_COMMUNITY_ID = 'SET_CURRENT_COMMUNITY_ID'
+export const SET_CURRENT_NETWORK_ID = 'SET_CURRENT_NETWORK_ID'
 export const SET_LOGIN_ERROR = 'SET_LOGIN_ERROR'
 export const SET_META_TAGS = 'SET_META_TAGS'
 export const SET_MOBILE_DEVICE = 'SET_MOBILE_DEVICE'
@@ -576,6 +577,10 @@ export function followPost (id, person) {
 
 export function setCurrentCommunityId (id) {
   return {type: SET_CURRENT_COMMUNITY_ID, payload: id}
+}
+
+export function setCurrentNetworkId (id) {
+  return {type: SET_CURRENT_NETWORK_ID, payload: id}
 }
 
 export function fetchTag (tagName, communityId) {

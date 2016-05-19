@@ -1,7 +1,7 @@
 import React from 'react'
+import { assetUrl } from '../util/assets'
 
-const earthImage = '/img/earth_1920x1080.jpg'
-const spaceRainbowImage = 'http://i.imgur.com/G5WpY72.jpg'
+const earthImage = () => assetUrl('/img/earth_1920x1080.jpg')
 
 const CoverImage = ({ url }) =>
   <div id='cover-image'>
@@ -10,7 +10,7 @@ const CoverImage = ({ url }) =>
 
 const CoverImagePage = ({ id, image, children }) => {
   return <div id={id} className='cover-image-container'>
-    <CoverImage url={image || earthImage}/>
+    <CoverImage url={image || earthImage()}/>
     <div id='cover-image-page-content'>
       {children}
     </div>

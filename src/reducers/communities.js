@@ -1,4 +1,5 @@
-import { compact, flatten, uniq, filter, merge, union, omit } from 'lodash'
+import { map, uniqBy } from 'lodash/fp'
+import { compact, flatten, filter, merge, union, omit } from 'lodash'
 import { debug } from '../util/logging'
 import {
   CREATE_COMMUNITY,
@@ -21,6 +22,9 @@ import {
   USE_INVITATION
 } from '../actions'
 import { mergeList } from './util'
+
+const getPostCommunities = posts =>
+  uniqBy('id', flatten(map(p => p.communities, posts)))
 
 export default function (state = {}, action) {
   let { error, type, payload, meta } = action
@@ -55,13 +59,12 @@ export default function (state = {}, action) {
       community = {...state[meta.cache.id], moderators: payload}
       return {...state, [meta.cache.id]: community}
     case FETCH_POSTS:
-      let communities = uniq(flatten(payload.posts.map(p => p.communities)), c => c.id)
-      return mergeList(state, communities, 'slug')
+      return mergeList(state, getPostCommunities(payload.posts), 'slug')
     case FETCH_POST:
       return mergeList(state, payload.communities, 'slug')
     case FETCH_PERSON:
       const newPosts = compact([payload.recent_request, payload.recent_offer])
-      return mergeList(state, newPosts.map(p => p.communities), 'slug')
+      return mergeList(state, getPostCommunities(newPosts), 'slug')
     case FETCH_CURRENT_USER:
       if (payload && payload.memberships) {
         return mergeList(state, payload.memberships.map(m => m.community), 'slug')

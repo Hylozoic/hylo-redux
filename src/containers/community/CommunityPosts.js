@@ -32,7 +32,7 @@ class CommunityPosts extends React.Component {
     let { community, params: { id }, location: { query }, currentUser } = this.props
 
     return <div>
-      <PostEditor community={community}/>
+      {currentUser && <PostEditor community={community}/>}
       <ConnectedPostList {...{subject, id, query}}/>
       {!isMember(currentUser, community) && <div className='meta'>
         You are not a member of this community, so you are shown only posts that are marked as public.

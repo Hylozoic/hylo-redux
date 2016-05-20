@@ -100,6 +100,7 @@ export default class App extends React.Component {
 
       {!hideTopNav && <TopNav currentUser={currentUser}
         community={community}
+        network={network}
         onChangeCommunity={visitCommunity}
         openLeftNav={openLeftNav}
         leftNavIsOpen={leftNavIsOpen}

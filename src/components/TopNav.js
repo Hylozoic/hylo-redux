@@ -6,7 +6,7 @@ import Dropdown from './Dropdown'
 import Search from './Search'
 import { isAdmin } from '../models/currentUser'
 import { filter, find, flow, get, map, sortBy } from 'lodash/fp'
-import { throttle } from 'lodash'
+import { throttle, merge } from 'lodash'
 import { same } from '../models'
 import { MenuButton, leftNavWidth, leftNavEasing } from './LeftNav'
 import { editorUrl } from '../containers/StandalonePostEditor'
@@ -37,12 +37,12 @@ const allCommunities = () => ({
   name: 'All Communities'
 })
 
-const getCommunities = (currentUser, community) =>
-  [community].concat(flow(
+const getMenuItems = (currentUser, firstItem) =>
+  [firstItem].concat(flow(
     get('memberships'),
     sortBy(m => -Date.parse(m.last_viewed_at || '2001-01-01')),
     map('community'),
-    filter(c => !same('id', community, c))
+    firstItem.isNetwork ? i => i : filter(c => !same('id', firstItem, c))
   )(currentUser))
 
 const getCurrentMembership = (currentUser, community) =>
@@ -62,6 +62,7 @@ export default class TopNav extends React.Component {
     opened: bool,
     isMobile: bool,
     community: object,
+    network: object,
     leftNavIsOpen: bool
   }
 
@@ -103,13 +104,14 @@ export default class TopNav extends React.Component {
   render () {
     const {
       search, logout, openLeftNav, leftNavIsOpen, path, onChangeCommunity,
-      isMobile
+      isMobile, network
     } = this.props
     const { currentUser } = this.context
     const label = getLabel(path)
     const community = this.props.community || allCommunities()
     const { slug } = community
-    const communities = getCommunities(currentUser, community)
+    const firstItem = network ? merge(network, {isNetwork: true}) : community
+    const menuItems = getMenuItems(currentUser, firstItem)
     const membership = getCurrentMembership(currentUser, community)
     const newCount = get('new_notification_count',
       community.id ? membership : currentUser)
@@ -128,7 +130,7 @@ export default class TopNav extends React.Component {
             <li><A to='/login'>Log in</A></li>
           </ul>}
 
-        {currentUser && <CommunityMenu {...{communities, onChangeCommunity}}/>}
+        {currentUser && <CommunityMenu {...{menuItems, onChangeCommunity}}/>}
         {currentUser && isMobile &&
           <A to={editorUrl(slug, getPostType(path))} className='compose'>
             <Icon name='Compose'/>
@@ -143,14 +145,15 @@ export default class TopNav extends React.Component {
   }
 }
 
-const CommunityMenu = ({ communities, onChangeCommunity }) =>
+const CommunityMenu = ({ menuItems, onChangeCommunity }) =>
   <Dropdown className='communities'
     backdrop={true}
     toggleChildren={<div>
-      <img src={communities[0].avatar_url}/>
+      <img src={menuItems[0].avatar_url}/>
       <span className='name'>
-        {communities[0].name} <span className='caret'></span>
+        {menuItems[0].name} <span className='caret'></span>
       </span>
+      {menuItems[0].isNetwork && <span className='subtitle'>Network</span>}
     </div>}>
     <li>
       <ul className='inner-list dropdown-menu'>
@@ -159,7 +162,7 @@ const CommunityMenu = ({ communities, onChangeCommunity }) =>
             <img src={allCommunities().avatar_url}/> All Communities
           </a>
         </li>
-        {communities.slice(1).map(community => <li key={community.id}>
+        {menuItems.slice(1).map(community => <li key={community.id}>
           <a onClick={() => onChangeCommunity(community)} title={community.name}>
             <img src={community.avatar_url}/> {community.name}
           </a>

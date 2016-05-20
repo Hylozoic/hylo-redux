@@ -129,17 +129,18 @@ const PersonProfile = compose(
     </div>
     {!category && recentRequest && <div>
       <p className='section-label'>Recent request</p>
-      <PostList posts={[recentRequest]}/>
+      <PostList posts={[recentRequest]} hideMobileSearch={true}/>
     </div>}
     {!category && recentOffer && <div>
       <p className='section-label'>Recent offer</p>
-      <PostList posts={[recentOffer]}/>
+      <PostList posts={[recentOffer]} hideMobileSearch={true}/>
     </div>}
     <ListLabel category={category}/>
     {category === 'thank'
       ? <Thanks person={person}/>
-      : <ConnectedPostList {...{subject, id, query: getFetchOpts(query), hideMobileSearch: true}}
-          hide={postsToHide}/>}
+      : <ConnectedPostList {...{subject, id, query: getFetchOpts(query)}}
+          hide={postsToHide}
+          hideMobileSearch={true}/>}
   </CoverImagePage>
 })
 

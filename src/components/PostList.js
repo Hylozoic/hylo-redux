@@ -79,9 +79,8 @@ class PostList extends React.Component {
 
     if (!pending && posts.length === 0) {
       return <span>
-        {isMobile && !hideMobileSearch && <MobileSearch search={doSearch}/>}
         <div className='no-results'>No posts to show.</div>
-        </span>
+      </span>
     }
 
     const showPost = post => {
@@ -107,7 +106,7 @@ class PostList extends React.Component {
     }
 
     return <span>
-      {isMobile && <MobileSearch search={doSearch}/>}
+      {isMobile && !hideMobileSearch && <MobileSearch search={doSearch}/>}
       <RefreshButton refresh={refreshPostList} />
       <ul className='posts'>
       {pending && <li className='loading'>Loading...</li>}

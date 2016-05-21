@@ -83,7 +83,7 @@ const CommunityNav = ({ community, canModerate, canInvite }) => {
       <A to={url('invite')}><Icon name='Mail'/> Invite</A>
     </li>}
     {network && <li>
-      <A to={`/n/${network.slug}`}><Icon name='merkaba'/>{network.name}</A>
+      <A to={`/n/${network.slug}`}><Icon name='merkaba'/>Network</A>
     </li>}
     {canModerate && <li>
       <A to={url('settings')}><Icon name='Settings'/> Settings</A>

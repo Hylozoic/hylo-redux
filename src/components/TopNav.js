@@ -150,7 +150,7 @@ const CommunityMenu = ({ menuItems, onChangeCommunity }) =>
     backdrop={true}
     toggleChildren={<div>
       <img src={menuItems[0].avatar_url}/>
-      <span className='name'>
+      <span className={cx('name', {network: menuItems[0].isNetwork})}>
         {menuItems[0].name} <span className='caret'></span>
       </span>
       {menuItems[0].isNetwork && <span className='subtitle'>Network</span>}

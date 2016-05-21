@@ -57,43 +57,74 @@ export const TopicList = ({ tags, slug }) => {
   </ul>
 }
 
-export const LeftNav = ({ opened, community, tags, close, canModerate, canInvite }) => {
-  const { slug } = community || {}
+const CommunityNav = ({ community, canModerate, canInvite }) => {
+  const { slug, network } = community
+  const url = slug ? suffix => `/c/${slug}/${suffix}` : suffix => '/' + suffix
+
+  return <ul>
+    <li>
+      <IndexA to={slug ? `/c/${slug}` : '/app'}>
+        <Icon name='Comment-Alt'/> Conversations
+      </IndexA>
+    </li>
+    <li>
+      <A to={url('events')}><Icon name='Calendar'/> Events</A>
+    </li>
+    <li>
+      <A to={url('projects')}><Icon name='ProjectorScreen'/> Projects</A>
+    </li>
+    {community && <li>
+      <A to={url('members')}><Icon name='Users'/> Members</A>
+    </li>}
+    {community && <li>
+      <A to={url('about')}><Icon name='Help'/> About</A>
+    </li>}
+    {canInvite && <li>
+      <A to={url('invite')}><Icon name='Mail'/> Invite</A>
+    </li>}
+    {network && <li>
+      <A to={`/n/${network.slug}`}><Icon name='merkaba'/>Network</A>
+    </li>}
+    {canModerate && <li>
+      <A to={url('settings')}><Icon name='Settings'/> Settings</A>
+    </li>}
+  </ul>
+}
+
+const NetworkNav = ({ network }) => {
+  const { slug } = network
+  const url = suffix => `/n/${slug}/${suffix}`
+
+  return <ul>
+    <li>
+      <IndexA to={`/n/${slug}`}>
+        <Icon name='Comment-Alt'/> Conversations
+      </IndexA>
+    </li>
+    <li>
+      <A to={url('communities')}><Icon name='Keypad'/> Communities</A>
+    </li>
+    <li>
+      <A to={url('members')}><Icon name='Users'/> Members</A>
+    </li>
+    <li>
+      <A to={url('about')}><Icon name='Help'/> About</A>
+    </li>
+  </ul>
+}
+
+export const LeftNav = ({ opened, community, network, tags, close, canModerate, canInvite }) => {
   const onMenuClick = event => {
     close()
     event.stopPropagation()
   }
-  const url = slug ? suffix => `/c/${slug}/${suffix}` : suffix => '/' + suffix
 
   return <VelocityTransitionGroup {...animations}>
     {opened && <nav id='leftNav' onClick={() => isMobile() && close()}>
       <MenuButton onClick={onMenuClick}/>
-      <ul>
-        <li>
-          <IndexA to={slug ? `/c/${slug}` : '/app'}>
-            <Icon name='Comment-Alt'/> Conversations
-          </IndexA>
-        </li>
-        <li>
-          <A to={url('events')}><Icon name='Calendar'/> Events</A>
-        </li>
-        <li>
-          <A to={url('projects')}><Icon name='ProjectorScreen'/> Projects</A>
-        </li>
-        {community && <li>
-          <A to={url('members')}><Icon name='Users'/> Members</A>
-        </li>}
-        {community && <li>
-          <A to={url('about')}><Icon name='Help'/> About</A>
-        </li>}
-        {canInvite && <li>
-          <A to={url('invite')}><Icon name='Mail'/> Invite</A>
-        </li>}
-        {canModerate && <li>
-          <A to={url('settings')}><Icon name='Settings'/> Settings</A>
-        </li>}
-        </ul>
-      {!isEmpty(tags) && <TopicList tags={tags} slug={slug}/>}
+      {community && <CommunityNav community={community} canModerate={canModerate} canInvite={canInvite} />}
+      {network && <NetworkNav network={network} />}
+      {!isEmpty(tags) && <TopicList tags={tags} slug={community.slug}/>}
     </nav>}
   </VelocityTransitionGroup>
 }

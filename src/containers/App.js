@@ -27,6 +27,7 @@ const { array, bool, func, object, string } = React.PropTypes
   const { isMobile, leftNavIsOpen, notifierMessages } = state
   const currentUser = state.people.current
   const community = find(state.communities, c => c.id === state.currentCommunityId)
+  const network = find(state.networks, n => n.id === state.currentNetworkId)
   const tags = community ? state.tagsByCommunity[community.slug] : {}
 
   return {
@@ -35,6 +36,7 @@ const { array, bool, func, object, string } = React.PropTypes
     notifierMessages,
     currentUser,
     community,
+    network,
     tags,
     path: state.routing.path
   }
@@ -46,6 +48,7 @@ export default class App extends React.Component {
     currentUser: object,
     leftNavIsOpen: bool,
     tags: object,
+    network: object,
     notifierMessages: array,
     path: string,
     dispatch: func,
@@ -64,7 +67,7 @@ export default class App extends React.Component {
   render () {
     const {
       children, community, currentUser, dispatch, tags,
-      leftNavIsOpen, notifierMessages, isMobile
+      leftNavIsOpen, network, notifierMessages, isMobile
     } = this.props
 
     const path = this.props.path.split('?')[0]
@@ -91,6 +94,7 @@ export default class App extends React.Component {
     return <div className={cx({leftNavIsOpen, isMobile})}>
       <LeftNav opened={leftNavIsOpen}
         community={community}
+        network={network}
         tags={tags}
         canModerate={canModerate(currentUser, community)}
         canInvite={canInvite(currentUser, community)}
@@ -98,6 +102,7 @@ export default class App extends React.Component {
 
       {!hideTopNav && <TopNav currentUser={currentUser}
         community={community}
+        network={network}
         onChangeCommunity={visitCommunity}
         openLeftNav={openLeftNav}
         leftNavIsOpen={leftNavIsOpen}

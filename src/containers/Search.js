@@ -3,14 +3,13 @@ import { prefetch } from 'react-fetcher'
 import { connect } from 'react-redux'
 import { connectedListProps, fetchWithCache, refetch } from '../util/caching'
 import { navigate, search } from '../actions'
-import { debounce, get, isEmpty, pick, some } from 'lodash'
+import { debounce, get, isEmpty, pick } from 'lodash'
 import Select from '../components/Select'
 import Comment from '../components/Comment'
 import Avatar from '../components/Avatar'
 import A from '../components/A'
 import Post from '../components/Post'
 import ScrollListener from '../components/ScrollListener'
-import Tags from '../components/Tags'
 import CoverImagePage from '../components/CoverImagePage'
 import { commentUrl } from '../routes'
 import decode from 'ent/decode'
@@ -119,7 +118,7 @@ const PostResult = ({ post, dispatch }) => {
 }
 
 const PersonResult = ({ person, onTagClick }) => {
-  let { bio, work, intention, skills, organizations } = person
+  let { bio, work, intention } = person
   return <div className='person-result'>
     <div className='hello'>
       <Avatar person={person}/>
@@ -130,14 +129,6 @@ const PersonResult = ({ person, onTagClick }) => {
       {bio && <p><strong>About me:</strong> {bio}</p>}
       {work && <p><strong>What I'm doing:</strong> {work}</p>}
       {intention && <p><strong>What I'd like to do:</strong> {intention}</p>}
-      {some(skills) && <div className='tag-group skills'>
-        <strong>Skills:</strong>
-        <Tags onClick={onTagClick}>{skills}</Tags>
-      </div>}
-      {some(organizations) && <div className='tag-group'>
-        <strong>Groups:</strong>
-        <Tags onClick={onTagClick}>{organizations}</Tags>
-      </div>}
     </div>
   </div>
 }

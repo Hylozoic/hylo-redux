@@ -1,7 +1,6 @@
 import React from 'react'
 import cx from 'classnames'
 import { isEmpty } from 'lodash'
-import { isMobile } from '../client/util'
 import { VelocityTransitionGroup } from 'velocity-react'
 const { array, bool, func, object, string } = React.PropTypes
 
@@ -34,31 +33,16 @@ export default class Dropdown extends React.Component {
   }
 
   hide = event => {
-    if (!this.dragging && this.state.active) {
-      // without this delay, the dropdown sometimes closes without registering a
-      // click on a link in its list
-      setTimeout(() => this.setState({active: false}), 10)
-    }
+    if (this.state.active) this.setState({active: false})
     return true
   }
 
   componentDidMount () {
-    this.touchEvent = isMobile() ? 'touchend' : 'click'
-    window.addEventListener(this.touchEvent, this.hide)
-    if (this.touchEvent === 'touchend') {
-      this.resetDragging = () => this.dragging = false
-      this.startDragging = () => this.dragging = true
-      window.addEventListener('touchstart', this.resetDragging)
-      window.addEventListener('touchmove', this.startDragging)
-    }
+    window.addEventListener('click', this.hide)
   }
 
   componentWillUnmount () {
-    window.removeEventListener(this.touchEvent, this.hide)
-    if (this.touchEvent === 'touchend') {
-      window.removeEventListener('touchstart', this.resetDragging)
-      window.removeEventListener('touchmove', this.startDragging)
-    }
+    window.removeEventListener('click', this.hide)
   }
 
   render () {
@@ -75,7 +59,7 @@ export default class Dropdown extends React.Component {
       <VelocityTransitionGroup
         enter={{animation: 'fadeIn', duration: 100}}
         leave={{animation: 'fadeOut', duration: 100}}>
-        {backdrop && active && <div className='backdrop'/>}
+        {backdrop && active && <a className='backdrop'/>}
       </VelocityTransitionGroup>
     </div>
   }

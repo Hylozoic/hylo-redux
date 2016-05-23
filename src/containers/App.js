@@ -57,11 +57,12 @@ export default class App extends React.Component {
 
   static childContextTypes = {
     dispatch: func,
-    currentUser: object
+    currentUser: object,
+    isMobile: bool
   }
 
   getChildContext () {
-    return pick(this.props, 'dispatch', 'currentUser')
+    return pick(this.props, 'dispatch', 'currentUser', 'isMobile')
   }
 
   render () {
@@ -109,8 +110,7 @@ export default class App extends React.Component {
         logout={() => dispatch(logout())}
         path={path}
         search={doSearch}
-        opened={leftNavIsOpen}
-        isMobile={isMobile}/>}
+        opened={leftNavIsOpen}/>}
 
       <VelocityComponent animation={moveWithMenu} easing={leftNavEasing}>
         <div id='main'>

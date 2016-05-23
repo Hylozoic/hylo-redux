@@ -60,14 +60,14 @@ export default class TopNav extends React.Component {
     openLeftNav: func,
     onChangeCommunity: func,
     opened: bool,
-    isMobile: bool,
     community: object,
     network: object,
     leftNavIsOpen: bool
   }
 
   static contextTypes = {
-    currentUser: object
+    currentUser: object,
+    isMobile: bool
   }
 
   constructor (props) {
@@ -89,14 +89,14 @@ export default class TopNav extends React.Component {
   }, 50)
 
   componentDidMount () {
-    if (!this.props.isMobile) {
+    if (!this.context.isMobile) {
       this.setState({isScrolling: viewportTop() > 0})
       window.addEventListener('scroll', this.handleScrollEvents)
     }
   }
 
   componentWillUnmount () {
-    if (!this.props.isMobile) {
+    if (!this.context.isMobile) {
       window.removeEventListener('scroll', this.handleScrollEvents)
     }
   }
@@ -104,9 +104,9 @@ export default class TopNav extends React.Component {
   render () {
     const {
       search, logout, openLeftNav, leftNavIsOpen, path, onChangeCommunity,
-      isMobile, network
+      network
     } = this.props
-    const { currentUser } = this.context
+    const { currentUser, isMobile } = this.context
     const label = getLabel(path)
     const community = this.props.community || allCommunities()
     const { slug } = community
@@ -145,15 +145,17 @@ export default class TopNav extends React.Component {
   }
 }
 
-const CommunityMenu = ({ menuItems, onChangeCommunity }) =>
-  <Dropdown className='communities'
+const CommunityMenu = ({ menuItems, onChangeCommunity }, { isMobile }) => {
+  const currentItem = menuItems[0]
+  const { isNetwork } = currentItem
+  return <Dropdown className='communities'
     backdrop={true}
     toggleChildren={<div>
-      <img src={menuItems[0].avatar_url}/>
-      <span className={cx('name', {network: menuItems[0].isNetwork})}>
-        {menuItems[0].name} <span className='caret'></span>
+      <img src={currentItem.avatar_url}/>
+      <span className={cx('name', {network: isNetwork})}>
+        {currentItem.name} <span className='caret'></span>
       </span>
-      {menuItems[0].isNetwork && <span className='subtitle'>Network</span>}
+      {!isMobile && isNetwork && <span className='subtitle'>Network</span>}
     </div>}>
     <li>
       <ul className='inner-list dropdown-menu'>
@@ -175,6 +177,8 @@ const CommunityMenu = ({ menuItems, onChangeCommunity }) =>
       </div>
     </li>
   </Dropdown>
+}
+CommunityMenu.contextTypes = {isMobile: bool}
 
 const UserMenu = ({ isMobile, slug, logout, newCount, currentUser }) => {
   return <ul className='right'>

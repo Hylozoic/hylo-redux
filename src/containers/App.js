@@ -133,5 +133,5 @@ const nextPath = (path, community) => {
     : path.match(/(events|projects|notifications)$/)
   const pathEnd = match ? `/${match[1]}` : ''
 
-  return pathStart + pathEnd
+  return (pathStart + pathEnd) || '/app'
 }

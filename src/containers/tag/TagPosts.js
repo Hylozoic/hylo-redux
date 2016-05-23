@@ -5,6 +5,7 @@ import { fetch, ConnectedPostList } from '../ConnectedPostList'
 import { fetchTag, followTag, navigate } from '../../actions'
 import { compose } from 'redux'
 import { get } from 'lodash'
+import PostEditor from '../../components/PostEditor'
 const { bool, func, object } = React.PropTypes
 
 const subject = 'tag'
@@ -23,6 +24,10 @@ class TagPosts extends React.Component {
     community: object
   }
 
+  static contextTypes = {
+    currentUser: object
+  }
+
   getChildContext () {
     const { community } = this.props
     return {community}
@@ -30,12 +35,10 @@ class TagPosts extends React.Component {
 
   render () {
     const {
-      params: { tagName, id },
-      location: { query },
-      tag,
-      dispatch,
-      redirecting
+      params: { tagName, id }, location: { query }, tag, dispatch, redirecting,
+      community
     } = this.props
+    const { currentUser } = this.context
 
     // we check tag.id here because tag will be non-null if we're clicking a
     // link in the left nav, but it won't have an id until fetchTag returns
@@ -46,6 +49,7 @@ class TagPosts extends React.Component {
     const toggleFollow = () => dispatch(followTag(id, tagName))
 
     return <div>
+      {currentUser && <PostEditor community={community}/>}
       <div className='list-controls tag-header'>
         <span className='tag-name'>#{tagName}</span>
         {id && (tag.followed

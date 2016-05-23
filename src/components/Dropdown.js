@@ -21,7 +21,7 @@ export default class Dropdown extends React.Component {
   }
 
   toggle = event => {
-    let { active } = this.state
+    const { active } = this.state
     this.setState({active: !active})
     if (!active && this.state.neverOpened) {
       this.setState({neverOpened: false})
@@ -34,7 +34,7 @@ export default class Dropdown extends React.Component {
   }
 
   hide = event => {
-    if (this.state.active) {
+    if (!this.dragging && this.state.active) {
       // without this delay, the dropdown sometimes closes without registering a
       // click on a link in its list
       setTimeout(() => this.setState({active: false}), 10)
@@ -45,10 +45,20 @@ export default class Dropdown extends React.Component {
   componentDidMount () {
     this.touchEvent = isMobile() ? 'touchend' : 'click'
     window.addEventListener(this.touchEvent, this.hide)
+    if (this.touchEvent === 'touchend') {
+      this.resetDragging = () => this.dragging = false
+      this.startDragging = () => this.dragging = true
+      window.addEventListener('touchstart', this.resetDragging)
+      window.addEventListener('touchmove', this.startDragging)
+    }
   }
 
   componentWillUnmount () {
     window.removeEventListener(this.touchEvent, this.hide)
+    if (this.touchEvent === 'touchend') {
+      window.removeEventListener('touchstart', this.resetDragging)
+      window.removeEventListener('touchmove', this.startDragging)
+    }
   }
 
   render () {

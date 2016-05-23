@@ -323,7 +323,7 @@ export class PostEditor extends React.Component {
         {specialTags.map(t => <li key={t}>
           <a onClick={() => selectTag(t)}>#{t}</a>
         </li>)}
-        <li><a onClick={() => selectTag('chat')}>#all-topics</a></li>
+        <li><a onClick={() => selectTag(null)}>#all-topics</a></li>
       </Dropdown>}
 
       {Subeditor && <Subeditor ref='subeditor'

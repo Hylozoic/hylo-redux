@@ -1,7 +1,7 @@
 import React from 'react'
 const { func } = React.PropTypes
 
-export default class Search extends React.Component {
+export default class SearchInput extends React.Component {
   constructor (props) {
     super(props)
     this.state = {}

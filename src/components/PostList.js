@@ -11,7 +11,7 @@ import { ProjectPostCard } from './ProjectPost'
 import { getEditingPostIds } from '../models/post'
 import { isMobile, makeUrl } from '../client/util'
 import { navigate } from '../actions'
-import Search from './Search'
+import SearchInput from './SearchInput'
 import Icon from './Icon'
 
 const { array, bool, func, string } = React.PropTypes
@@ -135,7 +135,7 @@ class MobileSearch extends React.Component {
     const { search } = this.props
     return <div className='mobile-search hidden' ref='mobileSearch'>
       <Icon name='Loupe'/>
-      <Search onChange={search}/>
+      <SearchInput onChange={search}/>
     </div>
   }
 }

@@ -3,7 +3,7 @@ import { A } from './A'
 import Icon from './Icon'
 import { NonLinkAvatar } from './Avatar'
 import Dropdown from './Dropdown'
-import Search from './Search'
+import SearchInput from './SearchInput'
 import { isAdmin } from '../models/currentUser'
 import { filter, find, flow, get, map, sortBy } from 'lodash/fp'
 import { throttle, merge } from 'lodash'
@@ -140,7 +140,7 @@ export default class TopNav extends React.Component {
 
         <div className='search'>
           <Icon name='Loupe'/>
-          <Search onChange={search}/>
+          <SearchInput onChange={search}/>
         </div>
       </nav>
     </VelocityComponent>

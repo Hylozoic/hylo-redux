@@ -88,7 +88,6 @@ export default class Search extends React.Component {
           onChange={t => this.updateSearch({type: t.id})} alignRight={true}/>
       </div>
       <Results results={searchResults}
-        dispatch={dispatch}
         onTagClick={tag => updateTextInput(tag)}
         loadMore={loadMore}/>
       {pending
@@ -100,22 +99,20 @@ export default class Search extends React.Component {
   }
 }
 
-const Results = ({ results, dispatch, onTagClick, loadMore }) => {
+const Results = ({ results, onTagClick, loadMore }) => {
   return <div className='results'>
     {results.map(({ type, data }) => <div key={`${type}${data.id}`}>
       {type === 'post'
-        ? <PostResult post={data} dispatch={dispatch}/>
+        ? <PostResult post={data}/>
         : type === 'person'
           ? <PersonResult person={data} onTagClick={onTagClick}/>
-        : <CommentResult comment={data} dispatch={dispatch}/>}
+          : <CommentResult comment={data}/>}
     </div>)}
     <ScrollListener onBottom={loadMore}/>
   </div>
 }
 
-const PostResult = ({ post, dispatch }) => {
-  return <Post post={post}/>
-}
+const PostResult = ({ post }) => <Post post={post}/>
 
 const PersonResult = ({ person, onTagClick }) => {
   let { bio, work, intention } = person
@@ -133,7 +130,7 @@ const PersonResult = ({ person, onTagClick }) => {
   </div>
 }
 
-const CommentResult = ({ comment, dispatch }) => {
+const CommentResult = ({ comment }, { dispatch }) => {
   const { post } = comment
   const welcomedPerson = get(post, 'relatedUsers.0')
   const url = commentUrl(comment)
@@ -151,3 +148,4 @@ const CommentResult = ({ comment, dispatch }) => {
     <Comment comment={comment} truncate={true} expand={visit}/>
   </div>
 }
+CommentResult.contextTypes = {dispatch: func}

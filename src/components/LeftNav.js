@@ -58,7 +58,7 @@ export const TopicList = ({ tags, slug }) => {
 }
 
 const CommunityNav = ({ community, canModerate, canInvite }) => {
-  const { slug, network } = community
+  const { slug, network } = community || {}
   const url = slug ? suffix => `/c/${slug}/${suffix}` : suffix => '/' + suffix
 
   return <ul>
@@ -122,8 +122,10 @@ export const LeftNav = ({ opened, community, network, tags, close, canModerate, 
   return <VelocityTransitionGroup {...animations}>
     {opened && <nav id='leftNav' onClick={() => isMobile() && close()}>
       <MenuButton onClick={onMenuClick}/>
-      {community && <CommunityNav community={community} canModerate={canModerate} canInvite={canInvite} />}
-      {network && <NetworkNav network={network} />}
+      {network
+        ? <NetworkNav network={network} />
+        : <CommunityNav community={community} canModerate={canModerate}
+            canInvite={canInvite}/>}
       {!isEmpty(tags) && <TopicList tags={tags} slug={community.slug}/>}
     </nav>}
   </VelocityTransitionGroup>

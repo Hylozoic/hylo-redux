@@ -126,8 +126,8 @@ export default class App extends React.Component {
   }
 }
 
-const nextPath = (path, community) => {
-  const pathStart = community ? `/c/${community.slug}` : ''
+export const nextPath = (path, community, isNetwork) => {
+  const pathStart = community ? `/${isNetwork ? 'n' : 'c'}/${community.slug}` : ''
   const match = community
     ? path.match(/(events|projects|members|about|invite|notifications)$/)
     : path.match(/(events|projects|notifications)$/)

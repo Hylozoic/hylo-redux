@@ -108,6 +108,12 @@ nav {
       margin-right: 10px;
     }
 
+    .non-mobile({
+      img:hover {
+        box-shadow: 0 0 5px 2px @shadow-color;
+      }
+    });
+
     .mobile({
       padding: 0;
       border: 0;
@@ -138,13 +144,13 @@ nav {
     }
 
     > .dropdown-menu {
-      margin-top: 9px;
+      margin-top: 10px;
       overflow-y: visible;
       max-height: none;
       padding: @border-radius-base 0 0 0;
       .has-top-triangle(#fff, #fff, 5px);
       &:after {
-        left: 50px;
+        left: 90px;
       }
 
       li {

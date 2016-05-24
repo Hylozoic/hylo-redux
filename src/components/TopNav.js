@@ -8,6 +8,7 @@ import { isAdmin } from '../models/currentUser'
 import { filter, find, flow, get, map, sortBy } from 'lodash/fp'
 import { throttle, merge } from 'lodash'
 import { same } from '../models'
+import { nextPath } from '../containers/App'
 import { MenuButton, leftNavWidth, leftNavEasing } from './LeftNav'
 import { editorUrl } from '../containers/StandalonePostEditor'
 import { assetUrl } from '../util/assets'
@@ -15,6 +16,7 @@ const { object, func, string, bool } = React.PropTypes
 import { viewportTop } from '../util/scrolling'
 import { VelocityComponent } from 'velocity-react'
 import cx from 'classnames'
+import { navigate } from '../actions'
 
 const getPostType = path => {
   if (path.endsWith('events')) return 'event'
@@ -145,13 +147,21 @@ export default class TopNav extends React.Component {
   }
 }
 
-const CommunityMenu = ({ menuItems, onChangeCommunity }, { isMobile }) => {
+const CommunityMenu = ({ menuItems, onChangeCommunity }, { isMobile, dispatch }) => {
   const currentItem = menuItems[0]
-  const { isNetwork } = currentItem
+  const { isNetwork, id } = currentItem
+  const jumpToConversations = event => {
+    if (isMobile) return
+    event.preventDefault()
+    event.stopPropagation()
+    dispatch(navigate(nextPath('', id ? currentItem : null, isNetwork)))
+  }
+
   return <Dropdown className='communities'
     backdrop={true}
     toggleChildren={<div>
-      <img src={currentItem.avatar_url}/>
+      <img src={currentItem.avatar_url} title='Jump to Conversations'
+        onClick={jumpToConversations}/>
       <span className={cx('name', {network: isNetwork})}>
         {currentItem.name} <span className='caret'></span>
       </span>
@@ -178,7 +188,7 @@ const CommunityMenu = ({ menuItems, onChangeCommunity }, { isMobile }) => {
     </li>
   </Dropdown>
 }
-CommunityMenu.contextTypes = {isMobile: bool}
+CommunityMenu.contextTypes = {isMobile: bool, dispatch: func}
 
 const UserMenu = ({ isMobile, slug, logout, newCount, currentUser }) => {
   return <ul className='right'>

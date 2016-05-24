@@ -44,7 +44,12 @@ export const PersonCard = ({ person, menu, slug }) => {
       {bio && <div className='details'>{bio}</div>}
       {offersText && <div className='offerCount'>{offersText}</div>}
       {!isEmpty(tags) && tags.map(tag =>
-        <a className='hashtag' href={tagUrl(tag.name, slug)}>#{tag.name}&nbsp;</a>)}
+        <span key={tag.name}>
+          <a className='hashtag' href={tagUrl(tag.name, slug)}>
+            #{tag.name}
+          </a>
+          &nbsp;<wbr/>
+        </span>)}
     </div>
   </div>
 }

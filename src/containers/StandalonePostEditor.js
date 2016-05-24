@@ -60,7 +60,7 @@ export default class StandalonePostEditor extends React.Component {
       if (window.history && window.history.length > 2) {
         createHistory().goBack()
       } else {
-        dispatch(navigate(`/p/${post.id}`))
+        dispatch(navigate(post ? `/p/${post.id}` : '/app'))
       }
     }
     return <div className='standalone-post-editor'>

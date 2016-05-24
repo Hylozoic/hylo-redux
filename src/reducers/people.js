@@ -158,7 +158,7 @@ export default function (state = {}, action) {
       debug('caching person:', payload.id)
       return {
         ...state,
-        [payload.id]: normalize(payload)
+        [payload.id]: {...state[payload.id], ...normalize(payload)}
       }
     case LOGIN:
     case SIGNUP:

@@ -15,7 +15,7 @@ import Avatar from './Avatar'
 import LinkedPersonSentence from './LinkedPersonSentence'
 import A from './A'
 import { ClickCatchingSpan } from './ClickCatcher'
-import { fetchPost, followPost } from '../actions'
+import { fetchPost, followPost, navigate } from '../actions'
 import moment from 'moment'
 const { array, bool, func, object } = React.PropTypes
 
@@ -124,7 +124,8 @@ class ProjectRequest extends React.Component {
   }
 
   static contextTypes = {
-    dispatch: func
+    dispatch: func,
+    isMobile: bool
   }
 
   static childContextTypes = {
@@ -141,7 +142,7 @@ class ProjectRequest extends React.Component {
   }
 
   render () {
-    const { dispatch } = this.context
+    const { dispatch, isMobile } = this.context
     const { post, community } = this.props
     const { name, id, numComments } = post
     let description = presentDescription(post, community)
@@ -149,8 +150,12 @@ class ProjectRequest extends React.Component {
     if (truncated) description = truncate(description, 200)
 
     const zoom = () => {
-      this.setState({zoomed: true})
-      dispatch(fetchPost(id))
+      if (isMobile) {
+        dispatch(navigate(`/p/${post.id}`))
+      } else {
+        this.setState({zoomed: true})
+        dispatch(fetchPost(id))
+      }
     }
     const unzoom = () => this.setState({zoomed: false})
 

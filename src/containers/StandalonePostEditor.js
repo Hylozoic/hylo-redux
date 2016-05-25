@@ -64,8 +64,8 @@ export default class StandalonePostEditor extends React.Component {
       }
     }
     return <div className='standalone-post-editor'>
-      <div className='top-menu'>
-        <a className='save' onClick={() => editor.saveIfValid()}>Save</a>
+      <div id='mobile-top-bar'>
+        <a className='right' onClick={() => editor.saveIfValid()}>Save</a>
         <a className='back' onClick={() => editor.cancel()}>
           <span className='left-angle-bracket'>&#x3008;</span>
           Back

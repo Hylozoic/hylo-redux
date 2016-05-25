@@ -10,6 +10,7 @@ import {
   setMetaTags
 } from '../actions'
 import { ogMetaTags } from '../util'
+import A from '../components/A'
 import PostEditor from '../components/PostEditor'
 import { scrollToAnchor } from '../util/scrolling'
 import { findError } from '../actions/util'
@@ -60,30 +61,44 @@ export default class SinglePost extends React.Component {
     comments: array
   }
 
+  static contextTypes = {
+    isMobile: bool
+  }
+
   getChildContext () {
     return pick(['community', 'post', 'comments', 'communities'], this.props)
   }
 
   render () {
     const { post, community, editing, error, location: { query } } = this.props
-
+    const { isMobile } = this.context
     if (error) return <AccessErrorMessage error={error}/>
-    if (!post || !community) return <div className='loading'>Loading...</div>
+    if (!post || !post.user) return <div className='loading'>Loading...</div>
+    const isChild = !!post.parent_post_id
 
-    return <CoverImagePage id='single-post' image={get(community, 'banner_url')}>
-      {editing
-        ? <PostEditor post={post} expanded={true}/>
-        : showPost(post)}
-
-      {showTaggedPosts(post) && <div>
-        <p className='meta other-posts-label'>
-          Other posts for&nbsp;
-          <span className='hashtag'>#{post.tag}</span>
-        </p>
-        <ConnectedPostList subject={subject} id={post.tag} omit={post.id}
-          query={{...query, communityId: community.id}}/>
+    return <div>
+      {isMobile && isChild && <div id='mobile-top-bar'>
+        <A className='back' to={`/p/${post.parent_post_id}`}>
+          <span className='left-angle-bracket'>&#x3008;</span>
+          Back to project
+        </A>
       </div>}
-    </CoverImagePage>
+      <CoverImagePage id='single-post' image={get(community, 'banner_url')}>
+        {editing
+          ? <PostEditor post={post} expanded={true}/>
+          : showPost(post)}
+
+        {showTaggedPosts(post) && <div>
+          <p className='meta other-posts-label'>
+            Other posts for&nbsp;
+            <span className='hashtag'>#{post.tag}</span>
+          </p>
+          {community && <ConnectedPostList subject={subject} id={post.tag}
+            omit={post.id}
+            query={{...query, communityId: community.id}}/>}
+        </div>}
+      </CoverImagePage>
+    </div>
   }
 }
 
@@ -96,7 +111,9 @@ const showPost = (post) => {
 }
 
 const redirectToParent = (store, id) => {
-  const post = store.getState().posts[id]
+  const state = store.getState()
+  if (state.isMobile) return false
+  const post = state.posts[id]
   if (get(post, 'parent_post_id')) {
     store.dispatch(navigate(`/p/${post.parent_post_id}`))
     return true

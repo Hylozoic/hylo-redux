@@ -102,7 +102,9 @@ export const Header = ({ communities }, { post, community }) => {
             <A to={`/p/${post.id}`} title={createdAt}>
               {nonbreaking(humanDate(createdAt))}
             </A>
-            &nbsp;in <A to={`/c/${community.slug}`}>{community.name}</A>
+            {community && <span>
+              &nbsp;in <A to={`/c/${community.slug}`}>{community.name}</A>
+            </span>}
             {post.public && <span>{spacer}Public</span>}
           </span>
         </div>}

@@ -15,9 +15,11 @@ import { fetchCurrentUser, setMobileDevice } from '../actions'
 import { localsForPrefetch } from '../util/universal'
 import { getManifest } from '../util/assets'
 import { some, isEmpty, toPairs } from 'lodash'
+import { map } from 'lodash/fp'
 import { parse } from 'url'
 import MobileDetect from 'mobile-detect'
 
+const newrelic = process.env.NEW_RELIC_LICENSE_KEY ? require('newrelic') : null
 const matchPromise = promisify(match, {multiArgs: true})
 
 const checkAPIErrors = ({ errors }) => {
@@ -49,6 +51,11 @@ export default function (req, res) {
 
     if (!renderProps) {
       return res.status(404).send('Not found')
+    }
+
+    if (newrelic) {
+      const txPath = map('path', renderProps.routes).join('/').replace('//', '/')
+      newrelic.setTransactionName(`${req.method.toLowerCase()} ${txPath}`)
     }
 
     return renderApp(res, renderProps, history, store)

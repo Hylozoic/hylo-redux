@@ -57,7 +57,9 @@ export function prependInP (text, prependee) {
 }
 
 export function humanDate (date, short) {
-  var ret = prettyDate.format(typeof date === 'string' ? new Date(date) : date)
+  var ret = date
+    ? prettyDate.format(typeof date === 'string' ? new Date(date) : date)
+    : ''
   if (short) {
     ret = ret.replace(' ago', '')
   } else {

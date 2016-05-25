@@ -8,7 +8,7 @@ exports.config = {
   /**
    * Array of application names.
    */
-  app_name : ['hylo-react'],
+  app_name : [process.env.NEW_RELIC_APP_NAME],
   /**
    * Your New Relic license key.
    */

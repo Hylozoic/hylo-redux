@@ -13,7 +13,7 @@
 @import (inline) '../node_modules/react-datetime/css/react-datetime.css';
 
 body {
-  background-color: @page-background;
+  background-color: @page-bg;
   color: @off-black;
   .base-text;
 }
@@ -250,7 +250,7 @@ ul.tags {
 .tag {
   display: inline-block;
   color: @off-black;
-  background-color: @light-gray-bg-2;
+  background-color: #ddd;
   border: 1px solid transparent;
   height: 26px;
   line-height: 24px;
@@ -368,7 +368,7 @@ ul.tags {
   line-height: 34px;
   min-height: 70px;
   text-align: right;
-  background-color: @list-controls-background;
+  background-color: @faint-gray-bg;
   padding: 15px;
 
   > * {
@@ -424,19 +424,19 @@ ul.tags {
 }
 
 .members {
-  background-color: @card-background;
+  background-color: white;
   > ul {
     .no-bullets;
   }
 }
 
 .onboarding-questions {
-  border: 1px solid @hylo-teal;
+  border: 1px solid @damian-green;
   border-radius: @border-radius-base;
-  background-color: @card-background;
+  background-color: white;
   margin-bottom: @card-bottom-margin;
   .header {
-    background-color: @hylo-teal;
+    background-color: @damian-green;
     padding: 15px;
     color: white;
     h3 {
@@ -567,7 +567,7 @@ ul.tags {
     background-color: white;
 
     &.unread {
-      background-color: lighten(@dark-blue, 43%);
+      background-color: lighten(@damian-green, 47%);
     }
 
     .avatar {
@@ -719,12 +719,12 @@ ul.tags {
 
 #search {
   .results > div {
-    background-color: @card-background;
+    background-color: white;
   }
 
   .message {
     padding: 15px;
-    background-color: @card-background;
+    background-color: white;
   }
 
   .person-result {
@@ -784,7 +784,7 @@ ul.tags {
 }
 
 #about-community {
-  background-color: @card-background;
+  background-color: white;
   padding: 15px;
   .body-text;
 }

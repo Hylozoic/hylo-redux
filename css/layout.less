@@ -59,12 +59,12 @@ nav {
 #topNav {
   .has-nav-height;
   width: 100vw;
-  background-color: @top-nav-background;
+  background-color: white;
   position: relative;
   z-index: 10;
   position: fixed;
   top: 0;
-  box-shadow: 0 0 2px @shadow-color;
+  box-shadow: 0 0 2px #c9c9c9;
 
   &.scrolling {
     opacity: 0.98;
@@ -78,7 +78,7 @@ nav {
     float: left;
     display: block;
     border-right: 1px solid @faint-gray-border;
-    background-color: @top-nav-background;
+    background-color: white;
     color: @off-black;
     .medium;
     .bar {
@@ -154,7 +154,7 @@ nav {
       }
 
       li {
-        border-bottom: 1px solid @center-menu-list-item-border;
+        border-bottom: 1px solid @faint-gray-border;
         width: 100%;
         &:last-child {
           border-bottom: 0;
@@ -203,7 +203,7 @@ nav {
         height: 50px;
       }
       background-color: #fff;
-      border-top: 1px solid @center-menu-list-item-border;
+      border-top: 1px solid @faint-gray-border;
       border-bottom-left-radius: @border-radius-base;
       border-bottom-right-radius: @border-radius-base;
       position: absolute;
@@ -372,7 +372,7 @@ nav {
   z-index: 20;
   height: 100%;
   width: @left-nav-width;
-  background-color: @left-nav-background;
+  background-color: #262626;
   overflow-y: scroll;
   padding-bottom: 50px;
 
@@ -397,7 +397,7 @@ nav {
     display: block;
     margin-bottom: 6px;
     text-decoration: none;
-    color: @medium-gray-text-2;
+    color: #8d8d8d;
     font-size: 13px;
     .regular;
     letter-spacing: 0.03em;
@@ -409,7 +409,7 @@ nav {
       color: #fff;
     }
     &.active {
-      background-color: @left-nav-hover-link-background;
+      background-color: #303030;
       border-radius: 24px;
       color: @damian-green;
       .regular;
@@ -431,13 +431,14 @@ nav {
 
   .topic-list {
     margin-top: 15px;
+    padding-top: @p-bottom-margin;
     border-top: 1px @dark-gray-bg solid;
-    .subheading {
+    .subheading a {
       padding-top: 5px;
       font-size: 11px;
       .medium;
       letter-spacing: 0.1em;
-      color: @medium-gray-text;
+      color: #727272;
     }
     .bullet {
       font-size: 20px;
@@ -520,7 +521,7 @@ nav {
     width: 90%;
     height: 100%;
     border: none;
-    background-color: @page-background;
+    background-color: @page-bg;
     &:focus {
       outline: 0;
       -webkit-box-shadow: none;
@@ -538,11 +539,11 @@ nav {
 #cover-image-page-content {
   .form-sections {
     .section-label {
-      background-color: @list-controls-background;
+      background-color: @faint-gray-bg;
       padding: 15px;
     }
     .section {
-      background-color: @card-background;
+      background-color: white;
       padding: 15px;
       margin-bottom: 15px;
     }
@@ -561,7 +562,7 @@ nav {
   }
 
   ul.tabs a.active:after {
-    background-color: @page-background !important;
+    background-color: @page-bg !important;
   }
 
   .mobile({

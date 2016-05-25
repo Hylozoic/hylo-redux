@@ -317,15 +317,6 @@ export default class UserSettings extends React.Component {
         </Item>
         <Item>
           <div className='half-column'>
-            <label>Receive email notifications?</label>
-            <div className='summary'>Check the circle to get updates on posts you create or follow. You can also change this for each post individually.</div>
-          </div>
-          <div className='half-column right-align'>
-            <input type='checkbox' checked={currentUser.send_email_preference} onChange={() => this.toggle('send_email_preference')}/>
-          </div>
-        </Item>
-        <Item>
-          <div className='half-column'>
             <label>Receive email digests?</label>
             <div className='summary'>Choose how frequently you would like to receive email about new activity in your communities.</div>
           </div>
@@ -344,24 +335,6 @@ export default class UserSettings extends React.Component {
           </div>
           <div className='half-column right-align'>
             <input type='checkbox' checked={currentUser.settings.receives_email_prompts} onChange={() => this.toggle('settings.receives_email_prompts')}/>
-          </div>
-        </Item>
-        <Item>
-          <div className='half-column'>
-            <label>Get mobile notifications on posts you are following?</label>
-            <div className='summary'>Check the circle to get mobile notifications on any posts you are following.</div>
-          </div>
-          <div className='half-column right-align'>
-            <input type='checkbox' checked={currentUser.push_follow_preference} onChange={() => this.toggle('push_follow_preference')}/>
-          </div>
-        </Item>
-        <Item>
-          <div className='half-column'>
-            <label>Get mobile notifications on new posts?</label>
-            <div className='summary'>Check the circle to get mobile notifications on any new posts in your communities.</div>
-          </div>
-          <div className='half-column right-align'>
-            <input type='checkbox' checked={currentUser.push_new_post_preference} onChange={() => this.toggle('push_new_post_preference')}/>
           </div>
         </Item>
       </Section>}

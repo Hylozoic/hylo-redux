@@ -1,12 +1,15 @@
 require('../support')
 import { mocks, helpers } from '../../support'
-import { set } from 'lodash'
+import { cloneDeep, set } from 'lodash'
 import { PostEditor } from '../../../src/components/PostEditor'
+import { FETCH_TAG } from '../../../src/actions'
 import {
   findRenderedDOMComponentWithClass,
   renderIntoDocument,
   Simulate
 } from 'react-addons-test-utils'
+const { click } = Simulate
+const { createElement, wait } = helpers
 
 const state = {
   people: {
@@ -35,15 +38,25 @@ const state = {
 const post = {id: 'foo'}
 let component, node, store
 
-const render = (state, post) => {
+const render = (state, post, storeSetupCallback) => {
   store = mocks.redux.store(state)
-  component = helpers.createElement(PostEditor, {post}, {store})
+  if (storeSetupCallback) storeSetupCallback(store)
+  const context = {store, dispatch: store.dispatch}
+  component = createElement(PostEditor, {post}, context)
   node = renderIntoDocument(component).getWrappedInstance()
 }
 
 describe('PostEditor', () => {
+  beforeEach(() => {
+    window.alert = spy(window.alert)
+  })
+
+  afterEach(() => {
+    window.alert = window._originalAlert
+  })
+
   describe('with a post', () => {
-    before(() => {
+    beforeEach(() => {
       render(state, post)
     })
 
@@ -57,21 +70,34 @@ describe('PostEditor', () => {
       let tag = findRenderedDOMComponentWithClass(node, 'tag')
       expect(tag.innerHTML).to.match(/Foo Community/)
     })
+
+    it('has a details field', () => {
+      // we just test a few important methods here -- tinymce won't load without
+      // a proper browser environment
+      node.refs.details.componentDidMount()
+      node.goToDetails()
+    })
   })
 
   describe('with an empty title', () => {
-    before(() => {
-      window.alert = spy(window.alert)
-      render(set(state, 'postEdits.foo.name', ''), post)
-    })
-
-    after(() => {
-      window.alert = window._originalAlert
+    beforeEach(() => {
+      render(set(cloneDeep(state), 'postEdits.foo.name', ''), post)
     })
 
     it('fails validation', () => {
-      Simulate.click(node.refs.save)
+      click(node.refs.save)
       expect(window.alert).to.have.been.called.with('The title of a post cannot be blank.')
+    })
+  })
+
+  describe('with no community selected', () => {
+    beforeEach(() => {
+      render(set(cloneDeep(state), 'postEdits.foo.communities', []), post)
+    })
+
+    it('fails validation', () => {
+      click(node.refs.save)
+      expect(window.alert).to.have.been.called.with('Please pick at least one community.')
     })
   })
 
@@ -80,6 +106,33 @@ describe('PostEditor', () => {
       expect(() => {
         render(state, null)
       }).not.to.throw(Error)
+    })
+  })
+
+  describe('with a project post', () => {
+    beforeEach(() => {
+      const newState = cloneDeep(state)
+      set(newState, 'postEdits.foo.type', 'project')
+      set(newState, 'postEdits.foo.tag', 'foo')
+
+      render(newState, post, store => {
+        store.transformAction(FETCH_TAG, action => {
+          return Promise.resolve({
+            ...action,
+            payload: {name: 'foo'}
+          })
+        })
+      })
+    })
+
+    it('validates the tag', () => {
+      click(node.refs.save)
+      return wait(300, () => {
+        expect(store.dispatch).to.have.been.called()
+        const action = store.dispatched.slice(-1)[0]
+        expect(action.type).to.equal(FETCH_TAG)
+        expect(window.alert).to.have.been.called.with('The tag "foo" is already in use.')
+      })
     })
   })
 })

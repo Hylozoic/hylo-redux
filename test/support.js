@@ -10,6 +10,27 @@ chai.use(require('chai-spies'))
 global.expect = chai.expect
 global.spy = chai.spy
 
+// call store.transformAction(action.type, callback) in test setup if you want
+// store.dispatch(action) to return a specific value
+const mockReduxStore = function (state) {
+  let dispatched = []
+  let actionTransforms = {}
+
+  return {
+    subscribe: spy(() => {}),
+    getState: () => ({...state}),
+    dispatched,
+    dispatch: spy(action => {
+      dispatched.push(action)
+      const callback = actionTransforms[action.type]
+      return callback ? callback(action) : action
+    }),
+    transformAction: (actionType, response) => {
+      actionTransforms[actionType] = response
+    }
+  }
+}
+
 export default {
   helpers: {
     createElement: (componentClass, props, context) => {
@@ -35,8 +56,13 @@ export default {
       }
 
       return createElement(Wrapper)
-    }
+    },
+
+    // this is basically setTimeout promisified
+    wait: (millis, callback) =>
+      new Promise((resolve, _) => setTimeout(() => resolve(callback()), millis))
   },
+
   mocks: {
     request: function (path) {
       return {originalUrl: path, method: 'GET', headers: {}}
@@ -62,13 +88,7 @@ export default {
       return res
     },
     redux: {
-      store: function (state) {
-        return {
-          subscribe: spy(() => {}),
-          dispatch: spy(() => {}),
-          getState: () => ({...state})
-        }
-      }
+      store: mockReduxStore
     }
   }
 }

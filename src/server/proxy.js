@@ -46,7 +46,7 @@ const transformPathname = pathname => {
   return pathname
 }
 
-const handlePage = page => (req, res) => {
+const handlePage = (req, res) => {
   if (process.env.DISABLE_PROXY) {
     return res.status(503).send('Service Unavailable')
   }
@@ -82,6 +82,6 @@ const handlePage = page => (req, res) => {
 export const handleStaticPages = server => {
   staticPages.forEach(page => {
     if (page === '') page = '/'
-    server.get(page, handlePage(page))
+    server.get(page, handlePage)
   })
 }

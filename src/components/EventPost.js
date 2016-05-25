@@ -53,10 +53,10 @@ const Attendance = ({ post, limit, showButton, ...props }, { currentUser }) => {
   )
 
   return <div className={cx('attendance', props.className)}>
-    <div className='going avatar-list'>
+    {going.length > 0 && <div className='going avatar-list'>
       {going.slice(0, limit).map(person =>
         <Avatar person={person} key={person.id}/>)}
-    </div>
+    </div>}
     {currentUser && showButton && <RSVPSelect post={post}/>}
     {!isEmpty(going) && <LinkedPersonSentence people={going} className='blurb meta'>
       {going.length > 1 || some(going, same('id', currentUser)) ? 'are' : 'is'}

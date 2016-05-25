@@ -12,7 +12,7 @@
     height: 70px;
     line-height: 70px;
     vertical-align: middle;
-    border-bottom: 2px solid @faint-gray-border;
+    border-bottom: 1px solid @faint-gray-border;
     input {
       padding-left: 10px;
       font-size: 24px;
@@ -55,29 +55,31 @@
 
 .person-card {
   .card;
+  border: 1px solid @faint-gray-border;
   border-radius: 0px;
   position: relative;
   margin-right: -1px;
   margin-top: -1px;
 
   .square-avatar {
-    display: inline-block;
+    display: block;
     background-position: center;
     background-size: cover;
-    padding:15px;
-    width: 210px;
+    margin: 15px 15px @p-bottom-margin;
+    width: 180px;
+    height: 180px;
   }
 
   .person-body {
-    padding: 15px;
+    padding: 0 15px 15px;
     .name {
       .medium;
       font-size: 16px;
     }
     .role {
-      .aktiv-grotesk(500);
       color: @faint-gray-text;
       font-size: 13px;
+      margin-bottom: @p-bottom-margin;
     }
 
     .moderator {
@@ -86,11 +88,11 @@
 
     .details {
       text-align: left;
-      padding-top: 15px;
     }
 
     .offerCount {
       color: @damian-orange;
+      padding-top: @p-bottom-margin;
     }
   }
 

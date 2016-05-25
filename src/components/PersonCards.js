@@ -22,20 +22,22 @@ const PersonCards = ({ people, menus, slug }) => {
 export default PersonCards
 
 export const PersonCard = ({ person, menu, slug }) => {
-  let { id, avatar_url, name, bio, isModerator, joined_at, tags, offerCount } = person
+  const {
+    id, avatar_url, name, bio, isModerator, joined_at, tags, offerCount
+  } = person
 
   const offersText = Number(offerCount) > 0
   ? `•${offerCount} offer${Number(offerCount) > 1 ? 's' : ''}`
   : null
+
+  const avatarStyle = {backgroundImage: `url(${avatar_url})`}
 
   return <div className='person-card'>
     {menu && <Dropdown className='caret-menu' alignRight={true}
       toggleChildren={<i className='icon-down'></i>}>
       {menu}
     </Dropdown>}
-    <A to={`/u/${person.id}`}>
-      <img className='square-avatar' src={avatar_url}/>
-    </A>
+    <A to={`/u/${person.id}`} className='square-avatar' style={avatarStyle}/>
     <div className='person-body'>
       <A className='name' to={`/u/${id}`}>{name}</A>
       <div className='role'>

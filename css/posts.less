@@ -108,12 +108,12 @@ ul.posts {
     vertical-align: middle;
     position: relative;
     top: -1px;
-    padding-right: 5px;
+    padding-right: 7px;
   }
 
   .icon-Heart2 {
     left: -2px;
-    color: #f8f;
+    color: @damian-red;
     padding-right: 3px;
   }
 
@@ -241,7 +241,7 @@ ul.posts {
 
   .post-section.comments-section {
     padding-left: 0px;
-    border-top: 1px solid @post-border;
+    border-top: 1px solid @faint-gray-border;
     padding-bottom: 15px;
     padding-right: 0 !important;
 
@@ -724,7 +724,7 @@ ul.posts {
     margin-left: -15px;
 
     .going {
-      width: 68%;
+      max-width: 68%;
       display: inline-block;
       white-space: nowrap;
       overflow: hidden;
@@ -739,10 +739,23 @@ ul.posts {
         width: 100%;
       }
       .dropdown-toggle {
-        height: @avatar-size-default;
-        line-height: @avatar-size-default;
+        .medium;
+        border: 1px solid @post-border;
+        border-radius: 0;
+        box-shadow: 0 1px 1px rgba(0, 0, 0, 0.06);
+        text-align: left;
+        height: @avatar-size-default - 2;
+        line-height: @avatar-size-default - 2;
         padding-top: 0;
         padding-bottom: 0;
+        position: relative;
+        top: 1px;
+
+        .caret {
+          position: absolute;
+          right: 12px;
+          top: 16px;
+        }
       }
     }
   }

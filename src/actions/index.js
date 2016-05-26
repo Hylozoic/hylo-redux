@@ -415,7 +415,7 @@ export function fetchActivity (offset = 0, resetCount, id = 'all') {
     type: FETCH_ACTIVITY,
     payload: {api: true, path},
     meta: {
-      cache: {id, bucket: 'activities', limit, offset, array: true},
+      cache: {id, bucket: 'activitiesByCommunity', limit, offset, array: true},
       resetCount,
       id
     }

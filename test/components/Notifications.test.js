@@ -30,6 +30,9 @@ const store = mocks.redux.store({
       comment: {
         id: 1,
         text: 'Yes, foo!'
+      },
+      meta: {
+        reasons: ['newComment']
       }
     },
     2: {
@@ -40,6 +43,9 @@ const store = mocks.redux.store({
         id: 6,
         name: 'Bar',
         communities: [{slug: 'foocom'}]
+      },
+      meta: {
+        reasons: ['tag: bar']
       }
     },
     3: {
@@ -50,6 +56,9 @@ const store = mocks.redux.store({
         id: 7,
         name: 'Baz',
         communities: [{slug: 'barcom'}]
+      },
+      meta: {
+        reasons: ['mention']
       }
     }
   }

@@ -57,7 +57,7 @@ export function prependInP (text, prependee) {
 }
 
 export function humanDate (date, short) {
-  var ret = date
+  var ret = date && !isNaN(Number(date)) && Number(date) !== 0
     ? prettyDate.format(typeof date === 'string' ? new Date(date) : date)
     : ''
   if (short) {

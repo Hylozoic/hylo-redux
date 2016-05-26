@@ -1,7 +1,8 @@
 import dotenv from 'dotenv'
 import chai from 'chai'
 import { Component, createElement, PropTypes } from 'react'
-import { mapValues, omit } from 'lodash'
+import { mapValues, merge, omit } from 'lodash'
+import { generate } from 'randomstring'
 process.env.NODE_ENV = 'test'
 
 dotenv.load({path: './.env.test', silent: true})
@@ -9,6 +10,9 @@ dotenv.load({path: './.env.test', silent: true})
 chai.use(require('chai-spies'))
 global.expect = chai.expect
 global.spy = chai.spy
+
+const text = (length = 10) => generate({length, charset: 'alphabetic'})
+const number = (range = 10000) => Math.floor(Math.random() * range)
 
 // call store.transformAction(action.type, callback) in test setup if you want
 // store.dispatch(action) to return a specific value
@@ -89,6 +93,12 @@ export default {
     },
     redux: {
       store: mockReduxStore
+    },
+    models: {
+      user: (attrs) => merge({
+        id: number(),
+        name: text()
+      }, attrs)
     }
   }
 }

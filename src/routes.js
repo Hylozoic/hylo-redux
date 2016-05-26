@@ -59,7 +59,9 @@ export default function makeRoutes (store) {
 
   const requireAdmin = (nextState, replaceState) => {
     const currentUser = store.getState().people.current
-    if (!get(currentUser, 'is_admin')) replaceState({}, '/login')
+    if (!get(currentUser, 'is_admin')) {
+      replaceState({}, '/noo/admin/login')
+    }
   }
 
   const requireCommunity = (options = {}) => (nextState, replaceState) => {

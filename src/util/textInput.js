@@ -1,5 +1,5 @@
 import { hashtagCharacterRegex } from '../models/hashtag'
-import { has } from 'lodash'
+import { curry, has } from 'lodash'
 
 export const keyMap = {
   BACKSPACE: 8,
@@ -26,7 +26,11 @@ export const getCharacter = event => String.fromCharCode(getKeyCode(event))
 export const sanitizeTagInput = event =>
   getCharacter(event).match(hashtagCharacterRegex) || event.preventDefault()
 
-export const preventSpaces = event => {
-  const keyCode = getKeyCode(event)
-  if (keyCode === keyMap.SPACE) event.preventDefault()
-}
+// use like: <input type='text' onKeyDown={onKeyCode(keyMap.ENTER, callback)}/>
+const onKeyCode = curry((keyCode, callback, event) =>
+  getKeyCode(event) === keyCode && callback(event))
+
+// use like: <input type='text' onKeyDown={onEnter(callback)}/>
+export const onEnter = onKeyCode(keyMap.ENTER)
+
+export const preventSpaces = onKeyCode(keyMap.SPACE, e => e.preventDefault())

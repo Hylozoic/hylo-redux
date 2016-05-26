@@ -11,13 +11,14 @@ import {
   thank
 } from '../actions'
 import { filter, get, includes, map } from 'lodash'
+import { find } from 'lodash/fp'
 import cx from 'classnames'
 import ScrollListener from '../components/ScrollListener'
 import Avatar from '../components/Avatar'
 import truncate from 'html-truncate'
 import { present, humanDate } from '../util/text'
 import { VIEWED_NOTIFICATIONS, trackEvent } from '../util/analytics'
-import { commentUrl } from '../routes'
+import { postUrl } from '../routes'
 import { getCurrentCommunity } from '../models/community'
 const { array, bool, func, number, object } = React.PropTypes
 
@@ -80,7 +81,7 @@ Notifications.propTypes = {
 
 export default Notifications
 
-let actionText = (action, comment, post) => {
+const actionText = (action, comment, post, reasons) => {
   switch (action) {
     case 'mention':
       if (!comment) return `mentioned you in their ${post.tag}`
@@ -93,10 +94,14 @@ let actionText = (action, comment, post) => {
       return 'followed'
     case 'unfollow':
       return 'stopped following'
+    case 'tag':
+      const tagReason = find(r => r.startsWith('tag: '), reasons)
+      const tag = tagReason.split(': ')[1]
+      return `made a new post tagged with #${tag}:`
   }
 }
 
-let bodyText = (action, comment, post) => {
+const bodyText = (action, comment, post) => {
   if (includes(['followAdd', 'follow', 'unfollow'], action)) {
     return ''
   }
@@ -105,7 +110,9 @@ let bodyText = (action, comment, post) => {
 }
 
 const Activity = ({ activity, currentUser, dispatch }) => {
-  let { actor, action, post, comment, comment_id, unread, created_at } = activity
+  const {
+    actor, action, post, comment, comment_id, unread, created_at, meta: { reasons }
+  } = activity
   let { isThanked } = comment || {}
   const spacer = <span>&nbsp;&nbsp;•&nbsp;&nbsp;</span>
 
@@ -125,14 +132,16 @@ const Activity = ({ activity, currentUser, dispatch }) => {
 
   let visit = () => {
     if (unread) dispatch(markActivityRead(activity.id))
-    dispatch(navigate(commentUrl({...comment, post_id: post.id})))
+    dispatch(navigate(postUrl(post.id, get(comment, 'id'))))
   }
 
   return <div key={activity.id} className={cx('activity', {unread})}>
     <Avatar person={actor}/>
     <div className='content'>
       <div className='title'>
-        {actor.name} {actionText(action, comment, post)} <a onClick={visit}>{postName}</a>
+        {actor.name}
+        &nbsp;{actionText(action, comment, post, reasons)}&nbsp;
+        <a onClick={visit}>{postName}</a>
       </div>
 
       {text && <div className='body-text' dangerouslySetInnerHTML={{__html: text}}/>}

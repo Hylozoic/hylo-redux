@@ -148,6 +148,9 @@ export const communityOnboardingUrl = community =>
 export const commentUrl = comment =>
   `/p/${comment.post_id}#comment-${comment.id}`
 
+export const postUrl = (postId, commentId) =>
+  `/p/${postId}` + (commentId ? `#comment-${commentId}` : '')
+
 export const tagUrl = (name, slug) => {
   var result = ''
   if (slug) result += `/c/${slug}`

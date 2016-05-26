@@ -1,4 +1,3 @@
-import { some } from 'lodash'
 const LRU = require('lru-cache')
 const mime = require('mime')
 const request = require('request')
@@ -27,14 +26,6 @@ const transformPathname = pathname => {
   // a path without an extension should be served by index.html in
   // the folder of the same name.
   if (!pathname.match(/\.\w{2,4}$/)) {
-    if (pathname.startsWith('/admin')) {
-      // serve the admin Angular app
-      pathname = '/admin'
-    } else if (!some(staticPages, x => x === pathname)) {
-      // for any paths not explicitly listed, serve the Angular app.
-      pathname = '/app'
-    }
-
     pathname += '/index.html'
   }
 

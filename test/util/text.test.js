@@ -12,6 +12,11 @@ describe('appendInP', () => {
 })
 
 describe('humanDate', () => {
+  it('handles a date string', () => {
+    const t = new Date(new Date().getTime() - 86400000)
+    expect(humanDate(t.toString())).to.equal('yesterday')
+  })
+
   it('omits "ago" if the second argument is true', () => {
     const t = new Date(new Date().getTime() - 15 * 60000)
     expect(humanDate(t, true)).to.equal('15m')

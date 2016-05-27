@@ -62,7 +62,8 @@ export default class SinglePost extends React.Component {
   }
 
   static contextTypes = {
-    isMobile: bool
+    isMobile: bool,
+    currentUser: object
   }
 
   getChildContext () {
@@ -71,7 +72,7 @@ export default class SinglePost extends React.Component {
 
   render () {
     const { post, community, editing, error, location: { query } } = this.props
-    const { isMobile } = this.context
+    const { currentUser, isMobile } = this.context
     if (error) return <AccessErrorMessage error={error}/>
     if (!post || !post.user) return <div className='loading'>Loading...</div>
     const isChild = !!post.parent_post_id
@@ -89,6 +90,7 @@ export default class SinglePost extends React.Component {
           : showPost(post)}
 
         {showTaggedPosts(post) && <div>
+          {currentUser && <PostEditor community={community} tag={post.tag}/>}
           <p className='meta other-posts-label'>
             Other posts for&nbsp;
             <span className='hashtag'>#{post.tag}</span>

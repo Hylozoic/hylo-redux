@@ -10,7 +10,7 @@ import React from 'react'
 import cx from 'classnames'
 import autoproxy from 'autoproxy'
 import {
-  debounce, filter, find, get, includes, isEmpty, some, startsWith
+  debounce, compact, filter, find, get, includes, isEmpty, some, startsWith
 } from 'lodash'
 import CommunityTagInput from './CommunityTagInput'
 import Dropdown from './Dropdown'
@@ -29,7 +29,6 @@ import { uploadDoc } from '../actions/uploadDoc'
 import { attachmentParams } from '../util/shims'
 import { prepend } from '../util/tinymce'
 import { isKey } from '../util/textInput'
-import { prepareHashtagsForEditing } from '../util/linkify'
 import { CREATE_POST, UPDATE_POST, UPLOAD_IMAGE } from '../actions'
 import { ADDED_POST, EDITED_POST, trackEvent } from '../util/analytics'
 const { array, bool, func, object, string } = React.PropTypes
@@ -38,7 +37,7 @@ const specialTags = ['request', 'offer', 'intention']
 
 export const newPostId = 'new-post'
 
-@autoproxy(connect((state, { community, post, project, type }) => {
+@autoproxy(connect((state, { community, post, project, type, tag }) => {
   const id = post ? post.id
     : type === 'project' ? 'new-project'
     : type === 'event' ? 'new-event' : newPostId
@@ -67,7 +66,8 @@ export class PostEditor extends React.Component {
     saving: bool,
     onCancel: func,
     imagePending: bool,
-    type: string
+    type: string,
+    tag: string
   }
 
   constructor (props) {
@@ -77,8 +77,9 @@ export class PostEditor extends React.Component {
 
   componentDidMount () {
     // initialize the communities list when opening the editor in a community
-    let { community, postEdit: { communities } } = this.props
+    const { community, postEdit: { communities }, tag } = this.props
     if (community && isEmpty(communities)) this.addCommunity(community)
+    if (tag) this.updateStore({tag})
     this.refs.title.focus()
   }
 
@@ -258,7 +259,7 @@ export class PostEditor extends React.Component {
   handleAddTag = tag => {
     if (this.editorType()) return
     tag = tag.replace(/^#/, '')
-    if (includes(['request', 'offer'], tag)) {
+    if (includes(specialTags, tag)) {
       this.updateStore({tag})
     }
   }
@@ -269,26 +270,17 @@ export class PostEditor extends React.Component {
   }
 
   render () {
-    let {
+    const {
       post, postEdit, dispatch, currentUser, imagePending, saving, id
     } = this.props
-    let { description, communities, tag } = postEdit
-    let { name, showDetails } = this.state
+    const selectableTags = compact([this.props.tag].concat(specialTags))
+    const { description, communities, tag } = postEdit
+    const { name, showDetails } = this.state
     const editorType = this.editorType()
     const shouldSelectTag = !includes(['event', 'project'], editorType)
     const selectTag = tag => this.updateStore({tag})
     const Subeditor = editorType === 'event' ? EventPostEditor
       : editorType === 'project' ? ProjectPostEditor : null
-
-    // FIXME this should be performed during the creation of the postEdits entry
-    // in the store
-    if (!this.preparedDescription) {
-      const editingDescription = prepareHashtagsForEditing(description)
-      if (editingDescription !== description) {
-        description = editingDescription
-      }
-      this.preparedDescription = true
-    }
 
     return <div className='post-editor clearfix'>
       <PostEditorHeader person={currentUser}/>
@@ -320,7 +312,7 @@ export class PostEditor extends React.Component {
           <span className='caret'></span>
         </button>
       }>
-        {specialTags.map(t => <li key={t}>
+        {selectableTags.map(t => <li key={t}>
           <a onClick={() => selectTag(t)}>#{t}</a>
         </li>)}
         <li><a onClick={() => selectTag(null)}>#all-topics</a></li>
@@ -461,7 +453,8 @@ export default class PostEditorWrapper extends React.Component {
     post: object,
     community: object,
     type: string,
-    expanded: bool
+    expanded: bool,
+    tag: string
   }
 
   static contextTypes = {
@@ -478,7 +471,7 @@ export default class PostEditorWrapper extends React.Component {
   }
 
   render () {
-    const { type, post, community } = this.props
+    const { type, post, community, tag } = this.props
 
     // if PostEditorWrapper is being initialized with expanded=true, we don't
     // want to set up onCancel, because the entire component will probably be
@@ -495,7 +488,7 @@ export default class PostEditorWrapper extends React.Component {
       </div>
     }
 
-    return <PostEditor {...{post, community, type, onCancel}}/>
+    return <PostEditor {...{post, community, type, onCancel, tag}}/>
   }
 }
 

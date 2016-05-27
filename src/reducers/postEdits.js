@@ -11,6 +11,7 @@ import {
   UPLOAD_IMAGE
 } from '../actions'
 import { updateMedia } from './util'
+import { prepareHashtagsForEditing } from '../util/linkify'
 import { invalidCharacterRegex } from '../models/hashtag'
 
 const stateWithDoc = (state, id, doc) => {
@@ -71,7 +72,10 @@ export default function (state = {}, action) {
     case CANCEL_POST_EDIT:
       return {...state, [id]: null}
     case START_POST_EDIT:
-      return {...state, [payload.id]: {...payload, expanded: true}}
+      return {...state, [payload.id]: {
+        ...payload,
+        description: prepareHashtagsForEditing(payload.description)
+      }}
     case UPLOAD_IMAGE:
     case REMOVE_IMAGE:
       if (subject === 'post') {

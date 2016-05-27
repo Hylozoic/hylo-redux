@@ -27,11 +27,11 @@ describe('postEdits', () => {
         a: {
           id: 'a',
           name: 'foo',
+          description: '',
           type: 'event',
           media: [
             {type: 'image', url: 'http://foo.com/foo.gif'}
-          ],
-          expanded: true
+          ]
         }
       }
 

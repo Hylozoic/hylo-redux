@@ -1,5 +1,5 @@
 require('../support')
-import linkify from '../../src/util/linkify'
+import linkify, { prepareHashtagsForEditing } from '../../src/util/linkify'
 
 describe('linkify', () => {
   it('works correctly', () => {
@@ -46,5 +46,18 @@ describe('linkify', () => {
     let slug = 'bar'
     let expected = '<p>and <a href="/c/bar/tag/foo" data-search="#foo" class="hashtag">#foo</a></p>'
     expect(linkify(source, slug)).to.equal(expected)
+  })
+})
+
+describe('prepareHashtagsForEditing', () => {
+  it('handles null and blank text', () => {
+    expect(prepareHashtagsForEditing(null)).to.equal('')
+    expect(prepareHashtagsForEditing('')).to.equal('')
+  })
+
+  it('sets data-autocompleting on hashtags', () => {
+    const desc = 'hello. <a>#foo</a> and <a>#bar</a> are common nonsense words in code.'
+    const expected = 'hello. <a data-autocompleting="true">#foo</a> and <a data-autocompleting="true">#bar</a> are common nonsense words in code.'
+    expect(prepareHashtagsForEditing(desc)).to.equal(expected)
   })
 })

@@ -49,7 +49,7 @@ class TagPosts extends React.Component {
     const toggleFollow = () => dispatch(followTag(id, tagName))
 
     return <div>
-      {currentUser && <PostEditor community={community}/>}
+      {currentUser && <PostEditor community={community} tag={tagName}/>}
       <div className='list-controls tag-header'>
         <span className='tag-name'>#{tagName}</span>
         {id && (tag.followed

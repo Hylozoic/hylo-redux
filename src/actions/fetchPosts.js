@@ -4,18 +4,22 @@ import { FETCH_POSTS, CHECK_FRESHNESS_POSTS } from './index'
 export function fetchPosts (opts) {
   // communityId is only used when fetching a tag
   const {
-    subject, id, limit, type, tag, sort, search, filter, cacheId, communityId,
-    omit
+    subject, id, limit, type, tag, sort, search, filter, cacheId, omit
   } = opts
   const offset = opts.offset || 0
-  const querystring = cleanAndStringify({
+  const queryParams = {
     offset, limit, type, tag, sort, search, filter, omit,
-    comments: true, votes: true})
+    comments: true, votes: true}
   let path
 
   switch (subject) {
     case 'community':
-      path = `/noo/community/${id}/posts`
+      if (id === 'all' && tag) {
+        path = `/noo/tag/${tag}/posts`
+        queryParams.tag = null
+      } else {
+        path = `/noo/community/${id}/posts`
+      }
       break
     case 'person':
       path = `/noo/user/${id}/posts`
@@ -27,18 +31,11 @@ export function fetchPosts (opts) {
       path = `/noo/user/${id}/followed-posts`
       break
     case 'project':
-      path = `/noo/project/${id}/posts`
-      break
     case 'network':
-      path = `/noo/network/${id}/posts`
-      break
-    case 'tag':
-      path = communityId
-        ? `/noo/community/${communityId}/tag/${id}/posts`
-        : `/noo/tag/${id}/posts`
+      path = `/noo/${subject}/${id}/posts`
       break
   }
-  path += '?' + querystring
+  path += '?' + cleanAndStringify(queryParams)
 
   return {
     type: FETCH_POSTS,
@@ -50,21 +47,22 @@ export function fetchPosts (opts) {
 }
 
 export function checkFreshness (subject, id, posts, query = {}) {
-  let { limit, offset, type, sort, search, filter, communityId, omit } = query
-  let cacheId = createCacheId(subject, id, query)
-  if (!offset) offset = 0
-  let querystring = cleanAndStringify({offset, limit, type, sort, search, filter, omit})
-  let payload = {api: true, params: {posts}, path: `/noo/freshness/posts/${subject}/${id}`, method: 'POST'}
+  const { limit, type, sort, search, filter, tag, omit } = query
+  const offset = query.offset || 0
+  const queryParams = {offset, limit, type, sort, search, filter, tag, omit}
 
-  if (subject === 'tag') {
-    payload.path = communityId
-      ? `/noo/freshness/posts/community/${communityId}/tag/${id}`
-      : `/noo/freshness/posts/tag/${id}`
+  let path
+  if (subject === 'community' && id === 'all' && tag) {
+    path = `/noo/freshness/posts/tag/${tag}`
+    queryParams.tag = null
+  } else {
+    path = `/noo/freshness/posts/${subject}/${id}`
   }
+  path += '?' + cleanAndStringify(queryParams)
 
-  payload.path += '?' + querystring
-
-  var meta = {cacheId}
-
-  return {type: CHECK_FRESHNESS_POSTS, payload, meta}
+  return {
+    type: CHECK_FRESHNESS_POSTS,
+    payload: {api: true, params: {posts}, path, method: 'POST'},
+    meta: {cacheId: createCacheId(subject, id, query)}
+  }
 }

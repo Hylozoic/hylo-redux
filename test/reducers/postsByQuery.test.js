@@ -57,7 +57,8 @@ describe('postsByQuery', () => {
       let post = {
         id: 'p',
         user: {id: '1'},
-        communities: [{slug: 'foo'}, {slug: 'bar'}]
+        communities: [{slug: 'foo'}, {slug: 'bar'}],
+        tag: 'sometag'
       }
 
       let action = {type: CREATE_POST, payload: post}
@@ -67,7 +68,11 @@ describe('postsByQuery', () => {
         'subject=community&id=foo': ['b'],
         'subject=community&id=bar': ['c'],
         'subject=community&id=baz': ['d'],
-        'subject=person&id=1': ['e']
+        'subject=person&id=1': ['e'],
+        'subject=community&id=all&tag=sometag': ['f'],
+        'subject=community&id=bar&tag=sometag': ['g'],
+        'subject=community&id=all&tag=othertag': ['h'],
+        'subject=community&id=bar&tag=othertag': ['i']
       }
 
       let expectedState = {
@@ -75,7 +80,11 @@ describe('postsByQuery', () => {
         'subject=community&id=foo': ['p', 'b'],
         'subject=community&id=bar': ['p', 'c'],
         'subject=community&id=baz': ['d'],
-        'subject=person&id=1': ['p', 'e']
+        'subject=person&id=1': ['p', 'e'],
+        'subject=community&id=all&tag=sometag': ['p', 'f'],
+        'subject=community&id=bar&tag=sometag': ['p', 'g'],
+        'subject=community&id=all&tag=othertag': ['h'],
+        'subject=community&id=bar&tag=othertag': ['i']
       }
 
       expect(postsByQuery(state, action)).to.deep.equal(expectedState)

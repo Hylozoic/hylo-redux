@@ -8,7 +8,7 @@ import { get } from 'lodash'
 import PostEditor from '../../components/PostEditor'
 const { bool, func, object } = React.PropTypes
 
-const subject = 'tag'
+const subject = 'community'
 
 class TagPosts extends React.Component {
   static propTypes = {
@@ -60,7 +60,7 @@ class TagPosts extends React.Component {
               Follow
             </button>)}
       </div>
-      <ConnectedPostList {...{subject, id: tagName, query: {...query, communityId: id}}}/>
+      <ConnectedPostList {...{subject, id: id || 'all', query: {...query, tag: tagName}}}/>
     </div>
   }
 }
@@ -70,7 +70,7 @@ export default compose(
     dispatch(fetchTag(tagName, id))
     .then(({ payload }) => payload.post
       ? dispatch(navigate(`/p/${payload.post.id}`))
-      : dispatch(fetch(subject, tagName, {...query, communityId: id})))),
+      : dispatch(fetch(subject, id || 'all', {...query, tag: tagName})))),
   connect((state, { params: { tagName, id } }) => {
     const tag = get(state, ['tagsByCommunity', id || 'all', tagName])
     return {

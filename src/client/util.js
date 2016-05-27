@@ -18,19 +18,21 @@ export function isAndroidApp () {
 }
 
 export function calliOSBridge (message, callback) {
-  var randomName = () => {
-    return randomstring.generate({length: 10, charset: 'alphabetic'})
-  }
-
-  if (callback) {
-    const callbackIdentifier = randomName()
-    if (!window.iOSCallbacks) {
-      window.iOSCallbacks = {}
+  if (isiOSApp()) {
+    var randomName = () => {
+      return randomstring.generate({length: 10, charset: 'alphabetic'})
     }
-    window.iOSCallbacks[callbackIdentifier] = callback
-    message.callbackPath = `window.iOSCallbacks.${callbackIdentifier}`
+
+    if (callback) {
+      const callbackIdentifier = randomName()
+      if (!window.iOSCallbacks) {
+        window.iOSCallbacks = {}
+      }
+      window.iOSCallbacks[callbackIdentifier] = callback
+      message.callbackPath = `window.iOSCallbacks.${callbackIdentifier}`
+    }
+    window.webkit.messageHandlers.hylo.postMessage(message)
   }
-  window.webkit.messageHandlers.hylo.postMessage(message)
 }
 
 // FIXME this isn't client-specific

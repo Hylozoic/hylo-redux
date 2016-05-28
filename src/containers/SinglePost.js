@@ -23,7 +23,7 @@ import { getComments, getCommunities, getPost } from '../models/post'
 import { fetch, ConnectedPostList } from './ConnectedPostList'
 const { array, bool, object, string } = React.PropTypes
 
-const subject = 'tag'
+const subject = 'community'
 
 const showTaggedPosts = post =>
   post.tag && !includes(['event', 'chat'], post.tag) &&
@@ -95,9 +95,9 @@ export default class SinglePost extends React.Component {
             Other posts for&nbsp;
             <span className='hashtag'>#{post.tag}</span>
           </p>
-          {community && <ConnectedPostList subject={subject} id={post.tag}
+          {community && <ConnectedPostList subject={subject} id={community.id}
             omit={post.id}
-            query={{...query, communityId: community.id}}/>}
+            query={{...query, tag: post.tag}}/>}
         </div>}
       </CoverImagePage>
     </div>
@@ -149,7 +149,7 @@ const setupPage = (store, id, query, action) => {
 
     // if this is an event or project, fetch the first page of results for
     // tagged posts.
-    showTaggedPosts(post) && dispatch(fetch(subject, post.tag, {...query, communityId, omit: post.id})),
+    showTaggedPosts(post) && dispatch(fetch(subject, communityId, {...query, tag: post.tag, omit: post.id})),
 
     // FIXME this should be done elsewhere since it needs to happen for every
     // page for a community, not just single-post views.

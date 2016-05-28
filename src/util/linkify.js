@@ -6,11 +6,8 @@ import { hashtagAttribute } from './RichTextTagger'
 import { tagUrl } from '../routes'
 import { hashtagFullRegex } from '../models/hashtag'
 
-// unlike the linkifyjs module, this handles text that may already have html
-// tags in it. it does so by generating a DOM from the text and linkifying only
-// text nodes that aren't inside A tags.
 
-  // this handles old-style hashtags, which aren't wrapped in tags
+// this handles old-style hashtags, which aren't wrapped in tags
 function linkifyjsOptions (slug) {
   return {
     formatHref: function (value, type) {
@@ -25,6 +22,9 @@ function linkifyjsOptions (slug) {
   }
 }
 
+// unlike the linkifyjs module, this handles text that may already have html
+// tags in it. it does so by generating a DOM from the text and linkifying only
+// text nodes that aren't inside A tags.
 export default function linkify (text, slug) {
   var $ = cheerio.load(text)
 

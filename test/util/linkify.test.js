@@ -42,9 +42,9 @@ describe('linkify', () => {
   })
 
   it('adds attributes to linked hashtags, including community slug if present', () => {
-    let source = '<p>and <a>#foo</a></p>'
-    let slug = 'bar'
-    let expected = '<p>and <a href="/c/bar/tag/foo" data-search="#foo" class="hashtag">#foo</a></p>'
+    let source = '<p>and <a>#foo-bar</a></p>'
+    let slug = 'yes'
+    let expected = '<p>and <a href="/c/yes/tag/foo-bar" data-search="#foo-bar" class="hashtag">#foo-bar</a></p>'
     expect(linkify(source, slug)).to.equal(expected)
   })
 })

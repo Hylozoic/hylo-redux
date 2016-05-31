@@ -1,5 +1,6 @@
 import qs from 'querystring'
 import { isEmpty, omit, omitBy } from 'lodash'
+import { crypto } from 'crypto'
 
 // if you need to check whether the client is a mobile device from the server
 // side, use the isMobile reducer in the store
@@ -16,20 +17,22 @@ export function isAndroidApp () {
   return typeof AndroidBridge !== 'undefined'
 }
 
-/* usage:
- * var connectWebViewJavascriptBridge = require('webViewJavascriptBridge')
- * connectWebViewJavascriptBridge(function(bridge) {
- *   bridge.send(...)
- * }
- */
-export function connectWebViewBridge (callback) {
-  if (window.WebViewJavascriptBridge) {
-    callback(window.WebViewJavascriptBridge)
-  } else {
-    document.addEventListener('WebViewJavascriptBridgeReady', function () {
-      callback(window.WebViewJavascriptBridge)
-    }, false)
+export function calliOSBridge (message, callback) {
+  if (!isiOSApp()) return
+
+  var randomName = () => {
+    return crypto.randomBytes(10).toString('hex')
   }
+
+  if (callback) {
+    const callbackIdentifier = randomName()
+    if (!window.iOSCallbacks) {
+      window.iOSCallbacks = {}
+    }
+    window.iOSCallbacks[callbackIdentifier] = callback
+    message.callbackPath = `window.iOSCallbacks.${callbackIdentifier}`
+  }
+  window.webkit.messageHandlers.hylo.postMessage(message)
 }
 
 // FIXME this isn't client-specific

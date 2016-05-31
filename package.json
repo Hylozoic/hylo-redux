@@ -63,7 +63,7 @@
     "react-dom": "^15.0.2",
     "react-fetcher": "^0.2.0",
     "react-masonry-component": "^3.0.0",
-    "react-redux": "^4.0.0",
+    "react-redux": "^4.4.5",
     "react-router": "^1.0.0",
     "react-tinymce": "^0.5.1",
     "redux": "^3.0.4",
@@ -78,6 +78,7 @@
     "velocity-react": "^1.1.5"
   },
   "devDependencies": {
+    "babel-cli": "^6.9.0",
     "babel-plugin-react-transform": "^1.1.1",
     "babelify": "^6.3.0",
     "chai": "^3.4.1",

@@ -9,7 +9,7 @@ import Notifier from '../components/Notifier'
 import LiveStatusPoller from '../components/LiveStatusPoller'
 import PageTitleController from '../components/PageTitleController'
 import { logout, navigate, removeNotification, toggleMainMenu, updateUserSettings } from '../actions'
-import { makeUrl, calliOSBridge } from '../client/util'
+import { makeUrl } from '../client/util'
 import { VelocityComponent } from 'velocity-react'
 import { canInvite, canModerate } from '../models/currentUser'
 import { get, pick } from 'lodash'
@@ -107,10 +107,7 @@ export default class App extends React.Component {
         onChangeCommunity={visitCommunity}
         openLeftNav={openLeftNav}
         leftNavIsOpen={leftNavIsOpen}
-        logout={() => {
-          calliOSBridge({type: 'logout'})
-          dispatch(logout())
-        }}
+        logout={() => dispatch(logout())}
         path={path}
         search={doSearch}
         opened={leftNavIsOpen}/>}

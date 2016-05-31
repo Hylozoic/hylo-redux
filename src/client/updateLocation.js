@@ -4,7 +4,6 @@ import { debug } from '../util/logging'
 import { get, isEqual } from 'lodash'
 import { localsForPrefetch } from '../util/universal'
 import { identify } from '../util/analytics'
-import { calliOSBridge } from './util'
 
 var prevLocation = null
 
@@ -37,9 +36,6 @@ const updateLocation = opts => location => {
 
     // don't prefetch for the first route after page load, because it's all been
     // loaded on the server already
-
-    calliOSBridge({type: 'navigated', pathname: location.pathname})
-
     Promise.resolve(prevLocation && getPrefetchedData(components, locals))
     .then(() => getDeferredData(components, locals))
     .then(() => prevLocation = location)

@@ -57,7 +57,6 @@
     "newrelic": "^1.27.2",
     "pretty-date": "^0.2.0",
     "querystring": "^0.2.0",
-    "randomstring": "^1.1.5",
     "react": "^15.0.2",
     "react-datetime": "^2.1.0",
     "react-dom": "^15.0.2",

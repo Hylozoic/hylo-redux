@@ -1,6 +1,6 @@
 import { join } from 'path'
 import qs from 'querystring'
-import { isiOSApp, isAndroidApp, calliOSBridge } from './util'
+import { isiOSApp, isAndroidApp, connectWebViewBridge } from './util'
 import { s3, filepickerKey } from '../config'
 
 // order matters, except for CONVERT, which toggles the crop UI
@@ -85,11 +85,11 @@ const uploadCore = function (opts) {
     let resp = window.AndroidBridge.filepickerUpload(opts)
     resp === '' ? failure('Cancelled') : convertAndStore(JSON.parse(resp))
   } else if (isiOSApp()) {
-    let payload = {type: 'filepickerUpload'}
+    let payload = JSON.stringify({message: 'filepickerUpload', options: opts})
 
-    calliOSBridge(payload, resp => {
-      resp === '' ? failure('Cancelled') : convertAndStore(JSON.parse(resp))
-    })
+    connectWebViewBridge(bridge =>
+      bridge.send(payload, resp =>
+        (resp === '' ? failure('Cancelled') : convertAndStore(JSON.parse(resp)))))
   } else {
     pick(
       {

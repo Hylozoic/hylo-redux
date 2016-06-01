@@ -9,7 +9,7 @@ import Notifier from '../components/Notifier'
 import LiveStatusPoller from '../components/LiveStatusPoller'
 import PageTitleController from '../components/PageTitleController'
 import { logout, navigate, removeNotification, toggleMainMenu, updateUserSettings } from '../actions'
-import { makeUrl, calliOSBridge } from '../client/util'
+import { makeUrl, calliOSBridge, iOSAppVersion } from '../client/util'
 import { VelocityComponent } from 'velocity-react'
 import { canInvite, canModerate } from '../models/currentUser'
 import { get, pick } from 'lodash'
@@ -63,6 +63,13 @@ export default class App extends React.Component {
 
   getChildContext () {
     return pick(this.props, 'dispatch', 'currentUser', 'isMobile')
+  }
+
+  componentDidMount () {
+    const version = Number(iOSAppVersion())
+    if (version < 1.7) {
+      window.location = 'https://www.hylo.com/newapp'
+    }
   }
 
   render () {

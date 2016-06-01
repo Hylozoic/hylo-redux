@@ -142,8 +142,8 @@ export class PostEditor extends React.Component {
     const self = this._self()
 
     // this forces a final blur event on TinyMCE
-    const { tagSelector } = self.refs
-    tagSelector.focus()
+    const { tagSelector, title } = self.refs
+    tagSelector ? tagSelector.focus() : title.focus()
 
     self.validate().then(valid => {
       if (!valid) return

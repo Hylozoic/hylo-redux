@@ -8,7 +8,7 @@ const classNames = [
   'icon-Calendar',
   'icon-Calendar-Add',
   'icon-Camera',
-  'icon-Chevon-Left',
+  'icon-Chevron-Left',
   'icon-Chevron-Down',
   'icon-Chevron-Right',
   'icon-Chevron-Up',

@@ -16,7 +16,8 @@ const staticPages = [
   '/subscribe',
   '/styleguide',
   '/terms',
-  '/terms/privacy'
+  '/terms/privacy',
+  '/newapp'
 ]
 
 const transformPathname = pathname => {

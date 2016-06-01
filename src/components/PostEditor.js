@@ -22,7 +22,7 @@ import AutosizingTextarea from './AutosizingTextarea'
 import { connect } from 'react-redux'
 import {
   updatePostEditor, createPost, updatePost, cancelPostEdit,
-  removeImage, removeDoc
+  removeImage, removeDoc, fetchLeftNavTags
 } from '../actions'
 import { uploadImage } from '../actions/uploadImage'
 import { uploadDoc } from '../actions/uploadDoc'
@@ -31,6 +31,7 @@ import { prepend } from '../util/tinymce'
 import { isKey } from '../util/textInput'
 import { CREATE_POST, UPDATE_POST, UPLOAD_IMAGE } from '../actions'
 import { ADDED_POST, EDITED_POST, trackEvent } from '../util/analytics'
+import { getCurrentCommunity } from '../models/community'
 const { array, bool, func, object, string } = React.PropTypes
 
 const specialTags = ['request', 'offer', 'intention']
@@ -51,7 +52,8 @@ export const newPostId = 'new-post'
     mentionOptions: state.typeaheadMatches.post,
     currentUser: state.people.current,
     saving: state.pending[CREATE_POST] || state.pending[UPDATE_POST],
-    imagePending: state.pending[UPLOAD_IMAGE]
+    imagePending: state.pending[UPLOAD_IMAGE],
+    currentCommunitySlug: get(getCurrentCommunity(state), 'slug')
   }
 }, null, null, {withRef: true}))
 export class PostEditor extends React.Component {
@@ -67,7 +69,8 @@ export class PostEditor extends React.Component {
     onCancel: func,
     imagePending: bool,
     type: string,
-    tag: string
+    tag: string,
+    currentCommunitySlug: string
   }
 
   constructor (props) {
@@ -151,7 +154,7 @@ export class PostEditor extends React.Component {
   }
 
   save () {
-    const { dispatch, post, postEdit, id } = this.props
+    const { dispatch, post, postEdit, id, currentCommunitySlug } = this.props
     const tag = postEdit.tag
     const params = {
       type: this.editorType(),
@@ -170,6 +173,9 @@ export class PostEditor extends React.Component {
         post: {id: get(post, 'id'), tag},
         community: {id: get(postEdit, 'communities.0')}
       })
+      if (currentCommunitySlug) {
+        dispatch(fetchLeftNavTags(currentCommunitySlug, true))
+      }
       this.cancel()
     })
   }

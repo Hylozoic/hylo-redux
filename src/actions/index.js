@@ -610,11 +610,11 @@ export function followTag (id, tagName) {
   }
 }
 
-export function fetchLeftNavTags (id) {
+export function fetchLeftNavTags (id, refresh) {
   return {
     type: FETCH_LEFT_NAV_TAGS,
     payload: {api: true, path: `/noo/community/${id}/tags/leftnav`},
-    meta: {id, cache: {id, bucket: 'tagsByCommunity'}}
+    meta: {id, cache: {id, bucket: 'tagsByCommunity', refresh}}
   }
 }
 

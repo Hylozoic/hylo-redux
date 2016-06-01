@@ -140,6 +140,11 @@ export class PostEditor extends React.Component {
 
   saveIfValid () {
     const self = this._self()
+
+    // this forces a final blur event on TinyMCE
+    const { tagSelector, title } = self.refs
+    tagSelector ? tagSelector.focus() : title.focus()
+
     self.validate().then(valid => {
       if (!valid) return
       // we use setTimeout here to avoid a race condition. the description field
@@ -313,7 +318,7 @@ export class PostEditor extends React.Component {
         </div>}
 
       {shouldSelectTag && <Dropdown className='hashtag-selector' toggleChildren={
-        <button>
+        <button ref='tagSelector'>
           #{tag || 'all-topics'}&nbsp;
           <span className='caret'></span>
         </button>

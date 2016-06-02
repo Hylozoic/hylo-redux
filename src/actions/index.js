@@ -58,6 +58,7 @@ export const REMOVE_POST = 'REMOVE_POST'
 export const RESET_COMMUNITY_VALIDATION = 'RESET_COMMUNITY_VALIDATION'
 export const RESET_ERROR = 'RESET_ERROR'
 export const RESET_NETWORK_VALIDATION = 'RESET_NETWORK_VALIDATION'
+export const RESET_NEW_POST_COUNT = 'RESET_NEW_POST_COUNT'
 export const SEARCH = 'SEARCH'
 export const SEND_COMMUNITY_INVITATION = 'SEND_COMMUNITY_INVITATION'
 export const SET_CURRENT_COMMUNITY_ID = 'SET_CURRENT_COMMUNITY_ID'
@@ -627,5 +628,13 @@ export function removeComment (id) {
     type: REMOVE_COMMENT,
     payload: {api: true, path: `/noo/comment/${id}`, method: 'DELETE'},
     meta: {id}
+  }
+}
+
+export function resetNewPostCount (tagName, id) {
+  if (!id) return Promise.resolve()
+  return {
+    type: RESET_NEW_POST_COUNT,
+    payload: {api: true, path: `/noo/community/${id}/tag/${tagName}/reset`, method: 'POST'}
   }
 }

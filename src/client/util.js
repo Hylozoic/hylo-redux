@@ -1,5 +1,5 @@
 import qs from 'querystring'
-import { isEmpty, omit, omitBy } from 'lodash'
+import { isEmpty, omit, omitBy, get } from 'lodash'
 import { crypto } from 'crypto'
 
 // if you need to check whether the client is a mobile device from the server
@@ -11,6 +11,10 @@ export const isMobile = () => {
 
 export function isiOSApp () {
   return window.navigator.userAgent.indexOf('Hylo-App') > -1
+}
+
+export function iOSAppVersion () {
+  return Number(window.navigator.userAgent.split('Hylo-App/')[1])
 }
 
 export function isAndroidApp () {
@@ -32,7 +36,9 @@ export function calliOSBridge (message, callback) {
     window.iOSCallbacks[callbackIdentifier] = callback
     message.callbackPath = `window.iOSCallbacks.${callbackIdentifier}`
   }
-  window.webkit.messageHandlers.hylo.postMessage(message)
+  if (get(window, 'webkit.messageHandlers.hylo.postMessage')) {
+    window.webkit.messageHandlers.hylo.postMessage(message)
+  }
 }
 
 // FIXME this isn't client-specific

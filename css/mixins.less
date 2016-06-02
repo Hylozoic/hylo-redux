@@ -62,20 +62,26 @@
 .has-top-triangle(@color: @off-white, @border-color: @off-white, @side-length: 7px) {
   &:after {
     content: '';
-    display: block;
-    position: absolute;
-    left: 50%;
-    width: @side-length * 2;
-    height: @side-length * 2;
-    margin-left: -@side-length;
-    top: -@side-length;
-    border-top: 1px solid @border-color;
-    border-left: 1px solid @border-color;
-    background-color: @color;
-    transform: rotate(45deg);
-    -webkit-transform: rotate(45deg);
-    -ms-transform: rotate(45deg);
+    .is-top-triangle(@color, @border-color, @side-length);
   }
+}
+
+.is-top-triangle(@color: @off-white, @border-color: @off-white, @side-length: 7px) {
+  display: block;
+  position: absolute;
+  left: 50%;
+  width: @side-length * 2 !important;
+  height: @side-length * 2 !important;
+  margin-left: -@side-length;
+  top: -@side-length;
+  border-top: 1px solid @border-color !important;
+  border-left: 1px solid @border-color !important;
+  border-bottom: 0 !important;
+  border-right: 0 !important;
+  background-color: @color;
+  transform: rotate(45deg);
+  -webkit-transform: rotate(45deg);
+  -ms-transform: rotate(45deg);
 }
 
 .has-left-side-avatar() {

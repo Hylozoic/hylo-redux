@@ -1,53 +1,64 @@
 import React from 'react'
 
 const classNames = [
-  'icon-Camera',
-  'icon-Comment-Alt',
-  'icon-Message-Smile',
-  'icon-Comment',
-  'icon-Keypad',
-  'icon-Loudspeaker',
-  'icon-JunkBox',
-  'icon-Box-Out',
-  'icon-Mail',
   'icon-AddContacts',
-  'icon-Users',
-  'icon-Chevron-Up',
-  'icon-Chevon-Left',
+  'icon-Bell',
+  'icon-Bookmark',
+  'icon-Box-Out',
+  'icon-Calendar',
+  'icon-Calendar-Add',
+  'icon-Camera',
+  'icon-Chevron-Left',
   'icon-Chevron-Down',
   'icon-Chevron-Right',
-  'icon-List',
-  'icon-Calendar-Add',
-  'icon-Calendar',
-  'icon-Bell',
+  'icon-Chevron-Up',
   'icon-Clock',
   'icon-Cloud-Download',
   'icon-Cloud-Upload',
-  'icon-Pin-1',
-  'icon-Loupe',
-  'icon-View',
-  'icon-More-Alt',
-  'icon-More',
-  'icon-Bookmark',
-  'icon-Heart',
-  'icon-Like',
-  'icon-Star',
-  'icon-Trash',
+  'icon-Comment',
+  'icon-Comment-Alt',
   'icon-Compose',
-  'icon-Lock',
-  'icon-pencil',
+  'icon-Heart',
+  'icon-Heart2',
+  'icon-Help',
+  'icon-JunkBox',
+  'icon-Keypad',
+  'icon-Like',
   'icon-Link',
-  'icon-merkaba',
-  'icon-hylo-script',
-  'icon-twitter',
+  'icon-List',
+  'icon-Lock',
+  'icon-Loudspeaker',
+  'icon-Loupe',
+  'icon-Mail',
+  'icon-Message-Smile',
+  'icon-More',
+  'icon-More-Alt',
+  'icon-Pencil',
+  'icon-Pin-1',
+  'icon-Pin-2',
+  'icon-ProjectorScreen',
+  'icon-Settings',
+  'icon-Star',
+  'icon-Tag',
+  'icon-Trash',
+  'icon-Users',
+  'icon-VideoCamera',
+  'icon-View',
+  'icon-big-check',
   'icon-facebook',
-  'icon-linkedin'
-].reverse()
+  'icon-hylo-script',
+  'icon-linkedin',
+  'icon-merkaba',
+  'icon-twitter'
+]
 
 export default class IconTest extends React.Component {
   render () {
-    return <div>
-      {classNames.map(cn => <span key={cn} className={cn} />)}
+    return <div id='icon-test'>
+      {classNames.map(cn => <span key={cn}>
+        <span className={cn}/> {cn.replace(/icon-/, '')}
+      </span>)}
+      <p>{classNames.length} icons</p>
     </div>
   }
 }

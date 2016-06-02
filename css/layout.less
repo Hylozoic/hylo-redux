@@ -148,7 +148,6 @@ nav {
       overflow-y: visible;
       max-height: none;
       padding: @border-radius-base 0 0 0;
-      .has-top-triangle(#fff, #fff, 5px);
       &:after {
         left: 90px;
       }
@@ -163,26 +162,10 @@ nav {
           padding: 13px 15px;
         }
       }
-
-      .mobile({
-        &:after {
-          left: auto;
-          right: 78.5px;
-        }
-
-        position: fixed;
-        top: 0;
-        left: -1px;
-        margin-top: @mobile-top-nav-height - 1;
-        border-radius: 0;
-
-        li {
-          width: 100vw;
-        }
-      });
     }
 
     .inner-list {
+      width: 100%;
       border-top-left-radius: @border-radius-base;
       border-top-right-radius: @border-radius-base;
       border: 0;
@@ -324,6 +307,18 @@ nav {
   .user-menu {
     .dropdown-menu {
       margin-top: 6px;
+      overflow-y: visible;
+      .mobile({
+        margin-top: 20px;
+      });
+
+      > li > a {
+        padding: 8px 20px;
+      }
+    }
+
+    .dropdown-toggle {
+      display: block;
     }
 
     .badge {

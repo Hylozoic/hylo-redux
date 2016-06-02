@@ -796,6 +796,7 @@ ul.tags {
   top: 0;
   left: 0;
   background-color: rgba(0, 0, 0, 0.25);
+  z-index: 2;
 }
 
 #admin-page {
@@ -803,5 +804,24 @@ ul.tags {
     background-color: white;
     padding: 15px;
     margin-bottom: 15px;
+  }
+}
+
+#icon-test {
+  padding: 15px;
+  background-color: white;
+  .light;
+  > span {
+    line-height: 30px;
+    > * {
+      vertical-align: middle;
+    }
+    span {
+      font-size: 18px;
+      margin-right: 3px;
+    }
+    margin-bottom: 8px;
+    margin-right: 15px;
+    display: inline-block;
   }
 }

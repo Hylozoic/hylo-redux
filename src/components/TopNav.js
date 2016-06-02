@@ -157,8 +157,7 @@ const CommunityMenu = ({ menuItems, onChangeCommunity }, { isMobile, dispatch })
     dispatch(navigate(nextPath('', id ? currentItem : null, isNetwork)))
   }
 
-  return <Dropdown className='communities'
-    backdrop={true}
+  return <Dropdown className='communities' backdrop={true} triangle={true}
     toggleChildren={<div>
       <img src={currentItem.avatar_url} title='Jump to Conversations'
         onClick={jumpToConversations}/>
@@ -199,12 +198,14 @@ const UserMenu = ({ isMobile, slug, logout, newCount, currentUser }) => {
       </A>
     </li>}
     <li>
-      <Dropdown className='user-menu' alignRight={true} toggleChildren={
-        <div>
-          <NonLinkAvatar person={currentUser}/>
-          {isMobile && newCount > 0 && <div className='dot-badge'/>}
-        </div>
-      }>
+      <Dropdown className='user-menu' alignRight={true}
+        triangle={isMobile} backdrop={isMobile}
+        toggleChildren={
+          <div>
+            <NonLinkAvatar person={currentUser}/>
+            {isMobile && newCount > 0 && <div className='dot-badge'/>}
+          </div>
+        }>
         <li><A to={`/u/${currentUser.id}`}>My profile</A></li>
         {isMobile && <li>
           <A to={slug ? `/c/${slug}/notifications` : '/notifications'}>

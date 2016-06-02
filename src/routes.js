@@ -137,7 +137,7 @@ export default function makeRoutes (store) {
     </Route>
 
     <Route path='testbench' component={TestBench}/>
-    <Route path='icontest' component={IconTest}/>
+    <Route path='icons' component={IconTest}/>
   </Route>
 }
 

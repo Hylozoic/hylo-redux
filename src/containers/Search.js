@@ -112,7 +112,9 @@ const Results = ({ results, onTagClick, loadMore }) => {
   </div>
 }
 
-const PostResult = ({ post }) => <Post post={post}/>
+const PostResult = ({ post }, { dispatch }) =>
+  <Post post={post} onExpand={() => dispatch(navigate(`/p/${post.id}`))}/>
+PostResult.contextTypes = {dispatch: func}
 
 const PersonResult = ({ person, onTagClick }) => {
   let { bio, work, intention } = person

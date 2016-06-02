@@ -62,10 +62,10 @@ export default class Dropdown extends React.Component {
         {toggleChildren}
       </a>
       <ul className={cx('dropdown-menu', {'dropdown-menu-right': alignRight})}
-        style={menuStyle(isMobile, this.refs.parent)}
+        style={mobileMenuStyle(isMobile, this.refs.parent)}
         onClick={() => this.toggle()}>
         {triangle && <li className='triangle'
-          style={{left: findTriangleLeftPos(this.refs.parent)}}/>}
+          style={{left: findTriangleLeftPos(isMobile, this.refs.parent)}}/>}
         {children}
       </ul>
       <VelocityTransitionGroup
@@ -79,7 +79,7 @@ export default class Dropdown extends React.Component {
 
 const margin = 10
 
-const menuStyle = (isMobile, parent) => {
+const mobileMenuStyle = (isMobile, parent) => {
   if (!isMobile || typeof document === 'undefined') return {}
   return {
     left: findLeftPos(parent) + margin,
@@ -89,5 +89,7 @@ const menuStyle = (isMobile, parent) => {
 
 const findLeftPos = parent => parent ? -position(parent).x : null
 
-const findTriangleLeftPos = parent =>
-  parent ? position(parent).x + parent.offsetWidth / 2 - margin - 1 : null
+const findTriangleLeftPos = (isMobile, parent) => {
+  if (!isMobile || !parent) return
+  return position(parent).x + parent.offsetWidth / 2 - margin - 1
+}

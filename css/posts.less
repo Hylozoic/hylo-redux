@@ -281,6 +281,7 @@ ul.posts {
   }
 
   &.expanded {
+    z-index: 3;
     .non-mobile({
       position: relative;
       @extra-margin: 15px;
@@ -1125,7 +1126,7 @@ ul.posts {
 
 .comment {
   .post-left-padding(@mobile-side-margin);
-  padding-right: 15px;
+  .post-right-padding;
   margin-bottom: 5px;
   padding-top: 15px;
   .has-left-side-avatar;

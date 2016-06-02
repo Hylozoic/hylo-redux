@@ -36,8 +36,9 @@ export function calliOSBridge (message, callback) {
     window.iOSCallbacks[callbackIdentifier] = callback
     message.callbackPath = `window.iOSCallbacks.${callbackIdentifier}`
   }
-  const postMessage = get(window, 'webkit.messageHandlers.hylo.postMessage')
-  postMessage && postMessage(message)
+  if (get(window, 'webkit.messageHandlers.hylo.postMessage')) {
+    window.webkit.messageHandlers.hylo.postMessage(message)
+  }
 }
 
 // FIXME this isn't client-specific

@@ -31,10 +31,15 @@ export default class CommentForm extends React.Component {
     event.preventDefault()
     if (!text || textLength(text) < 2) return
 
-    dispatch(createComment(postId, this.state.text))
-    trackEvent(ADDED_COMMENT, {post: {id: postId}})
-    this.refs.editor.setContent('')
-    this.setState({text: '', editing: false})
+    // this is to make sure the last edit in TinyMCE gets saved on mobile,
+    // because the blur event doesn't fire when the button is tapped otherwise
+    this.refs.button.focus()
+    setTimeout(() => {
+      dispatch(createComment(postId, this.state.text))
+      trackEvent(ADDED_COMMENT, {post: {id: postId}})
+      this.refs.editor.setContent('')
+      this.setState({text: '', editing: false})
+    })
   }
 
   render () {
@@ -51,7 +56,7 @@ export default class CommentForm extends React.Component {
             <RichTextEditor ref='editor' name='comment'
               onChange={setText}
               startFocused={true}/>
-            <input type='submit' value='Comment'/>
+            <input type='submit' value='Comment' ref='button'/>
           </div>
         : <div className='content placeholder' onClick={edit}>
             {placeholder}

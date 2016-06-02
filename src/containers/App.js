@@ -8,7 +8,7 @@ import { LeftNav, leftNavWidth, leftNavEasing } from '../components/LeftNav'
 import Notifier from '../components/Notifier'
 import LiveStatusPoller from '../components/LiveStatusPoller'
 import PageTitleController from '../components/PageTitleController'
-import { logout, navigate, removeNotification, toggleMainMenu, updateUserSettings } from '../actions'
+import { logout, navigate, removeNotification, toggleMainMenu, updateUserSettings, fetchLeftNavTags } from '../actions'
 import { makeUrl, calliOSBridge } from '../client/util'
 import { VelocityComponent } from 'velocity-react'
 import { canInvite, canModerate } from '../models/currentUser'
@@ -63,6 +63,36 @@ export default class App extends React.Component {
 
   getChildContext () {
     return pick(this.props, 'dispatch', 'currentUser', 'isMobile')
+  }
+
+  setLeftNavRefreshInterval (community) {
+    let { dispatch } = this.props
+
+    if (this.leftNavRefreshInterval) {
+      clearInterval(this.leftNavRefreshInterval)
+    }
+
+    const slug = get(community, 'slug')
+
+    if (slug) {
+      this.leftNavRefreshInterval = setInterval(() => dispatch(fetchLeftNavTags(slug, true)),
+        60 * 1000)
+    }
+  }
+
+  componentDidMount () {
+    let { community } = this.props
+    this.setLeftNavRefreshInterval(community)
+  }
+
+  componentWillReceiveProps (nextProps) {
+    if (nextProps.community.id !== this.props.community.id) {
+      this.setLeftNavRefreshInterval(nextProps.community)
+    }
+  }
+
+  componentWillUnmount () {
+    clearInterval(this.intervalId)
   }
 
   render () {

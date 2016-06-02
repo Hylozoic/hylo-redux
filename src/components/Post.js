@@ -33,6 +33,8 @@ import decode from 'ent/decode'
 
 const spacer = <span>&nbsp; •&nbsp; </span>
 
+const shouldShowTag = tag => tag && !includes(['chat'], tag)
+
 export const presentDescription = (post, community) =>
   present(sanitize(post.description), {slug: get(community, 'slug')})
 
@@ -126,7 +128,7 @@ const Details = ({ expanded, onExpand, tag }, { post, community }) => {
       <a onClick={onExpand} className='show-more'>Show&nbsp;more</a>
       &nbsp;
     </span>}
-    {tag !== 'chat' && <a className='hashtag' href={tagUrl(tag, slug)}>
+    {shouldShowTag(tag) && <a className='hashtag' href={tagUrl(tag, slug)}>
       {`#${tag}`}
     </a>}
   </div>

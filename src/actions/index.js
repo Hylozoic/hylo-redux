@@ -47,6 +47,7 @@ export const MARK_ACTIVITY_READ_PENDING = MARK_ACTIVITY_READ + _PENDING
 export const MARK_ALL_ACTIVITIES_READ = 'MARK_ALL_ACTIVITIES_READ'
 export const MARK_ALL_ACTIVITIES_READ_PENDING = MARK_ALL_ACTIVITIES_READ + _PENDING
 export const NAVIGATE = 'NAVIGATE'
+export const NO_ACTION = 'NO_ACTION'
 export const NOTIFY = 'NOTIFY'
 export const REMOVE_COMMENT = 'REMOVE_COMMENT'
 export const REMOVE_COMMUNITY_MODERATOR = 'REMOVE_COMMUNITY_MODERATOR'
@@ -632,7 +633,7 @@ export function removeComment (id) {
 }
 
 export function resetNewPostCount (tagName, id) {
-  if (!id) return Promise.resolve()
+  if (!id) return {type: NO_ACTION}
   return {
     type: RESET_NEW_POST_COUNT,
     payload: {api: true, path: `/noo/community/${id}/tag/${tagName}/reset`, method: 'POST'}

@@ -7,6 +7,7 @@ because they make more sense.
 */
 
 import React from 'react'
+import shallowCompare from 'react-addons-shallow-compare'
 import cx from 'classnames'
 import autoproxy from 'autoproxy'
 import {
@@ -278,6 +279,10 @@ export class PostEditor extends React.Component {
   editorType () {
     const type = this.props.postEdit.type || this.props.type
     return includes(['event', 'project'], type) ? type : null
+  }
+
+  shouldComponentUpdate (nextProps, nextState) {
+    return shallowCompare(this, nextProps, nextState)
   }
 
   render () {

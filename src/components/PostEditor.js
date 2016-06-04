@@ -543,6 +543,8 @@ class TagDescriptionEditor extends React.Component {
     const edit = debounce((tag, value) =>
       dispatch(editTagDescription(tag, value)), 200)
 
+    if (isEmpty(tags)) return null
+
     return <div id='tag-description-editor'>
       <div className='backdrop'/>
       <div className='modal'>

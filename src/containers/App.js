@@ -65,40 +65,11 @@ export default class App extends React.Component {
     return pick(this.props, 'dispatch', 'currentUser', 'isMobile')
   }
 
-  setLeftNavRefreshInterval (community) {
-    let { dispatch } = this.props
-
-    if (this.leftNavRefreshInterval) {
-      clearInterval(this.leftNavRefreshInterval)
-    }
-
-    const slug = get(community, 'slug')
-
-    if (slug) {
-      this.leftNavRefreshInterval = setInterval(() => dispatch(fetchLeftNavTags(slug, true)),
-        60 * 1000)
-    }
-  }
-
   componentDidMount () {
-    let { community } = this.props
-
     const version = Number(iOSAppVersion())
     if (version < 1.7) {
       window.location = 'https://www.hylo.com/newapp'
     }
-
-    this.setLeftNavRefreshInterval(community)
-  }
-
-  componentWillReceiveProps (nextProps) {
-    if (nextProps.community.id !== this.props.community.id) {
-      this.setLeftNavRefreshInterval(nextProps.community)
-    }
-  }
-
-  componentWillUnmount () {
-    clearInterval(this.intervalId)
   }
 
   render () {
@@ -159,7 +130,7 @@ export default class App extends React.Component {
 
       <Notifier messages={notifierMessages}
         remove={id => dispatch(removeNotification(id))}/>
-      <LiveStatusPoller/>
+      <LiveStatusPoller communityId={get(community, 'id')}/>
       <PageTitleController/>
     </div>
   }

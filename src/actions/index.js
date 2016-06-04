@@ -570,10 +570,10 @@ export function search (opts) {
   }
 }
 
-export function fetchLiveStatus () {
+export function fetchLiveStatus (communityId) {
   return {
     type: FETCH_LIVE_STATUS,
-    payload: {api: true, path: `/noo/live-status`}
+    payload: {api: true, path: `/noo/live-status/${communityId}`}
   }
 }
 

@@ -1,7 +1,9 @@
-import { includes, startCase, uniq } from 'lodash'
+import { includes, mapValues, startCase, uniq } from 'lodash'
 import {
   CANCEL_POST_EDIT,
+  CANCEL_TAG_DESCRIPTION_EDIT,
   CREATE_POST,
+  EDIT_TAG_DESCRIPTION,
   REMOVE_DOC,
   REMOVE_IMAGE,
   START_POST_EDIT,
@@ -51,10 +53,10 @@ const withSuggestedTag = (payload, state, id) => {
 }
 
 export default function (state = {}, action) {
-  if (action.error) return state
+  const { type, payload, meta, error } = action
+  if (error) return state
 
-  let { type, payload, meta } = action
-  let { subject, id } = meta || {}
+  const { subject, id } = meta || {}
   switch (type) {
     case UPDATE_POST_EDITOR:
       if (payload.video) {
@@ -89,6 +91,37 @@ export default function (state = {}, action) {
       return stateWithDoc(state, id, payload)
     case REMOVE_DOC:
       return stateWithoutDoc(state, id, payload)
+  }
+
+  return state
+}
+
+export const editingTagDescriptions = (state = false, action) => {
+  const { type, error, payload } = action
+  if (type === CANCEL_TAG_DESCRIPTION_EDIT) {
+    return false
+  } else if (type === CREATE_POST && error) {
+    const response = JSON.parse(payload.response.body)
+    return !!response.tagsMissingDescriptions
+  }
+
+  return state
+}
+
+export const tagDescriptionEdits = (state = {}, action) => {
+  const { type, error, payload } = action
+  if (type === CREATE_POST && error) {
+    const response = JSON.parse(payload.response.body)
+    if (response.tagsMissingDescriptions) {
+      return {
+        ...mapValues(response.tagsMissingDescriptions, () => ''),
+        ...state
+      }
+    }
+  } else if (includes([START_POST_EDIT, CANCEL_POST_EDIT], type)) {
+    return {}
+  } else if (type === EDIT_TAG_DESCRIPTION) {
+    return {...state, [payload.tag]: payload.description}
   }
 
   return state

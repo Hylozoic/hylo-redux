@@ -11,7 +11,7 @@ import shallowCompare from 'react-addons-shallow-compare'
 import cx from 'classnames'
 import autoproxy from 'autoproxy'
 import {
-  debounce, compact, filter, find, get, includes, isEmpty, some, startsWith
+  debounce, compact, filter, find, get, includes, isEmpty, keys, map, some, startsWith
 } from 'lodash'
 import CommunityTagInput from './CommunityTagInput'
 import Dropdown from './Dropdown'
@@ -19,11 +19,12 @@ import EventPostEditor from './EventPostEditor'
 import ProjectPostEditor from './ProjectPostEditor'
 import RichTextEditor from './RichTextEditor'
 import { NonLinkAvatar } from './Avatar'
+import Icon from './Icon'
 import AutosizingTextarea from './AutosizingTextarea'
 import { connect } from 'react-redux'
 import {
-  updatePostEditor, createPost, updatePost, cancelPostEdit,
-  removeImage, removeDoc, fetchLeftNavTags
+  createPost, cancelPostEdit, cancelTagDescriptionEdit, editTagDescription,
+  fetchLeftNavTags, removeImage, removeDoc, updatePost, updatePostEditor
 } from '../actions'
 import { uploadImage } from '../actions/uploadImage'
 import { uploadDoc } from '../actions/uploadDoc'
@@ -45,23 +46,23 @@ export const newPostId = 'new-post'
     : type === 'event' ? 'new-event' : newPostId
 
   // this object tracks the edits that are currently being made
-  let postEdit = state.postEdits[id] || {}
+  const postEdit = state.postEdits[id] || {}
+  const { editingTagDescriptions, pending } = state
 
   return {
     id,
     postEdit,
     mentionOptions: state.typeaheadMatches.post,
-    currentUser: state.people.current,
-    saving: state.pending[CREATE_POST] || state.pending[UPDATE_POST],
-    imagePending: state.pending[UPLOAD_IMAGE],
-    currentCommunitySlug: get(getCurrentCommunity(state), 'slug')
+    saving: pending[CREATE_POST] || pending[UPDATE_POST],
+    imagePending: pending[UPLOAD_IMAGE],
+    currentCommunitySlug: get(getCurrentCommunity(state), 'slug'),
+    editingTagDescriptions
   }
 }, null, null, {withRef: true}))
 export class PostEditor extends React.Component {
   static propTypes = {
     dispatch: func,
     mentionOptions: array,
-    currentUser: object,
     post: object,
     id: string.isRequired,
     postEdit: object,
@@ -71,7 +72,12 @@ export class PostEditor extends React.Component {
     imagePending: bool,
     type: string,
     tag: string,
-    currentCommunitySlug: string
+    currentCommunitySlug: string,
+    editingTagDescriptions: bool
+  }
+
+  static contextTypes = {
+    currentUser: object
   }
 
   constructor (props) {
@@ -186,6 +192,11 @@ export class PostEditor extends React.Component {
     })
   }
 
+  saveWithTagDescriptions = tagDescriptions => {
+    this.updateStore({tagDescriptions})
+    this.saveIfValid()
+  }
+
   // this method allows you to type as much as you want into the title field, by
   // automatically truncating it to a specified length and prepending the
   // removed portion to the details field.
@@ -287,8 +298,10 @@ export class PostEditor extends React.Component {
 
   render () {
     const {
-      post, postEdit, dispatch, currentUser, imagePending, saving, id
+      post, postEdit, dispatch, imagePending, saving, id,
+      editingTagDescriptions
     } = this.props
+    const { currentUser } = this.context
     const selectableTags = compact([this.props.tag].concat(specialTags))
     const { description, communities, tag } = postEdit
     const { name, showDetails } = this.state
@@ -339,8 +352,7 @@ export class PostEditor extends React.Component {
 
       <div className='communities'>
         <span>in&nbsp;</span>
-        <CommunitySelector currentUser={currentUser}
-          communities={communities || []}
+        <CommunitySelector communities={communities || []}
           onSelect={this.addCommunity}
           onRemove={this.removeCommunity}/>
       </div>
@@ -368,6 +380,9 @@ export class PostEditor extends React.Component {
           Public
         </label>
       </div>
+
+      {editingTagDescriptions && <TagDescriptionEditor
+        onSave={this.saveWithTagDescriptions}/>}
     </div>
   }
 }
@@ -425,20 +440,19 @@ class CommunitySelector extends React.Component {
   }
 
   static propTypes = {
-    currentUser: object.isRequired,
     communities: array.isRequired,
     onSelect: func.isRequired,
     onRemove: func.isRequired
   }
 
+  static contextTypes = {
+    currentUser: object.isRequired
+  }
+
   render () {
     const { term } = this.state
-    const {
-      currentUser: { memberships },
-      communities,
-      onSelect,
-      onRemove
-    } = this.props
+    const { communities, onSelect, onRemove } = this.props
+    const { currentUser: { memberships } } = this.context
 
     const match = c =>
       startsWith(c.name.toLowerCase(), term.toLowerCase()) &&
@@ -512,3 +526,46 @@ const placeholderText = type =>
   type === 'event' ? 'Create an event'
     : type === 'project' ? 'Start a project'
     : 'Start a conversation'
+
+@connect((state, props) => ({
+  tags: state.tagDescriptionEdits
+}))
+class TagDescriptionEditor extends React.Component {
+  static propTypes = {
+    tags: object,
+    onSave: func,
+    dispatch: func
+  }
+
+  render () {
+    const { tags, onSave, dispatch } = this.props
+    const cancel = () => dispatch(cancelTagDescriptionEdit())
+    const edit = debounce((tag, value) =>
+      dispatch(editTagDescription(tag, value)), 200)
+
+    return <div id='tag-description-editor'>
+      <div className='backdrop'/>
+      <div className='modal'>
+        <h2>
+          Hey, you're creating&nbsp;
+          {keys(tags).length > 1 ? 'new topics.' : 'a new topic.'}
+          <a className='close' onClick={cancel}><Icon name='Fail'/></a>
+        </h2>
+        {map(tags, (description, tag) => <div key={tag} className='tag-group'>
+          <div className='topic'>
+            <label>Topic</label>
+            <span>#{tag}</span>
+          </div>
+          <div className='description'>
+            <label>Description</label>
+            <input type='text' defaultValue={description}
+              onChange={event => edit(tag, event.target.value)}/>
+          </div>
+        </div>)}
+        <div className='footer'>
+          <button onClick={() => onSave(tags)}>Create</button>
+        </div>
+      </div>
+    </div>
+  }
+}

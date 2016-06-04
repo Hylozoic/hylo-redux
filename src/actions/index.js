@@ -4,6 +4,7 @@ export const _PENDING = '_PENDING'
 export const ADD_COMMUNITY_MODERATOR = 'ADD_COMMUNITY_MODERATOR'
 export const ADD_COMMUNITY_MODERATOR_PENDING = ADD_COMMUNITY_MODERATOR + _PENDING
 export const CANCEL_POST_EDIT = 'CANCEL_POST_EDIT'
+export const CANCEL_TAG_DESCRIPTION_EDIT = 'CANCEL_TAG_DESCRIPTION_EDIT'
 export const CANCEL_TYPEAHEAD = 'CANCEL_TYPEAHEAD'
 export const CHANGE_EVENT_RESPONSE = 'CHANGE_EVENT_RESPONSE'
 export const CHANGE_EVENT_RESPONSE_PENDING = CHANGE_EVENT_RESPONSE + _PENDING
@@ -13,6 +14,7 @@ export const CREATE_COMMENT = 'CREATE_COMMENT'
 export const CREATE_COMMUNITY = 'CREATE_COMMUNITY'
 export const CREATE_POST = 'CREATE_POST'
 export const CREATE_NETWORK = 'CREATE_NETWORK'
+export const EDIT_TAG_DESCRIPTION = 'EDIT_TAG_DESCRIPTION'
 export const FETCH_ACTIVITY = 'FETCH_ACTIVITY'
 export const FETCH_COMMENTS = 'FETCH_COMMENTS'
 export const FETCH_COMMUNITY = 'FETCH_COMMUNITY'
@@ -628,4 +630,12 @@ export function removeComment (id) {
     payload: {api: true, path: `/noo/comment/${id}`, method: 'DELETE'},
     meta: {id}
   }
+}
+
+export function cancelTagDescriptionEdit () {
+  return {type: CANCEL_TAG_DESCRIPTION_EDIT}
+}
+
+export function editTagDescription (tag, description) {
+  return {type: EDIT_TAG_DESCRIPTION, payload: {tag, description}}
 }

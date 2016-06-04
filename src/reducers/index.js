@@ -10,7 +10,7 @@ import networks from './networks'
 import networkEdits from './networkEdits'
 import people from './people'
 import peopleByQuery from './peopleByQuery'
-import postEdits from './postEdits'
+import postEdits, { editingTagDescriptions, tagDescriptionEdits } from './postEdits'
 import postsByQuery from './postsByQuery'
 import posts from './posts'
 import {
@@ -169,6 +169,7 @@ export default combineReducers({
   commentsByPost,
   communities,
   communitiesByQuery,
+  editingTagDescriptions,
   hasFreshPostsByQuery: keyedHasFreshItems(CHECK_FRESHNESS_POSTS, 'postsByQuery'),
   networks,
   networkEdits,
@@ -179,6 +180,7 @@ export default combineReducers({
   postsByQuery,
   postEdits,
   searchResultsByQuery: appendPayloadByPath(SEARCH, 'meta.cache.id', 'items'),
+  tagDescriptionEdits,
   thanks: appendPayloadByPath(FETCH_THANKS, 'meta.id'),
   totalActivities: keyedCounter(FETCH_ACTIVITY, 'total', 'meta.id'),
   totalCommunitiesByQuery: keyedCounter(FETCH_COMMUNITIES, 'communities_total'),

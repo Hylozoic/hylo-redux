@@ -1,6 +1,8 @@
 import {
-  cloneDeep, filter, isArray, isEqual, mergeWith, set, some, transform, uniq
+  cloneDeep, filter, get, includes, isArray, isEqual, mergeWith, set, some,
+  transform, uniq
 } from 'lodash'
+import { CLEAR_CACHE } from '../actions'
 
 export const appendUniq = (state, key, values) =>
   concatUniq(state, key, state[key] || [], values)
@@ -63,3 +65,55 @@ export const toggleIncludes = (arr, element) => {
     ? filter(arr, x => !isEqual(x, element))
     : [...arr, element]
 }
+
+export const keyedCounter = (actionType, payloadKey, statePath = 'meta.cache.id') =>
+  (state = {}, action) => {
+    let { type, payload, error } = action
+    if (error) return state
+    if (type === actionType) {
+      return {...state, [get(action, statePath)]: Number(payload[payloadKey])}
+    }
+    return state
+  }
+
+export const keyedHasFreshItems = (actionType, bucket) =>
+  (state = {}, action) => {
+    let { type, payload, error, meta } = action
+    if (error) return state
+    if (type === actionType) {
+      return {...state, [meta.cacheId]: payload}
+    }
+    if (type === CLEAR_CACHE && payload.bucket === bucket) {
+      return {...state, [payload.id]: false}
+    }
+    return state
+  }
+
+export const storePayload = (...types) => (state = {}, action) => {
+  let { type, payload, error } = action
+  if (error) return state
+  if (includes(types, type)) return payload
+  return state
+}
+
+export const storePayloadById = (...types) => (state = {}, action) => {
+  let { type, payload, error, meta } = action
+  let { id } = meta || {}
+  if (error) return state
+  if (includes(types, type)) {
+    return {
+      ...state,
+      [id]: {...state[id], ...payload}
+    }
+  }
+
+  return state
+}
+
+export const appendPayloadByPath = (actionType, statePath, payloadPath) =>
+  (state = {}, action) => {
+    let { type, payload, error } = action
+    if (error || type !== actionType) return state
+    const data = payloadPath ? get(payload, payloadPath) : payload
+    return appendUniq(state, get(action, statePath), data)
+  }

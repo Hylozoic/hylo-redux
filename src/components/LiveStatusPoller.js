@@ -1,36 +1,38 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { fetchLiveStatus } from '../actions'
-const { func, string } = React.PropTypes
+import { get } from 'lodash'
+const { func, object } = React.PropTypes
 
 @connect()
 export default class LiveStatusPoller extends React.Component {
 
   static propTypes = {
     dispatch: func,
-    communityId: string
+    community: object
   }
 
-  setPollInterval (communityId) {
+  setPollInterval (community) {
     let { dispatch } = this.props
 
     if (this.pollInterval) {
       clearInterval(this.pollInterval)
     }
 
-    this.pollInterval = setInterval(() => dispatch(fetchLiveStatus(communityId)),
+    this.pollInterval = setInterval(() =>
+      dispatch(fetchLiveStatus(get(community, 'id'), get(community, 'slug'))),
       6 * 1000)
   }
 
   componentDidMount () {
-    let { dispatch, communityId } = this.props
-    dispatch(fetchLiveStatus(communityId))
-    this.setPollInterval(communityId)
+    let { dispatch, community } = this.props
+    dispatch(fetchLiveStatus(community))
+    this.setPollInterval(community)
   }
 
   componentWillReceiveProps (nextProps) {
-    if (nextProps.communityId !== this.props.communityId) {
-      this.setPollInterval(nextProps.communityId)
+    if (get(nextProps, 'community.id') !== get(this.props, 'community.id')) {
+      this.setPollInterval(nextProps.community)
     }
   }
 

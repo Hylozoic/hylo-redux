@@ -8,7 +8,7 @@ import { LeftNav, leftNavWidth, leftNavEasing } from '../components/LeftNav'
 import Notifier from '../components/Notifier'
 import LiveStatusPoller from '../components/LiveStatusPoller'
 import PageTitleController from '../components/PageTitleController'
-import { logout, navigate, removeNotification, toggleMainMenu, updateUserSettings, fetchLeftNavTags } from '../actions'
+import { logout, navigate, removeNotification, toggleMainMenu, updateUserSettings } from '../actions'
 import { makeUrl, calliOSBridge, iOSAppVersion } from '../client/util'
 import { VelocityComponent } from 'velocity-react'
 import { canInvite, canModerate } from '../models/currentUser'
@@ -130,7 +130,7 @@ export default class App extends React.Component {
 
       <Notifier messages={notifierMessages}
         remove={id => dispatch(removeNotification(id))}/>
-      <LiveStatusPoller communityId={get(community, 'id')}/>
+      <LiveStatusPoller community={community}/>
       <PageTitleController/>
     </div>
   }

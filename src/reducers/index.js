@@ -534,7 +534,7 @@ export default combineReducers({
       case FETCH_LEFT_NAV_TAGS:
         return mergeLeftNavTags(state, payload, meta.id)
       case FETCH_LIVE_STATUS:
-        return mergeLeftNavTags(state, payload.left_nav_tags, payload.slug)
+        return mergeLeftNavTags(state, payload.left_nav_tags, get(meta, 'slug'))
       case FOLLOW_TAG_PENDING:
         oldCommunityTags = state[meta.id] || {}
         var oldTag = oldCommunityTags[meta.tagName]

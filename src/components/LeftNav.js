@@ -5,6 +5,7 @@ import { VelocityTransitionGroup } from 'velocity-react'
 import { isEmpty, filter } from 'lodash'
 import { tagUrl } from '../routes'
 import { isMobile } from '../client/util'
+import cx from 'classnames'
 
 export const leftNavWidth = 208 // this value is dupicated in CSS
 export const leftNavEasing = [70, 25]
@@ -34,11 +35,11 @@ export const TopicList = ({ tags, slug }) => {
   let followedTags = filter(tags, t => t.followed && !t.created)
   let createdTags = filter(tags, t => t.created && t.name !== 'chat')
 
-  const TagLink = ({ name }) => {
+  const TagLink = ({ name, highlight }) => {
     var allTopics = name === 'all-topics'
     var AComponent = allTopics ? IndexA : A
     return <li>
-      <AComponent to={tagUrl(name, slug)}>
+      <AComponent to={tagUrl(name, slug)} className={cx({highlight})}>
         <span className='bullet'>•</span>&nbsp;&nbsp;# {name}
       </AComponent>
     </li>
@@ -48,12 +49,12 @@ export const TopicList = ({ tags, slug }) => {
     <li className='subheading'><a>TOPICS ({followedTags.length + 1})</a></li>
     <TagLink name='all-topics'/>
     {!isEmpty(followedTags) && followedTags.map(tag =>
-      <TagLink name={tag.name} key={tag.name} />)}
+      <TagLink name={tag.name} key={tag.name} highlight={tag.new_post_count}/>)}
     {!isEmpty(createdTags) && <li className='subheading'>
       <a>TOPICS CREATED ({createdTags.length})</a>
     </li>}
     {!isEmpty(createdTags) && createdTags.map(tag =>
-      <TagLink name={tag.name} key={tag.name} />)}
+      <TagLink name={tag.name} key={tag.name} highlight={tag.new_post_count}/>)}
   </ul>
 }
 

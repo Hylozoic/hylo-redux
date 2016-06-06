@@ -69,7 +69,7 @@ export default function (req, res) {
   .catch(err => {
     res.errors = [err]
     res.setHeader('Content-Type', 'text/plain')
-    const state = parse(req.url, true).query.verboseErrorPage
+    const state = parse(req.originalUrl, true).query.verboseErrorPage
       ? JSON.stringify(store.getState(), null, 2)
       : ''
     res.status(500).send(`${err.stack}\n\n${state}`)

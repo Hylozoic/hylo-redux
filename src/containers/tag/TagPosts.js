@@ -2,7 +2,7 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { prefetch } from 'react-fetcher'
 import { fetch, ConnectedPostList } from '../ConnectedPostList'
-import { fetchTag, followTag, navigate } from '../../actions'
+import { fetchTag, followTag, navigate, resetNewPostCount } from '../../actions'
 import { compose } from 'redux'
 import { get } from 'lodash'
 import PostEditor from '../../components/PostEditor'
@@ -66,11 +66,13 @@ class TagPosts extends React.Component {
 }
 
 export default compose(
-  prefetch(({ dispatch, params: { tagName, id }, query }) =>
-    dispatch(fetchTag(tagName, id))
+  prefetch(({ dispatch, params: { tagName, id }, query }) => {
+    if (id) dispatch(resetNewPostCount(tagName, id))
+    return dispatch(fetchTag(tagName, id))
     .then(({ payload }) => payload.post
       ? dispatch(navigate(`/p/${payload.post.id}`))
-      : dispatch(fetch(subject, id || 'all', {...query, tag: tagName})))),
+      : dispatch(fetch(subject, id || 'all', {...query, tag: tagName})))
+  }),
   connect((state, { params: { tagName, id } }) => {
     const tag = get(state, ['tagsByCommunity', id || 'all', tagName])
     return {

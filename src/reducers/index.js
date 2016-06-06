@@ -1,6 +1,6 @@
 import { combineReducers } from 'redux'
 import { routeReducer } from 'redux-simple-router'
-import { some, get, partition, merge, transform } from 'lodash'
+import { some, get, partition, merge, transform, isEmpty } from 'lodash'
 import { activities, activitiesByCommunity } from './activities'
 import comments from './comments'
 import commentsByPost from './commentsByPost'
@@ -460,6 +460,16 @@ export default combineReducers({
   },
 
   tagsByCommunity: (state = {}, action) => {
+    const mergeLeftNavTags = (state, leftNavTags, id) => {
+      if (isEmpty(leftNavTags)) return state
+      let labeledTags = leftNavTags.followed.map(f => merge(f, {followed: true}))
+      .concat(leftNavTags.created.map(c => merge(c, {created: true})))
+      return {
+        ...state,
+        [id]: mergeList(state[id] || {}, labeledTags, 'name')
+      }
+    }
+
     // meta.id here is whatever params.id is in CommunityProfile
     let { type, payload, meta } = action
     switch (type) {
@@ -473,12 +483,9 @@ export default combineReducers({
           }
         }
       case FETCH_LEFT_NAV_TAGS:
-        let labeledTags = payload.followed.map(f => merge(f, {followed: true}))
-        .concat(payload.created.map(c => merge(c, {created: true})))
-        return {
-          ...state,
-          [meta.id]: mergeList(state[meta.id] || {}, labeledTags, 'name')
-        }
+        return mergeLeftNavTags(state, payload, meta.id)
+      case FETCH_LIVE_STATUS:
+        return mergeLeftNavTags(state, payload.left_nav_tags, get(meta, 'slug'))
       case FOLLOW_TAG_PENDING:
         oldCommunityTags = state[meta.id] || {}
         var oldTag = oldCommunityTags[meta.tagName]

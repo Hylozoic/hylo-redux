@@ -130,7 +130,7 @@ export default class App extends React.Component {
 
       <Notifier messages={notifierMessages}
         remove={id => dispatch(removeNotification(id))}/>
-      <LiveStatusPoller/>
+      <LiveStatusPoller community={community}/>
       <PageTitleController/>
     </div>
   }

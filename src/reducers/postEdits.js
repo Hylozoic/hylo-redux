@@ -100,7 +100,7 @@ export const editingTagDescriptions = (state = false, action) => {
   const { type, error, payload } = action
   if (type === CANCEL_TAG_DESCRIPTION_EDIT) {
     return false
-  } else if (type === CREATE_POST && error) {
+  } else if (includes([CREATE_POST, UPDATE_POST], type) && error) {
     const response = JSON.parse(payload.response.body)
     return !!response.tagsMissingDescriptions
   }
@@ -110,7 +110,7 @@ export const editingTagDescriptions = (state = false, action) => {
 
 export const tagDescriptionEdits = (state = {}, action) => {
   const { type, error, payload } = action
-  if (type === CREATE_POST && error) {
+  if (includes([CREATE_POST, UPDATE_POST], type) && error) {
     const response = JSON.parse(payload.response.body)
     if (response.tagsMissingDescriptions) {
       return {

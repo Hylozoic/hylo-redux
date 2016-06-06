@@ -11,7 +11,7 @@ import shallowCompare from 'react-addons-shallow-compare'
 import cx from 'classnames'
 import autoproxy from 'autoproxy'
 import {
-  debounce, compact, filter, find, get, includes, isEmpty, keys, map, some, startsWith
+  debounce, compact, filter, find, get, includes, isEmpty, some, startsWith
 } from 'lodash'
 import CommunityTagInput from './CommunityTagInput'
 import Dropdown from './Dropdown'
@@ -19,12 +19,11 @@ import EventPostEditor from './EventPostEditor'
 import ProjectPostEditor from './ProjectPostEditor'
 import RichTextEditor from './RichTextEditor'
 import { NonLinkAvatar } from './Avatar'
-import Icon from './Icon'
 import AutosizingTextarea from './AutosizingTextarea'
 import { connect } from 'react-redux'
 import {
-  createPost, cancelPostEdit, cancelTagDescriptionEdit, editTagDescription,
-  fetchLeftNavTags, removeImage, removeDoc, updatePost, updatePostEditor
+  createPost, cancelPostEdit, fetchLeftNavTags, removeImage, removeDoc,
+  updatePost, updatePostEditor
 } from '../actions'
 import { uploadImage } from '../actions/uploadImage'
 import { uploadDoc } from '../actions/uploadDoc'
@@ -34,6 +33,7 @@ import { isKey } from '../util/textInput'
 import { CREATE_POST, UPDATE_POST, UPLOAD_IMAGE } from '../actions'
 import { ADDED_POST, EDITED_POST, trackEvent } from '../util/analytics'
 import { getCurrentCommunity } from '../models/community'
+import TagDescriptionEditor from './TagDescriptionEditor'
 const { array, bool, func, object, string } = React.PropTypes
 
 const specialTags = ['request', 'offer', 'intention']
@@ -526,48 +526,3 @@ const placeholderText = type =>
   type === 'event' ? 'Create an event'
     : type === 'project' ? 'Start a project'
     : 'Start a conversation'
-
-@connect((state, props) => ({
-  tags: state.tagDescriptionEdits
-}))
-class TagDescriptionEditor extends React.Component {
-  static propTypes = {
-    tags: object,
-    onSave: func,
-    dispatch: func
-  }
-
-  render () {
-    const { tags, onSave, dispatch } = this.props
-    const cancel = () => dispatch(cancelTagDescriptionEdit())
-    const edit = debounce((tag, value) =>
-      dispatch(editTagDescription(tag, value)), 200)
-
-    if (isEmpty(tags)) return null
-
-    return <div id='tag-description-editor'>
-      <div className='backdrop'/>
-      <div className='modal'>
-        <h2>
-          Hey, you're creating&nbsp;
-          {keys(tags).length > 1 ? 'new topics.' : 'a new topic.'}
-          <a className='close' onClick={cancel}><Icon name='Fail'/></a>
-        </h2>
-        {map(tags, (description, tag) => <div key={tag} className='tag-group'>
-          <div className='topic'>
-            <label>Topic</label>
-            <span>#{tag}</span>
-          </div>
-          <div className='description'>
-            <label>Description</label>
-            <input type='text' defaultValue={description}
-              onChange={event => edit(tag, event.target.value)}/>
-          </div>
-        </div>)}
-        <div className='footer'>
-          <button onClick={() => onSave(tags)}>Create</button>
-        </div>
-      </div>
-    </div>
-  }
-}

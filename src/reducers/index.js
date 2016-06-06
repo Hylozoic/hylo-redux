@@ -1,6 +1,6 @@
 import { combineReducers } from 'redux'
 import { routeReducer } from 'redux-simple-router'
-import { some, get, includes, partition, merge, transform } from 'lodash'
+import { some, get, includes, partition, merge, transform, isEmpty } from 'lodash'
 import { activities, activitiesByCommunity } from './activities'
 import comments from './comments'
 import commentsByPost from './commentsByPost'
@@ -510,6 +510,7 @@ export default combineReducers({
 
   tagsByCommunity: (state = {}, action) => {
     const mergeLeftNavTags = (state, leftNavTags, id) => {
+      if (isEmpty(leftNavTags)) return state
       let labeledTags = leftNavTags.followed.map(f => merge(f, {followed: true}))
       .concat(leftNavTags.created.map(c => merge(c, {created: true})))
       return {

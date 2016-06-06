@@ -67,7 +67,7 @@ class TagPosts extends React.Component {
 
 export default compose(
   prefetch(({ dispatch, params: { tagName, id }, query }) => {
-    dispatch(resetNewPostCount(tagName, id))
+    if (id) dispatch(resetNewPostCount(tagName, id))
     return dispatch(fetchTag(tagName, id))
     .then(({ payload }) => payload.post
       ? dispatch(navigate(`/p/${payload.post.id}`))

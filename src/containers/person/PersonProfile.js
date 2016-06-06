@@ -19,6 +19,8 @@ import Comment from '../../components/Comment'
 import { parse } from 'url'
 import moment from 'moment'
 import { getPost } from '../../models/post'
+import { getCurrentCommunity } from '../../models/community'
+
 const { func, object } = React.PropTypes
 
 const defaultBanner = 'https://d3ngex8q79bk55.cloudfront.net/misc/default_user_banner.jpg'
@@ -73,6 +75,7 @@ const PersonProfile = compose(
     const person = state.people[id]
     return omitBy(isNull, {
       person,
+      community: getCurrentCommunity(state),
       currentUser: state.people.current,
       error: findError(state.errors, FETCH_PERSON, 'people', id),
       recentRequest: getPost(get(person, 'recent_request_id'), state),
@@ -85,7 +88,7 @@ const PersonProfile = compose(
   if (!person || !person.grouped_post_count) return <div>Loading...</div>
 
   const {
-    params: { id }, location: { query }, recentRequest, recentOffer
+    params: { id }, location: { query }, recentRequest, recentOffer, community
   } = props
   const category = query.show
   const {
@@ -123,7 +126,7 @@ const PersonProfile = compose(
     </div>
     {some(tags) && <div className='skills'>
       <h3>Skills</h3>
-      {tags.map(tag => <A key={tag} to={tagUrl(tag)}>
+      {tags.map(tag => <A key={tag} to={tagUrl(tag, get(community, 'slug'))}>
         #{tag}
       </A>)}
     </div>}

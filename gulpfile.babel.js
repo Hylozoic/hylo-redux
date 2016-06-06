@@ -71,6 +71,15 @@ gulp.task('build-dist-js', bundle)
 gulp.task('upload', upload)
 gulp.task('update-heroku', updateHeroku)
 
+gulp.task('build', function (done) {
+  runSequence(
+    'clean-dist',
+    'load-heroku-env',
+    ['build-dist-css', 'build-dist-js'],
+    done
+  )
+})
+
 gulp.task('deploy', function (done) {
   runSequence(
     'clean-dist',

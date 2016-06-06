@@ -6,10 +6,12 @@ import RichTextEditor from './RichTextEditor'
 import { createComment } from '../actions'
 import { ADDED_COMMENT, trackEvent } from '../util/analytics'
 import { textLength } from '../util/text'
-var { array, func, object, string } = React.PropTypes
+import TagDescriptionEditor from './TagDescriptionEditor'
+var { array, bool, func, object, string } = React.PropTypes
 
 @connect(state => ({
-  currentUser: get(state, 'people.current')
+  currentUser: get(state, 'people.current'),
+  editingTagDescriptions: state.editingTagDescriptions
 }))
 export default class CommentForm extends React.Component {
   static propTypes = {
@@ -17,7 +19,8 @@ export default class CommentForm extends React.Component {
     dispatch: func,
     postId: string,
     mentionOptions: array,
-    placeholder: string
+    placeholder: string,
+    editingTagDescriptions: bool
   }
 
   constructor (props) {
@@ -28,22 +31,30 @@ export default class CommentForm extends React.Component {
   submit = event => {
     const { dispatch, postId } = this.props
     const { text } = this.state
-    event.preventDefault()
+    if (event) event.preventDefault()
     if (!text || textLength(text) < 2) return
 
     // this is to make sure the last edit in TinyMCE gets saved on mobile,
     // because the blur event doesn't fire when the button is tapped otherwise
     this.refs.button.focus()
     setTimeout(() => {
-      dispatch(createComment(postId, this.state.text))
-      trackEvent(ADDED_COMMENT, {post: {id: postId}})
-      this.refs.editor.setContent('')
-      this.setState({text: '', editing: false})
+      dispatch(createComment(postId, this.state.text, this.state.tagDescriptions))
+      .then(({ error }) => {
+        if (error) return
+        trackEvent(ADDED_COMMENT, {post: {id: postId}})
+        this.refs.editor.setContent('')
+        this.setState({text: '', editing: false})
+      })
     })
   }
 
+  saveWithTagDescriptions = tagDescriptions => {
+    this.setState({tagDescriptions})
+    this.submit()
+  }
+
   render () {
-    const { currentUser } = this.props
+    const { currentUser, editingTagDescriptions } = this.props
     const { editing } = this.state
     const edit = () => this.setState({editing: true})
     const setText = event => this.setState({text: event.target.value})
@@ -53,6 +64,8 @@ export default class CommentForm extends React.Component {
       <Avatar person={currentUser}/>
       {editing
         ? <div className='content'>
+            {editingTagDescriptions && <TagDescriptionEditor
+              onSave={this.saveWithTagDescriptions}/>}
             <RichTextEditor ref='editor' name='comment'
               onChange={setText}
               startFocused={true}/>

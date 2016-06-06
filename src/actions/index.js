@@ -209,10 +209,11 @@ export function fetchComments (postId, opts = {}) {
   }
 }
 
-export function createComment (postId, text) {
+export function createComment (postId, text, tagDescriptions) {
+  const params = {text, tagDescriptions}
   return {
     type: CREATE_COMMENT,
-    payload: {api: true, path: `/noo/post/${postId}/comment`, params: {text}, method: 'POST'},
+    payload: {api: true, path: `/noo/post/${postId}/comment`, params, method: 'POST'},
     meta: {id: postId}
   }
 }

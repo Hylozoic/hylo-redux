@@ -2,6 +2,7 @@ import { includes, mapValues, startCase, uniq } from 'lodash'
 import {
   CANCEL_POST_EDIT,
   CANCEL_TAG_DESCRIPTION_EDIT,
+  CREATE_COMMENT,
   CREATE_POST,
   EDIT_TAG_DESCRIPTION,
   REMOVE_DOC,
@@ -100,7 +101,7 @@ export const editingTagDescriptions = (state = false, action) => {
   const { type, error, payload } = action
   if (type === CANCEL_TAG_DESCRIPTION_EDIT) {
     return false
-  } else if (includes([CREATE_POST, UPDATE_POST], type) && error) {
+  } else if (includes([CREATE_POST, UPDATE_POST, CREATE_COMMENT], type) && error) {
     const response = JSON.parse(payload.response.body)
     return !!response.tagsMissingDescriptions
   }
@@ -110,7 +111,7 @@ export const editingTagDescriptions = (state = false, action) => {
 
 export const tagDescriptionEdits = (state = {}, action) => {
   const { type, error, payload } = action
-  if (includes([CREATE_POST, UPDATE_POST], type) && error) {
+  if (includes([CREATE_POST, UPDATE_POST, CREATE_COMMENT], type) && error) {
     const response = JSON.parse(payload.response.body)
     if (response.tagsMissingDescriptions) {
       return {
@@ -118,7 +119,7 @@ export const tagDescriptionEdits = (state = {}, action) => {
         ...state
       }
     }
-  } else if (includes([START_POST_EDIT, CANCEL_POST_EDIT], type)) {
+  } else if (includes([START_POST_EDIT, CANCEL_POST_EDIT, CREATE_COMMENT], type)) {
     return {}
   } else if (type === EDIT_TAG_DESCRIPTION) {
     return {...state, [payload.tag]: payload.description}

@@ -3,8 +3,8 @@ import { compose } from 'redux'
 import { connect } from 'react-redux'
 import { prefetch, defer } from 'react-fetcher'
 import { commentUrl, tagUrl } from '../../routes'
-import { FETCH_PERSON, fetchPerson, fetchThanks, navigate } from '../../actions'
-import { capitalize, compact, get, some } from 'lodash'
+import { FETCH_PERSON, fetchPerson, fetchThanks, navigate, setCurrentCommunityId } from '../../actions'
+import { capitalize, compact, get, some, includes } from 'lodash'
 import { isNull, map, omitBy, sortBy } from 'lodash/fp'
 import { VIEWED_PERSON, VIEWED_SELF, trackEvent } from '../../util/analytics'
 import { findError } from '../../actions/util'
@@ -47,9 +47,15 @@ const initialFetch = (id, query) => {
 }
 
 const PersonProfile = compose(
-  prefetch(({ dispatch, params: { id }, query }) =>
+  prefetch(({ store, dispatch, params: { id }, query }) =>
   Promise.all([
-    dispatch(fetchPerson(id)),
+    dispatch(fetchPerson(id))
+    .then(({ payload: { shared_communities }, error }) => {
+      if (error) return
+      let { currentCommunityId } = store.getState()
+      if (includes(shared_communities, currentCommunityId)) return
+      return dispatch(setCurrentCommunityId(shared_communities[0] || 'all'))
+    }),
     dispatch(initialFetch(id, query))
   ])),
   defer(({ store, params: { id } }) => {

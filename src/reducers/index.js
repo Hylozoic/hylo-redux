@@ -1,6 +1,6 @@
 import { combineReducers } from 'redux'
 import { routeReducer } from 'redux-simple-router'
-import { some, get, includes, partition, merge, transform, isEmpty } from 'lodash'
+import { some, get, partition, merge, transform, isEmpty } from 'lodash'
 import { activities, activitiesByCommunity } from './activities'
 import comments from './comments'
 import commentsByPost from './commentsByPost'
@@ -10,17 +10,18 @@ import networks from './networks'
 import networkEdits from './networkEdits'
 import people from './people'
 import peopleByQuery from './peopleByQuery'
-import postEdits from './postEdits'
+import postEdits, { editingTagDescriptions, tagDescriptionEdits } from './postEdits'
 import postsByQuery from './postsByQuery'
 import posts from './posts'
-import { appendUniq, mergeList } from './util'
+import {
+  appendPayloadByPath, keyedCounter, keyedHasFreshItems, mergeList, storePayload
+} from './util'
 import { admin } from './admin'
 
 import {
   CANCEL_POST_EDIT,
   CANCEL_TYPEAHEAD,
   CHECK_FRESHNESS_POSTS,
-  CLEAR_CACHE,
   CREATE_COMMUNITY,
   CREATE_POST,
   CREATE_NETWORK,
@@ -65,58 +66,6 @@ import {
   VALIDATE_NETWORK_ATTRIBUTE,
   VALIDATE_NETWORK_ATTRIBUTE_PENDING
 } from '../actions'
-
-const keyedCounter = (actionType, payloadKey, statePath = 'meta.cache.id') =>
-  (state = {}, action) => {
-    let { type, payload, error } = action
-    if (error) return state
-    if (type === actionType) {
-      return {...state, [get(action, statePath)]: Number(payload[payloadKey])}
-    }
-    return state
-  }
-
-const keyedHasFreshItems = (actionType, bucket) =>
-  (state = {}, action) => {
-    let { type, payload, error, meta } = action
-    if (error) return state
-    if (type === actionType) {
-      return {...state, [meta.cacheId]: payload}
-    }
-    if (type === CLEAR_CACHE && payload.bucket === bucket) {
-      return {...state, [payload.id]: false}
-    }
-    return state
-  }
-
-const storePayload = (...types) => (state = {}, action) => {
-  let { type, payload, error } = action
-  if (error) return state
-  if (includes(types, type)) return payload
-  return state
-}
-
-const storePayloadById = (...types) => (state = {}, action) => {
-  let { type, payload, error, meta } = action
-  let { id } = meta || {}
-  if (error) return state
-  if (includes(types, type)) {
-    return {
-      ...state,
-      [id]: {...state[id], ...payload}
-    }
-  }
-
-  return state
-}
-
-const appendPayloadByPath = (actionType, statePath, payloadPath) =>
-  (state = {}, action) => {
-    let { type, payload, error } = action
-    if (error || type !== actionType) return state
-    const data = payloadPath ? get(payload, payloadPath) : payload
-    return appendUniq(state, get(action, statePath), data)
-  }
 
 export default combineReducers({
   isMobile: (state = false, action) => {
@@ -220,6 +169,7 @@ export default combineReducers({
   commentsByPost,
   communities,
   communitiesByQuery,
+  editingTagDescriptions,
   hasFreshPostsByQuery: keyedHasFreshItems(CHECK_FRESHNESS_POSTS, 'postsByQuery'),
   networks,
   networkEdits,
@@ -230,6 +180,7 @@ export default combineReducers({
   postsByQuery,
   postEdits,
   searchResultsByQuery: appendPayloadByPath(SEARCH, 'meta.cache.id', 'items'),
+  tagDescriptionEdits,
   thanks: appendPayloadByPath(FETCH_THANKS, 'meta.id'),
   totalActivities: keyedCounter(FETCH_ACTIVITY, 'total', 'meta.id'),
   totalCommunitiesByQuery: keyedCounter(FETCH_COMMUNITIES, 'communities_total'),

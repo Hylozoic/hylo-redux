@@ -62,7 +62,7 @@ export default class Dropdown extends React.Component {
         {toggleChildren}
       </a>
       <ul className={cx('dropdown-menu', {'dropdown-menu-right': alignRight})}
-        style={mobileMenuStyle(isMobile, this.refs.parent)}
+        style={mobileMenuStyle(isMobile && active, this.refs.parent)}
         onClick={() => this.toggle()}>
         {triangle && <li className='triangle'
           style={{left: findTriangleLeftPos(isMobile, this.refs.parent)}}/>}
@@ -79,8 +79,8 @@ export default class Dropdown extends React.Component {
 
 const margin = 10
 
-const mobileMenuStyle = (isMobile, parent) => {
-  if (!isMobile || typeof document === 'undefined') return {}
+const mobileMenuStyle = (shouldUse, parent) => {
+  if (!shouldUse) return {}
   return {
     left: findLeftPos(parent) + margin,
     width: document.documentElement.clientWidth - margin * 2

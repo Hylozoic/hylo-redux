@@ -7,6 +7,7 @@ because they make more sense.
 */
 
 import React from 'react'
+import shallowCompare from 'react-addons-shallow-compare'
 import cx from 'classnames'
 import autoproxy from 'autoproxy'
 import {
@@ -21,8 +22,8 @@ import { NonLinkAvatar } from './Avatar'
 import AutosizingTextarea from './AutosizingTextarea'
 import { connect } from 'react-redux'
 import {
-  updatePostEditor, createPost, updatePost, cancelPostEdit,
-  removeImage, removeDoc, fetchLeftNavTags
+  createPost, cancelPostEdit, fetchLeftNavTags, removeImage, removeDoc,
+  updatePost, updatePostEditor
 } from '../actions'
 import { uploadImage } from '../actions/uploadImage'
 import { uploadDoc } from '../actions/uploadDoc'
@@ -32,6 +33,7 @@ import { isKey } from '../util/textInput'
 import { CREATE_POST, UPDATE_POST, UPLOAD_IMAGE } from '../actions'
 import { ADDED_POST, EDITED_POST, trackEvent } from '../util/analytics'
 import { getCurrentCommunity } from '../models/community'
+import TagDescriptionEditor from './TagDescriptionEditor'
 const { array, bool, func, object, string } = React.PropTypes
 
 const specialTags = ['request', 'offer', 'intention']
@@ -44,23 +46,23 @@ export const newPostId = 'new-post'
     : type === 'event' ? 'new-event' : newPostId
 
   // this object tracks the edits that are currently being made
-  let postEdit = state.postEdits[id] || {}
+  const postEdit = state.postEdits[id] || {}
+  const { editingTagDescriptions, pending } = state
 
   return {
     id,
     postEdit,
     mentionOptions: state.typeaheadMatches.post,
-    currentUser: state.people.current,
-    saving: state.pending[CREATE_POST] || state.pending[UPDATE_POST],
-    imagePending: state.pending[UPLOAD_IMAGE],
-    currentCommunitySlug: get(getCurrentCommunity(state), 'slug')
+    saving: pending[CREATE_POST] || pending[UPDATE_POST],
+    imagePending: pending[UPLOAD_IMAGE],
+    currentCommunitySlug: get(getCurrentCommunity(state), 'slug'),
+    editingTagDescriptions
   }
 }, null, null, {withRef: true}))
 export class PostEditor extends React.Component {
   static propTypes = {
     dispatch: func,
     mentionOptions: array,
-    currentUser: object,
     post: object,
     id: string.isRequired,
     postEdit: object,
@@ -70,7 +72,12 @@ export class PostEditor extends React.Component {
     imagePending: bool,
     type: string,
     tag: string,
-    currentCommunitySlug: string
+    currentCommunitySlug: string,
+    editingTagDescriptions: bool
+  }
+
+  static contextTypes = {
+    currentUser: object
   }
 
   constructor (props) {
@@ -185,6 +192,11 @@ export class PostEditor extends React.Component {
     })
   }
 
+  saveWithTagDescriptions = tagDescriptions => {
+    this.updateStore({tagDescriptions})
+    this.saveIfValid()
+  }
+
   // this method allows you to type as much as you want into the title field, by
   // automatically truncating it to a specified length and prepending the
   // removed portion to the details field.
@@ -280,10 +292,16 @@ export class PostEditor extends React.Component {
     return includes(['event', 'project'], type) ? type : null
   }
 
+  shouldComponentUpdate (nextProps, nextState) {
+    return shallowCompare(this, nextProps, nextState)
+  }
+
   render () {
     const {
-      post, postEdit, dispatch, currentUser, imagePending, saving, id
+      post, postEdit, dispatch, imagePending, saving, id,
+      editingTagDescriptions
     } = this.props
+    const { currentUser } = this.context
     const selectableTags = compact([this.props.tag].concat(specialTags))
     const { description, communities, tag } = postEdit
     const { name, showDetails } = this.state
@@ -334,8 +352,7 @@ export class PostEditor extends React.Component {
 
       <div className='communities'>
         <span>in&nbsp;</span>
-        <CommunitySelector currentUser={currentUser}
-          communities={communities || []}
+        <CommunitySelector communities={communities || []}
           onSelect={this.addCommunity}
           onRemove={this.removeCommunity}/>
       </div>
@@ -363,6 +380,9 @@ export class PostEditor extends React.Component {
           Public
         </label>
       </div>
+
+      {editingTagDescriptions && <TagDescriptionEditor
+        onSave={this.saveWithTagDescriptions}/>}
     </div>
   }
 }
@@ -420,20 +440,19 @@ class CommunitySelector extends React.Component {
   }
 
   static propTypes = {
-    currentUser: object.isRequired,
     communities: array.isRequired,
     onSelect: func.isRequired,
     onRemove: func.isRequired
   }
 
+  static contextTypes = {
+    currentUser: object.isRequired
+  }
+
   render () {
     const { term } = this.state
-    const {
-      currentUser: { memberships },
-      communities,
-      onSelect,
-      onRemove
-    } = this.props
+    const { communities, onSelect, onRemove } = this.props
+    const { currentUser: { memberships } } = this.context
 
     const match = c =>
       startsWith(c.name.toLowerCase(), term.toLowerCase()) &&

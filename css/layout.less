@@ -121,10 +121,16 @@ nav {
       img {
         width: @avatar-size-default;
         height: @avatar-size-default;
-        margin-right: 0;
       }
-      .dropdown-toggle .name {
-        display: none;
+
+      .dropdown-toggle {
+        img {
+          margin-right: 0;
+        }
+
+        .name {
+          display: none;
+        }
       }
     });
 
@@ -312,8 +318,17 @@ nav {
         margin-top: 20px;
       });
 
+      > li {
+        line-height: normal;
+      }
+
       > li > a {
-        padding: 8px 20px;
+        padding: 2px 20px;
+        .icon {
+          margin-right: 8px;
+          position: relative;
+          top: -1px;
+        }
       }
     }
 
@@ -433,9 +448,7 @@ nav {
     border-top: 1px @dark-gray-bg solid;
     .subheading a {
       padding-top: 5px;
-      font-size: 11px;
-      .medium;
-      letter-spacing: 0.1em;
+      .small-caps-list-header;
       color: #727272;
     }
     .bullet {

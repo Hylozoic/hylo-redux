@@ -11,12 +11,9 @@ import {
 const { click } = Simulate
 const { createElement, wait } = helpers
 
+const currentUser = {id: 'person'}
+
 const state = {
-  people: {
-    current: {
-      id: 'person'
-    }
-  },
   pending: {},
   postEdits: {
     foo: {
@@ -41,7 +38,7 @@ let component, node, store
 const render = (state, post, storeSetupCallback) => {
   store = mocks.redux.store(state)
   if (storeSetupCallback) storeSetupCallback(store)
-  const context = {store, dispatch: store.dispatch}
+  const context = {store, dispatch: store.dispatch, currentUser}
   component = createElement(PostEditor, {post}, context)
   node = renderIntoDocument(component).getWrappedInstance()
 }

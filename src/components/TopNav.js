@@ -206,16 +206,32 @@ const UserMenu = ({ isMobile, slug, logout, newCount, currentUser }) => {
             {isMobile && newCount > 0 && <div className='dot-badge'/>}
           </div>
         }>
-        <li><A to={`/u/${currentUser.id}`}>My profile</A></li>
+        <li>
+          <A to={`/u/${currentUser.id}`}>
+            <Icon name='User'/> My profile
+          </A>
+        </li>
         {isMobile && <li>
           <A to={slug ? `/c/${slug}/notifications` : '/notifications'}>
-            Notifications
+            <Icon name='Bell'/> Notifications
             {newCount > 0 && <span className='badge'>{newCount}</span>}
           </A>
         </li>}
-        <li><A to={'/settings'}>Settings</A></li>
-        {isAdmin(currentUser) && <li><A to={'/admin'}>Admin</A></li>}
-        <li><a href='#' onClick={logout}>Log out</a></li>
+        <li>
+          <A to={'/settings'}>
+            <Icon name='Settings'/> Settings
+          </A>
+        </li>
+        {isAdmin(currentUser) && <li>
+          <A to={'/admin'}>
+            <Icon name='Keypad'/> Admin
+          </A>
+        </li>}
+        <li>
+          <a href='#' onClick={logout}>
+            <Icon name='Fail'/> Log out
+          </a>
+        </li>
       </Dropdown>
     </li>
   </ul>

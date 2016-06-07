@@ -6,6 +6,7 @@ import {
   FETCH_COMMUNITIES,
   FETCH_POSTS,
   FETCH_PEOPLE,
+  FETCH_TAGS,
   SEARCH
 } from '../actions'
 
@@ -46,6 +47,10 @@ export const connectedListProps = (state, props, itemType) => {
       break
     case 'searchResults':
       actionType = SEARCH
+      getItem = x => x
+      break
+    case 'tags':
+      actionType = FETCH_TAGS
       getItem = x => x
       break
 

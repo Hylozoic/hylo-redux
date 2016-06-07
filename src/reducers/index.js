@@ -12,6 +12,7 @@ import people from './people'
 import peopleByQuery from './peopleByQuery'
 import postEdits, { editingTagDescriptions, tagDescriptionEdits } from './postEdits'
 import postsByQuery from './postsByQuery'
+import { tagsByQuery, totalTagsByQuery } from './tags'
 import posts from './posts'
 import {
   appendPayloadByPath, keyedCounter, keyedHasFreshItems, mergeList, storePayload
@@ -34,6 +35,7 @@ import {
   FETCH_PEOPLE,
   FETCH_POSTS,
   FETCH_TAG,
+  FETCH_TAGS,
   FETCH_THANKS,
   FOLLOW_TAG_PENDING,
   LOGIN,
@@ -180,6 +182,7 @@ export default combineReducers({
   postsByQuery,
   postEdits,
   searchResultsByQuery: appendPayloadByPath(SEARCH, 'meta.cache.id', 'items'),
+  tagsByQuery,
   tagDescriptionEdits,
   thanks: appendPayloadByPath(FETCH_THANKS, 'meta.id'),
   totalActivities: keyedCounter(FETCH_ACTIVITY, 'total', 'meta.id'),
@@ -188,6 +191,7 @@ export default combineReducers({
   totalPostsByQuery: keyedCounter(FETCH_POSTS, 'posts_total'),
   totalPeopleByQuery: keyedCounter(FETCH_PEOPLE, 'people_total'),
   totalSearchResultsByQuery: keyedCounter(SEARCH, 'total'),
+  totalTagsByQuery,
 
   pending: (state = {}, action) => {
     let { type, meta } = action
@@ -210,6 +214,7 @@ export default combineReducers({
       toggle(SEND_COMMUNITY_INVITATION) ||
       toggle(FETCH_INVITATIONS) ||
       toggle(FETCH_COMMUNITIES) ||
+      toggle(FETCH_TAGS) ||
       toggle(SEARCH) ||
       state
   },

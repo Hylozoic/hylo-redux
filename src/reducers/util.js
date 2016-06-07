@@ -1,18 +1,18 @@
 import {
   cloneDeep, filter, get, includes, isArray, isEqual, mergeWith, set, some,
-  transform, uniq
+  transform, uniqBy
 } from 'lodash'
 import { CLEAR_CACHE } from '../actions'
 
-export const appendUniq = (state, key, values) =>
-  concatUniq(state, key, state[key] || [], values)
+export const appendUniq = (state, key, values, uniqTest) =>
+  concatUniq(state, key, state[key] || [], values, uniqTest)
 
-export const prependUniq = (state, key, values) =>
-  concatUniq(state, key, values, state[key] || [])
+export const prependUniq = (state, key, values, uniqTest) =>
+  concatUniq(state, key, values, state[key] || [], uniqTest)
 
-export const concatUniq = (state, key, first, second) => ({
+export const concatUniq = (state, key, first, second, uniqTest = x => x) => ({
   ...state,
-  [key]: uniq(first.concat(second))
+  [key]: uniqBy(first.concat(second), uniqTest)
 })
 
 // given a list of items, produce an object where each item is keyed by the
@@ -110,10 +110,13 @@ export const storePayloadById = (...types) => (state = {}, action) => {
   return state
 }
 
-export const appendPayloadByPath = (actionType, statePath, payloadPath) =>
+export const appendPayloadByPath = (actionType, statePath, payloadPath, uniqTest) =>
   (state = {}, action) => {
     let { type, payload, error } = action
     if (error || type !== actionType) return state
     const data = payloadPath ? get(payload, payloadPath) : payload
-    return appendUniq(state, get(action, statePath), data)
+    return appendUniq(state, get(action, statePath), data, uniqTest)
   }
+
+export const composeReducers = (...reducers) => (state, action) =>
+  reducers.reduce((newState, reducer) => reducer(newState, action), state)

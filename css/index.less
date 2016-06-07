@@ -826,3 +826,39 @@ ul.tags {
     display: inline-block;
   }
 }
+
+#topic-settings {
+  background-color: white;
+  h2 {
+    margin-top: 0;
+    padding-top: 25px;
+    margin-left: 25px;
+    margin-right: 25px;
+  }
+
+  p {
+    margin-left: 25px;
+    margin-right: 25px;
+  }
+
+  .topic-row {
+    border-bottom: 1px solid @post-border;
+    padding: 10px 25px;
+
+    .topic-post-type {
+      margin-left: 1em;
+      color: @faint-gray-text;
+    }
+
+    a {
+      text-decoration: none;
+      &:hover {
+        opacity: 0.6;
+      }
+    }
+
+    .right a {
+      margin-left: 20px;
+    }
+  }
+}

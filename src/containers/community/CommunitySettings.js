@@ -16,6 +16,7 @@ import {
   navigate
 } from '../../actions'
 import { avatarUploadSettings, bannerUploadSettings } from '../../models/community'
+import A from '../../components/A'
 import { uploadImage } from '../../actions/uploadImage'
 import PersonChooser from '../../components/PersonChooser'
 import { reversibleUpdate } from '../../util/forms'
@@ -437,7 +438,7 @@ export default class CommunitySettings extends React.Component {
         </div>
       </div>}
 
-      <SectionLabel name='moderators' {...labelProps}>Moderators</SectionLabel>
+      <SectionLabel name='moderators' {...labelProps}>Moderation</SectionLabel>
       {expand.moderators && <div className='section moderators'>
         <div className='section-item'>
           <div className='full-column'>
@@ -458,6 +459,13 @@ export default class CommunitySettings extends React.Component {
               onSelect={this.addModerator}
               communityId={community.id}
               typeaheadId='moderator'/>
+          </div>
+        </div>
+        <div className='section-item'>
+          <div className='full-column'>
+            <A className='button' to={`/c/${community.slug}/settings/tags`}>
+              Moderate topics
+            </A>
           </div>
         </div>
       </div>}

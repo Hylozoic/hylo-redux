@@ -26,7 +26,7 @@ export default class LiveStatusPoller extends React.Component {
 
   componentDidMount () {
     let { dispatch, community } = this.props
-    setTimeout(() => dispatch(fetchLiveStatus(community)), 10 * 1000)
+    setTimeout(() => dispatch(fetchLiveStatus(get(community, 'id'), get(community, 'slug'))), 10 * 1000)
     this.setPollInterval(community)
   }
 

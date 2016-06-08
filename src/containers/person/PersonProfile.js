@@ -53,7 +53,7 @@ const PersonProfile = compose(
   Promise.all([
     dispatch(fetchPerson(id))
     .then(({ payload: { shared_communities }, error }) => {
-      if (error) return
+      if (error || !shared_communities) return
       let { currentCommunityId } = store.getState()
       if (includes(shared_communities, currentCommunityId)) return
       return dispatch(setCurrentCommunityId(shared_communities[0] || 'all'))

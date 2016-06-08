@@ -2,10 +2,13 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { prefetch } from 'react-fetcher'
 import { fetch, ConnectedPostList } from '../ConnectedPostList'
-import { fetchTag, followTag, navigate, resetNewPostCount } from '../../actions'
+import {
+  FETCH_TAG, fetchTag, followTag, navigate, resetNewPostCount
+} from '../../actions'
 import { compose } from 'redux'
 import { get } from 'lodash'
 import PostEditor from '../../components/PostEditor'
+import AccessErrorMessage from '../../components/AccessErrorMessage'
 const { bool, func, object } = React.PropTypes
 
 const subject = 'community'
@@ -17,7 +20,8 @@ class TagPosts extends React.Component {
     location: object,
     tag: object,
     community: object,
-    redirecting: bool
+    redirecting: bool,
+    tagError: object
   }
 
   static childContextTypes = {
@@ -36,9 +40,13 @@ class TagPosts extends React.Component {
   render () {
     const {
       params: { tagName, id }, location: { query }, tag, dispatch, redirecting,
-      community
+      community, tagError
     } = this.props
     const { currentUser } = this.context
+
+    if (get(tagError, 'meta.tagName') === tagName) {
+      return <AccessErrorMessage error={tagError.payload.response}/>
+    }
 
     // we check tag.id here because tag will be non-null if we're clicking a
     // link in the left nav, but it won't have an id until fetchTag returns
@@ -78,7 +86,8 @@ export default compose(
     return {
       tag,
       redirecting: !!get(tag, 'post.id'),
-      community: get(state, ['communities', id])
+      community: get(state, ['communities', id]),
+      tagError: state.errors[FETCH_TAG]
     }
   })
 )(TagPosts)

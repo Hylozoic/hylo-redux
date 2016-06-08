@@ -19,7 +19,7 @@ const TagSettings = ({ tags, community, dispatch, pending, total }) => {
     : () => {}
   const remove = tag =>
     window.confirm('Are you sure? This cannot be undone.') &&
-      dispatch(removeTagFromCommunity(tag.id, slug))
+      dispatch(removeTagFromCommunity(tag, slug))
 
   return <div id='topic-settings'>
     <h2>Manage Topics</h2>

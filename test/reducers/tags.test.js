@@ -1,5 +1,5 @@
 require('../support')
-import { tagsByQuery, totalTagsByQuery } from '../../src/reducers/tags'
+import { tagsByCommunity, tagsByQuery, totalTagsByQuery } from '../../src/reducers/tags'
 import { FETCH_TAGS, REMOVE_TAG } from '../../src/actions'
 
 const fetchAction = {
@@ -22,7 +22,8 @@ const removeAction = {
   type: REMOVE_TAG,
   meta: {
     id: 1,
-    slug: 'hum'
+    slug: 'hum',
+    name: 'foo'
   }
 }
 
@@ -55,7 +56,7 @@ describe('tagsByQuery', () => {
     })
   })
 
-  describe('on REMOVE_TAGS', () => {
+  describe('on REMOVE_TAG', () => {
     it('removes a tag', () => {
       const state = {
         'subject=community&id=hum': [
@@ -85,7 +86,7 @@ describe('totalTagsByQuery', () => {
     })
   })
 
-  it('decrements on REMOVE_TAGS', () => {
+  it('decrements on REMOVE_TAG', () => {
     const state = {
       'subject=community&id=hum': 3,
       'subject=community&id=ah': 3
@@ -94,6 +95,31 @@ describe('totalTagsByQuery', () => {
     expect(totalTagsByQuery(state, removeAction)).to.deep.equal({
       'subject=community&id=hum': 2,
       'subject=community&id=ah': 3
+    })
+  })
+})
+
+describe('tagsByCommunity', () => {
+  it('removes a tag on REMOVE_TAG', () => {
+    const state = {
+      whee: {
+        foo: {name: 'foo'},
+        tag2: {name: 'tag2'}
+      },
+      hum: {
+        foo: {name: 'foo'},
+        tag2: {name: 'tag2'}
+      }
+    }
+
+    expect(tagsByCommunity(state, removeAction)).to.deep.equal({
+      whee: {
+        foo: {name: 'foo'},
+        tag2: {name: 'tag2'}
+      },
+      hum: {
+        tag2: {name: 'tag2'}
+      }
     })
   })
 })

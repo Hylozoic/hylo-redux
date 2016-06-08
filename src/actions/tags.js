@@ -21,10 +21,11 @@ export function fetchTags (opts) {
   }
 }
 
-export function removeTagFromCommunity (id, slug) {
+export function removeTagFromCommunity (tag, slug) {
+  const { id, name } = tag
   return {
     type: REMOVE_TAG,
     payload: {api: true, path: `/noo/community/${slug}/tag/${id}`, method: 'DELETE'},
-    meta: {id, slug}
+    meta: {id, name, slug}
   }
 }

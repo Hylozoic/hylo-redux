@@ -1,4 +1,5 @@
 import React from 'react'
+import TagLink from '../components/TagLink'
 
 const classNames = [
   'icon-AddContacts',
@@ -57,6 +58,19 @@ const classNames = [
 export default class IconTest extends React.Component {
   render () {
     return <div id='icon-test'>
+      <br />
+      <br />
+      <br />
+      <br />
+      <br />
+      <br />
+      <br />
+      <br />
+      <br />
+      <TagLink tagName='woo' slug='hylo' />
+      <br />
+      <br />
+      <br />
       {classNames.map(cn => <span key={cn}>
         <span className={cn}/> {cn.replace(/icon-/, '')}
       </span>)}

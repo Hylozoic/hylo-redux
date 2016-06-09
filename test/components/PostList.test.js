@@ -49,7 +49,7 @@ const posts = [
 
 describe('PostList', () => {
   it('renders a mixed group of posts', () => {
-    const component = createElement(PostList, {posts}, {store, dispatch: store.dispatch})
+    const component = createElement(PostList, {posts}, {store})
     const doc = cheerio.load(renderToString(component))
     expect(doc('.post').length).to.equal(3)
     expect(doc('.project-summary').length).to.equal(1)

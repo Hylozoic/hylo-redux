@@ -239,10 +239,6 @@ ul.tabs {
   color: @damian-green;
 }
 
-.popover.hidden {
-  display: none;
-}
-
 .meta {
   .meta-text;
 }
@@ -864,5 +860,22 @@ ul.tags {
     .right a {
       margin-left: 20px;
     }
+  }
+}
+
+.popover {
+  width: 290px;
+  margin: 50px;
+  &.hidden {
+    display: none;
+  }
+  .tag-name {
+    .tag-header-name-text;
+  }
+  .bottom-border {
+    border-bottom: 1px solid @light-gray-border;
+  }
+  .footer {
+    background-color: @faint-gray-bg
   }
 }

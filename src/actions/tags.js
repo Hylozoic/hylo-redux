@@ -1,5 +1,5 @@
 import { cleanAndStringify, createCacheId } from '../util/caching'
-import { FETCH_TAGS, REMOVE_TAG } from './index'
+import { FETCH_TAGS, REMOVE_TAG, SHOW_ALL_TAGS } from './index'
 
 export function fetchTags (opts) {
   const { subject, id, limit } = opts
@@ -27,5 +27,11 @@ export function removeTagFromCommunity (tag, slug) {
     type: REMOVE_TAG,
     payload: {api: true, path: `/noo/community/${slug}/tag/${id}`, method: 'DELETE'},
     meta: {id, name, slug}
+  }
+}
+
+export function showAllTags (slug) {
+  return {
+    type: SHOW_ALL_TAGS
   }
 }

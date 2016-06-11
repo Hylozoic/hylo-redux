@@ -9,8 +9,9 @@ export function viewportTop () {
   : document.body.scrollTop
 }
 
-export function isAtBottom (offset) {
-  return viewportTop() >= bottomScrollPosition() - offset
+export function isAtBottom (offset, element) {
+  if (!element) return viewportTop() >= bottomScrollPosition() - offset
+  return element.scrollTop >= element.scrollHeight - element.offsetHeight - offset
 }
 
 export function scrollToBottom () {

@@ -1,9 +1,11 @@
 import React from 'react'
-import { tagUrl } from '../routes'
+import { connect } from 'react-redux'
 import A from './A'
 import Avatar from './Avatar'
 import cx from 'classnames'
-const { string } = React.PropTypes
+import { isEmpty } from 'lodash'
+import { hideTagPopover } from '../actions/index'
+const { string, object, func } = React.PropTypes
 
 const nounCount = (n, noun) => {
   `${n} ${noun}${n !== 1 && 's'}`
@@ -20,36 +22,31 @@ const dummyData = {
   ]
 }
 
-export default class TagLink extends React.Component {
+@connect(({ tagPopover }) => tagPopover)
+export default class TagPopover extends React.Component {
+
   static propTypes = {
+    dispatch: func,
     tagName: string,
-    slug: string
+    slug: string,
+    position: object
   }
 
-  constructor (props) {
-    super(props)
-    this.state = {hidden: true}
-  }
-
-  showPopover () {
-    this.setState({hidden: false})
-  }
-
-  hidePopover () {
-    this.setState({hidden: true})
+  hide () {
+    let { dispatch } = this.props
+    dispatch(hideTagPopover())
   }
 
   render () {
     let { tagName, slug } = this.props
-    let { hidden } = this.state
+    console.log('tag popo props ', this.props)
 
     let { description, post_count, follower_count, active_members } = dummyData
 
-    return <span
-      onMouseOver={() => this.showPopover()}
-      onMouseOut={() => this.hidePopover()}>
-      <A to={tagUrl(tagName, slug)} className='hashtag'>#{tagName}</A>
-      <div className={cx('popover', {hidden})} ref='popover'>
+    if (isEmpty(tagName)) return null
+
+    return <div className={cx('popover')}
+        onMouseLeave={() => this.hide()}>
         <div className='bottom-border'>
           <span className='tag-name'>#{tagName}</span>
           <span>{description}</span>
@@ -70,6 +67,5 @@ export default class TagLink extends React.Component {
           <span>{nounCount(post_count, 'post')}</span>
         </div>
       </div>
-    </span>
   }
 }

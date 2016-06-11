@@ -40,6 +40,7 @@ export const FETCH_THANKS = 'FETCH_THANKS'
 export const FOLLOW_POST = 'FOLLOW_POST'
 export const FOLLOW_TAG = 'FOLLOW_TAG'
 export const FOLLOW_TAG_PENDING = FOLLOW_TAG + '_PENDING'
+export const HIDE_TAG_POPOVER = 'HIDE_TAG_POPOVER'
 export const JOIN_COMMUNITY_WITH_CODE = 'JOIN_COMMUNITY_WITH_CODE'
 export const LEAVE_COMMUNITY = 'LEAVE_COMMUNITY'
 export const LEAVE_COMMUNITY_PENDING = LEAVE_COMMUNITY + _PENDING
@@ -72,6 +73,7 @@ export const SET_META_TAGS = 'SET_META_TAGS'
 export const SET_MOBILE_DEVICE = 'SET_MOBILE_DEVICE'
 export const SET_PASSWORD = 'SET_PASSWORD'
 export const SET_SIGNUP_ERROR = 'SET_SIGNUP_ERROR'
+export const SHOW_TAG_POPOVER = 'SHOW_TAG_POPOVER'
 export const SIGNUP = 'SIGNUP'
 export const START_POST_EDIT = 'START_POST_EDIT'
 export const THANK = 'THANK'
@@ -650,4 +652,12 @@ export function cancelTagDescriptionEdit () {
 
 export function editTagDescription (tag, description) {
   return {type: EDIT_TAG_DESCRIPTION, payload: {tag, description}}
+}
+
+export function showTagPopover (tagName, slug, position) {
+  return {type: SHOW_TAG_POPOVER, payload: {tagName, slug, position}}
+}
+
+export function hideTagPopover () {
+  return {type: HIDE_TAG_POPOVER}
 }

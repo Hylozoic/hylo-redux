@@ -36,6 +36,7 @@ export const FETCH_POSTS = 'FETCH_POSTS'
 export const FETCH_RAW_ADMIN_METRICS = 'FETCH_RAW_ADMIN_METRICS'
 export const FETCH_TAG = 'FETCH_TAG'
 export const FETCH_TAGS = 'FETCH_TAGS'
+export const FETCH_TAG_SUMMARY = 'FETCH_TAG_SUMMARY'
 export const FETCH_THANKS = 'FETCH_THANKS'
 export const FOLLOW_POST = 'FOLLOW_POST'
 export const FOLLOW_TAG = 'FOLLOW_TAG'
@@ -660,4 +661,12 @@ export function showTagPopover (tagName, slug, position) {
 
 export function hideTagPopover () {
   return {type: HIDE_TAG_POPOVER}
+}
+
+export function fetchTagSummary (tagName, id) {
+  return {
+    type: FETCH_TAG_SUMMARY,
+    payload: {api: true, path: `/noo/community/${id}/tag/${tagName}/summary`},
+    meta: {tagName, id}
+  }
 }

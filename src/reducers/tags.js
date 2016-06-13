@@ -3,7 +3,7 @@ import {
 } from './util'
 import {
   FETCH_LEFT_NAV_TAGS, FETCH_LIVE_STATUS, FETCH_TAG, FETCH_TAGS,
-  FOLLOW_TAG_PENDING, REMOVE_TAG
+  FETCH_TAG_SUMMARY, FOLLOW_TAG_PENDING, REMOVE_TAG
 } from '../actions'
 import { filter, get, isEmpty, merge, omitBy, toPairs } from 'lodash'
 import qs from 'querystring'
@@ -76,12 +76,22 @@ export const tagsByCommunity = (state = {}, action) => {
       return mergeLeftNavTags(state, payload.left_nav_tags, get(meta, 'slug'))
     case FOLLOW_TAG_PENDING:
       oldCommunityTags = state[meta.id] || {}
-      var oldTag = oldCommunityTags[meta.tagName]
+      let oldTag = oldCommunityTags[meta.tagName]
       return {
         ...state,
         [meta.id]: {
           ...oldCommunityTags,
           [meta.tagName]: {...oldTag, followed: !oldTag.followed}
+        }
+      }
+    case FETCH_TAG_SUMMARY:
+      oldCommunityTags = state[meta.id] || {}
+      oldTag = oldCommunityTags[meta.tagName]
+      return {
+        ...state,
+        [meta.id]: {
+          ...oldCommunityTags,
+          [meta.tagName]: {...oldTag, ...payload}
         }
       }
     case REMOVE_TAG:

@@ -5,13 +5,13 @@ import { closeModal } from '../actions'
 // circular import; code smell; refactor?
 import BrowseTopicsModal from '../containers/BrowseTopicsModal'
 import cx from 'classnames'
-const { func } = React.PropTypes
+const { bool, func } = React.PropTypes
 
 export const modalWrapperCSSId = 'top-level-modal-wrapper'
 
-const modalStyle = () => {
+const modalStyle = (isMobile) => {
   return {
-    left: position(document.getElementById('cover-image-page-content')).x,
+    left: isMobile ? 0 : position(document.getElementById('cover-image-page-content')).x,
     width: Math.min(688, document.getElementById('main').offsetWidth)
   }
 }
@@ -35,8 +35,8 @@ export const ModalWrapper = ({ show }, { dispatch }) => {
 }
 ModalWrapper.contextTypes = {dispatch: func}
 
-export const Modal = ({ id, className, children, title, onCancel }) => {
-  return <div id={id} className={cx(className, 'modal')} style={modalStyle()}>
+export const Modal = ({ id, className, children, title, onCancel }, { isMobile }) => {
+  return <div id={id} className={cx(className, 'modal')} style={modalStyle(isMobile)}>
     <h2>
       {title}
       <a className='close' onClick={onCancel}><Icon name='Fail'/></a>
@@ -44,3 +44,4 @@ export const Modal = ({ id, className, children, title, onCancel }) => {
     {children}
   </div>
 }
+Modal.contextTypes = {isMobile: bool}

@@ -1,11 +1,16 @@
 import React from 'react'
 import { connect } from 'react-redux'
-import { getCurrentCommunity } from '../models/community'
+import { getCurrentCommunity, getFollowedTags } from '../models/community'
 import { connectedListProps } from '../util/caching'
-import { fetchTags } from '../actions/tags'
+import { closeModal } from '../actions'
+import { fetchTags, followTag } from '../actions/tags'
 import ScrollListener from '../components/ScrollListener'
+import Icon from '../components/Icon'
+import A from '../components/A'
 import { modalWrapperCSSId, Modal } from '../components/Modal'
-import { isEmpty } from 'lodash'
+import { isEmpty, some } from 'lodash'
+import { find } from 'lodash/fp'
+import { same } from '../models'
 import { humanDate } from '../util/text'
 const { array, bool, func, number, object } = React.PropTypes
 
@@ -15,7 +20,8 @@ const subject = 'community'
   const community = getCurrentCommunity(state)
   return {
     community,
-    ...connectedListProps(state, {subject, id: community.slug}, 'tags')
+    ...connectedListProps(state, {subject, id: community.slug}, 'tags'),
+    followedTags: getFollowedTags(community, state)
   }
 })
 export default class BrowseTopicsModal extends React.Component {
@@ -24,7 +30,8 @@ export default class BrowseTopicsModal extends React.Component {
     tags: array,
     community: object,
     pending: bool,
-    total: number
+    total: number,
+    followedTags: array
   }
 
   componentDidMount () {
@@ -33,32 +40,57 @@ export default class BrowseTopicsModal extends React.Component {
   }
 
   render () {
-    const { tags, community, dispatch, pending, total } = this.props
+    const { tags, community, dispatch, pending, total, followedTags } = this.props
     const offset = tags.length
+    const title = total ? `Browse all ${total} topics` : 'Browse all topics'
     const loadMore = !pending && offset < total
       ? () => dispatch(fetchTags({subject, id: community.slug, offset}))
       : () => {}
 
-    const title = total
-      ? `Browse all ${total} topics`
-      : 'Browse all topics'
-
     return <Modal title={title} id='browse-all-topics'>
       {isEmpty(tags) ? <div className='loading'>Loading...</div>
         : <ul>
-            {tags.map(({ id, name, description, owner, created_at }) =>
-              <li key={id}>
-                <span className='name'>#{name}</span>
-                {description && <span className='description'>
-                  {description}
-                </span>}
-                {!isEmpty(owner) && <span className='meta'>
-                  created by {owner.name} {humanDate(created_at)}
-                </span>}
-              </li>)}
+            {tags.map(tag => {
+              const followed = some(followedTags, same('name', tag))
+              return <TagRow tag={tag} community={community} key={tag.id}
+                followed={followed}/>
+            })}
           </ul>}
       <ScrollListener elementId={modalWrapperCSSId}
         onBottom={loadMore}/>
     </Modal>
   }
 }
+
+const TagRow = ({ tag, community, followed }, { dispatch }) => {
+  const { id, name, post_type } = tag
+  const { slug } = community
+  const membership = find(m => same('id', community), tag.memberships)
+  const { description, follower_count, owner, created_at } = membership
+  const unfollow = () => dispatch(followTag(slug, name))
+
+  return <li key={id}>
+    <div className='right'>
+      <span className='followers'>
+        <Icon name='Users'/>
+        {follower_count}
+      </span>
+      {followed
+        ? <a className='unfollow button' onClick={unfollow}>
+            Unfollow <span className='x'>&times;</span>
+          </a>
+        : <A className='view button' to={`/c/${slug}/tag/${name}`}
+            onClick={() => dispatch(closeModal())}>
+            View <Icon name='View'/>
+          </A>}
+    </div>
+    <span className='name'>#{name}</span>
+    {(description || post_type) && <p className='description'>
+      {description || post_type}
+    </p>}
+    {!isEmpty(owner) && <span className='meta'>
+      created by {owner.name} {humanDate(created_at)}
+    </span>}
+  </li>
+}
+TagRow.contextTypes = {dispatch: func}

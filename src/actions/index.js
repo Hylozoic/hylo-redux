@@ -611,14 +611,6 @@ export function fetchTag (tagName, communityId) {
   }
 }
 
-export function followTag (id, tagName) {
-  return {
-    type: FOLLOW_TAG,
-    payload: {api: true, path: `/noo/community/${id}/tag/${tagName}/follow`, method: 'POST'},
-    meta: {id, tagName}
-  }
-}
-
 export function fetchLeftNavTags (id, refresh) {
   return {
     type: FETCH_LEFT_NAV_TAGS,

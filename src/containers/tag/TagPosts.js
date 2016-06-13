@@ -3,8 +3,9 @@ import { connect } from 'react-redux'
 import { prefetch } from 'react-fetcher'
 import { fetch, ConnectedPostList } from '../ConnectedPostList'
 import {
-  FETCH_TAG, fetchTag, followTag, navigate, resetNewPostCount
+  FETCH_TAG, fetchTag, navigate, resetNewPostCount
 } from '../../actions'
+import { followTag } from '../../actions/tags'
 import { compose } from 'redux'
 import { get } from 'lodash'
 import PostEditor from '../../components/PostEditor'

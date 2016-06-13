@@ -1,4 +1,5 @@
-import { find } from 'lodash/fp'
+import { values } from 'lodash'
+import { find, pickBy } from 'lodash/fp'
 
 export const MemberRole = {DEFAULT: 0, MODERATOR: 1}
 
@@ -21,3 +22,6 @@ export const getCommunity = (idOrSlug, state) =>
 
 export const getCurrentCommunity = state =>
   getCommunity(state.currentCommunityId, state)
+
+export const getFollowedTags = (community, state) =>
+  values(pickBy(t => t.followed, state.tagsByCommunity[community.slug]))

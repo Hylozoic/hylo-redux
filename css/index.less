@@ -865,15 +865,36 @@ ul.tags {
 
 .popover {
   width: 290px;
-  margin: 50px;
+  margin: 25px;
   position: absolute;
+  background-color: white;
+  border: 1px solid @light-gray-border;
+  .meta-text {
+    .meta-text;
+  }
   .tag-name {
     .tag-header-name-text;
+    display: block;
+  }
+  .avatar {
+    float: left;
+  }
+  .name {
+    padding-left: 5px;
+  }
+  .member-post-count {
+    padding-left: 5px;
   }
   .bottom-border {
     border-bottom: 1px solid @light-gray-border;
+    padding: 10px 15px;
   }
   .footer {
-    background-color: @faint-gray-bg
+    .meta-text;
+    background-color: @faint-gray-bg;
+    padding: 15px 15px;
+    a {
+      color: @damian-green;
+    }
   }
 }

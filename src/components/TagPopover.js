@@ -31,7 +31,7 @@ export default class TagPopover extends React.Component {
     slug: string,
     description: string,
     postCount: string,
-    followerCount: number,
+    followerCount: string,
     activeMembers: array,
     position: object,
     anchorWidth: number,
@@ -63,6 +63,7 @@ export default class TagPopover extends React.Component {
 
     // content has loaded
     if (nextProps.description) {
+      this.removeHideTimeout()
       this.hideTimeoutId = setTimeout(() => this.hide(), 3000)
     }
   }

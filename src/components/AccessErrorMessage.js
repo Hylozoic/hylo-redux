@@ -13,7 +13,7 @@ const AccessErrorMessage = ({ error }) => {
     default:
       errorMessage = 'An error occurred.'
   }
-  return <div className='alert alert-danger'>
+  return <div className='alert alert-danger access-error-message'>
     {errorMessage}
     <span> </span>
     <a href='javascript:history.go(-1)'>Back</a>

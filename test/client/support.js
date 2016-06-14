@@ -14,6 +14,12 @@ for (let key in window) {
   global[key] = window[key]
 }
 
+import chai from 'chai'
+chai.use(require('chai-spies'))
+window.analytics = {
+  track: chai.spy(() => {})
+}
+
 // if tests want to set up spies for window methods, they can restore the
 // original behavior using these
 window._originalAlert = window.alert

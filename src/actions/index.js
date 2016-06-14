@@ -10,6 +10,7 @@ export const CHANGE_EVENT_RESPONSE = 'CHANGE_EVENT_RESPONSE'
 export const CHANGE_EVENT_RESPONSE_PENDING = CHANGE_EVENT_RESPONSE + _PENDING
 export const CHECK_FRESHNESS_POSTS = 'CHECK_FRESHNESS_POSTS'
 export const CLEAR_CACHE = 'CLEAR_CACHE'
+export const CLOSE_MODAL = 'CLOSE_MODAL'
 export const CREATE_COMMENT = 'CREATE_COMMENT'
 export const CREATE_COMMUNITY = 'CREATE_COMMUNITY'
 export const CREATE_POST = 'CREATE_POST'
@@ -74,6 +75,7 @@ export const SET_META_TAGS = 'SET_META_TAGS'
 export const SET_MOBILE_DEVICE = 'SET_MOBILE_DEVICE'
 export const SET_PASSWORD = 'SET_PASSWORD'
 export const SET_SIGNUP_ERROR = 'SET_SIGNUP_ERROR'
+export const SHOW_ALL_TAGS = 'SHOW_ALL_TAGS'
 export const SHOW_TAG_POPOVER = 'SHOW_TAG_POPOVER'
 export const SIGNUP = 'SIGNUP'
 export const START_POST_EDIT = 'START_POST_EDIT'
@@ -612,14 +614,6 @@ export function fetchTag (tagName, communityId) {
   }
 }
 
-export function followTag (id, tagName) {
-  return {
-    type: FOLLOW_TAG,
-    payload: {api: true, path: `/noo/community/${id}/tag/${tagName}/follow`, method: 'POST'},
-    meta: {id, tagName}
-  }
-}
-
 export function fetchLeftNavTags (id, refresh) {
   return {
     type: FETCH_LEFT_NAV_TAGS,
@@ -669,4 +663,8 @@ export function fetchTagSummary (tagName, id) {
     payload: {api: true, path: `/noo/community/${id}/tag/${tagName}/summary`},
     meta: {tagName, id}
   }
+}
+
+export function closeModal () {
+  return {type: CLOSE_MODAL}
 }

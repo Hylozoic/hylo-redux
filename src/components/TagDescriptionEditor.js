@@ -43,7 +43,7 @@ export default class TagDescriptionEditor extends React.Component {
           </div>
         </div>)}
         <div className='footer'>
-          <button onClick={() => onSave(tags)}>Create</button>
+          <button onClick={() => onSave(tags)} className='ok'>Create</button>
         </div>
       </div>
     </div>

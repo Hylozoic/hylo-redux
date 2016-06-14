@@ -105,8 +105,9 @@ const bodyText = (action, comment, post) => {
   if (includes(['followAdd', 'follow', 'unfollow'], action)) {
     return ''
   }
-  let text = get(comment, 'text') || get(post, 'description')
-  return present(text, {slug: post.communities[0].slug, maxlength: 200})
+  const text = get(comment, 'text') || get(post, 'description')
+  const slug = get(post, 'communities.0.slug')
+  return present(text, {slug, maxlength: 200})
 }
 
 const Activity = ({ activity, currentUser, dispatch }) => {

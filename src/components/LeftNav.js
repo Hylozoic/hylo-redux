@@ -5,7 +5,9 @@ import { VelocityTransitionGroup } from 'velocity-react'
 import { isEmpty, filter } from 'lodash'
 import { tagUrl } from '../routes'
 import { isMobile } from '../client/util'
+import { showAllTags } from '../actions/tags'
 import cx from 'classnames'
+const { func } = React.PropTypes
 
 export const leftNavWidth = 208 // this value is dupicated in CSS
 export const leftNavEasing = [70, 25]
@@ -31,7 +33,7 @@ export const MenuButton = ({ onClick, label }) =>
     <span>{label || 'Menu'}</span>
   </a>
 
-export const TopicList = ({ tags, slug }) => {
+export const TopicList = ({ tags, slug }, { dispatch }) => {
   let followedTags = filter(tags, t => t.followed && !t.created)
   let createdTags = filter(tags, t => t.created && t.name !== 'chat')
 
@@ -50,6 +52,9 @@ export const TopicList = ({ tags, slug }) => {
     <TagLink name='all-topics'/>
     {!isEmpty(followedTags) && followedTags.map(tag =>
       <TagLink name={tag.name} key={tag.name} highlight={tag.new_post_count}/>)}
+    <li>
+      <a onClick={() => dispatch(showAllTags(slug))}><Icon name='More'/></a>
+    </li>
     {!isEmpty(createdTags) && <li className='subheading'>
       <a>TOPICS CREATED ({createdTags.length})</a>
     </li>}
@@ -57,6 +62,7 @@ export const TopicList = ({ tags, slug }) => {
       <TagLink name={tag.name} key={tag.name} highlight={tag.new_post_count}/>)}
   </ul>
 }
+TopicList.contextTypes = {dispatch: func}
 
 const CommunityNav = ({ community, canModerate, canInvite }) => {
   const { slug, network } = community || {}

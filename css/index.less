@@ -941,3 +941,72 @@ ul.tags {
 	border-width: 11px;
 	margin-left: -11px;
 }
+
+#browse-all-topics {
+  .loading {
+    padding: 0 25px 15px;
+  }
+  ul {
+    padding-left: 0;
+  }
+  li {
+    padding: 10px 25px;
+    min-height: 81px;
+    border-bottom: 1px solid @post-border;
+    list-style-type: none;
+
+    .name {
+      display: block;
+      .medium;
+    }
+
+    .description {
+      margin-bottom: 0;
+    }
+
+    .followers {
+      display: inline-block;
+      margin-top: 20px;
+      margin-left: 25px;
+    }
+
+    .icon-Users {
+      margin-right: 5px;
+    }
+
+    .button {
+      .round-button;
+      padding: 0 16px 0 20px;
+      margin-left: 10px;
+      position: relative;
+      top: -1px;
+      vertical-align: middle;
+      &.view {
+        color: white;
+        background-color: @damian-green;
+        border-color: @damian-green;
+        .icon {
+          margin-left: 5px;
+          position: relative;
+          top: 4px;
+          font-size: 20px;
+        }
+      }
+
+      .x {
+        .bold;
+        vertical-align: middle;
+        font-size: 24px;
+        position: relative;
+        top: -1px;
+        margin-left: 5px;
+        color: @faint-gray-text;
+      }
+    }
+  }
+}
+
+.isMobile #browse-all-topics li .right {
+  text-align: right;
+  float: none;
+}

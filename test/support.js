@@ -1,7 +1,7 @@
 import dotenv from 'dotenv'
 import chai from 'chai'
 import { Component, createElement, PropTypes } from 'react'
-import { mapValues, merge, omit } from 'lodash'
+import { get, mapValues, merge, omit } from 'lodash'
 import { generate } from 'randomstring'
 process.env.NODE_ENV = 'test'
 
@@ -38,6 +38,11 @@ const mockReduxStore = function (state) {
 export default {
   helpers: {
     createElement: (componentClass, props, context) => {
+      context = {
+        dispatch: get(context, 'store.dispatch'),
+        ...context
+      }
+
       class Wrapper extends Component {
         static childContextTypes = mapValues(context, () => PropTypes.any)
 
@@ -90,6 +95,12 @@ export default {
         })
       }
       return res
+    },
+    event: function (attrs) {
+      return merge({
+        preventDefault: spy(() => {}),
+        stopPropagation: spy(() => {})
+      }, attrs)
     },
     redux: {
       store: mockReduxStore

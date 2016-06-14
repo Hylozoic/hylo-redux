@@ -56,7 +56,7 @@ export const connectForNext = section =>
       community,
       actionError
     }
-  })
+  }, null, null, {withRef: true})
 
 export const goToNext = (currentUser, query) => {
   let { next, action, token } = query
@@ -119,11 +119,11 @@ export default class Login extends React.Component {
     let email = this.refs.email.value
     let password = this.refs.password.value
 
-    dispatch(login(email, password))
+    return dispatch(login(email, password))
     .then(({ error }) => {
       if (error) return
-      dispatch(goToNext(this.props.currentUser, query))
       trackEvent(LOGGED_IN)
+      return dispatch(goToNext(this.props.currentUser, query))
     })
   }
 
@@ -150,7 +150,7 @@ export default class Login extends React.Component {
           <input type='password' ref='password' id='password' className='form-control'/>
         </div>
         <div className='form-group'>
-          <input type='submit' value='Go'/>
+          <input ref='submit' type='submit' value='Go'/>
         </div>
         <div>
           <Link to={makeUrl('/signup', pick(query, 'next', 'action', 'id', 'token'))}>Sign up</Link>

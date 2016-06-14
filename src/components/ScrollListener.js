@@ -1,25 +1,31 @@
 import React from 'react'
 import { throttle } from 'lodash'
 import { isAtBottom } from '../util/scrolling'
-const { func } = React.PropTypes
+const { func, string } = React.PropTypes
 
 export default class ScrollListener extends React.Component {
   static propTypes = {
-    onBottom: func
+    onBottom: func,
+    elementId: string
   }
 
   handleScrollEvents = throttle(event => {
     event.preventDefault()
-    let { onBottom } = this.props
-    if (onBottom && isAtBottom(250)) onBottom()
-  }, 50)
+    const { onBottom } = this.props
+    if (onBottom && isAtBottom(250, this.element())) onBottom()
+  }, 100)
+
+  element () {
+    const { elementId } = this.props
+    return elementId ? document.getElementById(elementId) : window
+  }
 
   componentDidMount () {
-    window.addEventListener('scroll', this.handleScrollEvents)
+    this.element().addEventListener('scroll', this.handleScrollEvents)
   }
 
   componentWillUnmount () {
-    window.removeEventListener('scroll', this.handleScrollEvents)
+    this.element().removeEventListener('scroll', this.handleScrollEvents)
   }
 
   render () {

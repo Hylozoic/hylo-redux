@@ -23,6 +23,7 @@ import {
   CANCEL_POST_EDIT,
   CANCEL_TYPEAHEAD,
   CHECK_FRESHNESS_POSTS,
+  CLOSE_MODAL,
   CREATE_COMMUNITY,
   CREATE_POST,
   CREATE_NETWORK,
@@ -52,6 +53,7 @@ import {
   SET_META_TAGS,
   SET_MOBILE_DEVICE,
   SET_SIGNUP_ERROR,
+  SHOW_ALL_TAGS,
   SHOW_TAG_POPOVER,
   SIGNUP,
   TOGGLE_MAIN_MENU,
@@ -473,6 +475,17 @@ export default combineReducers({
       case FETCH_LIVE_STATUS:
         return updateTitle(state, payload.new_notification_count)
     }
+    return state
+  },
+
+  showModal: (state = null, action) => {
+    switch (action.type) {
+      case SHOW_ALL_TAGS:
+        return 'tags'
+      case CLOSE_MODAL:
+        return null
+    }
+
     return state
   }
 

@@ -15,6 +15,7 @@ import { VelocityComponent } from 'velocity-react'
 import { canInvite, canModerate } from '../models/currentUser'
 import { get, pick } from 'lodash'
 import { matchEditorUrl } from './StandalonePostEditor'
+import { ModalWrapper } from '../components/Modal'
 const { array, bool, func, object, string } = React.PropTypes
 
 @prefetch(({ store, dispatch }) => {
@@ -25,7 +26,7 @@ const { array, bool, func, object, string } = React.PropTypes
   }
 })
 @connect((state, { params }) => {
-  const { isMobile, leftNavIsOpen, notifierMessages } = state
+  const { isMobile, leftNavIsOpen, notifierMessages, showModal } = state
   const currentUser = state.people.current
   const community = find(state.communities, c => c.id === state.currentCommunityId)
   const network = find(state.networks, n => n.id === state.currentNetworkId)
@@ -39,7 +40,8 @@ const { array, bool, func, object, string } = React.PropTypes
     community,
     network,
     tags,
-    path: state.routing.path
+    path: state.routing.path,
+    showModal
   }
 })
 export default class App extends React.Component {
@@ -53,7 +55,8 @@ export default class App extends React.Component {
     notifierMessages: array,
     path: string,
     dispatch: func,
-    isMobile: bool
+    isMobile: bool,
+    showModal: string
   }
 
   static childContextTypes = {
@@ -75,8 +78,8 @@ export default class App extends React.Component {
 
   render () {
     const {
-      children, community, currentUser, dispatch, tags,
-      leftNavIsOpen, network, notifierMessages, isMobile
+      children, community, currentUser, dispatch, tags, leftNavIsOpen, network,
+      notifierMessages, isMobile, showModal
     } = this.props
 
     const path = this.props.path.split('?')[0]
@@ -100,7 +103,7 @@ export default class App extends React.Component {
     const visitCommunity = community =>
       dispatch(navigate(nextPath(path, community)))
 
-    return <div className={cx({leftNavIsOpen, isMobile})}>
+    return <div className={cx({leftNavIsOpen, isMobile, showModal})}>
       <LeftNav opened={leftNavIsOpen}
         community={community}
         network={network}
@@ -134,6 +137,7 @@ export default class App extends React.Component {
       <LiveStatusPoller community={community}/>
       <PageTitleController/>
       <TagPopover/>
+      <ModalWrapper show={showModal}/>
     </div>
   }
 }

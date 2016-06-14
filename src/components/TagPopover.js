@@ -40,13 +40,23 @@ export default class TagPopover extends React.Component {
 
   hide () {
     let { dispatch } = this.props
-    // dispatch(hideTagPopover())
+    dispatch(hideTagPopover())
+  }
+
+  hideListener (event) {
+    let { popoverContainer } = this.refs
+    if (!popoverContainer || popoverContainer.contains(event.target)) return
+    this.hide()
   }
 
   componentWillReceiveProps (nextProps) {
     let { dispatch, slug, tagName } = this.props
-    if (isEmpty(nextProps.tagName)) return
+    if (isEmpty(nextProps.tagName)) {
+      document.documentElement.removeEventListener('mouseover', this.hideListener)
+      return
+    }
     if (nextProps.tagName !== tagName || nextProps.slug !== slug) {
+      document.documentElement.addEventListener('mouseover', event => this.hideListener(event))
       dispatch(fetchTagSummary(nextProps.tagName, nextProps.slug))
     }
   }
@@ -66,7 +76,8 @@ export default class TagPopover extends React.Component {
     let innerPosition = above ? {bottom: 5} : {}
 
     return <div className='popover-container'
-        style={outerPosition}>
+        style={outerPosition}
+        ref='popoverContainer'>
         <div className={cx('popover', above ? 'above' : 'below')}
           onMouseLeave={() => this.hide()}
           style={innerPosition}>

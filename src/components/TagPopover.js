@@ -57,7 +57,7 @@ export default class TagPopover extends React.Component {
     if (isEmpty(nextProps.tagName)) return
 
     // loading
-    if (nextProps.tagName !== tagName || nextProps.slug !== slug) {
+    if ((nextProps.tagName !== tagName || nextProps.slug !== slug) && !nextProps.description) {
       dispatch(fetchTagSummary(nextProps.tagName, nextProps.slug))
     }
 

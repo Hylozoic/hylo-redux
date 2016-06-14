@@ -230,7 +230,7 @@ export class CommentSection extends React.Component {
         if (error) {
           return dispatch(notify('Could not load comments. Please try again soon.', {type: 'error'}))
         }
-        if (id) scrollToAnchor(`comment-${id}`, 15)
+        if (id) scrollToAnchor(`comment-${id}`, 90)
       })
     }
 

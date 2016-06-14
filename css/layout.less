@@ -1,3 +1,4 @@
+@main-column-width: 688px;
 @top-nav-height: 75px;
 @left-nav-width: 208px;
 @refresh-button-height: 36px;
@@ -9,6 +10,11 @@
 #app {
   overflow-x: hidden;
   min-height: 100vh;
+
+  > .showModal {
+    overflow-y: hidden;
+    height: 100vh;
+  }
 }
 
 nav {
@@ -457,6 +463,11 @@ nav {
       vertical-align: middle;
       display: inline-block;
     }
+
+    .icon-More {
+      font-size: 24px;
+      padding-left: 14px;
+    }
   }
 
 }
@@ -542,7 +553,7 @@ nav {
 }
 
 #cover-image-page-content, .simple-page {
-  max-width: 688px;
+  max-width: @main-column-width;
   margin: 0 auto;
   position: relative;
 }
@@ -666,5 +677,59 @@ nav {
 
   .right {
     float: right;
+  }
+}
+
+#top-level-modal-wrapper {
+  z-index: 50;
+  position: fixed;
+  height: 100vh;
+  width: 100vw;
+  top: 0;
+  left: 0;
+  overflow-y: scroll;
+
+  .modal {
+    position: absolute;
+    top: 0;
+    max-width: @main-column-width;
+    margin: 10vh auto;
+  }
+}
+
+.modal {
+  z-index: 3;
+  background-color: white;
+
+  h2 {
+    padding: 25px;
+    margin: 0;
+    border-bottom: 1px solid @post-border;
+  }
+
+  .close {
+    float: right;
+    text-decoration: none;
+  }
+
+  .footer {
+    margin-top: -15px;
+    padding: 25px;
+    button, a.button {
+      .round-button;
+      padding: 0 20px;
+
+      &.ok {
+        color: white;
+        background-color: @damian-green;
+        border-color: @damian-green;
+      }
+    }
+  }
+}
+
+.isMobile #top-level-modal-wrapper {
+  .modal {
+    margin: 0;
   }
 }

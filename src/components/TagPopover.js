@@ -43,26 +43,27 @@ export default class TagPopover extends React.Component {
     dispatch(hideTagPopover())
   }
 
-  hideListener (event) {
-    let { popoverContainer } = this.refs
-    if (!popoverContainer || popoverContainer.contains(event.target)) return
-    this.hide()
+  removeHideTimeout () {
+    if (this.hideTimeoutId) {
+      clearTimeout(this.hideTimeoutId)
+      this.hideTimeoutId = null
+    }
   }
 
   componentWillReceiveProps (nextProps) {
-    let { dispatch, slug, tagName, description } = this.props
-    if (isEmpty(nextProps.tagName)) {
-      document.documentElement.removeEventListener('mouseover', this.hideListener)
-      return
-    }
+    let { dispatch, slug, tagName } = this.props
+
+    // hidden
+    if (isEmpty(nextProps.tagName)) return
+
+    // loading
     if (nextProps.tagName !== tagName || nextProps.slug !== slug) {
       dispatch(fetchTagSummary(nextProps.tagName, nextProps.slug))
     }
-    if (nextProps.description && nextProps.description !== description) {
-      // content has loaded
-      setTimeout(() => {
-        document.documentElement.addEventListener('mouseover', event => this.hideListener(event))
-      }, 2500)
+
+    // content has loaded
+    if (nextProps.description) {
+      this.hideTimeoutId = setTimeout(() => this.hide(), 3000)
     }
   }
 
@@ -90,8 +91,9 @@ export default class TagPopover extends React.Component {
         style={outerPosition}
         ref='popoverContainer'>
         <div className={cx('popover', above ? 'above' : 'below')}
-          onMouseLeave={() => this.hide()}
-          style={innerPosition}>
+          style={innerPosition}
+          onMouseEnter={() => this.removeHideTimeout()}
+          onMouseLeave={() => this.hide()}>
           <div className='bottom-border'>
             <span className='tag-name'># {tagName}</span>
             <span className='description meta-text'>{description}</span>

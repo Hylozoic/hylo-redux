@@ -50,14 +50,19 @@ export default class TagPopover extends React.Component {
   }
 
   componentWillReceiveProps (nextProps) {
-    let { dispatch, slug, tagName } = this.props
+    let { dispatch, slug, tagName, description } = this.props
     if (isEmpty(nextProps.tagName)) {
       document.documentElement.removeEventListener('mouseover', this.hideListener)
       return
     }
     if (nextProps.tagName !== tagName || nextProps.slug !== slug) {
-      document.documentElement.addEventListener('mouseover', event => this.hideListener(event))
       dispatch(fetchTagSummary(nextProps.tagName, nextProps.slug))
+    }
+    if (nextProps.description && nextProps.description !== description) {
+      // content has loaded
+      setTimeout(() => {
+        document.documentElement.addEventListener('mouseover', event => this.hideListener(event))
+      }, 2500)
     }
   }
 
@@ -70,8 +75,14 @@ export default class TagPopover extends React.Component {
     const toggleFollow = () => dispatch(followTag(slug, tagName))
     const popoverHeight = 380
     const popoverWidth = 290
+    let left = position.x - 25 + (anchorWidth / 2) - (popoverWidth / 2)
+    if (left < 0) {
+      left = 0
+    } else if (left > document.documentElement.clientWidth - (popoverWidth + 30)) {
+      left = document.documentElement.clientWidth - (popoverWidth + 30)
+    }
     const above = position.y > popoverHeight + 70
-    let outerPosition = {left: position.x - 25 + (anchorWidth / 2) - (popoverWidth / 2)}
+    let outerPosition = {left}
     outerPosition.top = window.pageYOffset + position.y + 15
     let innerPosition = above ? {bottom: 5} : {}
 

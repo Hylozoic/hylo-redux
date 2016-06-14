@@ -1,7 +1,7 @@
 import React from 'react'
 import { navigate, showTagPopover } from '../actions'
 import { tagUrlComponents } from '../routes'
-import { position } from '../util/scrolling'
+import { positionInViewport } from '../util/scrolling'
 const { func } = React.PropTypes
 
 const ClickCatcher = ({ tag, ...props }, { dispatch }) => {
@@ -24,7 +24,7 @@ const ClickCatcher = ({ tag, ...props }, { dispatch }) => {
     var node = event.target
     if (node.nodeName.toLowerCase() === 'a' && node.getAttribute('class') === 'hashtag') {
       let { tagName, slug } = tagUrlComponents(node.getAttribute('href'))
-      dispatch(showTagPopover(tagName, slug, position(node)))
+      dispatch(showTagPopover(tagName, slug, positionInViewport(node), node.offsetWidth))
     }
   }
 

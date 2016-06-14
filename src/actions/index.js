@@ -655,8 +655,8 @@ export function editTagDescription (tag, description) {
   return {type: EDIT_TAG_DESCRIPTION, payload: {tag, description}}
 }
 
-export function showTagPopover (tagName, slug, position) {
-  return {type: SHOW_TAG_POPOVER, payload: {tagName, slug, position}}
+export function showTagPopover (tagName, slug, position, anchorWidth) {
+  return {type: SHOW_TAG_POPOVER, payload: {tagName, slug, position, anchorWidth}}
 }
 
 export function hideTagPopover () {

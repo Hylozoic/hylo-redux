@@ -60,9 +60,12 @@ export const tagsByCommunity = (state = {}, action) => {
   let { type, payload, meta, error } = action
   if (error) return state
 
+  let oldCommunityTags
+  let oldTag
+
   switch (type) {
     case FETCH_TAG:
-      let oldCommunityTags = state[meta.id] || {}
+      oldCommunityTags = state[meta.id] || {}
       return {
         ...state,
         [meta.id]: {
@@ -76,7 +79,7 @@ export const tagsByCommunity = (state = {}, action) => {
       return mergeLeftNavTags(state, payload.left_nav_tags, get(meta, 'slug'))
     case FOLLOW_TAG_PENDING:
       oldCommunityTags = state[meta.id] || {}
-      let oldTag = oldCommunityTags[meta.tagName]
+      oldTag = oldCommunityTags[meta.tagName]
       return {
         ...state,
         [meta.id]: {

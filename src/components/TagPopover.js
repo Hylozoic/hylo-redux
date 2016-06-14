@@ -84,8 +84,7 @@ export default class TagPopover extends React.Component {
       left = document.documentElement.clientWidth - (popoverWidth + 30)
     }
     const above = position.y > popoverHeight + 70
-    let outerPosition = {left}
-    outerPosition.top = window.pageYOffset + position.y + 15
+    let outerPosition = {left, top: position.y + 15 + window.pageYOffset}
     let innerPosition = above ? {bottom: 5} : {}
 
     return <div className='popover-container'

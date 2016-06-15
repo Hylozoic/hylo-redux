@@ -4,10 +4,20 @@ import A from './A'
 import Avatar from './Avatar'
 import cx from 'classnames'
 import { isEmpty, get } from 'lodash'
-import { hideTagPopover, fetchTagSummary, followTag } from '../actions/index'
+import { tagUrlComponents } from '../routes'
+import { positionInViewport } from '../util/scrolling'
+import { showTagPopover, hideTagPopover, fetchTagSummary, followTag } from '../actions/index'
 const { string, object, func, array, number, bool } = React.PropTypes
 
 const nounCount = (n, noun) => `${n} ${noun}${Number(n) !== 1 ? 's' : ''}`
+
+export const handleMouseOver = dispatch => event => {
+  var node = event.target
+  if (node.nodeName.toLowerCase() === 'a' && node.getAttribute('class') === 'hashtag') {
+    let { tagName, slug } = tagUrlComponents(node.getAttribute('href'))
+    dispatch(showTagPopover(tagName, slug, positionInViewport(node), node.offsetWidth))
+  }
+}
 
 @connect(({ tagPopover: { slug, tagName, position, anchorWidth }, tagsByCommunity }) => {
   let tag = get(tagsByCommunity, [slug, tagName])

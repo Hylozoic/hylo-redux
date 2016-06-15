@@ -60,8 +60,7 @@ export const tagsByCommunity = (state = {}, action) => {
   let { type, payload, meta, error } = action
   if (error) return state
 
-  let oldCommunityTags
-  let oldTag
+  let oldCommunityTags, oldTag
 
   switch (type) {
     case FETCH_TAG:

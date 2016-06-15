@@ -615,6 +615,23 @@ ul.tags {
       width: inherit;
     }
   }
+
+  .notification-settings {
+    margin-bottom: @p-bottom-margin;
+    label {
+      display: inline-block;
+      margin-left: 10px;
+    }
+
+    .mobile({
+      text-align: left;
+      margin-top: @p-bottom-margin;
+      label {
+        margin-left: 0;
+        margin-right: 10px;
+      }
+    });
+  }
 }
 
 .sent-invitations {

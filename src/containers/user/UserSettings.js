@@ -143,13 +143,13 @@ export default class UserSettings extends React.Component {
     this.trackEdit()
   }
 
-  membershipToggle (membership, path) {
+  membershipToggle = (membership, path) => {
     this.updateMembership(membership, path, !get(membership, path))
   }
 
-  leaveCommunity (communityId) {
+  leaveCommunity = (communityId, name) => {
     let { dispatch, currentUser } = this.props
-    if (!window.confirm('Are you sure you want to leave this community?')) return
+    if (!window.confirm(`Are you sure you want to leave ${name}?`)) return
     dispatch(leaveCommunity(communityId, currentUser))
   }
 
@@ -341,35 +341,10 @@ export default class UserSettings extends React.Component {
 
       <SectionLabel name='communities' label='Communities' {...{dispatch, expand}}/>
       {expand.communities && <Section className='communities'>
-        {memberships.map(membership => <span key={membership.id}>
-          <Item>
-            <div className='half-column'>
-              <label><A to={`/c/${membership.community.slug}`}>{membership.community.name}</A></label>
-              <div className='summary'>Joined: { formatDate(membership.created_at) }</div>
-            </div>
-            <div className='half-column right-align'>
-              <button onClick={() => this.leaveCommunity(membership.community_id)}>Leave</button>
-            </div>
-          </Item>
-          <Item>
-            <div className='half-column'>
-              <div>Receive Email notifications from {membership.community.name}</div>
-              <div className='summary'>Check the circle to get email updates from this community.</div>
-            </div>
-            <div className='half-column right-align'>
-              <input type='checkbox' checked={get(membership, 'settings.send_email')} onChange={() => this.membershipToggle(membership, 'settings.send_email')}/>
-            </div>
-          </Item>
-          <Item>
-            <div className='half-column'>
-              <div>Receive Mobile notifications from {membership.community.name}</div>
-            <div className='summary'>Check the circle to get mobile updates from this community.</div>
-            </div>
-            <div className='half-column right-align'>
-              <input type='checkbox' checked={get(membership, 'settings.send_push_notifications')} onChange={() => this.membershipToggle(membership, 'settings.send_push_notifications')}/>
-            </div>
-          </Item>
-        </span>)}
+        {memberships.map(membership => <MembershipSettings key={membership.id}
+          membership={membership}
+          toggle={this.membershipToggle}
+          leave={this.leaveCommunity}/>)}
         {memberships.length === 0 && <Item>
           <div className='full-column'>
             <p>You do not belong to any communities yet.</p>
@@ -406,3 +381,36 @@ const LinkButton = ({ href, icon, ...props }) =>
   <a {...props} className='button' href={href} target='_blank'>
     <Icon name={icon}/>
   </a>
+
+const MembershipSettings = ({ membership, toggle, leave }) => {
+  const { community, created_at } = membership
+  const { id, name, slug } = community
+  return <div>
+    <Item>
+      <div className='half-column'>
+        <label>
+          <A to={`/c/${slug}`}>{name}</A>
+        </label>
+        <div className='summary'>
+          Joined {formatDate(created_at)}
+        </div>
+      </div>
+      <div className='half-column right-align'>
+        <div className='notification-settings'>
+          <p>Receive notifications:</p>
+          <label>
+            <input type='checkbox' checked={get(membership, 'settings.send_email')}
+              onChange={() => toggle(membership, 'settings.send_email')}/>
+            Email
+          </label>
+          <label>
+            <input type='checkbox' checked={get(membership, 'settings.send_push_notifications')}
+              onChange={() => toggle(membership, 'settings.send_push_notifications')}/>
+            Mobile
+          </label>
+        </div>
+        <button onClick={() => leave(id, name)}>Leave community</button>
+      </div>
+    </Item>
+  </div>
+}

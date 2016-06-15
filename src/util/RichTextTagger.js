@@ -10,11 +10,12 @@ import {
 import { includes, some } from 'lodash'
 
 export const hashtagAttribute = 'data-autocompleting'
+export const justCreatedAttribute = 'data-just-created'
 
 const triggerKeyCodes = [keyMap.HASH, keyMap.AT_SIGN]
 const triggers = ['#', '@']
 const template = keyCode =>
-  <a {...{[hashtagAttribute]: true}}>
+  <a {...{[hashtagAttribute]: true, [justCreatedAttribute]: true}}>
     {String.fromCharCode(keyCode)}
   </a>
 
@@ -61,7 +62,8 @@ export class RichTextTagger {
     if (keyCode === keyMap.ENTER) {
       // this is a workaround for the fact that we can't suppress the insertion
       // of a new linebreak due to Enter in TinyMCE. (well, it's alleged that
-      // you can, but only by defining a callback when first initializing it.)
+      // you can, but only by defining a callback when first initializing
+      // TinyMCE.)
       //
       // so we assume a new paragraph has been inserted, backtrack to the node
       // we were trying to replace, and remove the new paragraph.
@@ -123,8 +125,20 @@ export class RichTextTagger {
     const keyCode = getKeyCode(event)
     // create an empty tag when a trigger character is typed
     if (includes(triggerKeyCodes, keyCode)) {
-      insertJSX(template(keyCode), this.editor)
       event.preventDefault()
+      insertJSX(template(keyCode), this.editor)
+
+      // if the cursor is not in the tag that was just created (this happens on
+      // Firefox), we have to move it there
+      const node = this.domNode()
+      if (node.tagName === 'P') {
+        // there's probably a simpler way to find the tag than this...
+        const tag = window.tinymce.$(node).find(`[${justCreatedAttribute}]`)[0]
+        this.editor.selection.setCursorLocation(tag, 1)
+        tag.removeAttribute(justCreatedAttribute)
+      } else {
+        node.removeAttribute(justCreatedAttribute)
+      }
     }
   }
 

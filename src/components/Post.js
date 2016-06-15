@@ -92,8 +92,6 @@ export const Header = ({ communities }, { post, community }) => {
   const person = tag === 'welcome' ? post.relatedUsers[0] : post.user
   const createdAt = new Date(post.created_at)
 
-  if (!community) community = communities[0]
-
   return <div className='header'>
     <Menu/>
     <Avatar person={person}/>
@@ -105,15 +103,29 @@ export const Header = ({ communities }, { post, community }) => {
             <A to={`/p/${post.id}`} title={createdAt}>
               {nonbreaking(humanDate(createdAt))}
             </A>
-            {community && <span>
-              &nbsp;in <A to={`/c/${community.slug}`}>{community.name}</A>
-            </span>}
+            {communities && <Communities communities={communities}/>}
             {post.public && <span>{spacer}Public</span>}
           </span>
         </div>}
   </div>
 }
 Header.contextTypes = {post: object, community: object}
+
+const Communities = ({ communities }, { community }) => {
+  if (community) communities = sortBy(communities, c => c.id !== community.id)
+  const length = communities.length
+  const communityLink = community => <A to={`/c/${community.slug}`}>{community.name}</A>
+  return <span className='communities'>
+    &nbsp;in {communityLink(communities[0])}
+    {length > 1 && ', '}
+    {length > 1 && communityLink(communities[1])}
+    {length > 2 && <Dropdown className='post-communities-dropdown'
+      toggleChildren={<span> + {length - 2} other{length > 3 ? 's' : ''}</span>}>
+      {communities.map(c => <li key={c.id}>{communityLink(c)}</li>)}
+    </Dropdown>}
+  </span>
+}
+Communities.contextTypes = {community: object}
 
 const Details = ({ expanded, onExpand, tag }, { post, community, dispatch }) => {
   const slug = get(community, 'slug')

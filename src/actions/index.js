@@ -37,10 +37,12 @@ export const FETCH_POSTS = 'FETCH_POSTS'
 export const FETCH_RAW_ADMIN_METRICS = 'FETCH_RAW_ADMIN_METRICS'
 export const FETCH_TAG = 'FETCH_TAG'
 export const FETCH_TAGS = 'FETCH_TAGS'
+export const FETCH_TAG_SUMMARY = 'FETCH_TAG_SUMMARY'
 export const FETCH_THANKS = 'FETCH_THANKS'
 export const FOLLOW_POST = 'FOLLOW_POST'
 export const FOLLOW_TAG = 'FOLLOW_TAG'
 export const FOLLOW_TAG_PENDING = FOLLOW_TAG + '_PENDING'
+export const HIDE_TAG_POPOVER = 'HIDE_TAG_POPOVER'
 export const JOIN_COMMUNITY_WITH_CODE = 'JOIN_COMMUNITY_WITH_CODE'
 export const LEAVE_COMMUNITY = 'LEAVE_COMMUNITY'
 export const LEAVE_COMMUNITY_PENDING = LEAVE_COMMUNITY + _PENDING
@@ -74,6 +76,7 @@ export const SET_MOBILE_DEVICE = 'SET_MOBILE_DEVICE'
 export const SET_PASSWORD = 'SET_PASSWORD'
 export const SET_SIGNUP_ERROR = 'SET_SIGNUP_ERROR'
 export const SHOW_ALL_TAGS = 'SHOW_ALL_TAGS'
+export const SHOW_TAG_POPOVER = 'SHOW_TAG_POPOVER'
 export const SIGNUP = 'SIGNUP'
 export const START_POST_EDIT = 'START_POST_EDIT'
 export const THANK = 'THANK'
@@ -644,6 +647,22 @@ export function cancelTagDescriptionEdit () {
 
 export function editTagDescription (tag, description) {
   return {type: EDIT_TAG_DESCRIPTION, payload: {tag, description}}
+}
+
+export function showTagPopover (tagName, slug, position, anchorWidth) {
+  return {type: SHOW_TAG_POPOVER, payload: {tagName, slug, position, anchorWidth}}
+}
+
+export function hideTagPopover () {
+  return {type: HIDE_TAG_POPOVER}
+}
+
+export function fetchTagSummary (tagName, id) {
+  return {
+    type: FETCH_TAG_SUMMARY,
+    payload: {api: true, path: `/noo/community/${id}/tag/${tagName}/summary`},
+    meta: {tagName, id}
+  }
 }
 
 export function closeModal () {

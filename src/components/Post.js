@@ -13,6 +13,7 @@ import A from './A'
 import Avatar from './Avatar'
 import Dropdown from './Dropdown'
 import { ClickCatchingSpan } from './ClickCatcher'
+import { handleMouseOver } from './TagPopover'
 import Comment from './Comment'
 import CommentForm from './CommentForm'
 import Icon from './Icon'
@@ -114,7 +115,7 @@ export const Header = ({ communities }, { post, community }) => {
 }
 Header.contextTypes = {post: object, community: object}
 
-const Details = ({ expanded, onExpand, tag }, { post, community }) => {
+const Details = ({ expanded, onExpand, tag }, { post, community, dispatch }) => {
   const slug = get(community, 'slug')
   let description = presentDescription(post, community)
   const truncated = !expanded && textLength(description) > 200
@@ -128,12 +129,14 @@ const Details = ({ expanded, onExpand, tag }, { post, community }) => {
       <a onClick={onExpand} className='show-more'>Show&nbsp;more</a>
       &nbsp;
     </span>}
-    {shouldShowTag(tag) && <a className='hashtag' href={tagUrl(tag, slug)}>
+    {shouldShowTag(tag) && <a className='hashtag'
+      href={tagUrl(tag, slug)}
+      onMouseOver={handleMouseOver(dispatch)}>
       {`#${tag}`}
     </a>}
   </div>
 }
-Details.contextTypes = {post: object, community: object}
+Details.contextTypes = {post: object, community: object, dispatch: func}
 
 const Attachments = (props, { post }) => {
   const attachments = filter(post.media, m => m.type === 'gdoc')

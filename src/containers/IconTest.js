@@ -55,6 +55,7 @@ const classNames = [
 ]
 
 export default class IconTest extends React.Component {
+
   render () {
     return <div id='icon-test'>
       {classNames.map(cn => <span key={cn}>

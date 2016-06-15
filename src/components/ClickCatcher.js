@@ -1,5 +1,6 @@
 import React from 'react'
 import { navigate } from '../actions'
+import { handleMouseOver } from './TagPopover'
 const { func } = React.PropTypes
 
 const ClickCatcher = ({ tag, ...props }, { dispatch }) => {
@@ -17,11 +18,12 @@ const ClickCatcher = ({ tag, ...props }, { dispatch }) => {
       node.setAttribute('target', '_blank')
     }
   }
+
   switch (tag) {
     case 'div':
-      return <div {...props} onClick={handleClick}></div>
+      return <div {...props} onClick={handleClick} onMouseOver={handleMouseOver(dispatch)}></div>
     case 'span':
-      return <span {...props} onClick={handleClick}></span>
+      return <span {...props} onClick={handleClick} onMouseOver={handleMouseOver(dispatch)}></span>
   }
 }
 

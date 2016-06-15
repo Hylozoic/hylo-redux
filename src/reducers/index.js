@@ -36,6 +36,7 @@ import {
   FETCH_POSTS,
   FETCH_TAGS,
   FETCH_THANKS,
+  HIDE_TAG_POPOVER,
   LOGIN,
   LOGOUT,
   NAVIGATE,
@@ -53,6 +54,7 @@ import {
   SET_MOBILE_DEVICE,
   SET_SIGNUP_ERROR,
   SHOW_ALL_TAGS,
+  SHOW_TAG_POPOVER,
   SIGNUP,
   TOGGLE_MAIN_MENU,
   TOGGLE_USER_SETTINGS_SECTION,
@@ -181,6 +183,18 @@ export default combineReducers({
   postsByQuery,
   postEdits,
   searchResultsByQuery: appendPayloadByPath(SEARCH, 'meta.cache.id', 'items'),
+
+  tagPopover: (state = {}, action) => {
+    switch (action.type) {
+      case SHOW_TAG_POPOVER:
+        return action.payload
+      case HIDE_TAG_POPOVER:
+        return {}
+    }
+
+    return state
+  },
+
   tagsByCommunity,
   tagsByQuery,
   tagDescriptionEdits,

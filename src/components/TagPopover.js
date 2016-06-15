@@ -6,7 +6,8 @@ import cx from 'classnames'
 import { isEmpty, get } from 'lodash'
 import { tagUrlComponents } from '../routes'
 import { positionInViewport } from '../util/scrolling'
-import { showTagPopover, hideTagPopover, fetchTagSummary, followTag } from '../actions/index'
+import { showTagPopover, hideTagPopover, fetchTagSummary } from '../actions/index'
+import { followTag } from '../actions/tags'
 const { string, object, func, array, number, bool } = React.PropTypes
 
 const nounCount = (n, noun) => `${n} ${noun}${Number(n) !== 1 ? 's' : ''}`

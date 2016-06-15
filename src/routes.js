@@ -164,7 +164,7 @@ export const tagUrl = (name, slug) => {
 
 export const tagUrlComponents = (url) => {
   let match = url.match(/\/c\/([^\/]+)\/tag\/([^\/]+)/)
-  if (!match) return
+  if (!match) return {}
   return {
     slug: match[1],
     tagName: match[2]

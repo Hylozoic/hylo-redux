@@ -145,8 +145,8 @@ export default class App extends React.Component {
 export const nextPath = (path, community, isNetwork) => {
   const pathStart = community ? `/${isNetwork ? 'n' : 'c'}/${community.slug}` : ''
   const match = community
-    ? path.match(/(events|projects|members|about|invite|notifications)$/)
-    : path.match(/(events|projects|notifications)$/)
+    ? path.match(/(events|projects|people|notifications|about|invite)$/)
+    : path.match(/(events|projects|people|notifications)$/)
   const pathEnd = match ? `/${match[1]}` : ''
 
   return (pathStart + pathEnd) || '/app'

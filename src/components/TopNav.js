@@ -26,7 +26,7 @@ const getPostType = path => {
 const getLabel = path => {
   if (path.endsWith('events')) return 'Events'
   if (path.endsWith('projects')) return 'Projects'
-  if (path.endsWith('members')) return 'Members'
+  if (path.endsWith('people')) return 'People'
   if (path.endsWith('about')) return 'About'
   if (path.endsWith('invite')) return 'Invite'
   if (path === '/' || path.match(/^\/c\/[^\/]+$/)) return 'Conversations'

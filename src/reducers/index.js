@@ -203,7 +203,7 @@ export default combineReducers({
   totalCommunitiesByQuery: keyedCounter(FETCH_COMMUNITIES, 'communities_total'),
   totalInvitations: keyedCounter(FETCH_INVITATIONS, 'total', 'meta.communityId'),
   totalPostsByQuery: keyedCounter(FETCH_POSTS, 'posts_total'),
-  totalPeopleByQuery: keyedCounter(FETCH_PEOPLE, 'people_total'),
+  totalPeopleByQuery: keyedCounter(FETCH_PEOPLE, 'total'),
   totalSearchResultsByQuery: keyedCounter(SEARCH, 'total'),
   totalTagsByQuery,
 

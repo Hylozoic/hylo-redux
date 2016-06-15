@@ -37,7 +37,7 @@ export default function (state = {}, action) {
   switch (type) {
     case FETCH_PEOPLE:
       let { cache } = meta
-      return handlePeople(state, cache.id, payload.people)
+      return handlePeople(state, cache.id, payload.items)
   }
   return state
 }

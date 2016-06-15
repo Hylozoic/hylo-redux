@@ -6,10 +6,10 @@ import SetPassword from './containers/SetPassword'
 import App from './containers/App'
 import { AllPosts, MyPosts, FollowedPosts } from './containers/home'
 import AllCommunities from './containers/AllCommunities'
+import People from './containers/People'
 import Projects from './containers/Projects'
 import CommunityProfile from './containers/community/CommunityProfile'
 import CommunityPosts from './containers/community/CommunityPosts'
-import CommunityMembers from './containers/community/CommunityMembers'
 import CommunityEditor from './containers/community/CommunityEditor'
 import CommunityInvitations from './containers/community/CommunityInvitations'
 import CommunityJoinForm from './containers/community/CommunityJoinForm'
@@ -103,12 +103,12 @@ export default function makeRoutes (store) {
       })}/>
 
     <Route path='c/:id/onboarding' component={Onboarding} onEnter={requireLogin}/>
-    <Route path='c/:id/new' component={StandalonePostEditor} community={true} onEnter={requireLogin}/>
-    <Route path='c/:id/events/new' component={StandalonePostEditor} community={true} type='event' onEnter={requireLogin}/>
-    <Route path='c/:id/projects/new' component={StandalonePostEditor} community={true} type='project' onEnter={requireLogin}/>
+    <Route path='c/:id/new' component={StandalonePostEditor} community onEnter={requireLogin}/>
+    <Route path='c/:id/events/new' component={StandalonePostEditor} community type='event' onEnter={requireLogin}/>
+    <Route path='c/:id/projects/new' component={StandalonePostEditor} community type='project' onEnter={requireLogin}/>
     <Route path='c/:id' component={CommunityProfile}>
       <IndexRoute component={CommunityPosts}/>
-      <Route path='members' component={CommunityMembers} onEnter={requireLogin}/>
+      <Route path='people' component={People} onEnter={requireLogin}/>
       <Route path='events' component={Events}/>
       <Route path='projects' component={Projects}/>
       <Route path='about' component={AboutCommunity}/>
@@ -136,6 +136,7 @@ export default function makeRoutes (store) {
       <Route path='notifications' component={Notifications} onEnter={requireLogin}/>
       <Route path='projects' component={Projects} onEnter={requireLogin}/>
       <Route path='events' component={Events} onEnter={requireLogin}/>
+      <Route path='people' component={People} onEnter={requireLogin}/>
     </Route>
 
     <Route path='testbench' component={TestBench}/>

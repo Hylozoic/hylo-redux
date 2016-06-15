@@ -80,9 +80,9 @@ const CommunityNav = ({ community, canModerate, canInvite }) => {
     <li>
       <A to={url('projects')}><Icon name='ProjectorScreen'/> Projects</A>
     </li>
-    {community && <li>
-      <A to={url('members')}><Icon name='Users'/> Members</A>
-    </li>}
+    <li>
+      <A to={url('people')}><Icon name='Users'/> People</A>
+    </li>
     {community && <li>
       <A to={url('about')}><Icon name='Help'/> About</A>
     </li>}

@@ -11,14 +11,13 @@ export function fetchPeople (opts) {
   switch (subject) {
     case 'community':
       querystring = cleanAndStringify({search, limit, offset})
-      path = `/noo/community/${id}/members?${querystring}`
+      path = id === 'all'
+        ? `/noo/user?${querystring}`
+        : `/noo/community/${id}/members?${querystring}`
       break
     case 'network':
       querystring = cleanAndStringify({search, limit, offset})
       path = `/noo/network/${id}/members?${querystring}`
-      break
-    case 'voters':
-      path = `/noo/post/${id}/voters`
       break
   }
 

@@ -128,7 +128,7 @@ describe('people', () => {
       let action = {
         type: FETCH_PEOPLE,
         payload: {
-          people: [
+          items: [
             {id: 'a', foo: 'b', bar: 'c'}
           ]
         }

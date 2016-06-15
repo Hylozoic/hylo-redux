@@ -2,27 +2,31 @@ import React from 'react'
 import { prefetch } from 'react-fetcher'
 import { connect } from 'react-redux'
 import { debounce, includes } from 'lodash'
-import { FETCH_PEOPLE } from '../../actions'
-import { fetchPeople } from '../../actions/fetchPeople'
-import { createCacheId, connectedListProps, fetchWithCache, refetch } from '../../util/caching'
-import Icon from '../../components/Icon'
-import ScrollListener from '../../components/ScrollListener'
-import PersonCards from '../../components/PersonCards'
-import AccessErrorMessage from '../../components/AccessErrorMessage'
-import A from '../../components/A'
+import { FETCH_PEOPLE } from '../actions'
+import { fetchPeople } from '../actions/fetchPeople'
+import { createCacheId, connectedListProps, fetchWithCache, refetch } from '../util/caching'
+import Icon from '../components/Icon'
+import ScrollListener from '../components/ScrollListener'
+import PersonCards from '../components/PersonCards'
+import AccessErrorMessage from '../components/AccessErrorMessage'
+import A from '../components/A'
 const { array, bool, func, number, object } = React.PropTypes
-import { canInvite } from '../../models/currentUser'
-import { findError } from '../../actions/util'
+import { canInvite } from '../models/currentUser'
+import { findError } from '../actions/util'
 import qs from 'querystring'
-import { NonLinkAvatar } from '../../components/Avatar'
-import { humanDate } from '../../util/text'
+import { NonLinkAvatar } from '../components/Avatar'
+import { humanDate } from '../util/text'
 
 const subject = 'community'
 const fetch = fetchWithCache(fetchPeople)
 
-@prefetch(({ dispatch, params: { id }, query }) => dispatch(fetch(subject, id, query)))
+@prefetch(({ dispatch, params: { id }, query }) => {
+  if (!id) id = 'all'
+  return dispatch(fetch(subject, id, query))
+})
 @connect((state, { params: { id }, location: { query } }) => {
-  let cacheId = createCacheId(subject, id, query)
+  if (!id) id = 'all'
+  const cacheId = createCacheId(subject, id, query)
   return {
     ...connectedListProps(state, {subject, id, query}, 'people'),
     community: state.communities[id],
@@ -32,7 +36,7 @@ const fetch = fetchWithCache(fetchPeople)
     isMobile: state.isMobile
   }
 })
-export default class CommunityMembers extends React.Component {
+export default class People extends React.Component {
   static propTypes = {
     people: array,
     moderatorIds: array,
@@ -68,6 +72,7 @@ export default class CommunityMembers extends React.Component {
     if (error) return <AccessErrorMessage error={error}/>
     if (!currentUser) return <div>Loading...</div>
     let { search } = query
+    const { slug } = community || {}
     const people = this.props.people.map(person => ({
       ...person,
       isModerator: includes(moderatorIds, person.id)
@@ -90,7 +95,7 @@ export default class CommunityMembers extends React.Component {
       {pending && <div className='loading'>Loading...</div>}
       {isMobile
         ? people.map(person => <PersonRow person={person} key={person.id}/>)
-        : <PersonCards people={people} slug={community.slug}/>}
+        : <PersonCards people={people} slug={slug}/>}
       <ScrollListener onBottom={this.loadMore}/>
     </div>
   }

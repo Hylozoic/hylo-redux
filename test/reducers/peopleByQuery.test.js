@@ -9,8 +9,8 @@ describe('peopleByQuery', () => {
     let action = {
       type: FETCH_PEOPLE,
       payload: {
-        people_total: '1',
-        people: [{id: 'a', isModerator: 1}]
+        total: '1',
+        items: [{id: 'a', isModerator: 1}]
       },
       meta: {
         cache: {id: 'subject=community&id=123'}

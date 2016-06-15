@@ -64,11 +64,11 @@ describe('appHandler', () => {
     })
 
     it('redirects away from a page that requires login', () => {
-      req = support.mocks.request('/c/foo/members')
+      req = support.mocks.request('/c/foo/people')
 
       return appHandler(req, res)
       .then(() => {
-        expect(res.redirect).to.have.been.called.with(302, '/login?next=%2Fc%2Ffoo%2Fmembers')
+        expect(res.redirect).to.have.been.called.with(302, '/login?next=%2Fc%2Ffoo%2Fpeople')
       })
     })
   })
@@ -85,7 +85,7 @@ describe('appHandler', () => {
     })
 
     it('loads a page that requires login', () => {
-      req = support.mocks.request('/c/house/members')
+      req = support.mocks.request('/c/house/people')
 
       return appHandler(req, res)
       .then(() => {

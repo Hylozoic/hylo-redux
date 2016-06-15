@@ -171,7 +171,7 @@ export default function (state = {}, action) {
         current: normalized
       }
     case FETCH_PEOPLE:
-      return mergeList(state, payload.people.map(normalize), 'id')
+      return mergeList(state, payload.items.map(normalize), 'id')
     case CREATE_COMMUNITY:
     case JOIN_COMMUNITY_WITH_CODE:
     case USE_INVITATION:

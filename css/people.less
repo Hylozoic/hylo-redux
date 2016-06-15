@@ -9,7 +9,7 @@
 
   .search-bar {
     padding-left: 30px;
-    height: 70px;
+    min-height: 70px;
     line-height: 70px;
     vertical-align: middle;
     border-bottom: 1px solid @faint-gray-border;
@@ -28,6 +28,16 @@
     .icon {
       color: @gray-text;
       font-size: 20px;
+    }
+
+    .show-posts {
+      position: absolute;
+      right: 25px;
+      top: 15px;
+      .round-button;
+      .mobile({
+        position: static;
+      });
     }
   }
   .member-controls {

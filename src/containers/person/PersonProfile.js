@@ -2,7 +2,7 @@ import React from 'react'
 import { compose } from 'redux'
 import { connect } from 'react-redux'
 import { prefetch, defer } from 'react-fetcher'
-import { commentUrl, tagUrl } from '../../routes'
+import { commentUrl, peopleUrl } from '../../routes'
 import { FETCH_PERSON, fetchPerson, fetchThanks, navigate, setCurrentCommunityId } from '../../actions'
 import { capitalize, compact, get, some, includes } from 'lodash'
 import { isNull, map, omitBy, sortBy } from 'lodash/fp'
@@ -126,7 +126,7 @@ const PersonProfile = compose(
     </div>
     {some(tags) && <div className='skills'>
       <h3>Skills</h3>
-      {tags.map(tag => <A key={tag} to={tagUrl(tag, get(community, 'slug'))}>
+      {tags.map(tag => <A key={tag} to={peopleUrl(community) + `?search=%23${tag}`}>
         #{tag}
       </A>)}
     </div>}
@@ -138,18 +138,18 @@ const PersonProfile = compose(
     </div>
     {!category && recentRequest && <div>
       <p className='section-label'>Recent request</p>
-      <PostList posts={[recentRequest]} hideMobileSearch={true}/>
+      <PostList posts={[recentRequest]} hideMobileSearch/>
     </div>}
     {!category && recentOffer && <div>
       <p className='section-label'>Recent offer</p>
-      <PostList posts={[recentOffer]} hideMobileSearch={true}/>
+      <PostList posts={[recentOffer]} hideMobileSearch/>
     </div>}
     <ListLabel category={category}/>
     {category === 'thank'
       ? <Thanks person={person}/>
       : <ConnectedPostList {...{subject, id, query: getFetchOpts(query)}}
           hide={postsToHide}
-          hideMobileSearch={true}/>}
+          hideMobileSearch/>}
   </CoverImagePage>
 })
 
@@ -222,7 +222,7 @@ const Thanks = connect((state, { person }) => ({
         <A to={`/u/${thank.thankedBy.id}`}>{thank.thankedBy.name}</A>
         &nbsp;thanked {person.name.split(' ')[0]} for:
       </span>
-      <Comment comment={{...thank.comment, user: person}} truncate={true}
+      <Comment comment={{...thank.comment, user: person}} truncate
         expand={() => visit(thank.comment)}/>
     </div>)}
   </div>

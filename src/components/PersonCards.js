@@ -3,16 +3,16 @@ import A from '../components/A'
 import Dropdown from '../components/Dropdown'
 import Masonry from 'react-masonry-component'
 import { humanDate } from '../util/text'
-import { tagUrl } from '../routes'
 import { isEmpty } from 'lodash'
 
-const PersonCards = ({ people, menus, slug }) => {
+const PersonCards = ({ people, menus, slug, onSkillClick }) => {
   return <div className='person-cards masonry-container'>
     <Masonry options={{transitionDuration: 0}}>
       {people.map(person => <div key={person.id} className='masonry-item-wrapper'>
         <PersonCard person={person}
           menu={menus && menus[person.id]}
           slug={slug}
+          onSkillClick={onSkillClick}
           />
       </div>)}
     </Masonry>
@@ -21,7 +21,7 @@ const PersonCards = ({ people, menus, slug }) => {
 
 export default PersonCards
 
-export const PersonCard = ({ person, menu, slug }) => {
+export const PersonCard = ({ person, menu, slug, onSkillClick }) => {
   const {
     id, avatar_url, name, bio, isModerator, joined_at, tags, offerCount
   } = person
@@ -33,7 +33,7 @@ export const PersonCard = ({ person, menu, slug }) => {
   const avatarStyle = {backgroundImage: `url(${avatar_url})`}
 
   return <div className='person-card'>
-    {menu && <Dropdown className='caret-menu' alignRight={true}
+    {menu && <Dropdown className='caret-menu' alignRight
       toggleChildren={<i className='icon-down'></i>}>
       {menu}
     </Dropdown>}
@@ -47,7 +47,7 @@ export const PersonCard = ({ person, menu, slug }) => {
       {offersText && <div className='offerCount'>{offersText}</div>}
       {!isEmpty(tags) && tags.map(tag =>
         <span key={tag.name}>
-          <a className='hashtag' href={tagUrl(tag.name, slug)}>
+          <a className='hashtag' onClick={() => onSkillClick(tag.name)}>
             #{tag.name}
           </a>
           &nbsp;<wbr/>

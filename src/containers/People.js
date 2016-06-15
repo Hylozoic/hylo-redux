@@ -16,6 +16,7 @@ import { findError } from '../actions/util'
 import qs from 'querystring'
 import { NonLinkAvatar } from '../components/Avatar'
 import { humanDate } from '../util/text'
+import { tagUrl } from '../routes'
 
 const subject = 'community'
 const fetch = fetchWithCache(fetchPeople)
@@ -71,20 +72,32 @@ export default class People extends React.Component {
     } = this.props
     if (error) return <AccessErrorMessage error={error}/>
     if (!currentUser) return <div>Loading...</div>
-    let { search } = query
+
+    const { search } = query
     const { slug } = community || {}
     const people = this.props.people.map(person => ({
       ...person,
       isModerator: includes(moderatorIds, person.id)
     }))
+    const searchTag = tag => {
+      const search = '#' + tag
+      this.updateQuery({search})
+      this.refs.searchInput.value = search
+    }
 
     return <div className='members'>
       <div className='search-bar'>
         <Icon name='Loupe' />
         <input type='text'
+          ref='searchInput'
           placeholder='Search'
           defaultValue={search}
-          onChange={event => this.updateQuery({search: event.target.value})} />
+          onChange={event => this.updateQuery({search: event.target.value})}/>
+        {search && search.startsWith('#') &&
+          <A className='show-posts button'
+            to={tagUrl(search.replace(/^#/, ''), slug)}>
+            Show tagged posts
+          </A>}
       </div>
       <div className='member-controls'>
         {total} member{total === 1 ? '' : 's'}
@@ -95,7 +108,7 @@ export default class People extends React.Component {
       {pending && <div className='loading'>Loading...</div>}
       {isMobile
         ? people.map(person => <PersonRow person={person} key={person.id}/>)
-        : <PersonCards people={people} slug={slug}/>}
+        : <PersonCards people={people} slug={slug} onSkillClick={searchTag}/>}
       <ScrollListener onBottom={this.loadMore}/>
     </div>
   }

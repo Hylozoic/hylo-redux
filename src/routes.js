@@ -172,6 +172,8 @@ export const tagUrlComponents = (url) => {
   }
 }
 
-export const isSearchUrl = (path) => {
-  return path.split('?')[0] === '/search'
-}
+export const isSearchUrl = (path) =>
+  path.split('?')[0] === '/search'
+
+export const peopleUrl = community =>
+  `${community ? '/c/' + community.slug : ''}/people`

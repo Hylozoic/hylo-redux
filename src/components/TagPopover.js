@@ -43,28 +43,30 @@ export default class TagPopover extends React.Component {
     dispatch(hideTagPopover())
   }
 
-  removeHideTimeout () {
-    if (this.hideTimeoutId) {
-      clearTimeout(this.hideTimeoutId)
-      this.hideTimeoutId = null
-    }
+  hideListener (event) {
+    let { popoverContainer, popoverMousePadding } = this.refs
+    if (!popoverContainer || !popoverMousePadding ||
+      popoverContainer.contains(event.target) ||
+      popoverMousePadding.contains(event.target)) return
+    this.hide()
   }
 
   componentWillReceiveProps (nextProps) {
     let { dispatch, slug, tagName } = this.props
 
     // hidden
-    if (isEmpty(nextProps.tagName)) return
-
-    // loading
-    if ((nextProps.tagName !== tagName || nextProps.slug !== slug) && !nextProps.description) {
-      dispatch(fetchTagSummary(nextProps.tagName, nextProps.slug))
+    if (isEmpty(nextProps.tagName)) {
+      document.documentElement.removeEventListener('mouseover', this.listener)
+      return
     }
 
-    // content has loaded
-    if (nextProps.description) {
-      this.removeHideTimeout()
-      this.hideTimeoutId = setTimeout(() => this.hide(), 3000)
+    // loading
+    if ((nextProps.tagName !== tagName || nextProps.slug !== slug)) {
+      this.listener = event => this.hideListener(event)
+      document.documentElement.addEventListener('mouseover', this.listener)
+      if (!nextProps.description) {
+        dispatch(fetchTagSummary(nextProps.tagName, nextProps.slug))
+      }
     }
   }
 
@@ -90,10 +92,12 @@ export default class TagPopover extends React.Component {
     return <div className='popover-container'
         style={outerPosition}
         ref='popoverContainer'>
+        <div className='popover-mouse-padding'
+          ref='popoverMousePadding'
+          style={innerPosition}>
+        </div>
         <div className={cx('popover', above ? 'above' : 'below')}
-          style={innerPosition}
-          onMouseEnter={() => this.removeHideTimeout()}
-          onMouseLeave={() => this.hide()}>
+          style={innerPosition}>
           <div className='bottom-border'>
             <span className='tag-name'># {tagName}</span>
             <span className='description meta-text'>{description}</span>

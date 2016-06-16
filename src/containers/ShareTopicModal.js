@@ -3,7 +3,7 @@ import { connect } from 'react-redux'
 import { closeModal, fetchCommunitySettings } from '../actions'
 import A from '../components/A'
 import { Modal } from '../components/Modal'
-import { communityJoinTagUrl } from '../routes'
+import { communityTagJoinUrl } from '../routes'
 import { get } from 'lodash'
 const { func, string, object } = React.PropTypes
 
@@ -32,7 +32,7 @@ export default class ShareTopicModal extends React.Component {
     let { onCancel, tagName, community } = this.props
     let loaded = get(community, 'beta_access_code')
     let joinUrl
-    if (loaded) joinUrl = communityJoinTagUrl(community, tagName)
+    if (loaded) joinUrl = communityTagJoinUrl(community, tagName)
 
     return <Modal title='Invite to join conversation' id='share-topic' onCancel={onCancel}>
       {loaded ? <div><A to={joinUrl}>{joinUrl}</A></div> : <div>Loading...</div>}

@@ -21,6 +21,7 @@ const { func, object, string } = React.PropTypes
 export const prefetchForNext = prefetch(({ query, dispatch }) => {
   switch (query.action) {
     case 'join-community':
+    case 'join-community-tag':
       return dispatch(fetchCommunity(query.id))
     case 'use-invitation':
       return dispatch(fetchCommunityForInvitation(query.token))

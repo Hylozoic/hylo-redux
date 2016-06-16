@@ -102,6 +102,12 @@ export default function makeRoutes (store) {
         addParams: ({ params: { id } }) => ({id, action: 'join-community'})
       })}/>
 
+    <Route path='c/:id/join/:code/tag/:tagName' component={CommunityJoinLinkHandler}
+      onEnter={requireLoginWithOptions({
+        startAtSignup: true,
+        addParams: ({ params: { id } }) => ({id, action: 'join-community-tag'})
+      })}/>
+
     <Route path='c/:id/onboarding' component={Onboarding} onEnter={requireLogin}/>
     <Route path='c/:id/new' component={StandalonePostEditor} community onEnter={requireLogin}/>
     <Route path='c/:id/events/new' component={StandalonePostEditor} community type='event' onEnter={requireLogin}/>
@@ -155,7 +161,7 @@ export const communityOnboardingUrl = community =>
 export const communityJoinUrl = community =>
   `${origin()}/c/${community.slug}/join/${community.beta_access_code}`
 
-export const communityJoinTagUrl = (community, tagName) =>
+export const communityTagJoinUrl = (community, tagName) =>
   `${origin()}/c/${community.slug}/join/${community.beta_access_code}/tag/${tagName}`
 
 export const commentUrl = comment =>

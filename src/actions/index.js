@@ -401,10 +401,10 @@ export function createCommunity (params) {
   }
 }
 
-export function joinCommunityWithCode (code) {
+export function joinCommunityWithCode (code, tagName) {
   return {
     type: JOIN_COMMUNITY_WITH_CODE,
-    payload: {api: true, params: {code}, path: '/noo/community/code', method: 'POST'}
+    payload: {api: true, params: {code, tagName}, path: '/noo/community/code', method: 'POST'}
   }
 }
 

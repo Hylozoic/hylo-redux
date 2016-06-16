@@ -10,10 +10,9 @@ import {
 } from '../../actions'
 const { func, object, string } = React.PropTypes
 
-@prefetch(({ path, params: { id, code }, dispatch }) => {
-  return dispatch(joinCommunityWithCode(code))
-})
-@connect(({ errors, people }) => ({
+@prefetch(({ path, params: { id, code, tagName }, dispatch }) =>
+  dispatch(joinCommunityWithCode(code, tagName)))
+@connect(({ errors, people }, { tagName }) => ({
   codeError: get(errors[JOIN_COMMUNITY_WITH_CODE], 'payload.response.body'),
   currentUser: people.current
 }))

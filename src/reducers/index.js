@@ -188,6 +188,7 @@ export default combineReducers({
     switch (action.type) {
       case SHOW_TAG_POPOVER:
         return action.payload
+      case NAVIGATE:
       case HIDE_TAG_POPOVER:
         return {}
     }

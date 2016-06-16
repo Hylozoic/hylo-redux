@@ -56,7 +56,7 @@ export default class App extends React.Component {
     path: string,
     dispatch: func,
     isMobile: bool,
-    showModal: string
+    showModal: object
   }
 
   static childContextTypes = {
@@ -137,7 +137,7 @@ export default class App extends React.Component {
       <LiveStatusPoller community={community}/>
       <PageTitleController/>
       <TagPopover/>
-      <ModalWrapper show={showModal}/>
+      <ModalWrapper show={get(showModal, 'show')} params={get(showModal, 'params')}/>
     </div>
   }
 }

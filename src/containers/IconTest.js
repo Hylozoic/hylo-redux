@@ -1,4 +1,7 @@
 import React from 'react'
+import { connect } from 'react-redux'
+import { showShareTag } from '../actions/tags'
+const { func } = React.PropTypes
 
 const classNames = [
   'icon-AddContacts',
@@ -54,10 +57,18 @@ const classNames = [
   'icon-twitter'
 ]
 
+@connect()
 export default class IconTest extends React.Component {
 
+  static propTypes = {
+    dispatch: func
+  }
+
   render () {
+    let { dispatch } = this.props
+
     return <div id='icon-test'>
+      <button onClick={() => dispatch(showShareTag())}>Share</button>
       {classNames.map(cn => <span key={cn}>
         <span className={cn}/> {cn.replace(/icon-/, '')}
       </span>)}

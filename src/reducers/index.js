@@ -54,6 +54,7 @@ import {
   SET_MOBILE_DEVICE,
   SET_SIGNUP_ERROR,
   SHOW_ALL_TAGS,
+  SHOW_SHARE_TAG,
   SHOW_TAG_POPOVER,
   SIGNUP,
   TOGGLE_MAIN_MENU,
@@ -478,10 +479,12 @@ export default combineReducers({
     return state
   },
 
-  showModal: (state = null, action) => {
+  showModal: (state = {}, action) => {
     switch (action.type) {
       case SHOW_ALL_TAGS:
-        return 'tags'
+        return {show: 'tags'}
+      case SHOW_SHARE_TAG:
+        return {show: 'share-tag', params: action.payload}
       case CLOSE_MODAL:
         return null
     }

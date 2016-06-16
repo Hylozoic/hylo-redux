@@ -144,11 +144,19 @@ export default function makeRoutes (store) {
   </Route>
 }
 
+export const origin = () => typeof window !== 'undefined' ? window.location.origin : 'https://www.hylo.com'
+
 export const communityUrl = (community, params) =>
   makeUrl(`/c/${community.slug}`, params)
 
 export const communityOnboardingUrl = community =>
   `/c/${community.slug}/onboarding`
+
+export const communityJoinUrl = community =>
+  `${origin()}/c/${community.slug}/join/${community.beta_access_code}`
+
+export const communityJoinTagUrl = (community, tagName) =>
+  `${origin()}/c/${community.slug}/join/${community.beta_access_code}/tag/${tagName}`
 
 export const commentUrl = comment =>
   `/p/${comment.post_id}#comment-${comment.id}`

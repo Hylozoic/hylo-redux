@@ -117,10 +117,8 @@ const Communities = ({ communities }, { community }) => {
   const communityLink = community => <A to={`/c/${community.slug}`}>{community.name}</A>
   return <span className='communities'>
     &nbsp;in {communityLink(communities[0])}
-    {length > 1 && ', '}
-    {length > 1 && communityLink(communities[1])}
-    {length > 2 && <Dropdown className='post-communities-dropdown'
-      toggleChildren={<span> + {length - 2} other{length > 3 ? 's' : ''}</span>}>
+    {length > 1 && <Dropdown className='post-communities-dropdown'
+      toggleChildren={<span> + {length - 1} other{length > 2 ? 's' : ''}</span>}>
       {communities.map(c => <li key={c.id}>{communityLink(c)}</li>)}
     </Dropdown>}
   </span>

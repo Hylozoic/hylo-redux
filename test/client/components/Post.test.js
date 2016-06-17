@@ -6,6 +6,8 @@ import {
   renderIntoDocument
 } from 'react-addons-test-utils'
 
+const stripComments = markup => markup.replace(/<!--[^>]*-->/g, '')
+
 let post = {
   id: 'p',
   name: 'i have &quot;something&quot; for you!',
@@ -19,16 +21,15 @@ let post = {
     name: 'Mr. X',
     avatar_url: '/img/mrx.png'
   },
-  communities: ['f']
+  communities: ['1']
 }
-
-let communities = [
-  {id: 'f', name: 'Foomunity'}
-]
 
 let state = {
   communities: {
-    f: communities[0]
+    foo: {id: '1', name: 'Foomunity', slug: 'foo'},
+    bar: {id: '2', name: 'Barmunity', slug: 'bar'},
+    baz: {id: '3', name: 'Bazmunity', slug: 'baz'},
+    qux: {id: '4', name: 'Quxmunity', slug: 'qux'}
   },
   people: {
     current: {
@@ -37,6 +38,22 @@ let state = {
       avatar_url: '/img/mrx.png'
     }
   }
+}
+
+let post2 = {
+  id: '2',
+  name: 'This post is in four different communities!',
+  description: "It's just that relevant",
+  type: 'offer',
+  tag: 'offer',
+  created_at: new Date(),
+  updated_at: new Date(),
+  user: {
+    id: 'x',
+    name: 'Mr. X',
+    avatar_url: '/img/mrx.png'
+  },
+  communities: ['1', '2', '3', '4']
 }
 
 describe('Post', () => {
@@ -52,5 +69,16 @@ describe('Post', () => {
     expect(details.innerHTML).to.match(expected)
     let title = findRenderedDOMComponentWithClass(node, 'title')
     expect(title.innerHTML).to.equal('i have "something" for you!')
+  })
+
+  it('visualizes cross posting between communities', () => {
+    const props = {post: post2}
+    const store = mocks.redux.store(state)
+    const context = {store, dispatch: store.dispatch}
+    let component = helpers.createElement(Post, props, context)
+    let node = renderIntoDocument(component)
+    let communities = findRenderedDOMComponentWithClass(node, 'communities')
+    let expected = '&nbsp;in <a class="">Foomunity</a><div class="dropdown post-communities-dropdown"><a class="dropdown-toggle"><span> + 3 others</span></a><ul class="dropdown-menu"><li><a class="">Foomunity</a></li><li><a class="">Barmunity</a></li><li><a class="">Bazmunity</a></li><li><a class="">Quxmunity</a></li></ul><span></span></div>'
+    expect(stripComments(communities.innerHTML)).to.equal(expected)
   })
 })

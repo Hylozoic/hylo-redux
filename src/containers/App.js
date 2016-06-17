@@ -13,7 +13,7 @@ import { logout, navigate, removeNotification, toggleMainMenu, updateUserSetting
 import { makeUrl, calliOSBridge, iOSAppVersion } from '../client/util'
 import { VelocityComponent } from 'velocity-react'
 import { canInvite, canModerate } from '../models/currentUser'
-import { get, pick } from 'lodash'
+import { get, pick, isEmpty } from 'lodash'
 import { matchEditorUrl } from './StandalonePostEditor'
 import { ModalWrapper } from '../components/Modal'
 const { array, bool, func, object, string } = React.PropTypes
@@ -103,7 +103,9 @@ export default class App extends React.Component {
     const visitCommunity = community =>
       dispatch(navigate(nextPath(path, community)))
 
-    return <div className={cx({leftNavIsOpen, isMobile, showModal})}>
+    console.log({showModal})
+
+    return <div className={cx({leftNavIsOpen, isMobile, showModal: !isEmpty(showModal)})}>
       <LeftNav opened={leftNavIsOpen}
         community={community}
         network={network}

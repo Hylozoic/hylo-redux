@@ -4,6 +4,7 @@ import truncate from 'html-truncate'
 import linkify from './linkify'
 import moment from 'moment-timezone'
 import marked from 'marked'
+import { compact } from 'lodash'
 
 export function sanitize (text) {
   if (!text) return ''
@@ -139,3 +140,11 @@ export function nonbreaking (str) {
 export function textLength (html) {
   return html.replace(/<[^>]+>/g, '').length
 }
+
+export const parseEmailList = emails =>
+  compact((emails || '').split(/,|\n/).map(email => {
+    let trimmed = email.trim()
+    // use only the email portion of a "Joe Bloggs <joe@bloggs.org>" line
+    let match = trimmed.match(/.*<(.*)>/)
+    return match ? match[1] : trimmed
+  }))

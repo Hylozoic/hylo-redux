@@ -1,14 +1,23 @@
 import React from 'react'
 import { connect } from 'react-redux'
-import { closeModal, fetchCommunitySettings } from '../actions'
+import validator from 'validator'
+import {
+  closeModal, fetchCommunitySettings, updateTagInvitationEditor, sendCommunityTagInvitation,
+  SEND_COMMUNITY_TAG_INVITATION
+} from '../actions'
 import A from '../components/A'
 import { Modal } from '../components/Modal'
 import { communityTagJoinUrl } from '../routes'
-import { get } from 'lodash'
-const { func, string, object } = React.PropTypes
+import { parseEmailList } from '../util/text'
+import { get, isEmpty, some } from 'lodash'
+import cx from 'classnames'
+const { func, string, object, bool } = React.PropTypes
 
-@connect((state, { slug }) => ({
-  community: state.communities[slug]
+@connect(({ communities, tagInvitationEditor, pending }, { slug }) => ({
+  community: communities[slug],
+  tagInvitationEditor,
+  pending: pending[SEND_COMMUNITY_TAG_INVITATION]
+
 }))
 export default class ShareTopicModal extends React.Component {
   static propTypes = {
@@ -16,7 +25,9 @@ export default class ShareTopicModal extends React.Component {
     onCancel: func,
     tagName: string,
     slug: string,
-    community: object
+    community: object,
+    tagInvitationEditor: object,
+    pending: bool
   }
 
   componentDidMount () {
@@ -26,10 +37,28 @@ export default class ShareTopicModal extends React.Component {
   }
 
   render () {
-    let { onCancel, tagName, community } = this.props
+    let { onCancel, tagName, community, dispatch, pending,
+      tagInvitationEditor: { recipients, error, success } } = this.props
     let loaded = get(community, 'beta_access_code')
     let joinUrl
     if (loaded) joinUrl = communityTagJoinUrl(community, tagName)
+
+    let setError = text => dispatch(updateTagInvitationEditor('error', text))
+
+    let update = (field) => event =>
+      dispatch(updateTagInvitationEditor(field, event.target.value))
+
+    let submit = () => {
+      setError(null)
+
+      let emails = parseEmailList(recipients)
+      if (isEmpty(emails)) return setError('Enter at least one email address.')
+
+      let badEmails = emails.filter(email => !validator.isEmail(email))
+      if (some(badEmails)) return setError(`These emails are invalid: ${badEmails.join(', ')}`)
+
+      dispatch(sendCommunityTagInvitation(community.id, tagName, {emails}))
+    }
 
     return <Modal title='Invite to join conversation' id='share-topic' onCancel={onCancel}>
       <div className='join-url'>
@@ -41,12 +70,17 @@ export default class ShareTopicModal extends React.Component {
       <div className='invite'>
         <label>People</label>
         <input type='text'
-          placeholder='Enter email addresses'
-          onChange={event => console.log('changing emails')}/>
+          placeholder='Enter email addresses, separated by commas'
+          value={recipients}
+          onChange={update('recipients')}/>
       </div>
+      {error && <div className='alert alert-danger'>{error}</div>}
+      {success && <div className='alert alert-success'>{success}</div>}
       <div className='footer'>
-        <button onClick={closeModal}>Done</button>
-        <button onClick={closeModal} className='ok'>Invite</button>
+        <button onClick={() => dispatch(closeModal())}>Done</button>
+        <button onClick={submit} className={cx({ok: !pending})}>
+          {pending ? 'Sending...' : 'Invite'}
+        </button>
       </div>
     </Modal>
   }

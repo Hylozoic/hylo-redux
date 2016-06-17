@@ -47,6 +47,7 @@ import {
   RESET_NETWORK_VALIDATION,
   SEARCH,
   SEND_COMMUNITY_INVITATION,
+  SEND_COMMUNITY_TAG_INVITATION,
   SET_CURRENT_COMMUNITY_ID,
   SET_CURRENT_NETWORK_ID,
   SET_LOGIN_ERROR,
@@ -63,6 +64,7 @@ import {
   UPDATE_COMMUNITY_EDITOR,
   UPDATE_NETWORK_EDITOR,
   UPDATE_INVITATION_EDITOR,
+  UPDATE_TAG_INVITATION_EDITOR,
   UPDATE_POST,
   UPLOAD_IMAGE,
   VALIDATE_COMMUNITY_ATTRIBUTE,
@@ -227,6 +229,7 @@ export default combineReducers({
       toggle(CREATE_NETWORK) ||
       toggle(FETCH_ACTIVITY) ||
       toggle(SEND_COMMUNITY_INVITATION) ||
+      toggle(SEND_COMMUNITY_TAG_INVITATION) ||
       toggle(FETCH_INVITATIONS) ||
       toggle(FETCH_COMMUNITIES) ||
       toggle(FETCH_TAGS) ||
@@ -430,6 +433,29 @@ export default combineReducers({
       case UPDATE_INVITATION_EDITOR:
         return {...state, [payload.field]: payload.value}
       case SEND_COMMUNITY_INVITATION:
+        let { results } = payload
+        let [ failures, successes ] = partition(results, r => r.error)
+        let success, error
+        let sl = successes.length
+        if (sl > 0) {
+          let pl = sl > 1
+          success = `Sent invitation${pl ? 's' : ''} to ${sl} ${pl ? 'people' : 'person'}.`
+        }
+        if (some(failures)) {
+          error = failures.map(r => `Couldn't send to ${r.email}: ${r.error}.`).join(' ')
+        }
+        return {...state, success, error}
+    }
+    return state
+  },
+
+  tagInvitationEditor: (state = {}, action) => {
+    let { type, payload, error } = action
+    if (error) return state
+    switch (type) {
+      case UPDATE_TAG_INVITATION_EDITOR:
+        return {...state, [payload.field]: payload.value}
+      case SEND_COMMUNITY_TAG_INVITATION:
         let { results } = payload
         let [ failures, successes ] = partition(results, r => r.error)
         let success, error

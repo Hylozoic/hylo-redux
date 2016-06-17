@@ -455,6 +455,8 @@ export default combineReducers({
     switch (type) {
       case UPDATE_TAG_INVITATION_EDITOR:
         return {...state, [payload.field]: payload.value}
+      case CLOSE_MODAL:
+        return {}
       case SEND_COMMUNITY_TAG_INVITATION:
         let { results } = payload
         let [ failures, successes ] = partition(results, r => r.error)

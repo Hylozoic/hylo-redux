@@ -7,9 +7,6 @@ import { communityTagJoinUrl } from '../routes'
 import { get } from 'lodash'
 const { func, string, object } = React.PropTypes
 
-closeModal
-A
-
 @connect((state, { slug }) => ({
   community: state.communities[slug]
 }))
@@ -35,8 +32,22 @@ export default class ShareTopicModal extends React.Component {
     if (loaded) joinUrl = communityTagJoinUrl(community, tagName)
 
     return <Modal title='Invite to join conversation' id='share-topic' onCancel={onCancel}>
-      {loaded ? <div><A to={joinUrl}>{joinUrl}</A></div> : <div>Loading...</div>}
-
+      <div className='join-url'>
+        <label>Copy Link</label>
+        {loaded
+        ? <A to={joinUrl}>{joinUrl}</A>
+      : <span>Loading...</span>}
+      </div>
+      <div className='invite'>
+        <label>People</label>
+        <input type='text'
+          placeholder='Enter email addresses'
+          onChange={event => console.log('changing emails')}/>
+      </div>
+      <div className='footer'>
+        <button onClick={closeModal}>Done</button>
+        <button onClick={closeModal} className='ok'>Invite</button>
+      </div>
     </Modal>
   }
 }

@@ -103,8 +103,6 @@ export default class App extends React.Component {
     const visitCommunity = community =>
       dispatch(navigate(nextPath(path, community)))
 
-    console.log({showModal})
-
     return <div className={cx({leftNavIsOpen, isMobile, showModal: !isEmpty(showModal)})}>
       <LeftNav opened={leftNavIsOpen}
         community={community}

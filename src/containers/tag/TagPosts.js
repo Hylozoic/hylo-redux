@@ -9,7 +9,9 @@ import { followTag, showShareTag } from '../../actions/tags'
 import { compose } from 'redux'
 import { get } from 'lodash'
 import PostEditor from '../../components/PostEditor'
+import Icon from '../../components/Icon'
 import AccessErrorMessage from '../../components/AccessErrorMessage'
+import { canInvite } from '../../models/currentUser'
 const { bool, func, object } = React.PropTypes
 
 const subject = 'community'
@@ -61,14 +63,11 @@ class TagPosts extends React.Component {
       {currentUser && <PostEditor community={community} tag={tagName}/>}
       <div className='list-controls tag-header'>
         <span className='tag-name'>#{tagName}</span>
-        <button onClick={() => dispatch(showShareTag(tagName, id))}>Share</button>
-        {id && (tag.followed
-          ? <button className='unfollow' onClick={toggleFollow}>
-              Unfollow
-            </button>
-          : <button className='follow' onClick={toggleFollow}>
-              Follow
-            </button>)}
+        {id && <button className={tag.followed ? 'unfollow' : 'follow'} onClick={toggleFollow}>
+          {tag.followed ? 'Unfollow' : 'Follow'}
+        </button>}
+        {canInvite(currentUser, community) &&
+          <button className='share' onClick={() => dispatch(showShareTag(tagName, id))}><Icon name='Box-Out'/></button>}
       </div>
       <ConnectedPostList {...{subject, id: id || 'all', query: {...query, tag: tagName}}}/>
     </div>

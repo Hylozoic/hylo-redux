@@ -75,6 +75,17 @@
     .dropdown {
       display: inline-block;
     }
+    li {
+      padding-bottom: 15px;
+      &.create {
+        border-top: 1px solid @faint-gray-border;
+        padding-top: 10px;
+        padding-bottom: 7px;
+        a {
+          color: @damian-green;
+        }
+      }
+    }
     button {
       height: 24px;
       border-radius: 24px;
@@ -371,6 +382,9 @@
       padding: 0;
       border: 0;
       background-color: transparent;
+      &.tag {
+        width: 90%;
+      }
     }
   }
 }

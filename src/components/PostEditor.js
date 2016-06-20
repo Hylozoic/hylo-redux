@@ -308,7 +308,7 @@ export class PostEditor extends React.Component {
       editingTagDescriptions
     } = this.props
     const { currentUser } = this.context
-    const selectableTags = compact([this.props.tag].concat(specialTags))
+    const selectableTags = compact([this.props.tag, post.tag].concat(specialTags))
     const { description, communities, tag } = postEdit
     const { name, showDetails } = this.state
     const editorType = this.editorType()
@@ -349,10 +349,10 @@ export class PostEditor extends React.Component {
         </button>
       }>
         {selectableTags.map(t => <li key={t}>
-          <a onClick={() => selectTag(t)}>#{t}</a>
+          <a onClick={() => selectTag(t)}># {t}</a>
         </li>)}
         <li><a onClick={() => selectTag(null)}>#all-topics</a></li>
-        <li><a onClick={() => createTag()}>Create New Topic</a></li>
+        <li className='create'><a onClick={() => createTag()}>Create New Topic</a></li>
       </Dropdown>}
 
       {Subeditor && <Subeditor ref='subeditor'

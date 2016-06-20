@@ -64,9 +64,9 @@ export default class TagDescriptionEditor extends React.Component {
           <div className='topic'>
             <label>Topic</label>
             {creating
-            ? <span>#<input type='text' defaultValue={tag}
+            ? <span>#&nbsp;<input type='text' defaultValue={tag} className='tag'
               onChange={event => edit(event.target.value, description)}/></span>
-            : <span>#{tag}</span>}
+            : <span># {tag}</span>}
           </div>
           <div className='description'>
             <label>Description</label>

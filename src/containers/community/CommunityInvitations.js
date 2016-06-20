@@ -46,7 +46,7 @@ const CommunityInvitations = compose(
   let { currentUser, community, dispatch, invitationEditor, params: { id }, pending } = props
   if (!canInvite(currentUser, community)) {
     return <div>
-      You dont have permission to view this page. <a href='javascript:history.go(-1)'>Back</a>
+      You don't have permission to view this page. <a href='javascript:history.go(-1)'>Back</a>
     </div>
   }
   let invitationUrl = `https://www.hylo.com/c/${community.slug}/join/${community.beta_access_code}`

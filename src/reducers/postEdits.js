@@ -4,6 +4,7 @@ import {
   CANCEL_TAG_DESCRIPTION_EDIT,
   CREATE_COMMENT,
   CREATE_POST,
+  CREATE_TAG_IN_POST_EDITOR,
   EDIT_TAG_DESCRIPTION,
   REMOVE_DOC,
   REMOVE_IMAGE,
@@ -104,6 +105,8 @@ export const editingTagDescriptions = (state = false, action) => {
   } else if (includes([CREATE_POST, UPDATE_POST, CREATE_COMMENT], type) && error) {
     const response = JSON.parse(payload.response.body)
     return !!response.tagsMissingDescriptions
+  } else if (type === CREATE_TAG_IN_POST_EDITOR) {
+    return true
   }
 
   return state
@@ -122,7 +125,13 @@ export const tagDescriptionEdits = (state = {}, action) => {
   } else if (includes([START_POST_EDIT, CANCEL_POST_EDIT, CREATE_COMMENT], type)) {
     return {}
   } else if (type === EDIT_TAG_DESCRIPTION) {
-    return {...state, [payload.tag]: payload.description}
+    if (state.creating === true) {
+      return {creating: true, [payload.tag]: payload.description}
+    } else {
+      return {...state, [payload.tag]: payload.description}
+    }
+  } else if (type === CREATE_TAG_IN_POST_EDITOR) {
+    return {creating: true, '': ''}
   }
 
   return state

@@ -15,6 +15,7 @@ export const CREATE_COMMENT = 'CREATE_COMMENT'
 export const CREATE_COMMUNITY = 'CREATE_COMMUNITY'
 export const CREATE_POST = 'CREATE_POST'
 export const CREATE_NETWORK = 'CREATE_NETWORK'
+export const CREATE_TAG_IN_POST_EDITOR = 'CREATE_TAG_IN_POST_EDITOR'
 export const EDIT_TAG_DESCRIPTION = 'EDIT_TAG_DESCRIPTION'
 export const FETCH_ACTIVITY = 'FETCH_ACTIVITY'
 export const FETCH_COMMENTS = 'FETCH_COMMENTS'
@@ -667,4 +668,10 @@ export function fetchTagSummary (tagName, id) {
 
 export function closeModal () {
   return {type: CLOSE_MODAL}
+}
+
+export function createTagInPostEditor () {
+  return {
+    type: CREATE_TAG_IN_POST_EDITOR
+  }
 }

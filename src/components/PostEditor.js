@@ -11,7 +11,7 @@ import shallowCompare from 'react-addons-shallow-compare'
 import cx from 'classnames'
 import autoproxy from 'autoproxy'
 import {
-  debounce, compact, filter, find, get, includes, isEmpty, some, startsWith
+  debounce, compact, filter, find, get, includes, isEmpty, some, startsWith, keys
 } from 'lodash'
 import CommunityTagInput from './CommunityTagInput'
 import Dropdown from './Dropdown'
@@ -31,6 +31,7 @@ import { attachmentParams } from '../util/shims'
 import { prepend } from '../util/tinymce'
 import { isKey } from '../util/textInput'
 import { CREATE_POST, UPDATE_POST, UPLOAD_IMAGE } from '../actions'
+import { createTagInPostEditor } from '../actions'
 import { ADDED_POST, EDITED_POST, trackEvent } from '../util/analytics'
 import { getCurrentCommunity } from '../models/community'
 import TagDescriptionEditor from './TagDescriptionEditor'
@@ -197,6 +198,11 @@ export class PostEditor extends React.Component {
     this.saveIfValid()
   }
 
+  updatePostTagAndDescription = tagDescriptions => {
+    let tag = keys(tagDescriptions)[0]
+    this.updateStore({tag, tagDescriptions})
+  }
+
   // this method allows you to type as much as you want into the title field, by
   // automatically truncating it to a specified length and prepending the
   // removed portion to the details field.
@@ -308,6 +314,7 @@ export class PostEditor extends React.Component {
     const editorType = this.editorType()
     const shouldSelectTag = !includes(['event', 'project'], editorType)
     const selectTag = tag => this.updateStore({tag})
+    const createTag = () => dispatch(createTagInPostEditor())
     const Subeditor = editorType === 'event' ? EventPostEditor
       : editorType === 'project' ? ProjectPostEditor : null
 
@@ -345,6 +352,7 @@ export class PostEditor extends React.Component {
           <a onClick={() => selectTag(t)}>#{t}</a>
         </li>)}
         <li><a onClick={() => selectTag(null)}>#all-topics</a></li>
+        <li><a onClick={() => createTag()}>Create New Topic</a></li>
       </Dropdown>}
 
       {Subeditor && <Subeditor ref='subeditor'
@@ -382,7 +390,8 @@ export class PostEditor extends React.Component {
       </div>
 
       {editingTagDescriptions && <TagDescriptionEditor
-        onSave={this.saveWithTagDescriptions}/>}
+        savePost={this.saveWithTagDescriptions}
+        updatePostTag={this.updatePostTagAndDescription} />}
     </div>
   }
 }

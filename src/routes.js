@@ -37,7 +37,7 @@ import StandalonePostEditor from './containers/StandalonePostEditor'
 import Admin from './containers/Admin'
 import TestBench from './containers/TestBench'
 import { debug } from './util/logging'
-import { makeUrl } from './client/util'
+import { makeUrl } from './util/navigation'
 import { get, isEmpty } from 'lodash'
 
 export default function makeRoutes (store) {

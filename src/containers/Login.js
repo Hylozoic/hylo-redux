@@ -1,7 +1,7 @@
 import React from 'react'
 import { defer, prefetch } from 'react-fetcher'
 import { get, pick, uniq } from 'lodash'
-import { makeUrl } from '../client/util'
+import { makeUrl } from '../util/navigation'
 import { connect } from 'react-redux'
 import {
   FETCH_COMMUNITY_FOR_INVITATION,

@@ -1,7 +1,7 @@
 import React from 'react'
 import { pick } from 'lodash'
 import { defer } from 'react-fetcher'
-import { makeUrl } from '../client/util'
+import { makeUrl } from '../util/navigation'
 import { Link } from 'react-router'
 import { signup, setSignupError } from '../actions'
 import ServiceAuthButtons from '../components/ServiceAuthButtons'

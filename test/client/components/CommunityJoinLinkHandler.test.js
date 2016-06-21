@@ -6,11 +6,11 @@ import { NAVIGATE } from '../../../src/actions'
 const { createElement } = helpers
 
 describe('CommunityJoinLinkHandler', () => {
-  var store, redirectUrl, node
+  var store, redirectUrl
 
   const setup = props => {
     const component = createElement(CommunityJoinLinkHandler, props, {store})
-    node = renderIntoDocument(component).getWrappedInstance()
+    renderIntoDocument(component).getWrappedInstance()
   }
 
   beforeEach(() => {
@@ -33,9 +33,10 @@ describe('CommunityJoinLinkHandler', () => {
     }, 10)
   })
 
-  it('redirects to community profile with existing membership', () => {
+  it('redirects to community profile with existing membership', done => {
     store.getState().people.current.memberships = [{
-      community: {id: '1', name: 'Foomunity', slug: 'foomunity', preexisting: true}
+      community: {id: '1', name: 'Foomunity', slug: 'foomunity'},
+      preexisting: true
     }]
     setup({params: {id: 'foomunity'}})
     // this is to compensate for the setTimeout in CommunityJoinLinkHandler
@@ -45,9 +46,10 @@ describe('CommunityJoinLinkHandler', () => {
     }, 10)
   })
 
-  it('redirects to tag page with tagName param existing membership', () => {
+  it('redirects to tag page with tagName param existing membership', done => {
     store.getState().people.current.memberships = [{
-      community: {id: '1', name: 'Foomunity', slug: 'foomunity', preexisting: true}
+      community: {id: '1', name: 'Foomunity', slug: 'foomunity'},
+      preexisting: true
     }]
     setup({params: {id: 'foomunity', tagName: 'bar'}})
     // this is to compensate for the setTimeout in CommunityJoinLinkHandler

@@ -6,7 +6,7 @@ import cx from 'classnames'
 import { isEmpty, get } from 'lodash'
 import { tagUrlComponents } from '../routes'
 import { positionInViewport } from '../util/scrolling'
-import { showTagPopover, hideTagPopover, fetchTagSummary } from '../actions/index'
+import { showTagPopover, hideTagPopover, fetchTagSummary, navigate } from '../actions/index'
 import { followTag } from '../actions/tags'
 const { string, object, func, array, number, bool } = React.PropTypes
 
@@ -105,6 +105,7 @@ export default class TagPopover extends React.Component {
         ref='popoverContainer'>
         <div className='popover-mouse-padding'
           ref='popoverMousePadding'
+          onClick={() => dispatch(navigate(`/c/${slug}/tag/${tagName}`))}
           style={innerPosition}>
         </div>
         <div className={cx('popover', above ? 'above' : 'below')}

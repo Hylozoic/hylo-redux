@@ -21,7 +21,7 @@ import { uploadImage } from '../../actions/uploadImage'
 import PersonChooser from '../../components/PersonChooser'
 import { reversibleUpdate } from '../../util/forms'
 import { communityJoinUrl } from '../../routes'
-import { makeUrl } from '../../client/util'
+import { makeUrl } from '../../util/navigation'
 
 @prefetch(({dispatch, params: {id}}) =>
   Promise.all([

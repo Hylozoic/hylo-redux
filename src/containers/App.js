@@ -10,12 +10,13 @@ import LiveStatusPoller from '../components/LiveStatusPoller'
 import PageTitleController from '../components/PageTitleController'
 import TagPopover from '../components/TagPopover'
 import { logout, navigate, removeNotification, toggleMainMenu, updateUserSettings } from '../actions'
-import { makeUrl, calliOSBridge, iOSAppVersion } from '../client/util'
+import { calliOSBridge, iOSAppVersion } from '../client/util'
 import { VelocityComponent } from 'velocity-react'
 import { canInvite, canModerate } from '../models/currentUser'
 import { get, pick, isEmpty } from 'lodash'
 import { matchEditorUrl } from './StandalonePostEditor'
 import { ModalWrapper } from '../components/Modal'
+import { makeUrl, nextPath } from '../util/navigation'
 const { array, bool, func, object, string } = React.PropTypes
 
 @prefetch(({ store, dispatch }) => {
@@ -55,7 +56,8 @@ export default class App extends React.Component {
     path: string,
     dispatch: func,
     isMobile: bool,
-    showModal: object
+    showModal: object,
+    location: object
   }
 
   static childContextTypes = {
@@ -78,7 +80,7 @@ export default class App extends React.Component {
   render () {
     const {
       children, community, currentUser, dispatch, tags, leftNavIsOpen, network,
-      notifierMessages, isMobile, showModal
+      notifierMessages, isMobile, showModal, location: { query }
     } = this.props
 
     const path = this.props.path.split('?')[0]
@@ -100,7 +102,7 @@ export default class App extends React.Component {
     const closeLeftNav = () => toggleLeftNav(false)
     const doSearch = text => dispatch(navigate(makeUrl('/search', {q: text})))
     const visitCommunity = community =>
-      dispatch(navigate(nextPath(path, community)))
+      dispatch(navigate(nextPath(path, community, false, query)))
 
     return <div className={cx({leftNavIsOpen, isMobile, showModal: !isEmpty(showModal)})}>
       <LeftNav opened={leftNavIsOpen}
@@ -139,14 +141,4 @@ export default class App extends React.Component {
       <ModalWrapper show={get(showModal, 'show')} params={get(showModal, 'params')}/>
     </div>
   }
-}
-
-export const nextPath = (path, community, isNetwork) => {
-  const pathStart = community ? `/${isNetwork ? 'n' : 'c'}/${community.slug}` : ''
-  const match = community
-    ? path.match(/(events|projects|people|notifications|about|invite)$/)
-    : path.match(/(events|projects|people|notifications)$/)
-  const pathEnd = match ? `/${match[1]}` : ''
-
-  return (pathStart + pathEnd) || '/app'
 }

@@ -8,7 +8,7 @@ import { isAdmin } from '../models/currentUser'
 import { filter, find, flow, get, map, sortBy } from 'lodash/fp'
 import { throttle, merge } from 'lodash'
 import { same } from '../models'
-import { nextPath } from '../containers/App'
+import { nextPath } from '../util/navigation'
 import { MenuButton, leftNavWidth, leftNavEasing } from './LeftNav'
 import { editorUrl } from '../containers/StandalonePostEditor'
 import { assetUrl } from '../util/assets'
@@ -157,15 +157,16 @@ const CommunityMenu = ({ menuItems, onChangeCommunity }, { isMobile, dispatch })
     dispatch(navigate(nextPath('', id ? currentItem : null, isNetwork)))
   }
 
-  return <Dropdown className='communities' backdrop={true} triangle={true}
-    toggleChildren={<div>
-      <img src={currentItem.avatar_url} title='Jump to Conversations'
-        onClick={jumpToConversations}/>
-      <span className={cx('name', {network: isNetwork})}>
-        {currentItem.name} <span className='caret'></span>
-      </span>
-      {!isMobile && isNetwork && <span className='subtitle'>Network</span>}
-    </div>}>
+  return <Dropdown className='communities' backdrop triangle toggleChildren={
+      <div>
+        <img src={currentItem.avatar_url} title='Jump to Conversations'
+          onClick={jumpToConversations}/>
+        <span className={cx('name', {network: isNetwork})}>
+          {currentItem.name} <span className='caret'></span>
+        </span>
+        {!isMobile && isNetwork && <span className='subtitle'>Network</span>}
+      </div>
+    }>
     <li>
       <ul className='inner-list dropdown-menu'>
         <li key='all'>
@@ -198,9 +199,8 @@ const UserMenu = ({ isMobile, slug, logout, newCount, currentUser }) => {
       </A>
     </li>}
     <li>
-      <Dropdown className='user-menu' alignRight={true}
-        triangle={isMobile} backdrop={isMobile}
-        toggleChildren={
+      <Dropdown className='user-menu' alignRight triangle={isMobile}
+        backdrop={isMobile} toggleChildren={
           <div>
             <NonLinkAvatar person={currentUser}/>
             {isMobile && newCount > 0 && <div className='dot-badge'/>}

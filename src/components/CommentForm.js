@@ -66,9 +66,8 @@ export default class CommentForm extends React.Component {
         ? <div className='content'>
             {editingTagDescriptions && <TagDescriptionEditor
               onSave={this.saveWithTagDescriptions}/>}
-            <RichTextEditor ref='editor' name='comment'
-              onChange={setText}
-              startFocused={true}/>
+            <RichTextEditor ref='editor' name='comment' startFocused
+              onChange={setText}/>
             <input type='submit' value='Comment' ref='button'/>
           </div>
         : <div className='content placeholder' onClick={edit}>

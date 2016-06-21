@@ -47,6 +47,12 @@ describe('linkify', () => {
     let expected = '<p>and <a href="/c/yes/tag/foo-bar" data-search="#foo-bar" class="hashtag">#foo-bar</a></p>'
     expect(linkify(source, slug)).to.equal(expected)
   })
+
+  it('does not linkify hash fragments in URLs as hashtags', () => {
+    const source = '<p>ok http://foo.com/#bar yes?</p>'
+    const expected = '<p>ok <a href="http://foo.com/#bar" class="linkified" target="_blank">http://foo.com/#bar</a> yes?</p>'
+    expect(linkify(source)).to.equal(expected)
+  })
 })
 
 describe('prepareHashtagsForEditing', () => {

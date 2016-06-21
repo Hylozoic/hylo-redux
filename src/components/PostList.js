@@ -86,13 +86,13 @@ class PostList extends React.Component {
 
     const showPost = post => {
       if (includes(post.id, editingPostIds)) {
-        return <PostEditor post={post} expanded={true}/>
+        return <PostEditor post={post} expanded/>
       }
 
       if (post.id === this.state.expanded) {
         return <div>
           <div className='backdrop' onClick={this.unexpand}/>
-          <Post post={post} expanded={true}/>
+          <Post post={post} expanded/>
         </div>
       }
 

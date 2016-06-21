@@ -31,7 +31,6 @@ const { array, bool, func, object, string } = React.PropTypes
   const community = find(state.communities, c => c.id === state.currentCommunityId)
   const network = find(state.networks, n => n.id === state.currentNetworkId)
   const tags = community ? state.tagsByCommunity[community.slug] : {}
-
   return {
     isMobile,
     leftNavIsOpen,
@@ -43,7 +42,7 @@ const { array, bool, func, object, string } = React.PropTypes
     path: state.routing.path,
     showModal
   }
-})
+}, null, null, {withRef: true})
 export default class App extends React.Component {
   static propTypes = {
     children: object,
@@ -126,11 +125,11 @@ export default class App extends React.Component {
         search={doSearch}
         opened={leftNavIsOpen}/>}
 
-      <VelocityComponent animation={moveWithMenu} easing={leftNavEasing}>
+      {/*<VelocityComponent animation={moveWithMenu} easing={leftNavEasing}>*/}
         <div id='main'>
           {children}
         </div>
-      </VelocityComponent>
+      {/*</VelocityComponent>*/}
 
       <Notifier messages={notifierMessages}
         remove={id => dispatch(removeNotification(id))}/>

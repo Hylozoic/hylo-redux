@@ -6,6 +6,7 @@ import { closeModal } from '../actions'
 import BrowseTopicsModal from '../containers/BrowseTopicsModal'
 import ShareTopicModal from '../containers/ShareTopicModal'
 import cx from 'classnames'
+import { get } from 'lodash'
 const { bool, func } = React.PropTypes
 
 export const modalWrapperCSSId = 'top-level-modal-wrapper'
@@ -13,7 +14,7 @@ export const modalWrapperCSSId = 'top-level-modal-wrapper'
 const modalStyle = (isMobile) => {
   return {
     left: isMobile ? 0 : position(document.getElementById('cover-image-page-content')).x,
-    width: Math.min(688, document.getElementById('main').offsetWidth)
+    width: Math.min(688, get(document.getElementById('main'), 'offsetWidth') || 688)
   }
 }
 

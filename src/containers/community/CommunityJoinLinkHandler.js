@@ -15,7 +15,7 @@ const { func, object, string } = React.PropTypes
 @connect(({ errors, people }, { tagName }) => ({
   codeError: get(errors[JOIN_COMMUNITY_WITH_CODE], 'payload.response.body'),
   currentUser: people.current
-}))
+}), null, null, {withRef: true})
 export default class CommunityJoinLinkHandler extends React.Component {
   static propTypes = {
     currentUser: object,
@@ -45,7 +45,6 @@ export default class CommunityJoinLinkHandler extends React.Component {
     } else {
       navigateAction = () => dispatch(navigate(communityOnboardingUrl(community)))
     }
-
     // for some reason, calling navigate here without wrapping it in
     // setTimeout results in prefetching not taking place in the
     // CommunityProfile that we go to next

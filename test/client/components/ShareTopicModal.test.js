@@ -14,7 +14,7 @@ describe('ShareTopicModal', () => {
   const currentCommunityId = 1
 
   const setup = () => {
-    const component = createElement(App, {}, {store})
+    const component = createElement(App, {location: {}}, {store})
     return renderIntoDocument(component).getWrappedInstance()
   }
 

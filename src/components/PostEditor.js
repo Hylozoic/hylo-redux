@@ -11,7 +11,7 @@ import shallowCompare from 'react-addons-shallow-compare'
 import cx from 'classnames'
 import autoproxy from 'autoproxy'
 import {
-  debounce, compact, filter, find, get, includes, isEmpty, some, startsWith, keys
+  debounce, compact, filter, find, get, includes, isEmpty, some, startsWith, keys, uniq
 } from 'lodash'
 import CommunityTagInput from './CommunityTagInput'
 import Dropdown from './Dropdown'
@@ -308,8 +308,8 @@ export class PostEditor extends React.Component {
       editingTagDescriptions
     } = this.props
     const { currentUser } = this.context
-    const selectableTags = compact([this.props.tag, post.tag].concat(specialTags))
     const { description, communities, tag } = postEdit
+    const selectableTags = uniq(compact([this.props.tag, tag].concat(specialTags)))
     const { name, showDetails } = this.state
     const editorType = this.editorType()
     const shouldSelectTag = !includes(['event', 'project'], editorType)
@@ -349,7 +349,7 @@ export class PostEditor extends React.Component {
         </button>
       }>
         {selectableTags.map(t => <li key={t}>
-          <a onClick={() => selectTag(t)}># {t}</a>
+          <a onClick={() => selectTag(t)}>#{t}</a>
         </li>)}
         <li><a onClick={() => selectTag(null)}>#all-topics</a></li>
         <li className='create'><a onClick={() => createTag()}>Create New Topic</a></li>

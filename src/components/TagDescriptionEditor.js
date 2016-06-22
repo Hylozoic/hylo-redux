@@ -64,9 +64,11 @@ export default class TagDescriptionEditor extends React.Component {
           <div className='topic'>
             <label>Topic</label>
             {creating
-            ? <span>#&nbsp;<input type='text' defaultValue={tag} className='tag'
-              onChange={event => edit(event.target.value, description)}/></span>
-            : <span># {tag}</span>}
+              ? <span>#&nbsp;
+                <input type='text' defaultValue={tag} className='tag' placeholder='Topic name'
+                  onChange={event => edit(event.target.value, description)}/>
+              </span>
+              : <span># {tag}</span>}
           </div>
           <div className='description'>
             <label>Description</label>
@@ -75,9 +77,7 @@ export default class TagDescriptionEditor extends React.Component {
           </div>
         </div>)}
         <div className='footer'>
-          {creating
-          ? <button onClick={createTag} className='ok'>Create</button>
-          : <button onClick={() => savePost(tags)} className='ok'>Create</button>}
+          <button onClick={creating ? createTag : () => savePost(tags)} className='ok'>Create</button>
         </div>
       </div>
     </div>

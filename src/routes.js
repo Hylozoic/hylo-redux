@@ -39,6 +39,7 @@ import TestBench from './containers/TestBench'
 import { debug } from './util/logging'
 import { makeUrl } from './util/navigation'
 import { get, isEmpty } from 'lodash'
+import config from './config'
 
 export default function makeRoutes (store) {
   const requireLoginWithOptions = (options = {}) => (nextState, replaceState) => {
@@ -150,7 +151,7 @@ export default function makeRoutes (store) {
   </Route>
 }
 
-export const origin = () => typeof window !== 'undefined' ? window.location.origin : 'https://www.hylo.com'
+export const origin = () => typeof window !== 'undefined' ? window.location.origin : config.host
 
 export const communityUrl = (community, params) =>
   makeUrl(`/c/${community.slug}`, params)

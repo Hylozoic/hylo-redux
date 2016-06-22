@@ -1,18 +1,19 @@
-function bottomScrollPosition () {
-  return document.body.scrollHeight - window.innerHeight
-}
+import { has } from 'lodash'
 
-export function viewportTop () {
-  if (window.pageYOffset) return window.pageYOffset
-  return document.documentElement.clientHeight
-  ? document.documentElement.scrollTop
-  : document.body.scrollTop
-}
+const bottomScrollPosition = () =>
+  document.body.scrollHeight - window.innerHeight
 
-export function isAtBottom (offset, element) {
-  if (!element) return viewportTop() >= bottomScrollPosition() - offset
-  return element.scrollTop >= element.scrollHeight - element.offsetHeight - offset
-}
+export const viewportTop = () =>
+  has(window, 'pageYOffset')
+    ? window.pageYOffset
+    : document.documentElement.clientHeight
+      ? document.documentElement.scrollTop
+      : document.body.scrollTop
+
+export const isAtBottom = (offset, element) =>
+  (!element || element === window)
+    ? viewportTop() >= bottomScrollPosition() - offset
+    : element.scrollTop >= element.scrollHeight - element.offsetHeight - offset
 
 export function scrollToBottom () {
   return window.scrollTo(0, bottomScrollPosition())

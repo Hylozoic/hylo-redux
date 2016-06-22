@@ -1,7 +1,7 @@
 import dotenv from 'dotenv'
 import chai from 'chai'
-import { Component, createElement, PropTypes } from 'react'
-import { get, mapValues, merge, omit } from 'lodash'
+import React from 'react'
+import { get, has, mapValues, merge, omit } from 'lodash'
 import { generate } from 'randomstring'
 process.env.NODE_ENV = 'test'
 
@@ -35,41 +35,52 @@ const mockReduxStore = function (state) {
   }
 }
 
+const createElement = (componentClass, props, context) => {
+  context = {
+    dispatch: get(context, 'store.dispatch'),
+    ...context
+  }
+
+  class Wrapper extends React.Component {
+    static childContextTypes = mapValues(context, () => React.PropTypes.any)
+
+    getChildContext () { return context }
+
+    render () {
+      this.renderedElement = React.createElement(componentClass, {
+        ...omit(props, 'stateless'),
+        ref: has(props, 'stateless') ? null : 'wrappedInstance'
+      })
+      return this.renderedElement
+    }
+
+    getWrappedInstance () {
+      if (this.refs.wrappedInstance && this.refs.wrappedInstance.getWrappedInstance) {
+        return this.refs.wrappedInstance.getWrappedInstance()
+      }
+      return this.refs.wrappedInstance
+    }
+  }
+
+  return React.createElement(Wrapper)
+}
+
 export default {
   helpers: {
-    createElement: (componentClass, props, context) => {
-      context = {
-        dispatch: get(context, 'store.dispatch'),
-        ...context
-      }
-
-      class Wrapper extends Component {
-        static childContextTypes = mapValues(context, () => PropTypes.any)
-
-        getChildContext () { return context }
-
-        render () {
-          this.renderedElement = createElement(componentClass, {
-            ...omit(props, 'stateless'),
-            ref: props.stateless ? null : 'wrappedInstance'
-          })
-          return this.renderedElement
-        }
-
-        getWrappedInstance () {
-          if (this.refs.wrappedInstance && this.refs.wrappedInstance.getWrappedInstance) {
-            return this.refs.wrappedInstance.getWrappedInstance()
-          }
-          return this.refs.wrappedInstance
-        }
-      }
-
-      return createElement(Wrapper)
-    },
+    createElement,
 
     // this is basically setTimeout promisified
     wait: (millis, callback) =>
-      new Promise((resolve, _) => setTimeout(() => resolve(callback()), millis))
+      new Promise((resolve, _) => setTimeout(() => resolve(callback()), millis)),
+
+    spyify: (object, methodName) => {
+      object['_original' + methodName] = object[methodName]
+      object[methodName] = spy(object[methodName])
+    },
+
+    unspyify: (object, methodName) => {
+      object[methodName] = object['_original' + methodName]
+    }
   },
 
   mocks: {

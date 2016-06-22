@@ -5,7 +5,7 @@ const { func, string } = React.PropTypes
 
 export default class ScrollListener extends React.Component {
   static propTypes = {
-    onBottom: func,
+    onBottom: func.isRequired,
     elementId: string
   }
 

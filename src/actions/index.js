@@ -17,6 +17,7 @@ export const CREATE_POST = 'CREATE_POST'
 export const CREATE_NETWORK = 'CREATE_NETWORK'
 export const CREATE_TAG_IN_POST_EDITOR = 'CREATE_TAG_IN_POST_EDITOR'
 export const EDIT_TAG_DESCRIPTION = 'EDIT_TAG_DESCRIPTION'
+export const EDIT_NEW_TAG_AND_DESCRIPTION = 'EDIT_NEW_TAG_AND_DESCRIPTION'
 export const FETCH_ACTIVITY = 'FETCH_ACTIVITY'
 export const FETCH_COMMENTS = 'FETCH_COMMENTS'
 export const FETCH_COMMUNITY = 'FETCH_COMMUNITY'
@@ -648,6 +649,10 @@ export function cancelTagDescriptionEdit () {
 
 export function editTagDescription (tag, description) {
   return {type: EDIT_TAG_DESCRIPTION, payload: {tag, description}}
+}
+
+export function editNewTagAndDescription (tag, description) {
+  return {type: EDIT_NEW_TAG_AND_DESCRIPTION, payload: {tag, description}}
 }
 
 export function showTagPopover (tagName, slug, position, anchorWidth) {

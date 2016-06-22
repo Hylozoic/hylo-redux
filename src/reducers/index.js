@@ -10,7 +10,9 @@ import networks from './networks'
 import networkEdits from './networkEdits'
 import people from './people'
 import peopleByQuery from './peopleByQuery'
-import postEdits, { editingTagDescriptions, tagDescriptionEdits } from './postEdits'
+import postEdits, {
+  editingTagDescriptions, creatingTagAndDescription, tagDescriptionEdits
+} from './postEdits'
 import postsByQuery from './postsByQuery'
 import { tagsByCommunity, tagsByQuery, totalTagsByQuery } from './tags'
 import posts from './posts'
@@ -173,6 +175,7 @@ export default combineReducers({
   communities,
   communitiesByQuery,
   editingTagDescriptions,
+  creatingTagAndDescription,
   hasFreshPostsByQuery: keyedHasFreshItems(CHECK_FRESHNESS_POSTS, 'postsByQuery'),
   networks,
   networkEdits,

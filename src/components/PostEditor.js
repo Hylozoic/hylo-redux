@@ -48,7 +48,7 @@ export const newPostId = 'new-post'
 
   // this object tracks the edits that are currently being made
   const postEdit = state.postEdits[id] || {}
-  const { editingTagDescriptions, pending } = state
+  const { editingTagDescriptions, creatingTagAndDescription, pending } = state
 
   return {
     id,
@@ -57,7 +57,8 @@ export const newPostId = 'new-post'
     saving: pending[CREATE_POST] || pending[UPDATE_POST],
     imagePending: pending[UPLOAD_IMAGE],
     currentCommunitySlug: get(getCurrentCommunity(state), 'slug'),
-    editingTagDescriptions
+    editingTagDescriptions,
+    creatingTagAndDescription
   }
 }, null, null, {withRef: true}))
 export class PostEditor extends React.Component {
@@ -74,7 +75,8 @@ export class PostEditor extends React.Component {
     type: string,
     tag: string,
     currentCommunitySlug: string,
-    editingTagDescriptions: bool
+    editingTagDescriptions: bool,
+    creatingTagAndDescription: bool
   }
 
   static contextTypes = {
@@ -305,7 +307,7 @@ export class PostEditor extends React.Component {
   render () {
     const {
       post, postEdit, dispatch, imagePending, saving, id,
-      editingTagDescriptions
+      editingTagDescriptions, creatingTagAndDescription
     } = this.props
     const { currentUser } = this.context
     const { description, communities, tag } = postEdit
@@ -388,8 +390,7 @@ export class PostEditor extends React.Component {
           Public
         </label>
       </div>
-
-      {editingTagDescriptions && <TagDescriptionEditor
+      {(editingTagDescriptions || creatingTagAndDescription) && <TagDescriptionEditor
         savePost={this.saveWithTagDescriptions}
         updatePostTag={this.updatePostTagAndDescription} />}
     </div>

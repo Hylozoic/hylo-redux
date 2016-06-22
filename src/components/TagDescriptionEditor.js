@@ -1,13 +1,14 @@
 import React from 'react'
 import { connect } from 'react-redux'
-import { cancelTagDescriptionEdit, editTagDescription } from '../actions'
+import { cancelTagDescriptionEdit, editTagDescription, editNewTagAndDescription } from '../actions'
 import Icon from './Icon'
-import { debounce, keys, isEmpty, map, omit } from 'lodash'
+import { debounce, keys, isEmpty, map } from 'lodash'
 import { hashtagWordRegex } from '../models/hashtag'
-const { func, object } = React.PropTypes
+const { func, object, bool } = React.PropTypes
 
 @connect((state, props) => ({
-  tags: state.tagDescriptionEdits
+  tags: state.tagDescriptionEdits,
+  creating: state.creatingTagAndDescription
 }))
 export default class TagDescriptionEditor extends React.Component {
   static propTypes = {
@@ -15,20 +16,28 @@ export default class TagDescriptionEditor extends React.Component {
     savePost: func,
     saveTagDescriptions: func,
     updatePostTag: func,
-    dispatch: func
+    dispatch: func,
+    creating: bool
+  }
+
+  componentWillReceiveProps (nextProps) {
+    let { tags, creating } = this.props
+    if (creating && keys(nextProps.tags)[0] !== keys(tags)[0]) {
+      console.log('didnt equal')
+      this.refs.tag.focus()
+    }
   }
 
   render () {
-    let { tags, savePost, updatePostTag, dispatch } = this.props
+    let { tags, savePost, updatePostTag, dispatch, creating } = this.props
     const cancel = () => dispatch(cancelTagDescriptionEdit())
+    const editAction = creating ? editNewTagAndDescription : editTagDescription
     const edit = debounce((tag, value) =>
-      dispatch(editTagDescription(tag, value)), 200)
+      dispatch(editAction(tag, value)), 200)
 
-    if (isEmpty(tags)) return null
-
-    let creating = tags.creating === true
-    if (creating) {
-      tags = omit(tags, 'creating')
+    if (isEmpty(tags)) {
+      if (!creating) return null
+      tags = {'': ''}
     }
 
     const validate = tags => {
@@ -65,10 +74,10 @@ export default class TagDescriptionEditor extends React.Component {
             <label>Topic</label>
             {creating
               ? <span>#&nbsp;
-                <input type='text' defaultValue={tag} className='tag' placeholder='Topic name'
+                <input type='text' defaultValue={tag} className='tag' ref='tag' placeholder='Topic name'
                   onChange={event => edit(event.target.value, description)}/>
               </span>
-              : <span># {tag}</span>}
+              : <span>#{tag}</span>}
           </div>
           <div className='description'>
             <label>Description</label>

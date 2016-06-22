@@ -9,7 +9,8 @@ import {
   ADD_COMMUNITY_MODERATOR_PENDING,
   REMOVE_COMMUNITY_MODERATOR,
   REMOVE_COMMUNITY_MODERATOR_PENDING,
-  UPDATE_COMMUNITY_SETTINGS_PENDING
+  UPDATE_COMMUNITY_SETTINGS_PENDING,
+  USE_INVITATION
 } from '../../src/actions'
 
 const post1 = {
@@ -243,6 +244,26 @@ describe('communities', () => {
         c1: {...community1, moderators: [{name: 'Joe Mod', id: 1}]}
       }
 
+      expect(communities(state, action)).to.deep.equal(expectedState)
+    })
+  })
+
+  describe('on USE_INVITATION', () => {
+    it('adds the community indexed by both token and slug', () => {
+      const token = 'abcdef'
+      let action = {
+        type: USE_INVITATION,
+        meta: {token},
+        payload: {
+          community: community1
+        }
+      }
+      let state = {}
+
+      let expectedState = {
+        [community1.slug]: community1,
+        [token]: community1
+      }
       expect(communities(state, action)).to.deep.equal(expectedState)
     })
   })

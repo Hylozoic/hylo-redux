@@ -8,7 +8,7 @@ import {
 import A from '../components/A'
 import { Modal } from '../components/Modal'
 import { communityTagJoinUrl } from '../routes'
-import { parseEmailList } from '../util/text'
+import { parseEmailString } from '../util/text'
 import { get, isEmpty, some } from 'lodash'
 import cx from 'classnames'
 const { func, string, object, bool } = React.PropTypes
@@ -51,7 +51,7 @@ export default class ShareTopicModal extends React.Component {
     let submit = () => {
       setError(null)
 
-      let emails = parseEmailList(recipients)
+      let emails = parseEmailString(recipients)
       if (isEmpty(emails)) return setError('Enter at least one email address.')
 
       let badEmails = emails.filter(email => !validator.isEmail(email))

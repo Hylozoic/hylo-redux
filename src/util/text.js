@@ -141,7 +141,7 @@ export function textLength (html) {
   return html.replace(/<[^>]+>/g, '').length
 }
 
-export const parseEmailList = emails =>
+export const parseEmailString = emails =>
   compact((emails || '').split(/,|\n/).map(email => {
     let trimmed = email.trim()
     // use only the email portion of a "Joe Bloggs <joe@bloggs.org>" line

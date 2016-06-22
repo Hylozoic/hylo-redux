@@ -20,7 +20,7 @@ import { some, get, isEmpty } from 'lodash'
 import cx from 'classnames'
 import { canInvite } from '../../models/currentUser'
 import { INVITED_COMMUNITY_MEMBERS, trackEvent } from '../../util/analytics'
-import { parseEmailList } from '../../util/text'
+import { parseEmailString } from '../../util/text'
 
 const defaultSubject = name =>
   `Join ${name} on Hylo`
@@ -68,7 +68,7 @@ const CommunityInvitations = compose(
     if (!subject) return setError('The subject may not be blank.')
     if (!message) return setError('The message may not be blank.')
 
-    let emails = parseEmailList(recipients)
+    let emails = parseEmailString(recipients)
     if (isEmpty(emails)) return setError('Enter at least one email address.')
 
     let badEmails = emails.filter(email => !validator.isEmail(email))

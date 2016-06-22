@@ -5,12 +5,13 @@ import { renderIntoDocument } from 'react-addons-test-utils'
 import { NAVIGATE } from '../../../src/actions'
 const { createElement } = helpers
 
-describe('CommunityJoinLinkHandler', () => {
+describe.only('CommunityJoinLinkHandler', () => {
   var store, redirectUrl
 
-  const setup = props => {
+  const renderAndWait = (props, callback) => {
     const component = createElement(CommunityJoinLinkHandler, props, {store})
     renderIntoDocument(component).getWrappedInstance()
+    setTimeout(callback, 10)
   }
 
   beforeEach(() => {
@@ -25,12 +26,11 @@ describe('CommunityJoinLinkHandler', () => {
     store.getState().people.current.memberships = [{
       community: {id: '1', name: 'Foomunity', slug: 'foomunity'}
     }]
-    setup({params: {id: 'foomunity', tagName: 'bar'}})
-    // this is to compensate for the setTimeout in CommunityJoinLinkHandler
-    setTimeout(() => {
+    renderAndWait({params: {id: 'foomunity', tagName: 'bar'}}, () => {
       expect(redirectUrl).to.equal('/c/foomunity/onboarding')
       done()
-    }, 10)
+    })
+    // this is to compensate for the setTimeout in CommunityJoinLinkHandler
   })
 
   it('redirects to community profile with existing membership', done => {
@@ -38,12 +38,10 @@ describe('CommunityJoinLinkHandler', () => {
       community: {id: '1', name: 'Foomunity', slug: 'foomunity'},
       preexisting: true
     }]
-    setup({params: {id: 'foomunity'}})
-    // this is to compensate for the setTimeout in CommunityJoinLinkHandler
-    setTimeout(() => {
+    renderAndWait({params: {id: 'foomunity'}}, () => {
       expect(redirectUrl).to.equal('/c/foomunity')
       done()
-    }, 10)
+    })
   })
 
   it('redirects to tag page with tagName param existing membership', done => {
@@ -51,11 +49,9 @@ describe('CommunityJoinLinkHandler', () => {
       community: {id: '1', name: 'Foomunity', slug: 'foomunity'},
       preexisting: true
     }]
-    setup({params: {id: 'foomunity', tagName: 'bar'}})
-    // this is to compensate for the setTimeout in CommunityJoinLinkHandler
-    setTimeout(() => {
+    renderAndWait({params: {id: 'foomunity', tagName: 'bar'}}, () => {
       expect(redirectUrl).to.equal('/c/foomunity/tag/bar')
       done()
-    }, 10)
+    })
   })
 })

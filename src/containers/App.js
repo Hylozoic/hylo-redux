@@ -13,7 +13,7 @@ import { logout, navigate, removeNotification, toggleMainMenu, updateUserSetting
 import { calliOSBridge, iOSAppVersion } from '../client/util'
 import { VelocityComponent } from 'velocity-react'
 import { canInvite, canModerate } from '../models/currentUser'
-import { get, pick } from 'lodash'
+import { get, pick, isEmpty } from 'lodash'
 import { matchEditorUrl } from './StandalonePostEditor'
 import { ModalWrapper } from '../components/Modal'
 import { makeUrl, nextPath } from '../util/navigation'
@@ -32,7 +32,6 @@ const { array, bool, func, object, string } = React.PropTypes
   const community = find(state.communities, c => c.id === state.currentCommunityId)
   const network = find(state.networks, n => n.id === state.currentNetworkId)
   const tags = community ? state.tagsByCommunity[community.slug] : {}
-
   return {
     isMobile,
     leftNavIsOpen,
@@ -44,7 +43,7 @@ const { array, bool, func, object, string } = React.PropTypes
     path: state.routing.path,
     showModal
   }
-})
+}, null, null, {withRef: true})
 export default class App extends React.Component {
   static propTypes = {
     children: object,
@@ -57,7 +56,7 @@ export default class App extends React.Component {
     path: string,
     dispatch: func,
     isMobile: bool,
-    showModal: string,
+    showModal: object,
     location: object
   }
 
@@ -105,7 +104,7 @@ export default class App extends React.Component {
     const visitCommunity = community =>
       dispatch(navigate(nextPath(path, community, false, query)))
 
-    return <div className={cx({leftNavIsOpen, isMobile, showModal})}>
+    return <div className={cx({leftNavIsOpen, isMobile, showModal: !isEmpty(showModal)})}>
       <LeftNav opened={leftNavIsOpen}
         community={community}
         network={network}
@@ -128,18 +127,18 @@ export default class App extends React.Component {
         search={doSearch}
         opened={leftNavIsOpen}/>}
 
-      <VelocityComponent animation={moveWithMenu} easing={leftNavEasing}>
+      {/*<VelocityComponent animation={moveWithMenu} easing={leftNavEasing}>*/}
         <div id='main'>
           {children}
         </div>
-      </VelocityComponent>
+      {/*</VelocityComponent>*/}
 
       <Notifier messages={notifierMessages}
         remove={id => dispatch(removeNotification(id))}/>
       <LiveStatusPoller community={community}/>
       <PageTitleController/>
       <TagPopover/>
-      <ModalWrapper show={showModal}/>
+      <ModalWrapper show={get(showModal, 'show')} params={get(showModal, 'params')}/>
     </div>
   }
 }

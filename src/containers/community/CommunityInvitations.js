@@ -16,10 +16,11 @@ import A from '../../components/A'
 import Avatar from '../../components/Avatar'
 import ScrollListener from '../../components/ScrollListener'
 import validator from 'validator'
-import { some, compact, get, isEmpty } from 'lodash'
+import { some, get, isEmpty } from 'lodash'
 import cx from 'classnames'
 import { canInvite } from '../../models/currentUser'
 import { INVITED_COMMUNITY_MEMBERS, trackEvent } from '../../util/analytics'
+import { parseEmailString } from '../../util/text'
 
 const defaultSubject = name =>
   `Join ${name} on Hylo`
@@ -28,14 +29,6 @@ const defaultMessage = name =>
   `${name} is using Hylo, a new kind of social network that's designed to help communities and organizations create things together.\n\n` +
   "We're surrounded by incredible people, skills, and resources. But it can be hard to know whom to connect with, for what, and when. Often the things we need most are closer than we think.\n\n" +
   'Hylo makes it easy to discover the abundant skills, resources, and opportunities in your communities that might otherwise go unnoticed. Together, we can create whatever we can imagine.'
-
-const parseEmailList = emails =>
-  compact((emails || '').split(/,|\n/).map(email => {
-    let trimmed = email.trim()
-    // use only the email portion of a "Joe Bloggs <joe@bloggs.org>" line
-    let match = trimmed.match(/.*<(.*)>/)
-    return match ? match[1] : trimmed
-  }))
 
 const CommunityInvitations = compose(
   prefetch(({ params: { id }, dispatch }) => Promise.all([
@@ -75,7 +68,7 @@ const CommunityInvitations = compose(
     if (!subject) return setError('The subject may not be blank.')
     if (!message) return setError('The message may not be blank.')
 
-    let emails = parseEmailList(recipients)
+    let emails = parseEmailString(recipients)
     if (isEmpty(emails)) return setError('Enter at least one email address.')
 
     let badEmails = emails.filter(email => !validator.isEmail(email))

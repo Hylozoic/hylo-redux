@@ -1,0 +1,61 @@
+.modal-input() {
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background-color: transparent;
+}
+
+.modal-row() {
+  padding: 10px 25px;
+  background-color: @faint-gray-bg;
+  border-top: 1px solid @post-border;
+
+  label {
+    .small-caps-list-header;
+    color: #bbb;
+    display: block;
+  }
+}
+
+#tag-description-editor {
+  .modal {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+  }
+
+  .topic, .description {
+    .modal-row;
+  }
+
+  .tag-group {
+    border-bottom: 1px solid @post-border;
+    margin-bottom: 15px;
+
+    input[type="text"] {
+      .modal-input;
+    }
+  }
+}
+
+#share-topic {
+  .join-url {
+    .modal-row;
+
+    a {
+      color: @damian-green;
+    }
+  }
+
+  .invite {
+    .modal-row;
+
+    input[type="text"] {
+      .modal-input;
+    }
+  }
+  button {
+    margin-right: 5px;
+  }
+}

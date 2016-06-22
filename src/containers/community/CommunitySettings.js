@@ -20,6 +20,7 @@ import A from '../../components/A'
 import { uploadImage } from '../../actions/uploadImage'
 import PersonChooser from '../../components/PersonChooser'
 import { reversibleUpdate } from '../../util/forms'
+import { communityJoinUrl } from '../../routes'
 import { makeUrl } from '../../util/navigation'
 
 @prefetch(({dispatch, params: {id}}) =>
@@ -235,8 +236,7 @@ export default class CommunitySettings extends React.Component {
     }
 
     if (expand.access) {
-      let origin = typeof window !== 'undefined' ? window.location.origin : 'https://www.hylo.com'
-      joinUrl = `${origin}/c/${community.slug}/join/${community.beta_access_code}`
+      joinUrl = communityJoinUrl(community)
 
       codeNotUnique = get(this.props.validation, 'beta_access_code.unique') === false
     }

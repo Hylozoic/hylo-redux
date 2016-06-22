@@ -5,11 +5,15 @@ import { get } from 'lodash'
 import {
   USE_INVITATION,
   useInvitation,
-  navigate
+  navigate,
+  fetchLeftNavTags,
+  fetchCommunity,
+  setCurrentCommunityId
 } from '../../actions'
 const { func, object, string } = React.PropTypes
 
-@prefetch(({ path, query: { token }, dispatch }) => dispatch(useInvitation(token)))
+@prefetch(({ path, query: { token }, dispatch }) =>
+  dispatch(useInvitation(token)))
 @connect(({ errors, people, communities }, { location: { query: { token } } }) => ({
   tokenError: get(errors[USE_INVITATION], 'payload.response.body'),
   currentUser: people.current,
@@ -29,9 +33,12 @@ export default class InvitationHandler extends React.Component {
   // not in server-side rendering. would have to jump back into appHandler to
   // implement checking for redirects that take place during prefetching
   componentDidMount () {
-    let { dispatch, community } = this.props
-    if (community) {
-      dispatch(navigate(`/c/${community.slug}`))
+    let { dispatch, community: { slug, id } } = this.props
+    if (slug) {
+      dispatch(fetchLeftNavTags(slug))
+      .then(() => dispatch(fetchCommunity(slug)))
+      .then(() => dispatch(setCurrentCommunityId(id)))
+      .then(() => dispatch(navigate(`/c/${slug}`)))
     }
   }
 

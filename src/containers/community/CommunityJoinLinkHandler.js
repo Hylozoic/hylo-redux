@@ -1,8 +1,8 @@
 import React from 'react'
 import { prefetch } from 'react-fetcher'
 import { connect } from 'react-redux'
-import { find, get, map } from 'lodash'
-import { communityOnboardingUrl } from '../../routes'
+import { find, get } from 'lodash'
+import { communityOnboardingUrl, tagUrl, communityUrl } from '../../routes'
 import {
   JOIN_COMMUNITY_WITH_CODE,
   joinCommunityWithCode,
@@ -10,13 +10,12 @@ import {
 } from '../../actions'
 const { func, object, string } = React.PropTypes
 
-@prefetch(({ path, params: { id, code }, dispatch }) => {
-  return dispatch(joinCommunityWithCode(code))
-})
-@connect(({ errors, people }) => ({
+@prefetch(({ path, params: { id, code, tagName }, dispatch }) =>
+  dispatch(joinCommunityWithCode(code, tagName)))
+@connect(({ errors, people }, { tagName }) => ({
   codeError: get(errors[JOIN_COMMUNITY_WITH_CODE], 'payload.response.body'),
   currentUser: people.current
-}))
+}), null, null, {withRef: true})
 export default class CommunityJoinLinkHandler extends React.Component {
   static propTypes = {
     currentUser: object,
@@ -30,15 +29,26 @@ export default class CommunityJoinLinkHandler extends React.Component {
   // not in server-side rendering. would have to jump back into appHandler to
   // implement checking for redirects that take place during prefetching
   componentDidMount () {
-    let { currentUser, dispatch, params: { id } } = this.props
+    let { currentUser, dispatch, params: { id, tagName } } = this.props
     if (!currentUser) return
-    let community = find(map(currentUser.memberships, 'community'), c => c.slug === id)
-    if (!community) return
+    let membership = find(currentUser.memberships, m => m.community.slug === id)
+    if (!membership) return
+    let { community } = membership
 
+    let navigateAction
+    if (membership.preexisting) {
+      if (tagName) {
+        navigateAction = () => dispatch(navigate(tagUrl(tagName, community.slug)))
+      } else {
+        navigateAction = () => dispatch(navigate(communityUrl(community)))
+      }
+    } else {
+      navigateAction = () => dispatch(navigate(communityOnboardingUrl(community)))
+    }
     // for some reason, calling navigate here without wrapping it in
     // setTimeout results in prefetching not taking place in the
     // CommunityProfile that we go to next
-    setTimeout(() => dispatch(navigate(communityOnboardingUrl(community))))
+    setTimeout(navigateAction)
   }
 
   render () {

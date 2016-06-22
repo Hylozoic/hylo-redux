@@ -13,6 +13,7 @@ import peopleByQuery from './peopleByQuery'
 import postEdits, { editingTagDescriptions, tagDescriptionEdits } from './postEdits'
 import postsByQuery from './postsByQuery'
 import { tagsByCommunity, tagsByQuery, totalTagsByQuery } from './tags'
+import tagInvitationEditor from './tagInvitationEditor'
 import posts from './posts'
 import {
   appendPayloadByPath, keyedCounter, keyedHasFreshItems, storePayload
@@ -47,6 +48,7 @@ import {
   RESET_NETWORK_VALIDATION,
   SEARCH,
   SEND_COMMUNITY_INVITATION,
+  SEND_COMMUNITY_TAG_INVITATION,
   SET_CURRENT_COMMUNITY_ID,
   SET_CURRENT_NETWORK_ID,
   SET_LOGIN_ERROR,
@@ -54,6 +56,7 @@ import {
   SET_MOBILE_DEVICE,
   SET_SIGNUP_ERROR,
   SHOW_ALL_TAGS,
+  SHOW_SHARE_TAG,
   SHOW_TAG_POPOVER,
   SIGNUP,
   TOGGLE_MAIN_MENU,
@@ -199,6 +202,7 @@ export default combineReducers({
   tagsByCommunity,
   tagsByQuery,
   tagDescriptionEdits,
+  tagInvitationEditor,
   thanks: appendPayloadByPath(FETCH_THANKS, 'meta.id'),
   totalActivities: keyedCounter(FETCH_ACTIVITY, 'total', 'meta.id'),
   totalCommunitiesByQuery: keyedCounter(FETCH_COMMUNITIES, 'communities_total'),
@@ -227,6 +231,7 @@ export default combineReducers({
       toggle(CREATE_NETWORK) ||
       toggle(FETCH_ACTIVITY) ||
       toggle(SEND_COMMUNITY_INVITATION) ||
+      toggle(SEND_COMMUNITY_TAG_INVITATION) ||
       toggle(FETCH_INVITATIONS) ||
       toggle(FETCH_COMMUNITIES) ||
       toggle(FETCH_TAGS) ||
@@ -479,10 +484,12 @@ export default combineReducers({
     return state
   },
 
-  showModal: (state = null, action) => {
+  showModal: (state = {}, action) => {
     switch (action.type) {
       case SHOW_ALL_TAGS:
-        return 'tags'
+        return {show: 'tags'}
+      case SHOW_SHARE_TAG:
+        return {show: 'share-tag', params: action.payload}
       case CLOSE_MODAL:
         return null
     }

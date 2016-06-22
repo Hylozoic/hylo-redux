@@ -249,21 +249,25 @@ describe('communities', () => {
   })
 
   describe('on USE_INVITATION', () => {
-    it('adds the community indexed by both token and slug', () => {
+    it('adds the community indexed by both token and slug, preserving existing values', () => {
       const token = 'abcdef'
+      let updatedCommunity1 = {slug: community1.slug, newval: 'a new value'}
       let action = {
         type: USE_INVITATION,
         meta: {token},
         payload: {
-          community: community1
+          community: updatedCommunity1
         }
       }
-      let state = {}
+      let state = {
+        [community1.slug]: community1
+      }
 
       let expectedState = {
-        [community1.slug]: community1,
-        [token]: community1
+        [community1.slug]: {...community1, ...updatedCommunity1},
+        [token]: updatedCommunity1
       }
+
       expect(communities(state, action)).to.deep.equal(expectedState)
     })
   })

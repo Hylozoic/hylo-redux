@@ -23,7 +23,6 @@ export default class TagDescriptionEditor extends React.Component {
   componentWillReceiveProps (nextProps) {
     let { tags, creating } = this.props
     if (creating && keys(nextProps.tags)[0] !== keys(tags)[0]) {
-      console.log('didnt equal')
       this.refs.tag.focus()
     }
   }
@@ -69,12 +68,12 @@ export default class TagDescriptionEditor extends React.Component {
           {keys(tags).length > 1 ? 'new topics.' : 'a new topic.'}
           <a className='close' onClick={cancel}><Icon name='Fail'/></a>
         </h2>
-        {map(tags, (description, tag) => <div key={tag} className='tag-group'>
+        {map(tags, (description, tag, i) => <div key={i} className='tag-group'>
           <div className='topic'>
             <label>Topic</label>
             {creating
               ? <span>#&nbsp;
-                <input type='text' defaultValue={tag} className='tag' ref='tag' placeholder='Topic name'
+                <input type='text' defaultValue={tag} className='tag-input' ref='tag' placeholder='Topic name'
                   onChange={event => edit(event.target.value, description)}/>
               </span>
               : <span>#{tag}</span>}

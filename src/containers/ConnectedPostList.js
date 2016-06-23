@@ -18,7 +18,7 @@ export class ConnectedPostList extends React.Component {
     subject: string.isRequired,
     id: string.isRequired,
     posts: array,
-    stale: number,
+    freshCount: number,
     dispatch: func,
     total: number,
     pending: bool,
@@ -72,11 +72,11 @@ export class ConnectedPostList extends React.Component {
 
   render () {
     const {
-      dispatch, stale, posts, total, pending, subject, id, query, hide, hideMobileSearch
+      dispatch, freshCount, posts, total, pending, subject, id, query, hide, hideMobileSearch
     } = this.props
 
     let refreshPostList
-    if (stale) {
+    if (freshCount) {
       refreshPostList = () => {
         dispatch(clearCache('postsByQuery', createCacheId(subject, id, query)))
         dispatch(fetch(subject, id, {...query}))
@@ -84,7 +84,7 @@ export class ConnectedPostList extends React.Component {
     }
 
     debug(`posts: ${posts ? posts.length : 0} / ${total || '??'}`)
-    return <PostList posts={posts || []} {...{pending, refreshPostList, freshCount: stale}}
+    return <PostList posts={posts || []} {...{pending, refreshPostList, freshCount}}
       loadMore={this.loadMore} hide={hide} hideMobileSearch={hideMobileSearch}/>
   }
 }

@@ -6,7 +6,7 @@ import {
   renderIntoDocument
 } from 'react-addons-test-utils'
 
-describe.only('ConnectedPostList', () => {
+describe('ConnectedPostList', () => {
   describe('with freshCount', () => {
     let community = {id: '1', name: 'Foomunity', slug: 'foo'}
 
@@ -29,7 +29,7 @@ describe.only('ConnectedPostList', () => {
       totalPostsByQuery: {'subject=community&id=foo': 1},
       postsByQuery: {'subject=community&id=foo': [1]},
       pending: {},
-      hasFreshPostsByQuery: {
+      countFreshPostsByQuery: {
         'subject=community&id=foo': 3
       }
     }

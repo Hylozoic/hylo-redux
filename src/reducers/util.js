@@ -76,7 +76,7 @@ export const keyedCounter = (actionType, payloadKey, statePath = 'meta.cache.id'
     return state
   }
 
-export const keyedHasFreshItems = (actionType, bucket) =>
+export const keyedCountFreshItems = (actionType, bucket) =>
   (state = {}, action) => {
     let { type, payload, error, meta } = action
     if (error) return state

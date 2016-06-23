@@ -31,13 +31,13 @@ describe('connectedListProps', () => {
       posts: [{id: 'a'}, {id: 'c'}],
       total: 20,
       pending: true,
-      stale: false
+      freshCount: false
     }
 
     expect(connectedListProps(state, props, 'posts')).to.deep.equal(expectedProps)
   })
 
-  it('sets stale to true when the store hasFreshPosts', () => {
+  it('sets freshCount to equal the stores countFreshPosts', () => {
     let state = {
       posts: {
         'a': {id: 'a'},
@@ -50,8 +50,8 @@ describe('connectedListProps', () => {
       totalPostsByQuery: {
         'subject=foo&id=bar&search=baz': 20
       },
-      hasFreshPostsByQuery: {
-        'subject=foo&id=bar&search=baz': true
+      countFreshPostsByQuery: {
+        'subject=foo&id=bar&search=baz': 4
       },
       pending: {
         [FETCH_POSTS]: true
@@ -68,7 +68,7 @@ describe('connectedListProps', () => {
       posts: [{id: 'a'}, {id: 'c'}],
       total: 20,
       pending: true,
-      stale: true
+      freshCount: 4
     }
 
     expect(connectedListProps(state, props, 'posts')).to.deep.equal(expectedProps)

@@ -2,12 +2,14 @@ import React from 'react'
 import { throttle } from 'lodash'
 import { VelocityTransitionGroup } from 'velocity-react'
 import { position, viewportTop } from '../util/scrolling'
+import { nounCount } from '../util/text'
 import cx from 'classnames'
-const { func } = React.PropTypes
+const { func, number } = React.PropTypes
 
 export default class RefreshButton extends React.Component {
   static propTypes = {
-    refresh: func
+    refresh: func,
+    count: number
   }
   constructor (props) {
     super(props)
@@ -38,7 +40,7 @@ export default class RefreshButton extends React.Component {
   }
 
   render () {
-    const { refresh } = this.props
+    const { refresh, count } = this.props
     const { isStatic } = this.state
     const classes = cx('refresh-button', {static: isStatic, floating: !isStatic})
     return <div ref='placeholder'>
@@ -48,7 +50,7 @@ export default class RefreshButton extends React.Component {
         {refresh && <div className='refresh-button-container'>
           <div onClick={refresh} className={classes}
             ref='refresh-button'>
-            Show new and updated posts
+            {nounCount(count, 'new post')}
           </div>
         </div>}
       </VelocityTransitionGroup>

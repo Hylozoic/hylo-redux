@@ -148,3 +148,5 @@ export const parseEmailString = emails =>
     let match = trimmed.match(/.*<(.*)>/)
     return match ? match[1] : trimmed
   }))
+
+export const nounCount = (n, noun) => `${n} ${noun}${Number(n) !== 1 ? 's' : ''}`

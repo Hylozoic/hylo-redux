@@ -6,11 +6,10 @@ import cx from 'classnames'
 import { isEmpty, get } from 'lodash'
 import { tagUrlComponents } from '../routes'
 import { positionInViewport } from '../util/scrolling'
+import { nounCount } from '../util/text'
 import { showTagPopover, hideTagPopover, fetchTagSummary, navigate } from '../actions/index'
 import { followTag } from '../actions/tags'
 const { string, object, func, array, number, bool } = React.PropTypes
-
-const nounCount = (n, noun) => `${n} ${noun}${Number(n) !== 1 ? 's' : ''}`
 
 export const handleMouseOver = dispatch => event => {
   var node = event.target

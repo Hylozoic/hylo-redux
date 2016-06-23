@@ -18,7 +18,7 @@ export class ConnectedPostList extends React.Component {
     subject: string.isRequired,
     id: string.isRequired,
     posts: array,
-    stale: bool,
+    stale: number,
     dispatch: func,
     total: number,
     pending: bool,
@@ -49,7 +49,7 @@ export class ConnectedPostList extends React.Component {
       clearInterval(this.intervalId)
     }
 
-    this.intervalId = setInterval(dispatchCheckFreshness, 60 * 1000)
+    this.intervalId = setInterval(dispatchCheckFreshness, 15 * 1000)
   }
 
   componentDidMount () {
@@ -84,7 +84,7 @@ export class ConnectedPostList extends React.Component {
     }
 
     debug(`posts: ${posts ? posts.length : 0} / ${total || '??'}`)
-    return <PostList posts={posts || []} {...{pending, refreshPostList}}
+    return <PostList posts={posts || []} {...{pending, refreshPostList, freshCount: stale}}
       loadMore={this.loadMore} hide={hide} hideMobileSearch={hideMobileSearch}/>
   }
 }

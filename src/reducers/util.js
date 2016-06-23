@@ -81,7 +81,7 @@ export const keyedHasFreshItems = (actionType, bucket) =>
     let { type, payload, error, meta } = action
     if (error) return state
     if (type === actionType) {
-      return {...state, [meta.cacheId]: payload}
+      return {...state, [meta.cacheId]: payload.freshCount}
     }
     if (type === CLEAR_CACHE && payload.bucket === bucket) {
       return {...state, [payload.id]: false}

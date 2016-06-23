@@ -15,7 +15,7 @@ import { navigate } from '../actions'
 import SearchInput from './SearchInput'
 import Icon from './Icon'
 
-const { array, bool, func, string } = React.PropTypes
+const { array, bool, func, string, number } = React.PropTypes
 
 @connect((state, props) => ({
   editingPostIds: isMobile() ? [] : getEditingPostIds(props.posts, state),
@@ -26,6 +26,7 @@ class PostList extends React.Component {
     posts: array,
     loadMore: func,
     refreshPostList: func,
+    freshCount: number,
     pending: bool,
     editingPostIds: array,
     hide: array,
@@ -74,7 +75,7 @@ class PostList extends React.Component {
   }
 
   render () {
-    let { hide, editingPostIds, pending, loadMore, refreshPostList, dispatch, hideMobileSearch, isMobile } = this.props
+    let { hide, editingPostIds, pending, loadMore, refreshPostList, freshCount, dispatch, hideMobileSearch, isMobile } = this.props
     const posts = filter(p => !includes(p.id, hide), this.props.posts)
     const doSearch = text => dispatch(navigate(makeUrl('/search', {q: text})))
 
@@ -108,7 +109,7 @@ class PostList extends React.Component {
 
     return <span>
       {isMobile && !hideMobileSearch && <MobileSearch search={doSearch}/>}
-      <RefreshButton refresh={refreshPostList} />
+      <RefreshButton refresh={refreshPostList} count={freshCount}/>
       <ul className='posts'>
       {pending && <li className='loading'>Loading...</li>}
       {posts.map(p => <li key={p.id} ref={p.id}>

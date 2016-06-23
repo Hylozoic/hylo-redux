@@ -24,7 +24,7 @@ describe('ConnectedPostList', () => {
       posts: {1: {
         id: 1, name: 'post', description: 'ra', type: 'offer',
         user: {id: 1, name: 'jo', avatar_url: ''},
-        communities: [1]
+        communities: [community]
       }},
       totalPostsByQuery: {'subject=community&id=foo': 1},
       postsByQuery: {'subject=community&id=foo': [1]},

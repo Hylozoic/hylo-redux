@@ -12,7 +12,7 @@ export const fetch = fetchWithCache(fetchPosts)
 
 @connect((state, props) => ({
   ...connectedListProps(state, props, 'posts')
-}))
+}), null, null, {withRef: true})
 export class ConnectedPostList extends React.Component {
   static propTypes = {
     subject: string.isRequired,

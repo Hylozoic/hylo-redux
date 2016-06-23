@@ -15,7 +15,7 @@ export const imageUrl = (post, fallback = true) =>
 
 export const getCommunities = (post, state) =>
   !post ? []
-    : get('0.id', post.communities) ? post.communities
+    : get(post.communities, '0.id') ? post.communities
     : map(id => find(same('id', {id}), state.communities), post.communities)
 
 export const getComments = (post, state) => {

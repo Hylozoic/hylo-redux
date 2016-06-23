@@ -48,8 +48,7 @@ CommunityProfile.propTypes = {
 }
 
 export default compose(
-  prefetch(({ store, dispatch, params: { id } }) =>
-    dispatch(fetchLeftNavTags(id))
+  prefetch(({ store, dispatch, params: { id } }) => dispatch(fetchLeftNavTags(id))
     .then(() => dispatch(fetchCommunity(id)))
     .then(() => {
       const community = store.getState().communities[id]

@@ -37,8 +37,9 @@ import StandalonePostEditor from './containers/StandalonePostEditor'
 import Admin from './containers/Admin'
 import TestBench from './containers/TestBench'
 import { debug } from './util/logging'
-import { makeUrl } from './client/util'
+import { makeUrl } from './util/navigation'
 import { get, isEmpty } from 'lodash'
+import config from './config'
 
 export default function makeRoutes (store) {
   const requireLoginWithOptions = (options = {}) => (nextState, replaceState) => {
@@ -102,6 +103,12 @@ export default function makeRoutes (store) {
         addParams: ({ params: { id } }) => ({id, action: 'join-community'})
       })}/>
 
+    <Route path='c/:id/join/:code/tag/:tagName' component={CommunityJoinLinkHandler}
+      onEnter={requireLoginWithOptions({
+        startAtSignup: true,
+        addParams: ({ params: { id } }) => ({id, action: 'join-community-tag'})
+      })}/>
+
     <Route path='c/:id/onboarding' component={Onboarding} onEnter={requireLogin}/>
     <Route path='c/:id/new' component={StandalonePostEditor} community onEnter={requireLogin}/>
     <Route path='c/:id/events/new' component={StandalonePostEditor} community type='event' onEnter={requireLogin}/>
@@ -144,11 +151,19 @@ export default function makeRoutes (store) {
   </Route>
 }
 
+export const origin = () => typeof window !== 'undefined' ? window.location.origin : config.host
+
 export const communityUrl = (community, params) =>
   makeUrl(`/c/${community.slug}`, params)
 
 export const communityOnboardingUrl = community =>
   `/c/${community.slug}/onboarding`
+
+export const communityJoinUrl = community =>
+  `${origin()}/c/${community.slug}/join/${community.beta_access_code}`
+
+export const communityTagJoinUrl = (community, tagName) =>
+  `${origin()}/c/${community.slug}/join/${community.beta_access_code}/tag/${tagName}`
 
 export const commentUrl = comment =>
   `/p/${comment.post_id}#comment-${comment.id}`

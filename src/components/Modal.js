@@ -4,7 +4,9 @@ import { position } from '../util/scrolling'
 import { closeModal } from '../actions'
 // circular import; code smell; refactor?
 import BrowseTopicsModal from '../containers/BrowseTopicsModal'
+import ShareTopicModal from '../containers/ShareTopicModal'
 import cx from 'classnames'
+import { get } from 'lodash'
 const { bool, func } = React.PropTypes
 
 export const modalWrapperCSSId = 'top-level-modal-wrapper'
@@ -12,11 +14,11 @@ export const modalWrapperCSSId = 'top-level-modal-wrapper'
 const modalStyle = (isMobile) => {
   return {
     left: isMobile ? 0 : position(document.getElementById('cover-image-page-content')).x,
-    width: Math.min(688, document.getElementById('main').offsetWidth)
+    width: Math.min(688, get(document.getElementById('main'), 'offsetWidth') || 688)
   }
 }
 
-export const ModalWrapper = ({ show }, { dispatch }) => {
+export const ModalWrapper = ({ show, params }, { dispatch }) => {
   if (!show) return null
 
   let modal, clickToClose
@@ -24,6 +26,12 @@ export const ModalWrapper = ({ show }, { dispatch }) => {
     case 'tags':
       modal = <BrowseTopicsModal onCancel={() => dispatch(closeModal())}/>
       clickToClose = true
+      break
+    case 'share-tag':
+      modal = <ShareTopicModal tagName={params.tagName} slug={params.slug}
+        onCancel={() => dispatch(closeModal())}/>
+      clickToClose = true
+      break
   }
 
   const onBackdropClick = () => clickToClose && dispatch(closeModal())

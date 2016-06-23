@@ -54,7 +54,12 @@ export default function (state = {}, action) {
     case FETCH_COMMUNITY_FOR_INVITATION:
       return {...state, [meta.token]: payload}
     case USE_INVITATION:
-      return {...state, [meta.token]: payload.community}
+      community = payload.community
+      return {
+        ...state,
+        [meta.token]: community,
+        [community.slug]: {...state[community.slug], ...community}
+      }
     case FETCH_COMMUNITY_MODERATORS:
       community = {...state[meta.cache.id], moderators: payload}
       return {...state, [meta.cache.id]: community}

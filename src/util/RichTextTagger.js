@@ -12,6 +12,7 @@ import { includes, some } from 'lodash'
 export const hashtagAttribute = 'data-autocompleting'
 export const justCreatedAttribute = 'data-just-created'
 
+const nbsp = String.fromCharCode(160) // non-breaking space
 const triggerKeyCodes = [keyMap.HASH, keyMap.AT_SIGN]
 const triggers = ['#', '@']
 const template = keyCode =>
@@ -20,9 +21,7 @@ const template = keyCode =>
   </a>
 
 const Mention = ({ person }) =>
-  <a data-user-id={person.id}
-    href={'/u/' + person.id}
-    data-finalized={true}>
+  <a data-user-id={person.id} href={'/u/' + person.id}>
     {person.name}
   </a>
 
@@ -32,6 +31,7 @@ export class RichTextTagger {
     this.autocomplete = autocomplete
   }
 
+  // if in a text node, will return its parent
   domNode () {
     return this.editor.selection.getNode()
   }
@@ -55,6 +55,16 @@ export class RichTextTagger {
 
   tagValueIsEmpty () {
     return some(triggers, t => t === this.tagValue())
+  }
+
+  canStartTag () {
+    const { selection } = this.editor
+    const rng = selection.getRng(true)
+    const pos = rng.startOffset
+    if (pos === 0) return true
+
+    const char = rng.startContainer.textContent.slice(pos - 1)
+    return includes([nbsp, ' '], char) // Chrome & Firefox respectively // non-breaking space
   }
 
   finishTag (choice, event) {
@@ -124,14 +134,14 @@ export class RichTextTagger {
   handleKeyPress = event => {
     const keyCode = getKeyCode(event)
     // create an empty tag when a trigger character is typed
-    if (includes(triggerKeyCodes, keyCode)) {
+    if (includes(triggerKeyCodes, keyCode) && this.canStartTag()) {
       event.preventDefault()
       insertJSX(template(keyCode), this.editor)
 
       // if the cursor is not in the tag that was just created (this happens on
       // Firefox), we have to move it there
       const node = this.domNode()
-      if (node.tagName === 'P') {
+      if (node.tagName !== 'A') {
         // there's probably a simpler way to find the tag than this...
         const tag = window.tinymce.$(node).find(`[${justCreatedAttribute}]`)[0]
         this.editor.selection.setCursorLocation(tag, 1)

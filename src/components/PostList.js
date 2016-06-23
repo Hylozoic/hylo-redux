@@ -9,7 +9,8 @@ import PostEditor from './PostEditor'
 import { EventPostCard } from './EventPost'
 import { ProjectPostCard } from './ProjectPost'
 import { getEditingPostIds } from '../models/post'
-import { isMobile, makeUrl } from '../client/util'
+import { isMobile } from '../client/util'
+import { makeUrl } from '../util/navigation'
 import { navigate } from '../actions'
 import SearchInput from './SearchInput'
 import Icon from './Icon'
@@ -85,13 +86,13 @@ class PostList extends React.Component {
 
     const showPost = post => {
       if (includes(post.id, editingPostIds)) {
-        return <PostEditor post={post} expanded={true}/>
+        return <PostEditor post={post} expanded/>
       }
 
       if (post.id === this.state.expanded) {
         return <div>
           <div className='backdrop' onClick={this.unexpand}/>
-          <Post post={post} expanded={true}/>
+          <Post post={post} expanded/>
         </div>
       }
 

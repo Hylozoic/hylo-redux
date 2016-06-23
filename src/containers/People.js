@@ -53,7 +53,10 @@ export default class People extends React.Component {
   }
 
   loadMore = () => {
-    let { people, dispatch, total, pending, params: { id }, location: { query } } = this.props
+    let {
+      people, dispatch, total, pending, params: { id }, location: { query }
+    } = this.props
+    if (!id) id = 'all'
     let offset = people.length
     if (!pending && offset < total) {
       dispatch(fetch(subject, id, {...query, offset}))

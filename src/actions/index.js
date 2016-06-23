@@ -70,6 +70,7 @@ export const RESET_NETWORK_VALIDATION = 'RESET_NETWORK_VALIDATION'
 export const RESET_NEW_POST_COUNT = 'RESET_NEW_POST_COUNT'
 export const SEARCH = 'SEARCH'
 export const SEND_COMMUNITY_INVITATION = 'SEND_COMMUNITY_INVITATION'
+export const SEND_COMMUNITY_TAG_INVITATION = 'SEND_COMMUNITY_TAG_INVITATION'
 export const SET_CURRENT_COMMUNITY_ID = 'SET_CURRENT_COMMUNITY_ID'
 export const SET_CURRENT_NETWORK_ID = 'SET_CURRENT_NETWORK_ID'
 export const SET_LOGIN_ERROR = 'SET_LOGIN_ERROR'
@@ -78,6 +79,7 @@ export const SET_MOBILE_DEVICE = 'SET_MOBILE_DEVICE'
 export const SET_PASSWORD = 'SET_PASSWORD'
 export const SET_SIGNUP_ERROR = 'SET_SIGNUP_ERROR'
 export const SHOW_ALL_TAGS = 'SHOW_ALL_TAGS'
+export const SHOW_SHARE_TAG = 'SHOW_SHARE_TAG'
 export const SHOW_TAG_POPOVER = 'SHOW_TAG_POPOVER'
 export const SIGNUP = 'SIGNUP'
 export const START_POST_EDIT = 'START_POST_EDIT'
@@ -88,6 +90,7 @@ export const TOGGLE_USER_SETTINGS_SECTION = 'TOGGLE_USER_SETTINGS_SECTION'
 export const TYPEAHEAD = 'TYPEAHEAD'
 export const UPDATE_COMMUNITY_EDITOR = 'UPDATE_COMMUNITY_EDITOR'
 export const UPDATE_INVITATION_EDITOR = 'UPDATE_INVITATION_EDITOR'
+export const UPDATE_TAG_INVITATION_EDITOR = 'UPDATE_TAG_INVITATION_EDITOR'
 export const UPDATE_COMMUNITY_SETTINGS = 'UPDATE_COMMUNITY_SETTINGS'
 export const UPDATE_COMMUNITY_SETTINGS_PENDING = UPDATE_COMMUNITY_SETTINGS + _PENDING
 export const UPDATE_MEMBERSHIP_SETTINGS = 'UPDATE_MEMBERSHIP_SETTINGS'
@@ -402,10 +405,10 @@ export function createCommunity (params) {
   }
 }
 
-export function joinCommunityWithCode (code) {
+export function joinCommunityWithCode (code, tagName) {
   return {
     type: JOIN_COMMUNITY_WITH_CODE,
-    payload: {api: true, params: {code}, path: '/noo/community/code', method: 'POST'}
+    payload: {api: true, params: {code, tagName}, path: '/noo/community/code', method: 'POST'}
   }
 }
 
@@ -522,6 +525,21 @@ export function sendCommunityInvitation (communityId, params) {
   return {
     type: SEND_COMMUNITY_INVITATION,
     payload: {api: true, path: `/noo/community/${communityId}/invite`, params, method: 'POST'}
+  }
+}
+
+export function updateTagInvitationEditor (field, value) {
+  return {
+    type: UPDATE_TAG_INVITATION_EDITOR,
+    payload: {field, value}
+  }
+}
+
+export function sendCommunityTagInvitation (communityId, tagName, params) {
+  params.emails = params.emails.join(',')
+  return {
+    type: SEND_COMMUNITY_TAG_INVITATION,
+    payload: {api: true, path: `/noo/community/${communityId}/invite/tag/${tagName}`, params, method: 'POST'}
   }
 }
 

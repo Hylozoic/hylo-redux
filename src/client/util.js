@@ -1,6 +1,7 @@
 import qs from 'querystring'
-import { isEmpty, omit, omitBy, get } from 'lodash'
+import { omit, get } from 'lodash'
 import { crypto } from 'crypto'
+import { makeUrl } from '../util/navigation'
 
 // if you need to check whether the client is a mobile device from the server
 // side, use the isMobile reducer in the store
@@ -39,12 +40,6 @@ export function calliOSBridge (message, callback) {
   if (get(window, 'webkit.messageHandlers.hylo.postMessage')) {
     window.webkit.messageHandlers.hylo.postMessage(message)
   }
-}
-
-// FIXME this isn't client-specific
-export function makeUrl (path, params) {
-  params = omitBy(params, x => !x)
-  return `${path}${!isEmpty(params) ? '?' + qs.stringify(params) : ''}`
 }
 
 export function locationWithoutParams (...names) {

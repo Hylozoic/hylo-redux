@@ -64,7 +64,7 @@ export class RichTextTagger {
     if (pos === 0) return true
 
     const char = rng.startContainer.textContent.slice(pos - 1)
-    return includes([nbsp, ' '], char) // Chrome & Firefox respectively // non-breaking space
+    return includes([nbsp, ' '], char) // Chrome & Firefox respectively
   }
 
   finishTag (choice, event) {

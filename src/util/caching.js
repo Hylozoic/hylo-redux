@@ -62,16 +62,16 @@ export const connectedListProps = (state, props, itemType) => {
   let cacheId = createCacheId(subject, id, query)
   let itemKey = `${itemType}ByQuery`
   let itemCountKey = `total${upperFirst(itemType)}ByQuery`
-  let hasFreshItemKey = `hasFresh${upperFirst(itemType)}ByQuery`
+  let countFreshItemKey = `countFresh${upperFirst(itemType)}ByQuery`
 
   let itemIds = compact(state[itemKey][cacheId] || [])
-  let hasFreshItems = (state[hasFreshItemKey] || {})[cacheId] || false
+  let countFreshItems = (state[countFreshItemKey] || {})[cacheId] || 0
 
   return {
     [itemType]: compact(itemIds.map(getItem)),
     total: state[itemCountKey][cacheId],
     pending: state.pending[actionType],
-    stale: hasFreshItems
+    freshCount: countFreshItems
   }
 }
 

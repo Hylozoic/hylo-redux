@@ -2,26 +2,39 @@ import React from 'react'
 import { throttle } from 'lodash'
 import { VelocityTransitionGroup } from 'velocity-react'
 import { position, viewportTop } from '../util/scrolling'
+import { nounCount } from '../util/text'
 import cx from 'classnames'
-const { func } = React.PropTypes
+const { func, number, bool } = React.PropTypes
 
 export default class RefreshButton extends React.Component {
   static propTypes = {
-    refresh: func
+    refresh: func,
+    count: number
   }
+
+  static contextTypes = {
+    isMobile: bool
+  }
+
   constructor (props) {
     super(props)
     this.state = {isStatic: true}
   }
 
+  topNavHeight () {
+    const { isMobile } = this.context
+    if (isMobile) return 60
+    return 75
+  }
+
   handleScrollEvents = throttle(event => {
     event.preventDefault()
     if (this.state.isStatic) {
-      if (viewportTop() > this.startingY) {
+      if (viewportTop() + this.topNavHeight() > this.startingY) {
         this.setState({isStatic: false})
       }
     } else {
-      if (viewportTop() < this.startingY) {
+      if (viewportTop() + this.topNavHeight() < this.startingY) {
         this.setState({isStatic: true})
       }
     }
@@ -29,7 +42,7 @@ export default class RefreshButton extends React.Component {
 
   componentDidMount () {
     this.startingY = position(this.refs.placeholder).y - 5
-    this.setState({isStatic: viewportTop() < this.startingY})
+    this.setState({isStatic: viewportTop() + this.topNavHeight() < this.startingY})
     window.addEventListener('scroll', this.handleScrollEvents)
   }
 
@@ -38,17 +51,18 @@ export default class RefreshButton extends React.Component {
   }
 
   render () {
-    const { refresh } = this.props
+    const { refresh, count } = this.props
     const { isStatic } = this.state
+
     const classes = cx('refresh-button', {static: isStatic, floating: !isStatic})
-    return <div ref='placeholder'>
+    return <div className='placeholder' ref='placeholder'>
       <VelocityTransitionGroup
         enter={{animation: 'slideDown'}}
         leave={{animation: 'slideUp'}}>
-        {refresh && <div className='refresh-button-container'>
+        {refresh && <div className='refresh-button-container' ref='container'>
           <div onClick={refresh} className={classes}
             ref='refresh-button'>
-            Show new and updated posts
+            {nounCount(count, 'new post')}
           </div>
         </div>}
       </VelocityTransitionGroup>

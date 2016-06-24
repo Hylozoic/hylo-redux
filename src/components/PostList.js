@@ -15,7 +15,7 @@ import { navigate } from '../actions'
 import SearchInput from './SearchInput'
 import Icon from './Icon'
 
-const { array, bool, func, string, object } = React.PropTypes
+const { array, bool, func, string, number } = React.PropTypes
 
 @connect((state, props) => ({
   editingPostIds: isMobile() ? [] : getEditingPostIds(props.posts, state),
@@ -26,7 +26,7 @@ class PostList extends React.Component {
     posts: array,
     loadMore: func,
     refreshPostList: func,
-    freshCount: object,
+    freshCount: number,
     pending: bool,
     editingPostIds: array,
     hide: array,

@@ -18,7 +18,7 @@ import { tagsByCommunity, tagsByQuery, totalTagsByQuery } from './tags'
 import tagInvitationEditor from './tagInvitationEditor'
 import posts from './posts'
 import {
-  appendPayloadByPath, keyedCounter, keyedCountFreshItems, storePayload
+  appendPayloadByPath, keyedCounter, keyedCount, storePayload
 } from './util'
 import { admin } from './admin'
 
@@ -178,7 +178,7 @@ export default combineReducers({
   communities,
   communitiesByQuery,
   editingTagDescriptions,
-  countFreshPostsByQuery: keyedCountFreshItems(CHECK_FRESHNESS_POSTS, 'postsByQuery'),
+  countFreshPostsByQuery: keyedCount(CHECK_FRESHNESS_POSTS, 'postsByQuery'),
   creatingTagAndDescription,
   networks,
   networkEdits,

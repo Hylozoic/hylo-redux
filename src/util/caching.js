@@ -65,7 +65,7 @@ export const connectedListProps = (state, props, itemType) => {
   let countFreshItemKey = `countFresh${upperFirst(itemType)}ByQuery`
 
   let itemIds = compact(state[itemKey][cacheId] || [])
-  let countFreshItems = (state[countFreshItemKey] || {})[cacheId] || false
+  let countFreshItems = (state[countFreshItemKey] || {})[cacheId] || 0
 
   return {
     [itemType]: compact(itemIds.map(getItem)),

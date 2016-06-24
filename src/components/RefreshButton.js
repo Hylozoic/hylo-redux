@@ -43,11 +43,8 @@ export default class RefreshButton extends React.Component {
   }
 
   render () {
-    // const { refresh, count } = this.props
+    const { refresh, count } = this.props
     const { isStatic } = this.state
-
-    const refresh = () => {}
-    const count = 3
 
     const classes = cx('refresh-button', {static: isStatic, floating: !isStatic})
     return <div className='placeholder' ref='placeholder'>

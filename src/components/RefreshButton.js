@@ -4,9 +4,7 @@ import { VelocityTransitionGroup } from 'velocity-react'
 import { position, viewportTop } from '../util/scrolling'
 import { nounCount } from '../util/text'
 import cx from 'classnames'
-const { func, number } = React.PropTypes
-
-const topNavHeight = 75
+const { func, number, bool } = React.PropTypes
 
 export default class RefreshButton extends React.Component {
   static propTypes = {
@@ -14,19 +12,29 @@ export default class RefreshButton extends React.Component {
     count: number
   }
 
+  static contextTypes = {
+    isMobile: bool
+  }
+
   constructor (props) {
     super(props)
     this.state = {isStatic: true}
   }
 
+  topNavHeight () {
+    const { isMobile } = this.context
+    if (isMobile) return 60
+    return 75
+  }
+
   handleScrollEvents = throttle(event => {
     event.preventDefault()
     if (this.state.isStatic) {
-      if (viewportTop() + topNavHeight > this.startingY) {
+      if (viewportTop() + this.topNavHeight() > this.startingY) {
         this.setState({isStatic: false})
       }
     } else {
-      if (viewportTop() + topNavHeight < this.startingY) {
+      if (viewportTop() + this.topNavHeight() < this.startingY) {
         this.setState({isStatic: true})
       }
     }
@@ -34,7 +42,7 @@ export default class RefreshButton extends React.Component {
 
   componentDidMount () {
     this.startingY = position(this.refs.placeholder).y - 5
-    this.setState({isStatic: viewportTop() + topNavHeight < this.startingY})
+    this.setState({isStatic: viewportTop() + this.topNavHeight() < this.startingY})
     window.addEventListener('scroll', this.handleScrollEvents)
   }
 

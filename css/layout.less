@@ -606,6 +606,10 @@ nav {
   top: 127px;
   left: 50%;
   margin-left: -@refresh-button-width/2;
+
+  .mobile({
+    top: 57px;
+  })
 }
 
 .refresh-button {
@@ -629,20 +633,24 @@ nav {
     margin-left: -@refresh-button-width/2;
     top: @top-nav-height + 10;
     margin-top: 5px;
+
+    .mobile({
+      top: @mobile-top-nav-height + 10;
+    })
   }
 
   &:after {
-  	bottom: 100%;
-  	left: 50%;
-  	border: solid transparent;
-  	content: " ";
-  	height: 0;
-  	width: 0;
-  	position: absolute;
-  	pointer-events: none;
-  	border-bottom-color: @damian-red;
-  	border-width: 7px;
-  	margin-left: -7px;
+    bottom: 100%;
+    left: 50%;
+    border: solid transparent;
+    content: " ";
+    height: 0;
+    width: 0;
+    position: absolute;
+    pointer-events: none;
+    border-bottom-color: @damian-red;
+    border-width: 7px;
+    margin-left: -7px;
   }
 }
 

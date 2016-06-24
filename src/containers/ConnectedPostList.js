@@ -49,7 +49,7 @@ export class ConnectedPostList extends React.Component {
       clearInterval(this.intervalId)
     }
 
-    this.intervalId = setInterval(dispatchCheckFreshness, 15 * 1000)
+    this.intervalId = setInterval(dispatchCheckFreshness, 60 * 1000)
   }
 
   componentDidMount () {

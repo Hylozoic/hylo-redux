@@ -113,7 +113,9 @@ Header.contextTypes = {post: object, community: object}
 
 const Communities = ({ communities }, { community }) => {
   if (community) communities = sortBy(communities, c => c.id !== community.id)
-  const length = communities.length
+  const { length } = communities
+  if (communities.length === 0) return null
+
   const communityLink = community => <A to={`/c/${community.slug}`}>{community.name}</A>
   return <span className='communities'>
     &nbsp;in {communityLink(communities[0])}

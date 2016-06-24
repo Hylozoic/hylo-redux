@@ -207,7 +207,7 @@ describe('tagDescriptionEdits', () => {
     })
   })
 
-  describe('on EDIT_TAG_DESCRIPTION it updates the correct tag', () => {
+  describe('on EDIT_TAG_DESCRIPTION', () => {
     const action = {
       type: EDIT_TAG_DESCRIPTION,
       payload: {
@@ -216,7 +216,7 @@ describe('tagDescriptionEdits', () => {
       }
     }
 
-    it('sets those tags for editing', () => {
+    it('updates the correct tag', () => {
       const state = {
         [tag1]: 'first description',
         [tag2]: 'second description'

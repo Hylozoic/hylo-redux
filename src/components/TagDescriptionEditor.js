@@ -20,13 +20,6 @@ export default class TagDescriptionEditor extends React.Component {
     creating: bool
   }
 
-  componentWillReceiveProps (nextProps) {
-    let { tags, creating } = this.props
-    if (creating && keys(nextProps.tags)[0] !== keys(tags)[0]) {
-      this.refs.tag.focus()
-    }
-  }
-
   render () {
     let { tags, savePost, updatePostTag, dispatch, creating } = this.props
     const cancel = () => dispatch(cancelTagDescriptionEdit())

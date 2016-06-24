@@ -2,7 +2,7 @@
 @top-nav-height: 75px;
 @left-nav-width: 208px;
 @refresh-button-height: 36px;
-@refresh-button-width: 300px;
+@refresh-button-width: 130px;
 
 @mobile-top-nav-height: 60px;
 @mobile-side-margin: 15px;
@@ -602,16 +602,17 @@ nav {
 }
 
 .refresh-button-container {
-  height: @refresh-button-height + 2;
-  margin-bottom: @p-bottom-margin;
+  position: absolute;
+  top: 127px;
+  left: 50%;
+  margin-left: -@refresh-button-width/2;
 }
 
 .refresh-button {
   line-height: @refresh-button-height;
   border-radius: @refresh-button-height;
-  background-color: white;
-  border: 1px solid @damian-green;
-  color: @damian-green;
+  background-color: @damian-red;
+  color: white;
   z-index: 1;
   cursor: pointer;
   text-align: center;
@@ -619,14 +620,29 @@ nav {
 
   &.static {
     margin: 0 auto;
+    position: absolute;
   }
 
   &.floating {
     position: fixed;
     left: 50%;
     margin-left: -@refresh-button-width/2;
-    top: 0;
+    top: @top-nav-height + 10;
     margin-top: 5px;
+  }
+
+  &:after {
+  	bottom: 100%;
+  	left: 50%;
+  	border: solid transparent;
+  	content: " ";
+  	height: 0;
+  	width: 0;
+  	position: absolute;
+  	pointer-events: none;
+  	border-bottom-color: @damian-red;
+  	border-width: 7px;
+  	margin-left: -7px;
   }
 }
 

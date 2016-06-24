@@ -74,6 +74,13 @@ describe('PostEditor', () => {
       node.refs.details.componentDidMount()
       node.goToDetails()
     })
+
+    it('displays tag description editor for creating new tag', () => {
+      click(node.refs.tagSelector)
+      let createLink = findRenderedDOMComponentWithClass(node, 'create')
+      click(createLink)
+      findRenderedDOMComponentWithClass(node, 'tag-input')
+    })
   })
 
   describe('with an empty title', () => {

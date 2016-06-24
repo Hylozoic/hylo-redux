@@ -1,9 +1,12 @@
 require('../support')
-import postEdits from '../../src/reducers/postEdits'
+import postEdits, { tagDescriptionEdits } from '../../src/reducers/postEdits'
 import {
   START_POST_EDIT,
   UPDATE_POST_EDITOR,
-  UPLOAD_IMAGE
+  UPLOAD_IMAGE,
+  CREATE_POST,
+  EDIT_TAG_DESCRIPTION,
+  EDIT_NEW_TAG_AND_DESCRIPTION
 } from '../../src/actions'
 
 describe('postEdits', () => {
@@ -166,6 +169,83 @@ describe('postEdits', () => {
       }
 
       expect(postEdits(state, action)).to.deep.equal(expected)
+    })
+  })
+})
+
+describe('tagDescriptionEdits', () => {
+  const tag1 = 'tag1'
+  const tag2 = 'tag2'
+
+  describe('on START_POST_EDIT', () => {
+    const action = {type: START_POST_EDIT}
+
+    it('clears the state', () => {
+      const state = {'atagname': 'the description'}
+      expect(tagDescriptionEdits(state, action)).to.deep.equal({})
+    })
+  })
+
+  describe('on CREATE_POST with missing tags error', () => {
+    const action = {
+      type: CREATE_POST,
+      error: true,
+      payload: {
+        response: {
+          body: `{"tagsMissingDescriptions": {"${tag1}": 1, "${tag2}": 1}}`
+        }
+      }
+    }
+
+    it('sets those tags for editing', () => {
+      const state = {}
+      const expectedState = {
+        [tag1]: '',
+        [tag2]: ''
+      }
+      expect(tagDescriptionEdits(state, action)).to.deep.equal(expectedState)
+    })
+  })
+
+  describe('on EDIT_TAG_DESCRIPTION', () => {
+    const action = {
+      type: EDIT_TAG_DESCRIPTION,
+      payload: {
+        tag: tag1,
+        description: 'new description'
+      }
+    }
+
+    it('updates the correct tag', () => {
+      const state = {
+        [tag1]: 'first description',
+        [tag2]: 'second description'
+      }
+      const expectedState = {
+        [tag1]: action.payload.description,
+        [tag2]: state[tag2]
+      }
+      expect(tagDescriptionEdits(state, action)).to.deep.equal(expectedState)
+    })
+  })
+
+  describe('on EDIT_NEW_TAG_AND_DESCRIPTION it replaces current data with new tag', () => {
+    const action = {
+      type: EDIT_NEW_TAG_AND_DESCRIPTION,
+      payload: {
+        tag: 'newtag',
+        description: 'new description'
+      }
+    }
+
+    it('sets those tags for editing', () => {
+      const state = {
+        [tag1]: 'description'
+      }
+      const expectedState = {
+        [action.payload.tag]: action.payload.description
+      }
+      expect(tagDescriptionEdits(state, action)).to.deep.equal(expectedState)
     })
   })
 })

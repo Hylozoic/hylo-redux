@@ -75,6 +75,17 @@
     .dropdown {
       display: inline-block;
     }
+    li {
+      padding-bottom: 15px;
+      &.create {
+        border-top: 1px solid @faint-gray-border;
+        padding-top: 10px;
+        padding-bottom: 7px;
+        a {
+          color: @damian-green;
+        }
+      }
+    }
     button {
       height: 24px;
       border-radius: 24px;
@@ -337,6 +348,42 @@
         padding-left: 0;
         margin-right: 0;
         padding-right: 0;
+      }
+    }
+  }
+}
+
+#tag-description-editor {
+  .modal {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+  }
+
+  .topic, .description {
+    padding: 10px 25px;
+    background-color: @faint-gray-bg;
+    border-top: 1px solid @post-border;
+
+    label {
+      .small-caps-list-header;
+      color: #bbb;
+      display: block;
+    }
+  }
+
+  .tag-group {
+    border-bottom: 1px solid @post-border;
+    margin-bottom: 15px;
+
+    input[type="text"] {
+      width: 100%;
+      padding: 0;
+      border: 0;
+      background-color: transparent;
+      &.tag-input {
+        width: 90%;
       }
     }
   }

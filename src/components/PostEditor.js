@@ -11,7 +11,7 @@ import shallowCompare from 'react-addons-shallow-compare'
 import cx from 'classnames'
 import autoproxy from 'autoproxy'
 import {
-  debounce, compact, filter, find, get, includes, isEmpty, some, startsWith
+  debounce, compact, filter, find, get, includes, isEmpty, some, startsWith, keys, uniq
 } from 'lodash'
 import CommunityTagInput from './CommunityTagInput'
 import Dropdown from './Dropdown'
@@ -31,6 +31,7 @@ import { attachmentParams } from '../util/shims'
 import { prepend } from '../util/tinymce'
 import { isKey } from '../util/textInput'
 import { CREATE_POST, UPDATE_POST, UPLOAD_IMAGE } from '../actions'
+import { createTagInPostEditor } from '../actions'
 import { ADDED_POST, EDITED_POST, trackEvent } from '../util/analytics'
 import { getCurrentCommunity } from '../models/community'
 import TagDescriptionEditor from './TagDescriptionEditor'
@@ -47,7 +48,7 @@ export const newPostId = 'new-post'
 
   // this object tracks the edits that are currently being made
   const postEdit = state.postEdits[id] || {}
-  const { editingTagDescriptions, pending } = state
+  const { editingTagDescriptions, creatingTagAndDescription, pending } = state
 
   return {
     id,
@@ -56,7 +57,8 @@ export const newPostId = 'new-post'
     saving: pending[CREATE_POST] || pending[UPDATE_POST],
     imagePending: pending[UPLOAD_IMAGE],
     currentCommunitySlug: get(getCurrentCommunity(state), 'slug'),
-    editingTagDescriptions
+    editingTagDescriptions,
+    creatingTagAndDescription
   }
 }, null, null, {withRef: true}))
 export class PostEditor extends React.Component {
@@ -73,7 +75,8 @@ export class PostEditor extends React.Component {
     type: string,
     tag: string,
     currentCommunitySlug: string,
-    editingTagDescriptions: bool
+    editingTagDescriptions: bool,
+    creatingTagAndDescription: bool
   }
 
   static contextTypes = {
@@ -197,6 +200,11 @@ export class PostEditor extends React.Component {
     this.saveIfValid()
   }
 
+  updatePostTagAndDescription = tagDescriptions => {
+    let tag = keys(tagDescriptions)[0]
+    this.updateStore({tag, tagDescriptions})
+  }
+
   // this method allows you to type as much as you want into the title field, by
   // automatically truncating it to a specified length and prepending the
   // removed portion to the details field.
@@ -299,15 +307,16 @@ export class PostEditor extends React.Component {
   render () {
     const {
       post, postEdit, dispatch, imagePending, saving, id,
-      editingTagDescriptions
+      editingTagDescriptions, creatingTagAndDescription
     } = this.props
     const { currentUser } = this.context
-    const selectableTags = compact([this.props.tag].concat(specialTags))
     const { description, communities, tag } = postEdit
+    const selectableTags = uniq(compact([this.props.tag, tag].concat(specialTags)))
     const { name, showDetails } = this.state
     const editorType = this.editorType()
     const shouldSelectTag = !includes(['event', 'project'], editorType)
     const selectTag = tag => this.updateStore({tag})
+    const createTag = () => dispatch(createTagInPostEditor())
     const Subeditor = editorType === 'event' ? EventPostEditor
       : editorType === 'project' ? ProjectPostEditor : null
 
@@ -345,6 +354,7 @@ export class PostEditor extends React.Component {
           <a onClick={() => selectTag(t)}>#{t}</a>
         </li>)}
         <li><a onClick={() => selectTag(null)}>#all-topics</a></li>
+        <li className='create'><a onClick={() => createTag()}>Create New Topic</a></li>
       </Dropdown>}
 
       {Subeditor && <Subeditor ref='subeditor'
@@ -380,9 +390,9 @@ export class PostEditor extends React.Component {
           Public
         </label>
       </div>
-
-      {editingTagDescriptions && <TagDescriptionEditor
-        onSave={this.saveWithTagDescriptions}/>}
+      {(editingTagDescriptions || creatingTagAndDescription) && <TagDescriptionEditor
+        savePost={this.saveWithTagDescriptions}
+        updatePostTag={this.updatePostTagAndDescription} />}
     </div>
   }
 }

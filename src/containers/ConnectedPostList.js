@@ -18,7 +18,7 @@ export class ConnectedPostList extends React.Component {
     subject: string.isRequired,
     id: string.isRequired,
     posts: array,
-    freshCount: number,
+    freshCount: object,
     dispatch: func,
     total: number,
     pending: bool,

@@ -699,3 +699,10 @@ export function createTagInPostEditor () {
     type: CREATE_TAG_IN_POST_EDITOR
   }
 }
+
+export function updateCommentEditor (id, text) {
+  return {
+    type: UPDATE_COMMENT_EDITOR,
+    payload: {id, text}
+  }
+}

@@ -12,7 +12,7 @@ export default function (state = {}, action) {
     case UPDATE_COMMENT_EDITOR:
       return {...state, [payload.id]: payload.text}
     case CREATE_COMMENT:
-      return {...state, [meta.id]: null}
+      return {...state, [meta.id]: undefined}
   }
 
   return state

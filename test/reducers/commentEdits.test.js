@@ -62,7 +62,7 @@ describe('commentEdits', () => {
         '3': 'An unfinished comment to another post'
       }
       const expected = {
-        '2': null,
+        '2': undefined,
         '3': 'An unfinished comment to another post'
       }
       expect(commentEdits(state, action)).to.deep.equal(expected)

@@ -6,10 +6,11 @@ import cx from 'classnames'
 const { func, object, string } = React.PropTypes
 import {
   UPLOAD_IMAGE,
-  updateMembershipSettings,
-  updateUserSettings,
   leaveCommunity,
-  toggleUserSettingsSection
+  notify,
+  toggleUserSettingsSection,
+  updateMembershipSettings,
+  updateUserSettings
  } from '../../actions'
 import { uploadImage } from '../../actions/uploadImage'
 import A from '../../components/A'
@@ -121,6 +122,7 @@ export default class UserSettings extends React.Component {
   update = (path, value) => {
     let { currentUser, dispatch } = this.props
     dispatch(reversibleUpdate(updateUserSettings, currentUser, path, value))
+    .then(({ error, payload }) => error && dispatch(notify(payload.message, {type: 'error'})))
     this.trackEdit()
   }
 

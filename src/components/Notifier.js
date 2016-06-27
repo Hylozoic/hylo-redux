@@ -28,8 +28,15 @@ export default class Notifier extends React.Component {
   }
 }
 
+const className = messageType => {
+  switch (messageType) {
+    case 'error': return 'danger'
+  }
+  return messageType
+}
+
 const Message = ({ message, remove }) => {
-  return <div className={`alert alert-${message.type}`}>
+  return <div className={`alert alert-${className(message.type)}`}>
     <a className='close' onClick={() => remove(message.id)}>&times;</a>
     <div>{message.text}</div>
   </div>

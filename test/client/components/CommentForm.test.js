@@ -44,7 +44,7 @@ describe('CommentForm', () => {
       pending: {}
     }
 
-    it.only('retains comment data after blur', () => {
+    it.skip('retains comment data after blur', () => {
       const props = {subject: 'community', id: 'foo'}
       const store = mocks.redux.store(state)
       const context = {store, community, currentUser}

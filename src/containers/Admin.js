@@ -1,6 +1,6 @@
 import React from 'react'
-import { curry, find, sortBy, values } from 'lodash'
-import { flatten, flow, get, map, maxBy, minBy } from 'lodash/fp'
+import { curry, find, merge, sortBy, values } from 'lodash'
+import { filter, flatten, flow, get, map, maxBy, minBy } from 'lodash/fp'
 import { connect } from 'react-redux'
 import { loadScript, loadStylesheet } from '../client/util'
 import { onEnter } from '../util/textInput'
@@ -16,13 +16,16 @@ const findOrPush = (arr, testFn, valueFn) => {
   return created
 }
 
-const aggregateData = events => {
-  return events.reduce((acc, e) => {
+const findOrPushByDate = (arr, event) => {
+  const date = moment(event.time).startOf('day').toDate()
+  const sameDate = item => item.date.getTime() === date.getTime()
+  return findOrPush(arr, sameDate, () => ({date}))
+}
+
+const aggregateData = events =>
+  events.reduce((acc, e) => {
     const label = e.name + 's'
-    const date = moment(e.time).startOf('day').toDate()
-    const item = findOrPush(acc,
-      g => g.date.getTime() === date.getTime(),
-      () => ({date}))
+    const item = findOrPushByDate(acc, e)
 
     if (item[label]) {
       item[label] += 1
@@ -31,28 +34,58 @@ const aggregateData = events => {
     }
     return acc
   }, [])
+
+const sharedChartAttrs = {
+  full_width: true,
+  height: 160,
+  top: 15,
+  bottom: 25,
+  buffer: 0,
+  linked: true,
+  missing_is_hidden: true
 }
 
 const makeChart = curry((minX, maxX, community) => {
   const data = aggregateData(community.events)
-  window.MG.data_graphic({
+  window.MG.data_graphic(merge({}, sharedChartAttrs, {
     data,
-    full_width: true,
-    height: 160,
     target: '#' + chartDomID(community),
-    linked: true,
     min_x: minX,
     max_x: maxX,
     y_accessor: ['users', 'posts', 'comments'],
-    legend: ['users', 'posts', 'comments'],
-    missing_is_hidden: true,
-    top: 15,
-    bottom: 25,
-    buffer: 0
-  })
+    legend: ['users', 'posts', 'comments']
+  }))
+})
+
+const makeUniquesChart = curry((minX, maxX, community) => {
+  const data = community.events.reduce((acc, e) => {
+    const item = findOrPushByDate(acc, e)
+    if (!item.uniques) item.uniques = {}
+    if (!item.uniques[e.user_id]) item.uniques[e.user_id] = true
+    return acc
+  }, [])
+  .map(({date, uniques}) => ({date, count: Object.keys(uniques).length}))
+
+  window.MG.data_graphic(merge({}, sharedChartAttrs, {
+    data,
+    target: '#' + chartDomID2(community),
+    min_x: minX,
+    max_x: maxX,
+    y_accessor: ['count'],
+    legend: ['uniques']
+  }))
 })
 
 const chartDomID = community => `chart-${community.id}`
+const chartDomID2 = community => `chart-${community.id}-2`
+
+const findDateRange = communities =>
+  flow(
+    map('events'),
+    flatten,
+    vals => [minBy('time', vals), maxBy('time', vals)],
+    map(val => moment(val.time).startOf('day').toDate())
+  )(communities)
 
 @connect(state => ({
   metrics: get('admin.metrics', state)
@@ -65,7 +98,7 @@ export default class Admin extends React.Component {
 
   constructor (props) {
     super(props)
-    this.state = {loginAs: ''}
+    this.state = {loginAs: '', communitySelection: 'top'}
   }
 
   componentDidMount () {
@@ -77,34 +110,36 @@ export default class Admin extends React.Component {
     .then(() => dispatch(fetchRawMetrics()))
     .then(() => {
       const { metrics } = this.props
-      const communities = sortBy(values(metrics), c => -c.events.length).slice(0, 30)
-      const [ minDate, maxDate ] = flow(
-        map('events'),
-        flatten,
-        vals => [minBy('time', vals), maxBy('time', vals)],
-        map(val => moment(val.time).startOf('day').toDate())
-      )(communities)
-      this.minDate = minDate
-      this.maxDate = maxDate
-      this.setState({communities})
+      const communities = sortBy(values(metrics), c => -c.events.length).slice(0, 20)
+      ;[ this.minDate, this.maxDate ] = findDateRange(communities)
+      this.setState({rerender: true, communitySelection: 'top'})
     })
   }
 
   render () {
-    const { communities, loginAs } = this.state
-    if (!communities) return <div className='loading'>Loading...</div>
+    const { metrics } = this.props
+    if (!metrics) return <div className='loading'>Loading...</div>
+    const { communitySelection, loginAs, rerender } = this.state
+    let communities
 
-    // a weird back-and-forth here: we load the script tags on-the-fly in
-    // componentDidMount(), then calculate the date range once, then finally
-    // setState({communities}). that triggers the code below to run makeChart
-    // for each community, but that takes place in a setTimeout because we need
-    // to ensure that the DOM nodes do render into already exist.
-    if (!this.renderedCharts) {
-      this.renderedCharts = true
-      setTimeout(() => communities.forEach(makeChart(this.minDate, this.maxDate)))
+    if (communitySelection === 'top') {
+      communities = sortBy(values(metrics), c => -c.events.length).slice(0, 10)
+    } else {
+      communities = filter(c => c.id === communitySelection, metrics)
+    }
+
+    if (rerender) {
+      setTimeout(() => {
+        this.setState({rerender: false})
+        communities.forEach(c => {
+          makeChart(this.minDate, this.maxDate, c)
+          makeUniquesChart(this.minDate, this.maxDate, c)
+        })
+      })
     }
 
     const go = () => window.location = `/noo/admin/login-as/${loginAs}`
+    const allCommunities = sortBy(metrics, c => c.name.toLowerCase())
 
     return <div className='simple-page' id='admin-page'>
       <ul>
@@ -118,9 +153,19 @@ export default class Admin extends React.Component {
         <li><a href='/admin/kue'>Kue</a></li>
         <li><a href='/noo/admin/logout'>Log out</a></li>
       </ul>
+
+      <p>
+        <select value={communitySelection} onChange={e => this.setState({communitySelection: e.target.value, rerender: true})}>
+          <option value='top'>Top 10</option>
+          {allCommunities.map(c =>
+            <option key={c.id} value={c.id}>{c.name}</option>)}
+        </select>
+      </p>
+
       {communities.map(c => <div key={c.id} className='community'>
         {c.name}
         <div id={chartDomID(c)} className='chart'></div>
+        <div id={chartDomID2(c)} className='chart'></div>
       </div>)}
     </div>
   }

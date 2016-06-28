@@ -1,17 +1,18 @@
 import React from 'react'
-import { get } from 'lodash'
+import { get, debounce } from 'lodash'
 import { connect } from 'react-redux'
 import Avatar from './Avatar'
 import RichTextEditor from './RichTextEditor'
-import { createComment } from '../actions'
+import { createComment, updateCommentEditor } from '../actions'
 import { ADDED_COMMENT, trackEvent } from '../util/analytics'
 import { textLength } from '../util/text'
 import TagDescriptionEditor from './TagDescriptionEditor'
 var { array, bool, func, object, string } = React.PropTypes
 
-@connect(state => ({
+@connect((state, { postId }) => ({
   currentUser: get(state, 'people.current'),
-  editingTagDescriptions: state.editingTagDescriptions
+  editingTagDescriptions: state.editingTagDescriptions,
+  text: state.commentEdits[postId]
 }))
 export default class CommentForm extends React.Component {
   static propTypes = {
@@ -20,7 +21,8 @@ export default class CommentForm extends React.Component {
     postId: string,
     mentionOptions: array,
     placeholder: string,
-    editingTagDescriptions: bool
+    editingTagDescriptions: bool,
+    text: string
   }
 
   constructor (props) {
@@ -29,8 +31,7 @@ export default class CommentForm extends React.Component {
   }
 
   submit = event => {
-    const { dispatch, postId } = this.props
-    const { text } = this.state
+    const { dispatch, postId, text } = this.props
     if (event) event.preventDefault()
     if (!text || textLength(text) < 2) return
 
@@ -38,12 +39,10 @@ export default class CommentForm extends React.Component {
     // because the blur event doesn't fire when the button is tapped otherwise
     this.refs.button.focus()
     setTimeout(() => {
-      dispatch(createComment(postId, this.state.text, this.state.tagDescriptions))
+      dispatch(createComment(postId, text, this.state.tagDescriptions))
       .then(({ error }) => {
         if (error) return
         trackEvent(ADDED_COMMENT, {post: {id: postId}})
-        this.refs.editor.setContent('')
-        this.setState({text: '', editing: false})
       })
     })
   }
@@ -54,10 +53,12 @@ export default class CommentForm extends React.Component {
   }
 
   render () {
-    const { currentUser, editingTagDescriptions } = this.props
-    const { editing } = this.state
-    const edit = () => this.setState({editing: true})
-    const setText = event => this.setState({text: event.target.value})
+    const { currentUser, editingTagDescriptions, dispatch, postId, text } = this.props
+    const editing = text !== undefined
+    const edit = () => {
+      dispatch(updateCommentEditor(postId, ''))
+    }
+    const setText = debounce(event => dispatch(updateCommentEditor(postId, event.target.value)), 200)
     const placeholder = this.props.placeholder || 'Add a comment...'
 
     return <form onSubmit={this.submit} className='comment-form'>
@@ -67,6 +68,7 @@ export default class CommentForm extends React.Component {
             {editingTagDescriptions && <TagDescriptionEditor
               onSave={this.saveWithTagDescriptions}/>}
             <RichTextEditor ref='editor' name='comment' startFocused
+              content={text}
               onChange={setText}/>
             <input type='submit' value='Comment' ref='button'/>
           </div>

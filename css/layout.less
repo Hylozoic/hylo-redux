@@ -474,6 +474,16 @@ nav {
 
 }
 
+#leftNavBackdrop {
+  position: fixed;
+  width: 100vw;
+  height: 100vh;
+  top: 0;
+  left: 0;
+  // z-index higher than top nav but lower than left nav
+  z-index: 15;
+}
+
 #main {
   padding-top: @top-nav-height;
   .mobile({

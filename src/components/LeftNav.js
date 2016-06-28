@@ -135,6 +135,7 @@ export const LeftNav = ({ opened, community, network, tags, close, canModerate, 
             canInvite={canInvite}/>}
       {!isEmpty(tags) && <TopicList tags={tags} slug={community.slug}/>}
     </nav>}
+    {opened && isMobile() && <div id='leftNavBackdrop' onClick={close}/>}
   </VelocityTransitionGroup>
 }
 

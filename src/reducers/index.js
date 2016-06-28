@@ -3,6 +3,7 @@ import { routeReducer } from 'redux-simple-router'
 import { some, get, partition, transform } from 'lodash'
 import { activities, activitiesByCommunity } from './activities'
 import comments from './comments'
+import commentEdits from './commentEdits'
 import commentsByPost from './commentsByPost'
 import communities from './communities'
 import communitiesByQuery from './communitiesByQuery'
@@ -174,6 +175,7 @@ export default combineReducers({
   activitiesByCommunity,
   admin,
   comments,
+  commentEdits,
   commentsByPost,
   communities,
   communitiesByQuery,

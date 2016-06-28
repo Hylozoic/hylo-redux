@@ -127,11 +127,11 @@ export default class App extends React.Component {
         search={doSearch}
         opened={leftNavIsOpen}/>}
 
-      {/*<VelocityComponent animation={moveWithMenu} easing={leftNavEasing}>*/}
+      <VelocityComponent animation={moveWithMenu} easing={leftNavEasing}>
         <div id='main'>
           {children}
         </div>
-      {/*</VelocityComponent>*/}
+      </VelocityComponent>
 
       <Notifier messages={notifierMessages}
         remove={id => dispatch(removeNotification(id))}/>

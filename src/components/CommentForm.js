@@ -1,5 +1,5 @@
 import React from 'react'
-import { get, debounce } from 'lodash'
+import { get } from 'lodash'
 import { connect } from 'react-redux'
 import Avatar from './Avatar'
 import RichTextEditor from './RichTextEditor'
@@ -55,10 +55,10 @@ export default class CommentForm extends React.Component {
   render () {
     const { currentUser, editingTagDescriptions, dispatch, postId, text } = this.props
     const editing = text !== undefined
-    const edit = () => {
-      dispatch(updateCommentEditor(postId, ''))
-    }
-    const setText = debounce(event => dispatch(updateCommentEditor(postId, event.target.value)), 200)
+    const updateStore = text => dispatch(updateCommentEditor(postId, text))
+    const edit = () => updateStore('')
+
+    const setText = event => updateStore(event.target.value)
     const placeholder = this.props.placeholder || 'Add a comment...'
 
     return <form onSubmit={this.submit} className='comment-form'>
@@ -69,6 +69,7 @@ export default class CommentForm extends React.Component {
               onSave={this.saveWithTagDescriptions}/>}
             <RichTextEditor ref='editor' name='comment' startFocused
               content={text}
+              onBlur={() => updateStore(this.refs.editor.getContent())}
               onChange={setText}/>
             <input type='submit' value='Comment' ref='button'/>
           </div>

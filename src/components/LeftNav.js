@@ -2,7 +2,8 @@ import React from 'react'
 import { A, IndexA } from './A'
 import Icon from './Icon'
 import { VelocityTransitionGroup } from 'velocity-react'
-import { isEmpty, filter } from 'lodash'
+import { isEmpty } from 'lodash'
+import { filter } from 'lodash/fp'
 import { tagUrl } from '../routes'
 import { isMobile } from '../client/util'
 import { showAllTags } from '../actions/tags'
@@ -34,9 +35,7 @@ export const MenuButton = ({ onClick, label }) =>
   </a>
 
 export const TopicList = ({ tags, slug }, { dispatch }) => {
-  let followedTags = filter(tags, t => t.followed && !t.created)
-  let createdTags = filter(tags, t => t.created && t.name !== 'chat')
-
+  const followed = filter('followed', tags)
   const TagLink = ({ name, highlight }) => {
     var allTopics = name === 'all-topics'
     var AComponent = allTopics ? IndexA : A
@@ -48,18 +47,13 @@ export const TopicList = ({ tags, slug }, { dispatch }) => {
   }
 
   return <ul className='topic-list'>
-    <li className='subheading'><a>TOPICS ({followedTags.length + 1})</a></li>
+    <li className='subheading'><a>TOPICS YOU FOLLOW ({followed.length + 1})</a></li>
     <TagLink name='all-topics'/>
-    {!isEmpty(followedTags) && followedTags.map(tag =>
+    {!isEmpty(followed) && followed.map(tag =>
       <TagLink name={tag.name} key={tag.name} highlight={tag.new_post_count}/>)}
     <li>
       <a onClick={() => dispatch(showAllTags(slug))}><Icon name='More'/></a>
     </li>
-    {!isEmpty(createdTags) && <li className='subheading'>
-      <a>TOPICS CREATED ({createdTags.length})</a>
-    </li>}
-    {!isEmpty(createdTags) && createdTags.map(tag =>
-      <TagLink name={tag.name} key={tag.name} highlight={tag.new_post_count}/>)}
   </ul>
 }
 TopicList.contextTypes = {dispatch: func}

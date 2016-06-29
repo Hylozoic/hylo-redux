@@ -12,6 +12,7 @@ import { isEmpty, some } from 'lodash'
 import { find } from 'lodash/fp'
 import { same } from '../models'
 import { humanDate } from '../util/text'
+import { tagUrl } from '../routes'
 const { array, bool, func, number, object } = React.PropTypes
 
 const subject = 'community'
@@ -65,15 +66,16 @@ export default class BrowseTopicsModal extends React.Component {
   }
 }
 
-const TagRow = ({ tag, community, followed }, { isMobile }) => {
+const TagRow = ({ tag, community, followed }, { isMobile, dispatch }) => {
   const { id, name, post_type } = tag
   const { slug } = community
   const membership = find(m => same('id', community), tag.memberships)
   const { description, follower_count, owner, created_at } = membership
+  const close = () => dispatch(closeModal())
 
   return <li key={id}>
     {!isMobile && <TagRowControls {...{follower_count, slug, followed, name}}/>}
-    <span className='name'>#{name}</span>
+    <A className='name' to={tagUrl(name, slug)} onClick={close}>#{name}</A>
     {(description || post_type) && <p className='description'>
       {description || post_type}
     </p>}
@@ -83,23 +85,22 @@ const TagRow = ({ tag, community, followed }, { isMobile }) => {
     {isMobile && <TagRowControls {...{follower_count, slug, followed, name}}/>}
   </li>
 }
-TagRow.contextTypes = {isMobile: bool}
+TagRow.contextTypes = {isMobile: bool, dispatch: func}
 
 const TagRowControls = ({ followed, follower_count, slug, name }, { dispatch }) => {
-  const unfollow = () => dispatch(followTag(slug, name))
+  const follow = () => dispatch(followTag(slug, name))
   return <div className='right'>
     <span className='followers'>
       <Icon name='Users'/>
       {follower_count}
     </span>
     {followed
-      ? <a className='unfollow button' onClick={unfollow}>
+      ? <a className='unfollow button' onClick={follow}>
           Unfollow <span className='x'>&times;</span>
         </a>
-      : <A className='view button' to={`/c/${slug}/tag/${name}`}
-          onClick={() => dispatch(closeModal())}>
-          View <Icon name='View'/>
-        </A>}
+      : <a className='follow button' onClick={follow}>
+          <span>+</span> Follow
+        </a>}
   </div>
 }
 TagRowControls.contextTypes = {dispatch: func}

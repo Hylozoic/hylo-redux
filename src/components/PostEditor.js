@@ -22,9 +22,10 @@ import { NonLinkAvatar } from './Avatar'
 import AutosizingTextarea from './AutosizingTextarea'
 import { connect } from 'react-redux'
 import {
-  createPost, cancelPostEdit, fetchLeftNavTags, removeImage, removeDoc,
-  updatePost, updatePostEditor
+  createPost, cancelPostEdit, removeImage, removeDoc, updatePost,
+  updatePostEditor
 } from '../actions'
+import { fetchLeftNavTags } from '../actions/tags'
 import { uploadImage } from '../actions/uploadImage'
 import { uploadDoc } from '../actions/uploadDoc'
 import { attachmentParams } from '../util/shims'

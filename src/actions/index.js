@@ -635,14 +635,6 @@ export function fetchTag (tagName, communityId) {
   }
 }
 
-export function fetchLeftNavTags (id, refresh) {
-  return {
-    type: FETCH_LEFT_NAV_TAGS,
-    payload: {api: true, path: `/noo/community/${id}/tags/leftnav`},
-    meta: {id, cache: {id, bucket: 'tagsByCommunity', refresh}}
-  }
-}
-
 export function setMobileDevice () {
   return {type: SET_MOBILE_DEVICE}
 }

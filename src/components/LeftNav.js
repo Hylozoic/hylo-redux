@@ -47,12 +47,16 @@ export const TopicList = ({ tags, slug }, { dispatch }) => {
   }
 
   return <ul className='topic-list'>
-    <li className='subheading'><a>TOPICS YOU FOLLOW ({followed.length + 1})</a></li>
+    <li className='subheading'>
+      <a>TOPICS YOU FOLLOW ({followed.length + 1})</a>
+    </li>
     <TagLink name='all-topics'/>
     {!isEmpty(followed) && followed.map(tag =>
       <TagLink name={tag.name} key={tag.name} highlight={tag.new_post_count}/>)}
     <li>
-      <a onClick={() => dispatch(showAllTags(slug))}><Icon name='More'/></a>
+      <a onClick={() => dispatch(showAllTags(slug))} className='browse-all'>
+        Browse all topics...
+      </a>
     </li>
   </ul>
 }

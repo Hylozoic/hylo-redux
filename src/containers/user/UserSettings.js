@@ -330,15 +330,6 @@ export default class UserSettings extends React.Component {
             </select>
           </div>
         </Item>
-        <Item>
-          <div className='half-column'>
-            <label>Receive email invitations to post?</label>
-            <div className='summary'>Check the circle to get a weekly email that lets you create posts without leaving your inbox.</div>
-          </div>
-          <div className='half-column right-align'>
-            <input type='checkbox' checked={currentUser.settings.receives_email_prompts} onChange={() => this.toggle('settings.receives_email_prompts')}/>
-          </div>
-        </Item>
       </Section>}
 
       <SectionLabel name='communities' label='Communities' {...{dispatch, expand}}/>

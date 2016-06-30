@@ -7,9 +7,9 @@ import {
   fetchCommunity,
   fetchLeftNavTags,
   navigate,
-  setCurrentCommunityId,
   updateUserSettings
 } from '../../actions'
+import { setCurrentCommunityIdLocalAndRemote } from '../../actions/util'
 import { locationWithoutParams } from '../../client/util'
 import { VIEWED_COMMUNITY, trackEvent } from '../../util/analytics'
 import { VelocityTransitionGroup } from 'velocity-react'
@@ -51,8 +51,10 @@ export default compose(
   prefetch(({ store, dispatch, params: { id } }) => dispatch(fetchLeftNavTags(id))
     .then(() => dispatch(fetchCommunity(id)))
     .then(() => {
-      const community = store.getState().communities[id]
-      community && dispatch(setCurrentCommunityId(community.id))
+      const state = store.getState()
+      const communityId = get(state.communities[id], 'id')
+      const userId = get(state.people, 'current.id')
+      setCurrentCommunityIdLocalAndRemote(dispatch, communityId, userId)
     })),
   defer(({ params: { id }, store }) => {
     const community = store.getState().communities[id]

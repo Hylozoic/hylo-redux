@@ -3,7 +3,8 @@ import { compose } from 'redux'
 import { connect } from 'react-redux'
 import { prefetch, defer } from 'react-fetcher'
 import { commentUrl, peopleUrl } from '../../routes'
-import { FETCH_PERSON, fetchPerson, fetchThanks, navigate, setCurrentCommunityId } from '../../actions'
+import { FETCH_PERSON, fetchPerson, fetchThanks, navigate } from '../../actions'
+import { setCurrentCommunityIdLocalAndRemote } from '../../actions/util'
 import { capitalize, compact, get, some, includes } from 'lodash'
 import { isNull, map, omitBy, sortBy } from 'lodash/fp'
 import { VIEWED_PERSON, VIEWED_SELF, trackEvent } from '../../util/analytics'
@@ -54,9 +55,9 @@ const PersonProfile = compose(
     dispatch(fetchPerson(id))
     .then(({ payload: { shared_communities }, error }) => {
       if (error || !shared_communities) return
-      let { currentCommunityId } = store.getState()
+      let { currentCommunityId, people: { current } } = store.getState()
       if (includes(shared_communities, currentCommunityId)) return
-      return dispatch(setCurrentCommunityId(shared_communities[0] || 'all'))
+      return setCurrentCommunityIdLocalAndRemote(dispatch, shared_communities[0] || 'all', current.id)
     }),
     dispatch(initialFetch(id, query))
   ])),

@@ -5,7 +5,7 @@ import { connect } from 'react-redux'
 import { fetch, ConnectedPostList } from './ConnectedPostList'
 import PostEditor from '../components/PostEditor'
 import CoverImagePage from '../components/CoverImagePage'
-import { setCurrentCommunityId } from '../actions'
+import { setCurrentCommunityIdLocalAndRemote } from '../actions/util'
 
 const makeComponent = (subject, title, showEditor) => props => {
   const { location: { query }, currentUser: { id } } = props
@@ -18,7 +18,7 @@ const makeComponent = (subject, title, showEditor) => props => {
 
 const wrapComponent = (subject, ...args) => compose(
   prefetch(({ dispatch, params, currentUser: { id }, query }) => {
-    dispatch(setCurrentCommunityId('all'))
+    setCurrentCommunityIdLocalAndRemote(dispatch, 'all', id)
     return dispatch(fetch(subject, id, query))
   }),
   connect(state => ({currentUser: state.people.current}))

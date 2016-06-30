@@ -7,9 +7,9 @@ import {
   useInvitation,
   navigate,
   fetchLeftNavTags,
-  fetchCommunity,
-  setCurrentCommunityId
+  fetchCommunity
 } from '../../actions'
+import { setCurrentCommunityIdLocalAndRemote } from '../../actions/util'
 const { func, object, string } = React.PropTypes
 
 @prefetch(({ path, query: { token }, dispatch }) =>
@@ -33,11 +33,11 @@ export default class InvitationHandler extends React.Component {
   // not in server-side rendering. would have to jump back into appHandler to
   // implement checking for redirects that take place during prefetching
   componentDidMount () {
-    let { dispatch, community: { slug, id } } = this.props
+    let { dispatch, community: { slug, id }, currentUser} = this.props
     if (slug) {
       dispatch(fetchLeftNavTags(slug))
       .then(() => dispatch(fetchCommunity(slug)))
-      .then(() => dispatch(setCurrentCommunityId(id)))
+      .then(() => setCurrentCommunityIdLocalAndRemote(dispatch, id, currentUser.id))
       .then(() => dispatch(navigate(`/c/${slug}`)))
     }
   }

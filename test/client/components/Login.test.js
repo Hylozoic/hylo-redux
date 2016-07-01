@@ -31,7 +31,10 @@ describe('Login', () => {
 
     it('redirects to the last visited community if available', () => {
       const slug = 'foomunity'
-      store.getState().people.current.settings = {currentCommunityId: 5}
+      const communityId = '5'
+      let currentUser = store.getState().people.current
+      currentUser.settings = {currentCommunityId: communityId}
+      currentUser.memberships = [{community_id: communityId, community: {id: communityId, slug}}]
       store.transformAction(FETCH_COMMUNITY, action => Promise.resolve({payload: {slug}}))
       setup({location: {query: {}}})
       return node.submit(mocks.event())

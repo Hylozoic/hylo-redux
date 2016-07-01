@@ -15,6 +15,7 @@ import { LOGGED_IN, STARTED_LOGIN, trackEvent } from '../util/analytics'
 import { Link } from 'react-router'
 import ServiceAuthButtons from '../components/ServiceAuthButtons'
 import { communityUrl } from '../routes'
+import { getCommunity } from '../models/currentUser'
 const { func, object, string } = React.PropTypes
 
 // export the decorators below so that Signup can use them as well
@@ -128,17 +129,14 @@ export default class Login extends React.Component {
     let email = this.refs.email.value
     let password = this.refs.password.value
     return dispatch(login(email, password))
-    .then(({ payload, error }) => {
+    .then(({ error }) => {
       if (error) return
       trackEvent(LOGGED_IN)
-      const currentCommunityId = get(payload, 'settings.currentCommunityId')
-      if (currentCommunityId) {
-        return dispatch(fetchCommunity(currentCommunityId))
-      } else {
-        return {}
-      }
+      const { currentUser } = this.props
+      const currentCommunityId = get(currentUser, 'settings.currentCommunityId')
+      const community = getCommunity(currentUser, currentCommunityId)
+      dispatch(goToNext(this.props.currentUser, community, query))
     })
-    .then(({payload}) => dispatch(goToNext(this.props.currentUser, payload, query)))
   }
 
   render () {

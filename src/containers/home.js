@@ -8,7 +8,7 @@ import CoverImagePage from '../components/CoverImagePage'
 import { navigate } from '../actions'
 import { saveCurrentCommunityId } from '../actions/util'
 import { communityUrl } from '../routes'
-import { get, find } from 'lodash'
+import { getCommunity } from '../models/currentUser'
 const { object } = React.PropTypes
 
 const makeComponent = (subject, title, showEditor) => React.createClass({
@@ -32,11 +32,12 @@ const makeComponent = (subject, title, showEditor) => React.createClass({
   }
 })
 
-export const prefetchForWrapped = subject => ({ dispatch, params, currentUser: { id, settings, memberships }, query, path }) => {
+export const prefetchForWrapped = subject => ({ dispatch, params, currentUser, query, path }) => {
   const { currentCommunityId } = settings
+  const { id, settings } = currentUser
   if (query.rd && currentCommunityId) {
     if (currentCommunityId !== 'all') {
-      const community = get(find(memberships, m => m.community_id === currentCommunityId), 'community')
+      const community = getCommunity(currentUser, currentCommunityId)
       community && dispatch(navigate(communityUrl(community)))
     }
   }

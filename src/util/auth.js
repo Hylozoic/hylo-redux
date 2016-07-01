@@ -1,4 +1,5 @@
-import { fetchCurrentUser, navigate, fetchCommunity } from '../actions'
+import { fetchCurrentUser, navigate } from '../actions'
+import { getCommunity } from '../models/currentUser'
 import { get } from 'lodash'
 import qs from 'querystring'
 import { communityUrl } from '../routes'
@@ -55,16 +56,11 @@ export function setupPopupCallback (name, dispatch, errorAction) {
           .then(action => {
             if (action.error) return
             let params = qs.parse(window.location.search.replace(/^\?/, ''))
-            const currentCommunityId = get(action, 'payload.settings.currentCommunityId')
-            next = params.next || `/u/${action.payload.id}`
-            if (currentCommunityId) {
-              return dispatch(fetchCommunity(currentCommunityId))
-            } else {
-              return {}
-            }
-          })
-          .then(({payload}) => {
-            if (payload) next = communityUrl(payload)
+
+            const currentUser = action.payload
+            const currentCommunityId = get(currentUser, 'settings.currentCommunityId')
+            const community = getCommunity(currentUser, currentCommunityId)
+            next = params.next || community ? communityUrl(community) : `/u/${action.payload.id}`
             return dispatch(navigate(next))
           })
         }

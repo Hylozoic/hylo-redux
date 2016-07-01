@@ -9,7 +9,7 @@ import {
   fetchLeftNavTags,
   fetchCommunity
 } from '../../actions'
-import { setCurrentCommunityIdLocalAndRemote } from '../../actions/util'
+import { saveCurrentCommunityId } from '../../actions/util'
 const { func, object, string } = React.PropTypes
 
 @prefetch(({ path, query: { token }, dispatch }) =>
@@ -37,7 +37,7 @@ export default class InvitationHandler extends React.Component {
     if (slug) {
       dispatch(fetchLeftNavTags(slug))
       .then(() => dispatch(fetchCommunity(slug)))
-      .then(() => setCurrentCommunityIdLocalAndRemote(dispatch, id, currentUser.id))
+      .then(() => saveCurrentCommunityId(dispatch, id, currentUser.id))
       .then(() => dispatch(navigate(`/c/${slug}`)))
     }
   }

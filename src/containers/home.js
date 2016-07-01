@@ -6,7 +6,7 @@ import { fetch, ConnectedPostList } from './ConnectedPostList'
 import PostEditor from '../components/PostEditor'
 import CoverImagePage from '../components/CoverImagePage'
 import { navigate, fetchCommunity } from '../actions'
-import { setCurrentCommunityIdLocalAndRemote } from '../actions/util'
+import { saveCurrentCommunityId } from '../actions/util'
 import { communityUrl } from '../routes'
 const { object } = React.PropTypes
 
@@ -43,7 +43,7 @@ const wrapComponent = (subject, ...args) => compose(
         })
       }
     }
-    setCurrentCommunityIdLocalAndRemote(dispatch, 'all', id)
+    saveCurrentCommunityId(dispatch, 'all', id)
     return dispatch(fetch(subject, id, query))
   }),
   connect(state => ({currentUser: state.people.current}))

@@ -9,7 +9,7 @@ export const findError = (errors, type, bucket, id) => {
   return get(find([errors[type]], match), 'payload.response')
 }
 
-export const setCurrentCommunityIdLocalAndRemote = (dispatch, communityId, userId) => {
+export const saveCurrentCommunityId = (dispatch, communityId, userId) => {
   if (!communityId) return
   const settings = {currentCommunityId: communityId}
   userId && dispatch(updateUserSettings(userId, {settings}))

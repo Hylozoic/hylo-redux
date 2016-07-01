@@ -8,7 +8,7 @@ import {
   FETCH_POST, fetchComments, fetchLeftNavTags, fetchPost, navigate,
   setMetaTags
 } from '../actions'
-import { setCurrentCommunityIdLocalAndRemote } from '../actions/util'
+import { saveCurrentCommunityId } from '../actions/util'
 import { ogMetaTags } from '../util'
 import A from '../components/A'
 import PostEditor from '../components/PostEditor'
@@ -133,7 +133,7 @@ const setupPage = (store, id, query, action) => {
   const communityId = get(post, 'communities.0') || 'all'
   const userId = get(state.people, 'current.id')
   const slug = get(state.communities, [communityId, 'slug'])
-  setCurrentCommunityIdLocalAndRemote(dispatch, communityId, userId)
+  saveCurrentCommunityId(dispatch, communityId, userId)
 
   if (payload && !payload.api) {
     const { name, description, media } = payload

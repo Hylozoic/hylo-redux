@@ -7,6 +7,9 @@ export const membership = (currentUser, community) =>
   community && find(get(currentUser, 'memberships'), m =>
       m.community.id === (community.id || community))
 
+export const getCommunity = (currentUser, community) =>
+  get(membership(currentUser, community), 'community')
+
 export const isMember = truthy(membership)
 
 export const canModerate = curry((currentUser, community) =>

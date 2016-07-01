@@ -6,9 +6,9 @@ import { get, includes } from 'lodash'
 import { pick } from 'lodash/fp'
 import {
   FETCH_POST, fetchComments, fetchPost, navigate,
-  setCurrentCommunityId,
   setMetaTags
 } from '../actions'
+import { saveCurrentCommunityId } from '../actions/util'
 import { fetchLeftNavTags } from '../actions/tags'
 import { ogMetaTags } from '../util'
 import A from '../components/A'
@@ -132,8 +132,9 @@ const setupPage = (store, id, query, action) => {
   if (!post) return
 
   const communityId = get(post, 'communities.0') || 'all'
+  const userId = get(state.people, 'current.id')
   const slug = get(state.communities, [communityId, 'slug'])
-  dispatch(setCurrentCommunityId(communityId))
+  saveCurrentCommunityId(dispatch, communityId, userId)
 
   if (payload && !payload.api) {
     const { name, description, media } = payload

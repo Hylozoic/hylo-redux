@@ -1,7 +1,7 @@
 require('../support')
 import { mocks, helpers } from '../../support'
 import Login from '../../../src/containers/Login.js'
-import { LOGIN, NAVIGATE } from '../../../src/actions'
+import { LOGIN, NAVIGATE, FETCH_COMMUNITY } from '../../../src/actions'
 import { renderIntoDocument } from 'react-addons-test-utils'
 const { createElement } = helpers
 
@@ -19,7 +19,7 @@ describe('Login', () => {
         people: {current: {id: 42}}
       })
 
-      store.transformAction(LOGIN, () => Promise.resolve({}))
+      store.transformAction(LOGIN, () => Promise.resolve({payload: store.getState().people.current}))
       store.transformAction(NAVIGATE, action => redirectUrl = action.payload)
     })
 
@@ -27,6 +27,18 @@ describe('Login', () => {
       setup({location: {query: {}}})
       return node.submit(mocks.event())
       .then(() => expect(redirectUrl).to.equal('/u/42'))
+    })
+
+    it('redirects to the last visited community if available', () => {
+      const slug = 'foomunity'
+      const communityId = '5'
+      let currentUser = store.getState().people.current
+      currentUser.settings = {currentCommunityId: communityId}
+      currentUser.memberships = [{community_id: communityId, community: {id: communityId, slug}}]
+      store.transformAction(FETCH_COMMUNITY, action => Promise.resolve({payload: {slug}}))
+      setup({location: {query: {}}})
+      return node.submit(mocks.event())
+      .then(() => expect(redirectUrl).to.equal(`/c/${slug}`))
     })
 
     it('redirects to a specified location', () => {

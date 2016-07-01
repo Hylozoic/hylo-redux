@@ -50,7 +50,7 @@ const getMenuItems = (currentUser, firstItem) =>
 const getCurrentMembership = (currentUser, community) =>
   flow(
     get('memberships'),
-    find(m => m.community.id === community.id)
+    find(m => m.community.id === get('id', community))
   )(currentUser)
 
 export default class TopNav extends React.Component {

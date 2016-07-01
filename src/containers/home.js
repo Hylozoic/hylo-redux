@@ -33,8 +33,8 @@ const makeComponent = (subject, title, showEditor) => React.createClass({
 })
 
 export const prefetchForWrapped = subject => ({ dispatch, params, currentUser, query, path }) => {
-  const { currentCommunityId } = settings
   const { id, settings } = currentUser
+  const { currentCommunityId } = settings
   if (query.rd && currentCommunityId) {
     if (currentCommunityId !== 'all') {
       const community = getCommunity(currentUser, currentCommunityId)

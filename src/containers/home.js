@@ -5,9 +5,10 @@ import { connect } from 'react-redux'
 import { fetch, ConnectedPostList } from './ConnectedPostList'
 import PostEditor from '../components/PostEditor'
 import CoverImagePage from '../components/CoverImagePage'
-import { navigate, fetchCommunity } from '../actions'
+import { navigate } from '../actions'
 import { saveCurrentCommunityId } from '../actions/util'
 import { communityUrl } from '../routes'
+import { get, find } from 'lodash'
 const { object } = React.PropTypes
 
 const makeComponent = (subject, title, showEditor) => React.createClass({
@@ -31,21 +32,20 @@ const makeComponent = (subject, title, showEditor) => React.createClass({
   }
 })
 
-const wrapComponent = (subject, ...args) => compose(
-  prefetch(({ dispatch, params, currentUser: { id, settings: { currentCommunityId } }, query, path }) => {
-    if (query.rd && currentCommunityId) {
-      if (currentCommunityId !== 'all') {
-        // we only have the id, so have to fetch to get the slug
-        return dispatch(fetchCommunity(currentCommunityId))
-        .then(action => {
-          if (action.error) return
-          return dispatch(navigate(communityUrl(action.payload)))
-        })
-      }
+export const prefetchForWrapped = subject => ({ dispatch, params, currentUser: { id, settings, memberships }, query, path }) => {
+  const { currentCommunityId } = settings
+  if (query.rd && currentCommunityId) {
+    if (currentCommunityId !== 'all') {
+      const community = get(find(memberships, m => m.community_id === currentCommunityId), 'community')
+      community && dispatch(navigate(communityUrl(community)))
     }
-    saveCurrentCommunityId(dispatch, 'all', id)
-    return dispatch(fetch(subject, id, query))
-  }),
+  }
+  saveCurrentCommunityId(dispatch, 'all', id)
+  return dispatch(fetch(subject, id, query))
+}
+
+const wrapComponent = (subject, ...args) => compose(
+  prefetch(prefetchForWrapped(subject)),
   connect(state => ({currentUser: state.people.current}))
 )(makeComponent(subject, ...args))
 

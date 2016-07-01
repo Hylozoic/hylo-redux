@@ -60,7 +60,7 @@ export function setupPopupCallback (name, dispatch, errorAction) {
             const currentUser = action.payload
             const currentCommunityId = get(currentUser, 'settings.currentCommunityId')
             const community = getCommunity(currentUser, currentCommunityId)
-            next = params.next || community ? communityUrl(community) : `/u/${action.payload.id}`
+            next = params.next || (community ? communityUrl(community) : `/u/${action.payload.id}`)
             return dispatch(navigate(next))
           })
         }

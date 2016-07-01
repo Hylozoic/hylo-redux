@@ -14,6 +14,8 @@ import {
 import { LOGGED_IN, STARTED_LOGIN, trackEvent } from '../util/analytics'
 import { Link } from 'react-router'
 import ServiceAuthButtons from '../components/ServiceAuthButtons'
+import { communityUrl } from '../routes'
+import { getCommunity } from '../models/currentUser'
 const { func, object, string } = React.PropTypes
 
 // export the decorators below so that Signup can use them as well
@@ -59,9 +61,16 @@ export const connectForNext = section =>
     }
   }, null, null, {withRef: true})
 
-export const goToNext = (currentUser, query) => {
+export const goToNext = (currentUser, community, query) => {
   let { next, action, token } = query
-  if (!next) next = `/u/${currentUser.id}`
+  if (!next) {
+    if (community) {
+      next = communityUrl(community)
+    } else {
+      next = `/u/${currentUser.id}`
+    }
+  }
+
   let params
   switch (action) {
     case 'use-invitation':
@@ -119,12 +128,14 @@ export default class Login extends React.Component {
     event.preventDefault()
     let email = this.refs.email.value
     let password = this.refs.password.value
-
     return dispatch(login(email, password))
     .then(({ error }) => {
       if (error) return
       trackEvent(LOGGED_IN)
-      return dispatch(goToNext(this.props.currentUser, query))
+      const { currentUser } = this.props
+      const currentCommunityId = get(currentUser, 'settings.currentCommunityId')
+      const community = getCommunity(currentUser, currentCommunityId)
+      dispatch(goToNext(this.props.currentUser, community, query))
     })
   }
 

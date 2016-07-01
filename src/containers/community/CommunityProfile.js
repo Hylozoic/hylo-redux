@@ -6,9 +6,9 @@ import { get, pick } from 'lodash'
 import {
   fetchCommunity,
   navigate,
-  setCurrentCommunityId,
   updateUserSettings
 } from '../../actions'
+import { saveCurrentCommunityId } from '../../actions/util'
 import { fetchLeftNavTags } from '../../actions/tags'
 import { locationWithoutParams } from '../../client/util'
 import { VIEWED_COMMUNITY, trackEvent } from '../../util/analytics'
@@ -51,8 +51,10 @@ export default compose(
   prefetch(({ store, dispatch, params: { id } }) => dispatch(fetchLeftNavTags(id))
     .then(() => dispatch(fetchCommunity(id)))
     .then(() => {
-      const community = store.getState().communities[id]
-      community && dispatch(setCurrentCommunityId(community.id))
+      const state = store.getState()
+      const communityId = get(state.communities[id], 'id')
+      const userId = get(state.people, 'current.id')
+      saveCurrentCommunityId(dispatch, communityId, userId)
     })),
   defer(({ params: { id }, store }) => {
     const community = store.getState().communities[id]

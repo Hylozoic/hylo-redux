@@ -5,10 +5,11 @@ import { connect } from 'react-redux'
 import { get, includes } from 'lodash'
 import { pick } from 'lodash/fp'
 import {
-  FETCH_POST, fetchComments, fetchLeftNavTags, fetchPost, navigate,
+  FETCH_POST, fetchComments, fetchPost, navigate,
   setCurrentCommunityId,
   setMetaTags
 } from '../actions'
+import { fetchLeftNavTags } from '../actions/tags'
 import { ogMetaTags } from '../util'
 import A from '../components/A'
 import PostEditor from '../components/PostEditor'

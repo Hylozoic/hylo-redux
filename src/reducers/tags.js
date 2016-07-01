@@ -46,10 +46,9 @@ export const totalTagsByQuery = composeReducers(
 )
 
 export const tagsByCommunity = (state = {}, action) => {
-  const mergeLeftNavTags = (state, leftNavTags, id) => {
-    if (isEmpty(leftNavTags)) return state
-    let labeledTags = leftNavTags.followed.map(f => merge(f, {followed: true}))
-    .concat(leftNavTags.created.map(c => merge(c, {created: true})))
+  const mergeLeftNavTags = (state, tags, id) => {
+    if (isEmpty(tags)) return state
+    const labeledTags = tags.map(f => ({...f, followed: true}))
     return {
       ...state,
       [id]: mergeList(state[id] || {}, labeledTags, 'name')

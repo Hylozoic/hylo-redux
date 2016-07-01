@@ -1,5 +1,12 @@
 import { cleanAndStringify, createCacheId } from '../util/caching'
-import { FETCH_TAGS, FOLLOW_TAG, REMOVE_TAG, SHOW_ALL_TAGS, SHOW_SHARE_TAG } from './index'
+import {
+  FETCH_LEFT_NAV_TAGS,
+  FETCH_TAGS,
+  FOLLOW_TAG,
+  REMOVE_TAG,
+  SHOW_ALL_TAGS,
+  SHOW_SHARE_TAG
+} from './index'
 
 export function followTag (id, tagName) {
   return {
@@ -46,4 +53,12 @@ export function showAllTags (slug) {
 
 export function showShareTag (tagName, slug) {
   return {type: SHOW_SHARE_TAG, payload: {tagName, slug}}
+}
+
+export function fetchLeftNavTags (id, refresh) {
+  return {
+    type: FETCH_LEFT_NAV_TAGS,
+    payload: {api: true, path: `/noo/community/${id}/tags/followed`},
+    meta: {id, cache: {id, bucket: 'tagsByCommunity', refresh}}
+  }
 }

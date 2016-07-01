@@ -6,10 +6,10 @@ import {
   USE_INVITATION,
   useInvitation,
   navigate,
-  fetchLeftNavTags,
   fetchCommunity,
   setCurrentCommunityId
 } from '../../actions'
+import { fetchLeftNavTags } from '../../actions/tags'
 const { func, object, string } = React.PropTypes
 
 @prefetch(({ path, query: { token }, dispatch }) =>

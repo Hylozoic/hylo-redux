@@ -392,7 +392,7 @@ export class PostEditor extends React.Component {
         </label>
       </div>
       {(editingTagDescriptions || creatingTagAndDescription) && <TagDescriptionEditor
-        savePost={this.saveWithTagDescriptions}
+        saveParent={this.saveWithTagDescriptions}
         updatePostTag={this.updatePostTagAndDescription} />}
     </div>
   }

@@ -13,7 +13,7 @@ const { func, object, bool } = React.PropTypes
 export default class TagDescriptionEditor extends React.Component {
   static propTypes = {
     tags: object,
-    savePost: func,
+    saveParent: func,
     saveTagDescriptions: func,
     updatePostTag: func,
     dispatch: func,
@@ -21,7 +21,7 @@ export default class TagDescriptionEditor extends React.Component {
   }
 
   render () {
-    let { tags, savePost, updatePostTag, dispatch, creating } = this.props
+    let { tags, saveParent, updatePostTag, dispatch, creating } = this.props
     const cancel = () => dispatch(cancelTagDescriptionEdit())
     const editAction = creating ? editNewTagAndDescription : editTagDescription
     const edit = debounce((tag, value) =>
@@ -78,7 +78,7 @@ export default class TagDescriptionEditor extends React.Component {
           </div>
         </div>)}
         <div className='footer'>
-          <button onClick={creating ? createTag : () => savePost(tags)} className='ok'>Create</button>
+          <button onClick={creating ? createTag : () => saveParent(tags)} className='ok'>Create</button>
         </div>
       </div>
     </div>

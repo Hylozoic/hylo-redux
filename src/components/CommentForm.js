@@ -66,7 +66,7 @@ export default class CommentForm extends React.Component {
       {editing
         ? <div className='content'>
             {editingTagDescriptions && <TagDescriptionEditor
-              onSave={this.saveWithTagDescriptions}/>}
+              saveParent={this.saveWithTagDescriptions}/>}
             <RichTextEditor ref='editor' name='comment' startFocused
               content={text}
               onBlur={() => updateStore(this.refs.editor.getContent())}

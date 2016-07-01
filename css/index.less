@@ -1005,20 +1005,23 @@ ul.tags {
 
     .button {
       .round-button;
-      padding: 0 16px 0 20px;
       margin-left: 10px;
       position: relative;
       top: -1px;
       vertical-align: middle;
-      &.view {
-        color: white;
-        background-color: @damian-green;
+      &.unfollow {
+        padding: 0 16px 0 20px;
+      }
+      &.follow {
+        color: @damian-green;
         border-color: @damian-green;
-        .icon {
-          margin-left: 5px;
+        padding: 0 20px 0 16px;
+        span {
+          font-size: 24px;
+          vertical-align: middle;
           position: relative;
-          top: 4px;
-          font-size: 20px;
+          top: -2px;
+          margin-right: 7px;
         }
       }
 

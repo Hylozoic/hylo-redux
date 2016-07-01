@@ -122,4 +122,27 @@ describe('tagsByCommunity', () => {
       }
     })
   })
+
+  it('merges tag content on FETCH_TAGS', () => {
+    const state = {
+      hum: {
+        foo: {name: 'foo', otherStuff: {foo: 'bar'}, followed: true}
+      },
+      wow: {
+        foo: {id: 7, name: 'foo', otherStuff: {yep: 'that'}}
+      }
+    }
+
+    const expected = {
+      hum: {
+        foo: {id: 1, name: 'foo', otherStuff: {foo: 'bar'}, followed: true},
+        bar: {id: 2, name: 'bar'}
+      },
+      wow: {
+        foo: {id: 7, name: 'foo', otherStuff: {yep: 'that'}}
+      }
+    }
+
+    expect(tagsByCommunity(state, fetchAction)).to.deep.equal(expected)
+  })
 })

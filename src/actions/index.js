@@ -180,7 +180,7 @@ export function fetchCommunity (id) {
   return {
     type: FETCH_COMMUNITY,
     payload: {api: true, path: `/noo/community/${id}`},
-    meta: {cache: {bucket: 'communities', id, requiredProp: 'banner_url'}}
+    meta: {cache: {bucket: 'communities', id, requiredProp: 'settings'}}
   }
 }
 
@@ -632,14 +632,6 @@ export function fetchTag (tagName, communityId) {
     type: FETCH_TAG,
     payload: {api: true, path},
     meta: {id: communityId || 'all', tagName}
-  }
-}
-
-export function fetchLeftNavTags (id, refresh) {
-  return {
-    type: FETCH_LEFT_NAV_TAGS,
-    payload: {api: true, path: `/noo/community/${id}/tags/leftnav`},
-    meta: {id, cache: {id, bucket: 'tagsByCommunity', refresh}}
   }
 }
 

@@ -5,7 +5,7 @@ import {
   FETCH_LEFT_NAV_TAGS, FETCH_LIVE_STATUS, FETCH_TAG, FETCH_TAGS,
   FETCH_TAG_SUMMARY, FOLLOW_TAG_PENDING, REMOVE_TAG
 } from '../actions'
-import { filter, get, isEmpty, merge, omitBy, toPairs } from 'lodash'
+import { filter, fromPairs, get, isEmpty, merge, omitBy, toPairs } from 'lodash'
 import qs from 'querystring'
 
 const matchesRemovedTag = (id, slug) => {
@@ -46,10 +46,9 @@ export const totalTagsByQuery = composeReducers(
 )
 
 export const tagsByCommunity = (state = {}, action) => {
-  const mergeLeftNavTags = (state, leftNavTags, id) => {
-    if (isEmpty(leftNavTags)) return state
-    let labeledTags = leftNavTags.followed.map(f => merge(f, {followed: true}))
-    .concat(leftNavTags.created.map(c => merge(c, {created: true})))
+  const mergeLeftNavTags = (state, tags, id) => {
+    if (isEmpty(tags)) return state
+    const labeledTags = tags.map(f => ({...f, followed: true}))
     return {
       ...state,
       [id]: mergeList(state[id] || {}, labeledTags, 'name')
@@ -101,6 +100,12 @@ export const tagsByCommunity = (state = {}, action) => {
         ...state,
         [meta.slug]: omitBy(state[meta.slug], t => t.name === meta.name)
       }
+    case FETCH_TAGS:
+      const slug = qs.parse(meta.cache.id).id
+      const itemsObj = {
+        [slug]: fromPairs(payload.items.map(tag => [tag.name, tag]))
+      }
+      return merge({}, state, itemsObj)
   }
   return state
 }

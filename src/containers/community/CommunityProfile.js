@@ -5,11 +5,11 @@ import { prefetch, defer } from 'react-fetcher'
 import { get, pick } from 'lodash'
 import {
   fetchCommunity,
-  fetchLeftNavTags,
   navigate,
   updateUserSettings
 } from '../../actions'
 import { saveCurrentCommunityId } from '../../actions/util'
+import { fetchLeftNavTags } from '../../actions/tags'
 import { locationWithoutParams } from '../../client/util'
 import { VIEWED_COMMUNITY, trackEvent } from '../../util/analytics'
 import { VelocityTransitionGroup } from 'velocity-react'

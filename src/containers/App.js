@@ -3,6 +3,7 @@ import cx from 'classnames'
 import { prefetch } from 'react-fetcher'
 import { connect } from 'react-redux'
 import { find, includes } from 'lodash'
+import { filter } from 'lodash/fp'
 import TopNav from '../components/TopNav'
 import { LeftNav, leftNavWidth, leftNavEasing } from '../components/LeftNav'
 import Notifier from '../components/Notifier'
@@ -18,6 +19,22 @@ import { matchEditorUrl } from './StandalonePostEditor'
 import { ModalWrapper } from '../components/Modal'
 import { makeUrl, nextPath } from '../util/navigation'
 const { array, bool, func, object, string } = React.PropTypes
+
+const makeNavLinks = (currentUser, community) => {
+  const { slug, network } = community || {}
+  const url = slug ? suffix => `/c/${slug}/${suffix}` : suffix => '/' + suffix
+  const rootUrl = slug ? `/c/${slug}` : '/app'
+  return filter('url', [
+    {url: rootUrl, icon: 'Comment-Alt', label: 'Conversations', index: true},
+    {url: url('events'), icon: 'Calendar', label: 'Events'},
+    {url: url('projects'), icon: 'ProjectorScreen', label: 'Projects'},
+    {url: url('people'), icon: 'Users', label: 'People'},
+    {url: slug && url('about'), icon: 'Help', label: 'About'},
+    {url: canInvite(currentUser, community) && url('invite'), icon: 'Mail', label: 'Invite'},
+    {url: network && `/n/${network.slug}`, icon: 'merkaba', label: 'Network'},
+    {url: canModerate(currentUser, community) && url('settings'), icon: 'Settings', label: 'Settings'}
+  ])
+}
 
 @prefetch(({ store, dispatch }) => {
   const { isMobile, people } = store.getState()
@@ -104,23 +121,23 @@ export default class App extends React.Component {
     const visitCommunity = community =>
       dispatch(navigate(nextPath(path, community, false, query)))
 
+    const links = makeNavLinks(currentUser, community)
+
     return <div className={cx({leftNavIsOpen, isMobile, showModal: !isEmpty(showModal)})}>
       <LeftNav opened={leftNavIsOpen}
+        links={links}
         community={community}
         network={network}
         tags={tags}
-        canModerate={canModerate(currentUser, community)}
-        canInvite={canInvite(currentUser, community)}
         close={closeLeftNav}/>
 
       {!hideTopNav && <TopNav currentUser={currentUser}
+        links={links}
         community={community}
         network={network}
         onChangeCommunity={visitCommunity}
         openLeftNav={openLeftNav}
         leftNavIsOpen={leftNavIsOpen}
-        canModerate={canModerate(currentUser, community)}
-        canInvite={canInvite(currentUser, community)}
         logout={() => {
           calliOSBridge({type: 'logout'})
           dispatch(logout())

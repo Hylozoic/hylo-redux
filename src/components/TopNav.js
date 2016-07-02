@@ -12,7 +12,7 @@ import { nextPath } from '../util/navigation'
 import { MenuButton, leftNavWidth, leftNavEasing } from './LeftNav'
 import { editorUrl } from '../containers/StandalonePostEditor'
 import { assetUrl } from '../util/assets'
-const { object, func, string, bool } = React.PropTypes
+const { array, object, func, string, bool } = React.PropTypes
 import { viewportTop } from '../util/scrolling'
 import { VelocityComponent } from 'velocity-react'
 import cx from 'classnames'
@@ -65,8 +65,7 @@ export default class TopNav extends React.Component {
     community: object,
     network: object,
     leftNavIsOpen: bool,
-    canModerate: bool,
-    canInvite: bool
+    links: array
   }
 
   static contextTypes = {
@@ -108,7 +107,7 @@ export default class TopNav extends React.Component {
   render () {
     const {
       search, logout, openLeftNav, leftNavIsOpen, path, onChangeCommunity,
-      network, canModerate, canInvite
+      network, links
     } = this.props
     const { currentUser, isMobile } = this.context
     const label = getLabel(path)
@@ -135,8 +134,7 @@ export default class TopNav extends React.Component {
           </ul>}
 
         {currentUser && <CommunityMenu {...{menuItems, onChangeCommunity}}/>}
-        {currentUser && !isMobile &&
-          <TopMainMenu {...{canModerate, canInvite, community}}/>}
+        {currentUser && !isMobile && <TopMainMenu links={links}/>}
         {currentUser && isMobile &&
           <A to={editorUrl(slug, getPostType(path))} className='compose'>
             <Icon name='Compose'/>
@@ -147,20 +145,19 @@ export default class TopNav extends React.Component {
   }
 }
 
-const TopMainMenu = ({ community, canInvite, canModerate }) => {
-  const { slug, network } = community
-  const url = slug ? suffix => `/c/${slug}/${suffix}` : suffix => '/' + suffix
+const TopMainMenu = ({ community, links }) => {
+  const LinkItem = ({ link }) => {
+    const { url, label, index } = link
+    const AComponent = index ? IndexA : A
+    return <AComponent to={url}>{label}</AComponent>
+  }
 
   return <div className='main-menu'>
-    <IndexA to={slug ? `/c/${slug}` : '/app'}>Conversations</IndexA>
-    <A to={url('projects')}>Projects</A>
-    <A to={url('events')}>Events</A>
+    {links.slice(0, 3).map(link => <LinkItem link={link} key={link.label}/>)}
     <Dropdown className='overflow-menu' toggleChildren={<Icon name='More'/>}>
-      <li><A to={url('people')}>People</A></li>
-      <li><A to={url('about')}>About</A></li>
-      {canInvite && <li><A to={url('invite')}>Invite</A></li>}
-      {network && <li><A to={`/n/${network.slug}`}>Network</A></li>}
-      {canModerate && <li><A to={url('settings')}>Settings</A></li>}
+      {links.slice(3).map(link => <li key={link.label}>
+        <LinkItem link={link}/>
+      </li>)}
     </Dropdown>
   </div>
 }

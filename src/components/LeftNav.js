@@ -62,37 +62,15 @@ export const TopicList = ({ tags, slug }, { dispatch }) => {
 }
 TopicList.contextTypes = {dispatch: func}
 
-const CommunityNav = ({ community, canModerate, canInvite }) => {
-  const { slug, network } = community || {}
-  const url = slug ? suffix => `/c/${slug}/${suffix}` : suffix => '/' + suffix
+const CommunityNav = ({ links }) => {
+  const LinkItem = ({ link }) => {
+    const { url, icon, label, index } = link
+    const AComponent = index ? IndexA : A
+    return <AComponent to={url}><Icon name={icon}/>{label}</AComponent>
+  }
 
   return <ul>
-    <li>
-      <IndexA to={slug ? `/c/${slug}` : '/app'}>
-        <Icon name='Comment-Alt'/> Conversations
-      </IndexA>
-    </li>
-    <li>
-      <A to={url('events')}><Icon name='Calendar'/> Events</A>
-    </li>
-    <li>
-      <A to={url('projects')}><Icon name='ProjectorScreen'/> Projects</A>
-    </li>
-    <li>
-      <A to={url('people')}><Icon name='Users'/> People</A>
-    </li>
-    {community && <li>
-      <A to={url('about')}><Icon name='Help'/> About</A>
-    </li>}
-    {canInvite && <li>
-      <A to={url('invite')}><Icon name='Mail'/> Invite</A>
-    </li>}
-    {network && <li>
-      <A to={`/n/${network.slug}`}><Icon name='merkaba'/>Network</A>
-    </li>}
-    {canModerate && <li>
-      <A to={url('settings')}><Icon name='Settings'/> Settings</A>
-    </li>}
+    {links.map(link => <LinkItem link={link} key={link.label}/>)}
   </ul>
 }
 
@@ -118,7 +96,7 @@ const NetworkNav = ({ network }) => {
   </ul>
 }
 
-export const LeftNav = ({ opened, community, network, tags, close, canModerate, canInvite }) => {
+export const LeftNav = ({ opened, community, network, tags, close, links }) => {
   const onMenuClick = event => {
     close()
     event.stopPropagation()
@@ -129,8 +107,7 @@ export const LeftNav = ({ opened, community, network, tags, close, canModerate, 
       <MenuButton onClick={onMenuClick}/>
       {network
         ? <NetworkNav network={network} />
-        : <CommunityNav community={community} canModerate={canModerate}
-            canInvite={canInvite}/>}
+        : <CommunityNav links={links}/>}
       {!isEmpty(tags) && <TopicList tags={tags} slug={community.slug}/>}
     </nav>}
     {opened && isMobile() && <div id='leftNavBackdrop' onClick={close}/>}

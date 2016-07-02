@@ -1,5 +1,5 @@
 import React from 'react'
-import { A } from './A'
+import { A, IndexA } from './A'
 import Icon from './Icon'
 import { NonLinkAvatar } from './Avatar'
 import Dropdown from './Dropdown'
@@ -64,7 +64,9 @@ export default class TopNav extends React.Component {
     opened: bool,
     community: object,
     network: object,
-    leftNavIsOpen: bool
+    leftNavIsOpen: bool,
+    canModerate: bool,
+    canInvite: bool
   }
 
   static contextTypes = {
@@ -106,7 +108,7 @@ export default class TopNav extends React.Component {
   render () {
     const {
       search, logout, openLeftNav, leftNavIsOpen, path, onChangeCommunity,
-      network
+      network, canModerate, canInvite
     } = this.props
     const { currentUser, isMobile } = this.context
     const label = getLabel(path)
@@ -126,25 +128,41 @@ export default class TopNav extends React.Component {
       <nav id='topNav' className={cx('clearfix', {scrolling: this.state.isScrolling})}>
         <MenuButton onClick={openLeftNav} label={label}/>
         {currentUser
-        ? <UserMenu {...{logout, currentUser, newCount, slug, isMobile}}/>
+        ? <UserMenu {...{logout, currentUser, newCount, slug, isMobile, search}}/>
         : <ul className='right'>
             <li><A to='/signup'>Sign up</A></li>
             <li><A to='/login'>Log in</A></li>
           </ul>}
 
         {currentUser && <CommunityMenu {...{menuItems, onChangeCommunity}}/>}
+        {currentUser && !isMobile &&
+          <TopMainMenu {...{canModerate, canInvite, community}}/>}
         {currentUser && isMobile &&
           <A to={editorUrl(slug, getPostType(path))} className='compose'>
             <Icon name='Compose'/>
           </A>}
 
-        <div className='search'>
-          <Icon name='Loupe'/>
-          <SearchInput onChange={search}/>
-        </div>
       </nav>
     </VelocityComponent>
   }
+}
+
+const TopMainMenu = ({ community, canInvite, canModerate }) => {
+  const { slug, network } = community
+  const url = slug ? suffix => `/c/${slug}/${suffix}` : suffix => '/' + suffix
+
+  return <div className='main-menu'>
+    <IndexA to={slug ? `/c/${slug}` : '/app'}>Conversations</IndexA>
+    <A to={url('projects')}>Projects</A>
+    <A to={url('events')}>Events</A>
+    <Dropdown className='overflow-menu' toggleChildren={<Icon name='More'/>}>
+      <li><A to={url('people')}>People</A></li>
+      <li><A to={url('about')}>About</A></li>
+      {canInvite && <li><A to={url('invite')}>Invite</A></li>}
+      {network && <li><A to={`/n/${network.slug}`}>Network</A></li>}
+      {canModerate && <li><A to={url('settings')}>Settings</A></li>}
+    </Dropdown>
+  </div>
 }
 
 const CommunityMenu = ({ menuItems, onChangeCommunity }, { isMobile, dispatch }) => {
@@ -190,14 +208,20 @@ const CommunityMenu = ({ menuItems, onChangeCommunity }, { isMobile, dispatch })
 }
 CommunityMenu.contextTypes = {isMobile: bool, dispatch: func}
 
-const UserMenu = ({ isMobile, slug, logout, newCount, currentUser }) => {
+const UserMenu = ({ isMobile, slug, logout, newCount, currentUser, search }) => {
   return <ul className='right'>
+    {!isMobile && <li className='search'>
+      <Icon name='Loupe'/>
+      <SearchInput onChange={search}/>
+    </li>}
+
     {!isMobile && <li className='notifications'>
       <A to={`${slug ? '/c/' + slug : ''}/notifications`}>
         <Icon name='Bell'/>
         {newCount > 0 && <div className='badge'>{newCount}</div>}
       </A>
     </li>}
+
     <li>
       <Dropdown className='user-menu' alignRight triangle={isMobile}
         backdrop={isMobile} toggleChildren={

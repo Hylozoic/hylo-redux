@@ -119,6 +119,8 @@ export default class App extends React.Component {
         onChangeCommunity={visitCommunity}
         openLeftNav={openLeftNav}
         leftNavIsOpen={leftNavIsOpen}
+        canModerate={canModerate(currentUser, community)}
+        canInvite={canInvite(currentUser, community)}
         logout={() => {
           calliOSBridge({type: 'logout'})
           dispatch(logout())

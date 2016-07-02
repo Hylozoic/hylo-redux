@@ -289,6 +289,7 @@ nav {
   }
 
   .search {
+    margin-top: 20px;
     margin-left: 30px;
     padding: 0 10px;
     display: inline-block;
@@ -380,6 +381,29 @@ nav {
     position: absolute;
     bottom: -(@size + 3px);
     left: @avatar-size-default / 2 - @size / 2;
+  }
+
+  .main-menu {
+    padding-left: 30px;
+    display: inline-block;
+    > a {
+      margin-right: 25px;
+      vertical-align: middle;
+      .medium;
+    }
+    > .dropdown {
+      display: inline-block;
+      .dropdown-toggle {
+        vertical-align: middle;
+        font-size: 24px;
+        text-decoration: none;
+        position: relative;
+        top: 3px;
+        .icon {
+          border: none;
+        }
+      }
+    }
   }
 }
 

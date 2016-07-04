@@ -1,6 +1,5 @@
 import qs from 'querystring'
 import { omit, get } from 'lodash'
-import { crypto } from 'crypto'
 import { makeUrl } from '../util/navigation'
 
 // if you need to check whether the client is a mobile device from the server
@@ -26,7 +25,7 @@ export function calliOSBridge (message, callback) {
   if (!isiOSApp()) return
 
   var randomName = () => {
-    return crypto.randomBytes(10).toString('hex')
+    return Math.random().toString(36).slice(2).replace(/^[0-9]*/, '')
   }
 
   if (callback) {
@@ -35,6 +34,7 @@ export function calliOSBridge (message, callback) {
       window.iOSCallbacks = {}
     }
     window.iOSCallbacks[callbackIdentifier] = callback
+
     message.callbackPath = `window.iOSCallbacks.${callbackIdentifier}`
   }
   if (get(window, 'webkit.messageHandlers.hylo.postMessage')) {

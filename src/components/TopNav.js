@@ -134,7 +134,7 @@ export default class TopNav extends React.Component {
           </ul>}
 
         {currentUser && <CommunityMenu {...{menuItems, onChangeCommunity}}/>}
-        {currentUser && !isMobile && <TopMainMenu links={links}/>}
+        {currentUser && !isMobile && !network && <TopMainMenu links={links}/>}
         {currentUser && isMobile &&
           <A to={editorUrl(slug, getPostType(path))} className='compose'>
             <Icon name='Compose'/>
@@ -154,7 +154,8 @@ const TopMainMenu = ({ community, links }) => {
 
   return <div className='main-menu'>
     {links.slice(0, 3).map(link => <LinkItem link={link} key={link.label}/>)}
-    <Dropdown className='overflow-menu' toggleChildren={<Icon name='More'/>}>
+    <Dropdown triangle className='overflow-menu' openOnHover
+      toggleChildren={<Icon name='More'/>}>
       {links.slice(3).map(link => <li key={link.label}>
         <LinkItem link={link}/>
       </li>)}
@@ -220,7 +221,7 @@ const UserMenu = ({ isMobile, slug, logout, newCount, currentUser, search }) => 
     </li>}
 
     <li>
-      <Dropdown className='user-menu' alignRight triangle={isMobile}
+      <Dropdown className='user-menu' alignRight openOnHover triangle={isMobile}
         backdrop={isMobile} toggleChildren={
           <div>
             <NonLinkAvatar person={currentUser}/>

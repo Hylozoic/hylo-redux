@@ -5,10 +5,9 @@ import { VelocityTransitionGroup } from 'velocity-react'
 import { isEmpty } from 'lodash'
 import { filter } from 'lodash/fp'
 import { tagUrl } from '../routes'
-import { isMobile } from '../client/util'
 import { showAllTags } from '../actions/tags'
 import cx from 'classnames'
-const { func } = React.PropTypes
+const { bool, func } = React.PropTypes
 
 export const leftNavWidth = 208 // this value is dupicated in CSS
 export const leftNavEasing = [70, 25]
@@ -69,7 +68,7 @@ const CommunityNav = ({ links }) => {
     return <AComponent to={url}><Icon name={icon}/>{label}</AComponent>
   }
 
-  return <ul>
+  return <ul className='nav-links'>
     {links.map(link => <LinkItem link={link} key={link.label}/>)}
   </ul>
 }
@@ -78,7 +77,7 @@ const NetworkNav = ({ network }) => {
   const { slug } = network
   const url = suffix => `/n/${slug}/${suffix}`
 
-  return <ul>
+  return <ul className='nav-links'>
     <li>
       <IndexA to={`/n/${slug}`}>
         <Icon name='Comment-Alt'/> Conversations
@@ -96,22 +95,23 @@ const NetworkNav = ({ network }) => {
   </ul>
 }
 
-export const LeftNav = ({ opened, community, network, tags, close, links }) => {
+export const LeftNav = ({ opened, community, network, tags, close, links }, { isMobile }) => {
   const onMenuClick = event => {
     close()
     event.stopPropagation()
   }
 
   return <VelocityTransitionGroup {...animations}>
-    {opened && <nav id='leftNav' onClick={() => isMobile() && close()}>
+    {opened && <nav id='leftNav' onClick={() => isMobile && close()}>
       <MenuButton onClick={onMenuClick}/>
       {network
         ? <NetworkNav network={network} />
-        : <CommunityNav links={links}/>}
+        : isMobile && <CommunityNav links={links}/>}
       {!isEmpty(tags) && <TopicList tags={tags} slug={community.slug}/>}
     </nav>}
-    {opened && isMobile() && <div id='leftNavBackdrop' onClick={close}/>}
+    {opened && isMobile && <div id='leftNavBackdrop' onClick={close}/>}
   </VelocityTransitionGroup>
 }
+LeftNav.contextTypes = {isMobile: bool}
 
 export default LeftNav

@@ -177,6 +177,7 @@ nav {
     }
 
     .inner-list {
+      overflow-y: scroll;
       width: 100%;
       border-top-left-radius: @border-radius-base;
       border-top-right-radius: @border-radius-base;
@@ -331,7 +332,7 @@ nav {
       }
 
       > li > a {
-        padding: 2px 20px;
+        line-height: 36px;
         .icon {
           margin-right: 8px;
           position: relative;
@@ -386,24 +387,47 @@ nav {
   .main-menu {
     padding-left: 30px;
     display: inline-block;
+
     > a {
       margin-right: 25px;
       vertical-align: middle;
       .medium;
-    }
-    > .dropdown {
-      display: inline-block;
-      .dropdown-toggle {
-        vertical-align: middle;
-        font-size: 24px;
-        text-decoration: none;
-        position: relative;
-        top: 3px;
-        .icon {
-          border: none;
-        }
+      text-decoration: none;
+      &:hover {
+        color: @damian-green;
       }
     }
+
+    > .dropdown {
+      display: inline-block;
+    }
+
+    .dropdown-toggle {
+      vertical-align: middle;
+      font-size: 24px;
+      text-decoration: none;
+      position: relative;
+      top: 3px;
+      .icon {
+        border: none;
+      }
+    }
+
+    .dropdown-menu {
+      > li > a {
+        line-height: 36px;
+      }
+
+      .non-mobile({
+        margin-top: -12px;
+        margin-left: -21px;
+        .triangle {
+          margin-left: -54px;
+        }
+      });
+    }
+
+
   }
 }
 
@@ -471,10 +495,14 @@ nav {
     }
   }
 
+  .nav-links {
+    padding-bottom: 15px;
+    margin-bottom: @p-bottom-margin;
+    border-bottom: 1px @dark-gray-bg solid;
+  }
+
   .topic-list {
-    margin-top: 15px;
-    padding-top: @p-bottom-margin;
-    border-top: 1px @dark-gray-bg solid;
+    padding-top: 0;
     .subheading a {
       padding-top: 5px;
       .small-caps-list-header;

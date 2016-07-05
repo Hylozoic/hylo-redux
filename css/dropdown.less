@@ -1,6 +1,9 @@
+@dropdown-border-color: rgba(0, 0, 0, 0.15);
+
 .dropdown-menu {
   max-height: 50vh;
   overflow-y: scroll;
+
   > li {
     position: relative;
 
@@ -49,13 +52,17 @@
 
   .triangle {
     min-width: 0 !important;
-    .is-top-triangle(#fff, #fff, 7px);
+    .is-top-triangle(#fff, @dropdown-border-color, 7px);
   }
 }
 
 .dropdown {
   &.inline {
     display: inline-block;
+  }
+
+  &.has-triangle .dropdown-menu {
+    overflow-y: visible;
   }
 
   &.active .dropdown-menu {

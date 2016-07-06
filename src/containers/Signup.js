@@ -3,7 +3,7 @@ import { pick } from 'lodash'
 import { defer } from 'react-fetcher'
 import { makeUrl } from '../util/navigation'
 import { Link } from 'react-router'
-import { signup, setSignupError } from '../actions'
+import { signup, setSignupError, toggleLeftNav } from '../actions'
 import ServiceAuthButtons from '../components/ServiceAuthButtons'
 import validator from 'validator'
 import { prefetchForNext, connectForNext, goToNext } from './Login'
@@ -65,6 +65,7 @@ export default class Signup extends React.Component {
     dispatch(signup(name, email, password))
     .then(({ error }) => {
       if (error) return
+      dispatch(toggleLeftNav())
       dispatch(goToNext(this.props.currentUser, query))
       trackEvent(SIGNED_UP)
     })

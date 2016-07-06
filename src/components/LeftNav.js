@@ -106,10 +106,10 @@ export const LeftNav = ({ opened, community, network, tags, close, links }, { is
       <MenuButton onClick={onMenuClick}/>
       {network
         ? <NetworkNav network={network} />
-        : isMobile && <CommunityNav links={links}/>}
+        : <CommunityNav links={links}/>}
       {!isEmpty(tags) && <TopicList tags={tags} slug={community.slug}/>}
     </nav>}
-    {opened && isMobile && <div id='leftNavBackdrop' onClick={close}/>}
+    {opened && <div id='leftNavBackdrop' onClick={close}/>}
   </VelocityTransitionGroup>
 }
 LeftNav.contextTypes = {isMobile: bool}

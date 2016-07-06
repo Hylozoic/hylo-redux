@@ -127,36 +127,36 @@ export default class TopNav extends React.Component {
       <nav id='topNav' className={cx('clearfix', {scrolling: this.state.isScrolling})}>
         <MenuButton onClick={openLeftNav} label={label}/>
         {currentUser
-        ? <UserMenu {...{logout, currentUser, newCount, slug, isMobile, search}}/>
+        ? <UserMenu {...{logout, currentUser, newCount, slug, search}}/>
         : <ul className='right'>
             <li><A to='/signup'>Sign up</A></li>
             <li><A to='/login'>Log in</A></li>
           </ul>}
 
         {currentUser && <CommunityMenu {...{menuItems, onChangeCommunity}}/>}
-        {currentUser && !isMobile && !network && <TopMainMenu links={links}/>}
-        {currentUser && isMobile &&
+        {currentUser && !network && <TopMainMenu links={links}/>}
+        {currentUser &&
           <A to={editorUrl(slug, getPostType(path))} className='compose'>
             <Icon name='Compose'/>
           </A>}
-
       </nav>
     </VelocityComponent>
   }
 }
 
 const TopMainMenu = ({ community, links }) => {
-  const LinkItem = ({ link }) => {
+  const LinkItem = ({ link, className }) => {
     const { url, label, index } = link
     const AComponent = index ? IndexA : A
-    return <AComponent to={url}>{label}</AComponent>
+    return <AComponent to={url} className={className}>{label}</AComponent>
   }
 
   return <div className='main-menu'>
-    {links.slice(0, 3).map(link => <LinkItem link={link} key={link.label}/>)}
+    {links.slice(0, 3).map(link =>
+      <LinkItem className={`a-${link.label}`} link={link} key={link.label}/>)}
     <Dropdown triangle className='overflow-menu' openOnHover
       toggleChildren={<Icon name='More'/>}>
-      {links.slice(3).map(link => <li key={link.label}>
+      {links.slice(1).map(link => <li key={link.label} className={`li-${link.label}`}>
         <LinkItem link={link}/>
       </li>)}
     </Dropdown>
@@ -178,9 +178,10 @@ const CommunityMenu = ({ menuItems, onChangeCommunity }, { isMobile, dispatch })
         <img src={currentItem.avatar_url} title='Jump to Conversations'
           onClick={jumpToConversations}/>
         <span className={cx('name', {network: isNetwork})}>
-          {currentItem.name} <span className='caret'></span>
+          {currentItem.name}
         </span>
-        {!isMobile && isNetwork && <span className='subtitle'>Network</span>}
+        <span className='caret'></span>
+        {isNetwork && <span className='subtitle'>Network</span>}
       </div>
     }>
     <li>
@@ -206,26 +207,26 @@ const CommunityMenu = ({ menuItems, onChangeCommunity }, { isMobile, dispatch })
 }
 CommunityMenu.contextTypes = {isMobile: bool, dispatch: func}
 
-const UserMenu = ({ isMobile, slug, logout, newCount, currentUser, search }) => {
+const UserMenu = ({ slug, logout, newCount, currentUser, search }, { isMobile }) => {
   return <ul className='right'>
-    {!isMobile && <li className='search'>
+    <li className='search'>
       <Icon name='Loupe'/>
       <SearchInput onChange={search}/>
-    </li>}
+    </li>
 
-    {!isMobile && <li className='notifications'>
+    <li className='notifications'>
       <A to={`${slug ? '/c/' + slug : ''}/notifications`}>
         <Icon name='Bell'/>
         {newCount > 0 && <div className='badge'>{newCount}</div>}
       </A>
-    </li>}
+    </li>
 
     <li>
       <Dropdown className='user-menu' alignRight openOnHover triangle={isMobile}
         backdrop={isMobile} toggleChildren={
           <div>
             <NonLinkAvatar person={currentUser}/>
-            {isMobile && newCount > 0 && <div className='dot-badge'/>}
+            {newCount > 0 && <div className='dot-badge'/>}
           </div>
         }>
         <li>
@@ -233,12 +234,12 @@ const UserMenu = ({ isMobile, slug, logout, newCount, currentUser, search }) => 
             <Icon name='User'/> My profile
           </A>
         </li>
-        {isMobile && <li>
+        <li className='dropdown-notifications'>
           <A to={slug ? `/c/${slug}/notifications` : '/notifications'}>
             <Icon name='Bell'/> Notifications
             {newCount > 0 && <span className='badge'>{newCount}</span>}
           </A>
-        </li>}
+        </li>
         <li>
           <A to={'/settings'}>
             <Icon name='Settings'/> Settings
@@ -258,3 +259,4 @@ const UserMenu = ({ isMobile, slug, logout, newCount, currentUser, search }) => 
     </li>
   </ul>
 }
+UserMenu.contextTypes = {isMobile: bool}

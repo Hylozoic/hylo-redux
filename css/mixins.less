@@ -94,13 +94,13 @@
 }
 
 .mobile(@rules) {
-  @media (max-width: @screen-xs-max) {
+  @media (max-width: @screen-sm) {
     @rules();
   }
 }
 
 .non-mobile(@rules) {
-  @media (min-width: @screen-sm) {
+  @media (min-width: (@screen-sm + 1)) {
     @rules();
   }
 }

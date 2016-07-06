@@ -54,7 +54,7 @@ export default compose(
       const state = store.getState()
       const communityId = get(state.communities[id], 'id')
       const userId = get(state.people, 'current.id')
-      saveCurrentCommunityId(dispatch, communityId, userId)
+      return saveCurrentCommunityId(dispatch, communityId, userId)
     })),
   defer(({ params: { id }, store }) => {
     const community = store.getState().communities[id]

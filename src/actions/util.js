@@ -12,6 +12,8 @@ export const findError = (errors, type, bucket, id) => {
 export const saveCurrentCommunityId = (dispatch, communityId, userId) => {
   if (!communityId) return
   const settings = {currentCommunityId: communityId}
-  userId && dispatch(updateUserSettings(userId, {settings}))
+  if (userId && typeof window !== 'undefined') {
+    setTimeout(() => dispatch(updateUserSettings(userId, {settings})), 2000)
+  }
   return dispatch(setCurrentCommunityId(communityId))
 }

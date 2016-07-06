@@ -39,8 +39,9 @@ export const prefetchForWrapped = subject => ({ dispatch, params, currentUser, q
     const community = getCommunity(currentUser, currentCommunityId)
     if (community) return dispatch(navigate(communityUrl(community)))
   }
-  saveCurrentCommunityId(dispatch, 'all', id)
+
   return dispatch(fetch(subject, id, query))
+  .then(() => saveCurrentCommunityId(dispatch, 'all', id))
 }
 
 const wrapComponent = (subject, ...args) => compose(

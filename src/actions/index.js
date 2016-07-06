@@ -188,7 +188,7 @@ export function fetchCommunitySettings (id) {
   return {
     type: FETCH_COMMUNITY_SETTINGS,
     payload: {api: true, path: `/noo/community/${id}/settings`},
-    meta: {cache: {bucket: 'communities', id, requiredProp: 'welcome_message'}}
+    meta: {cache: {bucket: 'communities', id, requiredProp: 'beta_access_code'}}
   }
 }
 

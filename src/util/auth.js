@@ -54,7 +54,7 @@ export function setupPopupCallback (name, dispatch, errorAction) {
           .then(({ error, payload }) => {
             if (error) return
             const query = qs.parse(window.location.search.replace(/^\?/, ''))
-            return goToNext(payload, query)
+            return dispatch(goToNext(payload, query))
           })
         }
         break

@@ -37,18 +37,18 @@ export default class ShareTopicModal extends React.Component {
   }
 
   render () {
-    let { onCancel, tagName, community, dispatch, pending,
+    const { onCancel, tagName, community, dispatch, pending,
       tagInvitationEditor: { recipients, error, success } } = this.props
-    let loaded = get(community, 'beta_access_code')
-    let joinUrl
-    if (loaded) joinUrl = communityTagJoinUrl(community, tagName)
+    const joinUrl = get(community, 'beta_access_code')
+      ? communityTagJoinUrl(community, tagName)
+      : null
 
-    let setError = text => dispatch(updateTagInvitationEditor('error', text))
+    const setError = text => dispatch(updateTagInvitationEditor('error', text))
 
-    let update = (field) => event =>
+    const update = (field) => event =>
       dispatch(updateTagInvitationEditor(field, event.target.value))
 
-    let submit = () => {
+    const submit = () => {
       setError(null)
 
       let emails = parseEmailString(recipients)
@@ -63,9 +63,7 @@ export default class ShareTopicModal extends React.Component {
     return <Modal title='Invite to join conversation' id='share-topic' onCancel={onCancel}>
       <div className='join-url'>
         <label>Copy Link</label>
-        {loaded
-        ? <A to={joinUrl}>{joinUrl}</A>
-      : <span>Loading...</span>}
+        {joinUrl ? <A to={joinUrl}>{joinUrl}</A> : <span>Loading...</span>}
       </div>
       <div className='invite'>
         <label>People</label>

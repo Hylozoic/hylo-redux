@@ -1,5 +1,5 @@
 import React from 'react'
-import { A } from './A'
+import { A, IndexA } from './A'
 import Icon from './Icon'
 import { NonLinkAvatar } from './Avatar'
 import Dropdown from './Dropdown'
@@ -12,7 +12,7 @@ import { nextPath } from '../util/navigation'
 import { MenuButton, leftNavWidth, leftNavEasing } from './LeftNav'
 import { editorUrl } from '../containers/StandalonePostEditor'
 import { assetUrl } from '../util/assets'
-const { object, func, string, bool } = React.PropTypes
+const { array, object, func, string, bool } = React.PropTypes
 import { viewportTop } from '../util/scrolling'
 import { VelocityComponent } from 'velocity-react'
 import cx from 'classnames'
@@ -64,7 +64,8 @@ export default class TopNav extends React.Component {
     opened: bool,
     community: object,
     network: object,
-    leftNavIsOpen: bool
+    leftNavIsOpen: bool,
+    links: array
   }
 
   static contextTypes = {
@@ -106,7 +107,7 @@ export default class TopNav extends React.Component {
   render () {
     const {
       search, logout, openLeftNav, leftNavIsOpen, path, onChangeCommunity,
-      network
+      network, links
     } = this.props
     const { currentUser, isMobile } = this.context
     const label = getLabel(path)
@@ -126,25 +127,40 @@ export default class TopNav extends React.Component {
       <nav id='topNav' className={cx('clearfix', {scrolling: this.state.isScrolling})}>
         <MenuButton onClick={openLeftNav} label={label}/>
         {currentUser
-        ? <UserMenu {...{logout, currentUser, newCount, slug, isMobile}}/>
+        ? <UserMenu {...{logout, currentUser, newCount, slug, isMobile, search}}/>
         : <ul className='right'>
             <li><A to='/signup'>Sign up</A></li>
             <li><A to='/login'>Log in</A></li>
           </ul>}
 
         {currentUser && <CommunityMenu {...{menuItems, onChangeCommunity}}/>}
+        {currentUser && !isMobile && !network && <TopMainMenu links={links}/>}
         {currentUser && isMobile &&
           <A to={editorUrl(slug, getPostType(path))} className='compose'>
             <Icon name='Compose'/>
           </A>}
 
-        <div className='search'>
-          <Icon name='Loupe'/>
-          <SearchInput onChange={search}/>
-        </div>
       </nav>
     </VelocityComponent>
   }
+}
+
+const TopMainMenu = ({ community, links }) => {
+  const LinkItem = ({ link }) => {
+    const { url, label, index } = link
+    const AComponent = index ? IndexA : A
+    return <AComponent to={url}>{label}</AComponent>
+  }
+
+  return <div className='main-menu'>
+    {links.slice(0, 3).map(link => <LinkItem link={link} key={link.label}/>)}
+    <Dropdown triangle className='overflow-menu' openOnHover
+      toggleChildren={<Icon name='More'/>}>
+      {links.slice(3).map(link => <li key={link.label}>
+        <LinkItem link={link}/>
+      </li>)}
+    </Dropdown>
+  </div>
 }
 
 const CommunityMenu = ({ menuItems, onChangeCommunity }, { isMobile, dispatch }) => {
@@ -190,16 +206,22 @@ const CommunityMenu = ({ menuItems, onChangeCommunity }, { isMobile, dispatch })
 }
 CommunityMenu.contextTypes = {isMobile: bool, dispatch: func}
 
-const UserMenu = ({ isMobile, slug, logout, newCount, currentUser }) => {
+const UserMenu = ({ isMobile, slug, logout, newCount, currentUser, search }) => {
   return <ul className='right'>
+    {!isMobile && <li className='search'>
+      <Icon name='Loupe'/>
+      <SearchInput onChange={search}/>
+    </li>}
+
     {!isMobile && <li className='notifications'>
       <A to={`${slug ? '/c/' + slug : ''}/notifications`}>
         <Icon name='Bell'/>
         {newCount > 0 && <div className='badge'>{newCount}</div>}
       </A>
     </li>}
+
     <li>
-      <Dropdown className='user-menu' alignRight triangle={isMobile}
+      <Dropdown className='user-menu' alignRight openOnHover triangle={isMobile}
         backdrop={isMobile} toggleChildren={
           <div>
             <NonLinkAvatar person={currentUser}/>

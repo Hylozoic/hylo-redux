@@ -5,10 +5,9 @@ import { VelocityTransitionGroup } from 'velocity-react'
 import { isEmpty } from 'lodash'
 import { filter } from 'lodash/fp'
 import { tagUrl } from '../routes'
-import { isMobile } from '../client/util'
 import { showAllTags } from '../actions/tags'
 import cx from 'classnames'
-const { func } = React.PropTypes
+const { bool, func } = React.PropTypes
 
 export const leftNavWidth = 208 // this value is dupicated in CSS
 export const leftNavEasing = [70, 25]
@@ -62,37 +61,15 @@ export const TopicList = ({ tags, slug }, { dispatch }) => {
 }
 TopicList.contextTypes = {dispatch: func}
 
-const CommunityNav = ({ community, canModerate, canInvite }) => {
-  const { slug, network } = community || {}
-  const url = slug ? suffix => `/c/${slug}/${suffix}` : suffix => '/' + suffix
+const CommunityNav = ({ links }) => {
+  const LinkItem = ({ link }) => {
+    const { url, icon, label, index } = link
+    const AComponent = index ? IndexA : A
+    return <AComponent to={url}><Icon name={icon}/>{label}</AComponent>
+  }
 
-  return <ul>
-    <li>
-      <IndexA to={slug ? `/c/${slug}` : '/app'}>
-        <Icon name='Comment-Alt'/> Conversations
-      </IndexA>
-    </li>
-    <li>
-      <A to={url('events')}><Icon name='Calendar'/> Events</A>
-    </li>
-    <li>
-      <A to={url('projects')}><Icon name='ProjectorScreen'/> Projects</A>
-    </li>
-    <li>
-      <A to={url('people')}><Icon name='Users'/> People</A>
-    </li>
-    {community && <li>
-      <A to={url('about')}><Icon name='Help'/> About</A>
-    </li>}
-    {canInvite && <li>
-      <A to={url('invite')}><Icon name='Mail'/> Invite</A>
-    </li>}
-    {network && <li>
-      <A to={`/n/${network.slug}`}><Icon name='merkaba'/>Network</A>
-    </li>}
-    {canModerate && <li>
-      <A to={url('settings')}><Icon name='Settings'/> Settings</A>
-    </li>}
+  return <ul className='nav-links'>
+    {links.map(link => <LinkItem link={link} key={link.label}/>)}
   </ul>
 }
 
@@ -100,7 +77,7 @@ const NetworkNav = ({ network }) => {
   const { slug } = network
   const url = suffix => `/n/${slug}/${suffix}`
 
-  return <ul>
+  return <ul className='nav-links'>
     <li>
       <IndexA to={`/n/${slug}`}>
         <Icon name='Comment-Alt'/> Conversations
@@ -118,23 +95,23 @@ const NetworkNav = ({ network }) => {
   </ul>
 }
 
-export const LeftNav = ({ opened, community, network, tags, close, canModerate, canInvite }) => {
+export const LeftNav = ({ opened, community, network, tags, close, links }, { isMobile }) => {
   const onMenuClick = event => {
     close()
     event.stopPropagation()
   }
 
   return <VelocityTransitionGroup {...animations}>
-    {opened && <nav id='leftNav' onClick={() => isMobile() && close()}>
+    {opened && <nav id='leftNav' onClick={() => isMobile && close()}>
       <MenuButton onClick={onMenuClick}/>
       {network
         ? <NetworkNav network={network} />
-        : <CommunityNav community={community} canModerate={canModerate}
-            canInvite={canInvite}/>}
+        : isMobile && <CommunityNav links={links}/>}
       {!isEmpty(tags) && <TopicList tags={tags} slug={community.slug}/>}
     </nav>}
-    {opened && isMobile() && <div id='leftNavBackdrop' onClick={close}/>}
+    {opened && isMobile && <div id='leftNavBackdrop' onClick={close}/>}
   </VelocityTransitionGroup>
 }
+LeftNav.contextTypes = {isMobile: bool}
 
 export default LeftNav

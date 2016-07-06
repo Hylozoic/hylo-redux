@@ -177,6 +177,7 @@ nav {
     }
 
     .inner-list {
+      overflow-y: scroll;
       width: 100%;
       border-top-left-radius: @border-radius-base;
       border-top-right-radius: @border-radius-base;
@@ -289,6 +290,7 @@ nav {
   }
 
   .search {
+    margin-top: 20px;
     margin-left: 30px;
     padding: 0 10px;
     display: inline-block;
@@ -330,7 +332,7 @@ nav {
       }
 
       > li > a {
-        padding: 2px 20px;
+        line-height: 36px;
         .icon {
           margin-right: 8px;
           position: relative;
@@ -380,6 +382,52 @@ nav {
     position: absolute;
     bottom: -(@size + 3px);
     left: @avatar-size-default / 2 - @size / 2;
+  }
+
+  .main-menu {
+    padding-left: 30px;
+    display: inline-block;
+
+    > a {
+      margin-right: 25px;
+      vertical-align: middle;
+      .medium;
+      text-decoration: none;
+      &:hover {
+        color: @damian-green;
+      }
+    }
+
+    > .dropdown {
+      display: inline-block;
+    }
+
+    .dropdown-toggle {
+      vertical-align: middle;
+      font-size: 24px;
+      text-decoration: none;
+      position: relative;
+      top: 3px;
+      .icon {
+        border: none;
+      }
+    }
+
+    .dropdown-menu {
+      > li > a {
+        line-height: 36px;
+      }
+
+      .non-mobile({
+        margin-top: -12px;
+        margin-left: -21px;
+        .triangle {
+          margin-left: -54px;
+        }
+      });
+    }
+
+
   }
 }
 
@@ -435,25 +483,26 @@ nav {
       color: @damian-green;
       .regular;
     }
-    .glyphicon, .icon {
+    .icon {
       font-size: 16px;
-      margin-right: 8px;
+      margin-left: -2px;
+      margin-right: 6px;
+      width: 22px;
+      display: inline-block;
+      text-align: center;
       position: relative;
       top: 1px;
     }
-    .icon-Users {
-      margin-right: 6px;
-    }
-    .icon-merkaba {
-      left: -3px;
-      margin-right: 7px;
-    }
+  }
+
+  .nav-links {
+    padding-bottom: 15px;
+    margin-bottom: @p-bottom-margin;
+    border-bottom: 1px @dark-gray-bg solid;
   }
 
   .topic-list {
-    margin-top: 15px;
-    padding-top: @p-bottom-margin;
-    border-top: 1px @dark-gray-bg solid;
+    padding-top: 0;
     .subheading a {
       padding-top: 5px;
       .small-caps-list-header;

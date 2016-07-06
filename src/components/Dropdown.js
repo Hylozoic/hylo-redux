@@ -18,19 +18,27 @@ export default class Dropdown extends React.Component {
     toggleChildren: object.isRequired,
     onFirstOpen: func,
     backdrop: bool,
-    triangle: bool
+    triangle: bool,
+    openOnHover: bool
   }
 
   static contextTypes = {
     isMobile: bool
   }
 
-  toggle = event => {
+  toggle = (event, context) => {
     const { active } = this.state
     this.setState({active: !active})
-    if (!active && this.state.neverOpened) {
-      this.setState({neverOpened: false})
-      if (this.props.onFirstOpen) this.props.onFirstOpen()
+    if (active) {
+      this.setState({hoverOpened: false})
+    } else {
+      if (context === 'hover') {
+        this.setState({hoverOpened: true})
+      }
+      if (this.state.neverOpened) {
+        this.setState({neverOpened: false})
+        if (this.props.onFirstOpen) this.props.onFirstOpen()
+      }
     }
     if (event) {
       event.stopPropagation()
@@ -53,17 +61,23 @@ export default class Dropdown extends React.Component {
 
   render () {
     const {
-      toggleChildren, className, children, alignRight, backdrop, triangle
+      toggleChildren, children, alignRight, backdrop, triangle, openOnHover
     } = this.props
+    const { hoverOpened } = this.state
     const { isMobile } = this.context
     const active = this.state.active && !isEmpty(children)
-    return <div className={cx('dropdown', className, {active})} ref='parent'>
-      <a className='dropdown-toggle' onClick={this.toggle}>
+    const className = cx('dropdown', this.props.className,
+      {active, 'has-triangle': triangle})
+
+    return <div className={className} ref='parent'>
+      <a className='dropdown-toggle' onClick={this.toggle}
+        onMouseEnter={ev => openOnHover && this.toggle(ev, 'hover')}>
         {toggleChildren}
       </a>
       <ul className={cx('dropdown-menu', {'dropdown-menu-right': alignRight})}
         style={mobileMenuStyle(isMobile && active, this.refs.parent)}
-        onClick={() => this.toggle()}>
+        onClick={() => this.toggle()}
+        onMouseLeave={() => hoverOpened && this.toggle()}>
         {triangle && <li className='triangle'
           style={{left: findTriangleLeftPos(isMobile, this.refs.parent)}}/>}
         {children}

@@ -70,6 +70,12 @@ export default class UserSettings extends React.Component {
   validate () {
     let { errors } = this.state
 
+    if (errors.name) {
+      window.alert('Please provide a valid name.')
+      this.refs.name.focus()
+      return
+    }
+
     if (errors.email) {
       window.alert('Please provide a valid email.')
       this.refs.email.focus()
@@ -83,6 +89,13 @@ export default class UserSettings extends React.Component {
     }
 
     return true
+  }
+
+  setName = event => {
+    return this.setState({
+      edited: {...this.state.edited, name: event.target.value},
+      errors: {...this.state.errors, name: !event.target.value}
+    })
   }
 
   setEmail = event => {
@@ -189,9 +202,35 @@ export default class UserSettings extends React.Component {
       bio, location, url, facebook_url, twitter_name, linkedin_url
     } = {...currentUser, ...editing}
 
+    if (editing.name) {
+      console.log('edited', edited)
+    }
+
     return <div id='user-settings' className='form-sections simple-page'>
       <SectionLabel name='profile' label='Profile' {...{dispatch, expand}}/>
       {expand.profile && <Section className='profile'>
+        <Item>
+          <div className='half-column'>
+            <label>Your Name</label>
+            <p>{currentUser.name}</p>
+          </div>
+          {!editing.name && <div className='half-column right-align'>
+            <button type='button' onClick={() => this.edit('name')}>Change</button>
+          </div>}
+          {editing.name && <div className='half-column right-align'>
+            <form name='emailForm'>
+              <div className={cx('form-group', {'has-error': errors.name})}>
+                <input type='text' ref='name' className='name form-control'
+                  value={edited.name}
+                  onChange={this.setName}/>
+                </div>
+            </form>
+            <div className='buttons'>
+              <button type='button' onClick={() => this.cancelEdit('name')}>Cancel</button>
+              <button type='button' className='btn-primary' onClick={() => this.save('name')}>Save</button>
+            </div>
+          </div>}
+        </Item>
         <Item>
           <div className='half-column'>
             <label>Profile image</label>

@@ -9,7 +9,7 @@ import Notifier from '../components/Notifier'
 import LiveStatusPoller from '../components/LiveStatusPoller'
 import PageTitleController from '../components/PageTitleController'
 import TagPopover from '../components/TagPopover'
-import { logout, navigate, removeNotification, toggleMainMenu, updateUserSettings } from '../actions'
+import { logout, navigate, removeNotification, toggleLeftNav, updateUserSettings } from '../actions'
 import { calliOSBridge, iOSAppVersion } from '../client/util'
 import { VelocityComponent } from 'velocity-react'
 import { canInvite, canModerate } from '../models/currentUser'
@@ -23,7 +23,7 @@ const { array, bool, func, object, string } = React.PropTypes
   const { isMobile, people } = store.getState()
   if (!isMobile && typeof window === 'undefined' &&
     get(people.current, 'settings.leftNavIsOpen')) {
-    return dispatch(toggleMainMenu())
+    return dispatch(toggleLeftNav())
   }
 })
 @connect((state, { params }) => {
@@ -89,8 +89,8 @@ export default class App extends React.Component {
     ], path)
 
     const moveWithMenu = {marginLeft: leftNavIsOpen ? leftNavWidth : 0}
-    const toggleLeftNav = open => {
-      if (leftNavIsOpen !== open) dispatch(toggleMainMenu())
+    const toggleLeftNavAndSave = open => {
+      if (leftNavIsOpen !== open) dispatch(toggleLeftNav())
       if (!isMobile) {
         setTimeout(() => {
           const settings = {leftNavIsOpen: open}
@@ -98,8 +98,8 @@ export default class App extends React.Component {
         }, 1000)
       }
     }
-    const openLeftNav = () => toggleLeftNav(true)
-    const closeLeftNav = () => toggleLeftNav(false)
+    const openLeftNav = () => toggleLeftNavAndSave(true)
+    const closeLeftNav = () => toggleLeftNavAndSave(false)
     const doSearch = text => dispatch(navigate(makeUrl('/search', {q: text})))
     const visitCommunity = community =>
       dispatch(navigate(nextPath(path, community, false, query)))

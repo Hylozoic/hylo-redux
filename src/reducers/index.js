@@ -62,7 +62,7 @@ import {
   SHOW_SHARE_TAG,
   SHOW_TAG_POPOVER,
   SIGNUP,
-  TOGGLE_MAIN_MENU,
+  TOGGLE_LEFT_NAV,
   TOGGLE_USER_SETTINGS_SECTION,
   TYPEAHEAD,
   UPDATE_COMMUNITY_EDITOR,
@@ -114,7 +114,7 @@ export default combineReducers({
     if (error) return state
 
     switch (type) {
-      case TOGGLE_MAIN_MENU:
+      case TOGGLE_LEFT_NAV:
         return !state
     }
 

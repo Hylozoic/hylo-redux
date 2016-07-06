@@ -1,8 +1,7 @@
-import { fetchCurrentUser, navigate } from '../actions'
-import { getCommunity } from '../models/currentUser'
+import { fetchCurrentUser } from '../actions'
 import { get } from 'lodash'
+import { goToNext } from '../containers/Login'
 import qs from 'querystring'
-import { communityUrl } from '../routes'
 
 export const LOGIN_CONTEXT = 'login'
 export const PROFILE_CONTEXT = 'profile'
@@ -45,7 +44,6 @@ export function setupPopupCallback (name, dispatch, errorAction) {
 
   window.popupDone = opts => {
     let { context, error } = opts
-    let next
     switch (context) {
       case LOGIN_CONTEXT:
         if (error) {
@@ -53,15 +51,10 @@ export function setupPopupCallback (name, dispatch, errorAction) {
         } else {
           dispatch(errorAction(null))
           dispatch(fetchCurrentUser())
-          .then(action => {
-            if (action.error) return
-            let params = qs.parse(window.location.search.replace(/^\?/, ''))
-
-            const currentUser = action.payload
-            const currentCommunityId = get(currentUser, 'settings.currentCommunityId')
-            const community = getCommunity(currentUser, currentCommunityId)
-            next = params.next || (community ? communityUrl(community) : `/u/${action.payload.id}`)
-            return dispatch(navigate(next))
+          .then(({ error, payload }) => {
+            if (error) return
+            const query = qs.parse(window.location.search.replace(/^\?/, ''))
+            return goToNext(payload, query)
           })
         }
         break

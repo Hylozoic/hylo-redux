@@ -85,7 +85,7 @@ export const SIGNUP = 'SIGNUP'
 export const START_POST_EDIT = 'START_POST_EDIT'
 export const THANK = 'THANK'
 export const THANK_PENDING = THANK + _PENDING
-export const TOGGLE_MAIN_MENU = 'TOGGLE_MAIN_MENU'
+export const TOGGLE_LEFT_NAV = 'TOGGLE_LEFT_NAV'
 export const TOGGLE_USER_SETTINGS_SECTION = 'TOGGLE_USER_SETTINGS_SECTION'
 export const TYPEAHEAD = 'TYPEAHEAD'
 export const UPDATE_COMMENT_EDITOR = 'UPDATE_COMMENT_EDITOR'
@@ -322,8 +322,8 @@ export function changeEventResponse (id, response, user) {
   }
 }
 
-export function toggleMainMenu () {
-  return {type: TOGGLE_MAIN_MENU}
+export function toggleLeftNav () {
+  return {type: TOGGLE_LEFT_NAV}
 }
 
 export function updateUserSettings (id, params, prevProps) {

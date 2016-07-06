@@ -61,9 +61,13 @@ export const connectForNext = section =>
     }
   }, null, null, {withRef: true})
 
-export const goToNext = (currentUser, community, query) => {
+export const goToNext = (currentUser, query) => {
   let { next, action, token } = query
+
   if (!next) {
+    const currentCommunityId = get(currentUser, 'settings.currentCommunityId')
+    const community = getCommunity(currentUser, currentCommunityId)
+
     if (community) {
       next = communityUrl(community)
     } else {
@@ -131,11 +135,8 @@ export default class Login extends React.Component {
     return dispatch(login(email, password))
     .then(({ error }) => {
       if (error) return
+      dispatch(goToNext(this.props.currentUser, query))
       trackEvent(LOGGED_IN)
-      const { currentUser } = this.props
-      const currentCommunityId = get(currentUser, 'settings.currentCommunityId')
-      const community = getCommunity(currentUser, currentCommunityId)
-      dispatch(goToNext(this.props.currentUser, community, query))
     })
   }
 

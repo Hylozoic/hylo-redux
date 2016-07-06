@@ -2,16 +2,17 @@ import React from 'react'
 import { compose } from 'redux'
 import { prefetch } from 'react-fetcher'
 import { connect } from 'react-redux'
-import { fetchOnboarding } from '../actions'
+import { fetchCommunity } from '../actions'
 import A from '../components/A'
 import { communityUrl } from '../routes'
 import { isEmpty } from 'lodash'
 import { markdown, sanitize } from '../util/text'
 
 const Onboarding = compose(
-  prefetch(({ dispatch, params: { id }, currentUser }) =>
-    dispatch(fetchOnboarding(currentUser.id, id))),
-  connect(({ onboarding }) => ({community: onboarding}))
+  prefetch(({ dispatch, params: { id } }) => dispatch(fetchCommunity(id))),
+  connect(({ communities }, { params }) => ({
+    community: communities[params.id]
+  }))
 )(({ community }) => {
   let bg = url => ({style: {backgroundImage: `url(${url})`}})
 

@@ -572,14 +572,6 @@ export function removeNotification (id) {
   }
 }
 
-export function fetchOnboarding (userId, communityId) {
-  let path = `/noo/user/${userId}/onboarding?communityId=${communityId}`
-  return {
-    type: FETCH_ONBOARDING,
-    payload: {api: true, path}
-  }
-}
-
 export function removePost (id) {
   return {
     type: REMOVE_POST,

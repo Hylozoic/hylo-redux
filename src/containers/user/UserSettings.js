@@ -202,10 +202,6 @@ export default class UserSettings extends React.Component {
       bio, location, url, facebook_url, twitter_name, linkedin_url
     } = {...currentUser, ...editing}
 
-    if (editing.name) {
-      console.log('edited', edited)
-    }
-
     return <div id='user-settings' className='form-sections simple-page'>
       <SectionLabel name='profile' label='Profile' {...{dispatch, expand}}/>
       {expand.profile && <Section className='profile'>

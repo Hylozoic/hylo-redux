@@ -593,9 +593,10 @@ export function search (opts) {
 }
 
 export function fetchLiveStatus (communityId, slug) {
+  const path = `/noo/live-status?communityId=${communityId || ''}`
   return {
     type: FETCH_LIVE_STATUS,
-    payload: {api: true, path: `/noo/live-status/${communityId}`},
+    payload: {api: true, path},
     meta: {slug}
   }
 }

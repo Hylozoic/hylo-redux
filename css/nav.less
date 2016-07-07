@@ -532,12 +532,15 @@ nav {
   }
 
   .nav-links {
-    @media (min-width: @main-menu-hide-breakpoint) {
-      display: none;
-    }
     padding-bottom: 15px;
     margin-bottom: @p-bottom-margin;
     border-bottom: 1px @dark-gray-bg solid;
+  }
+
+  .community-nav-links {
+    @media (min-width: @main-menu-hide-breakpoint) {
+      display: none;
+    }
   }
 
   .topic-list {

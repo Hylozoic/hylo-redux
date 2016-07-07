@@ -68,7 +68,7 @@ const CommunityNav = ({ links }) => {
     return <AComponent to={url}><Icon name={icon}/>{label}</AComponent>
   }
 
-  return <ul className='nav-links'>
+  return <ul className='nav-links community-nav-links'>
     {links.map(link => <LinkItem link={link} key={link.label}/>)}
   </ul>
 }
@@ -77,7 +77,7 @@ const NetworkNav = ({ network }) => {
   const { slug } = network
   const url = suffix => `/n/${slug}/${suffix}`
 
-  return <ul className='nav-links'>
+  return <ul className='nav-links network-nav-links'>
     <li>
       <IndexA to={`/n/${slug}`}>
         <Icon name='Comment-Alt'/> Conversations

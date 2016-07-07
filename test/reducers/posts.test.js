@@ -45,6 +45,29 @@ describe('posts', () => {
 
       expect(posts(state, action)).to.deep.equal(expectedState)
     })
+
+    it('sets pins field correctly', () => {
+      let action = {
+        type: FETCH_POSTS,
+        payload: {
+          posts: [{id: 'a', name: 'hi', communities: [], pinned: true}]
+        },
+        meta: {
+          cache: {id: 'foo'},
+          communityId: 'c3'
+        }
+      }
+
+      let state = {
+        a: {id: 'a', description: 'hello', pins: ['c1', 'c2']}
+      }
+
+      let expectedState = {
+        a: {id: 'a', name: 'hi', description: 'hello', communities: [], pins: ['c1', 'c2', 'c3']}
+      }
+
+      expect(posts(state, action)).to.deep.equal(expectedState)
+    })
   })
 
   describe('on UPDATE_POST', () => {

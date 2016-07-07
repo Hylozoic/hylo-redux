@@ -10,10 +10,11 @@ export function fetchPosts (opts) {
   const queryParams = {
     offset, limit, type, tag, sort, search, filter, omit,
     comments: true, votes: true}
-  let path
+  let path, meta
 
   switch (subject) {
     case 'community':
+      meta.communityId = id
       if (id === 'all' && tag) {
         path = `/noo/tag/${tag}/posts`
         queryParams.tag = null
@@ -37,12 +38,12 @@ export function fetchPosts (opts) {
   }
   path += '?' + cleanAndStringify(queryParams)
 
+  meta.cache = {id: cacheId, bucket: 'postsByQuery', limit, offset, array: true}
+
   return {
     type: FETCH_POSTS,
     payload: {api: true, path},
-    meta: {
-      cache: {id: cacheId, bucket: 'postsByQuery', limit, offset, array: true}
-    }
+    meta
   }
 }
 

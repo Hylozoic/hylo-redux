@@ -1,6 +1,6 @@
 import {
-  cloneDeep, filter, get, includes, isArray, isEqual, mergeWith, set, some,
-  transform, uniqBy
+  cloneDeep, filter, get, includes, isArray, isEqual, isObject, mergeWith, set, some,
+  transform, uniqBy, uniq
 } from 'lodash'
 import { CLEAR_CACHE } from '../actions'
 
@@ -35,6 +35,10 @@ export function updateMedia (obj, type, url) {
   return {...obj, media}
 }
 
+const isSimpleArray = array => isArray(array) && (array.length === 0 || !isObject(array[0]))
+
+const mergeArray = (dest, src) => uniq(dest.concat(src))
+
 // update state with a set of items. items that already exist in the state get
 // new properties, update the values of existing properties, and do not lose any
 // existing properties that aren't contained in their new counterpart.
@@ -44,8 +48,9 @@ export const mergeList = (state, items, key) => {
     m[id] = mergeWith({...state[id]}, x, (objValue, srcValue) => {
       // we don't want to perform the default behavior of merge when working
       // with arrays, because that concatenates them. e.g. with the list of
-      // media for a post, that creates duplicate values. so we replace the old
-      // value with the new one instead.
+      // media for a post, that creates duplicate values. so instead we merge if they're simple,
+      if (isSimpleArray(objValue) && isSimpleArray(srcValue)) return mergeArray(objValue, srcValue)
+      // and replace the old value with the new one if they contain objects.
       if (isArray(objValue) && isArray(srcValue)) return srcValue
     })
     return m

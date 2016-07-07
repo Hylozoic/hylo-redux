@@ -6,6 +6,7 @@ import {
   FETCH_POSTS,
   FETCH_PERSON,
   FOLLOW_POST,
+  PIN_POST_PENDING,
   REMOVE_POST,
   UPDATE_POST,
   VOTE_ON_POST,
@@ -125,6 +126,8 @@ export default function (state = {}, action) {
     case FETCH_PERSON:
       const newPosts = compact([payload.recent_request, payload.recent_offer])
       return mergeList(state, newPosts.map(normalize), 'id')
+    case PIN_POST_PENDING:
+      return {...state, [id]: {...state[id], pinned: !state[id].pinned}}
   }
   return state
 }

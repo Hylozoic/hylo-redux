@@ -44,8 +44,8 @@ export const mergeList = (state, items, key) => {
     m[id] = mergeWith({...state[id]}, x, (objValue, srcValue) => {
       // we don't want to perform the default behavior of merge when working
       // with arrays, because that concatenates them. e.g. with the list of
-      // media for a post, that creates duplicate values. so instead we
-      // replace the old value with the new one if they contain objects.
+      // media for a post, that creates duplicate values. so we replace the old
+      // value with the new one instead.
       if (isArray(objValue) && isArray(srcValue)) return srcValue
     })
     return m

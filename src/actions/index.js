@@ -694,10 +694,10 @@ export function updateCommentEditor (id, text) {
   }
 }
 
-export function pinPost (communityId, id) {
+export function pinPost (slug, id) {
   return {
     type: PIN_POST,
-    payload: {api: true, path: `/noo/community/${communityId}/post/${id}/pin`, method: 'POST'},
-    meta: {communityId, id}
+    payload: {api: true, path: `/noo/community/${slug}/post/${id}/pin`, method: 'POST'},
+    meta: {slug, id}
   }
 }

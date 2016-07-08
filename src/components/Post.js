@@ -45,7 +45,6 @@ class Post extends React.Component {
     communities: array,
     community: object,
     comments: array,
-    pinned: bool,
     dispatch: func,
     expanded: bool,
     onExpand: func
@@ -195,7 +194,7 @@ export const Menu = (props, { dispatch, post, currentUser, community }) => {
     : dispatch(startPostEdit(post))
   const remove = () => window.confirm('Are you sure? This cannot be undone.') &&
     dispatch(removePost(post.id))
-  const pin = () => dispatch(pinPost(get(community, 'id'), post.id))
+  const pin = () => dispatch(pinPost(get(community, 'slug'), post.id))
 
   const toggleChildren = pinned
     ? <span className='pinned'><span className='label'>Pinned</span><span className='icon-More'></span></span>

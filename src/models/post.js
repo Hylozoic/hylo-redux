@@ -29,4 +29,5 @@ export const getEditingPostIds = (posts, state) =>
 
 export const getPost = (id, state) => id ? get(id, state.posts) : null
 
-export const isPinned = (post, community) => community && get(post, ['memberships', community.id, 'pinned'])
+export const isPinned = (post, community) =>
+ community ? get(['memberships', community.slug, 'pinned'], post) : null

@@ -127,7 +127,18 @@ export default function (state = {}, action) {
       const newPosts = compact([payload.recent_request, payload.recent_offer])
       return mergeList(state, newPosts.map(normalize), 'id')
     case PIN_POST_PENDING:
-      return {...state, [id]: {...state[id], pinned: !state[id].pinned}}
+      post = state[id]
+      const membership = get(['memberships', meta.slug], post)
+      return {...state, [id]: {
+        ...post,
+        memberships: {
+          ...post.memberships,
+          [meta.slug]: {
+            ...membership,
+            pinned: !get('pinned', membership)
+          }
+        }
+      }}
   }
   return state
 }

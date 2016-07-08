@@ -57,6 +57,8 @@ export const MARK_ALL_ACTIVITIES_READ_PENDING = MARK_ALL_ACTIVITIES_READ + _PEND
 export const NAVIGATE = 'NAVIGATE'
 export const NOTIFY = 'NOTIFY'
 export const REMOVE_COMMENT = 'REMOVE_COMMENT'
+export const REMOVE_COMMUNITY_MEMBER = 'REMOVE_COMMUNITY_MEMBER'
+export const REMOVE_COMMUNITY_MEMBER_PENDING = 'REMOVE_COMMUNITY_MEMBER_PENDING'
 export const REMOVE_COMMUNITY_MODERATOR = 'REMOVE_COMMUNITY_MODERATOR'
 export const REMOVE_COMMUNITY_MODERATOR_PENDING = REMOVE_COMMUNITY_MODERATOR + _PENDING
 export const REMOVE_DOC = 'REMOVE_DOC'
@@ -373,6 +375,14 @@ export function removeCommunityModerator (community, moderatorId, prevProps) {
     type: REMOVE_COMMUNITY_MODERATOR,
     payload: {api: true, path: `/noo/community/${community.id}/moderator/${moderatorId}`, method: 'DELETE'},
     meta: {slug: community.slug, moderatorId, prevProps}
+  }
+}
+
+export function removeCommunityMember (community, userId, cacheId, prevProps) {
+  return {
+    type: REMOVE_COMMUNITY_MEMBER,
+    payload: {api: true, path: `/noo/community/${community.id}/member/${userId}`, method: 'DELETE'},
+    meta: {slug: community.slug, userId, cacheId, prevProps}
   }
 }
 

@@ -5,7 +5,7 @@ import Masonry from 'react-masonry-component'
 import { humanDate } from '../util/text'
 import { isEmpty } from 'lodash'
 
-const PersonCards = ({ people, menus, slug, onSkillClick }) => {
+const PersonCards = ({ people, menus, slug, onSkillClick, removeMember }) => {
   return <div className='person-cards masonry-container'>
     <Masonry options={{transitionDuration: 0}}>
       {people.map(person => <div key={person.id} className='masonry-item-wrapper'>
@@ -13,6 +13,7 @@ const PersonCards = ({ people, menus, slug, onSkillClick }) => {
           menu={menus && menus[person.id]}
           slug={slug}
           onSkillClick={onSkillClick}
+          removeMember={removeMember}
           />
       </div>)}
     </Masonry>
@@ -21,7 +22,7 @@ const PersonCards = ({ people, menus, slug, onSkillClick }) => {
 
 export default PersonCards
 
-export const PersonCard = ({ person, menu, slug, onSkillClick }) => {
+export const PersonCard = ({ person, menu, slug, onSkillClick, removeMember }) => {
   const {
     id, avatar_url, name, bio, isModerator, joined_at, tags, offerCount
   } = person
@@ -36,6 +37,10 @@ export const PersonCard = ({ person, menu, slug, onSkillClick }) => {
     {menu && <Dropdown className='caret-menu' alignRight
       toggleChildren={<i className='icon-down'></i>}>
       {menu}
+    </Dropdown>}
+    {removeMember && <Dropdown className='person-menu' alignRight
+      toggleChildren={<i className='icon-More'></i>}>
+      {[<li key='1'><a onClick={() => removeMember(person.id)}>Remove from community</a></li>]}
     </Dropdown>}
     <A to={`/u/${person.id}`} className='square-avatar' style={avatarStyle}/>
     <div className='person-body'>

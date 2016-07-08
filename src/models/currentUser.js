@@ -13,7 +13,8 @@ export const getCommunity = (currentUser, community) =>
 export const isMember = truthy(membership)
 
 export const canModerate = curry((currentUser, community) =>
-  get(membership(currentUser, community), 'role') === MemberRole.MODERATOR)
+  get(membership(currentUser, community), 'role') === MemberRole.MODERATOR ||
+    isAdmin(currentUser))
 
 export const canInvite = (currentUser, community) =>
   canModerate(currentUser, community) ||

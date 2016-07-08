@@ -23,12 +23,12 @@ import { connect } from 'react-redux'
 import { compose } from 'redux'
 import {
   fetchComments, followPost, navigate, notify, removePost, startPostEdit,
-  voteOnPost
+  voteOnPost, pinPost
 } from '../actions'
 import { same } from '../models'
-import { getComments, getCommunities } from '../models/post'
+import { getComments, getCommunities, isPinned } from '../models/post'
 import { getCurrentCommunity } from '../models/community'
-import { canEditPost } from '../models/currentUser'
+import { canEditPost, canModerate } from '../models/currentUser'
 import { isMobile } from '../client/util'
 import decode from 'ent/decode'
 
@@ -185,17 +185,24 @@ const WelcomePostHeader = ({ communities }, { post }) => {
 }
 WelcomePostHeader.contextTypes = {post: object}
 
-export const Menu = (props, { dispatch, post, currentUser }) => {
+export const Menu = (props, { dispatch, post, currentUser, community }) => {
   const canEdit = canEditPost(currentUser, post)
   const following = some(post.followers, same('id', currentUser))
+  const pinned = isPinned(post, community)
   const edit = () => isMobile()
     ? dispatch(navigate(`/p/${post.id}/edit`))
     : dispatch(startPostEdit(post))
   const remove = () => window.confirm('Are you sure? This cannot be undone.') &&
     dispatch(removePost(post.id))
+  const pin = () => dispatch(pinPost(get(community, 'slug'), post.id))
+
+  const toggleChildren = pinned
+    ? <span className='pinned'><span className='label'>Pinned</span><span className='icon-More'></span></span>
+    : <span className='icon-More'></span>
 
   return <Dropdown className='post-menu' alignRight={true}
-    toggleChildren={<span className='icon-More'></span>}>
+    toggleChildren={toggleChildren}>
+    {canModerate(currentUser, community) && <li><a onClick={pin}>{pinned ? 'Unpin post' : 'Pin post'}</a></li>}
     {canEdit && <li><a onClick={edit}>Edit</a></li>}
     {canEdit && <li><a onClick={remove}>Remove</a></li>}
     <li>
@@ -208,7 +215,7 @@ export const Menu = (props, { dispatch, post, currentUser }) => {
     </li>
   </Dropdown>
 }
-Menu.contextTypes = {post: object, currentUser: object, dispatch: func}
+Menu.contextTypes = {post: object, currentUser: object, dispatch: func, community: object}
 
 export class CommentSection extends React.Component {
   static propTypes = {

@@ -56,6 +56,8 @@ export const MARK_ALL_ACTIVITIES_READ = 'MARK_ALL_ACTIVITIES_READ'
 export const MARK_ALL_ACTIVITIES_READ_PENDING = MARK_ALL_ACTIVITIES_READ + _PENDING
 export const NAVIGATE = 'NAVIGATE'
 export const NOTIFY = 'NOTIFY'
+export const PIN_POST = 'PIN_POST'
+export const PIN_POST_PENDING = 'PIN_POST_PENDING'
 export const REMOVE_COMMENT = 'REMOVE_COMMENT'
 export const REMOVE_COMMUNITY_MODERATOR = 'REMOVE_COMMUNITY_MODERATOR'
 export const REMOVE_COMMUNITY_MODERATOR_PENDING = REMOVE_COMMUNITY_MODERATOR + _PENDING
@@ -689,5 +691,13 @@ export function updateCommentEditor (id, text) {
   return {
     type: UPDATE_COMMENT_EDITOR,
     payload: {id, text}
+  }
+}
+
+export function pinPost (slug, id) {
+  return {
+    type: PIN_POST,
+    payload: {api: true, path: `/noo/community/${slug}/post/${id}/pin`, method: 'POST'},
+    meta: {slug, id}
   }
 }

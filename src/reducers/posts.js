@@ -6,6 +6,7 @@ import {
   FETCH_POSTS,
   FETCH_PERSON,
   FOLLOW_POST,
+  PIN_POST_PENDING,
   REMOVE_POST,
   UPDATE_POST,
   VOTE_ON_POST,
@@ -16,7 +17,7 @@ import { get, isNull, omitBy } from 'lodash/fp'
 import { cloneSet, mergeList } from './util'
 import { same } from '../models'
 
-const normalize = post => omitBy(isNull, {
+const normalize = (post) => omitBy(isNull, {
   ...post,
   children: post.children ? map(post.children, c => c.id) : null,
   communities: map(post.communities, c => c.id),
@@ -125,6 +126,19 @@ export default function (state = {}, action) {
     case FETCH_PERSON:
       const newPosts = compact([payload.recent_request, payload.recent_offer])
       return mergeList(state, newPosts.map(normalize), 'id')
+    case PIN_POST_PENDING:
+      post = state[id]
+      const membership = get(['memberships', meta.slug], post)
+      return {...state, [id]: {
+        ...post,
+        memberships: {
+          ...post.memberships,
+          [meta.slug]: {
+            ...membership,
+            pinned: !get('pinned', membership)
+          }
+        }
+      }}
   }
   return state
 }

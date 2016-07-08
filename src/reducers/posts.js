@@ -17,13 +17,12 @@ import { get, isNull, omitBy } from 'lodash/fp'
 import { cloneSet, mergeList } from './util'
 import { same } from '../models'
 
-const normalize = communityId => post => omitBy(isNull, {
-  ...omit(post, 'pinned'),
+const normalize = (post) => omitBy(isNull, {
+  ...post,
   children: post.children ? map(post.children, c => c.id) : null,
   communities: map(post.communities, c => c.id),
   numComments: post.num_comments || post.numComments,
-  num_comments: null,
-  pins: post.pinned ? [communityId] : null
+  num_comments: null
 })
 
 const normalizeUpdate = (post, params, payload) => {
@@ -90,7 +89,7 @@ export default function (state = {}, action) {
 
   switch (type) {
     case FETCH_POSTS:
-      return mergeList(state, payload.posts.map(normalize(meta.communityId)), 'id')
+      return mergeList(state, payload.posts.map(normalize), 'id')
     case CREATE_POST:
     case FETCH_POST:
       return mergeList(state, listWithChildren(normalize(payload), payload), 'id')

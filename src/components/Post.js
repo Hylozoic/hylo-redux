@@ -26,7 +26,7 @@ import {
   voteOnPost, pinPost
 } from '../actions'
 import { same } from '../models'
-import { getComments, getCommunities } from '../models/post'
+import { getComments, getCommunities, isPinned } from '../models/post'
 import { getCurrentCommunity } from '../models/community'
 import { canEditPost, canModerate } from '../models/currentUser'
 import { isMobile } from '../client/util'
@@ -45,6 +45,7 @@ class Post extends React.Component {
     communities: array,
     community: object,
     comments: array,
+    pinned: bool,
     dispatch: func,
     expanded: bool,
     onExpand: func
@@ -188,7 +189,7 @@ WelcomePostHeader.contextTypes = {post: object}
 export const Menu = (props, { dispatch, post, currentUser, community }) => {
   const canEdit = canEditPost(currentUser, post)
   const following = some(post.followers, same('id', currentUser))
-  const { pinned } = post
+  const pinned = isPinned(post, community)
   const edit = () => isMobile()
     ? dispatch(navigate(`/p/${post.id}/edit`))
     : dispatch(startPostEdit(post))

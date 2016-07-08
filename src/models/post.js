@@ -28,3 +28,5 @@ export const getEditingPostIds = (posts, state) =>
   intersection(keys(omitBy(isNull, state.postEdits)), map('id', posts))
 
 export const getPost = (id, state) => id ? get(id, state.posts) : null
+
+export const isPinned = (post, community) => community && get(post, ['memberships', community.id, 'pinned'])

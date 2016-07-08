@@ -50,7 +50,7 @@ describe('posts', () => {
       let action = {
         type: FETCH_POSTS,
         payload: {
-          posts: [{id: 'a', name: 'hi', communities: [], pinned: true}]
+          posts: [{id: 'a', name: 'hi', communities: [], memberships: {c3: {pinned: true}}}]
         },
         meta: {
           cache: {id: 'foo'},
@@ -59,11 +59,12 @@ describe('posts', () => {
       }
 
       let state = {
-        a: {id: 'a', description: 'hello', pins: ['c1', 'c2']}
+        a: {id: 'a', description: 'hello', memberships: {c1: {pinned: true}, c2: {pinned: false}}}
       }
 
       let expectedState = {
-        a: {id: 'a', name: 'hi', description: 'hello', communities: [], pins: ['c1', 'c2', 'c3']}
+        a: {id: 'a', name: 'hi', description: 'hello', communities: [],
+          memberships: {c1: {pinned: true}, c2: {pinned: false}, c3: {pinned: true}}}
       }
 
       expect(posts(state, action)).to.deep.equal(expectedState)

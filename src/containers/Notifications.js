@@ -84,7 +84,7 @@ export default Notifications
 const actionText = (action, comment, post, reasons) => {
   switch (action) {
     case 'mention':
-      if (!comment) return `mentioned you in their ${post.tag}`
+      if (!comment) return `mentioned you in their post`
       return 'mentioned you in a comment on'
     case 'comment':
       return 'commented on'

@@ -9,7 +9,7 @@ import {
 } from '../actions'
 
 const matchesCommunity = (key, post) => {
-  const communityIds = post.communities.map(c => c.slug)
+  const communityIds = post.communities.map(c => c.slug).concat(post.communities.map(c => c.id))
   return key.subject === 'community' &&
     (includes(communityIds, key.id) || key.id === 'all') &&
     (key.tag === post.tag || !key.tag)

@@ -35,11 +35,10 @@ export default class CommentForm extends React.Component {
     if (event) event.preventDefault()
     if (!text || textLength(text) < 2) return
 
-    // this is to make sure the last edit in TinyMCE gets saved on mobile,
-    // because the blur event doesn't fire when the button is tapped otherwise
-    this.refs.button.focus()
     setTimeout(() => {
-      dispatch(createComment(postId, text, this.state.tagDescriptions))
+      // use the current state of the editor rather than props to ensure we get the last
+      // edits on mobile, especially after an @mention
+      dispatch(createComment(postId, this.refs.editor.getContent(), this.state.tagDescriptions))
       .then(({ error }) => {
         if (error) return
         trackEvent(ADDED_COMMENT, {post: {id: postId}})

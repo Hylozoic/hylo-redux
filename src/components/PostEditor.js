@@ -381,8 +381,7 @@ export class PostEditor extends React.Component {
         <AttachmentsDropdown id={this.props.id}
           media={postEdit.media}
           path={`user/${currentUser.id}/seeds`}
-          imagePending={imagePending}
-          dispatch={dispatch}/>
+          imagePending={imagePending}/>
 
         <label className='visibility'>
           <input type='checkbox' value={postEdit.public || false}
@@ -398,8 +397,8 @@ export class PostEditor extends React.Component {
   }
 }
 
-const AttachmentsDropdown = props => {
-  const { id, imagePending, media, dispatch, path } = props
+const AttachmentsDropdown = (props, { dispatch }) => {
+  const { id, imagePending, media, path } = props
   const image = find(media, m => m.type === 'image')
   const docs = filter(media, m => m.type === 'gdoc')
   const length = (image ? 1 : 0) + docs.length
@@ -443,6 +442,8 @@ const AttachmentsDropdown = props => {
     </li>)}
   </Dropdown>
 }
+AttachmentsDropdown.propTypes = {id: string, imagePending: bool, media: array, path: string}
+AttachmentsDropdown.contextTypes = {dispatch: func}
 
 class CommunitySelector extends React.Component {
   constructor (props) {

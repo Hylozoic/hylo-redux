@@ -97,3 +97,35 @@ export function pendingPromiseMiddleware (store) {
     return next(action)
   }
 }
+
+export function optimisticMiddleware (diffs={}) {
+  return store => next => action => {
+
+    return next(action)
+
+    let { payload, meta } = action
+    if (payload && payload.api) {
+      let { path, params, method } = payload
+      let cookie = req && req.headers.cookie
+      let promise = fetchJSON(path, params, {method, cookie})
+      if (meta && meta.then) {
+        promise = promise.then(meta.then)
+      }
+
+      // TODO
+      // here, we could check for a flag in the action that indicates that the
+      // API response will contain entities that should be added to the store
+      // according to a standard pattern.
+      //
+      // we could respond to this flag by dispatching another action with a type
+      // like ADD_DATA_TO_STORE. this would simplify the reducers, because they
+      // wouldn't have to listen to a dozen different actions, just one.
+      //
+      // the flag could have values like "append", "merge", "replace", etc. to
+      // trigger different behavior.
+
+      return next({...action, payload: promise})
+    }
+    return next(action)
+  }
+}

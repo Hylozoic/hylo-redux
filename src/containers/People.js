@@ -87,7 +87,7 @@ export default class People extends React.Component {
 
     let removeMember
     if (canModerate(currentUser, community)) {
-      removeMember = id => dispatch(removeCommunityMember(community, id, cacheId))
+      removeMember = id => window.confirm('Are you sure you want to remove this member?') && dispatch(removeCommunityMember(community, id, cacheId))
     }
 
     const searchTag = tag => {

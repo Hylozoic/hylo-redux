@@ -137,7 +137,7 @@ const setupPage = (store, id, query, action) => {
 
   if (payload && !payload.api) {
     const { name, description, media } = payload
-    dispatch(setMetaTags(ogMetaTags(name, description, media[0])))
+    dispatch(setMetaTags(ogMetaTags(name, description, get(media, '0'))))
   }
 
   return Promise.all([

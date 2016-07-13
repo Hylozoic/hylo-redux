@@ -1,6 +1,6 @@
 import {
   cloneDeep, filter, get, includes, isArray, isEqual, mergeWith, set, some,
-  transform, uniqBy, mapValues
+  transform, uniqBy
 } from 'lodash'
 import { CLEAR_CACHE, SET_STATE } from '../actions'
 
@@ -120,3 +120,6 @@ export const appendPayloadByPath = (actionType, statePath, payloadPath, uniqTest
 
 export const composeReducers = (...reducers) => (state, action) =>
   reducers.reduce((newState, reducer) => reducer(newState, action), state)
+
+export const handleSetState = (state = {}, { type, payload }) =>
+  type === SET_STATE ? payload : state

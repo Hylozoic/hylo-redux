@@ -100,11 +100,8 @@ export function pendingPromiseMiddleware (store) {
 export function optimisticMiddleware (store) {
   return next => action => {
     let { payload, meta } = action
-    console.log('calling optimistic midddleware with', action.type)
     if (get(meta, 'optimistic') && isPromise(payload)) {
       const prevState = store.getState()
-      console.log("this one's optimistic")
-      console.log('prevState', prevState)
       action.payload = action.payload.then(
         result => result,
         error => {

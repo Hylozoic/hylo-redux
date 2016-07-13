@@ -200,9 +200,10 @@ export const Menu = (props, { dispatch, post, currentUser, community }) => {
     ? <span className='pinned'><span className='label'>Pinned</span><span className='icon-More'></span></span>
     : <span className='icon-More'></span>
 
-  return <Dropdown className='post-menu' alignRight={true}
-    toggleChildren={toggleChildren}>
-    {canModerate(currentUser, community) && <li><a onClick={pin}>{pinned ? 'Unpin post' : 'Pin post'}</a></li>}
+  return <Dropdown className='post-menu' alignRight {...{toggleChildren}}>
+    {canModerate(currentUser, community) && <li>
+      <a onClick={pin}>{pinned ? 'Unpin post' : 'Pin post'}</a>
+    </li>}
     {canEdit && <li><a onClick={edit}>Edit</a></li>}
     {canEdit && <li><a onClick={remove}>Remove</a></li>}
     <li>

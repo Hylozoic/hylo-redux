@@ -4,7 +4,7 @@ import Post from './Post'
 import ScrollListener from './ScrollListener'
 import RefreshButton from './RefreshButton'
 import { changeViewportTop, positionInViewport } from '../util/scrolling'
-import { filter, includes } from 'lodash/fp'
+import { filter, includes, isEmpty } from 'lodash/fp'
 import PostEditor from './PostEditor'
 import { EventPostCard } from './EventPost'
 import { ProjectPostCard } from './ProjectPost'
@@ -75,7 +75,10 @@ class PostList extends React.Component {
   }
 
   render () {
-    let { hide, editingPostIds, pending, loadMore, refreshPostList, freshCount, dispatch, hideMobileSearch, isMobile } = this.props
+    const {
+      hide, editingPostIds, pending, loadMore, refreshPostList, freshCount,
+      dispatch, hideMobileSearch, isMobile
+    } = this.props
     const posts = filter(p => !includes(p.id, hide), this.props.posts)
     const doSearch = text => dispatch(navigate(makeUrl('/search', {q: text})))
 
@@ -111,12 +114,13 @@ class PostList extends React.Component {
       {isMobile && !hideMobileSearch && <MobileSearch search={doSearch}/>}
       <RefreshButton refresh={refreshPostList} count={freshCount}/>
       <ul className='posts'>
-      {pending && <li className='loading'>Loading...</li>}
-      {posts.map(p => <li key={p.id} ref={p.id}>
-        {showPost(p)}
-      </li>)}
-      {loadMore && <ScrollListener onBottom={loadMore}/>}
-    </ul>
+        {pending && isEmpty(posts) && <li className='loading'>Loading...</li>}
+        {posts.map(p => <li key={p.id} ref={p.id}>
+          {showPost(p)}
+        </li>)}
+      </ul>
+      {pending && !isEmpty(posts) && <div className='paginating'>Loading more...</div>}
+      {loadMore && <ScrollListener onBottom={loadMore} padding={5}/>}
     </span>
   }
 }

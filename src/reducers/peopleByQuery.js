@@ -1,6 +1,5 @@
 import {
   FETCH_PEOPLE,
-  REMOVE_COMMUNITY_MEMBER,
   REMOVE_COMMUNITY_MEMBER_PENDING
 } from '../actions'
 import { filter, uniq } from 'lodash'
@@ -34,16 +33,6 @@ const handlePeople = (state, key, people) => {
 
 export default function (state = {}, action) {
   let { type, payload, meta } = action
-  if (action.error) {
-    switch (action.type) {
-      case REMOVE_COMMUNITY_MEMBER:
-        return {
-          ...state,
-          [meta.cacheId]: meta.prevProps
-        }
-    }
-    return state
-  }
 
   switch (type) {
     case FETCH_PEOPLE:

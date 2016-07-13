@@ -72,6 +72,7 @@ export const RESET_COMMUNITY_VALIDATION = 'RESET_COMMUNITY_VALIDATION'
 export const RESET_ERROR = 'RESET_ERROR'
 export const RESET_NETWORK_VALIDATION = 'RESET_NETWORK_VALIDATION'
 export const RESET_NEW_POST_COUNT = 'RESET_NEW_POST_COUNT'
+export const SET_STATE = 'SET_STATE'
 export const SEARCH = 'SEARCH'
 export const SEND_COMMUNITY_INVITATION = 'SEND_COMMUNITY_INVITATION'
 export const SEND_COMMUNITY_TAG_INVITATION = 'SEND_COMMUNITY_TAG_INVITATION'
@@ -380,11 +381,11 @@ export function removeCommunityModerator (community, moderatorId, prevProps) {
   }
 }
 
-export function removeCommunityMember (community, userId, cacheId, prevProps) {
+export function removeCommunityMember (community, userId, cacheId) {
   return {
     type: REMOVE_COMMUNITY_MEMBER,
     payload: {api: true, path: `/noo/community/${community.id}/member/${userId}`, method: 'DELETE'},
-    meta: {slug: community.slug, userId, cacheId, prevProps}
+    meta: {optimistic: true, slug: community.slug, userId, cacheId}
   }
 }
 

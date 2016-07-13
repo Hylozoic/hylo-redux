@@ -35,8 +35,7 @@ const fetch = fetchWithCache(fetchPeople)
     currentUser: state.people.current,
     error: findError(state.errors, FETCH_PEOPLE, 'peopleByQuery', cacheId),
     moderatorIds: state.peopleByQuery[qs.stringify({subject: 'community-moderators', id})] || [],
-    isMobile: state.isMobile,
-    peopleIds: state.peopleByQuery[cacheId]
+    isMobile: state.isMobile
   }
 })
 export default class People extends React.Component {
@@ -52,8 +51,7 @@ export default class People extends React.Component {
     currentUser: object,
     error: object,
     isMobile: bool,
-    cacheId: string,
-    peopleIds: array
+    cacheId: string
   }
 
   loadMore = () => {
@@ -75,7 +73,7 @@ export default class People extends React.Component {
   render () {
     const {
       pending, moderatorIds, location: { query }, community, currentUser, error,
-      total, isMobile, dispatch, cacheId, peopleIds
+      total, isMobile, dispatch, cacheId
     } = this.props
     if (error) return <AccessErrorMessage error={error}/>
     if (!currentUser) return <div>Loading...</div>
@@ -89,7 +87,7 @@ export default class People extends React.Component {
 
     let removeMember
     if (canModerate(currentUser, community)) {
-      removeMember = id => dispatch(removeCommunityMember(community, id, cacheId, peopleIds))
+      removeMember = id => dispatch(removeCommunityMember(community, id, cacheId))
     }
 
     const searchTag = tag => {

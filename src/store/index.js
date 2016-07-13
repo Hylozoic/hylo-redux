@@ -12,8 +12,8 @@ export function configureStore (initialState, req) {
     isServer && serverLogger,
     cacheMiddleware,
     apiMiddleware(req),
+    optimisticMiddleware,
     pendingPromiseMiddleware,
-    optimisticMiddleware(),
     promiseMiddleware,
     !isServer && createLogger({collapsed: true})
   ])

@@ -19,7 +19,7 @@ import { tagsByCommunity, tagsByQuery, totalTagsByQuery } from './tags'
 import tagInvitationEditor from './tagInvitationEditor'
 import posts from './posts'
 import {
-  appendPayloadByPath, keyedCounter, keyedCount, storePayload, composeReducers
+  appendPayloadByPath, keyedCounter, keyedCount, composeReducers, handleSetState
 } from './util'
 import { admin } from './admin'
 
@@ -57,7 +57,6 @@ import {
   SET_META_TAGS,
   SET_MOBILE_DEVICE,
   SET_SIGNUP_ERROR,
-  SET_STATE,
   SHOW_ALL_TAGS,
   SHOW_SHARE_TAG,
   SHOW_TAG_POPOVER,
@@ -501,8 +500,5 @@ const combinedReducers = combineReducers({
     return state
   }
 })
-
-const handleSetState = (state = {}, { type, payload }) =>
-  type === SET_STATE ? payload : state
 
 export default composeReducers(combinedReducers, handleSetState)

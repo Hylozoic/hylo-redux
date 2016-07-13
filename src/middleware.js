@@ -1,10 +1,9 @@
 import { inspect } from 'util'
-import { has, omit } from 'lodash'
 import { fetchJSON } from './util/api'
 import { debug } from './util/logging'
 import { blue } from 'chalk'
-import { find, values } from 'lodash'
-import { _PENDING } from './actions'
+import { find, values, get, has, omit } from 'lodash'
+import { _PENDING, SET_STATE } from './actions'
 
 // TODO cache expiration
 export function cacheMiddleware (store) {
@@ -98,33 +97,21 @@ export function pendingPromiseMiddleware (store) {
   }
 }
 
-export function optimisticMiddleware (diffs={}) {
-  return store => next => action => {
-
-    return next(action)
-
+export function optimisticMiddleware (store) {
+  return next => action => {
     let { payload, meta } = action
-    if (payload && payload.api) {
-      let { path, params, method } = payload
-      let cookie = req && req.headers.cookie
-      let promise = fetchJSON(path, params, {method, cookie})
-      if (meta && meta.then) {
-        promise = promise.then(meta.then)
-      }
-
-      // TODO
-      // here, we could check for a flag in the action that indicates that the
-      // API response will contain entities that should be added to the store
-      // according to a standard pattern.
-      //
-      // we could respond to this flag by dispatching another action with a type
-      // like ADD_DATA_TO_STORE. this would simplify the reducers, because they
-      // wouldn't have to listen to a dozen different actions, just one.
-      //
-      // the flag could have values like "append", "merge", "replace", etc. to
-      // trigger different behavior.
-
-      return next({...action, payload: promise})
+    console.log('calling optimistic midddleware with', action.type)
+    if (get(meta, 'optimistic') && isPromise(payload)) {
+      const prevState = store.getState()
+      console.log("this one's optimistic")
+      console.log('prevState', prevState)
+      action.payload = action.payload.then(
+        result => result,
+        error => {
+          store.dispatch({type: SET_STATE, payload: prevState})
+          throw error
+        }
+      )
     }
     return next(action)
   }

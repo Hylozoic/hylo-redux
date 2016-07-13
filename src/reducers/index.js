@@ -19,7 +19,7 @@ import { tagsByCommunity, tagsByQuery, totalTagsByQuery } from './tags'
 import tagInvitationEditor from './tagInvitationEditor'
 import posts from './posts'
 import {
-  appendPayloadByPath, keyedCounter, keyedCount, storePayload, injectSetState
+  appendPayloadByPath, keyedCounter, keyedCount, storePayload, composeReducers
 } from './util'
 import { admin } from './admin'
 
@@ -57,6 +57,7 @@ import {
   SET_META_TAGS,
   SET_MOBILE_DEVICE,
   SET_SIGNUP_ERROR,
+  SET_STATE,
   SHOW_ALL_TAGS,
   SHOW_SHARE_TAG,
   SHOW_TAG_POPOVER,
@@ -75,7 +76,7 @@ import {
   VALIDATE_NETWORK_ATTRIBUTE_PENDING
 } from '../actions'
 
-export default combineReducers(injectSetState({
+const combinedReducers = combineReducers({
   isMobile: (state = false, action) => {
     return action.type === SET_MOBILE_DEVICE ? true : state
   },
@@ -499,5 +500,9 @@ export default combineReducers(injectSetState({
 
     return state
   }
+})
 
-}))
+const handleSetState = (state = {}, { type, payload }) =>
+  type === SET_STATE ? payload : state
+
+export default composeReducers(combinedReducers, handleSetState)

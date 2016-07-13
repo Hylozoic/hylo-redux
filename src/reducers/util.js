@@ -1,8 +1,8 @@
 import {
   cloneDeep, filter, get, includes, isArray, isEqual, mergeWith, set, some,
-  transform, uniqBy
+  transform, uniqBy, mapValues
 } from 'lodash'
-import { CLEAR_CACHE } from '../actions'
+import { CLEAR_CACHE, SET_STATE } from '../actions'
 
 export const appendUniq = (state, key, values, uniqTest) =>
   concatUniq(state, key, state[key] || [], values, uniqTest)
@@ -117,6 +117,15 @@ export const appendPayloadByPath = (actionType, statePath, payloadPath, uniqTest
     const data = payloadPath ? get(payload, payloadPath) : payload
     return appendUniq(state, get(action, statePath), data, uniqTest)
   }
+
+export const injectSetState = (reducers) =>
+  mapValues(reducers, (reducer, key) =>
+    composeReducers(reducer, (state, action) => {
+      if (action.type === SET_STATE) {
+        return action.payload[key]
+      }
+      return state
+    }))
 
 export const composeReducers = (...reducers) => (state, action) =>
   reducers.reduce((newState, reducer) => reducer(newState, action), state)

@@ -19,7 +19,7 @@ import { tagsByCommunity, tagsByQuery, totalTagsByQuery } from './tags'
 import tagInvitationEditor from './tagInvitationEditor'
 import posts from './posts'
 import {
-  appendPayloadByPath, keyedCounter, keyedCount, storePayload
+  appendPayloadByPath, keyedCounter, keyedCount, storePayload, injectSetState
 } from './util'
 import { admin } from './admin'
 
@@ -75,7 +75,7 @@ import {
   VALIDATE_NETWORK_ATTRIBUTE_PENDING
 } from '../actions'
 
-export default combineReducers({
+export default combineReducers(injectSetState({
   isMobile: (state = false, action) => {
     return action.type === SET_MOBILE_DEVICE ? true : state
   },
@@ -500,4 +500,4 @@ export default combineReducers({
     return state
   }
 
-})
+}))

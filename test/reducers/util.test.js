@@ -12,35 +12,3 @@ describe('toggleIncludes', () => {
     expect(toggleIncludes(['f', {x: 'g'}], {x: 'g'})).to.deep.equal(['f'])
   })
 })
-
-describe.only('injectState', () => {
-  const objectReducer = (state = {a: 1, b: 2}, action) => {
-    if (action.type === 'ADD_C') {
-      return {...state, c: action.payload}
-    }
-    return state
-  }
-  const stringReducer = (state = 'default', action) => {
-    return state
-  }
-
-  it('injects a SET_STATE clause in each reducer', () => {
-    const store = createStore(combineReducers(injectSetState({objectReducer, stringReducer})), {})
-    const newState = {
-      objectReducer: {c: 3, d: 4},
-      stringReducer: 'updated'
-    }
-    store.dispatch({type: SET_STATE, payload: newState})
-    expect(store.getState()).to.deep.equal(newState)
-  })
-
-  it('preserves existing actions', () => {
-    const store = createStore(combineReducers(injectSetState({objectReducer, stringReducer})), {})
-    store.dispatch({type: 'ADD_C', payload: 333})
-    const expected = {
-      objectReducer: {a: 1, b: 2, c: 333},
-      stringReducer: 'default'
-    }
-    expect(store.getState()).to.deep.equal(expected)
-  })
-})

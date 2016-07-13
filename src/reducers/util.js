@@ -118,14 +118,5 @@ export const appendPayloadByPath = (actionType, statePath, payloadPath, uniqTest
     return appendUniq(state, get(action, statePath), data, uniqTest)
   }
 
-export const injectSetState = (reducers) =>
-  mapValues(reducers, (reducer, key) =>
-    composeReducers(reducer, (state, action) => {
-      if (action.type === SET_STATE) {
-        return action.payload[key]
-      }
-      return state
-    }))
-
 export const composeReducers = (...reducers) => (state, action) =>
   reducers.reduce((newState, reducer) => reducer(newState, action), state)

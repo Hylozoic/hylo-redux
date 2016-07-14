@@ -29,9 +29,9 @@ const makeNavLinks = (currentUser, community) => {
     {url: url('events'), icon: 'Calendar', label: 'Events'},
     {url: url('projects'), icon: 'ProjectorScreen', label: 'Projects'},
     {url: url('people'), icon: 'Users', label: 'Members'},
+    {url: network && `/n/${network.slug}`, icon: 'merkaba', label: 'Network'},
     {url: slug && url('about'), icon: 'Help', label: 'About'},
     {url: canInvite(currentUser, community) && url('invite'), icon: 'Mail', label: 'Invite'},
-    {url: network && `/n/${network.slug}`, icon: 'merkaba', label: 'Network'},
     {url: canModerate(currentUser, community) && url('settings'), icon: 'Settings', label: 'Settings'}
   ])
 }

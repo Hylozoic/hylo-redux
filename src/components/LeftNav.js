@@ -47,7 +47,7 @@ export const TopicList = ({ tags, slug }, { dispatch }) => {
 
   return <ul className='topic-list'>
     <li className='subheading'>
-      <a>TOPICS YOU FOLLOW ({followed.length + 1})</a>
+      <a>FOLLOWING ({followed.length + 1})</a>
     </li>
     <TagLink name='all-topics'/>
     {!isEmpty(followed) && followed.map(tag =>

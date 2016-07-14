@@ -2,7 +2,7 @@ import React from 'react'
 import { prefetch } from 'react-fetcher'
 import { connect } from 'react-redux'
 import { debounce, includes } from 'lodash'
-import { FETCH_PEOPLE } from '../actions'
+import { FETCH_PEOPLE, removeCommunityMember } from '../actions'
 import { fetchPeople } from '../actions/fetchPeople'
 import { createCacheId, connectedListProps, fetchWithCache, refetch } from '../util/caching'
 import Icon from '../components/Icon'
@@ -10,8 +10,8 @@ import ScrollListener from '../components/ScrollListener'
 import PersonCards from '../components/PersonCards'
 import AccessErrorMessage from '../components/AccessErrorMessage'
 import A from '../components/A'
-const { array, bool, func, number, object } = React.PropTypes
-import { canInvite } from '../models/currentUser'
+const { array, bool, func, number, object, string } = React.PropTypes
+import { canInvite, canModerate } from '../models/currentUser'
 import { findError } from '../actions/util'
 import qs from 'querystring'
 import { NonLinkAvatar } from '../components/Avatar'
@@ -30,6 +30,7 @@ const fetch = fetchWithCache(fetchPeople)
   const cacheId = createCacheId(subject, id, query)
   return {
     ...connectedListProps(state, {subject, id, query}, 'people'),
+    cacheId,
     community: state.communities[id],
     currentUser: state.people.current,
     error: findError(state.errors, FETCH_PEOPLE, 'peopleByQuery', cacheId),
@@ -49,7 +50,8 @@ export default class People extends React.Component {
     community: object,
     currentUser: object,
     error: object,
-    isMobile: bool
+    isMobile: bool,
+    cacheId: string
   }
 
   loadMore = () => {
@@ -71,7 +73,7 @@ export default class People extends React.Component {
   render () {
     const {
       pending, moderatorIds, location: { query }, community, currentUser, error,
-      total, isMobile
+      total, isMobile, dispatch, cacheId
     } = this.props
     if (error) return <AccessErrorMessage error={error}/>
     if (!currentUser) return <div>Loading...</div>
@@ -82,6 +84,12 @@ export default class People extends React.Component {
       ...person,
       isModerator: includes(moderatorIds, person.id)
     }))
+
+    let removeMember
+    if (canModerate(currentUser, community)) {
+      removeMember = id => window.confirm('Are you sure you want to remove this member?') && dispatch(removeCommunityMember(community, id, cacheId))
+    }
+
     const searchTag = tag => {
       const search = '#' + tag
       this.updateQuery({search})
@@ -111,7 +119,7 @@ export default class People extends React.Component {
       {pending && <div className='loading'>Loading...</div>}
       {isMobile
         ? people.map(person => <PersonRow person={person} key={person.id}/>)
-        : <PersonCards people={people} slug={slug} onSkillClick={searchTag}/>}
+        : <PersonCards people={people} slug={slug} onSkillClick={searchTag} removeMember={removeMember}/>}
       <ScrollListener onBottom={this.loadMore}/>
     </div>
   }

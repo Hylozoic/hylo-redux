@@ -106,15 +106,23 @@
     }
   }
 
-  .caret-menu {
+  .person-menu {
     display: none;
   }
 
-  &:hover .caret-menu {
-    display: block;
-    position: absolute;
-    top: 5px;
-    right: 4px;
+  &:hover .person-menu {
+    float: right;
+    display: inline;
+    padding-right: 25px;
+    padding-top: 15px;
+    .icon-More {
+      font-size: 20px;
+      color: black;
+      text-shadow: 0 0 3px white, 0 0 3px white;
+    }
+    a:hover {
+      text-decoration: none;
+    }
   }
 }
 

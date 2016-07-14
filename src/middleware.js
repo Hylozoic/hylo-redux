@@ -1,10 +1,9 @@
 import { inspect } from 'util'
-import { has, omit } from 'lodash'
 import { fetchJSON } from './util/api'
 import { debug } from './util/logging'
 import { blue } from 'chalk'
-import { find, values } from 'lodash'
-import { _PENDING } from './actions'
+import { find, values, get, has, omit } from 'lodash'
+import { _PENDING, SET_STATE } from './actions'
 
 // TODO cache expiration
 export function cacheMiddleware (store) {
@@ -93,6 +92,23 @@ export function pendingPromiseMiddleware (store) {
     let { type, payload } = action
     if (isPromise(payload)) {
       store.dispatch({...action, type: type + _PENDING, payload: null})
+    }
+    return next(action)
+  }
+}
+
+export function optimisticMiddleware (store) {
+  return next => action => {
+    let { payload, meta } = action
+    if (get(meta, 'optimistic') && isPromise(payload)) {
+      const prevState = store.getState()
+      action.payload = action.payload.then(
+        result => result,
+        error => {
+          store.dispatch({type: SET_STATE, payload: prevState})
+          throw error
+        }
+      )
     }
     return next(action)
   }

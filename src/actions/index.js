@@ -59,6 +59,8 @@ export const NOTIFY = 'NOTIFY'
 export const PIN_POST = 'PIN_POST'
 export const PIN_POST_PENDING = 'PIN_POST_PENDING'
 export const REMOVE_COMMENT = 'REMOVE_COMMENT'
+export const REMOVE_COMMUNITY_MEMBER = 'REMOVE_COMMUNITY_MEMBER'
+export const REMOVE_COMMUNITY_MEMBER_PENDING = 'REMOVE_COMMUNITY_MEMBER_PENDING'
 export const REMOVE_COMMUNITY_MODERATOR = 'REMOVE_COMMUNITY_MODERATOR'
 export const REMOVE_COMMUNITY_MODERATOR_PENDING = REMOVE_COMMUNITY_MODERATOR + _PENDING
 export const REMOVE_DOC = 'REMOVE_DOC'
@@ -70,6 +72,7 @@ export const RESET_COMMUNITY_VALIDATION = 'RESET_COMMUNITY_VALIDATION'
 export const RESET_ERROR = 'RESET_ERROR'
 export const RESET_NETWORK_VALIDATION = 'RESET_NETWORK_VALIDATION'
 export const RESET_NEW_POST_COUNT = 'RESET_NEW_POST_COUNT'
+export const SET_STATE = 'SET_STATE'
 export const SEARCH = 'SEARCH'
 export const SEND_COMMUNITY_INVITATION = 'SEND_COMMUNITY_INVITATION'
 export const SEND_COMMUNITY_TAG_INVITATION = 'SEND_COMMUNITY_TAG_INVITATION'
@@ -375,6 +378,14 @@ export function removeCommunityModerator (community, moderatorId, prevProps) {
     type: REMOVE_COMMUNITY_MODERATOR,
     payload: {api: true, path: `/noo/community/${community.id}/moderator/${moderatorId}`, method: 'DELETE'},
     meta: {slug: community.slug, moderatorId, prevProps}
+  }
+}
+
+export function removeCommunityMember (community, userId, cacheId) {
+  return {
+    type: REMOVE_COMMUNITY_MEMBER,
+    payload: {api: true, path: `/noo/community/${community.id}/member/${userId}`, method: 'DELETE'},
+    meta: {optimistic: true, slug: community.slug, userId, cacheId}
   }
 }
 

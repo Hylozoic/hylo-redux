@@ -1,5 +1,6 @@
 import {
-  FETCH_PEOPLE
+  FETCH_PEOPLE,
+  REMOVE_COMMUNITY_MEMBER_PENDING
 } from '../actions'
 import { filter, uniq } from 'lodash'
 import qs from 'querystring'
@@ -31,13 +32,18 @@ const handlePeople = (state, key, people) => {
 }
 
 export default function (state = {}, action) {
-  if (action.error) return state
-
   let { type, payload, meta } = action
+
   switch (type) {
     case FETCH_PEOPLE:
       let { cache } = meta
       return handlePeople(state, cache.id, payload.items)
+    case REMOVE_COMMUNITY_MEMBER_PENDING:
+      let { cacheId } = meta
+      return {
+        ...state,
+        [cacheId]: filter(state[cacheId], id => id !== meta.userId)
+      }
   }
   return state
 }

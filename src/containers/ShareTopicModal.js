@@ -62,7 +62,7 @@ export default class ShareTopicModal extends React.Component {
 
     return <Modal title={`Invite friends to join ${community.name} and follow #${tagName}`} id='share-topic' onCancel={onCancel}>
       <div className='join-url'>
-        <label>Friends with this link can join.</label>
+        <label>Friends with this link can join</label>
         {joinUrl ? <A to={joinUrl}>{joinUrl}</A> : <span>Loading...</span>}
       </div>
       <div className='invite'>

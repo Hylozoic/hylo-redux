@@ -44,26 +44,4 @@ describe('peopleByQuery', () => {
 
     expect(peopleByQuery(state, action)).to.deep.equal(expectedState)
   })
-
-  it('replaces removed member on error in REMOVE_COMMUNITY_MEMBER', () => {
-    let state = {
-      'subject=community&id=123': ['1', '3']
-    }
-
-    let action = {
-      type: REMOVE_COMMUNITY_MEMBER,
-      error: true,
-      meta: {
-        userId: '2',
-        cacheId: 'subject=community&id=123',
-        prevProps: ['1', '2', '3']
-      }
-    }
-
-    let expectedState = {
-      'subject=community&id=123': ['1', '2', '3']
-    }
-
-    expect(peopleByQuery(state, action)).to.deep.equal(expectedState)
-  })
 })

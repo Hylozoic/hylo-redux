@@ -81,7 +81,8 @@ describe('appHandler', () => {
       nock(HOST).get('/noo/user/me').reply(200, {id: 1, name: 'cat'})
       nock(HOST).get('/noo/community/house').reply(200, community)
       nock(HOST).get('/noo/community/house/posts?offset=0&limit=20').reply(200, {posts: [], posts_total: 0})
-      nock(HOST).get('/noo/community/house/tags/leftnav').reply(200, {followed: [], created: []})
+      nock(HOST).get('/noo/community/house/tags/followed').reply(200, [])
+      nock(HOST).get('/noo/community/house/members?limit=20&offset=0').reply(200, {items: []})
     })
 
     it('loads a page that requires login', () => {

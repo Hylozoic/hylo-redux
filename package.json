@@ -97,6 +97,7 @@
     "gulp-streamify": "^1.0.2",
     "gulp-uglify": "^1.5.1",
     "heroku-client": "^2.4.0",
+    "invariant": "^2.2.1",
     "isparta": "3.5.3",
     "istanbul-combine": "^0.3.0",
     "jsdom": "^8.1.0",

@@ -24,7 +24,7 @@ describe('handleSetState', () => {
     return state
   }
 
-  it('injects a SET_STATE clause in each reducer', () => {
+  it('replaces the state with payload on SET_STATE', () => {
     const store = createStore(composeReducers(combineReducers({objectReducer, stringReducer}), handleSetState), {})
     const newState = {
       objectReducer: {c: 3, d: 4},

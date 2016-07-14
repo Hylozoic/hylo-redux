@@ -54,7 +54,7 @@ export const TopicList = ({ tags, slug }, { dispatch }) => {
       <TagLink name={tag.name} key={tag.name} highlight={tag.new_post_count}/>)}
     <li>
       <a onClick={() => dispatch(showAllTags(slug))} className='browse-all'>
-        Browse all topics...
+        Follow more topics...
       </a>
     </li>
   </ul>

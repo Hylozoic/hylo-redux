@@ -45,12 +45,14 @@ ModalWrapper.contextTypes = {dispatch: func}
 
 export const Modal = ({ id, className, children, title, subtitle, onCancel }, { isMobile }) => {
   return <div id={id} className={cx(className, 'modal')} style={modalStyle(isMobile)}>
-    <h2>
-      {title}
-      <a className='close' onClick={onCancel}><Icon name='Fail'/></a>
-    </h2>
-    <div className='subtitle'>
-      {subtitle}
+    <div className='titles'>
+      <h2>
+        {title}
+        <a className='close' onClick={onCancel}><Icon name='Fail'/></a>
+      </h2>
+      {subtitle && <div className='subtitle'>
+        {subtitle}
+      </div>}
     </div>
     {children}
   </div>

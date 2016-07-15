@@ -237,7 +237,6 @@ export class CommentSection extends React.Component {
   render () {
     let { comments, truncate, expand } = this.props
     const { dispatch, post, currentUser, community, isProjectRequest } = this.context
-    let communitySlug = get(community, 'slug')
 
     if (!comments) comments = []
     comments = sortBy(comments, c => c.created_at)
@@ -267,7 +266,7 @@ export class CommentSection extends React.Component {
       {comments.map(c => <Comment comment={{...c, post_id: post.id}}
         truncate={truncate}
         expand={() => expandComment(c.id)}
-        communitySlug={communitySlug}
+        community={community}
         key={c.id}/>)}
       {currentUser && <CommentForm postId={post.id} {...{placeholder}}/>}
     </div>

@@ -28,7 +28,5 @@ export const canEditPost = (currentUser, post) => {
     isAdmin(currentUser)
 }
 
-export const canEditComment = (currentUser, comment) => {
-  // TODO allow moderators to delete comments
-  return same('id', currentUser, comment.user)
-}
+export const canEditComment = (currentUser, comment, community) =>
+  canModerate(currentUser, community) || same('id', currentUser, comment.user)

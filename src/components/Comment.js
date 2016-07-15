@@ -2,6 +2,7 @@ import React from 'react'
 import Avatar from './Avatar'
 import A from './A'
 import { some } from 'lodash'
+import { get } from 'lodash/fp'
 import { same } from '../models'
 import { humanDate, sanitize, prependInP, present, textLength } from '../util/text'
 import { commentUrl } from '../routes'
@@ -14,11 +15,11 @@ var { func, object } = React.PropTypes
 const spacer = <span>&nbsp;&nbsp;•&nbsp;&nbsp;</span>
 const truncatedLength = 220
 
-const Comment = ({ comment, truncate, expand, communitySlug }, { dispatch, currentUser }) => {
+const Comment = ({ comment, truncate, expand, community }, { dispatch, currentUser }) => {
   const person = comment.user
   const { thanks } = comment
   const isThanked = comment.isThanked || some(thanks, same('id', currentUser))
-  let text = present(sanitize(comment.text), {slug: communitySlug})
+  let text = present(sanitize(comment.text), {slug: get('slug', community)})
   const truncated = truncate && textLength(text) > truncatedLength
   if (truncated) text = truncateHtml(text, truncatedLength)
   text = prependInP(text, `<a href='/u/${person.id}'><strong class='name'>${person.name}</strong></a>`)
@@ -26,7 +27,7 @@ const Comment = ({ comment, truncate, expand, communitySlug }, { dispatch, curre
     dispatch(removeComment(comment.id))
 
   return <div className='comment' data-comment-id={comment.id}>
-    {canEditComment(currentUser, comment) &&
+    {canEditComment(currentUser, comment, community) &&
       <a className='delete' onClick={remove}>&times;</a>}
     <a name={`comment-${comment.id}`}></a>
     <Avatar person={person}/>

@@ -29,5 +29,4 @@ export const canEditPost = (currentUser, post) => {
 }
 
 export const canEditComment = (currentUser, comment, community) =>
-  canModerate(currentUser, community) ||
-  same('id', currentUser, comment.user)
+  canModerate(currentUser, community) || same('id', currentUser, comment.user)

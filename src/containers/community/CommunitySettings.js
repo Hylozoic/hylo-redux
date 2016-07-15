@@ -483,12 +483,25 @@ export default class CommunitySettings extends React.Component {
         </div>
       </div>}
 
+      <SectionLabel name='finance' {...labelProps}>Financial Projects</SectionLabel>
+      {expand.finance && <div className='section finance'>
+        <div className='section-item'>
+          <div className='half-column'>
+            <label>Enable Financial Projects</label>
+            <p className='summary'>Enabling this functionality enables you to ask for money to finance activities in your projects.</p>
+          </div>
+          <div className='half-column right-align'>
+            <input type='checkbox' checked={community.settings.enable_finance} onChange={() => this.toggle('settings.enable_finance')}/>
+          </div>
+        </div>
+      </div>}
+
       <SectionLabel name='delete' {...labelProps}>Delete</SectionLabel>
       {expand.delete && <div className='section delete'>
         <div className='section-item'>
           <div className='half-column'>
             <label>Delete this community</label>
-            <p className='summary'>This will delete the community, preventing users from joining, browsing or posting in this community. Existing posts will still be viewable on the "All Posts" page.</p>
+            <p className='summary'>Enabling this functionality allows members of the community to ask for financial contributions to their project.</p>
           </div>
           <div className='half-column right-align'>
             <button type='button' onClick={this.delete}>Delete</button>

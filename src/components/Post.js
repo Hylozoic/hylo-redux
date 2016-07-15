@@ -18,6 +18,7 @@ import Comment from './Comment'
 import CommentForm from './CommentForm'
 import Icon from './Icon'
 import LinkedPersonSentence from './LinkedPersonSentence'
+import LinkPreview from './LinkPreview'
 import { scrollToAnchor } from '../util/scrolling'
 import { connect } from 'react-redux'
 import { compose } from 'redux'
@@ -58,7 +59,7 @@ class Post extends React.Component {
 
   render () {
     const { post, communities, comments, expanded, onExpand, community } = this.props
-    const { tag, media } = post
+    const { tag, media, linkPreview } = post
     const image = find(m => m.type === 'image', media)
     const classes = cx('post', tag, {image, expanded})
     const title = linkifyHashtags(decode(sanitize(post.name || '')), get(community, 'slug'))
@@ -68,6 +69,7 @@ class Post extends React.Component {
       <p className='title post-section' dangerouslySetInnerHTML={{__html: title}}></p>
       {image && <img src={image.url} className='post-section full-image'/>}
       <Details {...{expanded, onExpand, tag}}/>
+      {linkPreview && <LinkPreview {...{linkPreview}}/>}
       <div className='voting post-section'><VoteButton/><Voters/></div>
       <Attachments/>
       <CommentSection truncate={!expanded} expand={onExpand} comments={comments}/>

@@ -1,5 +1,5 @@
 require('../support')
-import linkify, { prepareHashtagsForEditing } from '../../src/util/linkify'
+import linkify, { prepareHashtagsForEditing, findUrls } from '../../src/util/linkify'
 
 describe('linkify', () => {
   it('works correctly', () => {
@@ -65,5 +65,16 @@ describe('prepareHashtagsForEditing', () => {
     const desc = 'hello. <a>#foo</a> and <a>#bar</a> are common nonsense words in code.'
     const expected = 'hello. <a data-autocompleting="true">#foo</a> and <a data-autocompleting="true">#bar</a> are common nonsense words in code.'
     expect(prepareHashtagsForEditing(desc)).to.equal(expected)
+  })
+})
+
+describe('findUrls', () => {
+  it('finds urls', () => {
+    const text = '<p>http://foo.com</p>\n</p>https://bar.com/foo#zing https://zing.com/whee</p>'
+    expect(findUrls(text)).to.deep.equal([
+      'http://foo.com',
+      'https://bar.com/foo#zing',
+      'https://zing.com/whee'
+    ])
   })
 })

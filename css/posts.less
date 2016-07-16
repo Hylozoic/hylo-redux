@@ -92,13 +92,29 @@ ul.posts {
   }
 
   .link-preview {
-    .post-left-margin;
-    .post-right-margin;
+    display: block;
+    text-decoration: none;
     border: 1px solid @faint-gray-border;
     box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.04);
     margin-bottom: @p-bottom-margin;
+    position: relative;
+    .clearfix;
+
     img {
       width: 100%;
+
+      &.small {
+        width: 25%;
+        margin-right: 15px;
+        float: left;
+      }
+    }
+
+    .close {
+      position: absolute;
+      right: 0;
+      width: 20px;
+      text-align: center;
     }
   }
 

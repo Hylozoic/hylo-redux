@@ -11,7 +11,8 @@ import shallowCompare from 'react-addons-shallow-compare'
 import cx from 'classnames'
 import autoproxy from 'autoproxy'
 import {
-  debounce, compact, filter, find, get, includes, isEmpty, some, startsWith, keys, uniq
+  debounce, difference, compact, filter, find, get, includes, isEmpty, some,
+  startsWith, keys, uniq
 } from 'lodash'
 import CommunityTagInput from './CommunityTagInput'
 import Dropdown from './Dropdown'
@@ -20,18 +21,20 @@ import ProjectPostEditor from './ProjectPostEditor'
 import RichTextEditor from './RichTextEditor'
 import { NonLinkAvatar } from './Avatar'
 import AutosizingTextarea from './AutosizingTextarea'
+import LinkPreview from './LinkPreview'
 import { connect } from 'react-redux'
 import {
-  createPost, cancelPostEdit, removeImage, removeDoc, updatePost,
-  updatePostEditor
+  createPost, cancelPostEdit, fetchLinkPreview, removeImage, removeDoc,
+  updatePost, updatePostEditor
 } from '../actions'
 import { fetchLeftNavTags } from '../actions/tags'
 import { uploadImage } from '../actions/uploadImage'
 import { uploadDoc } from '../actions/uploadDoc'
 import { attachmentParams } from '../util/shims'
 import { prepend } from '../util/tinymce'
+import { findUrls } from '../util/linkify'
 import { isKey } from '../util/textInput'
-import { CREATE_POST, UPDATE_POST, UPLOAD_IMAGE } from '../actions'
+import { CREATE_POST, FETCH_LINK_PREVIEW, UPDATE_POST, UPLOAD_IMAGE } from '../actions'
 import { createTagInPostEditor } from '../actions'
 import { ADDED_POST, EDITED_POST, trackEvent } from '../util/analytics'
 import { getCurrentCommunity } from '../models/community'
@@ -57,6 +60,7 @@ export const newPostId = 'new-post'
     mentionOptions: state.typeaheadMatches.post,
     saving: pending[CREATE_POST] || pending[UPDATE_POST],
     imagePending: pending[UPLOAD_IMAGE],
+    linkPreviewPending: pending[FETCH_LINK_PREVIEW],
     currentCommunitySlug: get(getCurrentCommunity(state), 'slug'),
     editingTagDescriptions,
     creatingTagAndDescription
@@ -171,12 +175,10 @@ export class PostEditor extends React.Component {
 
   save () {
     const { dispatch, post, postEdit, id, currentCommunitySlug } = this.props
-    const tag = postEdit.tag
     const params = {
       type: this.editorType(),
       ...postEdit,
-      ...attachmentParams(post && post.media, postEdit.media),
-      tag
+      ...attachmentParams(post && post.media, postEdit.media)
     }
 
     dispatch((post ? updatePost : createPost)(id, params))
@@ -186,7 +188,7 @@ export class PostEditor extends React.Component {
       // events more human-readable, but we're only passing around community
       // ids in this component
       trackEvent(post ? EDITED_POST : ADDED_POST, {
-        post: {id: get(post, 'id'), tag},
+        post: {id: get(post, 'id'), tag: postEdit.tag},
         community: {id: get(postEdit, 'communities.0')}
       })
       if (currentCommunitySlug) {
@@ -305,13 +307,39 @@ export class PostEditor extends React.Component {
     return shallowCompare(this, nextProps, nextState)
   }
 
+  updateDescription (value) {
+    this.setDelayed('description', value)
+    const { dispatch, postEdit: { description, linkPreview } } = this.props
+    if (linkPreview) return
+
+    const currentUrls = findUrls(value)
+    if (isEmpty(currentUrls)) return
+
+    const newUrls = difference(currentUrls, findUrls(description))
+    if (isEmpty(newUrls)) return
+
+    const poll = (url, delay) =>
+      dispatch(fetchLinkPreview(url))
+      .then(({ payload }) => {
+        if (delay > 4) return // give up
+
+        if (!payload.id) {
+          setTimeout(() => poll(url, delay * 2), delay * 1000)
+        } else if (payload.title) {
+          this.updateStore({linkPreview: payload})
+        }
+      })
+
+    poll(newUrls[0], 0.5)
+  }
+
   render () {
     const {
       post, postEdit, dispatch, imagePending, saving, id,
       editingTagDescriptions, creatingTagAndDescription
     } = this.props
     const { currentUser } = this.context
-    const { description, communities, tag } = postEdit
+    const { description, communities, tag, linkPreview } = postEdit
     const selectableTags = uniq(compact([this.props.tag, tag].concat(specialTags)))
     const { name, showDetails } = this.state
     const editorType = this.editorType()
@@ -320,6 +348,7 @@ export class PostEditor extends React.Component {
     const createTag = () => dispatch(createTagInPostEditor())
     const Subeditor = editorType === 'event' ? EventPostEditor
       : editorType === 'project' ? ProjectPostEditor : null
+    const removeLinkPreview = () => this.updateStore({linkPreview: null})
 
     return <div className='post-editor clearfix'>
       <PostEditorHeader person={currentUser}/>
@@ -336,7 +365,7 @@ export class PostEditor extends React.Component {
         ref='details'
         name={post ? `post${id}` : id}
         content={description}
-        onChange={ev => this.setDelayed('description', ev.target.value)}
+        onChange={ev => this.updateDescription(ev.target.value)}
         onKeyUp={this.goBackToTitle}
         onAddTag={this.handleAddTag}
         onBlur={() => this.setState({showDetails: false})}/>
@@ -357,6 +386,8 @@ export class PostEditor extends React.Component {
         <li><a onClick={() => selectTag(null)}>#all-topics</a></li>
         <li className='create'><a onClick={() => createTag()}>Create New Topic</a></li>
       </Dropdown>}
+
+      {linkPreview && <LinkPreview {...{linkPreview}} onClose={removeLinkPreview}/>}
 
       {Subeditor && <Subeditor ref='subeditor'
         {...{post, postEdit, update: this.updateStore}}/>}

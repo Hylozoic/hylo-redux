@@ -41,7 +41,7 @@ export function updateMedia (obj, type, url) {
 export const mergeList = (state, items, key, opts = {}) => {
   let mergedItems = items.reduce((m, newItem) => {
     const id = newItem[key]
-    const oldItemCopy = omit({...state[id]}, opts.drop)
+    const oldItemCopy = omit(state[id], opts.drop)
     m[id] = mergeWith(oldItemCopy, newItem, (objValue, srcValue, k) => {
       // we don't want to perform the default behavior of merge when working
       // with arrays, because that concatenates them. e.g. with the list of

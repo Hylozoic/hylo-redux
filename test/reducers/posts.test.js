@@ -198,6 +198,38 @@ describe('posts', () => {
 
       expect(posts(state, action)).to.deep.equal(expectedState)
     })
+
+    it('adds a link preview', () => {
+      const action = {
+        type: UPDATE_POST,
+        payload: {},
+        meta: {id: 'a', params: {linkPreview: {id: 'b', url: 'foo'}}}
+      }
+
+      const state = {
+        a: {id: 'a'}
+      }
+
+      expect(posts(state, action)).to.deep.equal({
+        a: {id: 'a', linkPreview: {id: 'b', url: 'foo'}}
+      })
+    })
+
+    it('removes a link preview', () => {
+      const action = {
+        type: UPDATE_POST,
+        payload: {},
+        meta: {id: 'a', params: {}}
+      }
+
+      const state = {
+        a: {id: 'a', linkPreview: {id: 'b'}}
+      }
+
+      expect(posts(state, action)).to.deep.equal({
+        a: {id: 'a'}
+      })
+    })
   })
 
   describe('on FOLLOW_POST', () => {

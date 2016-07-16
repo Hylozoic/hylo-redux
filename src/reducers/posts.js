@@ -27,7 +27,7 @@ const normalize = (post) => omitBy(isNull, {
 
 const normalizeUpdate = (post, params, payload) => {
   const normalized = {
-    ...post,
+    ...omit(post, 'linkPreview'),
     ...omit(params, 'imageUrl', 'imageRemoved', 'docs', 'removedDocs')
   }
   if (some(payload.children)) {
@@ -95,7 +95,7 @@ export default function (state = {}, action) {
       return mergeList(state, listWithChildren(normalize(payload), payload), 'id')
     case UPDATE_POST:
       post = normalizeUpdate(post, meta.params, payload)
-      return mergeList(state, listWithChildren(post, payload), 'id')
+      return mergeList(state, listWithChildren(post, payload), 'id', {drop: ['linkPreview']})
     case CHANGE_EVENT_RESPONSE_PENDING:
       var { response, user } = meta
       return {...state, [id]: changeEventResponse(post, response, user)}

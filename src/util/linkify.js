@@ -1,11 +1,13 @@
-require('linkifyjs/plugins/hashtag')(require('linkifyjs'))
+const linkifyjs = require('linkifyjs')
 import linkifyString from 'linkifyjs/string'
 import cheerio from 'cheerio'
 import { isEmpty, toPairs, merge } from 'lodash'
+import { filter, map } from 'lodash/fp'
 import { hashtagAttribute } from './RichTextTagger'
 import { tagUrl } from '../routes'
 import { hashtagFullRegex } from '../models/hashtag'
-
+import striptags from 'striptags'
+require('linkifyjs/plugins/hashtag')(linkifyjs)
 
 // this handles old-style hashtags, which aren't wrapped in tags
 function linkifyjsOptions (slug) {
@@ -78,3 +80,6 @@ export function prepareHashtagsForEditing (text) {
   })
   return $.html()
 }
+
+export const findUrls = text =>
+  map('href', filter(x => x.type === 'url', linkifyjs.find(striptags(text))))

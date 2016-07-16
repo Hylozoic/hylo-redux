@@ -1,5 +1,5 @@
 import {
-  cloneDeep, filter, get, includes, isArray, isEqual, mergeWith, set, some,
+  cloneDeep, filter, get, includes, isArray, isEqual, mergeWith, omit, set, some,
   transform, uniqBy
 } from 'lodash'
 import { CLEAR_CACHE } from '../actions'
@@ -38,10 +38,11 @@ export function updateMedia (obj, type, url) {
 // update state with a set of items. items that already exist in the state get
 // new properties, update the values of existing properties, and do not lose any
 // existing properties that aren't contained in their new counterpart.
-export const mergeList = (state, items, key) => {
-  let mergedItems = items.reduce((m, x) => {
-    const id = x[key]
-    m[id] = mergeWith({...state[id]}, x, (objValue, srcValue) => {
+export const mergeList = (state, items, key, opts = {}) => {
+  let mergedItems = items.reduce((m, newItem) => {
+    const id = newItem[key]
+    const oldItemCopy = omit({...state[id]}, opts.drop)
+    m[id] = mergeWith(oldItemCopy, newItem, (objValue, srcValue, k) => {
       // we don't want to perform the default behavior of merge when working
       // with arrays, because that concatenates them. e.g. with the list of
       // media for a post, that creates duplicate values. so we replace the old

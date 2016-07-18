@@ -1,4 +1,5 @@
 import invariant from 'invariant'
+import qs from 'querystring'
 
 export const _PENDING = '_PENDING'
 export const ADD_COMMUNITY_MODERATOR = 'ADD_COMMUNITY_MODERATOR'
@@ -29,6 +30,7 @@ export const FETCH_CURRENT_USER = 'FETCH_CURRENT_USER'
 export const FETCH_FOLLOWED_TAGS = 'FETCH_FOLLOWED_TAGS'
 export const FETCH_INVITATIONS = 'FETCH_INVITATIONS'
 export const FETCH_LEFT_NAV_TAGS = 'FETCH_LEFT_NAV_TAGS'
+export const FETCH_LINK_PREVIEW = 'FETCH_LINK_PREVIEW'
 export const FETCH_LIVE_STATUS = 'FETCH_LIVE_STATUS'
 export const FETCH_NETWORK = 'FETCH_NETWORK'
 export const FETCH_ONBOARDING = 'FETCH_ONBOARDING'
@@ -286,7 +288,7 @@ export function fetchPost (id) {
 export function startPostEdit (post) {
   let fields = [
     'id', 'name', 'type', 'description', 'location', 'communities', 'public',
-    'media', 'start_time', 'end_time', 'tag', 'children'
+    'media', 'start_time', 'end_time', 'tag', 'children', 'linkPreview'
   ]
   let payload = cloneDeep(pick(post, fields))
   return {type: START_POST_EDIT, payload}
@@ -710,5 +712,13 @@ export function pinPost (slug, id) {
     type: PIN_POST,
     payload: {api: true, path: `/noo/community/${slug}/post/${id}/pin`, method: 'POST'},
     meta: {slug, id}
+  }
+}
+
+export function fetchLinkPreview (url) {
+  const q = qs.stringify({url})
+  return {
+    type: FETCH_LINK_PREVIEW,
+    payload: {api: true, path: `/noo/link-preview?${q}`}
   }
 }

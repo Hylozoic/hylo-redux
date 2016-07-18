@@ -7,7 +7,7 @@ import { validateTag } from './EventPostEditor'
 import { debounce } from 'lodash'
 import { get, map, pick } from 'lodash/fp'
 import { getPost, getVideo } from '../models/post'
-const { array, func, object } = React.PropTypes
+const { array, func, object, bool } = React.PropTypes
 
 const random = () => Math.random().toString().slice(2, 8)
 
@@ -61,15 +61,24 @@ export default class ProjectPostEditor extends React.Component {
     const videoUrl = get('url', getVideo(postEdit)) || ''
     if (type !== 'project') setTimeout(() => update({type: 'project'}))
 
-    return <div className='project-editor'>
+    return <div className='project-editor form-sections'>
       <h3>
         Requests
         <span className='soft normal'>&nbsp;&mdash; what you need to make it happen</span>
       </h3>
       <div className='requests'>
         {requests.map((p, i) => <ProjectRequestEditor post={p} key={p.id}
-          update={this.updateRequest(i)}/>)}
+                                                      update={this.updateRequest(i)}/>)}
         <a className='add-request' onClick={this.addRequest}>+ Add request</a>
+      </div>
+      <h3>
+        Financial Requests
+      </h3>
+      <div className='requests'>
+        <label>
+          <input type='checkbox' value={postEdit.financialRequestsEnabled} onChange={event => update({financialRequestsEnabled: event.target.value})}/>
+          Enable financial requests
+        </label>
       </div>
       <div className='more-fields'>
         <div className='video'>

@@ -54,14 +54,40 @@ export default class ProjectPostEditor extends React.Component {
   }
 
   render () {
-    const { postEdit, update, requests } = this.props
+    const { postEdit, update, requests, financialRequestAmount } = this.props
     const { end_time, tag, type } = postEdit
     const endTime = end_time ? new Date(end_time) : null
     const updateTag = tag => update({tag, tagEdited: true})
     const videoUrl = get('url', getVideo(postEdit)) || ''
     if (type !== 'project') setTimeout(() => update({type: 'project'}))
-
     return <div className='project-editor form-sections'>
+      <h3>
+        Financial Requests
+      </h3>
+      <div className='requests'>
+        <label>
+          { !postEdit.financialRequestsEnabled ?
+              <a
+                  className='add-request'
+                  onClick={event => update({financialRequestsEnabled: !postEdit.financialRequestsEnabled})}>
+                + Enable Financial Requests
+              </a>
+              : null
+          }
+        </label>
+          {
+            postEdit.financialRequestsEnabled ?
+                <span>How much do you need?
+                  <span>USD
+                    <input
+                        type="text"
+                        value={financialRequestAmount}
+                        onChange={e => update({financialRequestAmount: parseInt(e.target.value)})}/>
+                  </span>
+                </span>
+                : null
+          }
+      </div>
       <h3>
         Requests
         <span className='soft normal'>&nbsp;&mdash; what you need to make it happen</span>
@@ -70,15 +96,6 @@ export default class ProjectPostEditor extends React.Component {
         {requests.map((p, i) => <ProjectRequestEditor post={p} key={p.id}
                                                       update={this.updateRequest(i)}/>)}
         <a className='add-request' onClick={this.addRequest}>+ Add request</a>
-      </div>
-      <h3>
-        Financial Requests
-      </h3>
-      <div className='requests'>
-        <label>
-          <input type='checkbox' value={postEdit.financialRequestsEnabled} onChange={event => update({financialRequestsEnabled: event.target.value})}/>
-          Enable financial requests
-        </label>
       </div>
       <div className='more-fields'>
         <div className='video'>

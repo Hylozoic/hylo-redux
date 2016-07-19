@@ -7,9 +7,12 @@ import {
 } from '../../actions'
 import { followTag, showShareTag } from '../../actions/tags'
 import { compose } from 'redux'
-import { get } from 'lodash'
+import { get, sortBy } from 'lodash'
 import PostEditor from '../../components/PostEditor'
 import Icon from '../../components/Icon'
+import Avatar from '../../components/Avatar'
+import Dropdown from '../../components/Dropdown'
+import PersonDropdownItem from '../../components/PersonDropdownItem'
 import AccessErrorMessage from '../../components/AccessErrorMessage'
 import { canInvite } from '../../models/currentUser'
 const { bool, func, object } = React.PropTypes
@@ -24,7 +27,8 @@ class TagPosts extends React.Component {
     tag: object,
     community: object,
     redirecting: bool,
-    tagError: object
+    tagError: object,
+    isMobile: bool
   }
 
   static childContextTypes = {
@@ -43,7 +47,7 @@ class TagPosts extends React.Component {
   render () {
     const {
       params: { tagName, id }, location: { query }, tag, dispatch, redirecting,
-      community, tagError
+      community, tagError, isMobile
     } = this.props
     const { currentUser } = this.context
 
@@ -56,13 +60,18 @@ class TagPosts extends React.Component {
     if (!tag || !tag.id || redirecting) {
       return <div className='loading'>Please wait...</div>
     }
+    const { owner, followers } = tag
 
     const toggleFollow = () => dispatch(followTag(id, tagName))
 
     return <div>
       {currentUser && <PostEditor community={community} tag={tagName}/>}
       <div className='list-controls tag-header'>
-        <span className='tag-name'>#{tagName}</span>
+        <span className='title'>
+          <span className='tag-name'>#{tagName}</span>
+          {!isMobile && owner && <span className='byline'>by {owner.name}</span>}
+        </span>
+        {!isMobile && followers && <Followers followers={sortBy(followers, f => f.id !== owner.id)} />}
         {id && <button className={tag.followed ? 'unfollow' : 'follow'} onClick={toggleFollow}>
           {tag.followed ? 'Unfollow' : 'Follow'}
         </button>}
@@ -85,6 +94,7 @@ export default compose(
   connect((state, { params: { tagName, id } }) => {
     const tag = get(state, ['tagsByCommunity', id || 'all', tagName])
     return {
+      isMobile: state.isMobile,
       tag,
       redirecting: !!get(tag, 'post.id'),
       community: get(state, ['communities', id]),
@@ -92,3 +102,18 @@ export default compose(
     }
   })
 )(TagPosts)
+
+const Followers = ({followers}) => {
+  return <div className='followers'>
+    <span>
+      Followed by
+    </span>
+    {followers.slice(0, 3).map(follower => <Avatar key={follower.id} person={follower} />)}
+    {followers.length > 3 && <Dropdown toggleChildren={
+      <span className='plus-button'>
+        <span className='content'>+{followers.length - 3}</span>
+      </span>}>
+      {followers.slice(3).map(follower => <PersonDropdownItem person={follower}/>)}
+    </Dropdown>}
+  </div>
+}

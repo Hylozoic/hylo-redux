@@ -106,7 +106,6 @@ export const UPDATE_MEMBERSHIP_SETTINGS_PENDING = UPDATE_MEMBERSHIP_SETTINGS + _
 export const UPDATE_NETWORK = 'UPDATE_NETWORK'
 export const UPDATE_NETWORK_PENDING = UPDATE_NETWORK + _PENDING
 export const UPDATE_NETWORK_EDITOR = 'UPDATE_NETWORK_EDITOR'
-export const UPDATE_PAGE_TITLE = 'UPDATE_PAGE_TITLE'
 export const UPDATE_POST = 'UPDATE_POST'
 export const UPDATE_POST_EDITOR = 'UPDATE_POST_EDITOR'
 export const UPDATE_USER_SETTINGS = 'UPDATE_USER_SETTINGS'
@@ -721,12 +720,5 @@ export function fetchLinkPreview (url) {
   return {
     type: FETCH_LINK_PREVIEW,
     payload: {api: true, path: `/noo/link-preview?${q}`}
-  }
-}
-
-export function updatePageTitle (title) {
-  return {
-    type: UPDATE_PAGE_TITLE,
-    payload: title
   }
 }

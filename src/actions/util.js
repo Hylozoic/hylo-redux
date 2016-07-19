@@ -1,5 +1,5 @@
 import { find, get } from 'lodash'
-import { updateUserSettings, setCurrentCommunityId, updatePageTitle } from './index'
+import { updateUserSettings, setCurrentCommunityId } from './index'
 
 export const findError = (errors, type, bucket, id) => {
   let match = action =>
@@ -15,6 +15,5 @@ export const saveCurrentCommunity = (dispatch, community, userId) => {
   if (userId && typeof window !== 'undefined') {
     setTimeout(() => dispatch(updateUserSettings(userId, {settings})), 2000)
   }
-  dispatch(updatePageTitle(community.name))
   return dispatch(setCurrentCommunityId(community.id))
 }

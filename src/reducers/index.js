@@ -32,7 +32,6 @@ import {
   CREATE_POST,
   CREATE_NETWORK,
   FETCH_ACTIVITY,
-  FETCH_LIVE_STATUS,
   FETCH_COMMUNITIES,
   FETCH_INVITATIONS,
   FETCH_PEOPLE,
@@ -67,7 +66,6 @@ import {
   UPDATE_COMMUNITY_EDITOR,
   UPDATE_NETWORK_EDITOR,
   UPDATE_INVITATION_EDITOR,
-  UPDATE_PAGE_TITLE,
   UPDATE_POST,
   UPLOAD_IMAGE,
   VALIDATE_COMMUNITY_ATTRIBUTE,
@@ -465,35 +463,6 @@ const combinedReducers = combineReducers({
         return state.filter(n => n.id !== payload)
     }
 
-    return state
-  },
-
-  pageTitle: (state = 'Hylo', action) => {
-    let updateCount = (title, count) => {
-      let split = title.split(') ')
-      let words = split.length > 1 ? split[1] : split[0]
-      return (count > 0 ? `(${count}) ` : '') + words
-    }
-
-    let updateTitle = (full, words) => {
-      let split = full.split(') ')
-      return split.length > 1
-        ? `${split[0]}) ${words}`
-        : words
-    }
-
-    let { type, payload, meta } = action
-    switch (type) {
-      case FETCH_ACTIVITY:
-        if (meta.resetCount) {
-          return updateCount(state, 0)
-        }
-        break
-      case FETCH_LIVE_STATUS:
-        return updateCount(state, payload.new_notification_count)
-      case UPDATE_PAGE_TITLE:
-        return updateTitle(state, payload)
-    }
     return state
   },
 

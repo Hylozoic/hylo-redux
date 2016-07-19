@@ -60,13 +60,13 @@ export default class ShareTopicModal extends React.Component {
       dispatch(sendCommunityTagInvitation(community.id, tagName, {emails}))
     }
 
-    return <Modal title={`Invite friends to join ${community.name} and follow #${tagName}`} id='share-topic' onCancel={onCancel}>
+    return <Modal title='Invite new members' subtitle={`Invite people to join ${community.name} and follow #${tagName}`} id='share-topic' onCancel={onCancel}>
       <div className='join-url'>
-        <label>Friends with this link can join</label>
+        <label>People with this link can join</label>
         {joinUrl ? <A to={joinUrl}>{joinUrl}</A> : <span>Loading...</span>}
       </div>
-      <div className='invite'>
-        <label>Invite friends via email</label>
+      <div className='invite'>        
+        <label>Invite people via email</label>
         <input type='text'
           placeholder='Enter email addresses, separated by commas'
           value={recipients}

@@ -27,7 +27,8 @@ class TagPosts extends React.Component {
     tag: object,
     community: object,
     redirecting: bool,
-    tagError: object
+    tagError: object,
+    isMobile: bool
   }
 
   static childContextTypes = {
@@ -46,7 +47,7 @@ class TagPosts extends React.Component {
   render () {
     const {
       params: { tagName, id }, location: { query }, tag, dispatch, redirecting,
-      community, tagError
+      community, tagError, isMobile
     } = this.props
     const { currentUser } = this.context
 
@@ -59,10 +60,7 @@ class TagPosts extends React.Component {
     if (!tag || !tag.id || redirecting) {
       return <div className='loading'>Please wait...</div>
     }
-
     const { owner, followers } = tag
-
-    const isMobile = false
 
     const toggleFollow = () => dispatch(followTag(id, tagName))
 
@@ -96,6 +94,7 @@ export default compose(
   connect((state, { params: { tagName, id } }) => {
     const tag = get(state, ['tagsByCommunity', id || 'all', tagName])
     return {
+      isMobile: state.isMobile,
       tag,
       redirecting: !!get(tag, 'post.id'),
       community: get(state, ['communities', id]),
@@ -110,7 +109,10 @@ const Followers = ({followers}) => {
       Followed by
     </span>
     {followers.slice(0, 3).map(follower => <Avatar key={follower.id} person={follower} />)}
-    {followers.length > 3 && <Dropdown toggleChildren={<span className='plus-button'><span className='content'>+{followers.length - 3}</span></span>}>
+    {followers.length > 3 && <Dropdown toggleChildren={
+      <span className='plus-button'>
+        <span className='content'>+{followers.length - 3}</span>
+      </span>}>
       {followers.slice(3).map(follower => <PersonDropdownItem person={follower}/>)}
     </Dropdown>}
   </div>

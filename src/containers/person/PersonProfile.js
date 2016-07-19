@@ -4,7 +4,7 @@ import { connect } from 'react-redux'
 import { prefetch, defer } from 'react-fetcher'
 import { commentUrl, peopleUrl } from '../../routes'
 import { FETCH_PERSON, fetchPerson, fetchThanks, navigate } from '../../actions'
-import { saveCurrentCommunityId } from '../../actions/util'
+import { saveCurrentCommunity } from '../../actions/util'
 import { capitalize, compact, get, some, includes } from 'lodash'
 import { isNull, map, omitBy, sortBy } from 'lodash/fp'
 import { VIEWED_PERSON, VIEWED_SELF, trackEvent } from '../../util/analytics'
@@ -20,7 +20,7 @@ import Comment from '../../components/Comment'
 import { parse } from 'url'
 import moment from 'moment'
 import { getPost } from '../../models/post'
-import { getCurrentCommunity } from '../../models/community'
+import { getCurrentCommunity, getCommunity } from '../../models/community'
 
 const { func, object } = React.PropTypes
 
@@ -55,9 +55,11 @@ const PersonProfile = compose(
     dispatch(fetchPerson(id))
     .then(({ payload: { shared_communities }, error }) => {
       if (error || !shared_communities) return
-      let { currentCommunityId, people: { current } } = store.getState()
+      const state = store.getState()
+      let { currentCommunityId, people: { current } } = state
       if (includes(shared_communities, currentCommunityId)) return
-      return saveCurrentCommunityId(dispatch, shared_communities[0] || 'all', current.id)
+      const sharedCommunity = getCommunity(shared_communities[0], state)
+      return saveCurrentCommunity(dispatch, sharedCommunity || {id: 'all'}, current.id)
     }),
     dispatch(initialFetch(id, query))
   ])),

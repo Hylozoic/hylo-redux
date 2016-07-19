@@ -21,6 +21,7 @@ import { VIEWED_NOTIFICATIONS, trackEvent } from '../util/analytics'
 import { postUrl } from '../routes'
 import { getCurrentCommunity } from '../models/community'
 const { array, bool, func, number, object } = React.PropTypes
+import decode from 'ent/decode'
 
 const Notifications = compose(
   prefetch(({ dispatch, params: { id } }) => dispatch(fetchActivity(0, true, id))),
@@ -121,7 +122,7 @@ const Activity = ({ activity, currentUser, dispatch }) => {
 
   let postName = post.tag === 'welcome'
     ? `${post.relatedUsers[0].name}'s' welcoming post`
-    : truncate(post.name, 140)
+    : truncate(decode(post.name), 140)
 
   let thankLinkText = isThanked
     ? `You thanked ${actor.name.split(' ')[0]}`

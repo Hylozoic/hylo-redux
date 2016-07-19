@@ -1,6 +1,5 @@
 import React from 'react'
 import { connect } from 'react-redux'
-import { Link } from 'react-router'
 import { prefetch } from 'react-fetcher'
 import { fetch, ConnectedPostList } from '../ConnectedPostList'
 import {
@@ -8,36 +7,17 @@ import {
 } from '../../actions'
 import { followTag, showShareTag } from '../../actions/tags'
 import { compose } from 'redux'
-import { get } from 'lodash'
+import { get, sortBy } from 'lodash'
 import PostEditor from '../../components/PostEditor'
 import Icon from '../../components/Icon'
 import Avatar from '../../components/Avatar'
 import Dropdown from '../../components/Dropdown'
+import PersonDropdownItem from '../../components/PersonDropdownItem'
 import AccessErrorMessage from '../../components/AccessErrorMessage'
 import { canInvite } from '../../models/currentUser'
 const { bool, func, object } = React.PropTypes
 
 const subject = 'community'
-
-const lion = {
-  name: 'Mr Lion',
-  avatar_url: 'https://d3ngex8q79bk55.cloudfront.net/user/19723/avatar/1466200349818_1465940915413_a60672bc7cc461a2b1480446defb5b94.jpg'
-}
-
-const fakeTag = {
-  creator: {
-    id: 1,
-    name: 'Robbie Carlton',
-    avatar_url: 'https://d3ngex8q79bk55.cloudfront.net/user/11204/avatar/1467755857845_a14145223586391656938.jpeg'
-  },
-  followers: [
-    {...lion, id: 2},
-    {...lion, id: 3},
-    {...lion, id: 4},
-    {...lion, id: 5},
-    {...lion, id: 6}
-  ]
-}
 
 class TagPosts extends React.Component {
   static propTypes = {
@@ -80,7 +60,7 @@ class TagPosts extends React.Component {
       return <div className='loading'>Please wait...</div>
     }
 
-    const { creator, followers } = fakeTag
+    const { owner, followers } = tag
 
     const isMobile = false
 
@@ -89,9 +69,11 @@ class TagPosts extends React.Component {
     return <div>
       {currentUser && <PostEditor community={community} tag={tagName}/>}
       <div className='list-controls tag-header'>
-        <span className='tag-name'>#{tagName}</span>
-        {!isMobile && <span className='byline'>by {creator.name}</span>}
-        {!isMobile && <Followers followers={[creator].concat(followers)} />}
+        <span className='title'>
+          <span className='tag-name'>#{tagName}</span>
+          {!isMobile && owner && <span className='byline'>by {owner.name}</span>}
+        </span>
+        {!isMobile && followers && <Followers followers={sortBy(followers, f => f.id !== owner.id)} />}
         {id && <button className={tag.followed ? 'unfollow' : 'follow'} onClick={toggleFollow}>
           {tag.followed ? 'Unfollow' : 'Follow'}
         </button>}
@@ -128,10 +110,8 @@ const Followers = ({followers}) => {
       Followed by
     </span>
     {followers.slice(0, 3).map(follower => <Avatar key={follower.id} person={follower} />)}
-    {followers.length > 3 && <Dropdown toggleChildren={<span className='plus-button'>+{followers.length - 3}</span>}>
-      {followers.slice(3).map(follower => <li key={follower.id}>
-        <Avatar person={follower} /><Link to={`/u/${follower.id}`}>{follower.name}</Link>
-      </li>)}
+    {followers.length > 3 && <Dropdown toggleChildren={<span className='plus-button'><span className='content'>+{followers.length - 3}</span></span>}>
+      {followers.slice(3).map(follower => <PersonDropdownItem person={follower}/>)}
     </Dropdown>}
   </div>
 }

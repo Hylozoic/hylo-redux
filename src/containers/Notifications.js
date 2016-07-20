@@ -128,10 +128,6 @@ const Activity = ({ activity, currentUser, dispatch }) => {
     ? `You thanked ${actor.name.split(' ')[0]}`
     : 'Say thanks'
 
-  let thankTooltipText = isThanked
-    ? 'click to take back your thanks'
-    : 'click to give thanks for this comment'
-
   let visit = () => {
     if (unread) dispatch(markActivityRead(activity.id))
     dispatch(navigate(postUrl(post.id, get(comment, 'id'))))
@@ -152,8 +148,7 @@ const Activity = ({ activity, currentUser, dispatch }) => {
         {humanDate(created_at)}
         {comment && <span>
           {spacer}
-          <a tooltip={thankTooltipText} tooltip-popup-delay='500'
-            onClick={() => dispatch(thank(comment_id, currentUser))}>
+          <a onClick={() => dispatch(thank(comment_id, currentUser))}>
             {thankLinkText}
           </a>
           {spacer}

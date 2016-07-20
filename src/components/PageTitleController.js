@@ -47,18 +47,12 @@ export default class PageTitleController extends React.Component {
       this.originalFaviconUrl = null
     }
     document.head || (document.head = document.getElementsByTagName('head')[0])
-    const link = document.createElement('link')
-    const oldLink = document.getElementById('favicon')
+    const link = document.getElementById('favicon')
+    if (!link) return
     if (!this.originalFaviconUrl) {
-      this.originalFaviconUrl = oldLink.href
+      this.originalFaviconUrl = link.href
     }
-    link.id = 'favicon'
-    link.rel = 'shortcut icon'
     link.href = faviconUrl
-    if (oldLink) {
-      document.head.removeChild(oldLink)
-    }
-    document.head.appendChild(link)
   }
 
   render () {

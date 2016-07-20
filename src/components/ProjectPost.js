@@ -75,7 +75,7 @@ const ProjectPost = (props, context) => {
       </h3>
       {requests.map(id => <ProjectRequest key={id} {...{id, community}}/>)}
     </div>}
-    <CommentSection comments={comments}/>
+    <CommentSection post={post} comments={comments}/>
   </div>
 }
 ProjectPost.contextTypes = {
@@ -107,7 +107,7 @@ const Supporters = ({ post, simple }, { currentUser, dispatch }) => {
       <span>&nbsp;this.</span>
     </LinkedPersonSentence>}
     {!simple && <a className='support button has-icon' onClick={follow}>
-      <Icon name={isFollowing ? 'ok-sign' : 'plus-sign'} glyphicon={true}/>
+      <Icon name={isFollowing ? 'ok-sign' : 'plus-sign'} glyphicon/>
       {isFollowing ? 'Supporting' : 'Support this'}
     </a>}
   </div>
@@ -162,7 +162,7 @@ class ProjectRequest extends React.Component {
     return <div className='nested-request'>
       {this.state.zoomed && <div className='zoomed'>
         <div className='backdrop' onClick={unzoom}/>
-        {post.user && <Post post={post} expanded={true}/>}
+        {post.user && <Post post={post} expanded/>}
       </div>}
       <p className='title'>{name}</p>
       {description && <ClickCatchingSpan className='details'
@@ -172,7 +172,7 @@ class ProjectRequest extends React.Component {
       </span>}
       <div className='meta'>
         <a className='help button has-icon' onClick={zoom}>
-          <Icon name='plus-sign' glyphicon={true}/>
+          <Icon name='plus-sign' glyphicon/>
           Offer to help
         </a>
         {numComments > 0 && <a onClick={zoom}>
@@ -186,7 +186,7 @@ class ProjectRequest extends React.Component {
 const spacer = <span>&nbsp; •&nbsp; </span>
 
 export const ProjectPostCard = ({ post }) => {
-  const { name, user, tag, end_time } = post
+  const { name, user, tag, end_time, comments } = post
   const url = `/p/${post.id}`
   const backgroundImage = `url(${imageUrl(post)})`
 
@@ -204,6 +204,8 @@ export const ProjectPostCard = ({ post }) => {
       <A to={`/u/${user.id}`}>{user.name}</A>
     </div>
     <A className='title' to={url}>{name}</A>
-    <Supporters post={post} simple={true}/>
+    <Supporters post={post} simple/>
+    <div className='comments-section-spacer'/>
+    <CommentSection post={post} comments={comments}/>
   </div>
 }

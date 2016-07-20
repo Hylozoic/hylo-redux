@@ -9,7 +9,7 @@ import { filter, find, flow, get, map, sortBy } from 'lodash/fp'
 import { throttle, merge } from 'lodash'
 import { same } from '../models'
 import { nextPath } from '../util/navigation'
-import { MenuButton, leftNavWidth, leftNavEasing } from './LeftNav'
+import { MenuButton, leftNavWidth, leftNavEasing, menuButtonWidth } from './LeftNav'
 import { editorUrl } from '../containers/StandalonePostEditor'
 import { assetUrl } from '../util/assets'
 const { array, object, func, string, bool } = React.PropTypes
@@ -123,9 +123,15 @@ export default class TopNav extends React.Component {
       ? {marginLeft: leftNavIsOpen ? leftNavWidth : 0}
       : {marginLeft: 0}
 
+    const widenMenuButton = isMobile
+      ? {width: leftNavWidth}
+      : {width: leftNavIsOpen ? leftNavWidth : menuButtonWidth}
+
     return <VelocityComponent animation={moveWithMenu} easing={leftNavEasing}>
       <nav id='topNav' className={cx('clearfix', {scrolling: this.state.isScrolling})}>
-        <MenuButton onClick={openLeftNav} label={label}/>
+        <VelocityComponent animation={widenMenuButton} easing={leftNavEasing}>
+          <MenuButton onClick={openLeftNav} label={isMobile ? label : null}/>
+        </VelocityComponent>
         {currentUser
         ? <UserMenu {...{logout, currentUser, newCount, slug, search}}/>
         : <ul className='right'>

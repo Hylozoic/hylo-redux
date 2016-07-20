@@ -6,7 +6,7 @@ import { fetch, ConnectedPostList } from './ConnectedPostList'
 import PostEditor from '../components/PostEditor'
 import CoverImagePage from '../components/CoverImagePage'
 import { navigate } from '../actions'
-import { saveCurrentCommunity } from '../actions/util'
+import { saveCurrentCommunityId } from '../actions/util'
 import { communityUrl } from '../routes'
 import { getCommunity } from '../models/currentUser'
 const { object } = React.PropTypes
@@ -41,7 +41,7 @@ export const prefetchForWrapped = subject => ({ dispatch, params, currentUser, q
   }
 
   return dispatch(fetch(subject, id, query))
-  .then(() => saveCurrentCommunity(dispatch, {id: 'all'}, id))
+  .then(() => saveCurrentCommunityId(dispatch, 'all', id))
 }
 
 const wrapComponent = (subject, ...args) => compose(

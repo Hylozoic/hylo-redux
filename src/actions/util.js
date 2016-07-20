@@ -9,11 +9,11 @@ export const findError = (errors, type, bucket, id) => {
   return get(find([errors[type]], match), 'payload.response')
 }
 
-export const saveCurrentCommunity = (dispatch, community, userId) => {
-  if (!community) return
-  const settings = {currentCommunityId: community.id}
+export const saveCurrentCommunityId = (dispatch, communityId, userId) => {
+  if (!communityId) return
+  const settings = {currentCommunityId: communityId}
   if (userId && typeof window !== 'undefined') {
     setTimeout(() => dispatch(updateUserSettings(userId, {settings})), 2000)
   }
-  return dispatch(setCurrentCommunityId(community.id))
+  return dispatch(setCurrentCommunityId(communityId))
 }

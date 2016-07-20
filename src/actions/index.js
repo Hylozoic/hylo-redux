@@ -643,8 +643,8 @@ export function fetchTag (tagName, communityId) {
   }
 }
 
-export function setMobileDevice () {
-  return {type: SET_MOBILE_DEVICE}
+export function setMobileDevice (enabled = true) {
+  return {type: SET_MOBILE_DEVICE, payload: enabled}
 }
 
 export function removeComment (id) {

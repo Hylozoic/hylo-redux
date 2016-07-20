@@ -2,7 +2,7 @@ import React from 'react'
 import cx from 'classnames'
 import { prefetch } from 'react-fetcher'
 import { connect } from 'react-redux'
-import { find, includes } from 'lodash'
+import { debounce, find, includes } from 'lodash'
 import { filter } from 'lodash/fp'
 import TopNav from '../components/TopNav'
 import { LeftNav, leftNavWidth, leftNavEasing } from '../components/LeftNav'
@@ -11,13 +11,14 @@ import LiveStatusPoller from '../components/LiveStatusPoller'
 import PageTitleController from '../components/PageTitleController'
 import TagPopover from '../components/TagPopover'
 import { logout, navigate, removeNotification, toggleLeftNav, updateUserSettings } from '../actions'
-import { calliOSBridge, iOSAppVersion } from '../client/util'
+import { calliOSBridge, iOSAppVersion, isMobile as testIsMobile } from '../client/util'
 import { VelocityComponent } from 'velocity-react'
 import { canInvite, canModerate } from '../models/currentUser'
 import { get, pick, isEmpty } from 'lodash'
 import { matchEditorUrl } from './StandalonePostEditor'
 import { ModalWrapper } from '../components/Modal'
 import { makeUrl, nextPath } from '../util/navigation'
+import { setMobileDevice } from '../actions'
 const { array, bool, func, object, string } = React.PropTypes
 
 const makeNavLinks = (currentUser, community) => {
@@ -92,6 +93,10 @@ export default class App extends React.Component {
     if (version < 1.7) {
       window.location = 'https://www.hylo.com/newapp'
     }
+
+    window.addEventListener('resize', debounce(event => {
+      this.props.dispatch(setMobileDevice(testIsMobile()))
+    }), 1000)
   }
 
   render () {

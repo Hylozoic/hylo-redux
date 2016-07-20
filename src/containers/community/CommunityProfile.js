@@ -8,7 +8,7 @@ import {
   navigate,
   updateUserSettings
 } from '../../actions'
-import { saveCurrentCommunity } from '../../actions/util'
+import { saveCurrentCommunityId } from '../../actions/util'
 import { fetchLeftNavTags } from '../../actions/tags'
 import { locationWithoutParams } from '../../client/util'
 import { VIEWED_COMMUNITY, trackEvent } from '../../util/analytics'
@@ -52,8 +52,9 @@ export default compose(
     .then(() => dispatch(fetchCommunity(id)))
     .then(() => {
       const state = store.getState()
+      const communityId = get(state.communities[id], 'id')
       const userId = get(state.people, 'current.id')
-      return saveCurrentCommunity(dispatch, state.communities[id], userId)
+      return saveCurrentCommunityId(dispatch, communityId, userId)
     })),
   defer(({ params: { id }, store }) => {
     const community = store.getState().communities[id]

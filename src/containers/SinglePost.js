@@ -8,7 +8,7 @@ import {
   FETCH_POST, fetchComments, fetchPost, navigate,
   setMetaTags
 } from '../actions'
-import { saveCurrentCommunity } from '../actions/util'
+import { saveCurrentCommunityId } from '../actions/util'
 import { fetchLeftNavTags } from '../actions/tags'
 import { ogMetaTags } from '../util'
 import A from '../components/A'
@@ -19,7 +19,7 @@ import AccessErrorMessage from '../components/AccessErrorMessage'
 import CoverImagePage from '../components/CoverImagePage'
 import EventPost from '../components/EventPost'
 import ProjectPost from '../components/ProjectPost'
-import { getCurrentCommunity, getCommunity } from '../models/community'
+import { getCurrentCommunity } from '../models/community'
 import { getComments, getCommunities, getPost } from '../models/post'
 import { fetch, ConnectedPostList } from './ConnectedPostList'
 const { array, bool, object, string } = React.PropTypes
@@ -132,7 +132,6 @@ const setupPage = (store, id, query, action) => {
   if (!post) return
 
   const communityId = get(post, 'communities.0') || 'all'
-  const community = getCommunity(communityId, state)
   const userId = get(state.people, 'current.id')
   const slug = get(state.communities, [communityId, 'slug'])
 
@@ -142,7 +141,7 @@ const setupPage = (store, id, query, action) => {
   }
 
   return Promise.all([
-    saveCurrentCommunity(dispatch, community, userId),
+    saveCurrentCommunityId(dispatch, communityId, userId),
 
     // when this page is clicked into from a post list, fetchPost will cause a
     // cache hit; however, there may be more comments than the 3 that were

@@ -1,4 +1,5 @@
 import React from 'react'
+import { connect } from 'react-redux'
 import { timeRange, timeRangeBrief, timeRangeFull } from '../util/text'
 import { changeEventResponse } from '../actions'
 import A from './A'
@@ -9,7 +10,7 @@ import LinkedPersonSentence from './LinkedPersonSentence'
 import { ClickCatchingSpan } from './ClickCatcher'
 import { get, find, includes, isEmpty, some, sortBy } from 'lodash'
 import { same } from '../models'
-import { imageUrl } from '../models/post'
+import { getComments, imageUrl } from '../models/post'
 import { Header, CommentSection, presentDescription } from './Post'
 import decode from 'ent/decode'
 import cx from 'classnames'
@@ -19,8 +20,10 @@ const spacer = <span>&nbsp; •&nbsp; </span>
 
 const shouldShowTag = tag => tag && !includes(['event', 'chat'], tag)
 
-export const EventPostCard = ({ post }) => {
-  const { start_time, end_time, user, id, name, tag, comments } = post
+export const EventPostCard = connect(
+  (state, { post }) => ({comments: getComments(post, state)})
+)(({ post, comments }) => {
+  const { start_time, end_time, user, id, name, tag } = post
   const start = new Date(start_time)
   const end = end_time && new Date(end_time)
   const time = timeRangeBrief(start, end)
@@ -45,7 +48,7 @@ export const EventPostCard = ({ post }) => {
     <div className='comments-section-spacer'/>
     <CommentSection post={post} comments={comments}/>
   </div>
-}
+})
 
 const Attendance = ({ post, limit, showButton, className, children }, { currentUser }) => {
   const { responders } = post

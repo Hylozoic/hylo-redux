@@ -384,6 +384,21 @@ export default class UserSettings extends React.Component {
       {expand.payment && <Section className='payment'>
         <Item>
           <div className='full-column'>
+            <label>Enable Financial Features</label>
+            <p>Enabling this functionality allows you to create projects
+              with financial contributions and pledge funds to other
+              financially enabled projects using your HitFin wallet.</p>
+          </div>
+          <div className='third-column'>
+            <a className='button hit-fin-logo'
+               onClick={() => openPopup('hit-fin', PROFILE_CONTEXT)}>
+              Connect HitFin Account
+            </a>
+          </div>
+        </Item>
+        <Item>
+          <div className='full-column'>
+            <label>Membership Fees</label>
             <p>You do not belong to any communities that require a membership fee.</p>
           </div>
         </Item>

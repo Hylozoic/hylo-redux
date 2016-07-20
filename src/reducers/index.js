@@ -32,7 +32,6 @@ import {
   CREATE_POST,
   CREATE_NETWORK,
   FETCH_ACTIVITY,
-  FETCH_LIVE_STATUS,
   FETCH_COMMUNITIES,
   FETCH_INVITATIONS,
   FETCH_PEOPLE,
@@ -464,26 +463,6 @@ const combinedReducers = combineReducers({
         return state.filter(n => n.id !== payload)
     }
 
-    return state
-  },
-
-  pageTitle: (state = 'Hylo', action) => {
-    let updateTitle = (title, count) => {
-      let split = title.split(') ')
-      let words = split.length > 1 ? split[1] : split[0]
-      return (count > 0 ? `(${count}) ` : '') + words
-    }
-
-    let { type, payload, meta } = action
-    switch (type) {
-      case FETCH_ACTIVITY:
-        if (meta.resetCount) {
-          return updateTitle(state, 0)
-        }
-        break
-      case FETCH_LIVE_STATUS:
-        return updateTitle(state, payload.new_notification_count)
-    }
     return state
   },
 

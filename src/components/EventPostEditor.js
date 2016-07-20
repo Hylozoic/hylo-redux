@@ -47,13 +47,13 @@ export default class EventPostEditor extends React.Component {
       <div className='start-time'>
         <Icon name='Calendar'/>
         <DatetimePicker inputProps={{placeholder: 'start time'}}
-          value={startTime}
+          defaultValue={startTime}
           onBlur={updateTime('start_time')}/>
       </div>
       <div className='end-time'>
         <Icon name='Calendar'/>
         <DatetimePicker inputProps={{placeholder: 'end time'}}
-          value={endTime}
+          defaultValue={endTime}
           onBlur={updateTime('end_time')}/>
       </div>
       <div className='location'>

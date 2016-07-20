@@ -50,6 +50,7 @@ const makeNavLinks = (currentUser, community) => {
   const community = find(state.communities, c => c.id === state.currentCommunityId)
   const network = find(state.networks, n => n.id === state.currentNetworkId)
   const tags = community ? state.tagsByCommunity[community.slug] : {}
+  const networkCommunities = state.communitiesForNetworkNav[get(community, 'network.id')]
   return {
     isMobile,
     leftNavIsOpen,
@@ -59,7 +60,8 @@ const makeNavLinks = (currentUser, community) => {
     network,
     tags,
     path: state.routing.path,
-    showModal
+    showModal,
+    networkCommunities
   }
 }, null, null, {withRef: true})
 export default class App extends React.Component {
@@ -75,7 +77,8 @@ export default class App extends React.Component {
     dispatch: func,
     isMobile: bool,
     showModal: object,
-    location: object
+    location: object,
+    networkCommunities: array
   }
 
   static childContextTypes = {
@@ -102,7 +105,7 @@ export default class App extends React.Component {
   render () {
     const {
       children, community, currentUser, dispatch, tags, leftNavIsOpen, network,
-      notifierMessages, isMobile, showModal, location: { query }
+      notifierMessages, isMobile, showModal, location: { query }, networkCommunities
     } = this.props
 
     const path = this.props.path.split('?')[0]
@@ -140,6 +143,7 @@ export default class App extends React.Component {
         links={links}
         community={community}
         network={network}
+        networkCommunities={networkCommunities}
         onChangeCommunity={visitCommunity}
         openLeftNav={openLeftNav}
         leftNavIsOpen={leftNavIsOpen}

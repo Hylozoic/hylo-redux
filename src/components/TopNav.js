@@ -17,6 +17,7 @@ import { viewportTop } from '../util/scrolling'
 import { VelocityComponent } from 'velocity-react'
 import cx from 'classnames'
 import { navigate } from '../actions'
+import { communityUrl } from '../routes'
 
 const getPostType = path => {
   if (path.endsWith('events')) return 'event'
@@ -65,7 +66,8 @@ export default class TopNav extends React.Component {
     community: object,
     network: object,
     leftNavIsOpen: bool,
-    links: array
+    links: array,
+    networkCommunities: array
   }
 
   static contextTypes = {
@@ -107,7 +109,7 @@ export default class TopNav extends React.Component {
   render () {
     const {
       search, logout, openLeftNav, leftNavIsOpen, path, onChangeCommunity,
-      network, links
+      network, links, networkCommunities
     } = this.props
     const { currentUser, isMobile } = this.context
     const label = getLabel(path)
@@ -139,6 +141,9 @@ export default class TopNav extends React.Component {
           <A to={editorUrl(slug, getPostType(path))} className='compose'>
             <Icon name='Compose'/>
           </A>}
+        {currentUser && !isMobile && networkCommunities &&
+          networkCommunities.length > 1 &&
+          <NetworkCommunityLinks communities={networkCommunities}/>}
       </nav>
     </VelocityComponent>
   }
@@ -260,3 +265,9 @@ const UserMenu = ({ slug, logout, newCount, currentUser, search }, { isMobile })
   </ul>
 }
 UserMenu.contextTypes = {isMobile: bool}
+
+const NetworkCommunityLinks = ({ communities }, { isMobile }) => {
+  return <div>
+    {communities.map(community => <A to={communityUrl(community)}>{community.name}</A>)}
+  </div>
+}

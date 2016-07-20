@@ -7,7 +7,7 @@ import { textLength } from '../util/text'
 import { isEmpty } from 'lodash'
 import { find, some } from 'lodash/fp'
 import { same } from '../models'
-import { getPost, imageUrl } from '../models/post'
+import { getComments, getPost, imageUrl } from '../models/post'
 import Icon from './Icon'
 import Post from './Post'
 import Video from './Video'
@@ -185,8 +185,10 @@ class ProjectRequest extends React.Component {
 
 const spacer = <span>&nbsp; •&nbsp; </span>
 
-export const ProjectPostCard = ({ post }) => {
-  const { name, user, tag, end_time, comments } = post
+export const ProjectPostCard = connect(
+  (state, { post }) => ({comments: getComments(post, state)})
+)(({ post, comments }) => {
+  const { name, user, tag, end_time } = post
   const url = `/p/${post.id}`
   const backgroundImage = `url(${imageUrl(post)})`
 
@@ -208,4 +210,4 @@ export const ProjectPostCard = ({ post }) => {
     <div className='comments-section-spacer'/>
     <CommentSection post={post} comments={comments}/>
   </div>
-}
+})

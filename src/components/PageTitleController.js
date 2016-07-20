@@ -10,13 +10,15 @@ const { string } = React.PropTypes
   let count = get('new_notification_count', membership(state.people.current, community)) || 0
   let title = community ? community.name : 'Hylo'
   return {
-    pageTitle: (count > 0 ? `(${count}) ` : '') + title
+    pageTitle: (count > 0 ? `(${count}) ` : '') + title,
+    faviconUrl: get('avatar_url', community)
   }
 })
 export default class PageTitleController extends React.Component {
 
   static propTypes = {
-    pageTitle: string
+    pageTitle: string,
+    faviconUrl: string
   }
 
   componentDidMount () {
@@ -27,10 +29,28 @@ export default class PageTitleController extends React.Component {
     if (nextProps.pageTitle !== document.title) {
       this.setPageTitle(nextProps.pageTitle)
     }
+
+    if (nextProps.faviconUrl !== this.props.faviconUrl) {
+      this.setFavicon(nextProps.faviconUrl)
+    }
   }
 
   setPageTitle (title) {
     document.title = title
+  }
+
+  setFavicon (faviconUrl) {
+    if (!faviconUrl) return
+    document.head || (document.head = document.getElementsByTagName('head')[0])
+    const link = document.createElement('link')
+    const oldLink = document.getElementById('favicon')
+    link.id = 'favicon'
+    link.rel = 'shortcut icon'
+    link.href = faviconUrl
+    if (oldLink) {
+      document.head.removeChild(oldLink)
+    }
+    document.head.appendChild(link)
   }
 
   render () {

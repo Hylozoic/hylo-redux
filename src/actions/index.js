@@ -23,6 +23,7 @@ export const FETCH_ACTIVITY = 'FETCH_ACTIVITY'
 export const FETCH_COMMENTS = 'FETCH_COMMENTS'
 export const FETCH_COMMUNITY = 'FETCH_COMMUNITY'
 export const FETCH_COMMUNITIES = 'FETCH_COMMUNITIES'
+export const FETCH_COMMUNITIES_FOR_NETWORK_NAV = 'FETCH_COMMUNITIES_FOR_NETWORK_NAV'
 export const FETCH_COMMUNITY_FOR_INVITATION = 'FETCH_COMMUNITY_FOR_INVITATION'
 export const FETCH_COMMUNITY_MODERATORS = 'FETCH_COMMUNITY_MODERATORS'
 export const FETCH_COMMUNITY_SETTINGS = 'FETCH_COMMUNITY_SETTINGS'
@@ -720,5 +721,13 @@ export function fetchLinkPreview (url) {
   return {
     type: FETCH_LINK_PREVIEW,
     payload: {api: true, path: `/noo/link-preview?${q}`}
+  }
+}
+
+export function fetchCommunitiesForNetworkNav (networkId) {
+  return {
+    type: FETCH_COMMUNITIES_FOR_NETWORK_NAV,
+    payload: {api: true, path: `/noo/network/${networkId}/communitiesForNav`},
+    meta: {networkId}
   }
 }

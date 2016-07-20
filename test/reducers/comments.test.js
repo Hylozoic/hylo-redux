@@ -64,13 +64,14 @@ describe('comments', () => {
       }
 
       let state = {
-        '1': {id: '1', text: 'foo'}
+        '1': {id: '1', text: 'foo'},
+        '3': {id: '3', text: 'baz', user: {id: 'a', name: 'Alf'}}
       }
 
       let expectedState = {
         '1': {id: '1', text: 'foo'},
         '2': {id: '2', text: 'bar'},
-        '3': {id: '3', text: 'baz'}
+        '3': {id: '3', text: 'baz', user: {id: 'a', name: 'Alf'}}
       }
 
       expect(comments(state, action)).to.deep.equal(expectedState)

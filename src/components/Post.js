@@ -72,7 +72,7 @@ class Post extends React.Component {
       {linkPreview && <LinkPreview {...{linkPreview}}/>}
       <div className='voting post-section'><VoteButton/><Voters/></div>
       <Attachments/>
-      <CommentSection truncate={!expanded} expand={onExpand} comments={comments}/>
+      <CommentSection post={post} truncate={!expanded} expand={onExpand} comments={comments}/>
     </div>
   }
 }
@@ -225,11 +225,11 @@ export class CommentSection extends React.Component {
     comments: array,
     truncate: bool,
     expand: func,
+    post: object,
     dispatch: func
   }
 
   static contextTypes = {
-    post: object,
     dispatch: func,
     community: object,
     currentUser: object,
@@ -237,8 +237,8 @@ export class CommentSection extends React.Component {
   }
 
   render () {
-    let { comments, truncate, expand } = this.props
-    const { dispatch, post, currentUser, community, isProjectRequest } = this.context
+    let { post, comments, truncate, expand } = this.props
+    const { dispatch, currentUser, community, isProjectRequest } = this.context
 
     if (!comments) comments = []
     comments = sortBy(comments, c => c.created_at)

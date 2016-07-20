@@ -21,6 +21,7 @@ import { VIEWED_NOTIFICATIONS, trackEvent } from '../util/analytics'
 import { postUrl } from '../routes'
 import { getCurrentCommunity } from '../models/community'
 const { array, bool, func, number, object } = React.PropTypes
+import decode from 'ent/decode'
 
 const Notifications = compose(
   prefetch(({ dispatch, params: { id } }) => dispatch(fetchActivity(0, true, id))),
@@ -121,15 +122,11 @@ const Activity = ({ activity, currentUser, dispatch }) => {
 
   let postName = post.tag === 'welcome'
     ? `${post.relatedUsers[0].name}'s' welcoming post`
-    : truncate(post.name, 140)
+    : truncate(decode(post.name), 140)
 
   let thankLinkText = isThanked
     ? `You thanked ${actor.name.split(' ')[0]}`
     : 'Say thanks'
-
-  let thankTooltipText = isThanked
-    ? 'click to take back your thanks'
-    : 'click to give thanks for this comment'
 
   let visit = () => {
     if (unread) dispatch(markActivityRead(activity.id))
@@ -151,8 +148,7 @@ const Activity = ({ activity, currentUser, dispatch }) => {
         {humanDate(created_at)}
         {comment && <span>
           {spacer}
-          <a tooltip={thankTooltipText} tooltip-popup-delay='500'
-            onClick={() => dispatch(thank(comment_id, currentUser))}>
+          <a onClick={() => dispatch(thank(comment_id, currentUser))}>
             {thankLinkText}
           </a>
           {spacer}

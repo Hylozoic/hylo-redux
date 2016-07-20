@@ -1,4 +1,4 @@
-import { hashBy, toggleIncludes } from './util'
+import { hashBy, mergeList, toggleIncludes } from './util'
 import { filter, some } from 'lodash'
 import {
   FETCH_ACTIVITY,
@@ -31,10 +31,7 @@ export default function (state = {}, action) {
   switch (type) {
     case FETCH_ACTIVITY:
       let comments = filter(payload.items.map(a => a.comment))
-      return {
-        ...state,
-        ...hashBy(comments, 'id')
-      }
+      return mergeList(state, comments, 'id')
     case FETCH_COMMENTS:
       return {
         ...state,

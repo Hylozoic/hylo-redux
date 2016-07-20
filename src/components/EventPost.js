@@ -1,4 +1,5 @@
 import React from 'react'
+import { connect } from 'react-redux'
 import { timeRange, timeRangeBrief, timeRangeFull } from '../util/text'
 import { changeEventResponse } from '../actions'
 import A from './A'
@@ -9,7 +10,7 @@ import LinkedPersonSentence from './LinkedPersonSentence'
 import { ClickCatchingSpan } from './ClickCatcher'
 import { get, find, includes, isEmpty, some, sortBy } from 'lodash'
 import { same } from '../models'
-import { imageUrl } from '../models/post'
+import { getComments, imageUrl } from '../models/post'
 import { Header, CommentSection, presentDescription } from './Post'
 import decode from 'ent/decode'
 import cx from 'classnames'
@@ -19,7 +20,9 @@ const spacer = <span>&nbsp; •&nbsp; </span>
 
 const shouldShowTag = tag => tag && !includes(['event', 'chat'], tag)
 
-export const EventPostCard = ({ post }) => {
+export const EventPostCard = connect(
+  (state, { post }) => ({comments: getComments(post, state)})
+)(({ post, comments }) => {
   const { start_time, end_time, user, id, name, tag } = post
   const start = new Date(start_time)
   const end = end_time && new Date(end_time)
@@ -41,18 +44,20 @@ export const EventPostCard = ({ post }) => {
       <A to={`/u/${user.id}`}>{user.name}</A>
     </div>
     <A className='title' to={url}>{name}</A>
-    <Attendance post={post} showButton={true} limit={7} alignRight={true}/>
+    <Attendance post={post} showButton limit={7} alignRight/>
+    <div className='comments-section-spacer'/>
+    <CommentSection post={post} comments={comments}/>
   </div>
-}
+})
 
-const Attendance = ({ post, limit, showButton, ...props }, { currentUser }) => {
+const Attendance = ({ post, limit, showButton, className, children }, { currentUser }) => {
   const { responders } = post
   const going = sortBy(
     responders.filter(r => r.response === 'yes'),
     p => same('id', p, currentUser) ? 'Aaa' : p.name
   )
 
-  return <div className={cx('attendance', props.className)}>
+  return <div className={cx('attendance', className)}>
     {going.length > 0 && <div className='going avatar-list'>
       {going.slice(0, limit).map(person =>
         <Avatar person={person} key={person.id}/>)}
@@ -62,7 +67,7 @@ const Attendance = ({ post, limit, showButton, ...props }, { currentUser }) => {
       {going.length > 1 || some(going, same('id', currentUser)) ? 'are' : 'is'}
       &nbsp;going.
     </LinkedPersonSentence>}
-    {props.children}
+    {children}
   </div>
 }
 Attendance.contextTypes = {currentUser: object}
@@ -105,7 +110,7 @@ const EventPost = (props, context) => {
       {image && <div className='image'>
         <img src={image}/>
       </div>}
-      <Attendance post={post} limit={5} showButton={true}
+      <Attendance post={post} limit={5} showButton
         className={cx({'no-image': !image})}/>
       <div className='time'>
         <Icon name='Calendar'/>
@@ -122,7 +127,7 @@ const EventPost = (props, context) => {
       </div>}
     </div>
 
-    <CommentSection comments={comments}/>
+    <CommentSection post={post} comments={comments}/>
   </div>
 }
 EventPost.contextTypes = {

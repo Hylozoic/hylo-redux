@@ -76,7 +76,7 @@ import {
 
 const combinedReducers = combineReducers({
   isMobile: (state = false, action) => {
-    return action.type === SET_MOBILE_DEVICE ? true : state
+    return action.type === SET_MOBILE_DEVICE ? action.payload : state
   },
 
   currentCommunityId: (state = null, action) => {

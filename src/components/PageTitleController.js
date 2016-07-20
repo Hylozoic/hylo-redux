@@ -23,6 +23,7 @@ export default class PageTitleController extends React.Component {
 
   componentDidMount () {
     this.setPageTitle(this.props.pageTitle)
+    this.setFavicon(this.props.faviconUrl)
   }
 
   componentWillReceiveProps (nextProps) {

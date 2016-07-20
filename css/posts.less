@@ -404,7 +404,7 @@ ul.posts {
 
 .special-post-summary-card() {
   .clearfix;
-  padding: @post-padding;
+  padding: @post-padding @post-padding 0;
 
   .image {
     .fluid-height(61.8%);
@@ -414,6 +414,10 @@ ul.posts {
     background-position: center;
     float: left;
     margin-right: 15px;
+    .mobile({
+      .fluid-height(100%);
+      width: 28%;
+    })
   }
 
   > .meta {
@@ -435,13 +439,19 @@ ul.posts {
     overflow: hidden;
   }
 
-  .mobile({
-    padding: @mobile-side-margin;
+  .comments-section-spacer {
+    clear: both;
+  }
 
-    .image {
-      .fluid-height(100%);
-      width: 28%;
-    }
+  .comments-section {
+    margin: @post-padding -@post-padding 0;
+    .mobile({
+      margin: @mobile-side-margin -@mobile-side-margin 0;
+    });
+  }
+
+  .mobile({
+    padding: @mobile-side-margin @mobile-side-margin 0;
 
     .title, .supporters, .attendance {
       margin-left: 28% !important;
@@ -452,7 +462,6 @@ ul.posts {
     .avatar-list, .rsvp, .hashtag-segment {
       display: none !important;
     }
-
   });
 }
 

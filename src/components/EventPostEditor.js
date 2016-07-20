@@ -39,19 +39,22 @@ export default class EventPostEditor extends React.Component {
     const startTime = start_time ? new Date(start_time) : null
     const endTime = end_time ? new Date(end_time) : null
     const updateTag = tag => update({tag, tagEdited: true})
+    const updateTime = name => time => {
+      if (time._isAMomentObject) update({[name]: time.toISOString()})
+    }
 
     return <div className='more-fields'>
       <div className='start-time'>
         <Icon name='Calendar'/>
         <DatetimePicker inputProps={{placeholder: 'start time'}}
           value={startTime}
-          onChange={m => update({start_time: m.toISOString()})}/>
+          onBlur={updateTime('start_time')}/>
       </div>
       <div className='end-time'>
         <Icon name='Calendar'/>
         <DatetimePicker inputProps={{placeholder: 'end time'}}
           value={endTime}
-          onChange={m => update({end_time: m.toISOString()})}/>
+          onBlur={updateTime('end_time')}/>
       </div>
       <div className='location'>
         <Icon name='Pin-1'/>
@@ -60,8 +63,8 @@ export default class EventPostEditor extends React.Component {
           onChange={event => update({location: event.target.value})}/>
       </div>
       <div className='hashtag'>
-          <Icon name='Tag' />
-          <input type='text' placeholder='hashtag' value={tag}
+        <Icon name='Tag' />
+        <input type='text' placeholder='hashtag' value={tag || ''}
           onKeyPress={sanitizeTagInput}
           onChange={event => updateTag(event.target.value)}/>
       </div>

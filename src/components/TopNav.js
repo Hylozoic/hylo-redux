@@ -273,13 +273,23 @@ const UserMenu = ({ slug, logout, newCount, currentUser, search }, { isMobile })
 UserMenu.contextTypes = {isMobile: bool}
 
 const NetworkCommunityLinks = ({ communities, network, animation, easing }, { isMobile }) => {
+  const removeImpactHub = name => name.replace(/^Impact Hub/, '')
   return <VelocityComponent animation={animation} easing={easing}>
     <div className='network-nav'>
-      <Dropdown className='all-communities' alignRight={true} toggleChildren={<Icon name='More'/>}>
-        {communities.map(community => <li key={community.id}><A to={communityUrl(community)} >{community.name}</A></li>)}
+      <Dropdown className='all-communities' alignRight={true}
+        toggleChildren={<Icon name='More'/>}>
+        {communities.map(community =>
+          <li key={community.id}>
+            <A to={communityUrl(community)}>
+              {removeImpactHub(community.name)}
+            </A>
+          </li>)}
       </Dropdown>
       Communities: <A to={networkUrl(network)}>All</A>
-      {communities.map(community => <A to={communityUrl(community)} key={community.id}>{community.name}</A>)}
+      {communities.map(community =>
+        <A to={communityUrl(community)} key={community.id}>
+          {removeImpactHub(community.name)}
+        </A>)}
     </div>
   </VelocityComponent>
 }

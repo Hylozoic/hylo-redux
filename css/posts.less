@@ -86,6 +86,7 @@ ul.posts {
   .title {
     .post-title-text;
     margin-bottom: @p-bottom-margin;
+    line-height: 32px;
     a {
       color: @mid-gray-bg;
     }
@@ -296,6 +297,7 @@ ul.posts {
       color: @damian-green !important;
       text-decoration: none;
       float: left;
+      font-size: 13px;
       i {
         width: @vote-button-width;
         margin-right: @vote-button-margin;
@@ -317,8 +319,8 @@ ul.posts {
   .post-section.comments-section {
     padding-left: 0px;
     border-top: 1px solid @faint-gray-border;
-    padding-bottom: 15px;
     padding-right: 0 !important;
+    background-color: @faint-gray-bg;
 
     > a:first-child {
       margin-top: @p-bottom-margin;
@@ -879,7 +881,7 @@ ul.posts {
 
   .text {
     .body-text;
-
+    font-size: 13px;
     .name {
       color: black;
       margin-right: 0.4em;
@@ -898,10 +900,12 @@ ul.posts {
   }
 
   .thanks {
+    font-size: 12px;
     color: @damian-green;
   }
 
   .date {
+    font-size: 12px;
     color: @mid-gray-bg;
   }
 
@@ -938,7 +942,9 @@ ul.posts {
   padding-top: 15px;
   .post-left-padding(@mobile-side-margin);
   padding-right: 15px;
+  padding-bottom: 15px;
   position: relative;
+  background-color: white;
 
   .placeholder {
     color: @placeholder-color;

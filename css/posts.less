@@ -288,7 +288,7 @@ ul.posts {
     @vote-button-width: 18px;
     @vote-button-margin: 5px;
     margin-left: -@vote-button-margin - @vote-button-width;
-    margin-top: 15px;
+    margin-top: 25px;
     margin-bottom: 25px;
     line-height: 20px;
     .clearfix;
@@ -871,8 +871,8 @@ ul.posts {
   .post-right-padding;
   margin-bottom: 5px;
   padding-top: 15px;
-  .has-left-side-avatar;
   position: relative;
+  .has-left-side-avatar(@avatar-size-small);
 
   .content {
     overflow: hidden;
@@ -934,7 +934,6 @@ ul.posts {
 }
 
 .comment-form {
-  .has-left-side-avatar;
   .clearfix;
   margin-top: 15px;
   margin-bottom: 0;
@@ -945,6 +944,7 @@ ul.posts {
   padding-bottom: 15px;
   position: relative;
   background-color: white;
+  .has-left-side-avatar(@avatar-size-small);
 
   .placeholder {
     color: @placeholder-color;

@@ -84,12 +84,13 @@
   -ms-transform: rotate(45deg);
 }
 
-.has-left-side-avatar() {
+.has-left-side-avatar(@avatar-size) {
   > .avatar {
     float: left;
+    .round-image-div(@avatar-size-small)
   }
   > .content {
-    margin-left: @avatar-size-default + 15px;
+    margin-left: @avatar-size + 15px;
   }
 }
 

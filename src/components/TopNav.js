@@ -267,7 +267,7 @@ const UserMenu = ({ slug, logout, newCount, currentUser, search }, { isMobile })
 UserMenu.contextTypes = {isMobile: bool}
 
 const NetworkCommunityLinks = ({ communities }, { isMobile }) => {
-  return <div>
+  return <div className='network-nav'>
     {communities.map(community => <A to={communityUrl(community)}>{community.name}</A>)}
   </div>
 }

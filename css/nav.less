@@ -465,6 +465,25 @@ nav {
       display: none;
     });
   }
+
+  .network-nav {
+    white-space: nowrap;
+    height: 60px;
+    line-height: 60px;
+    color: @gray-text;
+    background-color: white;
+    border-top: 1px solid @faint-gray-border;
+    padding-left: 30px;
+    padding-right: 30px;
+    a {
+      padding-right: 20px;
+      color: @gray-text;
+      &.active {
+        color: black;
+      }
+    }
+  }
+
 }
 
 #leftNav {

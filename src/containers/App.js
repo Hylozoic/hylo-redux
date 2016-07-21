@@ -154,7 +154,10 @@ export default class App extends React.Component {
         }}
         path={path}
         search={doSearch}
-        opened={leftNavIsOpen}/>}
+        opened={leftNavIsOpen}
+        networkNavAnimation={moveWithMenu}
+        networkNavEasing={leftNavEasing}
+        />}
 
       <VelocityComponent animation={moveWithMenu} easing={leftNavEasing}>
         <div id='main'>

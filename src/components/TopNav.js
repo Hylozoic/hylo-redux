@@ -67,7 +67,9 @@ export default class TopNav extends React.Component {
     network: object,
     leftNavIsOpen: bool,
     links: array,
-    networkCommunities: array
+    networkCommunities: array,
+    networkNavAnimation: object,
+    networkNavEasing: array
   }
 
   static contextTypes = {
@@ -109,7 +111,7 @@ export default class TopNav extends React.Component {
   render () {
     const {
       search, logout, openLeftNav, leftNavIsOpen, path, onChangeCommunity,
-      network, links, networkCommunities
+      network, links, networkCommunities, networkNavAnimation, networkNavEasing
     } = this.props
     const { currentUser, isMobile } = this.context
     const label = getLabel(path)
@@ -145,7 +147,9 @@ export default class TopNav extends React.Component {
           networkCommunities.length > 1 &&
           <NetworkCommunityLinks
             communities={networkCommunities}
-            network={network || community.network}/>}
+            network={network || community.network}
+            animation={networkNavAnimation}
+            easing={networkNavEasing} />}
       </nav>
     </VelocityComponent>
   }
@@ -268,9 +272,11 @@ const UserMenu = ({ slug, logout, newCount, currentUser, search }, { isMobile })
 }
 UserMenu.contextTypes = {isMobile: bool}
 
-const NetworkCommunityLinks = ({ communities, network }, { isMobile }) => {
-  return <div className='network-nav'>
-    Communities: <A to={networkUrl(network)}>All</A>
-    {communities.map(community => <A to={communityUrl(community)} key={community.id}>{community.name}</A>)}
-  </div>
+const NetworkCommunityLinks = ({ communities, network, animation, easing }, { isMobile }) => {
+  return <VelocityComponent animation={animation} easing={easing}>
+    <div className='network-nav'>
+      Communities: <A to={networkUrl(network)}>All</A>
+      {communities.map(community => <A to={communityUrl(community)} key={community.id}>{community.name}</A>)}
+    </div>
+  </VelocityComponent>
 }

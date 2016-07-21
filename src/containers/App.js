@@ -50,7 +50,8 @@ const makeNavLinks = (currentUser, community) => {
   const community = find(state.communities, c => c.id === state.currentCommunityId)
   const network = find(state.networks, n => n.id === state.currentNetworkId)
   const tags = community ? state.tagsByCommunity[community.slug] : {}
-  const networkCommunities = state.communitiesForNetworkNav[get(community, 'network.id')]
+  const networkCommunities =
+    state.communitiesForNetworkNav[network ? network.id : get(community, 'network.id')]
   return {
     isMobile,
     leftNavIsOpen,

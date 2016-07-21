@@ -42,7 +42,6 @@ class CommunityProfile extends React.Component {
   fetchCommunitiesForNetworkNav (community) {
     const { dispatch } = this.props
     const networkId = get(community, 'network.id')
-    console.log('fetchComs, netId', networkId)
     if (!networkId) return
     dispatch(fetchCommunitiesForNetworkNav(networkId))
   }

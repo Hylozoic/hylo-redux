@@ -156,6 +156,9 @@ export const origin = () => typeof window !== 'undefined' ? window.location.orig
 export const communityUrl = (community, params) =>
   makeUrl(`/c/${community.slug}`, params)
 
+export const networkUrl = network =>
+  `/n/${network.slug}`
+
 export const communityOnboardingUrl = community =>
   `/c/${community.slug}/onboarding`
 

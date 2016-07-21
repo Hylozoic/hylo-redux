@@ -24,10 +24,14 @@ const state = {
     }
   },
   typeaheadMatches: {},
+  currentCommunityId: 'f',
   communities: {
     f: {
       id: 'f',
-      name: 'Foo Community'
+      name: 'Foo Community',
+      settings: {
+        enable_finance: false
+      }
     }
   }
 }

@@ -4,6 +4,7 @@ import Icon from './Icon'
 import DatetimePicker from 'react-datetime'
 import { sanitizeTagInput } from '../util/textInput'
 import { validateTag } from './EventPostEditor'
+import { getCurrentCommunity } from '../models/community'
 import { debounce } from 'lodash'
 import { get, map, pick } from 'lodash/fp'
 import { getPost, getVideo } from '../models/post'
@@ -15,14 +16,17 @@ const getSimplePost = state => id =>
   pick(['id', 'name', 'description'], getPost(id, state))
 
 @connect((state, { postEdit }) => ({
-  requests: postEdit.requests || map(getSimplePost(state), postEdit.children)
+  requests: postEdit.requests || map(getSimplePost(state), postEdit.children),
+  communityFinanceEnabled: getCurrentCommunity(state).settings.enable_finance
+
 }), null, null, {withRef: true})
 export default class ProjectPostEditor extends React.Component {
   static propTypes = {
     postEdit: object,
     post: object,
+    communityFinanceEnabled: bool,
     update: func.isRequired,
-    requests: array
+    requests: array.isRequired
   }
 
   static contextTypes = {dispatch: func}
@@ -53,6 +57,10 @@ export default class ProjectPostEditor extends React.Component {
     this.props.update({requests})
   }
 
+  checkFinancialRequestsAllowed = () => {
+      return communityFinanceEnabled || postEdit.financialRequestsEnabled
+  }
+
   render () {
     const { postEdit, update, requests, financialRequestAmount } = this.props
     const { end_time, tag, type } = postEdit
@@ -62,38 +70,6 @@ export default class ProjectPostEditor extends React.Component {
     if (type !== 'project') setTimeout(() => update({type: 'project'}))
     return <div className='project-editor form-sections'>
       <h3>
-        Financial Requests
-      </h3>
-      <div className='requests'>
-
-          { !postEdit.financialRequestsEnabled ?
-              <label>
-                <a
-                    className='add-request'
-                    onClick={event => update({financialRequestsEnabled: !postEdit.financialRequestsEnabled})}>
-                  + Enable Financial Requests
-                </a>
-              </label>
-              : null
-          }
-          {
-            postEdit.financialRequestsEnabled ?
-                <div className="section-item financial-request">
-                  <div className='title'>
-                    How much do you need?
-                  </div>
-                  <div>
-                    USD $
-                      <input
-                        type="text"
-                        value={financialRequestAmount}
-                        onChange={e => update({financialRequestAmount: parseInt(e.target.value)})}/>
-                  </div>
-                </div>
-                : null
-          }
-      </div>
-      <h3>
         Requests
         <span className='soft normal'>&nbsp;&mdash; what you need to make it happen</span>
       </h3>
@@ -102,6 +78,40 @@ export default class ProjectPostEditor extends React.Component {
                                                       update={this.updateRequest(i)}/>)}
         <a className='add-request' onClick={this.addRequest}>+ Add request</a>
       </div>
+        {this.checkFinancialRequestsAllowed &&
+      <h3>
+        Financial Requests
+      </h3>
+        }
+        {this.checkFinancialRequestsAllowed &&
+            <div className='requests'>
+
+                <label>
+                    <div>
+                        Enable Financial Contributions
+                        <input type="checkbox"
+                               onClick={event => update({financialRequestsEnabled: !postEdit.financialRequestsEnabled})}
+                               value={postEdit.financialRequestsEnabled}/>
+                    </div>
+                </label>
+
+                {postEdit.financialRequestsEnabled &&
+                <div className="section-item financial-request">
+                    <div className='title'>
+                        How much do you need?
+                    </div>
+                    <div>
+                        USD $
+                        <input
+                            type="text"
+                            value={financialRequestAmount}
+                            onChange={e => update({financialRequestAmount: parseInt(e.target.value)})}/>
+                    </div>
+                </div>
+                }
+            </div>
+        }
+
       <div className='more-fields'>
         <div className='video'>
           <Icon name='VideoCamera'/>

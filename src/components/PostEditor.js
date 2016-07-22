@@ -11,7 +11,7 @@ import shallowCompare from 'react-addons-shallow-compare'
 import cx from 'classnames'
 import autoproxy from 'autoproxy'
 import {
-  debounce, difference, compact, filter, find, get, includes, isEmpty, some,
+  debounce, difference, compact, filter, find, get, includes, isNaN, isEmpty, some,
   startsWith, keys, uniq
 } from 'lodash'
 import CommunityTagInput from './CommunityTagInput'
@@ -39,7 +39,7 @@ import { createTagInPostEditor } from '../actions'
 import { ADDED_POST, EDITED_POST, trackEvent } from '../util/analytics'
 import { getCurrentCommunity } from '../models/community'
 import TagDescriptionEditor from './TagDescriptionEditor'
-const { array, bool, func, object, string } = React.PropTypes
+const { array, bool, func, object, string, number } = React.PropTypes
 
 const specialTags = ['request', 'offer', 'intention']
 
@@ -133,6 +133,8 @@ export class PostEditor extends React.Component {
   validate () {
     let { postEdit } = this.props
     const { title, subeditor } = this.refs
+    var financialRequest = postEdit.financialRequestAmount
+    var financialRequestAmountAsTwoDecimals = parseFloat(financialRequest).toFixed(2).length;
 
     if (!postEdit.name) {
       window.alert('The title of a post cannot be blank.')
@@ -142,6 +144,26 @@ export class PostEditor extends React.Component {
 
     if (isEmpty(postEdit.communities)) {
       window.alert('Please pick at least one community.')
+      return Promise.resolve(false)
+    }
+
+    if (isNaN(parseInt(financialRequest)) || isEmpty(financialRequest)) {
+      window.alert('Enter an amount for financial contributions.')
+      return Promise.resolve(false)
+    }
+
+    if (parseInt(financialRequest) < 0) {
+      window.alert('Financial contributions amount must be positive.')
+      return Promise.resolve(false)
+    }
+
+    if (financialRequestAmountAsTwoDecimals < financialRequest.length) {
+      window.alert('Financial contributions amount can only contain two decimals.')
+      return Promise.resolve(false)
+    }
+
+    if(parseInt(financialRequest).length < financialRequest.length) {
+      window.alert('Financial contributions format invalid.')
       return Promise.resolve(false)
     }
 

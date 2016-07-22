@@ -20,8 +20,9 @@ const state = {
       expanded: true,
       name: 'hello!',
       description: 'and welcome',
-      communities: ['f']
-    }
+      communities: ['f'],
+      financialRequestAmount: '10.00'
+    },
   },
   typeaheadMatches: {},
   currentCommunityId: 'f',

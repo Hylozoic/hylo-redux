@@ -8,7 +8,7 @@ import { getCurrentCommunity } from '../models/community'
 import { debounce } from 'lodash'
 import { get, map, pick } from 'lodash/fp'
 import { getPost, getVideo } from '../models/post'
-const { array, func, object, bool } = React.PropTypes
+const { array, func, object, bool, number } = React.PropTypes
 
 const random = () => Math.random().toString().slice(2, 8)
 
@@ -25,6 +25,7 @@ export default class ProjectPostEditor extends React.Component {
     postEdit: object,
     post: object,
     communityFinanceEnabled: bool,
+    financialRequestAmount: number,
     update: func.isRequired,
     requests: array.isRequired
   }
@@ -62,7 +63,7 @@ export default class ProjectPostEditor extends React.Component {
   }
 
   render () {
-    const { postEdit, update, requests, financialRequestAmount } = this.props
+    const { postEdit, update, requests } = this.props
     const { end_time, tag, type } = postEdit
     const endTime = end_time ? new Date(end_time) : null
     const updateTag = tag => update({tag, tagEdited: true})
@@ -104,8 +105,8 @@ export default class ProjectPostEditor extends React.Component {
                         USD $
                         <input
                             type="text"
-                            value={financialRequestAmount}
-                            onChange={e => update({financialRequestAmount: parseInt(e.target.value)})}/>
+                            onChange={e => update({financialRequestAmount: e.target.value})}
+                            value={postEdit.financialRequestAmount}/> Accounting.
                     </div>
                 </div>
                 }

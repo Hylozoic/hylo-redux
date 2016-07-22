@@ -32,7 +32,8 @@ describe('ShareTopicModal', () => {
       showModal: {
         show: 'share-tag',
         params: {slug, tagName}
-      }
+      },
+      communitiesForNetworkNav: {}
     })
   })
 

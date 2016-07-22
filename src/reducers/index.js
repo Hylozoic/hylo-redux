@@ -7,6 +7,7 @@ import commentEdits from './commentEdits'
 import commentsByPost from './commentsByPost'
 import communities from './communities'
 import communitiesByQuery from './communitiesByQuery'
+import communitiesForNetworkNav from './communitiesForNetworkNav'
 import networks from './networks'
 import networkEdits from './networkEdits'
 import people from './people'
@@ -178,6 +179,7 @@ const combinedReducers = combineReducers({
   commentsByPost,
   communities,
   communitiesByQuery,
+  communitiesForNetworkNav,
   editingTagDescriptions,
   countFreshPostsByQuery: keyedCount(CHECK_FRESHNESS_POSTS, 'postsByQuery'),
   creatingTagAndDescription,

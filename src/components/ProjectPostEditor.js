@@ -8,6 +8,7 @@ import { getCurrentCommunity } from '../models/community'
 import { debounce } from 'lodash'
 import { get, map, pick } from 'lodash/fp'
 import { getPost, getVideo } from '../models/post'
+import CurrencyInput from 'react-currency-input'
 const { array, func, object, bool, number } = React.PropTypes
 
 const random = () => Math.random().toString().slice(2, 8)
@@ -103,10 +104,7 @@ export default class ProjectPostEditor extends React.Component {
                     </div>
                     <div>
                         USD $
-                        <input
-                            type="text"
-                            onChange={e => update({financialRequestAmount: e.target.value})}
-                            value={postEdit.financialRequestAmount}/> Accounting.
+                        <CurrencyInput value={postEdit.financialRequestAmount} onChange={maskedValue => update({financialRequestAmount: maskedValue})}/>
                     </div>
                 </div>
                 }

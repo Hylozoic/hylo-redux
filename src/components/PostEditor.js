@@ -133,8 +133,6 @@ export class PostEditor extends React.Component {
   validate () {
     let { postEdit } = this.props
     const { title, subeditor } = this.refs
-    var financialRequest = postEdit.financialRequestAmount
-    var financialRequestAmountAsTwoDecimals = parseFloat(financialRequest).toFixed(2).length;
 
     if (!postEdit.name) {
       window.alert('The title of a post cannot be blank.')
@@ -147,23 +145,8 @@ export class PostEditor extends React.Component {
       return Promise.resolve(false)
     }
 
-    if (isNaN(parseInt(financialRequest)) || isEmpty(financialRequest)) {
+    if (!postEdit.financialRequestAmount || parseFloat(postEdit.financialRequestAmount) === 0.00) {
       window.alert('Enter an amount for financial contributions.')
-      return Promise.resolve(false)
-    }
-
-    if (parseInt(financialRequest) < 0) {
-      window.alert('Financial contributions amount must be positive.')
-      return Promise.resolve(false)
-    }
-
-    if (financialRequestAmountAsTwoDecimals < financialRequest.length) {
-      window.alert('Financial contributions amount can only contain two decimals.')
-      return Promise.resolve(false)
-    }
-
-    if(parseInt(financialRequest).length < financialRequest.length) {
-      window.alert('Financial contributions format invalid.')
       return Promise.resolve(false)
     }
 

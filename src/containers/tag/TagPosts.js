@@ -2,9 +2,7 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { prefetch } from 'react-fetcher'
 import { fetch, ConnectedPostList } from '../ConnectedPostList'
-import {
-  FETCH_TAG, fetchTag, navigate, resetNewPostCount
-} from '../../actions'
+import { FETCH_TAG, fetchTag, navigate } from '../../actions'
 import { followTag, showShareTag } from '../../actions/tags'
 import { compose } from 'redux'
 import { get, sortBy } from 'lodash'
@@ -85,7 +83,6 @@ class TagPosts extends React.Component {
 
 export default compose(
   prefetch(({ dispatch, params: { tagName, id }, query }) => {
-    if (id) dispatch(resetNewPostCount(tagName, id))
     return dispatch(fetchTag(tagName, id))
     .then(({ payload }) => payload.post
       ? dispatch(navigate(`/p/${payload.post.id}`))

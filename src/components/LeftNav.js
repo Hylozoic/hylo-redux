@@ -3,7 +3,7 @@ import { A, IndexA } from './A'
 import Icon from './Icon'
 import { VelocityTransitionGroup } from 'velocity-react'
 import { isEmpty } from 'lodash'
-import { filter } from 'lodash/fp'
+import { filter, get } from 'lodash/fp'
 import { tagUrl } from '../routes'
 import { showAllTags } from '../actions/tags'
 import cx from 'classnames'
@@ -55,11 +55,11 @@ export const TopicList = ({ tags, slug }, { dispatch }) => {
     <TagLink name='all-topics'/>
     {!isEmpty(followed) && followed.map(tag =>
       <TagLink name={tag.name} key={tag.name} highlight={tag.new_post_count}/>)}
-    <li>
+    {slug && <li>
       <a onClick={() => dispatch(showAllTags(slug))} className='browse-all'>
         Follow more topics...
       </a>
-    </li>
+    </li>}
   </ul>
 }
 TopicList.contextTypes = {dispatch: func}
@@ -110,7 +110,7 @@ export const LeftNav = ({ opened, community, network, tags, close, links }, { is
       {network
         ? <NetworkNav network={network} />
         : <CommunityNav links={links}/>}
-      {!isEmpty(tags) && <TopicList tags={tags} slug={community.slug}/>}
+      {!isEmpty(tags) && <TopicList tags={tags} slug={get('slug', community)}/>}
     </nav>}
     {opened && <div id='leftNavBackdrop' onClick={close}/>}
   </VelocityTransitionGroup>

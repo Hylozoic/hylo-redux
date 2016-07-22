@@ -117,7 +117,7 @@ export default class App extends React.Component {
         setTimeout(() => {
           const settings = {leftNavIsOpen: open}
           dispatch(updateUserSettings(currentUser.id, {settings}))
-        }, 1000)
+        }, 5000)
       }
     }
     const openLeftNav = () => toggleLeftNavAndSave(true)

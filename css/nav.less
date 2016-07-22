@@ -1,5 +1,6 @@
 @top-nav-height: 75px;
 @left-nav-width: 208px;
+@menu-button-width: 87px;
 @mobile-top-nav-height: 60px;
 @main-menu-shrink-breakpoint: 1200px;
 @main-menu-hide-breakpoint: 1024px;
@@ -23,18 +24,20 @@ nav {
 .menu-button {
   .has-nav-height(-1);
   display: block;
-  width: @left-nav-width;
   padding-left: 30px;
+
   &:hover {
     text-decoration: none;
   }
+
   > * {
     vertical-align: middle;
   }
+
   .hamburger {
     width: 26px;
     display: inline-block;
-    margin-right: 10px;
+
     .bar {
       height: 1px;
       margin-bottom: 7px;
@@ -42,6 +45,13 @@ nav {
         margin-bottom: 0;
       }
     }
+  }
+
+  .close {
+    position: absolute;
+    right: 30px;
+    font-size: 36px;
+    .hairline;
   }
 
   .mobile({
@@ -74,6 +84,12 @@ nav {
     background-color: white;
     color: @off-black;
     .medium;
+    width: @menu-button-width;
+
+    &.opened {
+      width: @left-nav-width;
+    }
+
     .bar {
       background-color: black;
     }
@@ -82,6 +98,9 @@ nav {
       width: auto;
       border-right: 0;
       padding-right: 0;
+      .hamburger {
+        margin-right: 10px;
+      }
     });
   }
 
@@ -409,10 +428,11 @@ nav {
       vertical-align: middle;
       .medium;
       text-decoration: none;
-      &:hover {
+      &.active, &:hover {
         color: @damian-green;
       }
     }
+
 
     > .dropdown {
       display: inline-block;
@@ -467,6 +487,10 @@ nav {
   }
 }
 
+.leftNavIsOpen #topNav .menu-button {
+  width: @left-nav-width;
+}
+
 #leftNav {
   position: fixed;
   left: 0;
@@ -481,6 +505,8 @@ nav {
   .menu-button {
     background-color: #2e2e2e;
     color: white;
+    width: @left-nav-width;
+
     .hamburger {
       .bar {
         background-color: white;

@@ -9,8 +9,10 @@ import { showAllTags } from '../actions/tags'
 import cx from 'classnames'
 const { bool, func } = React.PropTypes
 
-export const leftNavWidth = 208 // this value is dupicated in CSS
 export const leftNavEasing = [70, 25]
+// these values are duplicated in CSS
+export const leftNavWidth = 208
+export const menuButtonWidth = 87
 
 const animations = {
   enter: {
@@ -23,14 +25,15 @@ const animations = {
   }
 }
 
-export const MenuButton = ({ onClick, label }) =>
+export const MenuButton = ({ onClick, label, showClose }) =>
   <a className='menu-button' onClick={onClick}>
-    <div className='hamburger'>
+    {!showClose && <div className='hamburger'>
       <div className='bar'></div>
       <div className='bar'></div>
       <div className='bar'></div>
-    </div>
-    <span>{label || 'Menu'}</span>
+    </div>}
+    {label && <span>{label}</span>}
+    {showClose && <span className='close'>&times;</span>}
   </a>
 
 export const TopicList = ({ tags, slug }, { dispatch }) => {
@@ -103,7 +106,7 @@ export const LeftNav = ({ opened, community, network, tags, close, links }, { is
 
   return <VelocityTransitionGroup {...animations}>
     {opened && <nav id='leftNav' onClick={() => isMobile && close()}>
-      <MenuButton onClick={onMenuClick}/>
+      <MenuButton onClick={onMenuClick} label={isMobile ? 'Menu' : 'Topics'} showClose/>
       {network
         ? <NetworkNav network={network} />
         : <CommunityNav links={links}/>}

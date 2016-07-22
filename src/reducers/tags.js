@@ -5,7 +5,7 @@ import {
   FETCH_LEFT_NAV_TAGS, FETCH_LIVE_STATUS, FETCH_TAG, FETCH_TAGS,
   FETCH_TAG_SUMMARY, FOLLOW_TAG_PENDING, REMOVE_TAG
 } from '../actions'
-import { filter, fromPairs, get, isEmpty, merge, omitBy, toPairs } from 'lodash'
+import { filter, fromPairs, isEmpty, merge, omitBy, toPairs } from 'lodash'
 import qs from 'querystring'
 
 const matchesRemovedTag = (id, slug) => {
@@ -46,14 +46,13 @@ export const totalTagsByQuery = composeReducers(
 )
 
 export const tagsByCommunity = (state = {}, action) => {
-  const mergeLeftNavTags = (state, tags, id) => {
-    if (isEmpty(tags)) return state
-    const labeledTags = tags.map(f => ({...f, followed: true}))
-    return {
-      ...state,
-      [id]: mergeList(state[id] || {}, labeledTags, 'name')
-    }
-  }
+  const mergeLeftNavTags = (state, payload) =>
+    toPairs(payload).reduce((m, [ slug, tags ]) => {
+      if (isEmpty(tags)) return m
+      const labeledTags = tags.map(f => ({...f, followed: true}))
+      const mergedTags = mergeList(m[slug] || {}, labeledTags, 'name')
+      return {...m, [slug]: mergedTags}
+    }, state)
 
   // meta.id here is whatever params.id is in CommunityProfile, i.e. a slug
   let { type, payload, meta, error } = action
@@ -66,15 +65,12 @@ export const tagsByCommunity = (state = {}, action) => {
       oldCommunityTags = state[meta.id] || {}
       return {
         ...state,
-        [meta.id]: {
-          ...oldCommunityTags,
-          [meta.tagName]: payload
-        }
+        [meta.id]: {...oldCommunityTags, [meta.tagName]: payload}
       }
     case FETCH_LEFT_NAV_TAGS:
-      return mergeLeftNavTags(state, payload, meta.id)
+      return mergeLeftNavTags(state, payload)
     case FETCH_LIVE_STATUS:
-      return mergeLeftNavTags(state, payload.left_nav_tags, get(meta, 'slug'))
+      return mergeLeftNavTags(state, payload.left_nav_tags)
     case FOLLOW_TAG_PENDING:
       oldCommunityTags = state[meta.id] || {}
       oldTag = oldCommunityTags[meta.tagName]

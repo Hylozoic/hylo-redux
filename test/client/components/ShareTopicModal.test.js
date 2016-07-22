@@ -22,7 +22,6 @@ describe('ShareTopicModal', () => {
     store = mocks.redux.store({
       pending: {},
       tagInvitationEditor: {},
-      tagsByCommunity: {},
       tagPopover: {},
       notifierMessages: [],
       routing: {path: `/c/${slug}`},

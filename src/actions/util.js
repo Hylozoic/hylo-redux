@@ -9,6 +9,8 @@ export const findError = (errors, type, bucket, id) => {
   return get(find([errors[type]], match), 'payload.response')
 }
 
+// FIXME this shouldn't go in here; actions/util is for functions used only
+// within actions
 export const saveCurrentCommunityId = (dispatch, communityId, userId) => {
   if (!communityId) return
   const settings = {currentCommunityId: communityId}

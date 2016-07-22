@@ -10,7 +10,6 @@ import {
   updateUserSettings
 } from '../../actions'
 import { saveCurrentCommunityId } from '../../actions/util'
-import { fetchLeftNavTags } from '../../actions/tags'
 import { locationWithoutParams } from '../../client/util'
 import { VIEWED_COMMUNITY, trackEvent } from '../../util/analytics'
 import { VelocityTransitionGroup } from 'velocity-react'
@@ -58,7 +57,7 @@ class CommunityProfile extends React.Component {
     const showOnboarding = get(location, 'query.onboarding')
 
     return <CoverImagePage id='community' image={community.banner_url}>
-      <VelocityTransitionGroup runOnMount={true}
+      <VelocityTransitionGroup runOnMount
         enter={{animation: 'slideDown', duration: 800}}
         leave={{animation: 'slideUp', duration: 800}}>
         {showOnboarding && <OnboardingQuestions person={currentUser} dispatch={dispatch}/>}
@@ -69,14 +68,15 @@ class CommunityProfile extends React.Component {
 }
 
 export default compose(
-  prefetch(({ store, dispatch, params: { id } }) => dispatch(fetchLeftNavTags(id))
-    .then(() => dispatch(fetchCommunity(id)))
+  prefetch(({ store, dispatch, params: { id } }) =>
+     dispatch(fetchCommunity(id))
     .then(() => {
       const state = store.getState()
       const communityId = get(state.communities[id], 'id')
       const userId = get(state.people, 'current.id')
       return saveCurrentCommunityId(dispatch, communityId, userId)
-    })),
+    })
+  ),
   defer(({ params: { id }, store }) => {
     const community = store.getState().communities[id]
     return trackEvent(VIEWED_COMMUNITY, {community})

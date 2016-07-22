@@ -9,7 +9,6 @@ import {
   setMetaTags
 } from '../actions'
 import { saveCurrentCommunityId } from '../actions/util'
-import { fetchLeftNavTags } from '../actions/tags'
 import { ogMetaTags } from '../util'
 import A from '../components/A'
 import PostEditor from '../components/PostEditor'
@@ -86,9 +85,7 @@ export default class SinglePost extends React.Component {
         </A>
       </div>}
       <CoverImagePage id='single-post' image={get(community, 'banner_url')}>
-        {editing
-          ? <PostEditor post={post} expanded={true}/>
-          : showPost(post)}
+        {editing ? <PostEditor post={post} expanded/> : showPost(post)}
 
         {showTaggedPosts(post) && <div>
           {currentUser && <PostEditor community={community} tag={post.tag}/>}
@@ -110,7 +107,7 @@ const showPost = (post) => {
     case 'event': return <EventPost post={post}/>
     case 'project': return <ProjectPost/>
   }
-  return <Post post={post} expanded={true}/>
+  return <Post post={post} expanded/>
 }
 
 const redirectToParent = (store, id) => {
@@ -133,7 +130,6 @@ const setupPage = (store, id, query, action) => {
 
   const communityId = get(post, 'communities.0') || 'all'
   const userId = get(state.people, 'current.id')
-  const slug = get(state.communities, [communityId, 'slug'])
 
   if (payload && !payload.api) {
     const { name, description, media } = payload
@@ -152,11 +148,8 @@ const setupPage = (store, id, query, action) => {
 
     // if this is an event or project, fetch the first page of results for
     // tagged posts.
-    showTaggedPosts(post) && dispatch(fetch(subject, communityId, {...query, tag: post.tag, omit: post.id})),
-
-    // FIXME this should be done elsewhere since it needs to happen for every
-    // page for a community, not just single-post views.
-    slug && dispatch(fetchLeftNavTags(slug))
+    showTaggedPosts(post) && dispatch(fetch(subject, communityId,
+      {...query, tag: post.tag, omit: post.id}))
   ])
   .then(scroll) // must be deferred until after comments are loaded
 }

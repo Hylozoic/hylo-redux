@@ -2,7 +2,7 @@ import React from 'react'
 import cx from 'classnames'
 import { prefetch } from 'react-fetcher'
 import { connect } from 'react-redux'
-import { debounce, find, includes, isEmpty, pick } from 'lodash'
+import { debounce, includes, isEmpty, pick } from 'lodash'
 import { filter, get } from 'lodash/fp'
 import TopNav from '../components/TopNav'
 import { LeftNav, leftNavWidth, leftNavEasing } from '../components/LeftNav'
@@ -19,6 +19,8 @@ import { matchEditorUrl } from './StandalonePostEditor'
 import { ModalWrapper } from '../components/Modal'
 import { makeUrl, nextPath } from '../util/navigation'
 import { setMobileDevice } from '../actions'
+import { getCurrentCommunity } from '../models/community'
+import { getCurrentNetwork } from '../models/network'
 const { array, bool, func, object, string } = React.PropTypes
 
 const makeNavLinks = (currentUser, community) => {
@@ -45,26 +47,25 @@ const makeNavLinks = (currentUser, community) => {
   }
 })
 @connect((state, { params }) => {
-  const { isMobile, leftNavIsOpen, notifierMessages, showModal } = state
-  const currentUser = state.people.current
-  const community = find(state.communities, c => c.id === state.currentCommunityId)
-  const network = find(state.networks, n => n.id === state.currentNetworkId)
+  const {
+    isMobile, leftNavIsOpen, notifierMessages, showModal, tagsByCommunity,
+    people, routing: { path }
+  } = state
+  const community = getCurrentCommunity(state)
+  const network = getCurrentNetwork(state)
   const networkCommunities =
     state.communitiesForNetworkNav[network ? network.id : get(community, 'network.id')]
-  const tags = community
-    ? get(community.slug, state.tagsByCommunity)
-    : aggregatedTags(state)
   return {
+    path,
+    network,
     isMobile,
+    community,
+    showModal,
     leftNavIsOpen,
     notifierMessages,
-    currentUser,
-    community,
-    network,
-    tags,
-    path: state.routing.path,
-    showModal,
-    networkCommunities
+    networkCommunities,
+    currentUser: people.current,
+    tags: get([community, 'slug'], tagsByCommunity) || aggregatedTags(state)
   }
 }, null, null, {withRef: true})
 export default class App extends React.Component {

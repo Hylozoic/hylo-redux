@@ -86,9 +86,7 @@ export default class SinglePost extends React.Component {
         </A>
       </div>}
       <CoverImagePage id='single-post' image={get(community, 'banner_url')}>
-        {editing
-          ? <PostEditor post={post} expanded={true}/>
-          : showPost(post)}
+        {editing ? <PostEditor post={post} expanded/> : showPost(post)}
 
         {showTaggedPosts(post) && <div>
           {currentUser && <PostEditor community={community} tag={post.tag}/>}
@@ -110,7 +108,7 @@ const showPost = (post) => {
     case 'event': return <EventPost post={post}/>
     case 'project': return <ProjectPost/>
   }
-  return <Post post={post} expanded={true}/>
+  return <Post post={post} expanded/>
 }
 
 const redirectToParent = (store, id) => {

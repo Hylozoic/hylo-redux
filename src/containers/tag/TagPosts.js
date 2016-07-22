@@ -5,7 +5,8 @@ import { fetch, ConnectedPostList } from '../ConnectedPostList'
 import { FETCH_TAG, fetchTag, navigate } from '../../actions'
 import { followTag, showShareTag } from '../../actions/tags'
 import { compose } from 'redux'
-import { get, sortBy } from 'lodash'
+import { sortBy } from 'lodash'
+import { get } from 'lodash/fp'
 import PostEditor from '../../components/PostEditor'
 import Icon from '../../components/Icon'
 import Avatar from '../../components/Avatar'
@@ -49,7 +50,7 @@ class TagPosts extends React.Component {
     } = this.props
     const { currentUser } = this.context
 
-    if (get(tagError, 'meta.tagName') === tagName) {
+    if (get('meta.tagName', tagError) === tagName) {
       return <AccessErrorMessage error={tagError.payload.response}/>
     }
 
@@ -89,13 +90,13 @@ export default compose(
       : dispatch(fetch(subject, id || 'all', {...query, tag: tagName})))
   }),
   connect((state, { params: { tagName, id } }) => {
-    const tag = get(state, ['tagsByCommunity', id || 'all', tagName])
+    const tag = get(['tagsByCommunity', id || 'all', tagName], state)
     return {
       isMobile: state.isMobile,
       tag,
-      redirecting: !!get(tag, 'post.id'),
-      community: get(state, ['communities', id]),
-      tagError: state.errors[FETCH_TAG]
+      redirecting: !!get('post.id', tag),
+      community: get(['communities', id], state),
+      tagError: get(FETCH_TAG, state.errors)
     }
   })
 )(TagPosts)
@@ -110,7 +111,8 @@ const Followers = ({followers}) => {
       <span className='plus-button'>
         <span className='content'>+{followers.length - 3}</span>
       </span>}>
-      {followers.slice(3).map(follower => <PersonDropdownItem person={follower}/>)}
+      {followers.slice(3).map(follower =>
+        <PersonDropdownItem key={follower.id} person={follower}/>)}
     </Dropdown>}
   </div>
 }

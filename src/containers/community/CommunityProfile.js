@@ -58,7 +58,7 @@ class CommunityProfile extends React.Component {
     const showOnboarding = get(location, 'query.onboarding')
 
     return <CoverImagePage id='community' image={community.banner_url}>
-      <VelocityTransitionGroup runOnMount={true}
+      <VelocityTransitionGroup runOnMount
         enter={{animation: 'slideDown', duration: 800}}
         leave={{animation: 'slideUp', duration: 800}}>
         {showOnboarding && <OnboardingQuestions person={currentUser} dispatch={dispatch}/>}

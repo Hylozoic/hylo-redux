@@ -49,12 +49,12 @@ const makeNavLinks = (currentUser, community) => {
 @connect((state, { params }) => {
   const {
     isMobile, leftNavIsOpen, notifierMessages, showModal, tagsByCommunity,
-    people, routing: { path }
+    people, routing: { path }, communitiesForNetworkNav
   } = state
   const community = getCurrentCommunity(state)
   const network = getCurrentNetwork(state)
   const networkCommunities =
-    state.communitiesForNetworkNav[network ? network.id : get(community, 'network.id')]
+    communitiesForNetworkNav[network ? network.id : get('network.id', community)]
   return {
     path,
     network,

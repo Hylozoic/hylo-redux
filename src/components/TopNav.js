@@ -29,7 +29,7 @@ const getLabel = path => {
   if (path.endsWith('people')) return 'Members'
   if (path.endsWith('about')) return 'About'
   if (path.endsWith('invite')) return 'Invite'
-  if (path === '/' || path.match(/^\/c\/[^\/]+$/)) return 'Conversations'
+  if (path === '/app' || path.match(/^\/c\/[^\/]+$/)) return 'Conversations'
   return 'Menu'
 }
 
@@ -123,15 +123,15 @@ export default class TopNav extends React.Component {
       ? {marginLeft: leftNavIsOpen ? leftNavWidth : 0}
       : {marginLeft: 0}
 
-    const widenMenuButton = isMobile
-      ? {width: leftNavWidth}
-      : {width: leftNavIsOpen ? leftNavWidth : menuButtonWidth}
+    const widenMenuButton = {width: leftNavIsOpen ? leftNavWidth : menuButtonWidth}
 
     return <VelocityComponent animation={moveWithMenu} easing={leftNavEasing}>
       <nav id='topNav' className={cx('clearfix', {scrolling: this.state.isScrolling})}>
-        <VelocityComponent animation={widenMenuButton} easing={leftNavEasing}>
-          <MenuButton onClick={openLeftNav} label={isMobile ? label : null}/>
-        </VelocityComponent>
+        {isMobile
+          ? <MenuButton onClick={openLeftNav} label={label}/>
+          : <VelocityComponent animation={widenMenuButton} easing={leftNavEasing}>
+              <MenuButton onClick={openLeftNav}/>
+            </VelocityComponent>}
         {currentUser
         ? <UserMenu {...{logout, currentUser, newCount, slug, search}}/>
         : <ul className='right'>

@@ -3,7 +3,6 @@ import { prefetch } from 'react-fetcher'
 import CoverImagePage from '../components/CoverImagePage'
 import { navigate } from '../actions'
 import { saveCurrentCommunityId } from '../actions/util'
-import { fetchLeftNavTags } from '../actions/tags'
 import { get } from 'lodash'
 import { fetch, ConnectedPostList } from './ConnectedPostList'
 import PostEditor from '../components/PostEditor'
@@ -16,8 +15,7 @@ const AllCommunities = ({ children }) =>
 
 const setCommunityAndFetchTags = ({ dispatch, store }) => {
   const userId = get(store.getState().people.current, 'id')
-  saveCurrentCommunityId(dispatch, 'all', userId)
-  return dispatch(fetchLeftNavTags('all'))
+  return saveCurrentCommunityId(dispatch, 'all', userId)
 }
 
 export default prefetch(setCommunityAndFetchTags)(AllCommunities)

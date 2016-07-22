@@ -2,10 +2,11 @@ import {
   appendPayloadByPath, composeReducers, keyedCounter, mergeList
 } from './util'
 import {
-  FETCH_LEFT_NAV_TAGS, FETCH_LIVE_STATUS, FETCH_TAG, FETCH_TAGS,
-  FETCH_TAG_SUMMARY, FOLLOW_TAG_PENDING, REMOVE_TAG
+  FETCH_CURRENT_USER, FETCH_LEFT_NAV_TAGS, FETCH_LIVE_STATUS, FETCH_TAG,
+  FETCH_TAGS, FETCH_TAG_SUMMARY, FOLLOW_TAG_PENDING, REMOVE_TAG
 } from '../actions'
 import { filter, fromPairs, isEmpty, merge, omitBy, toPairs } from 'lodash'
+import { get } from 'lodash/fp'
 import qs from 'querystring'
 
 const matchesRemovedTag = (id, slug) => {
@@ -70,7 +71,8 @@ export const tagsByCommunity = (state = {}, action) => {
     case FETCH_LEFT_NAV_TAGS:
       return mergeLeftNavTags(state, payload)
     case FETCH_LIVE_STATUS:
-      return mergeLeftNavTags(state, payload.left_nav_tags)
+    case FETCH_CURRENT_USER:
+      return mergeLeftNavTags(state, get('left_nav_tags', payload))
     case FOLLOW_TAG_PENDING:
       oldCommunityTags = state[meta.id] || {}
       oldTag = oldCommunityTags[meta.tagName]

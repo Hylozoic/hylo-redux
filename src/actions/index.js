@@ -86,6 +86,7 @@ export const SET_MOBILE_DEVICE = 'SET_MOBILE_DEVICE'
 export const SET_PASSWORD = 'SET_PASSWORD'
 export const SET_SIGNUP_ERROR = 'SET_SIGNUP_ERROR'
 export const SHOW_ALL_TAGS = 'SHOW_ALL_TAGS'
+export const SHOW_EXPANDED_POST = 'SHOW_EXPANDED_POST'
 export const SHOW_SHARE_TAG = 'SHOW_SHARE_TAG'
 export const SHOW_TAG_POPOVER = 'SHOW_TAG_POPOVER'
 export const SIGNUP = 'SIGNUP'
@@ -721,4 +722,8 @@ export function fetchLinkPreview (url) {
     type: FETCH_LINK_PREVIEW,
     payload: {api: true, path: `/noo/link-preview?${q}`}
   }
+}
+
+export function showExpandedPost (id) {
+  return {type: SHOW_EXPANDED_POST, payload: {id}}
 }

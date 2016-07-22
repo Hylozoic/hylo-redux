@@ -5,6 +5,7 @@ import { closeModal } from '../actions'
 // circular import; code smell; refactor?
 import BrowseTopicsModal from '../containers/BrowseTopicsModal'
 import ShareTopicModal from '../containers/ShareTopicModal'
+import ExpandedPostModal from '../containers/ExpandedPostModal'
 import cx from 'classnames'
 import { get } from 'lodash'
 const { bool, func } = React.PropTypes
@@ -32,6 +33,11 @@ export const ModalWrapper = ({ show, params }, { dispatch }) => {
         onCancel={() => dispatch(closeModal())}/>
       clickToClose = true
       break
+    case 'expanded-post':
+      modal = <ExpandedPostModal tagName={params.tagName} id={params.id}
+        onCancel={() => dispatch(closeModal())}/>
+      clickToClose = true
+      break
   }
 
   const onBackdropClick = () => clickToClose && dispatch(closeModal())
@@ -44,7 +50,7 @@ export const ModalWrapper = ({ show, params }, { dispatch }) => {
 ModalWrapper.contextTypes = {dispatch: func}
 
 export const Modal = ({ id, className, children, title, subtitle, onCancel }, { isMobile }) => {
-  return <div id={id} className={cx(className, 'modal')} style={modalStyle(isMobile)}>
+  return <SimpleModal id={id} className={className}>
     <div className='titles'>
       <h2>
         {title}
@@ -54,6 +60,13 @@ export const Modal = ({ id, className, children, title, subtitle, onCancel }, { 
         {subtitle}
       </div>}
     </div>
+    {children}
+  </SimpleModal>
+}
+Modal.contextTypes = {isMobile: bool}
+
+export const SimpleModal = ({ id, className, children }, { isMobile }) => {
+  return <div id={id} className={cx(className, 'modal')} style={modalStyle(isMobile)}>
     {children}
   </div>
 }

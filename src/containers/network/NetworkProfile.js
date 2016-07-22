@@ -3,6 +3,7 @@ import CoverImagePage from '../../components/CoverImagePage'
 import { connect } from 'react-redux'
 import { prefetch } from 'react-fetcher'
 import { fetchNetwork } from '../../actions/network'
+import { get } from 'lodash/fp'
 import { setCurrentNetworkId, fetchCommunitiesForNetworkNav } from '../../actions'
 const { func, object } = React.PropTypes
 
@@ -25,7 +26,7 @@ export default class NetworkProfile extends React.Component {
 
   componentDidMount () {
     const { dispatch, network } = this.props
-    if (!network.id) return
+    if (!get('id', network)) return
     dispatch(fetchCommunitiesForNetworkNav(network.id))
   }
 

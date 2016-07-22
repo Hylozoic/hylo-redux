@@ -285,7 +285,7 @@ const NetworkCommunityLinks = ({ communities, network, animation, easing }, { is
       <Dropdown className='all-communities' alignRight={true}
         toggleChildren={<Icon name='More'/>}>
         {communities.map(community =>
-          <li key={community.id}>
+          <li key={community.slug}>
             <A to={communityUrl(community)}>
               {removeImpactHub(community.name)}
             </A>
@@ -293,7 +293,7 @@ const NetworkCommunityLinks = ({ communities, network, animation, easing }, { is
       </Dropdown>
       Communities: <A to={networkUrl(network)}>All</A>
       {communities.map(community =>
-        <A to={communityUrl(community)} key={community.id}>
+        <A to={communityUrl(community)} key={community.slug}>
           {removeImpactHub(community.name)}
         </A>)}
     </div>

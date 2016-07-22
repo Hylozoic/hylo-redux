@@ -34,7 +34,9 @@ export const ModalWrapper = ({ show, params }, { dispatch }) => {
       clickToClose = true
       break
     case 'expanded-post':
-      modal = <ExpandedPostModal tagName={params.tagName} id={params.id}
+      modal = <ExpandedPostModal tagName={params.tagName}
+        id={params.id}
+        commentId={params.commentId}
         onCancel={() => dispatch(closeModal())}/>
       clickToClose = true
       break

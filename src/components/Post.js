@@ -1,7 +1,7 @@
 import React from 'react'
 import { filter, first, includes, isEmpty, map, some, sortBy, get } from 'lodash'
 import { find } from 'lodash/fp'
-const { array, bool, func, object } = React.PropTypes
+const { array, bool, func, object, string } = React.PropTypes
 import cx from 'classnames'
 import {
   humanDate, nonbreaking, present, sanitize, textLength, appendInP
@@ -48,13 +48,31 @@ class Post extends React.Component {
     comments: array,
     dispatch: func,
     expanded: bool,
-    onExpand: func
+    onExpand: func,
+    commentId: string
   }
 
   static childContextTypes = {post: object}
 
   getChildContext () {
     return {post: this.props.post}
+  }
+
+  scrollToComment () {
+    if (this.scrolledToComment) return
+    const { commentId, comments } = this.props
+    if (commentId && find(c => c.id === commentId, comments)) {
+      scrollToAnchor(`comment-${commentId}`, 90)
+      this.scrolledToComment = true
+    }
+  }
+
+  componentDidMount () {
+    this.scrollToComment()
+  }
+
+  componentDidUpdate (prevProps) {
+    this.scrollToComment()
   }
 
   render () {
@@ -245,7 +263,7 @@ export class CommentSection extends React.Component {
     if (truncate) comments = comments.slice(-3)
 
     const expandComment = id => {
-      expand()
+      expand(id)
 
       // the offset below is ignored by the backend, but it causes the frontend
       // to ignore the 3 comments that are already cached
@@ -254,7 +272,6 @@ export class CommentSection extends React.Component {
         if (error) {
           return dispatch(notify('Could not load comments. Please try again soon.', {type: 'error'}))
         }
-        if (id) scrollToAnchor(`comment-${id}`, 90)
       })
     }
 

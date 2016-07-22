@@ -724,6 +724,6 @@ export function fetchLinkPreview (url) {
   }
 }
 
-export function showExpandedPost (id) {
-  return {type: SHOW_EXPANDED_POST, payload: {id}}
+export function showExpandedPost (id, commentId) {
+  return {type: SHOW_EXPANDED_POST, payload: {id, commentId}}
 }

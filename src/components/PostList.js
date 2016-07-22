@@ -44,13 +44,13 @@ class PostList extends React.Component {
     this.state = {}
   }
 
-  expand = (id) => {
+  expand = (id, commentId) => {
     let { dispatch } = this.props
 
     if (isMobile()) {
       dispatch(navigate(`/p/${id}`))
     } else {
-      dispatch(showExpandedPost(id))
+      dispatch(showExpandedPost(id, commentId))
     }
   }
 
@@ -80,7 +80,7 @@ class PostList extends React.Component {
           return <ProjectPostCard post={post}/>
       }
 
-      return <Post post={post} onExpand={() => this.expand(post.id)}/>
+      return <Post post={post} onExpand={commentId => this.expand(post.id, commentId)}/>
     }
 
     return <span>

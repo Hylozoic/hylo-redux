@@ -1,8 +1,8 @@
 import { mocks } from '../support'
-import { prefetchForWrapped } from '../../src/containers/home.js'
+import { allPostsPrefetch } from '../../src/containers/AllCommunities.js'
 import { NAVIGATE } from '../../src/actions/'
 
-describe('prefetchForWrapped', () => {
+describe('allPostsPrefetch', () => {
   describe('with currentCommunityId', () => {
     it('redirects to the community', () => {
       var redirectUrl
@@ -17,7 +17,7 @@ describe('prefetchForWrapped', () => {
         people: {current: currentUser}
       })
       store.transformAction(NAVIGATE, action => redirectUrl = action.payload)
-      prefetchForWrapped('all-posts')({dispatch: store.dispatch, query: {rd: 1}, currentUser})
+      allPostsPrefetch({dispatch: store.dispatch, query: {rd: 1}, currentUser})
       expect(redirectUrl).to.equal(`/c/${slug}`)
     })
   })

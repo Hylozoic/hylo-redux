@@ -55,11 +55,11 @@ export const TopicList = ({ tags, slug }, { dispatch }) => {
     <TagLink name='all-topics'/>
     {!isEmpty(followed) && followed.map(tag =>
       <TagLink name={tag.name} key={tag.name} highlight={tag.new_post_count}/>)}
-    <li>
+    {slug && <li>
       <a onClick={() => dispatch(showAllTags(slug))} className='browse-all'>
         Follow more topics...
       </a>
-    </li>
+    </li>}
   </ul>
 }
 TopicList.contextTypes = {dispatch: func}

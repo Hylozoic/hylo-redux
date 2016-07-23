@@ -6,6 +6,7 @@ import RichTextEditor from './RichTextEditor'
 import { createComment, updateCommentEditor } from '../actions'
 import { ADDED_COMMENT, trackEvent } from '../util/analytics'
 import { textLength } from '../util/text'
+import { onCmdEnter } from '../util/textInput'
 import TagDescriptionEditor from './TagDescriptionEditor'
 var { array, bool, func, object, string } = React.PropTypes
 
@@ -59,6 +60,10 @@ export default class CommentForm extends React.Component {
 
     const setText = event => updateStore(event.target.value)
     const placeholder = this.props.placeholder || 'Add a comment...'
+    const quickSubmit = onCmdEnter(e => {
+      e.preventDefault()
+      this.submit()
+    })
 
     return <form onSubmit={this.submit} className='comment-form'>
       <Avatar person={currentUser}/>
@@ -69,7 +74,8 @@ export default class CommentForm extends React.Component {
             <RichTextEditor ref='editor' name='comment' startFocused
               content={text}
               onBlur={() => updateStore(this.refs.editor.getContent())}
-              onChange={setText}/>
+              onChange={setText}
+              onKeyDown={quickSubmit}/>
             <input type='submit' value='Comment' ref='button'/>
           </div>
         : <div className='content placeholder' onClick={edit}>

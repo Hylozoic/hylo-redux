@@ -21,7 +21,7 @@ const Html = props => {
     </head>
     <body>
       <div id='app' dangerouslySetInnerHTML={{__html: markup}}></div>
-      <script src='//cdnjs.cloudflare.com/ajax/libs/tinymce/4.2.8/tinymce.min.js'></script>
+      <script src='//cdn.tinymce.com/4/tinymce.min.js'></script>
       <script dangerouslySetInnerHTML={{__html: state}}></script>
       <script dangerouslySetInnerHTML={{__html: assetManifest}}></script>
       <script src={assetUrl('/index.js')} defer></script>
@@ -38,9 +38,3 @@ Html.propTypes = {
 }
 
 export default Html
-
-// this url has plugins embedded:
-// tinymce.cachefly.net/4.2/tinymce.min.js
-
-// this one doesn't, so plugins get fetched the first time an editor is shown:
-// cdnjs.cloudflare.com/ajax/libs/tinymce/4.2.8/tinymce.min.js

@@ -60,7 +60,7 @@ export default class ProjectPostEditor extends React.Component {
   }
 
   checkFinancialRequestsAllowed = () => {
-      return communityFinanceEnabled || postEdit.financialRequestsEnabled
+    return this.props.communityFinanceEnabled || this.props.postEdit.financialRequestsEnabled
   }
 
   render () {
@@ -80,12 +80,12 @@ export default class ProjectPostEditor extends React.Component {
                                                       update={this.updateRequest(i)}/>)}
         <a className='add-request' onClick={this.addRequest}>+ Add request</a>
       </div>
-        {this.checkFinancialRequestsAllowed &&
+        {this.checkFinancialRequestsAllowed() &&
       <h3>
         Financial Requests
       </h3>
         }
-        {this.checkFinancialRequestsAllowed &&
+        {this.checkFinancialRequestsAllowed() &&
             <div className='requests'>
 
                 <label>

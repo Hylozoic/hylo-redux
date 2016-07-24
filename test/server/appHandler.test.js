@@ -174,10 +174,7 @@ describe('appHandler', () => {
   describe('on a page that redirects during prefetch', () => {
     beforeEach(() => {
       nock(HOST).get('/noo/user/me').reply(200, {id: 1, name: 'cat'})
-      nock(HOST).get('/noo/tag/foo').reply(200, {
-        name: 'foo',
-        post: {id: 'f'}
-      })
+      nock(HOST).get('/noo/tag/foo').reply(200, {name: 'foo', post: {id: 'f'}})
     })
 
     it('responds with 302', () => {

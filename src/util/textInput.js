@@ -27,10 +27,11 @@ export const sanitizeTagInput = event =>
   getCharacter(event).match(hashtagCharacterRegex) || event.preventDefault()
 
 // use like: <input type='text' onKeyDown={onKeyCode(keyMap.ENTER, callback)}/>
-const onKeyCode = curry((keyCode, callback, event) =>
-  getKeyCode(event) === keyCode && callback(event))
+const onKeyCode = curry((modifier, keyCode, callback, event) =>
+  getKeyCode(event) === keyCode && (!modifier || event[modifier]) && callback(event))
 
 // use like: <input type='text' onKeyDown={onEnter(callback)}/>
-export const onEnter = onKeyCode(keyMap.ENTER)
+export const onEnter = onKeyCode(null, keyMap.ENTER)
+export const onCmdEnter = onKeyCode('metaKey', keyMap.ENTER)
 
-export const preventSpaces = onKeyCode(keyMap.SPACE, e => e.preventDefault())
+export const preventSpaces = onKeyCode(null, keyMap.SPACE, e => e.preventDefault())

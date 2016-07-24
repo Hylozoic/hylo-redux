@@ -2,8 +2,8 @@ import React from 'react'
 import cx from 'classnames'
 import { prefetch } from 'react-fetcher'
 import { connect } from 'react-redux'
-import { debounce, find, includes } from 'lodash'
-import { filter } from 'lodash/fp'
+import { debounce, includes, isEmpty, pick } from 'lodash'
+import { filter, get } from 'lodash/fp'
 import TopNav from '../components/TopNav'
 import { LeftNav, leftNavWidth, leftNavEasing } from '../components/LeftNav'
 import Notifier from '../components/Notifier'
@@ -14,11 +14,13 @@ import { logout, navigate, removeNotification, toggleLeftNav, updateUserSettings
 import { calliOSBridge, iOSAppVersion, isMobile as testIsMobile } from '../client/util'
 import { VelocityComponent } from 'velocity-react'
 import { canInvite, canModerate } from '../models/currentUser'
-import { get, pick, isEmpty } from 'lodash'
+import { aggregatedTags } from '../models/hashtag'
 import { matchEditorUrl } from './StandalonePostEditor'
 import { ModalWrapper } from '../components/Modal'
 import { makeUrl, nextPath } from '../util/navigation'
 import { setMobileDevice } from '../actions'
+import { getCurrentCommunity } from '../models/community'
+import { getCurrentNetwork } from '../models/network'
 const { array, bool, func, object, string } = React.PropTypes
 
 const makeNavLinks = (currentUser, community) => {
@@ -40,26 +42,30 @@ const makeNavLinks = (currentUser, community) => {
 @prefetch(({ store, dispatch }) => {
   const { isMobile, people } = store.getState()
   if (!isMobile && typeof window === 'undefined' &&
-    get(people.current, 'settings.leftNavIsOpen')) {
+    get('settings.leftNavIsOpen', people.current)) {
     return dispatch(toggleLeftNav())
   }
 })
 @connect((state, { params }) => {
-  const { isMobile, leftNavIsOpen, notifierMessages, showModal } = state
-  const currentUser = state.people.current
-  const community = find(state.communities, c => c.id === state.currentCommunityId)
-  const network = find(state.networks, n => n.id === state.currentNetworkId)
-  const tags = community ? state.tagsByCommunity[community.slug] : {}
+  const {
+    isMobile, leftNavIsOpen, notifierMessages, showModal, tagsByCommunity,
+    people, routing: { path }, communitiesForNetworkNav
+  } = state
+  const community = getCurrentCommunity(state)
+  const network = getCurrentNetwork(state)
+  const networkCommunities =
+    communitiesForNetworkNav[network ? network.id : get('network.id', community)]
   return {
+    path,
+    network,
     isMobile,
+    community,
+    showModal,
     leftNavIsOpen,
     notifierMessages,
-    currentUser,
-    community,
-    network,
-    tags,
-    path: state.routing.path,
-    showModal
+    networkCommunities,
+    currentUser: people.current,
+    tags: get(get('slug', community), tagsByCommunity) || aggregatedTags(state)
   }
 }, null, null, {withRef: true})
 export default class App extends React.Component {
@@ -75,7 +81,8 @@ export default class App extends React.Component {
     dispatch: func,
     isMobile: bool,
     showModal: object,
-    location: object
+    location: object,
+    networkCommunities: array
   }
 
   static childContextTypes = {
@@ -102,7 +109,7 @@ export default class App extends React.Component {
   render () {
     const {
       children, community, currentUser, dispatch, tags, leftNavIsOpen, network,
-      notifierMessages, isMobile, showModal, location: { query }
+      notifierMessages, isMobile, showModal, location: { query }, networkCommunities
     } = this.props
 
     const path = this.props.path.split('?')[0]
@@ -140,6 +147,7 @@ export default class App extends React.Component {
         links={links}
         community={community}
         network={network}
+        networkCommunities={networkCommunities}
         onChangeCommunity={visitCommunity}
         openLeftNav={openLeftNav}
         leftNavIsOpen={leftNavIsOpen}
@@ -149,7 +157,10 @@ export default class App extends React.Component {
         }}
         path={path}
         search={doSearch}
-        opened={leftNavIsOpen}/>}
+        opened={leftNavIsOpen}
+        networkNavAnimation={moveWithMenu}
+        networkNavEasing={leftNavEasing}
+        />}
 
       <VelocityComponent animation={moveWithMenu} easing={leftNavEasing}>
         <div id='main'>
@@ -162,7 +173,7 @@ export default class App extends React.Component {
       <LiveStatusPoller community={community}/>
       <PageTitleController/>
       <TagPopover/>
-      <ModalWrapper show={get(showModal, 'show')} params={get(showModal, 'params')}/>
+      <ModalWrapper show={get('show', showModal)} params={get('params', showModal)}/>
     </div>
   }
 }

@@ -21,6 +21,7 @@ import ProjectPostEditor from './ProjectPostEditor'
 import RichTextEditor from './RichTextEditor'
 import { NonLinkAvatar } from './Avatar'
 import AutosizingTextarea from './AutosizingTextarea'
+import Icon from './Icon'
 import LinkPreview from './LinkPreview'
 import { connect } from 'react-redux'
 import {
@@ -406,7 +407,9 @@ export class PostEditor extends React.Component {
 
       <div className='buttons'>
         <div className='right'>
-          <button onClick={() => this.cancel()}>Cancel</button>
+          <a className='cancel' onClick={() => this.cancel()}>
+            <Icon name='Fail'/>
+          </a>
         </div>
 
         <button className='save' ref='save' onClick={() => this.saveIfValid()}

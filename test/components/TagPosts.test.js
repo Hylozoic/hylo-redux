@@ -45,10 +45,7 @@ describe('TagPosts', () => {
         location: {}
       }
 
-      store = mocks.redux.store({
-        tagsByCommunity: {},
-        errors: {}
-      })
+      store = mocks.redux.store()
     })
 
     it('shows a loading message', () => {

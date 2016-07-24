@@ -17,6 +17,7 @@ import { viewportTop } from '../util/scrolling'
 import { VelocityComponent } from 'velocity-react'
 import cx from 'classnames'
 import { navigate } from '../actions'
+import { communityUrl, networkUrl } from '../routes'
 
 const getPostType = path => {
   if (path.endsWith('events')) return 'event'
@@ -29,7 +30,7 @@ const getLabel = path => {
   if (path.endsWith('people')) return 'Members'
   if (path.endsWith('about')) return 'About'
   if (path.endsWith('invite')) return 'Invite'
-  if (path === '/' || path.match(/^\/c\/[^\/]+$/)) return 'Conversations'
+  if (path === '/app' || path.match(/^\/c\/[^\/]+$/)) return 'Conversations'
   return 'Menu'
 }
 
@@ -65,7 +66,10 @@ export default class TopNav extends React.Component {
     community: object,
     network: object,
     leftNavIsOpen: bool,
-    links: array
+    links: array,
+    networkCommunities: array,
+    networkNavAnimation: object,
+    networkNavEasing: array
   }
 
   static contextTypes = {
@@ -107,7 +111,7 @@ export default class TopNav extends React.Component {
   render () {
     const {
       search, logout, openLeftNav, leftNavIsOpen, path, onChangeCommunity,
-      network, links
+      network, links, networkCommunities, networkNavAnimation, networkNavEasing
     } = this.props
     const { currentUser, isMobile } = this.context
     const label = getLabel(path)
@@ -123,15 +127,15 @@ export default class TopNav extends React.Component {
       ? {marginLeft: leftNavIsOpen ? leftNavWidth : 0}
       : {marginLeft: 0}
 
-    const widenMenuButton = isMobile
-      ? {width: leftNavWidth}
-      : {width: leftNavIsOpen ? leftNavWidth : menuButtonWidth}
+    const widenMenuButton = {width: leftNavIsOpen ? leftNavWidth : menuButtonWidth}
 
     return <VelocityComponent animation={moveWithMenu} easing={leftNavEasing}>
       <nav id='topNav' className={cx('clearfix', {scrolling: this.state.isScrolling})}>
-        <VelocityComponent animation={widenMenuButton} easing={leftNavEasing}>
-          <MenuButton onClick={openLeftNav} label={isMobile ? label : null}/>
-        </VelocityComponent>
+        {isMobile
+          ? <MenuButton onClick={openLeftNav} label={label}/>
+          : <VelocityComponent animation={widenMenuButton} easing={leftNavEasing}>
+              <MenuButton onClick={openLeftNav}/>
+            </VelocityComponent>}
         {currentUser
         ? <UserMenu {...{logout, currentUser, newCount, slug, search}}/>
         : <ul className='right'>
@@ -145,6 +149,13 @@ export default class TopNav extends React.Component {
           <A to={editorUrl(slug, getPostType(path))} className='compose'>
             <Icon name='Compose'/>
           </A>}
+        {currentUser && !isMobile && networkCommunities &&
+          networkCommunities.length > 1 &&
+          <NetworkCommunityLinks
+            communities={networkCommunities}
+            network={network || community.network}
+            animation={networkNavAnimation}
+            easing={networkNavEasing} />}
       </nav>
     </VelocityComponent>
   }
@@ -266,3 +277,25 @@ const UserMenu = ({ slug, logout, newCount, currentUser, search }, { isMobile })
   </ul>
 }
 UserMenu.contextTypes = {isMobile: bool}
+
+const NetworkCommunityLinks = ({ communities, network, animation, easing }, { isMobile }) => {
+  const removeImpactHub = name => name.replace(/^Impact Hub /, '')
+  return <VelocityComponent animation={animation} easing={easing}>
+    <div className='network-nav'>
+      <Dropdown className='all-communities' alignRight={true}
+        toggleChildren={<Icon name='More'/>}>
+        {sortBy('name', communities).map(community =>
+          <li key={community.slug}>
+            <A to={communityUrl(community)}>
+              {removeImpactHub(community.name)}
+            </A>
+          </li>)}
+      </Dropdown>
+      Communities: <A to={networkUrl(network)}>All</A>
+      {communities.map(community =>
+        <A to={communityUrl(community)} key={community.slug}>
+          {removeImpactHub(community.name)}
+        </A>)}
+    </div>
+  </VelocityComponent>
+}

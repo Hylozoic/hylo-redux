@@ -22,7 +22,6 @@ describe('ShareTopicModal', () => {
     store = mocks.redux.store({
       pending: {},
       tagInvitationEditor: {},
-      tagsByCommunity: {},
       tagPopover: {},
       notifierMessages: [],
       routing: {path: `/c/${slug}`},
@@ -32,7 +31,8 @@ describe('ShareTopicModal', () => {
       showModal: {
         show: 'share-tag',
         params: {slug, tagName}
-      }
+      },
+      communitiesForNetworkNav: {}
     })
   })
 

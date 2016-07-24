@@ -1,9 +1,9 @@
 import React from 'react'
 
 const Icon = ({ name, glyphicon }) => {
-  let className = glyphicon
-  ? `icon glyphicon glyphicon-${name}`
-  : className = `icon icon-${name}`
+  const className = glyphicon
+    ? `icon glyphicon glyphicon-${name}`
+    : `icon icon-${name}`
 
   return <span className={className}></span>
 }

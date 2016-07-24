@@ -53,7 +53,8 @@ const normalize = person => {
     recent_request: null,
     recent_offer: null,
     recent_request_id: get(person.recent_request, 'id'),
-    recent_offer_id: get(person.recent_offer, 'id')
+    recent_offer_id: get(person.recent_offer, 'id'),
+    left_nav_tags: null
   })
 }
 

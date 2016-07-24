@@ -5,11 +5,11 @@ import { prefetch, defer } from 'react-fetcher'
 import { get, pick } from 'lodash'
 import {
   fetchCommunity,
+  fetchCommunitiesForNetworkNav,
   navigate,
   updateUserSettings
 } from '../../actions'
 import { saveCurrentCommunityId } from '../../actions/util'
-import { fetchLeftNavTags } from '../../actions/tags'
 import { locationWithoutParams } from '../../client/util'
 import { VIEWED_COMMUNITY, trackEvent } from '../../util/analytics'
 import { VelocityTransitionGroup } from 'velocity-react'
@@ -18,44 +18,65 @@ import CoverImagePage from '../../components/CoverImagePage'
 import { preventSpaces } from '../../util/textInput'
 const { func, object } = React.PropTypes
 
-const CommunityProfile = props => {
-  let { community, currentUser, location, dispatch, children } = props
+class CommunityProfile extends React.Component {
 
-  // we might have partial data for a community already; if this component
-  // renders without banner_url, it'll cause a request to an invalid url
-  if (!community || !community.banner_url) {
-    return <div className='loading'>Loading...</div>
+  static propTypes = {
+    community: object,
+    currentUser: object,
+    children: object,
+    location: object,
+    dispatch: func
   }
 
-  const showOnboarding = get(location, 'query.onboarding')
+  componentDidMount () {
+    this.fetchCommunitiesForNetworkNav(this.props.community)
+  }
 
-  return <CoverImagePage id='community' image={community.banner_url}>
-    <VelocityTransitionGroup runOnMount={true}
-      enter={{animation: 'slideDown', duration: 800}}
-      leave={{animation: 'slideUp', duration: 800}}>
-      {showOnboarding && <OnboardingQuestions person={currentUser} dispatch={dispatch}/>}
-    </VelocityTransitionGroup>
-    {children}
-  </CoverImagePage>
-}
+  componentWillReceiveProps (nextProps) {
+    if (get(nextProps.community, 'network.id') !== get(this.props.community, 'network.id')) {
+      this.fetchCommunitiesForNetworkNav(nextProps.community)
+    }
+  }
 
-CommunityProfile.propTypes = {
-  community: object,
-  currentUser: object,
-  children: object,
-  location: object,
-  dispatch: func
+  fetchCommunitiesForNetworkNav (community) {
+    const { dispatch } = this.props
+    const networkId = get(community, 'network.id')
+    if (!networkId) return
+    dispatch(fetchCommunitiesForNetworkNav(networkId))
+  }
+
+  render () {
+    let { community, currentUser, location, dispatch, children } = this.props
+
+    // we might have partial data for a community already; if this component
+    // renders without banner_url, it'll cause a request to an invalid url
+    if (!community || !community.banner_url) {
+      return <div className='loading'>Loading...</div>
+    }
+
+    const showOnboarding = get(location, 'query.onboarding')
+
+    return <CoverImagePage id='community' image={community.banner_url}>
+      <VelocityTransitionGroup runOnMount
+        enter={{animation: 'slideDown', duration: 800}}
+        leave={{animation: 'slideUp', duration: 800}}>
+        {showOnboarding && <OnboardingQuestions person={currentUser} dispatch={dispatch}/>}
+      </VelocityTransitionGroup>
+      {children}
+    </CoverImagePage>
+  }
 }
 
 export default compose(
-  prefetch(({ store, dispatch, params: { id } }) => dispatch(fetchLeftNavTags(id))
-    .then(() => dispatch(fetchCommunity(id)))
+  prefetch(({ store, dispatch, params: { id } }) =>
+     dispatch(fetchCommunity(id))
     .then(() => {
       const state = store.getState()
       const communityId = get(state.communities[id], 'id')
       const userId = get(state.people, 'current.id')
       return saveCurrentCommunityId(dispatch, communityId, userId)
-    })),
+    })
+  ),
   defer(({ params: { id }, store }) => {
     const community = store.getState().communities[id]
     return trackEvent(VIEWED_COMMUNITY, {community})

@@ -53,6 +53,14 @@ describe('linkify', () => {
     const expected = '<p>ok <a href="http://foo.com/#bar" class="linkified" target="_blank">http://foo.com/#bar</a> yes?</p>'
     expect(linkify(source)).to.equal(expected)
   })
+
+  it('shortens long URLs', () => {
+    const longUrl = 'http://www.nirandfar.com/2016/07/three-steps-get-speed-subject-quickly.html?goal=0_9f67e23487-01de31333b-97733697&mc_cid=01de31333b&mc_eid=edfd8b3847'
+    const shortUrl = longUrl.slice(0, 48)
+    const source = `<p>${longUrl} and <a href="meow">${longUrl}</a></p>`
+    const expected = `<p><a href="${longUrl}" class="linkified" target="_blank">${shortUrl + '…'}</a> and <a href="meow">${shortUrl + '&#x2026;'}</a></p>`
+    expect(linkify(source)).to.equal(expected)
+  })
 })
 
 describe('prepareHashtagsForEditing', () => {

@@ -23,6 +23,7 @@ export const FETCH_ACTIVITY = 'FETCH_ACTIVITY'
 export const FETCH_COMMENTS = 'FETCH_COMMENTS'
 export const FETCH_COMMUNITY = 'FETCH_COMMUNITY'
 export const FETCH_COMMUNITIES = 'FETCH_COMMUNITIES'
+export const FETCH_COMMUNITIES_FOR_NETWORK_NAV = 'FETCH_COMMUNITIES_FOR_NETWORK_NAV'
 export const FETCH_COMMUNITY_FOR_INVITATION = 'FETCH_COMMUNITY_FOR_INVITATION'
 export const FETCH_COMMUNITY_MODERATORS = 'FETCH_COMMUNITY_MODERATORS'
 export const FETCH_COMMUNITY_SETTINGS = 'FETCH_COMMUNITY_SETTINGS'
@@ -73,7 +74,6 @@ export const REMOVE_TAG = 'REMOVE_TAG'
 export const RESET_COMMUNITY_VALIDATION = 'RESET_COMMUNITY_VALIDATION'
 export const RESET_ERROR = 'RESET_ERROR'
 export const RESET_NETWORK_VALIDATION = 'RESET_NETWORK_VALIDATION'
-export const RESET_NEW_POST_COUNT = 'RESET_NEW_POST_COUNT'
 export const SET_STATE = 'SET_STATE'
 export const SEARCH = 'SEARCH'
 export const SEND_COMMUNITY_INVITATION = 'SEND_COMMUNITY_INVITATION'
@@ -655,13 +655,6 @@ export function removeComment (id) {
   }
 }
 
-export function resetNewPostCount (tagName, id) {
-  return {
-    type: RESET_NEW_POST_COUNT,
-    payload: {api: true, path: `/noo/community/${id}/tag/${tagName}/reset`, method: 'POST'}
-  }
-}
-
 export function cancelTagDescriptionEdit () {
   return {type: CANCEL_TAG_DESCRIPTION_EDIT}
 }
@@ -720,5 +713,13 @@ export function fetchLinkPreview (url) {
   return {
     type: FETCH_LINK_PREVIEW,
     payload: {api: true, path: `/noo/link-preview?${q}`}
+  }
+}
+
+export function fetchCommunitiesForNetworkNav (networkId) {
+  return {
+    type: FETCH_COMMUNITIES_FOR_NETWORK_NAV,
+    payload: {api: true, path: `/noo/network/${networkId}/communitiesForNav`},
+    meta: {networkId}
   }
 }

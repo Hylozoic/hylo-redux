@@ -1,6 +1,6 @@
 require('../support')
 import { tagsByCommunity, tagsByQuery, totalTagsByQuery } from '../../src/reducers/tags'
-import { FETCH_TAGS, REMOVE_TAG } from '../../src/actions'
+import { FETCH_LEFT_NAV_TAGS, FETCH_TAGS, REMOVE_TAG } from '../../src/actions'
 
 const fetchAction = {
   type: FETCH_TAGS,
@@ -144,5 +144,55 @@ describe('tagsByCommunity', () => {
     }
 
     expect(tagsByCommunity(state, fetchAction)).to.deep.equal(expected)
+  })
+
+  it('merges content on FETCH_LEFT_NAV_TAGS', () => {
+    const state = {
+      hum: {
+        foo: {name: 'foo', otherStuff: {foo: 'bar'}, followed: true}
+      },
+      wow: {
+        foo: {id: 7, name: 'foo'}
+      },
+      zoop: {
+        bop: {name: 'bop'}
+      }
+    }
+
+    const expected = {
+      hum: {
+        foo: {name: 'foo', otherStuff: {foo: 'bar'}, followed: true, new_post_count: 7},
+        bar: {name: 'bar', new_post_count: 12, followed: true}
+      },
+      wow: {
+        foo: {id: 7, name: 'foo', otherStuff: {yep: 'that'}, followed: true},
+        zap: {name: 'zap', new_post_count: 11, followed: true}
+      },
+      zoop: {
+        bop: {name: 'bop'}
+      },
+      zang: {
+        bar: {name: 'bar', followed: true}
+      }
+    }
+
+    const action = {
+      type: FETCH_LEFT_NAV_TAGS,
+      payload: {
+        hum: [
+          {name: 'foo', new_post_count: 7},
+          {name: 'bar', new_post_count: 12}
+        ],
+        wow: [
+          {name: 'foo', otherStuff: {yep: 'that'}},
+          {name: 'zap', new_post_count: 11}
+        ],
+        zang: [
+          {name: 'bar'}
+        ]
+      }
+    }
+
+    expect(tagsByCommunity(state, action)).to.deep.equal(expected)
   })
 })

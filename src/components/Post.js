@@ -59,10 +59,12 @@ class Post extends React.Component {
   }
 
   scrollToComment () {
-    if (this.scrolledToComment) return
+    this.scrollTop = 2000
+    return
+    // if (this.scrolledToComment) return
     const { commentId, comments } = this.props
     if (commentId && find(c => c.id === commentId, comments)) {
-      scrollToAnchor(`comment-${commentId}`, 90)
+      scrollToAnchor(`comment-${commentId}`, 90, this)
       this.scrolledToComment = true
     }
   }

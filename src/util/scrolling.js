@@ -23,11 +23,11 @@ export function changeViewportTop (delta) {
   return window.scrollTo(0, viewportTop() + delta)
 }
 
-export function position (element) {
+export function position (element, parent) {
   let x = 0
   let y = 0
 
-  while (element) {
+  while (element && element !== parent) {
     x += element.offsetLeft + element.clientLeft
     y += element.offsetTop + element.clientTop
     element = element.offsetParent
@@ -49,7 +49,12 @@ export function positionInViewport (element) {
   return {x, y}
 }
 
-export function scrollToAnchor (anchor, padding = 0) {
+export function scrollToAnchor (anchor, padding = 0, parent) {
+  console.log('scrollToAnchor', {anchor, padding, parent})
   let element = document.querySelector(`[name='${anchor}']`)
-  return window.scrollTo(0, position(element).y - padding)
+  if (parent) {
+    parent.scrollTop = position(element, parent).y - padding
+  } else {
+    window.scrollTo(0, position(element).y - padding)
+  }
 }

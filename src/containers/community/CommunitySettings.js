@@ -483,11 +483,11 @@ export default class CommunitySettings extends React.Component {
         </div>
       </div>}
 
-      <SectionLabel name='finance' {...labelProps}>Financial Projects</SectionLabel>
+      <SectionLabel name='finance' {...labelProps}>Financial Contributions</SectionLabel>
       {expand.finance && <div className='section finance'>
         <div className='section-item'>
           <div className='half-column'>
-            <label>Enable Financial Projects</label>
+            <label>Enable Financial Contributions</label>
             <p className='summary'>Enabling this functionality enables you to ask for money to finance activities in your projects.</p>
           </div>
           <div className='half-column right-align'>

@@ -82,7 +82,7 @@ export default class ProjectPostEditor extends React.Component {
       </div>
         {this.checkFinancialRequestsAllowed() &&
       <h3>
-        Financial Requests
+        Financial Contributions
       </h3>
         }
         {this.checkFinancialRequestsAllowed() &&

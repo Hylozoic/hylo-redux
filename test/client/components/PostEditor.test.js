@@ -22,6 +22,7 @@ const state = {
       description: 'and welcome',
       communities: ['f'],
       financialRequestAmount: '10.00',
+      financialRequestsEnabled: false,
       end_time: new Date("2016-10-12T14:00:00.000Z")
     },
   },
@@ -150,6 +151,23 @@ describe('PostEditor', () => {
         expect(action.type).to.equal(FETCH_TAG)
         expect(window.alert).to.have.been.called.with('The tag "foo" is already in use.')
       })
+    })
+  })
+
+  describe('financial request enabled and community financially disabled', () => {
+    beforeEach(() =>
+    {
+      const newState = cloneDeep(state)
+      set(newState, 'communities.f.settings.enable_finance', false)
+      set(newState, 'postEdits.foo.financialRequestsEnabled', true)
+
+      render(newState, post)
+    })
+
+    it('should not show validation on financial contributions', () => {
+      let postEditor = findRenderedDOMComponentWithClass(node, 'post-editor clearfix')
+      click(node.refs.save)
+      expect(window.alert).to.have.been.called
     })
   })
 })

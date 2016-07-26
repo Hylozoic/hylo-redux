@@ -488,7 +488,7 @@ export default class CommunitySettings extends React.Component {
         <div className='section-item'>
           <div className='half-column'>
             <label>Enable Financial Contributions</label>
-            <p className='summary'>Enabling this functionality enables you to ask for money to finance activities in your projects.</p>
+            <p className='summary'>Enabling this functionality allows members of the community to ask for financial contributions to their project.</p>
           </div>
           <div className='half-column right-align'>
             <input type='checkbox' checked={community.settings.enable_finance} onChange={() => this.toggle('settings.enable_finance')}/>

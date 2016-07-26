@@ -21,7 +21,8 @@ const state = {
       name: 'hello!',
       description: 'and welcome',
       communities: ['f'],
-      financialRequestAmount: '10.00'
+      financialRequestAmount: '10.00',
+      end_time: new Date("2016-10-12T14:00:00.000Z")
     },
   },
   typeaheadMatches: {},
@@ -119,10 +120,13 @@ describe('PostEditor', () => {
   })
 
   describe('with a project post', () => {
+
     beforeEach(() => {
       const newState = cloneDeep(state)
       set(newState, 'postEdits.foo.type', 'project')
       set(newState, 'postEdits.foo.tag', 'foo')
+
+      window.confirm = spy(() => true)
 
       render(newState, post, store => {
         store.transformAction(FETCH_TAG, action => {
@@ -132,6 +136,10 @@ describe('PostEditor', () => {
           })
         })
       })
+    })
+
+    afterEach(() => {
+      window.confirm = window._originalConfirm
     })
 
     it('validates the tag', () => {

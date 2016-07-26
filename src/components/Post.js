@@ -1,8 +1,9 @@
 import React from 'react'
-import { filter, first, includes, isEmpty, map, some, sortBy, get } from 'lodash'
-import { find } from 'lodash/fp'
+import { difference, filter, first, includes, isEmpty, map, some, sortBy } from 'lodash'
+import { find, get } from 'lodash/fp'
 const { array, bool, func, object } = React.PropTypes
 import cx from 'classnames'
+import cheerio from 'cheerio'
 import {
   humanDate, nonbreaking, present, sanitize, textLength, appendInP
 } from '../util/text'
@@ -35,10 +36,8 @@ import decode from 'ent/decode'
 
 const spacer = <span>&nbsp; •&nbsp; </span>
 
-const shouldShowTag = tag => tag && !includes(['chat'], tag)
-
 export const presentDescription = (post, community) =>
-  present(sanitize(post.description), {slug: get(community, 'slug')})
+  present(sanitize(post.description), {slug: get('slug', community)})
 
 class Post extends React.Component {
   static propTypes = {
@@ -62,13 +61,13 @@ class Post extends React.Component {
     const { tag, media, linkPreview } = post
     const image = find(m => m.type === 'image', media)
     const classes = cx('post', tag, {image, expanded})
-    const title = linkifyHashtags(decode(sanitize(post.name || '')), get(community, 'slug'))
+    const title = linkifyHashtags(decode(sanitize(post.name || '')), get('slug', community))
 
     return <div className={classes}>
       <Header communities={communities}/>
       <p className='title post-section' dangerouslySetInnerHTML={{__html: title}}></p>
       {image && <img src={image.url} className='post-section full-image'/>}
-      <Details {...{expanded, onExpand, tag}}/>
+      <Details {...{expanded, onExpand}}/>
       {linkPreview && <LinkPreview {...{linkPreview}}/>}
       <div className='voting post-section'><VoteButton/><Voters/></div>
       <Attachments/>
@@ -129,11 +128,34 @@ const Communities = ({ communities }, { community }) => {
 }
 Communities.contextTypes = {community: object}
 
-const Details = ({ expanded, onExpand, tag }, { post, community, dispatch }) => {
-  const slug = get(community, 'slug')
+const extractTags = (shortDesc, fullDesc) => {
+  const tags = cheerio.load(fullDesc)('.hashtag').toArray()
+  if (tags.length === 0) return []
+
+  const shortTags = cheerio.load(shortDesc)('.hashtag').toArray()
+  const tagName = tag => tag.children[0].data.replace(/^#/, '')
+  return difference(tags, shortTags).map(tagName)
+}
+
+const HashtagLink = ({ tag, slug }, { dispatch }) => {
+  const onMouseOver = handleMouseOver(dispatch)
+  return <a className='hashtag' href={tagUrl(tag, slug)} {...{onMouseOver}}>
+    {`#${tag}`}
+  </a>
+}
+HashtagLink.contextTypes = {dispatch: func}
+
+export const Details = ({ expanded, onExpand }, { post, community, dispatch }) => {
+  const { tag } = post
+  const slug = get('slug', community)
   let description = presentDescription(post, community)
+  let extractedTags = []
   const truncated = !expanded && textLength(description) > 200
-  if (truncated) description = truncate(description, 200)
+  if (truncated) {
+    const orig = description
+    description = truncate(description, 200)
+    extractedTags = extractTags(description, orig)
+  }
   if (description) description = appendInP(description, '&nbsp;')
 
   return <div className='post-section details'>
@@ -143,11 +165,12 @@ const Details = ({ expanded, onExpand, tag }, { post, community, dispatch }) => 
       <a onClick={onExpand} className='show-more'>Show&nbsp;more</a>
       &nbsp;
     </span>}
-    {shouldShowTag(tag) && <a className='hashtag'
-      href={tagUrl(tag, slug)}
-      onMouseOver={handleMouseOver(dispatch)}>
-      {`#${tag}`}
-    </a>}
+    {extractedTags.map(tag => <span key={tag}>
+      <wbr/>
+      <HashtagLink tag={tag} slug={slug}/>
+      &nbsp;
+    </span>)}
+    {tag && <HashtagLink tag={tag} slug={slug}/>}
   </div>
 }
 Details.contextTypes = {post: object, community: object, dispatch: func}
@@ -196,7 +219,7 @@ export const Menu = (props, { dispatch, post, currentUser, community }) => {
     : dispatch(startPostEdit(post))
   const remove = () => window.confirm('Are you sure? This cannot be undone.') &&
     dispatch(removePost(post.id))
-  const pin = () => dispatch(pinPost(get(community, 'slug'), post.id))
+  const pin = () => dispatch(pinPost(get('slug', community), post.id))
 
   const toggleChildren = pinned
     ? <span className='pinned'><span className='label'>Pinned</span><span className='icon-More'></span></span>

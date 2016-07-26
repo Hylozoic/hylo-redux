@@ -32,6 +32,7 @@ import { getCurrentCommunity } from '../models/community'
 import { canEditPost, canModerate } from '../models/currentUser'
 import { isMobile } from '../client/util'
 import decode from 'ent/decode'
+import modalWrapperCSSId from './Modal'
 
 const spacer = <span>&nbsp; •&nbsp; </span>
 
@@ -59,12 +60,13 @@ class Post extends React.Component {
   }
 
   scrollToComment () {
-    this.scrollTop = 2000
-    return
-    // if (this.scrolledToComment) return
-    const { commentId, comments } = this.props
-    if (commentId && find(c => c.id === commentId, comments)) {
-      scrollToAnchor(`comment-${commentId}`, 90, this)
+    if (this.scrolledToComment) return
+    const { commentId } = this.props
+    const commentName = `comment-expanded-${commentId}`
+    console.log('querySelector', document.querySelector(`[name='${commentName}']`))
+    if (commentId && document.querySelector(`[name='${commentName}']`)) {
+      var modalWrapper = document.getElementById(modalWrapperCSSId)
+      scrollToAnchor(commentName, 90, modalWrapper)
       this.scrolledToComment = true
     }
   }
@@ -92,7 +94,7 @@ class Post extends React.Component {
       {linkPreview && <LinkPreview {...{linkPreview}}/>}
       <div className='voting post-section'><VoteButton/><Voters/></div>
       <Attachments/>
-      <CommentSection post={post} truncate={!expanded} expand={onExpand} comments={comments}/>
+      <CommentSection post={post} expanded={expanded} expand={onExpand} comments={comments}/>
     </div>
   }
 }
@@ -243,10 +245,10 @@ Menu.contextTypes = {post: object, currentUser: object, dispatch: func, communit
 export class CommentSection extends React.Component {
   static propTypes = {
     comments: array,
-    truncate: bool,
     expand: func,
     post: object,
-    dispatch: func
+    dispatch: func,
+    expanded: bool
   }
 
   static contextTypes = {
@@ -257,7 +259,8 @@ export class CommentSection extends React.Component {
   }
 
   render () {
-    let { post, comments, truncate, expand } = this.props
+    let { post, comments, expand, expanded } = this.props
+    const truncate = !expanded
     const { dispatch, currentUser, community, isProjectRequest } = this.context
 
     if (!comments) comments = []
@@ -288,6 +291,7 @@ export class CommentSection extends React.Component {
         truncate={truncate}
         expand={() => expandComment(c.id)}
         community={community}
+        expanded={expanded}
         key={c.id}/>)}
       {currentUser && <CommentForm postId={post.id} {...{placeholder}}/>}
     </div>

@@ -25,8 +25,9 @@ function linkifyjsOptions (slug) {
       return value
     },
     linkAttributes: function (value, type) {
-      if (type === 'hashtag') return {'data-search': value, class: 'hashtag'}
-    }
+      if (type === 'hashtag') return {'data-search': value}
+    },
+    linkClass: (href, type) => type === 'hashtag' ? 'hashtag' : 'linkified'
   }
 }
 

@@ -24,14 +24,14 @@ describe('linkify', () => {
 
   it('wraps unlinked hashtags', () => {
     let source = '<p>and #foo</p>'
-    let expected = '<p>and <a href="/tag/foo" class="linkified" data-search="#foo" class="hashtag">#foo</a></p>'
+    let expected = '<p>and <a href="/tag/foo" class="hashtag" data-search="#foo">#foo</a></p>'
     expect(linkify(source)).to.equal(expected)
   })
 
   it('adds community slug when wrapping unlinked hashtags', () => {
     let source = '<p>and #foo</p>'
     let slug = 'bar'
-    let expected = '<p>and <a href="/c/bar/tag/foo" class="linkified" data-search="#foo" class="hashtag">#foo</a></p>'
+    let expected = '<p>and <a href="/c/bar/tag/foo" class="hashtag" data-search="#foo">#foo</a></p>'
     expect(linkify(source, slug)).to.equal(expected)
   })
 

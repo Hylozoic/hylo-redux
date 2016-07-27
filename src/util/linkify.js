@@ -9,9 +9,15 @@ import { hashtagFullRegex } from '../models/hashtag'
 import striptags from 'striptags'
 require('linkifyjs/plugins/hashtag')(linkifyjs)
 
+const maxLinkLength = 48
+
 // this handles old-style hashtags, which aren't wrapped in tags
 function linkifyjsOptions (slug) {
   return {
+    format: (value, type) =>
+      type === 'url' && value.length > maxLinkLength
+        ? value.slice(0, maxLinkLength) + '…' : value,
+
     formatHref: function (value, type) {
       if (type === 'hashtag') {
         return tagUrl(value.substring(1), slug)
@@ -19,8 +25,9 @@ function linkifyjsOptions (slug) {
       return value
     },
     linkAttributes: function (value, type) {
-      if (type === 'hashtag') return {'data-search': value, class: 'hashtag'}
-    }
+      if (type === 'hashtag') return {'data-search': value}
+    },
+    linkClass: (href, type) => type === 'hashtag' ? 'hashtag' : 'linkified'
   }
 }
 
@@ -35,7 +42,7 @@ export default function linkify (text, slug) {
     node.contents().map((i, el) => {
       if (el.type === 'text') return linkifyString(el.data, linkifyjsOptions(slug))
       if (el.name === 'br') return $.html(el)
-      if (el.name === 'a') return setHashtagAttributes($, el, slug)
+      if (el.name === 'a') return cleanupLink($, el, slug)
       return recurse($, el, run)
     }).get().join('')
 
@@ -50,14 +57,20 @@ export function linkifyHashtags (text, slug) {
   }))
 }
 
-function setHashtagAttributes ($, el, slug) {
+function cleanupLink ($, el, slug) {
   const $el = $(el)
-  const match = $el.text().match(hashtagFullRegex)
+  const text = $el.text()
+  const match = text.match(hashtagFullRegex)
   if (match) {
     $el.attr('href', tagUrl(match[1], slug))
     $el.attr('data-search', match[0])
     $el.attr('class', 'hashtag')
   }
+
+  if (text.length >= maxLinkLength) {
+    $el.text(text.slice(0, maxLinkLength) + '…')
+  }
+
   return $.html(el)
 }
 

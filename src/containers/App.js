@@ -65,7 +65,7 @@ const makeNavLinks = (currentUser, community) => {
     notifierMessages,
     networkCommunities,
     currentUser: people.current,
-    tags: get([community, 'slug'], tagsByCommunity) || aggregatedTags(state)
+    tags: get(get('slug', community), tagsByCommunity) || aggregatedTags(state)
   }
 }, null, null, {withRef: true})
 export default class App extends React.Component {

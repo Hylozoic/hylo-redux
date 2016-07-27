@@ -116,7 +116,7 @@ export default class RichTextEditor extends React.Component {
 
     this._pollForEditor(editor => {
       onReady && onReady(editor)
-      startFocused && editor.focus()
+      startFocused && setTimeout(() => editor.focus())
 
       this.tagger = new RichTextTagger(editor, this.autocomplete)
 
@@ -226,25 +226,29 @@ class EditorPoller {
   }
 
   _poll () {
-    const waitMs = 40
     const { editors } = window.tinymce.EditorManager
-    let attempts = 1
-    this.pollInterval = setInterval(() => {
-      this._parent.editor = editors.find(e => e.id === this._editorId)
-      const elapsed = attempts * waitMs
-      if (this._parent.editor) {
-        console.log(`got ${this._editorId} after ${elapsed} ms; ` +
-          `calling ${this._callbacks.length} callback(s)`)
-        clearInterval(this.pollInterval)
-        this._callbacks.forEach(c => c(this._parent.editor))
+    const startTime = new Date().getTime()
+
+    const getEditor = (tryCount = 0) => {
+      const editor = editors.find(e => e.id === this._editorId)
+      this._parent.editor = editor
+      if (editor) {
+        if (tryCount > 0) {
+          const elapsed = new Date().getTime() - startTime
+          console.log(`got ${this._editorId} after ${elapsed} ms; ` +
+            `calling ${this._callbacks.length} callback(s)`)
+        }
+        this._callbacks.forEach(c => c(editor))
       } else {
-        attempts += 1
-        if (attempts > 200) {
-          console.error(`couldn't get ${this._editorId} after ${elapsed} ms`)
-          clearInterval(this.pollInterval)
+        if (tryCount >= 8) {
+          console.error(`failed to get ${this._editorId}`)
+        } else {
+          setTimeout(() => getEditor(tryCount + 1), 40 * Math.pow(2, tryCount))
         }
       }
-    }, waitMs)
+    }
+
+    getEditor()
   }
 
   addCallback (callback) {

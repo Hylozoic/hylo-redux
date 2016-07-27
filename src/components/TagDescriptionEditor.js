@@ -61,7 +61,7 @@ export default class TagDescriptionEditor extends React.Component {
           {keys(tags).length > 1 ? 'new topics.' : 'a new topic.'}
           <a className='close' onClick={cancel}><Icon name='Fail'/></a>
         </h2>
-        {map(tags, (description, tag, i) => <div key={i} className='tag-group'>
+        {map(tags, (description, tag, i) => <div key={creating ? i : tag} className='tag-group'>
           <div className='topic'>
             <label>Topic</label>
             {creating

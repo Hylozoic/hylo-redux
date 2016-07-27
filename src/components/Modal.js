@@ -8,16 +8,17 @@ import ShareTopicModal from '../containers/ShareTopicModal'
 import ExpandedPostModal from '../containers/ExpandedPostModal'
 import cx from 'classnames'
 import { get } from 'lodash'
-const { bool, func } = React.PropTypes
+const { array, bool, func, object, string, oneOfType } = React.PropTypes
 
 export const modalWrapperCSSId = 'top-level-modal-wrapper'
+const mainColumnWidth = 688 // defined in CSS
 
-const modalStyle = (isMobile) => {
-  return {
-    left: isMobile ? 0 : position(document.getElementById('cover-image-page-content')).x,
-    width: Math.min(688, get(document.getElementById('main'), 'offsetWidth') || 688)
-  }
-}
+const modalStyle = isMobile => ({
+  left: isMobile ? 0
+    : position(document.getElementById('cover-image-page-content')).x,
+  width: Math.min(mainColumnWidth,
+    get(document.getElementById('main'), 'offsetWidth') || mainColumnWidth)
+})
 
 export const ModalWrapper = ({ show, params }, { dispatch }) => {
   if (!show) return null
@@ -34,10 +35,7 @@ export const ModalWrapper = ({ show, params }, { dispatch }) => {
       clickToClose = true
       break
     case 'expanded-post':
-      modal = <ExpandedPostModal tagName={params.tagName}
-        id={params.id}
-        commentId={params.commentId}
-        onCancel={() => dispatch(closeModal())}/>
+      modal = <ExpandedPostModal id={params.id} commentId={params.commentId}/>
       clickToClose = true
       break
   }
@@ -53,7 +51,7 @@ ModalWrapper.contextTypes = {dispatch: func}
 
 export const Modal = ({ id, className, children, title, subtitle, onCancel }, { isMobile }) => {
   return <SimpleModal id={id} className={className}>
-    <div className='titles'>
+    <div className='title'>
       <h2>
         {title}
         <a className='close' onClick={onCancel}><Icon name='Fail'/></a>

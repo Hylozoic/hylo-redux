@@ -282,7 +282,7 @@ const NetworkCommunityLinks = ({ communities, network, animation, easing }, { is
   const removeImpactHub = name => name.replace(/^Impact Hub /, '')
   return <VelocityComponent animation={animation} easing={easing}>
     <div className='network-nav'>
-      <Dropdown className='all-communities' alignRight={true}
+      <Dropdown className='all-communities' alignRight
         toggleChildren={<Icon name='More'/>}>
         {sortBy('name', communities).map(community =>
           <li key={community.slug}>

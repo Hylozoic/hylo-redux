@@ -453,6 +453,7 @@ nav {
       > li > a {
         line-height: 36px;
       }
+      max-height: none;
 
       .non-mobile({
         margin-top: -12px;
@@ -519,6 +520,11 @@ nav {
     height: 55px;
     padding-right: 25px;
     padding-left: 25px;
+    .dropdown-menu {
+      > li > a {
+        font-weight: 300;
+      }
+    }
     a {
       text-decoration: none;
     }

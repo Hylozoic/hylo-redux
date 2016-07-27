@@ -67,7 +67,7 @@ nav {
   z-index: 10;
   position: fixed;
   top: 0;
-  box-shadow: 0 0 2px #c9c9c9;
+  box-shadow: 0 0 2px @drop-shadow-gray;
 
   &.scrolling {
     opacity: 0.98;
@@ -488,6 +488,7 @@ nav {
 }
 
 #networkNav {
+  .light;
   white-space: nowrap;
   position: relative;
   top: -2px;
@@ -503,7 +504,11 @@ nav {
     color: @gray-text;
     &.active {
       color: black;
+      font-weight: 500;
     }
+  }
+  .label {
+    color: @drop-shadow-gray;
   }
   .all-communities {
     display: inline;

@@ -17,7 +17,7 @@ const NetworkNav = ({ communities, network }, { isMobile }) => {
           </A>
         </li>)}
     </Dropdown>
-    Communities: <A to={networkUrl(network)}>All</A>
+    <span className='label'>Communities:</span> <A to={networkUrl(network)}>All</A>
     {communities.map(community =>
       <A to={communityUrl(community)} key={community.slug}>
         {removeImpactHub(community.name)}

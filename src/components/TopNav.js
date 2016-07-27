@@ -171,13 +171,14 @@ const TopMainMenu = ({ community, links }) => {
   const topLinks = filter(l => l.label !== 'Network', links)
 
   return <div className='main-menu'>
-    {links.slice(0, 3).map(link =>
+    {topLinks.slice(0, 4).map(link =>
       <LinkItem className={`a-${link.label}`} link={link} key={link.label}/>)}
     <Dropdown triangle className='overflow-menu' openOnHover
       toggleChildren={<Icon name='More'/>}>
-      {topLinks.slice(1).map(link => <li key={link.label} className={`li-${link.label}`}>
-        <LinkItem link={link}/>
-      </li>)}
+      {topLinks.slice(1).map(link =>
+        <li key={link.label} className={`li-${link.label.replace(' ', '-')}`}>
+          <LinkItem link={link}/>
+        </li>)}
     </Dropdown>
   </div>
 }

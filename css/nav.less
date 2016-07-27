@@ -2,7 +2,7 @@
 @left-nav-width: 208px;
 @menu-button-width: 87px;
 @mobile-top-nav-height: 60px;
-@main-menu-shrink-breakpoint: 1200px;
+@main-menu-shrink-breakpoint: 1285px;
 @main-menu-hide-breakpoint: 1024px;
 
 nav {
@@ -468,13 +468,13 @@ nav {
     }
 
     @media (max-width: (@main-menu-shrink-breakpoint - 1)) {
-      .a-Events, .a-Projects {
+      .a-Events, .a-Projects, .a-Members {
         display: none;
       }
     }
 
     @media (min-width: @main-menu-shrink-breakpoint) {
-      .li-Conversations, .li-Events, .li-Projects {
+      .li-Conversations, .li-Events, .li-Projects, .li-Members {
         display: none;
       }
     }

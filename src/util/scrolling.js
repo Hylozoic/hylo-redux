@@ -57,3 +57,9 @@ export function scrollToAnchor (anchor, padding = 0, parent) {
     window.scrollTo(0, position(element).y - padding)
   }
 }
+
+export const scrollToComment = (commentId, parent) => {
+  // show the comment in the upper middle area of the viewport
+  const padding = document.documentElement.clientHeight / 4
+  return scrollToAnchor(`comment-${commentId}`, padding, parent)
+}

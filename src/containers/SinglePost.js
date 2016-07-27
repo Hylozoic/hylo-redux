@@ -12,7 +12,7 @@ import { saveCurrentCommunityId } from '../actions/util'
 import { ogMetaTags } from '../util'
 import A from '../components/A'
 import PostEditor from '../components/PostEditor'
-import { scrollToAnchor } from '../util/scrolling'
+import { scrollToComment } from '../util/scrolling'
 import { findError } from '../actions/util'
 import AccessErrorMessage from '../components/AccessErrorMessage'
 import CoverImagePage from '../components/CoverImagePage'
@@ -156,6 +156,6 @@ const setupPage = (store, id, query, action) => {
 
 const scroll = () => {
   if (typeof window === 'undefined') return
-  let anchor = get(window.location.hash.match(/#(comment-\d+$)/), '1')
-  if (anchor) scrollToAnchor(anchor, 90)
+  let id = get(window.location.hash.match(/#comment-(\d+)$/), '1')
+  if (id) scrollToComment(id)
 }

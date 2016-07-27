@@ -155,7 +155,7 @@ export class PostEditor extends React.Component {
       window.alert('Enter a project deadline.')
       return Promise.resolve(false)
     }
-    
+
     if (subeditor) {
       const subvalidate = subeditor.validate || subeditor.getWrappedInstance().validate
       return Promise.resolve(subvalidate())

@@ -288,7 +288,7 @@ export function fetchPost (id) {
 export function startPostEdit (post) {
   let fields = [
     'id', 'name', 'type', 'description', 'location', 'communities', 'public',
-    'media', 'start_time', 'end_time', 'tag', 'children', 'linkPreview'
+    'media', 'start_time', 'end_time', 'tag', 'children', 'linkPreview', 'financialRequestAmount'
   ]
   let payload = cloneDeep(pick(post, fields))
   return {type: START_POST_EDIT, payload}

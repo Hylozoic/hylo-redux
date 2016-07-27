@@ -60,7 +60,7 @@ export default class ProjectPostEditor extends React.Component {
   }
 
   checkFinancialRequestsAllowed = () => {
-    return this.props.communityFinanceEnabled || this.props.postEdit.financialRequestsEnabled
+    return this.props.communityFinanceEnabled || this.props.postEdit.financialRequestsEnabled || this.props.postEdit.financialRequestAmount
   }
 
   render () {
@@ -97,7 +97,7 @@ export default class ProjectPostEditor extends React.Component {
                     </div>
                 </label>
 
-                {postEdit.financialRequestsEnabled &&
+                {postEdit.financialRequestsEnabled || postEdit.financialRequestAmount &&
                 <div className="section-item financial-request">
                     <div className='title'>
                         How much do you need?

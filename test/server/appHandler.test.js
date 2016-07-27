@@ -71,6 +71,16 @@ describe('appHandler', () => {
         expect(res.redirect).to.have.been.called.with(302, '/login?next=%2Fc%2Ffoo%2Fpeople')
       })
     })
+
+    it('preserves clickthrough parameters', () => {
+      req = support.mocks.request('/c/foo/people?ctt=digest_email&cti=42')
+
+      return appHandler(req, res)
+      .then(() => {
+        const path = '/login?next=%2Fc%2Ffoo%2Fpeople&ctt=digest_email&cti=42'
+        expect(res.redirect).to.have.been.called.with(302, path)
+      })
+    })
   })
 
   describe('with a logged-in user', () => {

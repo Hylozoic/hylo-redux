@@ -60,7 +60,9 @@ export default class ProjectPostEditor extends React.Component {
   }
 
   checkFinancialRequestsAllowed = () => {
-    return this.props.communityFinanceEnabled || this.props.postEdit.financialRequestsEnabled || this.props.postEdit.financialRequestAmountAsString
+    return this.props.communityFinanceEnabled ||
+      this.props.postEdit.financialRequestsEnabled ||
+      this.props.postEdit.financialRequestAmountAsString
   }
 
   render () {
@@ -91,20 +93,22 @@ export default class ProjectPostEditor extends React.Component {
                 <label>
                     <div>
                         Enable Financial Contributions
-                        <input type="checkbox" className="right"
+                        <input type='checkbox' className='right'
                                onClick={event => update({financialRequestsEnabled: !postEdit.financialRequestsEnabled})}
                                value={postEdit.financialRequestsEnabled}/>
                     </div>
                 </label>
 
-                {(postEdit.financialRequestsEnabled || postEdit.financialRequestAmountAsString) &&
-                <div className="section-item financial-request">
+                {(postEdit.financialRequestsEnabled) &&
+                <div className='section-item financial-request'>
                     <div className='title'>
                         How much do you need?
                     </div>
                     <div>
                         USD $
-                        <CurrencyInput value={postEdit.financialRequestAmountAsString + ''} thousandSeparator="" onChange={maskedValue => update({financialRequestAmountAsString: maskedValue})}/>
+                        <CurrencyInput value={postEdit.financialRequestAmountAsString + ''}
+                                       thousandSeparator=''
+                                       onChange={maskedValue => update({financialRequestAmountAsString: maskedValue})}/>
                     </div>
                 </div>
                 }
@@ -177,7 +181,7 @@ class ProjectRequestEditor extends React.Component {
     const showDetails = this.state.showDetails || !!description
     const editorClass = cx('details', {empty: !showDetails})
 
-    return <div className="request">
+    return <div className='request'>
       <div className='title-wrapper'>
         <AutosizingTextarea type='text' ref='title' className='title'
           value={name}

@@ -105,7 +105,10 @@ export class PostEditor extends React.Component {
   updateStore = (data) => {
     let { id, dispatch } = this.props
     var newObj = cloneDeep(data)
-    newObj.financialRequestAmount = parseFloat(data.financialRequestAmountAsString)
+
+    if (data.financialRequestAmountAsString) {
+      newObj.financialRequestAmount = parseFloat(data.financialRequestAmountAsString)
+    }
 
     dispatch(updatePostEditor(newObj, id))
   }

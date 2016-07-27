@@ -324,7 +324,7 @@ export function removeDoc (payload, id) {
 export function changeEventResponse (id, response, user) {
   return {
     type: CHANGE_EVENT_RESPONSE,
-    payload: {api: true, params: {response}, path: `/noo/post/${id}/respond`, method: 'POST'},
+    payload: {api: true, params: {response}, path: `/noo/post/${id}/rsvp`, method: 'POST'},
     meta: {id, response, user}
   }
 }

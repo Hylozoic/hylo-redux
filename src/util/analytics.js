@@ -54,6 +54,7 @@ export function trackEvent (eventName, options = {}) {
       break
     case EDITED_USER_SETTINGS:
     case LOGGED_IN:
+    case SIGNED_UP:
     case STARTED_LOGIN:
     case STARTED_SIGNUP:
     case VIEWED_NOTIFICATIONS:

@@ -151,11 +151,11 @@ export class PostEditor extends React.Component {
       return Promise.resolve(false)
     }
 
-    if (!postEdit.end_time) {
+    if (postEdit.financialRequestsEnabled && !postEdit.end_time) {
       window.alert('Enter a project deadline.')
       return Promise.resolve(false)
     }
-
+    
     if (subeditor) {
       const subvalidate = subeditor.validate || subeditor.getWrappedInstance().validate
       return Promise.resolve(subvalidate())

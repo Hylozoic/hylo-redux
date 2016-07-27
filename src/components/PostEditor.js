@@ -152,8 +152,13 @@ export class PostEditor extends React.Component {
       return Promise.resolve(false)
     }
 
-    if (postEdit.financialRequestsEnabled && (!postEdit.financialRequestAmount || parseFloat(postEdit.financialRequestAmountAsString) === 0.00)) {
+    if (postEdit.financialRequestsEnabled && (!postEdit.financialRequestAmountAsString || parseFloat(postEdit.financialRequestAmountAsString) === 0.00)) {
       window.alert('Enter an amount for financial contributions.')
+      return Promise.resolve(false)
+    }
+
+    if(postEdit.financialRequestAmount > 5000) {
+      window.alert('Financial contributions must be less than 5000.')
       return Promise.resolve(false)
     }
 

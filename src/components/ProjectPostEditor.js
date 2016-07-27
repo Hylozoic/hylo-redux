@@ -97,7 +97,7 @@ export default class ProjectPostEditor extends React.Component {
                     </div>
                 </label>
 
-                {postEdit.financialRequestsEnabled || postEdit.financialRequestAmount &&
+                {(postEdit.financialRequestsEnabled || postEdit.financialRequestAmount) &&
                 <div className="section-item financial-request">
                     <div className='title'>
                         How much do you need?

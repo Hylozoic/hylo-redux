@@ -50,7 +50,7 @@ export function trackEvent (eventName, options = {}) {
       })
       break
     case CLICKTHROUGH:
-      track(otherOptions)
+      track({community, ...otherOptions})
       break
     case EDITED_USER_SETTINGS:
     case LOGGED_IN:

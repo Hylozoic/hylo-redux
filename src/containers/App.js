@@ -5,6 +5,7 @@ import { connect } from 'react-redux'
 import { debounce, includes, isEmpty, pick } from 'lodash'
 import { filter, get } from 'lodash/fp'
 import TopNav from '../components/TopNav'
+import NetworkNav from '../components/NetworkNav'
 import { LeftNav, leftNavWidth, leftNavEasing } from '../components/LeftNav'
 import Notifier from '../components/Notifier'
 import LiveStatusPoller from '../components/LiveStatusPoller'
@@ -147,7 +148,6 @@ export default class App extends React.Component {
         links={links}
         community={community}
         network={network}
-        networkCommunities={networkCommunities}
         onChangeCommunity={visitCommunity}
         openLeftNav={openLeftNav}
         leftNavIsOpen={leftNavIsOpen}
@@ -158,12 +158,15 @@ export default class App extends React.Component {
         path={path}
         search={doSearch}
         opened={leftNavIsOpen}
-        networkNavAnimation={moveWithMenu}
-        networkNavEasing={leftNavEasing}
         />}
 
       <VelocityComponent animation={moveWithMenu} easing={leftNavEasing}>
         <div id='main'>
+          {currentUser && !isMobile && networkCommunities &&
+            networkCommunities.length > 1 &&
+            <NetworkNav
+              communities={networkCommunities}
+              network={network || community.network}/>}
           {children}
         </div>
       </VelocityComponent>

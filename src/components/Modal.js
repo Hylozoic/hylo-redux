@@ -67,9 +67,35 @@ export const Modal = ({ id, className, children, title, subtitle, onCancel }, { 
 }
 Modal.contextTypes = {isMobile: bool}
 
-export const SimpleModal = ({ id, className, children }, { isMobile }) => {
-  return <div id={id} className={cx(className, 'modal')} style={modalStyle(isMobile)}>
-    {children}
-  </div>
+export class SimpleModal extends React.Component {
+  static propTypes = {
+    id: string,
+    className: string,
+    children: oneOfType([array, object])
+  }
+
+  static contextTypes = {
+    isMobile: bool
+  }
+
+  lockScrolling = () => {
+    window.scrollTo(0, this.lockedScrollTop)
+  }
+
+  componentDidMount () {
+    this.lockedScrollTop = document.body.scrollTop
+    window.addEventListener('scroll', this.lockScrolling)
+  }
+
+  componentWillUnmount () {
+    window.removeEventListener('scroll', this.lockScrolling)
+  }
+
+  render () {
+    const { id, className, children } = this.props
+    const { isMobile } = this.context
+    return <div id={id} className={cx(className, 'modal')} style={modalStyle(isMobile)}>
+      {children}
+    </div>
+  }
 }
-Modal.contextTypes = {isMobile: bool}

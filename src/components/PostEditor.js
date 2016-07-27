@@ -11,8 +11,8 @@ import shallowCompare from 'react-addons-shallow-compare'
 import cx from 'classnames'
 import autoproxy from 'autoproxy'
 import {
-  debounce, difference, compact, filter, find, get, includes, isNaN, isEmpty, some,
-  startsWith, keys, uniq
+  debounce, difference, compact, cloneDeep, filter, find, get, includes, isNaN, isEmpty, some,
+  startsWith, keys, uniq, update
 } from 'lodash'
 import CommunityTagInput from './CommunityTagInput'
 import Dropdown from './Dropdown'
@@ -104,7 +104,11 @@ export class PostEditor extends React.Component {
 
   updateStore = (data) => {
     let { id, dispatch } = this.props
-    dispatch(updatePostEditor(data, id))
+    var newObj = cloneDeep(data)
+    update(newObj, 'financialRequestAmount', function(fra){
+        return parseFloat(fra)
+    })
+    dispatch(updatePostEditor(newObj, id))
   }
 
   _self () {

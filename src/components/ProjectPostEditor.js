@@ -104,7 +104,7 @@ export default class ProjectPostEditor extends React.Component {
                     </div>
                     <div>
                         USD $
-                        <CurrencyInput value={postEdit.financialRequestAmount + ''} thousandSeparator="" onChange={maskedValue => update({financialRequestAmount: parseFloat(maskedValue)})}/>
+                        <CurrencyInput value={postEdit.financialRequestAmount + ''} thousandSeparator="" onChange={maskedValue => update({financialRequestAmount: maskedValue})}/>
                     </div>
                 </div>
                 }

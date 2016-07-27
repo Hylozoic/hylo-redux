@@ -6,11 +6,6 @@
 #app {
   overflow-x: hidden;
   min-height: 100vh;
-
-  > .showModal {
-    overflow-y: hidden;
-    height: 100vh;
-  }
 }
 
 #main {
@@ -253,68 +248,5 @@
 
   .right {
     float: right;
-  }
-}
-
-#top-level-modal-wrapper {
-  z-index: 50;
-  position: fixed;
-  height: 100vh;
-  width: 100vw;
-  top: 0;
-  left: 0;
-  overflow-y: scroll;
-
-  .modal {
-    position: absolute;
-    top: 0;
-    max-width: @main-column-width;
-    margin: 10vh auto;
-  }
-}
-
-.modal {
-  z-index: 3;
-  background-color: white;
-  margin-bottom: -1px;
-
-  .titles {
-    border-bottom: 1px solid @post-border;
-    padding-bottom: 15px;
-  }
-
-  h2 {
-    padding: 25px 25px 10px 25px;
-    margin: 0;
-  }
-
-  .subtitle {
-    padding: 0px 25px 5px 25px;
-  }
-
-  .close {
-    float: right;
-    text-decoration: none;
-  }
-
-  .footer {
-    margin-top: -15px;
-    padding: 25px;
-    button, a.button {
-      .round-button;
-      padding: 0 20px;
-
-      &.ok {
-        color: white;
-        background-color: @damian-green;
-        border-color: @damian-green;
-      }
-    }
-  }
-}
-
-.isMobile #top-level-modal-wrapper {
-  .modal {
-    margin: 0;
   }
 }

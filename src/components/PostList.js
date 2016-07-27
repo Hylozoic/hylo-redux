@@ -3,23 +3,20 @@ import { connect } from 'react-redux'
 import Post from './Post'
 import ScrollListener from './ScrollListener'
 import RefreshButton from './RefreshButton'
-import { changeViewportTop, positionInViewport } from '../util/scrolling'
+import { changeViewportTop } from '../util/scrolling'
 import { filter, includes, isEmpty } from 'lodash/fp'
 import PostEditor from './PostEditor'
 import { EventPostCard } from './EventPost'
 import { ProjectPostCard } from './ProjectPost'
 import { getEditingPostIds } from '../models/post'
-import { isMobile } from '../client/util'
 import { makeUrl } from '../util/navigation'
-import { navigate } from '../actions'
+import { navigate, showExpandedPost } from '../actions'
 import SearchInput from './SearchInput'
 import Icon from './Icon'
-
 const { array, bool, func, string, number } = React.PropTypes
 
-@connect((state, props) => ({
-  editingPostIds: isMobile() ? [] : getEditingPostIds(props.posts, state),
-  isMobile: state.isMobile
+@connect((state, { posts }) => ({
+  editingPostIds: state.isMobile ? [] : getEditingPostIds(posts, state)
 }))
 class PostList extends React.Component {
   static propTypes = {
@@ -36,7 +33,8 @@ class PostList extends React.Component {
   }
 
   static contextTypes = {
-    postDisplayMode: string
+    postDisplayMode: string,
+    isMobile: bool
   }
 
   constructor (props) {
@@ -44,33 +42,14 @@ class PostList extends React.Component {
     this.state = {}
   }
 
-  expand = (id) => {
-    let { dispatch } = this.props
+  expand = (id, commentId) => {
+    const { dispatch } = this.props
+    const { isMobile } = this.context
 
-    if (isMobile()) {
-      dispatch(navigate(`/p/${id}`))
+    if (isMobile) {
+      dispatch(navigate(`/p/${id}` + (commentId ? `#comment-${commentId}` : '')))
     } else {
-      this.setState({expanded: id})
-    }
-  }
-
-  unexpand = event => {
-    this.setState({expanded: null})
-  }
-
-  componentWillUpdate (nextProps, nextState) {
-    if (!this.state.expanded && nextState.expanded) {
-      const node = this.refs[nextState.expanded]
-      this.initialHeight = node.offsetHeight
-      return
-    }
-
-    if (this.state.expanded && nextState.expanded !== this.state.expanded) {
-      const node = this.refs[this.state.expanded]
-      const nodeY = positionInViewport(node).y
-      if (nodeY + this.initialHeight < 0) {
-        changeViewportTop(nodeY - 30)
-      }
+      dispatch(showExpandedPost(id, commentId))
     }
   }
 
@@ -93,13 +72,6 @@ class PostList extends React.Component {
         return <PostEditor post={post} expanded/>
       }
 
-      if (post.id === this.state.expanded) {
-        return <div>
-          <div className='backdrop' onClick={this.unexpand}/>
-          <Post post={post} expanded/>
-        </div>
-      }
-
       switch (post.type) {
         case 'event':
           return <EventPostCard post={post}/>
@@ -107,7 +79,7 @@ class PostList extends React.Component {
           return <ProjectPostCard post={post}/>
       }
 
-      return <Post post={post} onExpand={() => this.expand(post.id)}/>
+      return <Post post={post} onExpand={commentId => this.expand(post.id, commentId)}/>
     }
 
     return <span>

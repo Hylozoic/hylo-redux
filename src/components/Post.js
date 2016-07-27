@@ -1,7 +1,7 @@
 import React from 'react'
 import { difference, filter, first, includes, isEmpty, map, some, sortBy } from 'lodash'
 import { find, get } from 'lodash/fp'
-const { array, bool, func, object } = React.PropTypes
+const { array, bool, func, object, string } = React.PropTypes
 import cx from 'classnames'
 import cheerio from 'cheerio'
 import {
@@ -20,12 +20,10 @@ import CommentForm from './CommentForm'
 import Icon from './Icon'
 import LinkedPersonSentence from './LinkedPersonSentence'
 import LinkPreview from './LinkPreview'
-import { scrollToAnchor } from '../util/scrolling'
 import { connect } from 'react-redux'
 import { compose } from 'redux'
 import {
-  fetchComments, followPost, navigate, notify, removePost, startPostEdit,
-  voteOnPost, pinPost
+  followPost, navigate, removePost, startPostEdit, voteOnPost, pinPost
 } from '../actions'
 import { same } from '../models'
 import { getComments, getCommunities, isPinned } from '../models/post'
@@ -47,7 +45,8 @@ class Post extends React.Component {
     comments: array,
     dispatch: func,
     expanded: bool,
-    onExpand: func
+    onExpand: func,
+    commentId: string
   }
 
   static childContextTypes = {post: object}
@@ -64,6 +63,7 @@ class Post extends React.Component {
     const title = linkifyHashtags(decode(sanitize(post.name || '')), get('slug', community))
 
     return <div className={classes}>
+      <a name={`post-${post.id}`}></a>
       <Header communities={communities}/>
       <p className='title post-section' dangerouslySetInnerHTML={{__html: title}}></p>
       {image && <img src={image.url} className='post-section full-image'/>}
@@ -71,7 +71,7 @@ class Post extends React.Component {
       {linkPreview && <LinkPreview {...{linkPreview}}/>}
       <div className='voting post-section'><VoteButton/><Voters/></div>
       <Attachments/>
-      <CommentSection post={post} truncate={!expanded} expand={onExpand} comments={comments}/>
+      <CommentSection {...{post, expanded, onExpand, comments}}/>
     </div>
   }
 }
@@ -162,7 +162,7 @@ export const Details = ({ expanded, onExpand }, { post, community, dispatch }) =
     <ClickCatchingSpan dangerouslySetInnerHTML={{__html: description}}/>
     {truncated && <span>
       <wbr/>
-      <a onClick={onExpand} className='show-more'>Show&nbsp;more</a>
+      <a onClick={() => onExpand(null)} className='show-more'>Show&nbsp;more</a>
       &nbsp;
     </span>}
     {extractedTags.map(tag => <span key={tag}>
@@ -246,52 +246,36 @@ Menu.contextTypes = {post: object, currentUser: object, dispatch: func, communit
 export class CommentSection extends React.Component {
   static propTypes = {
     comments: array,
-    truncate: bool,
-    expand: func,
+    onExpand: func,
     post: object,
-    dispatch: func
+    expanded: bool
   }
 
   static contextTypes = {
-    dispatch: func,
     community: object,
     currentUser: object,
     isProjectRequest: bool
   }
 
   render () {
-    let { post, comments, truncate, expand } = this.props
-    const { dispatch, currentUser, community, isProjectRequest } = this.context
+    let { post, comments, onExpand, expanded } = this.props
+    const truncate = !expanded
+    const { currentUser, community, isProjectRequest } = this.context
+    const placeholder = isProjectRequest ? 'How can you help?' : null
 
     if (!comments) comments = []
     comments = sortBy(comments, c => c.created_at)
     if (truncate) comments = comments.slice(-3)
 
-    const expandComment = id => {
-      expand()
-
-      // the offset below is ignored by the backend, but it causes the frontend
-      // to ignore the 3 comments that are already cached
-      dispatch(fetchComments(post.id, {offset: 3}))
-      .then(({ error }) => {
-        if (error) {
-          return dispatch(notify('Could not load comments. Please try again soon.', {type: 'error'}))
-        }
-        if (id) scrollToAnchor(`comment-${id}`, 90)
-      })
-    }
-
-    const placeholder = isProjectRequest ? 'How can you help?' : null
-
     return <div className={cx('comments-section post-section', {empty: isEmpty(comments)})}>
-      <a name={`post-${post.id}-comments`}></a>
       {truncate && post.numComments > comments.length && <div className='comment show-all'>
-        <a onClick={() => expandComment()}>Show all {post.numComments} comments</a>
+        <a onClick={() => onExpand()}>Show all {post.numComments} comments</a>
       </div>}
       {comments.map(c => <Comment comment={{...c, post_id: post.id}}
         truncate={truncate}
-        expand={() => expandComment(c.id)}
+        expand={() => onExpand(c.id)}
         community={community}
+        expanded={expanded}
         key={c.id}/>)}
       {currentUser && <CommentForm postId={post.id} {...{placeholder}}/>}
     </div>

@@ -9,17 +9,14 @@ import PostEditor from './PostEditor'
 import { EventPostCard } from './EventPost'
 import { ProjectPostCard } from './ProjectPost'
 import { getEditingPostIds } from '../models/post'
-import { isMobile } from '../client/util'
 import { makeUrl } from '../util/navigation'
 import { navigate, showExpandedPost } from '../actions'
 import SearchInput from './SearchInput'
 import Icon from './Icon'
-
 const { array, bool, func, string, number } = React.PropTypes
 
-@connect((state, props) => ({
-  editingPostIds: isMobile() ? [] : getEditingPostIds(props.posts, state),
-  isMobile: state.isMobile
+@connect((state, { posts }) => ({
+  editingPostIds: state.isMobile ? [] : getEditingPostIds(posts, state)
 }))
 class PostList extends React.Component {
   static propTypes = {
@@ -36,7 +33,8 @@ class PostList extends React.Component {
   }
 
   static contextTypes = {
-    postDisplayMode: string
+    postDisplayMode: string,
+    isMobile: bool
   }
 
   constructor (props) {
@@ -45,10 +43,11 @@ class PostList extends React.Component {
   }
 
   expand = (id, commentId) => {
-    let { dispatch } = this.props
+    const { dispatch } = this.props
+    const { isMobile } = this.context
 
-    if (isMobile()) {
-      dispatch(navigate(`/p/${id}`))
+    if (isMobile) {
+      dispatch(navigate(`/p/${id}` + (commentId ? `#comment-${commentId}` : '')))
     } else {
       dispatch(showExpandedPost(id, commentId))
     }

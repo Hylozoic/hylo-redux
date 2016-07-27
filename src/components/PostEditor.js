@@ -12,7 +12,7 @@ import cx from 'classnames'
 import autoproxy from 'autoproxy'
 import {
   debounce, difference, compact, cloneDeep, filter, find, get, includes, isNaN, isEmpty, some,
-  startsWith, keys, uniq, update
+  startsWith, keys, uniq
 } from 'lodash'
 import CommunityTagInput from './CommunityTagInput'
 import Dropdown from './Dropdown'
@@ -105,9 +105,8 @@ export class PostEditor extends React.Component {
   updateStore = (data) => {
     let { id, dispatch } = this.props
     var newObj = cloneDeep(data)
-    update(newObj, 'financialRequestAmount', function(fra){
-        return parseFloat(fra)
-    })
+    newObj.financialRequestAmount = parseFloat(data.financialRequestAmountAsString)
+
     dispatch(updatePostEditor(newObj, id))
   }
 
@@ -150,7 +149,7 @@ export class PostEditor extends React.Component {
       return Promise.resolve(false)
     }
 
-    if (postEdit.financialRequestsEnabled && (!postEdit.financialRequestAmount || parseFloat(postEdit.financialRequestAmount) === 0.00)) {
+    if (postEdit.financialRequestsEnabled && (!postEdit.financialRequestAmount || parseFloat(postEdit.financialRequestAmountAsString) === 0.00)) {
       window.alert('Enter an amount for financial contributions.')
       return Promise.resolve(false)
     }
@@ -165,8 +164,8 @@ export class PostEditor extends React.Component {
       return Promise.resolve(subvalidate())
     }
 
-    if(postEdit.financialRequestAmount) {
-      var requestAmount = postEdit.financialRequestAmount.toString()
+    if(postEdit.financialRequestAmountAsString) {
+      var requestAmount = postEdit.financialRequestAmountAsString
       var confirmPost = window.confirm('Please confirm you want to create a project with a request for USD ' + requestAmount + '. You will not be able to edit this amount after confirming.')
 
       return Promise.resolve(confirmPost)

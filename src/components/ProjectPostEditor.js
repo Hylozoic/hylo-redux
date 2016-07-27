@@ -9,7 +9,7 @@ import { debounce } from 'lodash'
 import { get, map, pick } from 'lodash/fp'
 import { getPost, getVideo } from '../models/post'
 import CurrencyInput from 'react-currency-input'
-const { array, func, object, bool, number } = React.PropTypes
+const { array, func, object, bool, string } = React.PropTypes
 
 const random = () => Math.random().toString().slice(2, 8)
 
@@ -26,7 +26,7 @@ export default class ProjectPostEditor extends React.Component {
     postEdit: object,
     post: object,
     communityFinanceEnabled: bool,
-    financialRequestAmount: number,
+    financialRequestAmountAsString: string,
     update: func.isRequired,
     requests: array.isRequired
   }
@@ -60,7 +60,7 @@ export default class ProjectPostEditor extends React.Component {
   }
 
   checkFinancialRequestsAllowed = () => {
-    return this.props.communityFinanceEnabled || this.props.postEdit.financialRequestsEnabled || this.props.postEdit.financialRequestAmount
+    return this.props.communityFinanceEnabled || this.props.postEdit.financialRequestsEnabled || this.props.postEdit.financialRequestAmountAsString
   }
 
   render () {
@@ -97,14 +97,14 @@ export default class ProjectPostEditor extends React.Component {
                     </div>
                 </label>
 
-                {(postEdit.financialRequestsEnabled || postEdit.financialRequestAmount) &&
+                {(postEdit.financialRequestsEnabled || postEdit.financialRequestAmountAsString) &&
                 <div className="section-item financial-request">
                     <div className='title'>
                         How much do you need?
                     </div>
                     <div>
                         USD $
-                        <CurrencyInput value={postEdit.financialRequestAmount + ''} thousandSeparator="" onChange={maskedValue => update({financialRequestAmount: maskedValue})}/>
+                        <CurrencyInput value={postEdit.financialRequestAmountAsString + ''} thousandSeparator="" onChange={maskedValue => update({financialRequestAmountAsString: maskedValue})}/>
                     </div>
                 </div>
                 }

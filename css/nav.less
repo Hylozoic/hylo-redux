@@ -2,7 +2,7 @@
 @left-nav-width: 208px;
 @menu-button-width: 87px;
 @mobile-top-nav-height: 60px;
-@main-menu-shrink-breakpoint: 1200px;
+@main-menu-shrink-breakpoint: 1285px;
 @main-menu-hide-breakpoint: 1024px;
 
 nav {
@@ -67,7 +67,7 @@ nav {
   z-index: 10;
   position: fixed;
   top: 0;
-  box-shadow: 0 0 2px #c9c9c9;
+  box-shadow: 0 0 2px @drop-shadow-gray;
 
   &.scrolling {
     opacity: 0.98;
@@ -453,6 +453,7 @@ nav {
       > li > a {
         line-height: 36px;
       }
+      max-height: none;
 
       .non-mobile({
         margin-top: -12px;
@@ -468,13 +469,13 @@ nav {
     }
 
     @media (max-width: (@main-menu-shrink-breakpoint - 1)) {
-      .a-Events, .a-Projects {
+      .a-Events, .a-Projects, .a-Members {
         display: none;
       }
     }
 
     @media (min-width: @main-menu-shrink-breakpoint) {
-      .li-Conversations, .li-Events, .li-Projects {
+      .li-Conversations, .li-Events, .li-Projects, .li-Members {
         display: none;
       }
     }
@@ -485,45 +486,54 @@ nav {
       display: none;
     });
   }
+}
 
-  .network-nav {
-    white-space: nowrap;
-    position: relative;
-    top: -2px;
-    height: 60px;
-    line-height: 60px;
+#networkNav {
+  .light;
+  white-space: nowrap;
+  position: relative;
+  top: -2px;
+  height: 60px;
+  line-height: 60px;
+  color: @gray-text;
+  background-color: white;
+  border-top: 1px solid @faint-gray-border;
+  padding-left: 30px;
+  padding-right: 30px;
+  a {
+    padding-left: 20px;
     color: @gray-text;
-    background-color: white;
-    border-top: 1px solid @faint-gray-border;
-    padding-left: 30px;
-    padding-right: 30px;
-    a {
-      padding-left: 20px;
-      color: @gray-text;
-      &.active {
-        color: black;
-      }
-    }
-    .all-communities {
-      display: inline;
-      position: absolute;
-      right: 0px;
-      top: 3px;
-      background-image: linear-gradient(to right, rgba(255, 255, 255, 0), rgba(255, 255, 255, 1) 40%);
-      height: 55px;
-      padding-right: 25px;
-      padding-left: 25px;
-      a {
-        text-decoration: none;
-      }
-      .icon-More {
-        font-size: 20px;
-        color: black;
-        border: none;
-      }
+    &.active {
+      color: black;
+      font-weight: 500;
     }
   }
-
+  .label {
+    color: @drop-shadow-gray;
+  }
+  .all-communities {
+    display: inline;
+    position: absolute;
+    right: 0px;
+    top: 3px;
+    background-image: linear-gradient(to right, rgba(255, 255, 255, 0), rgba(255, 255, 255, 1) 40%);
+    height: 55px;
+    padding-right: 25px;
+    padding-left: 25px;
+    .dropdown-menu {
+      > li > a {
+        font-weight: 300;
+      }
+    }
+    a {
+      text-decoration: none;
+    }
+    .icon-More {
+      font-size: 20px;
+      color: black;
+      border: none;
+    }
+  }
 }
 
 .leftNavIsOpen #topNav .menu-button {

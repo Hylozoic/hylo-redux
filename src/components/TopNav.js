@@ -17,7 +17,6 @@ import { viewportTop } from '../util/scrolling'
 import { VelocityComponent } from 'velocity-react'
 import cx from 'classnames'
 import { navigate } from '../actions'
-import { communityUrl, networkUrl } from '../routes'
 
 const getPostType = path => {
   if (path.endsWith('events')) return 'event'
@@ -66,10 +65,7 @@ export default class TopNav extends React.Component {
     community: object,
     network: object,
     leftNavIsOpen: bool,
-    links: array,
-    networkCommunities: array,
-    networkNavAnimation: object,
-    networkNavEasing: array
+    links: array
   }
 
   static contextTypes = {
@@ -111,7 +107,7 @@ export default class TopNav extends React.Component {
   render () {
     const {
       search, logout, openLeftNav, leftNavIsOpen, path, onChangeCommunity,
-      network, links, networkCommunities, networkNavAnimation, networkNavEasing
+      network, links
     } = this.props
     const { currentUser, isMobile } = this.context
     const label = getLabel(path)
@@ -149,13 +145,6 @@ export default class TopNav extends React.Component {
           <A to={editorUrl(slug, getPostType(path))} className='compose'>
             <Icon name='Compose'/>
           </A>}
-        {currentUser && !isMobile && networkCommunities &&
-          networkCommunities.length > 1 &&
-          <NetworkCommunityLinks
-            communities={networkCommunities}
-            network={network || community.network}
-            animation={networkNavAnimation}
-            easing={networkNavEasing} />}
       </nav>
     </VelocityComponent>
   }
@@ -168,14 +157,17 @@ const TopMainMenu = ({ community, links }) => {
     return <AComponent to={url} className={className}>{label}</AComponent>
   }
 
+  const topLinks = filter(l => l.label !== 'Network', links)
+
   return <div className='main-menu'>
-    {links.slice(0, 3).map(link =>
+    {topLinks.slice(0, 4).map(link =>
       <LinkItem className={`a-${link.label}`} link={link} key={link.label}/>)}
     <Dropdown triangle className='overflow-menu' openOnHover
       toggleChildren={<Icon name='More'/>}>
-      {links.slice(1).map(link => <li key={link.label} className={`li-${link.label}`}>
-        <LinkItem link={link}/>
-      </li>)}
+      {topLinks.slice(1).map(link =>
+        <li key={link.label} className={`li-${link.label.replace(' ', '-')}`}>
+          <LinkItem link={link}/>
+        </li>)}
     </Dropdown>
   </div>
 }
@@ -277,25 +269,3 @@ const UserMenu = ({ slug, logout, newCount, currentUser, search }, { isMobile })
   </ul>
 }
 UserMenu.contextTypes = {isMobile: bool}
-
-const NetworkCommunityLinks = ({ communities, network, animation, easing }, { isMobile }) => {
-  const removeImpactHub = name => name.replace(/^Impact Hub /, '')
-  return <VelocityComponent animation={animation} easing={easing}>
-    <div className='network-nav'>
-      <Dropdown className='all-communities' alignRight
-        toggleChildren={<Icon name='More'/>}>
-        {sortBy('name', communities).map(community =>
-          <li key={community.slug}>
-            <A to={communityUrl(community)}>
-              {removeImpactHub(community.name)}
-            </A>
-          </li>)}
-      </Dropdown>
-      Communities: <A to={networkUrl(network)}>All</A>
-      {communities.map(community =>
-        <A to={communityUrl(community)} key={community.slug}>
-          {removeImpactHub(community.name)}
-        </A>)}
-    </div>
-  </VelocityComponent>
-}

@@ -50,7 +50,7 @@ export function positionInViewport (element) {
 }
 
 export function scrollToAnchor (anchor, padding = 0, parent) {
-  let element = document.querySelector(`[name='${anchor}']`)
+  let element = (parent || document).querySelector(`[name='${anchor}']`)
   if (parent) {
     parent.scrollTop = position(element, parent).y - padding
   } else {

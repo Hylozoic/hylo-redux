@@ -25,12 +25,11 @@ const Comment = ({ comment, truncate, expand, community }, { dispatch, currentUs
   text = prependInP(text, `<a href='/u/${person.id}'><strong class='name'>${person.name}</strong></a>`)
   const remove = () => window.confirm('Delete this comment? This cannot be undone.') &&
     dispatch(removeComment(comment.id))
-  const name = `comment-${truncate ? '' : 'expanded-'}${comment.id}`
 
   return <div className='comment' data-comment-id={comment.id}>
     {canEditComment(currentUser, comment, community) &&
       <a className='delete' onClick={remove}>&times;</a>}
-    <a name={name}></a>
+    <a name={`comment-${comment.id}`}></a>
     <Avatar person={person}/>
     <div className='content'>
       <ClickCatchingSpan className='text' dangerouslySetInnerHTML={{__html: text}}/>

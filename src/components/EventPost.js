@@ -11,39 +11,40 @@ import { ClickCatchingSpan } from './ClickCatcher'
 import { get, find, includes, isEmpty, some, sortBy } from 'lodash'
 import { same } from '../models'
 import { getComments, imageUrl } from '../models/post'
+import { getCurrentCommunity } from '../models/community'
 import { Header, CommentSection, presentDescription } from './Post'
 import decode from 'ent/decode'
 import cx from 'classnames'
 const { array, func, object } = React.PropTypes
 
-const spacer = <span>&nbsp; •&nbsp; </span>
-
 const shouldShowTag = tag => tag && !includes(['event', 'chat'], tag)
 
 export const EventPostCard = connect(
-  (state, { post }) => ({comments: getComments(post, state)})
-)(({ post, comments }) => {
-  const { start_time, end_time, user, id, name, tag } = post
+  (state, { post }) => ({
+    comments: getComments(post, state),
+    community: getCurrentCommunity(state)
+  })
+)(({ post, comments, community }) => {
+  const { start_time, end_time, user, id, name } = post
   const start = new Date(start_time)
   const end = end_time && new Date(end_time)
   const time = timeRangeBrief(start, end)
   const timeFull = timeRangeFull(start, end)
 
+  const description = presentDescription(post, community)
   const url = `/p/${id}`
   const backgroundImage = `url(${imageUrl(post)})`
 
   return <div className='post event-summary'>
     <A className='image' to={url} style={{backgroundImage}}/>
     <div className='meta'>
-      <span title={timeFull}>{time}</span>
-      {spacer}
-      {shouldShowTag(tag) && <span className='hashtag-segment'>
-        <A className='hashtag' to={url}>#{tag}</A>
-        {spacer}
-      </span>}
-      <A to={`/u/${user.id}`}>{user.name}</A>
+      <A className='user-name' to={`/u/${user.id}`}>{user.name}</A>
+      <span className='time' title={timeFull}>{time}</span>
     </div>
     <A className='title' to={url}>{name}</A>
+    {description && <div className='details'>
+      <ClickCatchingSpan dangerouslySetInnerHTML={{__html: description}}/>
+    </div>}
     <Attendance post={post} showButton limit={7} alignRight/>
     <div className='comments-section-spacer'/>
     <CommentSection post={post} comments={comments}/>
@@ -58,15 +59,15 @@ const Attendance = ({ post, limit, showButton, className, children }, { currentU
   )
 
   return <div className={cx('attendance', className)}>
+    {!isEmpty(going) && <LinkedPersonSentence people={going} className='blurb meta'>
+      {going.length > 1 || some(going, same('id', currentUser)) ? 'are' : 'is'}
+      &nbsp;going.
+    </LinkedPersonSentence>}
     {going.length > 0 && <div className='going avatar-list'>
       {going.slice(0, limit).map(person =>
         <Avatar person={person} key={person.id}/>)}
     </div>}
     {currentUser && showButton && <RSVPSelect post={post}/>}
-    {!isEmpty(going) && <LinkedPersonSentence people={going} className='blurb meta'>
-      {going.length > 1 || some(going, same('id', currentUser)) ? 'are' : 'is'}
-      &nbsp;going.
-    </LinkedPersonSentence>}
     {children}
   </div>
 }

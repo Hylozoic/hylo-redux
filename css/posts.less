@@ -470,11 +470,37 @@ ul.posts {
 .post.event-summary {
   .special-post-summary-card;
 
+  .meta {
+    margin-bottom: 10px;
+  }
+
+  .user-name {
+    color: @damian-green;
+    padding-right: 10px;
+    font-weight: 400;
+  }
+
+  .time {
+    color: @damian-red;
+    font-weight: 400;
+  }
+
+  .details {
+    color: @gray-text;
+    font-weight: 300;
+    margin-bottom: 15px;
+  }
+
   .attendance {
     width: 61.8%;
     display: inline-block;
     padding-left: 15px;
     margin-left: -15px;
+
+    .blurb {
+      font-size: 12px;
+      margin-bottom: 10px;
+    }
 
     .going {
       max-width: 68%;
@@ -510,6 +536,13 @@ ul.posts {
           top: 16px;
         }
       }
+    }
+  }
+
+  .comment-form {
+    .has-left-side-avatar(@avatar-size-default);
+    > .avatar {
+      top: 0px;
     }
   }
 }

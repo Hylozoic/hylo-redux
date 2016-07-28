@@ -68,7 +68,7 @@ describe('ProjectPostEditor', () => {
     describe('financial request enabled and community financially disabled', () => {
         beforeEach(() => {
             const newState = cloneDeep(state)
-            set(newState, 'communities.f.settings.enable_finance', false)
+            set(newState, 'communities.f.financial_requests_enabled', false)
 
             const newPostEdit = cloneDeep(postEdit)
             set(newPostEdit, 'financialRequestsEnabled', true)

@@ -491,7 +491,7 @@ export default class CommunitySettings extends React.Component {
             <p className='summary'>Enabling this functionality allows members of the community to ask for financial contributions to their project.</p>
           </div>
           <div className='half-column right-align'>
-            <input type='checkbox' checked={community.settings.enable_finance} onChange={() => this.toggle('settings.enable_finance')}/>
+            <input type='checkbox' checked={community.financial_requests_enabled} onChange={() => this.toggle('financial_requests_enabled')}/>
           </div>
         </div>
       </div>}

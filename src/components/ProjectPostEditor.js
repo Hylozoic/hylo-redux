@@ -18,7 +18,7 @@ const getSimplePost = state => id =>
 
 @connect((state, { postEdit }) => ({
   requests: postEdit.requests || map(getSimplePost(state), postEdit.children),
-  communityFinanceEnabled: getCurrentCommunity(state).settings.enable_finance
+  communityFinanceEnabled: getCurrentCommunity(state).financial_requests_enabled
 
 }), null, null, {withRef: true})
 export default class ProjectPostEditor extends React.Component {

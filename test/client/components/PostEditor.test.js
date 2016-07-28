@@ -234,7 +234,7 @@ describe('PostEditor', () => {
     beforeEach(() =>
     {
       const newState = cloneDeep(state)
-      set(newState, 'communities.f.settings.enable_finance', false)
+      set(newState, 'communities.f.financial_requests_enabled', false)
       set(newState, 'postEdits.foo.financialRequestsEnabled', true)
 
       render(newState, post)

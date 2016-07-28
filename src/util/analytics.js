@@ -29,8 +29,7 @@ export function trackEvent (eventName, options = {}) {
     case ADDED_COMMUNITY:
     case VIEWED_COMMUNITY:
     case INVITED_COMMUNITY_MEMBERS:
-      let { slug } = community
-      track({community_slug: slug})
+      track({community: community.name})
       break
     case VIEWED_PERSON:
       let { id, name } = person
@@ -78,8 +77,6 @@ export const identify = person => {
   window.analytics.identify(id, {
     email, name, post_count, createdAt: created_at,
     provider: get(account, 'provider_key'),
-    community_id: get(community, 'id'),
-    community_name: get(community, 'name'),
-    community_slug: get(community, 'slug')
+    community: get(community, 'name')
   })
 }

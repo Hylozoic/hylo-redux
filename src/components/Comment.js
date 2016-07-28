@@ -9,6 +9,7 @@ import { commentUrl } from '../routes'
 import { removeComment, thank } from '../actions'
 import truncateHtml from 'html-truncate'
 import { ClickCatchingSpan } from './ClickCatcher'
+import Dropdown from './Dropdown'
 import { canEditComment } from '../models/currentUser'
 var { func, object } = React.PropTypes
 
@@ -25,10 +26,15 @@ const Comment = ({ comment, truncate, expand, community }, { dispatch, currentUs
   text = prependInP(text, `<a href='/u/${person.id}'><strong class='name'>${sanitize(person.name)}</strong></a>`)
   const remove = () => window.confirm('Delete this comment? This cannot be undone.') &&
     dispatch(removeComment(comment.id))
+  const edit = () => console.log('editing comment', comment.id)
 
   return <div className='comment' data-comment-id={comment.id}>
     {canEditComment(currentUser, comment, community) &&
-      <a className='delete' onClick={remove}>&times;</a>}
+      <Dropdown alignRight toggleChildren={<span className='icon-More'></span>}>
+        <li><a onClick={edit}>Edit</a></li>
+        <li><a onClick={remove}>Remove</a></li>
+      </Dropdown>
+      }
     <a name={`comment-${comment.id}`}></a>
     <Avatar person={person}/>
     <div className='content'>

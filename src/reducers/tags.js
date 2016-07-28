@@ -5,8 +5,8 @@ import {
   FETCH_CURRENT_USER, FETCH_LEFT_NAV_TAGS, FETCH_LIVE_STATUS, FETCH_TAG,
   FETCH_TAGS, FETCH_TAG_SUMMARY, FOLLOW_TAG_PENDING, REMOVE_TAG
 } from '../actions'
-import { filter, fromPairs, isEmpty, merge, omitBy, toPairs } from 'lodash'
-import { get } from 'lodash/fp'
+import { filter, fromPairs, merge, omitBy, toPairs } from 'lodash'
+import { get, pickBy, some } from 'lodash/fp'
 import qs from 'querystring'
 
 const matchesRemovedTag = (id, slug) => {
@@ -47,13 +47,15 @@ export const totalTagsByQuery = composeReducers(
 )
 
 export const tagsByCommunity = (state = {}, action) => {
-  const mergeLeftNavTags = (state, payload) =>
-    toPairs(payload).reduce((m, [ slug, tags ]) => {
-      if (isEmpty(tags)) return m
-      const labeledTags = tags.map(f => ({...f, followed: true}))
-      const mergedTags = mergeList(m[slug] || {}, labeledTags, 'name')
+  const mergeLeftNavTags = (state, payload) => {
+    return toPairs(payload).reduce((m, [ slug, tags ]) => {
+      const newTags = tags.map(f => ({...f, followed: true}))
+      const isInNewTags = (v, k) => some(t => t.name === k, newTags)
+      const existingTags = pickBy(isInNewTags, m[slug] || {})
+      const mergedTags = mergeList(existingTags, newTags, 'name')
       return {...m, [slug]: mergedTags}
     }, state)
+  }
 
   // meta.id here is whatever params.id is in CommunityProfile, i.e. a slug
   let { type, payload, meta, error } = action

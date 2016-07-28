@@ -157,6 +157,11 @@ export class PostEditor extends React.Component {
       return Promise.resolve(false)
     }
 
+    if(new Date(postEdit.end_time).getTime() < new Date().getTime()) {
+      window.alert('Deadline must have not yet passed.')
+      return Promise.resolve(false)
+    }
+
     if(postEdit.financialRequestAmount > 5000) {
       window.alert('Financial contributions must be less than 5000.')
       return Promise.resolve(false)
@@ -166,6 +171,7 @@ export class PostEditor extends React.Component {
       window.alert('Enter a project deadline.')
       return Promise.resolve(false)
     }
+
 
     if (subeditor) {
       const subvalidate = subeditor.validate || subeditor.getWrappedInstance().validate

@@ -61,7 +61,9 @@ export function trackEvent (eventName, options = {}) {
       track()
       break
     default:
-      throw new Error(`Don't know how to handle event named "${eventName}"`)
+      const message = `Don't know how to handle event named "${eventName}"`
+      window.alert(message)
+      throw new Error(message)
   }
 
   return Promise.resolve()

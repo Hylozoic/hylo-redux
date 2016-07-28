@@ -23,8 +23,8 @@ export const VIEWED_PERSON = 'Member Profiles: Loaded a profile'
 export const VIEWED_SELF = 'Member Profiles: Loaded Own Profile'
 
 export function trackEvent (eventName, options = {}) {
-  let { person, post, community, project, ...otherOptions } = options
-  let track = partial(window.analytics.track, eventName)
+  const { person, post, tag, community, ...otherOptions } = options
+  const track = partial(window.analytics.track, eventName)
   switch (eventName) {
     case ADDED_COMMUNITY:
     case VIEWED_COMMUNITY:
@@ -41,12 +41,7 @@ export function trackEvent (eventName, options = {}) {
       break
     case ADDED_POST:
     case EDITED_POST:
-      track({
-        post_id: post.id,
-        post_tag: post.tag,
-        community_id: community.id,
-        project_id: get(project, 'id')
-      })
+      track({post_tag: tag, community: community.name})
       break
     case CLICKTHROUGH:
       track({community, ...otherOptions})

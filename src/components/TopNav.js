@@ -8,7 +8,6 @@ import { isAdmin } from '../models/currentUser'
 import { filter, find, flow, get, map, sortBy } from 'lodash/fp'
 import { throttle, merge } from 'lodash'
 import { same } from '../models'
-import { nextPath } from '../util/navigation'
 import { MenuButton, leftNavWidth, leftNavEasing, menuButtonWidth } from './LeftNav'
 import { editorUrl } from '../containers/StandalonePostEditor'
 import { assetUrl } from '../util/assets'
@@ -16,7 +15,6 @@ const { array, object, func, string, bool } = React.PropTypes
 import { viewportTop } from '../util/scrolling'
 import { VelocityComponent } from 'velocity-react'
 import cx from 'classnames'
-import { navigate } from '../actions'
 
 const getPostType = path => {
   if (path.endsWith('events')) return 'event'
@@ -174,18 +172,11 @@ const TopMainMenu = ({ community, links }) => {
 
 const CommunityMenu = ({ menuItems, onChangeCommunity }, { isMobile, dispatch }) => {
   const currentItem = menuItems[0]
-  const { isNetwork, id } = currentItem
-  const jumpToConversations = event => {
-    if (isMobile) return
-    event.preventDefault()
-    event.stopPropagation()
-    dispatch(navigate(nextPath('', id ? currentItem : null, isNetwork)))
-  }
+  const { isNetwork } = currentItem
 
   return <Dropdown className='communities' backdrop triangle toggleChildren={
       <div>
-        <img src={currentItem.avatar_url} title='Jump to Conversations'
-          onClick={jumpToConversations}/>
+        <img src={currentItem.avatar_url}/>
         <span className={cx('name', {network: isNetwork})}>
           {currentItem.name}
         </span>

@@ -22,7 +22,7 @@ const Comment = ({ comment, truncate, expand, community }, { dispatch, currentUs
   let text = present(sanitize(comment.text), {slug: get('slug', community)})
   const truncated = truncate && textLength(text) > truncatedLength
   if (truncated) text = truncateHtml(text, truncatedLength)
-  text = prependInP(text, `<a href='/u/${person.id}'><strong class='name'>${person.name}</strong></a>`)
+  text = prependInP(text, `<a href='/u/${person.id}'><strong class='name'>${sanitize(person.name)}</strong></a>`)
   const remove = () => window.confirm('Delete this comment? This cannot be undone.') &&
     dispatch(removeComment(comment.id))
 

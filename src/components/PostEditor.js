@@ -163,8 +163,8 @@ export class PostEditor extends React.Component {
       return Promise.resolve(false)
     }
 
-    if(postEdit.financialRequestAmount > 5000) {
-      window.alert('Financial contributions must be less than 5000.')
+    if(postEdit.financialRequestAmountAsString > 100000) {
+      window.alert('Please enter an amount less than $100000.')
       return Promise.resolve(false)
     }
 
@@ -172,7 +172,6 @@ export class PostEditor extends React.Component {
       window.alert('Enter a project deadline.')
       return Promise.resolve(false)
     }
-
 
     if (subeditor) {
       const subvalidate = subeditor.validate || subeditor.getWrappedInstance().validate

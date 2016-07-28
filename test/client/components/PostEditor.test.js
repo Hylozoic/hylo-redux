@@ -117,6 +117,21 @@ describe('PostEditor', () => {
     })
   })
 
+  describe('with a financial contribution amount over the $100,000 threshold', () => {
+    beforeEach(() => {
+      const newState = cloneDeep(state)
+      set(newState, 'postEdits.foo.financialRequestAmountAsString', '1000000.00')
+      set(newState, 'postEdits.foo.financialRequestsEnabled', true)
+
+      render(newState, post)
+    })
+
+    it('fails validation', () => {
+      click(node.refs.save)
+      expect(window.alert).to.have.been.called.with('Please enter an amount less than $100000.')
+    })
+  })
+
   describe('with null financial contribution amount', () => {
     beforeEach(() => {
       const newState = cloneDeep(state)

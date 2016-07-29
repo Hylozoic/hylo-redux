@@ -63,7 +63,6 @@ export const newPostId = 'new-post'
     imagePending: pending[UPLOAD_IMAGE],
     linkPreviewPending: pending[FETCH_LINK_PREVIEW],
     currentCommunitySlug: get(getCurrentCommunity(state), 'slug'),
-    communityFinanceEnabled: getCurrentCommunity(state).financial_requests_enabled,
     editingTagDescriptions,
     creatingTagAndDescription
   }
@@ -82,7 +81,6 @@ export class PostEditor extends React.Component {
     type: string,
     tag: string,
     currentCommunitySlug: string,
-    communityFinanceEnabled: bool,
     editingTagDescriptions: bool,
     creatingTagAndDescription: bool
   }

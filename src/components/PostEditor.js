@@ -63,6 +63,7 @@ export const newPostId = 'new-post'
     imagePending: pending[UPLOAD_IMAGE],
     linkPreviewPending: pending[FETCH_LINK_PREVIEW],
     currentCommunitySlug: get(getCurrentCommunity(state), 'slug'),
+    communityFinanceEnabled: getCurrentCommunity(state).financial_requests_enabled,
     editingTagDescriptions,
     creatingTagAndDescription
   }
@@ -81,6 +82,7 @@ export class PostEditor extends React.Component {
     type: string,
     tag: string,
     currentCommunitySlug: string,
+    communityFinanceEnabled: bool,
     editingTagDescriptions: bool,
     creatingTagAndDescription: bool
   }
@@ -129,10 +131,18 @@ export class PostEditor extends React.Component {
 
   addCommunity = community => {
     let { communities, financialRequestsEnabled} = this.props.postEdit
-    if(financialRequestsEnabled && communities.length > 0){
-      alert("Financial projects can only be posted in one community.")
-      return
+    if(financialRequestsEnabled){
+      if(communities.length > 0){
+        alert("Financial projects can only be posted in one community.")
+        return
+      }
+      
+      if(!community.financial_requests_enabled){
+        alert("Financial projects can only be posted in financial contributions enabled community")
+        return
+      }
     }
+    
     this.updateStore({communities: (communities || []).concat(community.id)})
   }
 

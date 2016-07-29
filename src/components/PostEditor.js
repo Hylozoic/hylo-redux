@@ -128,7 +128,11 @@ export class PostEditor extends React.Component {
   setDelayed = debounce((key, value) => this.updateStore({[key]: value}), 50)
 
   addCommunity = community => {
-    let { communities } = this.props.postEdit
+    let { communities, financialRequestsEnabled} = this.props.postEdit
+    if(financialRequestsEnabled && communities.length > 0){
+      alert("Financial projects can only be posted in one community.")
+      return
+    }
     this.updateStore({communities: (communities || []).concat(community.id)})
   }
 

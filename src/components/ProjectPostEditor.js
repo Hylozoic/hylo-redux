@@ -65,6 +65,19 @@ export default class ProjectPostEditor extends React.Component {
       this.props.postEdit.financialRequestAmountAsString
   }
 
+  toggleEnableFinancialContributions = (event) => {
+    const { update, postEdit} = this.props
+
+    if(!postEdit.financialRequestsEnabled){
+      if(postEdit.communities && postEdit.communities.length > 1){
+        alert("Financial projects can only be posted in one community.")
+        return
+      }
+    }
+
+    update({financialRequestsEnabled: !postEdit.financialRequestsEnabled})
+  }
+
   render () {
     const { postEdit, update, requests } = this.props
     const { end_time, tag, type } = postEdit
@@ -94,7 +107,7 @@ export default class ProjectPostEditor extends React.Component {
                     <div>
                         Enable Financial Contributions
                         <input type='checkbox' className='right'
-                               onClick={event => update({financialRequestsEnabled: !postEdit.financialRequestsEnabled})}
+                               onClick={this.toggleEnableFinancialContributions}
                                value={postEdit.financialRequestsEnabled}/>
                     </div>
                 </label>

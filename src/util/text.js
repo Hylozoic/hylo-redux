@@ -1,6 +1,6 @@
 import sanitizeHtml from 'sanitize-html'
 import prettyDate from 'pretty-date'
-import truncate from 'html-truncate'
+import truncate from 'trunc-html'
 import linkify from './linkify'
 import moment from 'moment-timezone'
 import marked from 'marked'
@@ -34,7 +34,7 @@ export function present (text, opts = {}) {
   // make links and hashtags
   text = linkify(text, opts.slug)
 
-  if (opts && opts.maxlength) text = truncate(text, opts.maxlength)
+  if (opts && opts.maxlength) text = truncate(text, opts.maxlength).html
 
   return text
 }

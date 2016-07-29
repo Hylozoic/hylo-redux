@@ -15,7 +15,7 @@ import { find } from 'lodash/fp'
 import cx from 'classnames'
 import ScrollListener from '../components/ScrollListener'
 import Avatar from '../components/Avatar'
-import truncate from 'html-truncate'
+import truncate from 'trunc-html'
 import { present, humanDate } from '../util/text'
 import { VIEWED_NOTIFICATIONS, trackEvent } from '../util/analytics'
 import { postUrl } from '../routes'
@@ -122,7 +122,7 @@ const Activity = ({ activity, currentUser, dispatch }) => {
 
   let postName = post.tag === 'welcome'
     ? `${post.relatedUsers[0].name}'s' welcoming post`
-    : truncate(decode(post.name), 140)
+    : truncate(decode(post.name), 140).html
 
   let thankLinkText = isThanked
     ? `You thanked ${actor.name.split(' ')[0]}`

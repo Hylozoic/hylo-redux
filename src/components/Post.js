@@ -9,7 +9,7 @@ import {
 } from '../util/text'
 import { linkifyHashtags } from '../util/linkify'
 import { tagUrl } from '../routes'
-import truncate from 'html-truncate'
+import truncate from 'trunc-html'
 import A from './A'
 import Avatar from './Avatar'
 import Dropdown from './Dropdown'
@@ -153,7 +153,7 @@ export const Details = ({ expanded, onExpand }, { post, community, dispatch }) =
   const truncated = !expanded && textLength(description) > 200
   if (truncated) {
     const orig = description
-    description = truncate(description, 200)
+    description = truncate(description, 200).html
     extractedTags = extractTags(description, orig)
   }
   if (description) description = appendInP(description, '&nbsp;')
@@ -183,7 +183,7 @@ const Attachments = (props, { post }) => {
     {attachments.map((file, i) =>
       <a key={i} className='attachment' href={file.url} target='_blank' title={file.name}>
         <img src={file.thumbnail_url}/>
-        {truncate(file.name, 40)}
+        {truncate(file.name, 40).html}
       </a>)}
   </div>
 }

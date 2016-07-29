@@ -63,7 +63,7 @@ describe('timeRange', () => {
 describe('present', () => {
   it('treats <br> tags correctly when truncating', () => {
     const text = '<p>Hi,<br>how are you? Lorem ipsum and <b>all that rot</b></p>'
-    const expected = '<p>Hi,<br>how are you? Lorem ipsum and <b>all ...</b></p>'
+    const expected = '<p>Hi,<br/>how are you? Lorem ipsum and <b>all …</b></p>'
     expect(present(text, {maxlength: 36})).to.equal(expected)
   })
 })

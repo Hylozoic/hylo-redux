@@ -6,7 +6,7 @@ import { fetchCommunity } from '../actions'
 import A from '../components/A'
 import { communityUrl } from '../routes'
 import { isEmpty } from 'lodash'
-import { markdown, sanitize } from '../util/text'
+import { markdown, sanitize } from 'hylo-utils/text'
 
 const Onboarding = compose(
   prefetch(({ dispatch, params: { id } }) => dispatch(fetchCommunity(id))),

@@ -5,8 +5,9 @@ const { array, bool, func, object, string } = React.PropTypes
 import cx from 'classnames'
 import cheerio from 'cheerio'
 import {
-  humanDate, nonbreaking, present, sanitize, textLength, appendInP
+  humanDate, nonbreaking, present, textLength, appendInP
 } from '../util/text'
+import { sanitize } from 'hylo-utils/text'
 import { linkifyHashtags } from '../util/linkify'
 import { tagUrl } from '../routes'
 import truncate from 'trunc-html'

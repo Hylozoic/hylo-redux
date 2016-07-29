@@ -22,9 +22,10 @@ const shouldShowTag = tag => tag && !includes(['event', 'chat'], tag)
 export const EventPostCard = connect(
   (state, { post }) => ({
     comments: getComments(post, state),
-    community: getCurrentCommunity(state)
+    community: getCurrentCommunity(state),
+    isMobile: state.isMobile
   })
-)(({ post, comments, community }) => {
+)(({ post, comments, community, isMobile }) => {
   const { start_time, end_time, user, id, name } = post
   const start = new Date(start_time)
   const end = end_time && new Date(end_time)
@@ -42,7 +43,7 @@ export const EventPostCard = connect(
       <span className='time' title={timeFull}>{time}</span>
     </div>
     <A className='title' to={url}>{name}</A>
-    {description && <div className='details'>
+    {!isMobile && description && <div className='details'>
       <ClickCatchingSpan dangerouslySetInnerHTML={{__html: description}}/>
     </div>}
     <Attendance post={post} showButton limit={7} alignRight/>

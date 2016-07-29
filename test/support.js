@@ -65,62 +65,60 @@ const createElement = (componentClass, props, context) => {
   return React.createElement(Wrapper)
 }
 
-export default {
-  helpers: {
-    createElement,
+export const helpers = {
+  createElement,
 
-    // this is basically setTimeout promisified
-    wait: (millis, callback) =>
-      new Promise((resolve, _) => setTimeout(() => resolve(callback()), millis)),
+  // this is basically setTimeout promisified
+  wait: (millis, callback) =>
+    new Promise((resolve, _) => setTimeout(() => resolve(callback()), millis)),
 
-    spyify: (object, methodName) => {
-      object['_original' + methodName] = object[methodName]
-      object[methodName] = spy(object[methodName])
-    },
-
-    unspyify: (object, methodName) => {
-      object[methodName] = object['_original' + methodName]
-    }
+  spyify: (object, methodName) => {
+    object['_original' + methodName] = object[methodName]
+    object[methodName] = spy(object[methodName])
   },
 
-  mocks: {
-    request: function (path) {
-      return {originalUrl: path, method: 'GET', headers: {}}
-    },
-    response: function () {
-      let res = {
-        headers: {},
-        setHeader: spy((key, value) => res.headers[key] = value),
-        status: spy(code => {
-          res.statusCode = code
-          return res
-        }),
-        send: spy(body => {
-          res.body = body
-          return res
-        }),
-        redirect: spy((code, path) => {
-          res.statusCode = code
-          res.redirectLocation = path
-          return res
-        })
-      }
-      return res
-    },
-    event: function (attrs) {
-      return merge({
-        preventDefault: spy(() => {}),
-        stopPropagation: spy(() => {})
-      }, attrs)
-    },
-    redux: {
-      store: mockReduxStore
-    },
-    models: {
-      user: (attrs) => merge({
-        id: number(),
-        name: text()
-      }, attrs)
+  unspyify: (object, methodName) => {
+    object[methodName] = object['_original' + methodName]
+  }
+}
+
+export const mocks = {
+  request: function (path) {
+    return {originalUrl: path, method: 'GET', headers: {}}
+  },
+  response: function () {
+    let res = {
+      headers: {},
+      setHeader: spy((key, value) => res.headers[key] = value),
+      status: spy(code => {
+        res.statusCode = code
+        return res
+      }),
+      send: spy(body => {
+        res.body = body
+        return res
+      }),
+      redirect: spy((code, path) => {
+        res.statusCode = code
+        res.redirectLocation = path
+        return res
+      })
     }
+    return res
+  },
+  event: function (attrs) {
+    return merge({
+      preventDefault: spy(() => {}),
+      stopPropagation: spy(() => {})
+    }, attrs)
+  },
+  redux: {
+    store: mockReduxStore
+  },
+  models: {
+    user: (attrs) => merge({
+      id: number(),
+      name: text()
+    }, attrs)
   }
 }

@@ -96,6 +96,8 @@ describe('postEdits', () => {
       const state = {
         x: {
           description: 'lol',
+          financialRequestAmountAsString: "",
+          financialRequestsEnabled: false,
           type: 'event'
         }
       }
@@ -104,6 +106,8 @@ describe('postEdits', () => {
         x: {
           name: 'Foo and some! split-words as well',
           description: 'lol',
+          financialRequestAmountAsString: "",
+          financialRequestsEnabled: false,
           tag: 'FooAndSomeSplit',
           type: 'event'
         }
@@ -115,14 +119,18 @@ describe('postEdits', () => {
     it('does not suggest a tag for non-event posts', () => {
       const state = {
         x: {
-          description: 'lol'
+          description: 'lol',
+          financialRequestAmountAsString: "",
+          financialRequestsEnabled: false
         }
       }
 
       const expected = {
         x: {
           name: 'Foo and some! split-words as well',
-          description: 'lol'
+          description: 'lol',
+          financialRequestAmountAsString: "",
+          financialRequestsEnabled: false
         }
       }
 
@@ -134,6 +142,8 @@ describe('postEdits', () => {
         x: {
           id: 'x',
           description: 'lol',
+          financialRequestAmountAsString: "",
+          financialRequestsEnabled: false,
           type: 'event'
         }
       }
@@ -141,6 +151,8 @@ describe('postEdits', () => {
       const expected = {
         x: {
           id: 'x',
+          financialRequestAmountAsString: "",
+          financialRequestsEnabled: false,
           name: 'Foo and some! split-words as well',
           description: 'lol',
           type: 'event'
@@ -154,6 +166,8 @@ describe('postEdits', () => {
       const state = {
         x: {
           description: 'lol',
+          financialRequestAmountAsString: "",
+          financialRequestsEnabled: false,
           type: 'event',
           tagEdited: true
         }
@@ -163,6 +177,8 @@ describe('postEdits', () => {
         x: {
           name: 'Foo and some! split-words as well',
           description: 'lol',
+          financialRequestAmountAsString: "",
+          financialRequestsEnabled: false,
           tagEdited: true,
           type: 'event'
         }

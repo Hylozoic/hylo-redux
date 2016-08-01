@@ -15,7 +15,7 @@ import {
   UPLOAD_DOC,
   UPLOAD_IMAGE
 } from '../actions'
-import { updateMedia } from './util'
+import { updateMedia, checkForFinancialRequestAmount, getFinancialRequestAmountAsString } from './util'
 import { prepareHashtagsForEditing } from '../util/linkify'
 import { invalidCharacterRegex } from '../models/hashtag'
 
@@ -70,7 +70,11 @@ export default function (state = {}, action) {
       }
       return {
         ...state,
-        [id]: {...state[id], ...withSuggestedTag(payload, state, id)}
+        [id]: {...state[id],
+          ...withSuggestedTag(payload, state, id),
+          financialRequestsEnabled: payload.financialRequestsEnabled || checkForFinancialRequestAmount(state[id]),
+          financialRequestAmountAsString: getFinancialRequestAmountAsString(state[id])
+        }
       }
     case CREATE_POST:
     case UPDATE_POST:

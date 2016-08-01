@@ -35,6 +35,22 @@ export function updateMedia (obj, type, url) {
   return {...obj, media}
 }
 
+export function checkForFinancialRequestAmount(obj) {
+    if(obj && (obj.financialRequestAmount || obj.financialRequestAmount == 0)) {
+        return true
+    } else {
+        return false
+    }
+}
+
+export function getFinancialRequestAmountAsString(obj){
+    if (obj && obj.financialRequestAmount) {
+        return obj.financialRequestAmount.toString()
+    } else {
+        return ""
+    }
+}
+
 // update state with a set of items. items that already exist in the state get
 // new properties, update the values of existing properties, and do not lose any
 // existing properties that aren't contained in their new counterpart.

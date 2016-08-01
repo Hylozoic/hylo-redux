@@ -23,6 +23,7 @@ import { EDITED_USER_SETTINGS, trackEvent } from '../../util/analytics'
 import { reversibleUpdate } from '../../util/forms'
 import { preventSpaces } from '../../util/textInput'
 import Icon from '../../components/Icon'
+import _ from 'lodash'
 
 @prefetch(({ dispatch, params: { id }, query }) => {
   switch (query.expand) {
@@ -201,6 +202,14 @@ export default class UserSettings extends React.Component {
     let {
       bio, location, url, facebook_url, twitter_name, linkedin_url
     } = {...currentUser, ...editing}
+
+    var renderHitFinButton;
+    var hitfinLink = _.find(currentUser.linkedAccounts, (acc) => acc.provider_key === 'hit-fin');
+    if (!hitfinLink) {
+      renderHitFinButton = <a className='button hit-fin-logo' onClick={() => openPopup('hit-fin', PROFILE_CONTEXT)}> Connect HitFin Account </a>;
+    } else {
+      renderHitFinButton = <a className='button hit-fin-logo' onClick={() => openPopup('hit-fin', PROFILE_CONTEXT)}> Disconnect </a>;
+    }
 
     return <div id='user-settings' className='form-sections simple-page'>
       <SectionLabel name='profile' label='Profile' {...{dispatch, expand}}/>
@@ -390,10 +399,7 @@ export default class UserSettings extends React.Component {
               financially enabled projects using your HitFin wallet.</p>
           </div>
           <div className='third-column'>
-            <a className='button hit-fin-logo'
-               onClick={() => openPopup('hit-fin', PROFILE_CONTEXT)}>
-              Connect HitFin Account
-            </a>
+            {renderHitFinButton}
           </div>
         </Item>
         <Item>

@@ -1,4 +1,4 @@
-import support from '../support'
+import { mocks } from '../support'
 import nock from 'nock'
 import { inspect } from 'util'
 import { get } from 'lodash'
@@ -24,7 +24,7 @@ describe('appHandler', () => {
   let req, res
 
   beforeEach(() => {
-    res = support.mocks.response()
+    res = mocks.response()
   })
 
   describe('with a failed API request', () => {
@@ -33,7 +33,7 @@ describe('appHandler', () => {
     })
 
     it('sets the error property of the response', () => {
-      req = support.mocks.request('/login')
+      req = mocks.request('/login')
 
       return appHandler(req, res)
       .then(() => {
@@ -50,7 +50,7 @@ describe('appHandler', () => {
     })
 
     it('prefetches and renders the login page', () => {
-      req = support.mocks.request('/login')
+      req = mocks.request('/login')
 
       return appHandler(req, res)
       .then(() => {
@@ -64,11 +64,21 @@ describe('appHandler', () => {
     })
 
     it('redirects away from a page that requires login', () => {
-      req = support.mocks.request('/c/foo/people')
+      req = mocks.request('/c/foo/people')
 
       return appHandler(req, res)
       .then(() => {
         expect(res.redirect).to.have.been.called.with(302, '/login?next=%2Fc%2Ffoo%2Fpeople')
+      })
+    })
+
+    it('preserves clickthrough parameters', () => {
+      req = mocks.request('/c/foo/people?ctt=digest_email&cti=42')
+
+      return appHandler(req, res)
+      .then(() => {
+        const path = '/login?next=%2Fc%2Ffoo%2Fpeople&ctt=digest_email&cti=42'
+        expect(res.redirect).to.have.been.called.with(302, path)
       })
     })
   })
@@ -86,7 +96,7 @@ describe('appHandler', () => {
     })
 
     it('loads a page that requires login', () => {
-      req = support.mocks.request('/c/house/people')
+      req = mocks.request('/c/house/people')
 
       return appHandler(req, res)
       .then(() => {
@@ -110,7 +120,7 @@ describe('appHandler', () => {
     })
 
     it('starts with the specified section expanded', () => {
-      req = support.mocks.request('/settings?expand=password')
+      req = mocks.request('/settings?expand=password')
       return appHandler(req, res)
       .then(() => {
         checkError(res)
@@ -145,7 +155,7 @@ describe('appHandler', () => {
     })
 
     it('displays the post', () => {
-      req = support.mocks.request('/p/1')
+      req = mocks.request('/p/1')
       return appHandler(req, res)
       .then(() => {
         checkError(res)
@@ -155,7 +165,7 @@ describe('appHandler', () => {
     })
 
     it('sets the metatags', () => {
-      req = support.mocks.request('/p/1')
+      req = mocks.request('/p/1')
       return appHandler(req, res)
       .then(() => {
         checkError(res)
@@ -178,7 +188,7 @@ describe('appHandler', () => {
     })
 
     it('responds with 302', () => {
-      req = support.mocks.request('/tag/foo')
+      req = mocks.request('/tag/foo')
 
       return appHandler(req, res)
       .then(() => {

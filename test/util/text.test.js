@@ -1,5 +1,5 @@
 require('../support')
-import { appendInP, humanDate, textLength, timeRange } from '../../src/util/text'
+import { appendInP, humanDate, present, textLength, timeRange } from '../../src/util/text'
 
 describe('appendInP', () => {
   it('works correctly', () => {
@@ -57,5 +57,13 @@ describe('timeRange', () => {
   it('handles a start time without an end time', () => {
     const start = new Date('2015-11-07 16:00')
     expect(timeRange(start)).to.equal('Saturday, Nov 7, 2015 at 4:00 PM')
+  })
+})
+
+describe('present', () => {
+  it('treats <br> tags correctly when truncating', () => {
+    const text = '<p>Hi,<br>how are you? Lorem ipsum and <b>all that rot</b></p>'
+    const expected = '<p>Hi,<br/>how are you? Lorem ipsum and <b>all …</b></p>'
+    expect(present(text, {maxlength: 36})).to.equal(expected)
   })
 })

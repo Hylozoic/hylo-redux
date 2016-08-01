@@ -5,18 +5,20 @@ import { closeModal } from '../actions'
 // circular import; code smell; refactor?
 import BrowseTopicsModal from '../containers/BrowseTopicsModal'
 import ShareTopicModal from '../containers/ShareTopicModal'
+import ExpandedPostModal from '../containers/ExpandedPostModal'
 import cx from 'classnames'
 import { get } from 'lodash'
-const { bool, func } = React.PropTypes
+const { array, bool, func, object, string, oneOfType } = React.PropTypes
 
 export const modalWrapperCSSId = 'top-level-modal-wrapper'
+const mainColumnWidth = 688 // defined in CSS
 
-const modalStyle = (isMobile) => {
-  return {
-    left: isMobile ? 0 : position(document.getElementById('cover-image-page-content')).x,
-    width: Math.min(688, get(document.getElementById('main'), 'offsetWidth') || 688)
-  }
-}
+const modalStyle = isMobile => ({
+  left: isMobile ? 0
+    : position(document.getElementById('cover-image-page-content')).x,
+  width: Math.min(mainColumnWidth,
+    get(document.getElementById('main'), 'offsetWidth') || mainColumnWidth)
+})
 
 export const ModalWrapper = ({ show, params }, { dispatch }) => {
   if (!show) return null
@@ -32,6 +34,10 @@ export const ModalWrapper = ({ show, params }, { dispatch }) => {
         onCancel={() => dispatch(closeModal())}/>
       clickToClose = true
       break
+    case 'expanded-post':
+      modal = <ExpandedPostModal id={params.id} commentId={params.commentId}/>
+      clickToClose = true
+      break
   }
 
   const onBackdropClick = () => clickToClose && dispatch(closeModal())
@@ -44,8 +50,8 @@ export const ModalWrapper = ({ show, params }, { dispatch }) => {
 ModalWrapper.contextTypes = {dispatch: func}
 
 export const Modal = ({ id, className, children, title, subtitle, onCancel }, { isMobile }) => {
-  return <div id={id} className={cx(className, 'modal')} style={modalStyle(isMobile)}>
-    <div className='titles'>
+  return <SimpleModal id={id} className={className}>
+    <div className='title'>
       <h2>
         {title}
         <a className='close' onClick={onCancel}><Icon name='Fail'/></a>
@@ -55,6 +61,39 @@ export const Modal = ({ id, className, children, title, subtitle, onCancel }, { 
       </div>}
     </div>
     {children}
-  </div>
+  </SimpleModal>
 }
 Modal.contextTypes = {isMobile: bool}
+
+export class SimpleModal extends React.Component {
+  static propTypes = {
+    id: string,
+    className: string,
+    children: oneOfType([array, object])
+  }
+
+  static contextTypes = {
+    isMobile: bool
+  }
+
+  lockScrolling = () => {
+    window.scrollTo(0, this.lockedScrollTop)
+  }
+
+  componentDidMount () {
+    this.lockedScrollTop = document.body.scrollTop
+    window.addEventListener('scroll', this.lockScrolling)
+  }
+
+  componentWillUnmount () {
+    window.removeEventListener('scroll', this.lockScrolling)
+  }
+
+  render () {
+    const { id, className, children } = this.props
+    const { isMobile } = this.context
+    return <div id={id} className={cx(className, 'modal')} style={modalStyle(isMobile)}>
+      {children}
+    </div>
+  }
+}

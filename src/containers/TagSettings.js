@@ -8,6 +8,7 @@ import A from '../components/A'
 import Icon from '../components/Icon'
 import ScrollListener from '../components/ScrollListener'
 import { connectedListProps } from '../util/caching'
+import { includes } from 'lodash'
 
 const subject = 'community'
 
@@ -20,6 +21,7 @@ const TagSettings = ({ tags, community, dispatch, pending, total }) => {
   const remove = tag =>
     window.confirm('Are you sure? This cannot be undone.') &&
       dispatch(removeTagFromCommunity(tag, slug))
+  const canDelete = tag => !includes(['request', 'offer', 'intention'], tag.name)
 
   return <div id='topic-settings'>
     <h2>Manage Topics</h2>
@@ -32,9 +34,9 @@ const TagSettings = ({ tags, community, dispatch, pending, total }) => {
         <A to={`/c/${slug}/tag/${tag.name}`}>
           <Icon name='View'/>
         </A>
-        <a onClick={() => remove(tag)}>
+        {canDelete(tag) && <a onClick={() => remove(tag)}>
           <Icon name='Trash'/>
-        </a>
+        </a>}
       </div>
       {tag.name}
       {tag.post_type && <span className='topic-post-type'>

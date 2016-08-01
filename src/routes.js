@@ -37,7 +37,7 @@ import Admin from './containers/Admin'
 import TestBench from './containers/TestBench'
 import { debug } from './util/logging'
 import { makeUrl } from './util/navigation'
-import { get, isEmpty } from 'lodash'
+import { get, isEmpty, pick } from 'lodash'
 import config from './config'
 
 export default function makeRoutes (store) {
@@ -48,8 +48,10 @@ export default function makeRoutes (store) {
     let start = startAtSignup ? 'signup' : 'login'
     debug(`redirecting to ${start}`)
 
+    const { location: { pathname, query } } = nextState
     let params = {
-      next: nextState.location.pathname,
+      next: pathname,
+      ...pick(query, 'ctt', 'cti', 'ctcn'),
       ...(addParams ? addParams(nextState) : null)
     }
 

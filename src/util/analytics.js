@@ -23,14 +23,13 @@ export const VIEWED_PERSON = 'Member Profiles: Loaded a profile'
 export const VIEWED_SELF = 'Member Profiles: Loaded Own Profile'
 
 export function trackEvent (eventName, options = {}) {
-  let { person, post, community, project, ...otherOptions } = options
-  let track = partial(window.analytics.track, eventName)
+  const { person, post, tag, community, ...otherOptions } = options
+  const track = partial(window.analytics.track, eventName)
   switch (eventName) {
     case ADDED_COMMUNITY:
     case VIEWED_COMMUNITY:
     case INVITED_COMMUNITY_MEMBERS:
-      let { slug } = community
-      track({community_slug: slug})
+      track({community: community.name})
       break
     case VIEWED_PERSON:
       let { id, name } = person
@@ -42,18 +41,14 @@ export function trackEvent (eventName, options = {}) {
       break
     case ADDED_POST:
     case EDITED_POST:
-      track({
-        post_id: post.id,
-        post_tag: post.tag,
-        community_id: community.id,
-        project_id: get(project, 'id')
-      })
+      track({post_tag: tag, community: community.name})
       break
     case CLICKTHROUGH:
-      track(otherOptions)
+      track({community, ...otherOptions})
       break
     case EDITED_USER_SETTINGS:
     case LOGGED_IN:
+    case SIGNED_UP:
     case STARTED_LOGIN:
     case STARTED_SIGNUP:
     case VIEWED_NOTIFICATIONS:
@@ -61,7 +56,9 @@ export function trackEvent (eventName, options = {}) {
       track()
       break
     default:
-      throw new Error(`Don't know how to handle event named "${eventName}"`)
+      const message = `Don't know how to handle event named "${eventName}"`
+      window.alert(message)
+      throw new Error(message)
   }
 
   return Promise.resolve()
@@ -77,8 +74,6 @@ export const identify = person => {
   window.analytics.identify(id, {
     email, name, post_count, createdAt: created_at,
     provider: get(account, 'provider_key'),
-    community_id: get(community, 'id'),
-    community_name: get(community, 'name'),
-    community_slug: get(community, 'slug')
+    community: get(community, 'name')
   })
 }

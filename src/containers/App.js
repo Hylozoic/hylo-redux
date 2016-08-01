@@ -5,6 +5,7 @@ import { connect } from 'react-redux'
 import { debounce, includes, isEmpty, pick } from 'lodash'
 import { filter, get } from 'lodash/fp'
 import TopNav from '../components/TopNav'
+import NetworkNav from '../components/NetworkNav'
 import { LeftNav, leftNavWidth, leftNavEasing } from '../components/LeftNav'
 import Notifier from '../components/Notifier'
 import LiveStatusPoller from '../components/LiveStatusPoller'
@@ -35,7 +36,7 @@ const makeNavLinks = (currentUser, community) => {
     {url: network && `/n/${network.slug}`, icon: 'merkaba', label: 'Network'},
     {url: slug && url('about'), icon: 'Help', label: 'About'},
     {url: canInvite(currentUser, community) && url('invite'), icon: 'Mail', label: 'Invite'},
-    {url: canModerate(currentUser, community) && url('settings'), icon: 'Settings', label: 'Settings'}
+    {url: canModerate(currentUser, community) && url('settings'), icon: 'Settings', label: 'Community Settings'}
   ])
 }
 
@@ -134,6 +135,8 @@ export default class App extends React.Component {
       dispatch(navigate(nextPath(path, community, false, query)))
 
     const links = makeNavLinks(currentUser, community)
+    const showNetworkNav = currentUser && !isMobile && networkCommunities &&
+      networkCommunities.length > 1
 
     return <div className={cx({leftNavIsOpen, isMobile, showModal: !isEmpty(showModal)})}>
       <LeftNav opened={leftNavIsOpen}
@@ -147,7 +150,6 @@ export default class App extends React.Component {
         links={links}
         community={community}
         network={network}
-        networkCommunities={networkCommunities}
         onChangeCommunity={visitCommunity}
         openLeftNav={openLeftNav}
         leftNavIsOpen={leftNavIsOpen}
@@ -158,12 +160,13 @@ export default class App extends React.Component {
         path={path}
         search={doSearch}
         opened={leftNavIsOpen}
-        networkNavAnimation={moveWithMenu}
-        networkNavEasing={leftNavEasing}
         />}
 
       <VelocityComponent animation={moveWithMenu} easing={leftNavEasing}>
         <div id='main'>
+          {showNetworkNav && <NetworkNav
+            communities={networkCommunities}
+            network={network || community.network}/>}
           {children}
         </div>
       </VelocityComponent>

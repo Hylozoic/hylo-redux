@@ -364,12 +364,15 @@ ul.posts {
       @extra-margin: 15px;
       margin-left: -@extra-margin;
       margin-right: -@extra-margin;
+      margin-bottom: 0px;
+
       .post-section {
         padding-left: @post-content-left-margin + @extra-margin;
         padding-right: @post-content-right-margin + @extra-margin;
 
         &.comments-section {
           padding-left: 0px;
+          margin-bottom: 0px;
         }
 
         .comment, .comment-form {
@@ -873,6 +876,7 @@ ul.posts {
   padding-top: 15px;
   position: relative;
   .has-left-side-avatar(@avatar-size-small);
+  font-size: 13px;
 
   .content {
     overflow: hidden;
@@ -881,7 +885,6 @@ ul.posts {
 
   .text {
     .body-text;
-    font-size: 13px;
     .name {
       color: black;
       margin-right: 0.4em;

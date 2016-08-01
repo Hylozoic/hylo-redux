@@ -1,14 +1,16 @@
 import React from 'react'
-import { filter, first, includes, isEmpty, map, some, sortBy, get } from 'lodash'
-import { find } from 'lodash/fp'
-const { array, bool, func, object } = React.PropTypes
+import { difference, filter, first, includes, isEmpty, map, some, sortBy } from 'lodash'
+import { find, get } from 'lodash/fp'
+const { array, bool, func, object, string } = React.PropTypes
 import cx from 'classnames'
+import cheerio from 'cheerio'
 import {
-  humanDate, nonbreaking, present, sanitize, textLength, appendInP
+  humanDate, nonbreaking, present, textLength, appendInP
 } from '../util/text'
+import { sanitize } from 'hylo-utils/text'
 import { linkifyHashtags } from '../util/linkify'
 import { tagUrl } from '../routes'
-import truncate from 'html-truncate'
+import truncate from 'trunc-html'
 import A from './A'
 import Avatar from './Avatar'
 import Dropdown from './Dropdown'
@@ -19,12 +21,10 @@ import CommentForm from './CommentForm'
 import Icon from './Icon'
 import LinkedPersonSentence from './LinkedPersonSentence'
 import LinkPreview from './LinkPreview'
-import { scrollToAnchor } from '../util/scrolling'
 import { connect } from 'react-redux'
 import { compose } from 'redux'
 import {
-  fetchComments, followPost, navigate, notify, removePost, startPostEdit,
-  voteOnPost, pinPost
+  followPost, navigate, removePost, startPostEdit, voteOnPost, pinPost
 } from '../actions'
 import { same } from '../models'
 import { getComments, getCommunities, isPinned } from '../models/post'
@@ -35,10 +35,8 @@ import decode from 'ent/decode'
 
 const spacer = <span>&nbsp; •&nbsp; </span>
 
-const shouldShowTag = tag => tag && !includes(['chat'], tag)
-
 export const presentDescription = (post, community) =>
-  present(sanitize(post.description), {slug: get(community, 'slug')})
+  present(sanitize(post.description), {slug: get('slug', community)})
 
 class Post extends React.Component {
   static propTypes = {
@@ -48,7 +46,8 @@ class Post extends React.Component {
     comments: array,
     dispatch: func,
     expanded: bool,
-    onExpand: func
+    onExpand: func,
+    commentId: string
   }
 
   static childContextTypes = {post: object}
@@ -62,17 +61,18 @@ class Post extends React.Component {
     const { tag, media, linkPreview } = post
     const image = find(m => m.type === 'image', media)
     const classes = cx('post', tag, {image, expanded})
-    const title = linkifyHashtags(decode(sanitize(post.name || '')), get(community, 'slug'))
+    const title = linkifyHashtags(decode(sanitize(post.name || '')), get('slug', community))
 
     return <div className={classes}>
+      <a name={`post-${post.id}`}></a>
       <Header communities={communities}/>
       <p className='title post-section' dangerouslySetInnerHTML={{__html: title}}></p>
       {image && <img src={image.url} className='post-section full-image'/>}
-      <Details {...{expanded, onExpand, tag}}/>
+      <Details {...{expanded, onExpand}}/>
       {linkPreview && <LinkPreview {...{linkPreview}}/>}
       <div className='voting post-section'><VoteButton/><Voters/></div>
       <Attachments/>
-      <CommentSection post={post} truncate={!expanded} expand={onExpand} comments={comments}/>
+      <CommentSection {...{post, expanded, onExpand, comments}}/>
     </div>
   }
 }
@@ -129,25 +129,49 @@ const Communities = ({ communities }, { community }) => {
 }
 Communities.contextTypes = {community: object}
 
-const Details = ({ expanded, onExpand, tag }, { post, community, dispatch }) => {
-  const slug = get(community, 'slug')
+const extractTags = (shortDesc, fullDesc) => {
+  const tags = cheerio.load(fullDesc)('.hashtag').toArray()
+  if (tags.length === 0) return []
+
+  const shortTags = cheerio.load(shortDesc)('.hashtag').toArray()
+  const tagName = tag => tag.children[0].data.replace(/^#/, '')
+  return difference(tags, shortTags).map(tagName)
+}
+
+const HashtagLink = ({ tag, slug }, { dispatch }) => {
+  const onMouseOver = handleMouseOver(dispatch)
+  return <a className='hashtag' href={tagUrl(tag, slug)} {...{onMouseOver}}>
+    {`#${tag}`}
+  </a>
+}
+HashtagLink.contextTypes = {dispatch: func}
+
+export const Details = ({ expanded, onExpand }, { post, community, dispatch }) => {
+  const { tag } = post
+  const slug = get('slug', community)
   let description = presentDescription(post, community)
+  let extractedTags = []
   const truncated = !expanded && textLength(description) > 200
-  if (truncated) description = truncate(description, 200)
+  if (truncated) {
+    const orig = description
+    description = truncate(description, 200).html
+    extractedTags = extractTags(description, orig)
+  }
   if (description) description = appendInP(description, '&nbsp;')
 
   return <div className='post-section details'>
     <ClickCatchingSpan dangerouslySetInnerHTML={{__html: description}}/>
     {truncated && <span>
       <wbr/>
-      <a onClick={onExpand} className='show-more'>Show&nbsp;more</a>
+      <a onClick={() => onExpand(null)} className='show-more'>Show&nbsp;more</a>
       &nbsp;
     </span>}
-    {shouldShowTag(tag) && <a className='hashtag'
-      href={tagUrl(tag, slug)}
-      onMouseOver={handleMouseOver(dispatch)}>
-      {`#${tag}`}
-    </a>}
+    {extractedTags.map(tag => <span key={tag}>
+      <wbr/>
+      <HashtagLink tag={tag} slug={slug}/>
+      &nbsp;
+    </span>)}
+    {tag && <HashtagLink tag={tag} slug={slug}/>}
   </div>
 }
 Details.contextTypes = {post: object, community: object, dispatch: func}
@@ -160,7 +184,7 @@ const Attachments = (props, { post }) => {
     {attachments.map((file, i) =>
       <a key={i} className='attachment' href={file.url} target='_blank' title={file.name}>
         <img src={file.thumbnail_url}/>
-        {truncate(file.name, 40)}
+        {truncate(file.name, 40).html}
       </a>)}
   </div>
 }
@@ -196,7 +220,7 @@ export const Menu = (props, { dispatch, post, currentUser, community }) => {
     : dispatch(startPostEdit(post))
   const remove = () => window.confirm('Are you sure? This cannot be undone.') &&
     dispatch(removePost(post.id))
-  const pin = () => dispatch(pinPost(get(community, 'slug'), post.id))
+  const pin = () => dispatch(pinPost(get('slug', community), post.id))
 
   const toggleChildren = pinned
     ? <span className='pinned'><span className='label'>Pinned</span><span className='icon-More'></span></span>
@@ -223,52 +247,36 @@ Menu.contextTypes = {post: object, currentUser: object, dispatch: func, communit
 export class CommentSection extends React.Component {
   static propTypes = {
     comments: array,
-    truncate: bool,
-    expand: func,
+    onExpand: func,
     post: object,
-    dispatch: func
+    expanded: bool
   }
 
   static contextTypes = {
-    dispatch: func,
     community: object,
     currentUser: object,
     isProjectRequest: bool
   }
 
   render () {
-    let { post, comments, truncate, expand } = this.props
-    const { dispatch, currentUser, community, isProjectRequest } = this.context
+    let { post, comments, onExpand, expanded } = this.props
+    const truncate = !expanded
+    const { currentUser, community, isProjectRequest } = this.context
+    const placeholder = isProjectRequest ? 'How can you help?' : null
 
     if (!comments) comments = []
     comments = sortBy(comments, c => c.created_at)
     if (truncate) comments = comments.slice(-3)
 
-    const expandComment = id => {
-      expand()
-
-      // the offset below is ignored by the backend, but it causes the frontend
-      // to ignore the 3 comments that are already cached
-      dispatch(fetchComments(post.id, {offset: 3}))
-      .then(({ error }) => {
-        if (error) {
-          return dispatch(notify('Could not load comments. Please try again soon.', {type: 'error'}))
-        }
-        if (id) scrollToAnchor(`comment-${id}`, 90)
-      })
-    }
-
-    const placeholder = isProjectRequest ? 'How can you help?' : null
-
     return <div className={cx('comments-section post-section', {empty: isEmpty(comments)})}>
-      <a name={`post-${post.id}-comments`}></a>
       {truncate && post.numComments > comments.length && <div className='comment show-all'>
-        <a onClick={() => expandComment()}>Show all {post.numComments} comments</a>
+        <a onClick={() => onExpand()}>Show all {post.numComments} comments</a>
       </div>}
       {comments.map(c => <Comment comment={{...c, post_id: post.id}}
         truncate={truncate}
-        expand={() => expandComment(c.id)}
+        expand={() => onExpand(c.id)}
         community={community}
+        expanded={expanded}
         key={c.id}/>)}
       {currentUser && <CommentForm postId={post.id} {...{placeholder}}/>}
     </div>

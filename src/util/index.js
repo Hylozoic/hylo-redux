@@ -1,10 +1,9 @@
-import truncate from 'html-truncate'
-import striptags from 'striptags'
+import truncate from 'trunc-html'
 
 export const ogMetaTags = (title, description, image) => {
   var metaTags = {
     'og:title': title,
-    'og:description': truncate(striptags(description || ''), 140)
+    'og:description': truncate(description || '', 140).text
   }
   if (image) {
     metaTags = {...metaTags,

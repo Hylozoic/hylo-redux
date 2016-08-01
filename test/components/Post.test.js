@@ -1,8 +1,9 @@
 import { helpers } from '../support'
 import { renderToString } from 'react-dom/server'
-import { Voters } from '../../src/components/Post'
+import { Details, Voters } from '../../src/components/Post'
 import cheerio from 'cheerio'
 import decode from 'ent/decode'
+const { createElement } = helpers
 
 describe('Voters', () => {
   const currentUser = {id: 'x'}
@@ -15,7 +16,7 @@ describe('Voters', () => {
   ]
 
   const renderWithVoters = voters => {
-    let component = helpers.createElement(Voters, {stateless: true}, {
+    let component = createElement(Voters, {stateless: true}, {
       post: {voters}, currentUser
     })
     return renderToString(component)
@@ -53,4 +54,27 @@ describe('Voters', () => {
 
   it('handles 5 voters',
     test([currentUser, ...voters], 'You, Sneezy, Itchy, and 3 others liked this.'))
+})
+
+describe('Post Details', () => {
+  it('extracts tags from truncated description text', () => {
+    const description = `Please let me know what software you recommend and i
+    can start working on it, and then help me for about an hour to get
+    accustomed to the program? It is preferable that the software is free and
+    user friendly. Can offer compensation in the form of plants or ca$h. thank
+    you!! #permaculture <a>#design</a> #support`
+
+    const props = {stateless: true}
+    const context = {
+      post: {description, tag: 'request'},
+      community: {slug: 'foo'},
+      dispatch: () => {}
+    }
+
+    const component = createElement(Details, props, context)
+    const html = renderToString(component)
+    const doc = cheerio.load(html)
+    expect(doc('.show-more').length).to.equal(1)
+    expect(doc('.hashtag').length).to.equal(4)
+  })
 })

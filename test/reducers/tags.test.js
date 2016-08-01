@@ -146,13 +146,14 @@ describe('tagsByCommunity', () => {
     expect(tagsByCommunity(state, fetchAction)).to.deep.equal(expected)
   })
 
-  it('merges content on FETCH_LEFT_NAV_TAGS', () => {
+  it('merges content and removes tags on FETCH_LEFT_NAV_TAGS', () => {
     const state = {
       hum: {
         foo: {name: 'foo', otherStuff: {foo: 'bar'}, followed: true}
       },
       wow: {
-        foo: {id: 7, name: 'foo'}
+        foo: {id: 7, name: 'foo'},
+        bip: {name: 'bip'}
       },
       zoop: {
         bop: {name: 'bop'}

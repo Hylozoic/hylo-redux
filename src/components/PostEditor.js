@@ -28,7 +28,6 @@ import {
   createPost, cancelPostEdit, fetchLinkPreview, removeImage, removeDoc,
   updatePost, updatePostEditor
 } from '../actions'
-import { fetchLeftNavTags } from '../actions/tags'
 import { uploadImage } from '../actions/uploadImage'
 import { uploadDoc } from '../actions/uploadDoc'
 import { attachmentParams } from '../util/shims'
@@ -54,6 +53,8 @@ export const newPostId = 'new-post'
   // this object tracks the edits that are currently being made
   const postEdit = state.postEdits[id] || {}
   const { editingTagDescriptions, creatingTagAndDescription, pending } = state
+  const postCommunities = (postEdit.communities || []).map(id =>
+    find(state.communities, c => c.id === id))
 
   return {
     id,
@@ -64,7 +65,8 @@ export const newPostId = 'new-post'
     linkPreviewPending: pending[FETCH_LINK_PREVIEW],
     currentCommunitySlug: get(getCurrentCommunity(state), 'slug'),
     editingTagDescriptions,
-    creatingTagAndDescription
+    creatingTagAndDescription,
+    postCommunities
   }
 }, null, null, {withRef: true}))
 export class PostEditor extends React.Component {
@@ -82,7 +84,8 @@ export class PostEditor extends React.Component {
     tag: string,
     currentCommunitySlug: string,
     editingTagDescriptions: bool,
-    creatingTagAndDescription: bool
+    creatingTagAndDescription: bool,
+    postCommunities: array
   }
 
   static contextTypes = {
@@ -220,7 +223,7 @@ export class PostEditor extends React.Component {
   }
 
   save () {
-    const { dispatch, post, postEdit, id, currentCommunitySlug } = this.props
+    const { dispatch, post, postEdit, id, postCommunities } = this.props
     const params = {
       type: this.editorType(),
       ...postEdit,
@@ -230,16 +233,10 @@ export class PostEditor extends React.Component {
     dispatch((post ? updatePost : createPost)(id, params))
     .then(({ error }) => {
       if (error) return
-      // FIXME ideally we would pass name and slug along as well, to make
-      // events more human-readable, but we're only passing around community
-      // ids in this component
       trackEvent(post ? EDITED_POST : ADDED_POST, {
-        post: {id: get(post, 'id'), tag: postEdit.tag},
-        community: {id: get(postEdit, 'communities.0')}
+        tag: postEdit.tag,
+        community: {name: get(postCommunities[0], 'name')}
       })
-      if (currentCommunitySlug) {
-        dispatch(fetchLeftNavTags(currentCommunitySlug, true))
-      }
       this.cancel()
     })
   }

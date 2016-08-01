@@ -112,6 +112,9 @@ export class PostEditor extends React.Component {
     if (data.financialRequestAmountAsString) {
       newObj.financialRequestAmount = parseFloat(data.financialRequestAmountAsString)
     }
+    else {
+      newObj.financialRequestAmount = undefined
+    }
 
     dispatch(updatePostEditor(newObj, id))
   }

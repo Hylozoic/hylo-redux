@@ -74,6 +74,9 @@ export default class ProjectPostEditor extends React.Component {
         return
       }
     }
+    else{
+      update({financialRequestAmountAsString: undefined})
+    }
 
     update({financialRequestsEnabled: !postEdit.financialRequestsEnabled})
   }

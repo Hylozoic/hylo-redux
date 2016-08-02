@@ -3,7 +3,7 @@ import { get } from 'lodash'
 import { connect } from 'react-redux'
 import Avatar from './Avatar'
 import RichTextEditor from './RichTextEditor'
-import { createComment, updateCommentEditor } from '../actions'
+import { createComment, updateCommentEditor, updateComment } from '../actions'
 import { ADDED_COMMENT, trackEvent } from '../util/analytics'
 import { textLength } from '../util/text'
 import { onCmdEnter } from '../util/textInput'
@@ -11,9 +11,6 @@ import TagDescriptionEditor from './TagDescriptionEditor'
 var { array, bool, func, object, string } = React.PropTypes
 
 @connect((state, { postId, commentId }) => {
-  console.log('in connect comment')
-  console.log({postId, commentId})
-  console.log('text', postId ? state.commentEdits.new[postId] : state.commentEdits.edit[commentId])
   return ({
     currentUser: get(state, 'people.current'),
     editingTagDescriptions: state.editingTagDescriptions,
@@ -31,7 +28,8 @@ export default class CommentForm extends React.Component {
     placeholder: string,
     editingTagDescriptions: bool,
     text: string,
-    newComment: bool
+    newComment: bool,
+    close: func
   }
 
   constructor (props) {
@@ -40,18 +38,24 @@ export default class CommentForm extends React.Component {
   }
 
   submit = event => {
-    const { dispatch, postId, text } = this.props
+    const { dispatch, postId, commentId, text, newComment, close } = this.props
     if (event) event.preventDefault()
     if (!text || textLength(text) < 2) return
 
     setTimeout(() => {
       // use the current state of the editor rather than props to ensure we get the last
       // edits on mobile, especially after an @mention
-      dispatch(createComment(postId, this.refs.editor.getContent(), this.state.tagDescriptions))
-      .then(({ error }) => {
-        if (error) return
-        trackEvent(ADDED_COMMENT, {post: {id: postId}})
-      })
+
+      if (newComment) {
+        dispatch(createComment(postId, this.refs.editor.getContent(), this.state.tagDescriptions))
+        .then(({ error }) => {
+          if (error) return
+          trackEvent(ADDED_COMMENT, {post: {id: postId}})
+        })
+      } else {
+        dispatch(updateComment(commentId, this.refs.editor.getContent(), this.state.tagDescriptions))
+        close()
+      }
     })
   }
 
@@ -61,7 +65,7 @@ export default class CommentForm extends React.Component {
   }
 
   render () {
-    let { currentUser, editingTagDescriptions, dispatch, postId, commentId, text, newComment } = this.props
+    let { currentUser, editingTagDescriptions, dispatch, postId, commentId, text, newComment, close } = this.props
     const editing = text !== undefined
     const storeId = newComment ? postId : commentId
     const updateStore = text => dispatch(updateCommentEditor(storeId, text, newComment))
@@ -86,6 +90,7 @@ export default class CommentForm extends React.Component {
               onChange={setText}
               onKeyDown={quickSubmit}/>
             <input type='submit' value='Comment' ref='button'/>
+            {close && <button onClick={close}>Cancel</button>}
           </div>
         : <div className='content placeholder' onClick={edit}>
             {placeholder}

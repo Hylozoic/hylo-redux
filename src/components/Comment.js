@@ -53,9 +53,12 @@ class Comment extends React.Component {
       this.setState({editing: true})
       return dispatch(updateCommentEditor(comment.id, comment.text, false))
     }
+    const closeEdit = () => {
+      this.setState({editing: false})
+    }
 
     return editing
-      ? <CommentForm commentId={comment.id}/>
+      ? <CommentForm commentId={comment.id} close={closeEdit}/>
       : <div className='comment' data-comment-id={comment.id}>
       {canEditComment(currentUser, comment, community) &&
         <Dropdown alignRight toggleChildren={<span className='icon-More'></span>}>

@@ -2,6 +2,7 @@ import React from 'react'
 import { connect } from 'react-redux'
 import Icon from './Icon'
 import DatetimePicker from 'react-datetime'
+import moment from 'moment'
 import { sanitizeTagInput } from '../util/textInput'
 import { validateTag } from './EventPostEditor'
 import { getCurrentCommunity } from '../models/community'
@@ -81,6 +82,10 @@ export default class ProjectPostEditor extends React.Component {
     update({financialRequestsEnabled: !postEdit.financialRequestsEnabled})
   }
 
+  checkIfEdit = () => {
+    return !!this.props.post
+  }
+
   render () {
     const { postEdit, update, requests } = this.props
     const { end_time, tag, type } = postEdit
@@ -123,6 +128,7 @@ export default class ProjectPostEditor extends React.Component {
                     <div>
                         USD $
                         <CurrencyInput value={postEdit.financialRequestAmount}
+                                       disabled={this.checkIfEdit()}
                                        thousandSeparator=''
                                        onChange={maskedValue => update({financialRequestAmount: maskedValue})}/>
                     </div>
@@ -140,9 +146,16 @@ export default class ProjectPostEditor extends React.Component {
         </div>
         <div className='deadline'>
           <Icon name='Calendar'/>
+          { this.checkIfEdit() &&
+          <input type="text"
+                 value={moment(endTime).format("MM/DD/YYYY hh:mm A")}
+                 disabled={true}/>
+          }
+          { !this.checkIfEdit() &&
           <DatetimePicker inputProps={{placeholder: 'deadline'}}
-            value={endTime}
-            onChange={m => update({end_time: m.toISOString()})}/>
+                          value={endTime}
+                          onChange={m => update({end_time: m.toISOString()})}/>
+          }
         </div>
         <div className='location'>
           <Icon name='Pin-1'/>

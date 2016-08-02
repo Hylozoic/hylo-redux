@@ -121,6 +121,7 @@ export const VALIDATE_NETWORK_ATTRIBUTE = 'VALIDATE_NETWORK_ATTRIBUTE'
 export const VALIDATE_NETWORK_ATTRIBUTE_PENDING = VALIDATE_NETWORK_ATTRIBUTE + _PENDING
 export const VOTE_ON_POST = 'VOTE_ON_POST'
 export const VOTE_ON_POST_PENDING = VOTE_ON_POST + _PENDING
+export const DISCONNECT_HITFIN = 'DISCONNECT_HITFIN'
 
 import { cleanAndStringify } from '../util/caching'
 import { cloneDeep, pick } from 'lodash'
@@ -722,6 +723,13 @@ export function fetchCommunitiesForNetworkNav (networkId) {
     type: FETCH_COMMUNITIES_FOR_NETWORK_NAV,
     payload: {api: true, path: `/noo/network/${networkId}/communitiesForNav`},
     meta: {networkId}
+  }
+}
+
+export function disconnect_hitfin () {
+  return {
+    type: DISCONNECT_HITFIN,
+    payload: {api: true, path: `/noo/unlink/hit-fin`, method: 'DELETE'}
   }
 }
 

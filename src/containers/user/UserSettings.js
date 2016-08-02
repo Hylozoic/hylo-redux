@@ -18,7 +18,7 @@ import { formatDate } from '../../util/text'
 import { debounce, get, sortBy, throttle } from 'lodash'
 import ListItemTagInput from '../../components/ListItemTagInput'
 import { avatarUploadSettings, bannerUploadSettings } from '../../models/person'
-import { openPopup, setupPopupCallback, PROFILE_CONTEXT } from '../../util/auth'
+import { openPopup, setupPopupCallback, disconnect, PROFILE_CONTEXT } from '../../util/auth'
 import { EDITED_USER_SETTINGS, trackEvent } from '../../util/analytics'
 import { reversibleUpdate } from '../../util/forms'
 import { preventSpaces } from '../../util/textInput'
@@ -151,6 +151,12 @@ export default class UserSettings extends React.Component {
     this.update(path, !get(currentUser, path))
   }
 
+  unlinkHitfin = () => {
+    let { dispatch } = this.props
+    if (!window.confirm(`Are you sure you want to disconnect your HitFin account?`)) return
+    disconnect('hit-fin', dispatch)
+  }
+
   updateMembership = (membership, path, value) => {
     let { dispatch } = this.props
     // this is so reversibleUpdate will be able to call membership.id and get the right value
@@ -208,7 +214,7 @@ export default class UserSettings extends React.Component {
     if (!hitfinLink) {
       renderHitFinButton = <a className='button hit-fin-logo' onClick={() => openPopup('hit-fin', PROFILE_CONTEXT)}> Connect HitFin Account </a>;
     } else {
-      renderHitFinButton = <a className='button hit-fin-logo' onClick={() => openPopup('hit-fin', PROFILE_CONTEXT)}> Disconnect </a>;
+      renderHitFinButton = <a className='button hit-fin-logo' onClick={() => this.unlinkHitfin()}> Disconnect </a>;
     }
 
     return <div id='user-settings' className='form-sections simple-page'>

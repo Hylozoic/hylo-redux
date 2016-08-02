@@ -1,4 +1,4 @@
-import { fetchCurrentUser } from '../actions'
+import { fetchCurrentUser, disconnect_hitfin } from '../actions'
 import { get } from 'lodash'
 import { goToNext } from '../containers/Login'
 import qs from 'querystring'
@@ -7,6 +7,10 @@ export const LOGIN_CONTEXT = 'login'
 export const PROFILE_CONTEXT = 'profile'
 
 let popup
+
+export function disconnect (service, dispatch) {
+  dispatch(disconnect_hitfin())
+}
 
 export function openPopup (service, authContext) {
   var width, height
@@ -18,6 +22,9 @@ export function openPopup (service, authContext) {
     width = 560
     height = 520
   } else if (service === 'linkedin') {
+    width = 400
+    height = 584
+  } else if (service === 'hit-fin') {
     width = 400
     height = 584
   }

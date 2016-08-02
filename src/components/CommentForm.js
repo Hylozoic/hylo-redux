@@ -40,7 +40,7 @@ export default class CommentForm extends React.Component {
   submit = event => {
     const { dispatch, postId, commentId, text, newComment, close } = this.props
     if (event) event.preventDefault()
-    if (!text || textLength(text) < 2) return
+    if (!text || textLength(text) < 2) return false
 
     setTimeout(() => {
       // use the current state of the editor rather than props to ensure we get the last
@@ -57,6 +57,7 @@ export default class CommentForm extends React.Component {
         close()
       }
     })
+    return false
   }
 
   saveWithTagDescriptions = tagDescriptions => {

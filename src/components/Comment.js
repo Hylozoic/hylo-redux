@@ -4,10 +4,11 @@ import A from './A'
 import { some } from 'lodash'
 import { get } from 'lodash/fp'
 import { same } from '../models'
-import { humanDate, sanitize, prependInP, present, textLength } from '../util/text'
+import { humanDate, prependInP, present, textLength } from '../util/text'
+import { sanitize } from 'hylo-utils/text'
 import { commentUrl } from '../routes'
 import { removeComment, thank, updateCommentEditor } from '../actions'
-import truncateHtml from 'html-truncate'
+import truncateHtml from 'trunc-html'
 import { ClickCatchingSpan } from './ClickCatcher'
 import CommentForm from './CommentForm'
 import Dropdown from './Dropdown'
@@ -15,7 +16,7 @@ import { canEditComment } from '../models/currentUser'
 var { func, object, bool } = React.PropTypes
 
 const spacer = <span>&nbsp;&nbsp;•&nbsp;&nbsp;</span>
-const truncatedLength = 220
+const truncatedLength = 200
 
 class Comment extends React.Component {
   static propTypes = {
@@ -45,7 +46,7 @@ class Comment extends React.Component {
     const isThanked = comment.isThanked || some(thanks, same('id', currentUser))
     let text = present(sanitize(comment.text), {slug: get('slug', community)})
     const truncated = truncate && textLength(text) > truncatedLength
-    if (truncated) text = truncateHtml(text, truncatedLength)
+    if (truncated) text = truncateHtml(text, truncatedLength).html
     text = prependInP(text, `<a href='/u/${person.id}'><strong class='name'>${sanitize(person.name)}</strong></a>`)
     const remove = () => window.confirm('Delete this comment? This cannot be undone.') &&
       dispatch(removeComment(comment.id))

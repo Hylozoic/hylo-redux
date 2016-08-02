@@ -4,7 +4,7 @@ import { prefetch } from 'react-fetcher'
 import cx from 'classnames'
 const { object, func } = React.PropTypes
 import { find, get, reduce, isEmpty } from 'lodash'
-import { markdown, sanitize } from '../../util/text'
+import { markdown, sanitize } from 'hylo-utils/text'
 import {
   updateCommunitySettings,
   fetchCommunitySettings,

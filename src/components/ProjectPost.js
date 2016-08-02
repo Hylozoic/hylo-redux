@@ -2,8 +2,7 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { Header, CommentSection, presentDescription } from './Post'
 import decode from 'ent/decode'
-import truncate from 'html-truncate'
-import { textLength } from '../util/text'
+import { textLength, truncate } from '../util/text'
 import { isEmpty } from 'lodash'
 import { find, some } from 'lodash/fp'
 import { same } from '../models'
@@ -147,7 +146,9 @@ class ProjectRequest extends React.Component {
     const { name, id, numComments } = post
     let description = presentDescription(post, community)
     const truncated = textLength(description) > 200
-    if (truncated) description = truncate(description, 200)
+    if (truncated) {
+      description = truncate(description, 200)
+    }
 
     const zoom = () => {
       if (isMobile) {

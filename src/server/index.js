@@ -1,14 +1,13 @@
+// appHandler loads New Relic so it should be imported first
+import appHandler from './appHandler'
 import { upstreamHost, useAssetManifest, assetHost, assetPath } from '../config'
 import { magenta, red } from 'chalk'
 import { info } from '../util/logging'
 import { setManifest } from '../util/assets'
 import { parse } from 'url'
 import { handleStaticPages } from './proxy'
-
-if (process.env.NEW_RELIC_LICENSE_KEY) require('newrelic')
-const express = require('express')
-const request = require('request')
-const appHandler = require('./appHandler')
+import express from 'express'
+import request from 'request'
 
 const port = process.env.PORT || 9000
 const upstreamHostname = parse(upstreamHost).hostname

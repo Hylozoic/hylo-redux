@@ -2,8 +2,8 @@
 @left-nav-width: 208px;
 @menu-button-width: 87px;
 @mobile-top-nav-height: 60px;
-@main-menu-shrink-breakpoint: 1175px;
-@main-menu-hide-breakpoint: 914px;
+@main-menu-shrink-breakpoint: 1180px;
+@main-menu-hide-breakpoint: 1024px;
 
 nav {
   ul {
@@ -120,12 +120,6 @@ nav {
       margin-right: 10px;
     }
 
-    .non-mobile({
-      img:hover {
-        opacity: 0.8;
-      }
-    });
-
     .mobile({
       padding: 0;
       border: 0;
@@ -151,7 +145,7 @@ nav {
         .ellipsis;
         max-width: 240px;
         @media (max-width: (@main-menu-shrink-breakpoint - 1)) {
-          max-width: 210px;
+          max-width: 200px;
         }
       }
       .caret {
@@ -419,6 +413,12 @@ nav {
     });
   }
 
+  .dropdown-notifications {
+    .non-mobile({
+      display: none;
+    });
+  }
+
   .main-menu {
     padding-left: 30px;
     display: inline-block;
@@ -432,7 +432,6 @@ nav {
         color: @damian-green;
       }
     }
-
 
     > .dropdown {
       display: inline-block;
@@ -480,28 +479,21 @@ nav {
       }
     }
   }
-
-  .dropdown-notifications {
-    .non-mobile({
-      display: none;
-    });
-  }
 }
 
-.leftNavIsOpen #topNav .main-menu {
-  @media (max-width: (@main-menu-hide-breakpoint + @left-nav-width - 1)) {
-    display: none;
+.leftNavIsOpen #topNav {
+  .menu-button {
+    width: @left-nav-width;
   }
 
-  @media (max-width: (@main-menu-shrink-breakpoint + @left-nav-width - 1)) {
-    .a-Events, .a-Projects, .a-Members {
-      display: none;
-    }
-  }
-
-  @media (min-width: @main-menu-shrink-breakpoint + @left-nav-width) {
-    .li-Conversations, .li-Events, .li-Projects, .li-Members {
-      display: none;
+  .main-menu {
+    @media (max-width: (@main-menu-shrink-breakpoint + @left-nav-width - 1)) {
+      .a-Projects, .a-Members {
+        display: none;
+      }
+      .li-Projects, .li-Members {
+        display: block;
+      }
     }
   }
 }
@@ -552,10 +544,6 @@ nav {
       border: none;
     }
   }
-}
-
-.leftNavIsOpen #topNav .menu-button {
-  width: @left-nav-width;
 }
 
 #leftNav {

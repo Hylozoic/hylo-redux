@@ -1,29 +1,15 @@
-import sanitizeHtml from 'sanitize-html'
 import prettyDate from 'pretty-date'
-import truncate from 'html-truncate'
+import truncHtml from 'trunc-html'
 import linkify from './linkify'
 import moment from 'moment-timezone'
-import marked from 'marked'
 import { compact } from 'lodash'
 
-export function sanitize (text) {
-  if (!text) return ''
-
-  // remove leading &nbsp; (a side-effect of contenteditable)
-  var strippedText = text.replace(/<p>&nbsp;/gi, '<p>')
-
-  return sanitizeHtml(strippedText, {
-    allowedTags: ['a', 'p', 'br', 'ul', 'ol', 'li', 'strong', 'em'],
-    allowedAttributes: {
-      'a': ['href', 'data-user-id']
-    },
-
-    // remove empty paragraphs
-    exclusiveFilter: function (frame) {
-      return frame.tag === 'p' && !frame.text.trim()
+export const truncate = (text, length) =>
+  truncHtml(text, length, {
+    sanitizer: {
+      allowedAttributes: {a: ['href', 'class', 'data-search']}
     }
-  })
-}
+  }).html
 
 export function present (text, opts = {}) {
   if (!text) return ''
@@ -35,7 +21,6 @@ export function present (text, opts = {}) {
   text = linkify(text, opts.slug)
 
   if (opts && opts.maxlength) text = truncate(text, opts.maxlength)
-
   return text
 }
 
@@ -124,14 +109,6 @@ export function formatDate (date) {
   var dateObj = (typeof date === 'string' ? new Date(date) : date)
   return `${dateObj.toLocaleString('en-us', { month: 'long' })} ${dateObj.getDate()}, ${dateObj.getFullYear()}`
 }
-
-marked.setOptions({
-  gfm: true,
-  breaks: true,
-  sanitize: true
-})
-
-export const markdown = marked
 
 export function nonbreaking (str) {
   return str.replace(/ /g, String.fromCharCode(160))

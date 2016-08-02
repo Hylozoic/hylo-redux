@@ -1,7 +1,8 @@
 import { } from 'lodash'
 import {
   UPDATE_COMMENT_EDITOR,
-  CREATE_COMMENT
+  CREATE_COMMENT,
+  UPDATE_COMMENT
 } from '../actions'
 
 export default function (state = {new: {}, edit: {}}, action) {
@@ -14,6 +15,8 @@ export default function (state = {new: {}, edit: {}}, action) {
       return {...state, [payload.bucket]: {...state[payload.bucket], [payload.id]: payload.text}}
     case CREATE_COMMENT:
       return {...state, new: {...state.new, [meta.id]: undefined}}
+    case UPDATE_COMMENT:
+      return {...state, edit: {...state.edit, [meta.id]: undefined}}
   }
 
   return state

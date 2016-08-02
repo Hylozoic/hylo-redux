@@ -7,12 +7,11 @@ const { array, bool, func, object, string } = React.PropTypes
 import cx from 'classnames'
 import cheerio from 'cheerio'
 import {
-  humanDate, nonbreaking, present, textLength, appendInP
+  humanDate, nonbreaking, present, textLength, truncate, appendInP
 } from '../util/text'
 import { sanitize } from 'hylo-utils/text'
 import { linkifyHashtags } from '../util/linkify'
 import { tagUrl } from '../routes'
-import truncate from 'trunc-html'
 import A from './A'
 import Avatar from './Avatar'
 import Dropdown from './Dropdown'
@@ -156,11 +155,7 @@ export const Details = ({ expanded, onExpand }, { post, community, dispatch }) =
   const truncated = !expanded && textLength(description) > 200
   if (truncated) {
     const orig = description
-    description = truncate(description, 200, {
-      sanitizer: {
-        allowedAttributes: {a: ['href', 'class', 'data-search']}
-      }
-    }).html
+    description = truncate(description, 200)
     extractedTags = extractTags(description, orig)
   }
   if (description) description = appendInP(description, '&nbsp;')
@@ -190,7 +185,7 @@ const Attachments = (props, { post }) => {
     {attachments.map((file, i) =>
       <a key={i} className='attachment' href={file.url} target='_blank' title={file.name}>
         <img src={file.thumbnail_url}/>
-        {truncate(file.name, 40).html}
+        {truncate(file.name, 40).text}
       </a>)}
   </div>
 }

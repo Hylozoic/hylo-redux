@@ -1,8 +1,15 @@
 import prettyDate from 'pretty-date'
-import truncate from 'trunc-html'
+import truncHtml from 'trunc-html'
 import linkify from './linkify'
 import moment from 'moment-timezone'
 import { compact } from 'lodash'
+
+export const truncate = (text, length) =>
+  truncHtml(text, length, {
+    sanitizer: {
+      allowedAttributes: {a: ['href', 'class', 'data-search']}
+    }
+  }).html
 
 export function present (text, opts = {}) {
   if (!text) return ''
@@ -13,8 +20,7 @@ export function present (text, opts = {}) {
   // make links and hashtags
   text = linkify(text, opts.slug)
 
-  if (opts && opts.maxlength) text = truncate(text, opts.maxlength).html
-
+  if (opts && opts.maxlength) text = truncate(text, opts.maxlength)
   return text
 }
 

@@ -4,15 +4,16 @@ import {
   CREATE_COMMENT
 } from '../actions'
 
-export default function (state = {}, action) {
+export default function (state = {new: {}, edit: {}}, action) {
   const { type, payload, error, meta } = action
   if (error) return state
 
   switch (type) {
     case UPDATE_COMMENT_EDITOR:
-      return {...state, [payload.id]: payload.text}
+      // payload.bucket will be either 'new' or 'edit'
+      return {...state, [payload.bucket]: {...state[payload.bucket], [payload.id]: payload.text}}
     case CREATE_COMMENT:
-      return {...state, [meta.id]: undefined}
+      return {...state, new: {...state.new, [meta.id]: undefined}}
   }
 
   return state

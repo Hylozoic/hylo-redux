@@ -10,20 +10,28 @@ import { onCmdEnter } from '../util/textInput'
 import TagDescriptionEditor from './TagDescriptionEditor'
 var { array, bool, func, object, string } = React.PropTypes
 
-@connect((state, { postId }) => ({
-  currentUser: get(state, 'people.current'),
-  editingTagDescriptions: state.editingTagDescriptions,
-  text: state.commentEdits[postId]
-}))
+@connect((state, { postId, commentId }) => {
+  console.log('in connect comment')
+  console.log({postId, commentId})
+  console.log('text', postId ? state.commentEdits.new[postId] : state.commentEdits.edit[commentId])
+  return ({
+    currentUser: get(state, 'people.current'),
+    editingTagDescriptions: state.editingTagDescriptions,
+    text: postId ? state.commentEdits.new[postId] : state.commentEdits.edit[commentId],
+    newComment: !commentId
+  })
+})
 export default class CommentForm extends React.Component {
   static propTypes = {
     currentUser: object,
     dispatch: func,
     postId: string,
+    commentId: string,
     mentionOptions: array,
     placeholder: string,
     editingTagDescriptions: bool,
-    text: string
+    text: string,
+    newComment: bool
   }
 
   constructor (props) {
@@ -53,9 +61,10 @@ export default class CommentForm extends React.Component {
   }
 
   render () {
-    const { currentUser, editingTagDescriptions, dispatch, postId, text } = this.props
+    let { currentUser, editingTagDescriptions, dispatch, postId, commentId, text, newComment } = this.props
     const editing = text !== undefined
-    const updateStore = text => dispatch(updateCommentEditor(postId, text))
+    const storeId = newComment ? postId : commentId
+    const updateStore = text => dispatch(updateCommentEditor(storeId, text, newComment))
     const edit = () => updateStore('')
 
     const setText = event => updateStore(event.target.value)

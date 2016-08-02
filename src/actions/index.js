@@ -694,10 +694,10 @@ export function createTagInPostEditor () {
   }
 }
 
-export function updateCommentEditor (id, text) {
+export function updateCommentEditor (id, text, newComment) {
   return {
     type: UPDATE_COMMENT_EDITOR,
-    payload: {id, text}
+    payload: {id, text, bucket: newComment ? 'new' : 'edit'}
   }
 }
 

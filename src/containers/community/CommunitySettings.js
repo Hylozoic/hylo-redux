@@ -228,7 +228,7 @@ export default class CommunitySettings extends React.Component {
     let { avatar_url, banner_url } = community
     let { editing, edited, errors, expand } = this.state
     let labelProps = {expand, toggle: this.toggleSection}
-    let joinUrl, codeNotUnique, slugNotUnique
+    let joinUrl, codeNotUnique, slugNotUnique, addSlackUrl
     let { is_admin } = this.props.currentUser
 
     if (expand.appearance) {
@@ -239,6 +239,10 @@ export default class CommunitySettings extends React.Component {
       joinUrl = communityJoinUrl(community)
 
       codeNotUnique = get(this.props.validation, 'beta_access_code.unique') === false
+    }
+
+    if (expand.slack) {
+      addSlackUrl = 'test'
     }
 
     return <div className='form-sections' id='community-settings'>
@@ -479,6 +483,22 @@ export default class CommunitySettings extends React.Component {
           </div>
           <div className='half-column right-align'>
             <input type='checkbox' checked={community.settings.sends_email_prompts} onChange={() => this.toggle('settings.sends_email_prompts')}/>
+          </div>
+        </div>
+      </div>}
+
+      <SectionLabel name='slack' {...labelProps}>Send Updates to Slack</SectionLabel>
+      {expand.slack && <div className='section slack'>
+        <div className='section-item'>
+          <div className='full-column'>
+            {!community.slack_hook_url && <div>
+              <p className='summary'>Connect this community to a <a href="https://slack.com" target="_blank">Slack</a> team and Hylo will notify a channel when there are new posts.</p>
+              <a href="https://slack.com/oauth/authorize?scope=incoming-webhook&client_id={window.hyloEnv.slack.clientId}&redirect_uri={addSlackUrl}"><img alt="Add to Slack" height="40" width="139" src="https://platform.slack-edge.com/img/add_to_slack.png" srcset="https://platform.slack-edge.com/img/add_to_slack.png 1x, https://platform.slack-edge.com/img/add_to_slack@2x.png 2x"></img></a> 
+            </div>}
+            {community.slack_hook_url && <div>
+              <p>This community is connected to the <span class="slack_team">{community.slack_team}</span> team on Slack.</p>
+              <button type='button' onClick={() => this.removeSlackhook()}>Remove</button>
+            </div>}
           </div>
         </div>
       </div>}

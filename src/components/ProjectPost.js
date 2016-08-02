@@ -17,6 +17,7 @@ import A from './A'
 import { ClickCatchingSpan } from './ClickCatcher'
 import { fetchPost, followPost, navigate } from '../actions'
 import moment from 'moment'
+import numeral from 'numeral'
 const { array, bool, func, object } = React.PropTypes
 
 const Deadline = ({ time }) => {
@@ -65,6 +66,7 @@ const ProjectPost = (props, context) => {
             </div>
           </div>
         </div>
+        <PledgeProgress post={post}/>
         <Supporters post={post}/>
       </div>
     </div>
@@ -113,6 +115,20 @@ const Supporters = ({ post, simple }, { currentUser, dispatch }) => {
   </div>
 }
 Supporters.contextTypes = {currentUser: object, dispatch: func}
+
+const PledgeProgress = ({ post, simple }, { currentUser, dispatch }) => {
+  const { financialRequestAmount } = post
+  const currencyAmount = numeral(financialRequestAmount).format('$0,0.00')
+
+  return <div className='supporters'> 
+    <div className='top'>
+      <h2>$0</h2>    
+      <span className='meta'>
+      pledged of {currencyAmount} goal
+    </span>
+    </div>
+  </div>
+}
 
 @connect((state, { id }) => ({
   post: getPost(id, state)

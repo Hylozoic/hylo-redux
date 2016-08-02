@@ -55,6 +55,7 @@
     "mobile-detect": "^1.3.2",
     "moment-timezone": "^0.4.1",
     "newrelic": "^1.27.2",
+    "numeral": "^1.5.3",
     "pretty-date": "^0.2.0",
     "querystring": "^0.2.0",
     "randomstring": "^1.1.5",

@@ -1,5 +1,7 @@
 import React from 'react'
-import { difference, filter, first, includes, isEmpty, map, some, sortBy } from 'lodash'
+import {
+  difference, filter, first, includes, isEmpty, map, some, sortBy
+} from 'lodash'
 import { find, get } from 'lodash/fp'
 const { array, bool, func, object, string } = React.PropTypes
 import cx from 'classnames'
@@ -129,13 +131,13 @@ const Communities = ({ communities }, { community }) => {
 }
 Communities.contextTypes = {community: object}
 
-const extractTags = (shortDesc, fullDesc) => {
-  const tags = cheerio.load(fullDesc)('.hashtag').toArray()
-  if (tags.length === 0) return []
+const getTags = text =>
+  cheerio.load(text)('.hashtag').toArray().map(tag =>
+    tag.children[0].data.replace(/^#/, ''))
 
-  const shortTags = cheerio.load(shortDesc)('.hashtag').toArray()
-  const tagName = tag => tag.children[0].data.replace(/^#/, '')
-  return difference(tags, shortTags).map(tagName)
+const extractTags = (shortDesc, fullDesc) => {
+  const tags = getTags(fullDesc)
+  return tags.length === 0 ? [] : difference(tags, getTags(shortDesc))
 }
 
 const HashtagLink = ({ tag, slug }, { dispatch }) => {
@@ -154,7 +156,11 @@ export const Details = ({ expanded, onExpand }, { post, community, dispatch }) =
   const truncated = !expanded && textLength(description) > 200
   if (truncated) {
     const orig = description
-    description = truncate(description, 200).html
+    description = truncate(description, 200, {
+      sanitizer: {
+        allowedAttributes: {a: ['href', 'class', 'data-search']}
+      }
+    }).html
     extractedTags = extractTags(description, orig)
   }
   if (description) description = appendInP(description, '&nbsp;')

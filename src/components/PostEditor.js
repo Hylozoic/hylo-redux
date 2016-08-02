@@ -108,14 +108,6 @@ export class PostEditor extends React.Component {
   updateStore = (data) => {
     let { id, dispatch } = this.props
     var newObj = cloneDeep(data)
-
-    if (data.financialRequestAmountAsString) {
-      newObj.financialRequestAmount = parseFloat(data.financialRequestAmountAsString)
-    }
-    else {
-      newObj.financialRequestAmount = undefined
-    }
-
     dispatch(updatePostEditor(newObj, id))
   }
 
@@ -171,7 +163,7 @@ export class PostEditor extends React.Component {
     }
 
     if (postEdit.financialRequestsEnabled &&
-        (!postEdit.financialRequestAmountAsString || parseFloat(postEdit.financialRequestAmountAsString) === 0.00)) {
+        (!postEdit.financialRequestAmount || parseFloat(postEdit.financialRequestAmount) === 0.00)) {
       window.alert('Enter an amount for financial contributions.')
       return Promise.resolve(false)
     }
@@ -181,7 +173,7 @@ export class PostEditor extends React.Component {
       return Promise.resolve(false)
     }
 
-    if(postEdit.financialRequestAmountAsString > 100000) {
+    if(parseFloat(postEdit.financialRequestAmount) > 100000) {
       window.alert('Please enter an amount less than $100000.')
       return Promise.resolve(false)
     }
@@ -196,12 +188,12 @@ export class PostEditor extends React.Component {
       return Promise.resolve(subvalidate())
     }
 
-    if(postEdit.financialRequestAmountAsString) {
-      var requestAmount = postEdit.financialRequestAmountAsString
-      var confirmPost = window.confirm('Please confirm you want to create a project with a request for USD ' + requestAmount + '. You will not be able to edit this amount after confirming.')
-
-      return Promise.resolve(confirmPost)
-    }
+    // if(postEdit.financialRequestAmountAsString) {
+    //   var requestAmount = postEdit.financialRequestAmountAsString
+    //   var confirmPost = window.confirm('Please confirm you want to create a project with a request for USD ' + requestAmount + '. You will not be able to edit this amount after confirming.')
+    //
+    //   return Promise.resolve(confirmPost)
+    // }
     return Promise.resolve(true)
   }
 

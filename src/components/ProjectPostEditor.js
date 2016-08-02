@@ -26,7 +26,7 @@ export default class ProjectPostEditor extends React.Component {
     postEdit: object,
     post: object,
     communityFinanceEnabled: bool,
-    financialRequestAmountAsString: string,
+    financialRequestAmount: string,
     update: func.isRequired,
     requests: array.isRequired
   }
@@ -62,7 +62,7 @@ export default class ProjectPostEditor extends React.Component {
   checkFinancialRequestsAllowed = () => {
     return this.props.communityFinanceEnabled ||
       this.props.postEdit.financialRequestsEnabled ||
-      this.props.postEdit.financialRequestAmountAsString
+      this.props.postEdit.financialRequestAmount
   }
 
   toggleEnableFinancialContributions = (event) => {
@@ -75,7 +75,7 @@ export default class ProjectPostEditor extends React.Component {
       }
     }
     else{
-      update({financialRequestAmountAsString: undefined})
+      update({financialRequestAmount: undefined})
     }
 
     update({financialRequestsEnabled: !postEdit.financialRequestsEnabled})
@@ -122,9 +122,9 @@ export default class ProjectPostEditor extends React.Component {
                     </div>
                     <div>
                         USD $
-                        <CurrencyInput value={postEdit.financialRequestAmountAsString + ''}
+                        <CurrencyInput value={postEdit.financialRequestAmount}
                                        thousandSeparator=''
-                                       onChange={maskedValue => update({financialRequestAmountAsString: maskedValue})}/>
+                                       onChange={maskedValue => update({financialRequestAmount: maskedValue})}/>
                     </div>
                 </div>
                 }

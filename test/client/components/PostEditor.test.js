@@ -21,8 +21,7 @@ const state = {
       name: 'hello!',
       description: 'and welcome',
       communities: ['f'],
-      financialRequestAmount: 10.00,
-      financialRequestAmountAsString: '10.00',
+      financialRequestAmount: '10.00',
       financialRequestsEnabled: false,
       end_time: new Date("2016-10-12T14:00:00.000Z")
     },
@@ -105,7 +104,7 @@ describe('PostEditor', () => {
   describe('with no financial contribution amount', () => {
     beforeEach(() => {
       const newState = cloneDeep(state)
-      set(newState, 'postEdits.foo.financialRequestAmountAsString', '0.00')
+      set(newState, 'postEdits.foo.financialRequestAmount', '0.00')
       set(newState, 'postEdits.foo.financialRequestsEnabled', true)
 
       render(newState, post)
@@ -120,7 +119,7 @@ describe('PostEditor', () => {
   describe('with a financial contribution amount over the $100,000 threshold', () => {
     beforeEach(() => {
       const newState = cloneDeep(state)
-      set(newState, 'postEdits.foo.financialRequestAmountAsString', '1000000.00')
+      set(newState, 'postEdits.foo.financialRequestAmount', '1000000.00')
       set(newState, 'postEdits.foo.financialRequestsEnabled', true)
 
       render(newState, post)
@@ -135,7 +134,7 @@ describe('PostEditor', () => {
   describe('with null financial contribution amount', () => {
     beforeEach(() => {
       const newState = cloneDeep(state)
-      set(newState, 'postEdits.foo.financialRequestAmountAsString', null)
+      set(newState, 'postEdits.foo.financialRequestAmount', null)
       set(newState, 'postEdits.foo.financialRequestsEnabled', true)
 
       render(newState, post)

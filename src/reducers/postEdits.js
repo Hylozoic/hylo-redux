@@ -72,8 +72,8 @@ export default function (state = {}, action) {
         ...state,
         [id]: {...state[id],
           ...withSuggestedTag(payload, state, id),
-          financialRequestsEnabled: payload.financialRequestsEnabled || checkForFinancialRequestAmount(state[id]),
-          financialRequestAmountAsString: getFinancialRequestAmountAsString(state[id])
+          financialRequestsEnabled: !!(payload.financialRequestsEnabled || payload.financialRequestAmount || (state[id] && state[id].financialRequestAmount)),
+          financialRequestAmount: payload.financialRequestAmount || (state[id] && state[id].financialRequestAmount)
         }
       }
     case CREATE_POST:

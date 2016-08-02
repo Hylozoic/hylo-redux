@@ -66,7 +66,7 @@ const ProjectPost = (props, context) => {
             </div>
           </div>
         </div>
-        <PledgeProgress post={post}/>
+        {post.financialRequestAmount && <PledgeProgress post={post}/> }
         <Supporters post={post}/>
       </div>
     </div>

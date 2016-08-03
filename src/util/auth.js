@@ -14,7 +14,7 @@ export function disconnect (service, dispatch) {
 
 export function openPopup (service, authContext) {
   var width, height
-
+  console.log('service; ', service);
   if (service === 'google') {
     width = 420
     height = 480
@@ -38,6 +38,7 @@ export function openPopup (service, authContext) {
     authContext
   }
 
+console.log(`/noo/login/${service}?${qs.stringify(params)}`)
   popup = window.open(
     `/noo/login/${service}?${qs.stringify(params)}`,
     `${service}Auth`,

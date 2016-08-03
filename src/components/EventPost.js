@@ -1,7 +1,7 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { timeRange, timeRangeBrief, timeRangeFull } from '../util/text'
-import { changeEventResponse } from '../actions'
+import { changeEventResponse, navigate } from '../actions'
 import A from './A'
 import Avatar from './Avatar'
 import Select from './Select'
@@ -25,7 +25,7 @@ export const EventPostCard = connect(
     community: getCurrentCommunity(state),
     isMobile: state.isMobile
   })
-)(({ post, comments, community, isMobile }) => {
+)(({ post, comments, community, isMobile, dispatch }) => {
   const { start_time, end_time, user, id, name } = post
   const start = new Date(start_time)
   const end = end_time && new Date(end_time)
@@ -48,7 +48,8 @@ export const EventPostCard = connect(
     </div>}
     <Attendance post={post} showButton limit={7} alignRight/>
     <div className='comments-section-spacer'/>
-    <CommentSection post={post} comments={comments}/>
+    <CommentSection post={post} comments={comments}
+      onExpand={() => dispatch(navigate(url))}/>
   </div>
 })
 
@@ -129,7 +130,7 @@ const EventPost = (props, context) => {
       </div>}
     </div>
 
-    <CommentSection post={post} comments={comments}/>
+    <CommentSection post={post} comments={comments} expanded/>
   </div>
 }
 EventPost.contextTypes = {

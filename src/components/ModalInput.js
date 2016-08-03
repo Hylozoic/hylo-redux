@@ -1,4 +1,5 @@
 import React from 'react'
+import cx from 'classnames'
 const { func, string, object } = React.PropTypes
 
 class ModalInput extends React.Component {
@@ -6,6 +7,7 @@ class ModalInput extends React.Component {
   static propTypes = {
     label: string,
     placeholder: string,
+    className: string,
     value: object,
     onChange: func
   }
@@ -16,14 +18,21 @@ class ModalInput extends React.Component {
   }
 
   render () {
-    const { label, placeholder, value, onChange } = this.props
+    const { label, placeholder, value, onChange, className } = this.props
 
-    return <div className='invite'>
+    const { active } = this.state
+
+    const focus = () => this.setState({active: true})
+    const blur = () => this.setState({active: false})
+
+    return <div className={cx(className, 'modal-input', {active})}>
       <label>{label}</label>
       <input type='text'
         placeholder={placeholder}
         value={value}
-        onChange={onChange}/>
+        onChange={onChange}
+        onFocus={focus}
+        onBlur={blur} />
     </div>
   }
 }

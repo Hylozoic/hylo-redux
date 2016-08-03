@@ -53,6 +53,19 @@
       }
     }
   }
+
+  .modal-input {
+    border-bottom: 1px solid transparent !important;
+  }
+
+  .modal-input.active {
+    border-top: 1px solid @damian-green !important;
+    border-bottom: 1px solid @damian-green !important;
+    background-color: white !important;
+    input:focus {
+      outline: none;
+    }
+  }
 }
 
 .isMobile #top-level-modal-wrapper {

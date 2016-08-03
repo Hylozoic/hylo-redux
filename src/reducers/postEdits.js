@@ -68,12 +68,16 @@ export default function (state = {}, action) {
           [id]: updateMedia(state[id], 'video', payload.video)
         }
       }
+
+      const financialRequestsEnabled = !!(payload.financialRequestsEnabled || payload.financialRequestAmount || (state[id] && state[id].financialRequestAmount))
+      const financialRequestAmount = payload.financialRequestAmount || (state[id] && state[id].financialRequestAmount) || undefined
+
       return {
         ...state,
         [id]: {...state[id],
           ...withSuggestedTag(payload, state, id),
-          financialRequestsEnabled: !!(payload.financialRequestsEnabled || payload.financialRequestAmount || (state[id] && state[id].financialRequestAmount)),
-          financialRequestAmount: payload.financialRequestAmount || (state[id] && state[id].financialRequestAmount)
+          financialRequestsEnabled,
+          financialRequestAmount
         }
       }
     case CREATE_POST:

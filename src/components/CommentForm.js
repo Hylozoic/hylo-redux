@@ -38,25 +38,22 @@ export default class CommentForm extends React.Component {
   }
 
   submit = event => {
-    const { dispatch, postId, commentId, text, newComment, close } = this.props
+    const { dispatch, postId, commentId, newComment, close } = this.props
     if (event) event.preventDefault()
+    const text = this.refs.editor.getContent().replace(/<p>&nbsp;<\/p>$/m, '')
     if (!text || textLength(text) < 2) return false
 
-    setTimeout(() => {
-      // use the current state of the editor rather than props to ensure we get the last
-      // edits on mobile, especially after an @mention
+    if (newComment) {
+      dispatch(createComment(postId, text, this.state.tagDescriptions))
+      .then(({ error }) => {
+        if (error) return
+        trackEvent(ADDED_COMMENT, {post: {id: postId}})
+      })
+    } else {
+      dispatch(updateComment(commentId, text, this.state.tagDescriptions))
+      close()
+    }
 
-      if (newComment) {
-        dispatch(createComment(postId, this.refs.editor.getContent(), this.state.tagDescriptions))
-        .then(({ error }) => {
-          if (error) return
-          trackEvent(ADDED_COMMENT, {post: {id: postId}})
-        })
-      } else {
-        dispatch(updateComment(commentId, this.refs.editor.getContent(), this.state.tagDescriptions))
-        close()
-      }
-    })
     return false
   }
 

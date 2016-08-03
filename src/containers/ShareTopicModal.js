@@ -7,6 +7,7 @@ import {
 } from '../actions'
 import A from '../components/A'
 import { Modal } from '../components/Modal'
+import ModalInput from '../components/ModalInput'
 import { communityTagJoinUrl } from '../routes'
 import { parseEmailString } from '../util/text'
 import { get, isEmpty, some } from 'lodash'
@@ -65,13 +66,12 @@ export default class ShareTopicModal extends React.Component {
         <label>People with this link can join</label>
         {joinUrl ? <A to={joinUrl}>{joinUrl}</A> : <span>Loading...</span>}
       </div>
-      <div className='invite'>        
-        <label>Invite people via email</label>
-        <input type='text'
-          placeholder='Enter email addresses, separated by commas'
-          value={recipients}
-          onChange={update('recipients')}/>
-      </div>
+      <ModalInput
+        className='invite'
+        label='Invite people via email'
+        placeholder='Enter email addresses, separated by commas'
+        value={recipients}
+        onChange={update('recipients')}/>
       {error && <div className='alert alert-danger'>{error}</div>}
       {success && <div className='alert alert-success'>{success}</div>}
       <div className='footer'>

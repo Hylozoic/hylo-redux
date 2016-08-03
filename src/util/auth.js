@@ -9,7 +9,7 @@ export const PROFILE_CONTEXT = 'profile'
 let popup
 
 export function disconnect (service, dispatch) {
-  dispatch(disconnect_hitfin())
+  dispatch(disconnect_hitfin(true, dispatch))
 }
 
 export function openPopup (service, authContext) {

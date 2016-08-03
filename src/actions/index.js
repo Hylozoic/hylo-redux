@@ -726,10 +726,15 @@ export function fetchCommunitiesForNetworkNav (networkId) {
   }
 }
 
-export function disconnect_hitfin () {
+export function disconnect_hitfin (refresh, dispatch) {
   return {
     type: DISCONNECT_HITFIN,
-    payload: {api: true, path: `/noo/unlink/hit-fin`, method: 'DELETE'}
+    payload: {api: true, path: `/noo/unlink/hit-fin`, method: 'DELETE'},
+    meta: {
+      then: (resp) => {
+          dispatch(fetchCurrentUser(true))
+      }
+    }
   }
 }
 

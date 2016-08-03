@@ -8,7 +8,7 @@ import Select from './Select'
 import Icon from './Icon'
 import LinkedPersonSentence from './LinkedPersonSentence'
 import { ClickCatchingSpan } from './ClickCatcher'
-import { get, find, includes, isEmpty, some, sortBy } from 'lodash'
+import { get, find, isEmpty, some, sortBy } from 'lodash'
 import { same } from '../models'
 import { getComments, imageUrl } from '../models/post'
 import { getCurrentCommunity } from '../models/community'
@@ -17,7 +17,7 @@ import decode from 'ent/decode'
 import cx from 'classnames'
 const { array, func, object } = React.PropTypes
 
-const shouldShowTag = tag => tag && !includes(['event', 'chat'], tag)
+const shouldShowTag = tag => tag && tag !== 'event'
 
 export const EventPostCard = connect(
   (state, { post }) => ({

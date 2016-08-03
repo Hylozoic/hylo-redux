@@ -96,6 +96,8 @@ export const THANK_PENDING = THANK + _PENDING
 export const TOGGLE_LEFT_NAV = 'TOGGLE_LEFT_NAV'
 export const TOGGLE_USER_SETTINGS_SECTION = 'TOGGLE_USER_SETTINGS_SECTION'
 export const TYPEAHEAD = 'TYPEAHEAD'
+export const UPDATE_COMMENT = 'UPDATE_COMMENT'
+export const UPDATE_COMMENT_PENDING = UPDATE_COMMENT + _PENDING
 export const UPDATE_COMMENT_EDITOR = 'UPDATE_COMMENT_EDITOR'
 export const UPDATE_COMMUNITY_EDITOR = 'UPDATE_COMMUNITY_EDITOR'
 export const UPDATE_INVITATION_EDITOR = 'UPDATE_INVITATION_EDITOR'
@@ -694,10 +696,10 @@ export function createTagInPostEditor () {
   }
 }
 
-export function updateCommentEditor (id, text) {
+export function updateCommentEditor (id, text, newComment) {
   return {
     type: UPDATE_COMMENT_EDITOR,
-    payload: {id, text}
+    payload: {id, text, bucket: newComment ? 'new' : 'edit'}
   }
 }
 
@@ -727,4 +729,13 @@ export function fetchCommunitiesForNetworkNav (networkId) {
 
 export function showExpandedPost (id, commentId) {
   return {type: SHOW_EXPANDED_POST, payload: {id, commentId}}
+}
+
+export function updateComment (commentId, text, tagDescriptions) {
+  const params = {text, tagDescriptions}
+  return {
+    type: UPDATE_COMMENT,
+    payload: {api: true, path: `/noo/comment/${commentId}`, params, method: 'POST'},
+    meta: {id: commentId, text, optimistic: true}
+  }
 }

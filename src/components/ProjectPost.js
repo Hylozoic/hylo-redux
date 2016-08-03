@@ -74,7 +74,7 @@ const ProjectPost = (props, context) => {
       </h3>
       {requests.map(id => <ProjectRequest key={id} {...{id, community}}/>)}
     </div>}
-    <CommentSection post={post} comments={comments}/>
+    <CommentSection post={post} comments={comments} expanded/>
   </div>
 }
 ProjectPost.contextTypes = {
@@ -188,7 +188,7 @@ const spacer = <span>&nbsp; •&nbsp; </span>
 
 export const ProjectPostCard = connect(
   (state, { post }) => ({comments: getComments(post, state)})
-)(({ post, comments }) => {
+)(({ post, comments, dispatch }) => {
   const { name, user, tag, end_time } = post
   const url = `/p/${post.id}`
   const backgroundImage = `url(${imageUrl(post)})`
@@ -209,6 +209,7 @@ export const ProjectPostCard = connect(
     <A className='title' to={url}>{name}</A>
     <Supporters post={post} simple/>
     <div className='comments-section-spacer'/>
-    <CommentSection post={post} comments={comments}/>
+    <CommentSection post={post} comments={comments}
+      onExpand={() => dispatch(navigate(url))}/>
   </div>
 })

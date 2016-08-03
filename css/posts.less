@@ -740,6 +740,13 @@ ul.posts {
     }
   }
 
+  .row {
+    .non-mobile({
+      display: flex;
+      flex-direction: row;   
+    })
+  }
+
   .main-col {
     .make-sm-column(8);
     .non-mobile({
@@ -748,12 +755,24 @@ ul.posts {
     padding: 12px 0 @post-padding 3px;
   }
 
+  .side-col {
+    .make-sm-column(4);
+  }
+
+  .side-col > div{
+    width: 100%;
+  }
+
   .mobile({
     .row {
       margin: 0;
     }
 
     .main-col {
+      padding-left: 0;
+    }
+
+    .side-col {
       padding-left: 0;
     }
   });

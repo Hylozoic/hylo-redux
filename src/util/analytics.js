@@ -13,7 +13,6 @@ export const ADDED_POST = 'Add Post'
 export const CLICKTHROUGH = 'Clickthrough'
 export const EDITED_POST = 'Edit Post'
 export const LOGGED_IN = 'Login success'
-export const SIGNED_UP = 'Signup success'
 export const SHOWED_POST_COMMENTS = 'Post: Comments: Show'
 export const STARTED_LOGIN = 'Login start'
 export const STARTED_SIGNUP = 'Signup start'
@@ -48,7 +47,6 @@ export function trackEvent (eventName, options = {}) {
       break
     case EDITED_USER_SETTINGS:
     case LOGGED_IN:
-    case SIGNED_UP:
     case STARTED_LOGIN:
     case STARTED_SIGNUP:
     case VIEWED_NOTIFICATIONS:

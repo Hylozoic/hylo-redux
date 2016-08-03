@@ -7,7 +7,7 @@ import { signup, setSignupError, toggleLeftNav } from '../actions'
 import ServiceAuthButtons from '../components/ServiceAuthButtons'
 import validator from 'validator'
 import { prefetchForNext, connectForNext, goToNext } from './Login'
-import { SIGNED_UP, STARTED_SIGNUP, trackEvent } from '../util/analytics'
+import { STARTED_SIGNUP, trackEvent } from '../util/analytics'
 const { func, object, string } = React.PropTypes
 
 @prefetchForNext
@@ -67,7 +67,6 @@ export default class Signup extends React.Component {
       if (error) return
       dispatch(toggleLeftNav())
       dispatch(goToNext(this.props.currentUser, query))
-      trackEvent(SIGNED_UP)
     })
   }
 

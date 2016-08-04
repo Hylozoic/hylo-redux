@@ -522,7 +522,6 @@ export default class CommunitySettings extends React.Component {
               <p className='summary'>Connect this community to a <a href="https://slack.com" target="_blank">Slack</a> team and Hylo will notify a channel when there are new posts.</p>
               <a href={"https://slack.com/oauth/authorize?scope=incoming-webhook&client_id=" + slackClientId + "&redirect_uri=" + addSlackUrl}><img alt="Add to Slack" height="40" width="139" src="https://platform.slack-edge.com/img/add_to_slack.png" srcset="https://platform.slack-edge.com/img/add_to_slack.png 1x, https://platform.slack-edge.com/img/add_to_slack@2x.png 2x"></img></a> 
             </div>}
-            <button type='button' onClick={() => this.addSlackhook()}>Add</button>
             {community.slack_hook_url && <div>
               <p>This community is connected to the <span class="slack_team">{community.slack_team}</span> team on Slack.</p>
               <button type='button' onClick={() => this.removeSlackhook()}>Remove</button>

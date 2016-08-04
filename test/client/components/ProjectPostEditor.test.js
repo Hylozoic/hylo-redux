@@ -83,4 +83,27 @@ describe('ProjectPostEditor', () => {
       expect(projectPostEditor.getElementsByClassName('financial-request').length).to.equal(1)
     })
   })
+
+
+    describe('there is a non-financial project', () => {
+      let newState, newPostEdit
+
+      beforeEach(() => {
+        newState  = cloneDeep(state)
+        newPostEdit = cloneDeep(postEdit)
+      })
+
+      it('deadline should be blank when deadline is not given', () => {
+        render(newState, post, newPostEdit)
+        let deadline = findRenderedDOMComponentWithClass(node, 'end_time')
+        expect(deadline.value).to.equal('')
+      })
+
+      it('there is a deadline when deadline is given', () => {
+        set(newPostEdit, 'end_time', '2080-08-24T14:00:00.000Z')
+        render(newState, post, newPostEdit)
+        let deadline = findRenderedDOMComponentWithClass(node, 'end_time')
+        expect(deadline.value).to.equal('08/25/2080 12:00 AM')
+      })
+    })
 })

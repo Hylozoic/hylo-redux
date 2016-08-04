@@ -86,6 +86,14 @@ export default class ProjectPostEditor extends React.Component {
     return !!this.props.post
   }
 
+  valueOfEndTime = (end_time) => {
+    if (!!end_time)
+      return moment(end_time).format("MM/DD/YYYY hh:mm A")
+    else {
+      return ''
+    }
+  }
+
   render () {
     const { postEdit, update, requests } = this.props
     const { end_time, tag, type } = postEdit
@@ -150,9 +158,10 @@ export default class ProjectPostEditor extends React.Component {
         <div className='deadline'>
           <Icon name='Calendar'/>
           { this.checkIfEdit() &&
-          <input type='text'
-                 value={moment(endTime).format('MM/DD/YYYY hh:mm A')}
-                 disabled/>
+
+          <input type="text" className="end_time"
+                 value={this.valueOfEndTime(end_time)}
+                 disabled={true}/>
           }
           { !this.checkIfEdit() &&
           <DatetimePicker inputProps={{placeholder: 'deadline'}}

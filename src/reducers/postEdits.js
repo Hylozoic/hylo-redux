@@ -15,7 +15,7 @@ import {
   UPLOAD_DOC,
   UPLOAD_IMAGE
 } from '../actions'
-import { updateMedia, checkForFinancialRequestAmount, getFinancialRequestAmountAsString } from './util'
+import { updateMedia, checkIfNewOrEditProject } from './util'
 import { prepareHashtagsForEditing } from '../util/linkify'
 import { invalidCharacterRegex } from '../models/hashtag'
 
@@ -69,7 +69,7 @@ export default function (state = {}, action) {
         }
       }
 
-      const financialRequestsEnabled = !!(payload.financialRequestsEnabled || payload.financialRequestAmount || (state[id] && state[id].financialRequestAmount))
+      const financialRequestsEnabled = checkIfNewOrEditProject(payload, state, id)
       const financialRequestAmount = payload.financialRequestAmount || (state[id] && state[id].financialRequestAmount) || undefined
 
       return {

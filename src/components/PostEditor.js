@@ -188,12 +188,6 @@ export class PostEditor extends React.Component {
       return Promise.resolve(subvalidate())
     }
 
-    // if(postEdit.financialRequestAmountAsString) {
-    //   var requestAmount = postEdit.financialRequestAmountAsString
-    //   var confirmPost = window.confirm('Please confirm you want to create a project with a request for USD ' + requestAmount + '. You will not be able to edit this amount after confirming.')
-    //
-    //   return Promise.resolve(confirmPost)
-    // }
     return Promise.resolve(true)
   }
 

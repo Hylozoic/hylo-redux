@@ -35,6 +35,25 @@ export function updateMedia (obj, type, url) {
   return {...obj, media}
 }
 
+export function checkIfNewOrEditProject(payload, state, id) {
+    if(id === "new-project"){
+        return checkNewFormForFinancialRequestsEnabled(payload, state, id)
+    } else return false
+    //financial request enabled field disabled on form edit
+}
+
+function checkNewFormForFinancialRequestsEnabled(payload, state) {
+    if(state["new-project"] === undefined || state["new-project"] === null) {
+        return false
+    } else if(payload.financialRequestsEnabled === undefined && payload.financialRequestAmount === undefined) {
+        return state["new-project"].financialRequestsEnabled
+    } else if(payload.financialRequestsEnabled) {
+        return !state["new-project"].financialRequestsEnabled
+    } else if(payload.financialRequestAmount) {
+        return true
+    } else return false
+}
+
 export function checkForFinancialRequestAmount(obj) {
     if(obj && (obj.financialRequestAmount || obj.financialRequestAmount == 0)) {
         return true

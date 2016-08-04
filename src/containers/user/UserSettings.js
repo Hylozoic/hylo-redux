@@ -209,12 +209,12 @@ export default class UserSettings extends React.Component {
       bio, location, url, facebook_url, twitter_name, linkedin_url
     } = {...currentUser, ...editing}
 
-    var renderHitFinButton;
-    var hitfinLink = _.find(currentUser.linkedAccounts, (acc) => acc.provider_key === 'hit-fin');
+    var renderHitFinButton
+    var hitfinLink = _.find(currentUser.linkedAccounts, (acc) => acc.provider_key === 'hit-fin')
     if (!hitfinLink) {
-      renderHitFinButton = <a className='button hit-fin-logo' onClick={() => openPopup('hit-fin', PROFILE_CONTEXT)}> Connect HitFin Account </a>;
+      renderHitFinButton = <a className='button hit-fin-logo' onClick={() => openPopup('hit-fin', PROFILE_CONTEXT)}> Connect HitFin Account </a>
     } else {
-      renderHitFinButton = <a className='button hit-fin-logo' onClick={() => this.unlinkHitfin()}> Disconnect </a>;
+      renderHitFinButton = <a className='button hit-fin-logo' onClick={() => this.unlinkHitfin()}> Disconnect </a>
     }
 
     return <div id='user-settings' className='form-sections simple-page'>

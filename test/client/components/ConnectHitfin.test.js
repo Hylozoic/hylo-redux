@@ -2,7 +2,6 @@ import React from 'react'
 import { mocks, helpers } from '../../support'
 import cheerio from 'cheerio'
 import { renderToString } from 'react-dom/server'
-import ReactDom from 'react-dom'
 
 import ConnectHitfin from '../../../src/components/ConnectHitfin'
 

@@ -68,15 +68,14 @@ export default class ProjectPostEditor extends React.Component {
   }
 
   toggleEnableFinancialContributions = (event) => {
-    const { update, postEdit} = this.props
+    const { update, postEdit } = this.props
 
-    if(!postEdit.financialRequestsEnabled){
-      if(postEdit.communities && postEdit.communities.length > 1){
-        alert("Financial projects can only be posted in one community.")
+    if (!postEdit.financialRequestsEnabled) {
+      if (postEdit.communities && postEdit.communities.length > 1) {
+        window.alert('Financial projects can only be posted in one community.')
         return
       }
-    }
-    else{
+    } else {
       update({financialRequestAmount: undefined})
     }
 
@@ -150,9 +149,9 @@ export default class ProjectPostEditor extends React.Component {
         <div className='deadline'>
           <Icon name='Calendar'/>
           { this.checkIfEdit() &&
-          <input type="text"
-                 value={moment(endTime).format("MM/DD/YYYY hh:mm A")}
-                 disabled={true}/>
+          <input type='text'
+                 value={moment(endTime).format('MM/DD/YYYY hh:mm A')}
+                 disabled/>
           }
           { !this.checkIfEdit() &&
           <DatetimePicker inputProps={{placeholder: 'deadline'}}

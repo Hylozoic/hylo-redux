@@ -11,7 +11,7 @@ import shallowCompare from 'react-addons-shallow-compare'
 import cx from 'classnames'
 import autoproxy from 'autoproxy'
 import {
-  debounce, difference, compact, cloneDeep, filter, find, get, includes, isNaN, isEmpty, some,
+  debounce, difference, compact, cloneDeep, filter, find, get, includes, isEmpty, some,
   startsWith, keys, uniq
 } from 'lodash'
 import CommunityTagInput from './CommunityTagInput'
@@ -39,7 +39,7 @@ import { createTagInPostEditor } from '../actions'
 import { ADDED_POST, EDITED_POST, trackEvent } from '../util/analytics'
 import { getCurrentCommunity } from '../models/community'
 import TagDescriptionEditor from './TagDescriptionEditor'
-const { array, bool, func, object, string, number } = React.PropTypes
+const { array, bool, func, object, string } = React.PropTypes
 
 const specialTags = ['request', 'offer', 'intention']
 
@@ -126,19 +126,19 @@ export class PostEditor extends React.Component {
   setDelayed = debounce((key, value) => this.updateStore({[key]: value}), 50)
 
   addCommunity = community => {
-    let { communities, financialRequestsEnabled} = this.props.postEdit
-    if(financialRequestsEnabled){
-      if(communities.length > 0){
-        alert("Financial projects can only be posted in one community.")
+    let { communities, financialRequestsEnabled } = this.props.postEdit
+    if (financialRequestsEnabled) {
+      if (communities.length > 0) {
+        window.alert('Financial projects can only be posted in one community.')
         return
       }
-      
-      if(!community.financial_requests_enabled){
-        alert("Financial projects can only be posted in financial contributions enabled community")
+
+      if (!community.financial_requests_enabled) {
+        window.alert('Financial projects can only be posted in financial contributions enabled community')
         return
       }
     }
-    
+
     this.updateStore({communities: (communities || []).concat(community.id)})
   }
 
@@ -168,12 +168,12 @@ export class PostEditor extends React.Component {
       return Promise.resolve(false)
     }
 
-    if(new Date(postEdit.end_time).getTime() < new Date().getTime()) {
+    if (new Date(postEdit.end_time).getTime() < new Date().getTime()) {
       window.alert('Deadline must have not yet passed.')
       return Promise.resolve(false)
     }
 
-    if(parseFloat(postEdit.financialRequestAmount) > 100000) {
+    if (parseFloat(postEdit.financialRequestAmount) > 100000) {
       window.alert('Please enter an amount less than $100000.')
       return Promise.resolve(false)
     }

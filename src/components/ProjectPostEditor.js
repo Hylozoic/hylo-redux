@@ -115,6 +115,7 @@ export default class ProjectPostEditor extends React.Component {
                     <div>
                         Enable Financial Contributions
                         <input type='checkbox' className='right'
+                               disabled={this.checkIfEdit()}
                                onClick={this.toggleEnableFinancialContributions}
                                value={postEdit.financialRequestsEnabled}/>
                     </div>

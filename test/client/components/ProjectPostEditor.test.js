@@ -33,6 +33,9 @@ const state = {
                 enable_finance: false
             }
         }
+    },
+    people:{
+      current: { id: 'id', linkedAccounts: [] }
     }
 }
 

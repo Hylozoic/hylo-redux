@@ -10,6 +10,7 @@ import { debounce } from 'lodash'
 import { get, map, pick } from 'lodash/fp'
 import { getPost, getVideo } from '../models/post'
 import CurrencyInput from 'react-currency-input'
+import ConnectHitfin from './ConnectHitfin'
 const { array, func, object, bool, string } = React.PropTypes
 
 const random = () => Math.random().toString().slice(2, 8)
@@ -122,6 +123,7 @@ export default class ProjectPostEditor extends React.Component {
 
                 {(postEdit.financialRequestsEnabled) &&
                 <div className='section-item financial-request'>
+                  <ConnectHitfin message='Connect a HitFin account so that you cane enable financial contributions to your project'>
                     <div className='title'>
                         How much do you need?
                     </div>
@@ -132,6 +134,7 @@ export default class ProjectPostEditor extends React.Component {
                                        thousandSeparator=''
                                        onChange={maskedValue => update({financialRequestAmount: maskedValue})}/>
                     </div>
+                  </ConnectHitfin>
                 </div>
                 }
             </div>

@@ -203,18 +203,6 @@ export default class CommunitySettings extends React.Component {
     }
   }
 
-  addSlackhook () {
-    let { dispatch, community } = this.props
-    let { slug, slack_hook_url, slack_team, slack_configure_url } = community
-    let oldSettings = { slack_hook_url, slack_team, slack_configure_url }
-    let edited = { 
-      slack_hook_url: "a_big_url",
-      slack_team: "My Team",
-      slack_configure_url: "go here"
-    }
-    dispatch(updateCommunitySettings(community.id, {slug, ...edited}, oldSettings))
-  }
-
   removeSlackhook () {
     let { dispatch, community } = this.props
     let { slug, slack_hook_url, slack_team, slack_configure_url } = community

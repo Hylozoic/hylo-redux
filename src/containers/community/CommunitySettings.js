@@ -16,6 +16,7 @@ import {
   navigate
 } from '../../actions'
 import config from '../../config'
+const { upstreamHost } = config
 const slackClientId = config.slack.clientId
 import { avatarUploadSettings, bannerUploadSettings } from '../../models/community'
 import A from '../../components/A'
@@ -242,7 +243,7 @@ export default class CommunitySettings extends React.Component {
     let { avatar_url, banner_url } = community
     let { editing, edited, errors, expand } = this.state
     let labelProps = {expand, toggle: this.toggleSection}
-    let origin, joinUrl, codeNotUnique, slugNotUnique, addSlackUrl
+    let joinUrl, codeNotUnique, slugNotUnique, addSlackUrl
     let { is_admin } = this.props.currentUser
 
     if (expand.appearance) {
@@ -256,8 +257,7 @@ export default class CommunitySettings extends React.Component {
     }
 
     if (expand.slack) {
-      origin = 'http://localhost:3001'
-      addSlackUrl = origin + '/noo/community/' + community.id + '/settings/slack'
+      addSlackUrl = upstreamHost + '/noo/community/' + community.id + '/settings/slack'
     }
 
     return <div className='form-sections' id='community-settings'>

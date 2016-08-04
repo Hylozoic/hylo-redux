@@ -65,9 +65,8 @@ export default class Signup extends React.Component {
     dispatch(signup(name, email, password))
     .then(({ error }) => {
       if (error) return
-      const { currentUser } = this.props
       dispatch(toggleLeftNav())
-      dispatch(goToNext(currentUser, query))
+      dispatch(goToNext(this.props.currentUser, query))
     })
   }
 

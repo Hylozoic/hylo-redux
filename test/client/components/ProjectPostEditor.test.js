@@ -1,6 +1,7 @@
 require('../support')
 import { mocks, helpers } from '../../support'
 import { cloneDeep, set } from 'lodash'
+import moment from 'moment'
 import ProjectPostEditor from '../../../src/components/ProjectPostEditor'
 import {
   findRenderedDOMComponentWithClass,
@@ -103,7 +104,7 @@ describe('ProjectPostEditor', () => {
         set(newPostEdit, 'end_time', '2080-08-24T14:00:00.000Z')
         render(newState, post, newPostEdit)
         let deadline = findRenderedDOMComponentWithClass(node, 'end_time')
-        expect(deadline.value).to.equal('08/25/2080 12:00 AM')
+        expect(deadline.value).to.equal(moment('2080-08-24T14:00:00.000Z').format("MM/DD/YYYY hh:mm A"))
       })
     })
 })

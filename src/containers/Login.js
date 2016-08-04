@@ -11,7 +11,7 @@ import {
   navigate,
   setLoginError
 } from '../actions'
-import { LOGGED_IN, STARTED_LOGIN, trackEvent } from '../util/analytics'
+import { LOGGED_IN, STARTED_LOGIN, alias, trackEvent } from '../util/analytics'
 import { Link } from 'react-router'
 import ServiceAuthButtons from '../components/ServiceAuthButtons'
 import { communityUrl } from '../routes'
@@ -62,6 +62,8 @@ export const connectForNext = section =>
   }, null, null, {withRef: true})
 
 export const goToNext = (currentUser, query) => {
+  alias(currentUser.id)
+
   let { next, action, token } = query
 
   if (!next) {

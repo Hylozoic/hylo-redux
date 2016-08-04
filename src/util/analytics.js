@@ -75,3 +75,9 @@ export const identify = person => {
     community: get(community, 'name')
   })
 }
+
+// this is used to make sure that all events, whether they were fired before or
+// after signup, are assigned to the same user
+export const alias = id => {
+  window.analytics.alias(id)
+}

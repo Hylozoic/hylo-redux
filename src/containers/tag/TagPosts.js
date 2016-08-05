@@ -14,6 +14,7 @@ import Dropdown from '../../components/Dropdown'
 import PersonDropdownItem from '../../components/PersonDropdownItem'
 import AccessErrorMessage from '../../components/AccessErrorMessage'
 import { canInvite } from '../../models/currentUser'
+import Tooltip from '../../components/Tooltip'
 const { bool, func, object } = React.PropTypes
 
 const subject = 'community'
@@ -71,9 +72,17 @@ class TagPosts extends React.Component {
           {!isMobile && owner && <span className='byline'>by {owner.name}</span>}
         </span>
         {!isMobile && followers && <Followers followers={sortBy(followers, f => f.id !== owner.id)} />}
-        {id && <button className={tag.followed ? 'unfollow' : 'follow'} onClick={toggleFollow}>
+        {id && <button id='follow-button' className={tag.followed ? 'unfollow' : 'follow'} onClick={toggleFollow}>
           {tag.followed ? 'Unfollow' : 'Follow'}
         </button>}
+        {id && <Tooltip id='follow'
+          index={3}
+          arrow='right'
+          position='bottom'
+          parentId='follow-button'
+          title='Follow Topics'
+          body="You can (un)follow topics you're interested in for easy access and on-site notifications when there's a new post."
+        />}
         {canInvite(currentUser, community) &&
           <button className='share' onClick={() => dispatch(showShareTag(tagName, id))}><Icon name='Box-Out'/></button>}
       </div>

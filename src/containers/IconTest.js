@@ -15,7 +15,7 @@ export default class IconTest extends React.Component {
       <div>la</div>
       <div>
         <Tooltip
-          id='test3'
+          id='test31'
           index={3}
           title='Topics (3)'
           body='The topics you follow or create will be listed here for easy access and notifications on new activities'
@@ -32,7 +32,7 @@ export default class IconTest extends React.Component {
         <div>lalalalalalalalalalalalalalala
           lalalalalalalalalalalalalalalalalalalalalalala
           lalalalalalalalalalalalalalalalalalalalalalalala<Tooltip
-            id='test1'
+            id='test11'
             index={1}
             title='Topics (1)'
             body='The topics you follow or create will be listed here for easy access and notifications on new activities'
@@ -47,27 +47,24 @@ export default class IconTest extends React.Component {
         <div>la</div>
         <div>la</div>
 
-          <div>la</div>
-            <div>lalalalalalalalalalalalalalala
-              lalalalalalalalalalalalalalalalalalalalalalala
-              lalalalalalalalalalalalalalalalalalalalalalalala<Tooltip
-                id='test2'
-                index={2}
-                title='Topics (2)'
-                body='The topics you follow or create will be listed here for easy access and notifications on new activities'
-                />
-            </div>
-            <div>la</div>
-            <div>la</div>
-            <div>la</div>
-            <div>la</div>
-            <div>la</div>
-            <div>la</div>
-            <div>la</div>
-            <div>la</div>
-
-
-
+        <div>la</div>
+        <div>lalalalalalalalalalalalalalala
+          lalalalalalalalalalalalalalalalalalalalalalala
+          lalalalalalalalalalalalalalalalalalalalalalalala<Tooltip
+            id='test21'
+            index={2}
+            title='Topics (2)'
+            body='The topics you follow or create will be listed here for easy access and notifications on new activities'
+            />
+        </div>
+        <div>la</div>
+        <div>la</div>
+        <div>la</div>
+        <div>la</div>
+        <div>la</div>
+        <div>la</div>
+        <div>la</div>
+        <div>la</div>
     </div>
   }
 }

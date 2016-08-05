@@ -1,5 +1,6 @@
+import { omit } from 'lodash/fp'
 import {
-  REGISTER_TOOLTIP
+  REGISTER_TOOLTIP, UNREGISTER_TOOLTIP
 } from '../actions'
 
 export default function (state = {}, action) {
@@ -12,6 +13,8 @@ export default function (state = {}, action) {
         ...state,
         [payload.id]: payload.index
       }
+    case UNREGISTER_TOOLTIP:
+      return omit(payload.id, state)
   }
 
   return state

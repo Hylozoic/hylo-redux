@@ -3,7 +3,7 @@ import { connect } from 'react-redux'
 import ToolTip from 'react-portal-tooltip'
 import { get, omit, sortBy, flow, toPairs, keys } from 'lodash/fp'
 const { string, number, bool, object, func } = React.PropTypes
-import { updateUserSettings, registerTooltip } from '../actions'
+import { updateUserSettings, registerTooltip, unregisterTooltip } from '../actions'
 
 const activeTooltip = (currentUser, tooltips) => {
   const viewed = flow(
@@ -28,6 +28,7 @@ const activeTooltip = (currentUser, tooltips) => {
 export default class Tooltip extends React.Component {
   static propTypes = {
     id: string.isRequired,
+    parentId: string,
     index: number.isRequired,
     title: string,
     body: string,
@@ -48,8 +49,15 @@ export default class Tooltip extends React.Component {
     dispatch(registerTooltip(id, index))
   }
 
+  componentWillUnmount () {
+    const { dispatch, id } = this.props
+    dispatch(unregisterTooltip(id))
+  }
+
   render () {
-    const { id, active, title, body, position, arrow, dispatch, currentUser } = this.props
+    const {
+      id, active, title, body, position, arrow, dispatch, currentUser, parentId
+    } = this.props
 
     const ttid = `tooltip-id-${id}`
     const style = {
@@ -73,7 +81,7 @@ export default class Tooltip extends React.Component {
     return <span id={ttid}>
       <ToolTip
         active={active}
-        parent={`#${ttid}`}
+        parent={`#${parentId || ttid}`}
         position={position}
         arrow={arrow}
         style={style}>

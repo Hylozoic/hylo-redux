@@ -23,6 +23,7 @@ import { NonLinkAvatar } from './Avatar'
 import AutosizingTextarea from './AutosizingTextarea'
 import Icon from './Icon'
 import LinkPreview from './LinkPreview'
+import Tooltip from './Tooltip'
 import { connect } from 'react-redux'
 import {
   createPost, cancelPostEdit, fetchLinkPreview, removeImage, removeDoc,
@@ -373,7 +374,7 @@ export class PostEditor extends React.Component {
         </div>}
 
       {shouldSelectTag && <Dropdown className='hashtag-selector' toggleChildren={
-        <button ref='tagSelector'>
+        <button ref='tagSelector' id='tag-selector'>
           #{tag || 'all-topics'}&nbsp;
           <span className='caret'></span>
         </button>
@@ -384,6 +385,14 @@ export class PostEditor extends React.Component {
         <li><a onClick={() => selectTag(null)}>#all-topics</a></li>
         <li className='create'><a onClick={() => createTag()}>Create New Topic</a></li>
       </Dropdown>}
+      {id && <Tooltip id='selector'
+        index={1}
+        arrow='left'
+        position='bottom'
+        parentId='tag-selector'
+        title='Select Topic'
+        body='You can select or create a topic for your new post here.'
+      />}
 
       {linkPreview && <LinkPreview {...{linkPreview}} onClose={removeLinkPreview}/>}
 

@@ -1,6 +1,7 @@
 import React from 'react'
 import { A, IndexA } from './A'
 import Icon from './Icon'
+import Tooltip from './Tooltip'
 import { VelocityTransitionGroup } from 'velocity-react'
 import { isEmpty } from 'lodash'
 import { filter, get } from 'lodash/fp'
@@ -111,6 +112,11 @@ export const LeftNav = ({ opened, community, network, tags, close, links }, { is
         ? <NetworkNav network={network} />
         : <CommunityNav links={links}/>}
       {!isEmpty(tags) && <TopicList tags={tags} slug={get('slug', community)}/>}
+      <Tooltip id='topics'
+        index={2}
+        position='right'
+        title='Topics'
+        body='The topics you follow or create will be listed here for easy access and notifications on new activities'/>
     </nav>}
     {opened && <div id='leftNavBackdrop' onClick={close}/>}
   </VelocityTransitionGroup>

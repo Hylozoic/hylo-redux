@@ -97,6 +97,7 @@ export const THANK_PENDING = THANK + _PENDING
 export const TOGGLE_LEFT_NAV = 'TOGGLE_LEFT_NAV'
 export const TOGGLE_USER_SETTINGS_SECTION = 'TOGGLE_USER_SETTINGS_SECTION'
 export const TYPEAHEAD = 'TYPEAHEAD'
+export const UNREGISTER_TOOLTIP = 'UNREGISTER_TOOLTIP'
 export const UPDATE_COMMENT = 'UPDATE_COMMENT'
 export const UPDATE_COMMENT_PENDING = UPDATE_COMMENT + _PENDING
 export const UPDATE_COMMENT_EDITOR = 'UPDATE_COMMENT_EDITOR'
@@ -743,4 +744,8 @@ export function updateComment (commentId, text, tagDescriptions) {
 
 export function registerTooltip (id, index) {
   return {type: REGISTER_TOOLTIP, payload: {id, index}}
+}
+
+export function unregisterTooltip (id) {
+  return {type: UNREGISTER_TOOLTIP, payload: {id}}
 }

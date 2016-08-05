@@ -19,7 +19,7 @@ export const activeTooltip = (currentUser, tooltips) => {
 }
 
 @connect(({ people, tooltips }, { id }) => {
-  const currentUser = people.current
+  const currentUser = get('current', people)
   return {
     active: activeTooltip(currentUser, tooltips) === id,
     currentUser

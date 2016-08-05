@@ -106,8 +106,8 @@ export default function (state = {}, action) {
       let { params, id } = meta
       return {
         ...state,
-        current: {...state.current, ...params},
-        [id]: {...state[id], ...params}
+        current: merge(state.current, params),
+        [id]: merge(state[id], params)
       }
     case LEAVE_COMMUNITY_PENDING:
       let memberships = filter(state.current.memberships, m => m.community_id !== meta.communityId)

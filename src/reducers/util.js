@@ -35,14 +35,7 @@ export function updateMedia (obj, type, url) {
   return {...obj, media}
 }
 
-export function checkIfNewOrEditProject(payload, state, id) {
-    if(id === "new-project"){
-        return checkNewFormForFinancialRequestsEnabled(payload, state, id)
-    } else return false
-    //financial request enabled field disabled on form edit
-}
-
-function checkNewFormForFinancialRequestsEnabled(payload, state) {
+export function checkNewFormForFinancialRequestsEnabled(payload, state) {
     if(state["new-project"] === undefined || state["new-project"] === null) {
         return false
     } else if(payload.financialRequestsEnabled === undefined && payload.financialRequestAmount === undefined) {
@@ -54,20 +47,20 @@ function checkNewFormForFinancialRequestsEnabled(payload, state) {
     } else return false
 }
 
-export function checkForFinancialRequestAmount(obj) {
-    if(obj && (obj.financialRequestAmount || obj.financialRequestAmount == 0)) {
-        return true
-    } else {
-        return false
-    }
+export function checkEditFormForFinancialRequestsEnabled (state, id) {
+    return state[id] && state[id].financialRequestAmount
 }
 
-export function getFinancialRequestAmountAsString(obj){
-    if (obj && obj.financialRequestAmount) {
-        return obj.financialRequestAmount.toString()
-    } else {
-        return ""
-    }
+export function checkForFinancialRequestAmount(state, payload, id) {
+    if(state.financialRequestAmount) {
+        return state.financialRequestAmount
+    } else if(payload[id] && payload[id].financialRequestsEnabled === false) {
+        return undefined
+    } else if(payload[id] && payload[id].financialRequestAmount) {
+        return payload[id].financialRequestAmount
+    } else if(state[id] && state[id].financialRequestAmount) {
+        return state[id].financialRequestAmount
+    } else return undefined
 }
 
 // update state with a set of items. items that already exist in the state get

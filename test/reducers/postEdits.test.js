@@ -107,7 +107,7 @@ describe('postEdits', () => {
           name: 'Foo and some! split-words as well',
           description: 'lol',
           financialRequestAmount: undefined,
-          financialRequestsEnabled: false,
+          financialRequestsEnabled: undefined,
           tag: 'FooAndSomeSplit',
           type: 'event'
         }
@@ -130,7 +130,7 @@ describe('postEdits', () => {
           name: 'Foo and some! split-words as well',
           description: 'lol',
           financialRequestAmount: undefined,
-          financialRequestsEnabled: false
+          financialRequestsEnabled: undefined
         }
       }
 
@@ -152,7 +152,7 @@ describe('postEdits', () => {
         x: {
           id: 'x',
           financialRequestAmount: undefined,
-          financialRequestsEnabled: false,
+          financialRequestsEnabled: undefined,
           name: 'Foo and some! split-words as well',
           description: 'lol',
           type: 'event'
@@ -178,7 +178,7 @@ describe('postEdits', () => {
           name: 'Foo and some! split-words as well',
           description: 'lol',
           financialRequestAmount: undefined,
-          financialRequestsEnabled: false,
+          financialRequestsEnabled: undefined,
           tagEdited: true,
           type: 'event'
         }

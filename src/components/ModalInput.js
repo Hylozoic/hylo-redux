@@ -1,6 +1,6 @@
 import React from 'react'
 import cx from 'classnames'
-const { func, string, object } = React.PropTypes
+const { func, string } = React.PropTypes
 
 class ModalInput extends React.Component {
 
@@ -8,7 +8,9 @@ class ModalInput extends React.Component {
     label: string,
     placeholder: string,
     className: string,
-    value: object,
+    defaultValue: string,
+    value: string,
+    type: string,
     onChange: func
   }
 
@@ -17,22 +19,26 @@ class ModalInput extends React.Component {
     this.state = {}
   }
 
-  render () {
-    const { label, placeholder, value, onChange, className } = this.props
+  getValue () {
+    return this.refs.input.value
+  }
 
+  render () {
+    const {
+      label, placeholder, defaultValue, value, onChange, className, type
+    } = this.props
     const { active } = this.state
 
-    const focus = () => this.setState({active: true})
-    const blur = () => this.setState({active: false})
-
-    return <div className={cx(className, 'modal-input', {active})}>
+    return <div className={cx(className, 'modal-input', {active})}
+      onClick={() => this.refs.input.focus()}>
       <label>{label}</label>
-      <input type='text'
+      <input type={type || 'text'} ref='input'
         placeholder={placeholder}
+        defaultValue={defaultValue}
         value={value}
         onChange={onChange}
-        onFocus={focus}
-        onBlur={blur} />
+        onFocus={() => this.setState({active: true})}
+        onBlur={() => this.setState({active: false})} />
     </div>
   }
 }

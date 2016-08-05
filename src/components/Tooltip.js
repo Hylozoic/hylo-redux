@@ -5,7 +5,7 @@ import { get, omit, sortBy, flow, toPairs, keys } from 'lodash/fp'
 const { string, number, bool, object, func } = React.PropTypes
 import { updateUserSettings, registerTooltip, unregisterTooltip } from '../actions'
 
-const activeTooltip = (currentUser, tooltips) => {
+export const activeTooltip = (currentUser, tooltips) => {
   const viewed = flow(
     get('settings.viewedTooltips'),
     keys

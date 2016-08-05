@@ -75,10 +75,24 @@ export class ModalWrapper extends React.Component {
   }
 }
 
-export const Modal = (props, { isMobile }) => {
-  const { id, className, children, title, subtitle, onCancel, standalone } = props
+export const ModalContainer = (props, { isMobile }) => {
+  const { id, className, children, standalone } = props
   return <div id={id} className={cx(className, 'modal')}
     style={standalone ? {} : modalStyle(isMobile)}>
+    {children}
+  </div>
+}
+ModalContainer.propTypes = {
+  id: string,
+  children: oneOfType([array, object]),
+  className: string,
+  standalone: bool
+}
+ModalContainer.contextTypes = {isMobile: bool}
+
+export const Modal = (props, { isMobile }) => {
+  const { children, title, subtitle, onCancel, standalone } = props
+  return <ModalContainer {...props}>
     <div className='title'>
       <h2>
         {title}
@@ -91,7 +105,7 @@ export const Modal = (props, { isMobile }) => {
       </div>}
     </div>
     {children}
-  </div>
+  </ModalContainer>
 }
 Modal.propTypes = {
   id: string,

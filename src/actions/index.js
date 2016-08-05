@@ -12,6 +12,7 @@ export const CHANGE_EVENT_RESPONSE_PENDING = CHANGE_EVENT_RESPONSE + _PENDING
 export const CHECK_FRESHNESS_POSTS = 'CHECK_FRESHNESS_POSTS'
 export const CLEAR_CACHE = 'CLEAR_CACHE'
 export const CLOSE_MODAL = 'CLOSE_MODAL'
+export const CLOSE_TOOLTIP = 'CLOSE_TOOLTIP'
 export const CREATE_COMMENT = 'CREATE_COMMENT'
 export const CREATE_COMMUNITY = 'CREATE_COMMUNITY'
 export const CREATE_POST = 'CREATE_POST'
@@ -738,4 +739,8 @@ export function updateComment (commentId, text, tagDescriptions) {
     payload: {api: true, path: `/noo/comment/${commentId}`, params, method: 'POST'},
     meta: {id: commentId, text, optimistic: true}
   }
+}
+
+export function closeTooltip (id) {
+  
 }

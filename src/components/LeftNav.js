@@ -105,21 +105,22 @@ export const LeftNav = ({ opened, community, network, tags, close, links }, { is
     event.stopPropagation()
   }
 
-  return <VelocityTransitionGroup {...animations}>
+  return <span><VelocityTransitionGroup {...animations}>
     {opened && <nav id='leftNav' onClick={() => isMobile && close()}>
       <MenuButton onClick={onMenuClick} label={isMobile ? 'Menu' : 'Topics'} showClose/>
       {network
         ? <NetworkNav network={network} />
         : <CommunityNav links={links}/>}
       {!isEmpty(tags) && <TopicList tags={tags} slug={get('slug', community)}/>}
-      <Tooltip id='topics'
-        index={2}
-        position='right'
-        title='Topics'
-        body='The topics you follow or create will be listed here for easy access and notifications on new activities'/>
     </nav>}
     {opened && <div id='leftNavBackdrop' onClick={close}/>}
   </VelocityTransitionGroup>
+  {opened && <Tooltip id='topics'
+    index={2}
+    position='right'
+    title='Topics'
+    body='The topics you follow or create will be listed here for easy access and notifications on new activities'/>}
+  </span>
 }
 LeftNav.contextTypes = {isMobile: bool}
 

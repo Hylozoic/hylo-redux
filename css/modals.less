@@ -57,6 +57,12 @@
   background-color: white;
   margin-bottom: -1px;
 
+  .alert {
+    border-radius: 0;
+    border: none;
+    margin-bottom: 0;
+  }
+
   > .title {
     border-bottom: 1px solid @post-border;
     padding-bottom: 15px;
@@ -88,6 +94,11 @@
         background-color: @damian-green;
         border-color: @damian-green;
       }
+    }
+
+    .right {
+      line-height: @round-button-height + 1;
+      vertical-align: baseline;
     }
   }
 
@@ -157,8 +168,10 @@
   min-height: 100vh;
 
   .modal {
-    margin: 0 auto;
-    width: @main-column-width;
+    .non-mobile({
+      margin: 0 auto;
+      width: @main-column-width;
+    });
   }
 
   .modal-topper {

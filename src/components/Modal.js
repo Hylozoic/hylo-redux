@@ -38,13 +38,13 @@ export class ModalWrapper extends React.Component {
     window.scrollTo(0, this.lockedScrollTop)
   }
 
-  componentDidMount () {
-    this.lockedScrollTop = document.body.scrollTop
-    window.addEventListener('scroll', this.lockScrolling)
-  }
-
-  componentWillUnmount () {
-    window.removeEventListener('scroll', this.lockScrolling)
+  componentWillReceiveProps (nextProps) {
+    if (nextProps.show && !this.props.show) {
+      this.lockedScrollTop = document.body.scrollTop
+      window.addEventListener('scroll', this.lockScrolling)
+    } else if (!nextProps.show && this.props.show) {
+      window.removeEventListener('scroll', this.lockScrolling)
+    }
   }
 
   render () {

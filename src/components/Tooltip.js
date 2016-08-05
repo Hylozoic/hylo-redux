@@ -8,7 +8,9 @@ const activeTooltip = (currentUser, tooltips) => {
 
 }
 
-@connect(({ currentUser, tooltips }, { id }))
+@connect(({ currentUser, tooltips }, { id }) => {
+  
+})
 export default class Tooltip extends React.Component {
   static propTypes = {
     id: string.isRequired,
@@ -42,7 +44,7 @@ export default class Tooltip extends React.Component {
     }
 
     const closeTooltip = id => {
-      dispatch(updateUserSettings(currentUser.id))
+      // dispatch(updateUserSettings(currentUser.id, ))
     }
 
 

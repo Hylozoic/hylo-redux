@@ -337,11 +337,11 @@ export function toggleLeftNav () {
   return {type: TOGGLE_LEFT_NAV}
 }
 
-export function updateUserSettings (id, params, prevProps) {
+export function updateUserSettings (id, params) {
   return {
     type: UPDATE_USER_SETTINGS,
     payload: {api: true, params, path: `/noo/user/${id}`, method: 'POST'},
-    meta: {id, params, prevProps}
+    meta: {id, params, optimistic: true}
   }
 }
 
@@ -742,5 +742,5 @@ export function updateComment (commentId, text, tagDescriptions) {
 }
 
 export function closeTooltip (id) {
-  
+
 }

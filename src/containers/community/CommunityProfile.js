@@ -2,7 +2,7 @@ import React from 'react'
 import { compose } from 'redux'
 import { connect } from 'react-redux'
 import { prefetch, defer } from 'react-fetcher'
-import { get, pick } from 'lodash'
+import { get } from 'lodash'
 import {
   fetchCommunity,
   fetchCommunitiesForNetworkNav,
@@ -89,7 +89,7 @@ export default compose(
 
 const OnboardingQuestions = ({ person, dispatch }) => {
   let update = (field, value) =>
-    dispatch(updateUserSettings(person.id, {[field]: value}, pick(person, field)))
+    dispatch(updateUserSettings(person.id, {[field]: value}))
 
   let close = () => dispatch(navigate(locationWithoutParams('onboarding')))
 

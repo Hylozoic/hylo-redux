@@ -1,25 +1,41 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import ToolTip from 'react-portal-tooltip'
-const { string, number, bool } = React.PropTypes
-import { updateUserSettings } from '../actions'
+import { get, omit, sortBy, flow, toPairs, keys } from 'lodash/fp'
+const { string, number, bool, object, func } = React.PropTypes
+import { updateUserSettings, registerTooltip } from '../actions'
 
 const activeTooltip = (currentUser, tooltips) => {
-
+  const viewed = flow(
+    get('settings.viewedTooltips'),
+    keys
+  )(currentUser)
+  return flow(
+    omit(viewed),
+    toPairs,
+    sortBy(tt => tt[1]),
+    get('0.0')
+  )(tooltips)
 }
 
-@connect(({ currentUser, tooltips }, { id }) => {
-  
+@connect(({ people, tooltips }, { id }) => {
+  const currentUser = people.current
+  return {
+    active: activeTooltip(currentUser, tooltips) === id,
+    currentUser
+  }
 })
 export default class Tooltip extends React.Component {
   static propTypes = {
     id: string.isRequired,
-    order: number,
+    index: number.isRequired,
     title: string,
     body: string,
     active: bool,
     position: string,
-    arrow: string
+    arrow: string,
+    currentUser: object,
+    dispatch: func
   }
 
   static defaultProps = {
@@ -28,11 +44,12 @@ export default class Tooltip extends React.Component {
   }
 
   componentDidMount () {
-
+    const { dispatch, id, index } = this.props
+    dispatch(registerTooltip(id, index))
   }
 
   render () {
-    const { id, active, title, body, position, arrow, dispatch } = this.props
+    const { id, active, title, body, position, arrow, dispatch, currentUser } = this.props
 
     const ttid = `tooltip-id-${id}`
     const style = {
@@ -43,10 +60,15 @@ export default class Tooltip extends React.Component {
       }
     }
 
-    const closeTooltip = id => {
-      // dispatch(updateUserSettings(currentUser.id, ))
+    const close = () => {
+      const settings = {
+        viewedTooltips: {
+          ...get('settings.viewedTooltips', currentUser),
+          [id]: true
+        }
+      }
+      dispatch(updateUserSettings(currentUser.id, {settings}))
     }
-
 
     return <span id={ttid}>
       <ToolTip
@@ -59,7 +81,7 @@ export default class Tooltip extends React.Component {
           <div className='title'>{title}</div>
           <div className='body'>{body}</div>
           <div className='links'>
-            <a onClick={() => console.log('Close ', id)}>Got it</a>
+            <a onClick={() => close()}>Got it</a>
           </div>
         </div>
       </ToolTip>

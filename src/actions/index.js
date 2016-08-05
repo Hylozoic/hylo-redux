@@ -12,7 +12,6 @@ export const CHANGE_EVENT_RESPONSE_PENDING = CHANGE_EVENT_RESPONSE + _PENDING
 export const CHECK_FRESHNESS_POSTS = 'CHECK_FRESHNESS_POSTS'
 export const CLEAR_CACHE = 'CLEAR_CACHE'
 export const CLOSE_MODAL = 'CLOSE_MODAL'
-export const CLOSE_TOOLTIP = 'CLOSE_TOOLTIP'
 export const CREATE_COMMENT = 'CREATE_COMMENT'
 export const CREATE_COMMUNITY = 'CREATE_COMMUNITY'
 export const CREATE_POST = 'CREATE_POST'
@@ -62,6 +61,7 @@ export const NAVIGATE = 'NAVIGATE'
 export const NOTIFY = 'NOTIFY'
 export const PIN_POST = 'PIN_POST'
 export const PIN_POST_PENDING = 'PIN_POST' + _PENDING
+export const REGISTER_TOOLTIP = 'REGISTER_TOOLTIP'
 export const REMOVE_COMMENT = 'REMOVE_COMMENT'
 export const REMOVE_COMMUNITY_MEMBER = 'REMOVE_COMMUNITY_MEMBER'
 export const REMOVE_COMMUNITY_MEMBER_PENDING = 'REMOVE_COMMUNITY_MEMBER' + _PENDING
@@ -741,6 +741,6 @@ export function updateComment (commentId, text, tagDescriptions) {
   }
 }
 
-export function closeTooltip (id) {
-
+export function registerTooltip (id, index) {
+  return {type: REGISTER_TOOLTIP, payload: {id, index}}
 }

@@ -96,8 +96,6 @@ export const THANK_PENDING = THANK + _PENDING
 export const TOGGLE_LEFT_NAV = 'TOGGLE_LEFT_NAV'
 export const TOGGLE_USER_SETTINGS_SECTION = 'TOGGLE_USER_SETTINGS_SECTION'
 export const TYPEAHEAD = 'TYPEAHEAD'
-export const UPDATE_COMMENT = 'UPDATE_COMMENT'
-export const UPDATE_COMMENT_PENDING = UPDATE_COMMENT + _PENDING
 export const UPDATE_COMMENT_EDITOR = 'UPDATE_COMMENT_EDITOR'
 export const UPDATE_COMMUNITY_EDITOR = 'UPDATE_COMMUNITY_EDITOR'
 export const UPDATE_INVITATION_EDITOR = 'UPDATE_INVITATION_EDITOR'
@@ -334,7 +332,7 @@ export function removeDoc (payload, id) {
 export function changeEventResponse (id, response, user) {
   return {
     type: CHANGE_EVENT_RESPONSE,
-    payload: {api: true, params: {response}, path: `/noo/post/${id}/rsvp`, method: 'POST'},
+    payload: {api: true, params: {response}, path: `/noo/post/${id}/respond`, method: 'POST'},
     meta: {id, response, user}
   }
 }
@@ -703,10 +701,10 @@ export function createTagInPostEditor () {
   }
 }
 
-export function updateCommentEditor (id, text, newComment) {
+export function updateCommentEditor (id, text) {
   return {
     type: UPDATE_COMMENT_EDITOR,
-    payload: {id, text, bucket: newComment ? 'new' : 'edit'}
+    payload: {id, text}
   }
 }
 
@@ -748,13 +746,4 @@ export function disconnect_hitfin (refresh, dispatch) {
 
 export function showExpandedPost (id, commentId) {
   return {type: SHOW_EXPANDED_POST, payload: {id, commentId}}
-}
-
-export function updateComment (commentId, text, tagDescriptions) {
-  const params = {text, tagDescriptions}
-  return {
-    type: UPDATE_COMMENT,
-    payload: {api: true, path: `/noo/comment/${commentId}`, params, method: 'POST'},
-    meta: {id: commentId, text, optimistic: true}
-  }
 }

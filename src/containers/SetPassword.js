@@ -32,7 +32,7 @@ export default class SetPassword extends React.Component {
 
   render () {
     const { error, message } = this.state
-    return <div className='simple-page login-signup'>
+    return <div className='simple-page'>
       <form onSubmit={this.submit}>
         <h2>Set your password</h2>
         {error && <div className='alert alert-danger'>{error}</div>}

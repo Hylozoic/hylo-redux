@@ -8,7 +8,8 @@ const postTypes = [
   {name: 'All types', id: 'all'},
   {name: 'Intentions', id: 'intention'},
   {name: 'Offers', id: 'offer'},
-  {name: 'Requests', id: 'request'}
+  {name: 'Requests', id: 'request'},
+  {name: 'Chats', id: 'chat'}
 ]
 
 const sorts = [

@@ -6,7 +6,6 @@ import {
   FETCH_POST,
   FETCH_POSTS,
   CREATE_COMMENT,
-  UPDATE_COMMENT_PENDING,
   REMOVE_COMMENT,
   THANK_PENDING
 } from '../actions'
@@ -24,11 +23,6 @@ export default function (state = {}, action) {
       return {
         ...state,
         [commentId]: {...state[commentId], thanks, isThanked}
-      }
-    case UPDATE_COMMENT_PENDING:
-      return {
-        ...state,
-        [meta.id]: {...state[meta.id], text: meta.text}
       }
   }
 

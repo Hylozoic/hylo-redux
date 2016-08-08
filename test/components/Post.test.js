@@ -58,7 +58,7 @@ describe('Voters', () => {
 
 describe('Post Details', () => {
   it('extracts tags from truncated description text', () => {
-    const description = `Please let me know what <a>#software</a> you recommend and i
+    const description = `Please let me know what software you recommend and i
     can start working on it, and then help me for about an hour to get
     accustomed to the program? It is preferable that the software is free and
     user friendly. Can offer compensation in the form of plants or ca$h. thank
@@ -75,6 +75,6 @@ describe('Post Details', () => {
     const html = renderToString(component)
     const doc = cheerio.load(html)
     expect(doc('.show-more').length).to.equal(1)
-    expect(doc('span > .hashtag').text()).to.equal('#permaculture#design#support')
+    expect(doc('.hashtag').length).to.equal(4)
   })
 })

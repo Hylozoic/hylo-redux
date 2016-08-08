@@ -17,8 +17,7 @@ for (let key in window) {
 import chai from 'chai'
 chai.use(require('chai-spies'))
 window.analytics = {
-  track: chai.spy(() => {}),
-  alias: chai.spy(() => {})
+  track: chai.spy(() => {})
 }
 
 // if tests want to set up spies for window methods, they can restore the

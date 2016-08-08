@@ -61,6 +61,73 @@ button, a.button, input[type=submit] {
   }
 }
 
+.login-signup {
+  label {
+    margin-right: 5px;
+  }
+
+  .service-buttons {
+    margin-bottom: 15px;
+    .clearfix;
+  }
+
+  .service-buttons a {
+    width: 31.33%;
+    background-size: 28px;
+    background-position: 10px center;
+    background-repeat: no-repeat;
+    color: @off-white;
+    box-sizing: border-box;
+    padding-left: 20px;
+    height: 36px;
+    line-height: 36px;
+    border-radius: @border-radius-base;
+    vertical-align: middle;
+    display: block;
+    float: left;
+    text-decoration: none;
+    cursor: pointer;
+    text-align: center;
+
+    &.google {
+      background-color: #5b5b5b;
+      background-image: url(/img/google.png);
+      background-size: 22px;
+      background-position: 12px center;
+      &:active {
+        background-color: darken(#5b5b5b, 15%);
+      }
+      .mobile({
+        background-position-x: 5px;
+      });
+    }
+
+    &.facebook {
+      background-color: #464b9a;
+      background-image: url(/img/facebook.png);
+      margin: 0 3%;
+      &:active {
+        background-color: darken(#464b9a, 15%);
+      }
+      .mobile({
+        background-position-x: left;
+      });
+    }
+
+    &.linkedin {
+      background-color: #4272b6;
+      background-image: url(/img/linkedin.png);
+      background-position: 10px 2px;
+      &:active {
+        background-color: darken(#4272b6, 15%);
+      }
+      .mobile({
+        background-position-x: left;
+      });
+    }
+  }
+}
+
 .left {
   float: left;
 }
@@ -299,9 +366,6 @@ ul.tags {
     overflow: visible;
     &.active {
       position: absolute;
-    }
-    .dropdown-menu {
-      max-height: 31vh;
     }
   }
 }

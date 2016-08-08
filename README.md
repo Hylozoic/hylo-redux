@@ -32,10 +32,6 @@ Then it's just the usual: `npm install`, `npm start`, `npm test`.
 
 It depends on a running instance of [hylo-node](https://github.com/Hylozoic/hylo-node), the location of which is set with `UPSTREAM_HOST`.
 
-#### Generating the CSS
-
-You'll need to have gulp installed, using `npm install gulp -g`. Then run `gulp build-dev-css` to build the CSS for the dev environment.
-
 ## Deployment
 
 The deployment code should probably be pulled out into a separate module at some point.

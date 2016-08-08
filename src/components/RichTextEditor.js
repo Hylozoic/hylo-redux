@@ -154,7 +154,7 @@ export default class RichTextEditor extends React.Component {
 
   autocomplete = debounce((term, node) => {
     const { dispatch, name } = this.props
-    dispatch(typeahead(term, name, {limit: 20}))
+    dispatch(typeahead(term, name))
     if (!node || !term) return
 
     // position the dropdown under the cursor

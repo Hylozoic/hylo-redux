@@ -5,12 +5,9 @@ import { makeUrl } from '../util/navigation'
 import { Link } from 'react-router'
 import { signup, setSignupError, toggleLeftNav } from '../actions'
 import ServiceAuthButtons from '../components/ServiceAuthButtons'
-import Modal from '../components/Modal'
-import ModalOnlyPage from '../components/ModalOnlyPage'
-import ModalInput from '../components/ModalInput'
 import validator from 'validator'
 import { prefetchForNext, connectForNext, goToNext } from './Login'
-import { STARTED_SIGNUP, trackEvent } from '../util/analytics'
+import { SIGNED_UP, STARTED_SIGNUP, trackEvent } from '../util/analytics'
 const { func, object, string } = React.PropTypes
 
 @prefetchForNext
@@ -36,19 +33,19 @@ export default class Signup extends React.Component {
 
   validate () {
     this.setState({error: null})
-    let name = this.refs.name.getValue()
+    let name = this.refs.name.value
     if (!name) {
       this.setState({error: 'Your name cannot be blank.'})
       return false
     }
 
-    let email = this.refs.email.getValue()
+    let email = this.refs.email.value
     if (!validator.isEmail(email)) {
       this.setState({error: 'Enter a valid email address.'})
       return false
     }
 
-    let password = this.refs.password.getValue()
+    let password = this.refs.password.value
     if (!password) {
       this.setState({error: 'Your password cannot be blank.'})
       return false
@@ -62,14 +59,15 @@ export default class Signup extends React.Component {
     if (!this.validate()) return
 
     let { dispatch, location: { query } } = this.props
-    let name = this.refs.name.getValue()
-    let email = this.refs.email.getValue()
-    let password = this.refs.password.getValue()
+    let name = this.refs.name.value
+    let email = this.refs.email.value
+    let password = this.refs.password.value
     dispatch(signup(name, email, password))
     .then(({ error }) => {
       if (error) return
       dispatch(toggleLeftNav())
       dispatch(goToNext(this.props.currentUser, query))
+      trackEvent(SIGNED_UP)
     })
   }
 
@@ -85,37 +83,34 @@ export default class Signup extends React.Component {
       }
     }
 
-    const { actionError, location: { query }, community } = this.props
-    const loginUrl = makeUrl('/login', pick(query, 'next', 'action', 'id', 'token'))
+    let { actionError, location: { query }, community } = this.props
 
-    return <ModalOnlyPage id='signup' className='login-signup'>
-      {community && <div className='modal-topper'>
-        <div className='medium-avatar' style={{backgroundImage: `url(${community.avatar_url})`}}/>
-        <h2>Join {community.name}</h2>
-      </div>}
-      <Modal title='Create your account.' standalone>
-        <form onSubmit={this.submit}>
-          {actionError && <div className='alert alert-danger'>{actionError}</div>}
-          {error && <div className='alert alert-danger'>{error}</div>}
+    return <div id='signup' className='login-signup simple-page'>
+      <form onSubmit={this.submit}>
+        <h2>Sign up</h2>
+        {community && <p>To join {community.name}</p>}
+        {actionError && <div className='alert alert-danger'>{actionError}</div>}
+        {error && <div className='alert alert-danger'>{error}</div>}
 
-          <div className='oauth'>
-            <label>Connect with</label>
-            <ServiceAuthButtons errorAction={setSignupError}/>
-          </div>
+        <ServiceAuthButtons errorAction={setSignupError}/>
 
-          <h4>Or sign up with email</h4>
-
-          <ModalInput label='Full name' ref='name' />
-          <ModalInput label='Email' ref='email' />
-          <ModalInput label='Password' ref='password' type='password'/>
-          <div className='footer'>
-            <input type='submit' value='Sign up'/>
-            <div className='right'>
-              Or <Link to={loginUrl}>log in</Link>
-            </div>
-          </div>
+        <div className='form-group'>
+          <label htmlFor='name'>Full name</label>
+          <input type='text' ref='name' id='name' className='form-control'/>
+        </div>
+        <div className='form-group email'>
+          <label htmlFor='email'>Email</label>
+          <input type='text' ref='email' id='email' className='form-control'/>
+        </div>
+        <div className='form-group password'>
+          <label htmlFor='password'>Password</label>
+          <input type='password' ref='password' id='password' className='form-control'/>
+        </div>
+        <div className='form-group'>
+          <input type='submit' value='Go'/>
+        </div>
+        Or <Link to={makeUrl('/login', pick(query, 'next', 'action', 'id', 'token'))}>log in</Link>
       </form>
-      </Modal>
-    </ModalOnlyPage>
+    </div>
   }
 }

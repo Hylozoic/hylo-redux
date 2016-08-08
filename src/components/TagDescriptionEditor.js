@@ -1,11 +1,9 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { cancelTagDescriptionEdit, editTagDescription, editNewTagAndDescription } from '../actions'
+import Icon from './Icon'
 import { debounce, keys, isEmpty, map } from 'lodash'
 import { hashtagWordRegex } from '../models/hashtag'
-import { BareModalWrapper, Modal } from './Modal'
-import ModalInput from './ModalInput'
-import cx from 'classnames'
 const { func, object, bool } = React.PropTypes
 
 @connect((state, props) => ({
@@ -55,26 +53,34 @@ export default class TagDescriptionEditor extends React.Component {
       cancel()
     }
 
-    const title = `Hey, you're creating ${keys(tags).length > 1 ? 'new topics.' : 'a new topic.'}`
-
-    return <BareModalWrapper>
-      <Modal id='tag-description-editor' title={title}>
-        {map(tags, (description, tag, i) => <div key={creating ? i : tag}
-        className={cx('tag-group', {creating})}>
-        {creating
-          ? <ModalInput label='Topic name' defaultValue={tag}
-          onChange={event => edit(event.target.value, description)}/>
-        : <div className='topic'>
-        <label>Topic name</label>
-        <span>#{tag}</span>
-      </div>}
-      <ModalInput label='Description' defaultValue={description}
-        onChange={event => edit(tag, event.target.value)}/>
-    </div>)}
-    <div className='footer'>
-      <button onClick={creating ? createTag : () => saveParent(tags)} className='ok'>Create</button>
+    return <div id='tag-description-editor'>
+      <div className='backdrop'/>
+      <div className='modal'>
+        <h2>
+          Hey, you're creating&nbsp;
+          {keys(tags).length > 1 ? 'new topics.' : 'a new topic.'}
+          <a className='close' onClick={cancel}><Icon name='Fail'/></a>
+        </h2>
+        {map(tags, (description, tag, i) => <div key={creating ? i : tag} className='tag-group'>
+          <div className='topic'>
+            <label>Topic</label>
+            {creating
+              ? <span>#&nbsp;
+                <input type='text' defaultValue={tag} className='tag-input' ref='tag' placeholder='Topic name'
+                  onChange={event => edit(event.target.value, description)}/>
+              </span>
+              : <span>#{tag}</span>}
+          </div>
+          <div className='description'>
+            <label>Description</label>
+            <input type='text' defaultValue={description}
+              onChange={event => edit(tag, event.target.value)}/>
+          </div>
+        </div>)}
+        <div className='footer'>
+          <button onClick={creating ? createTag : () => saveParent(tags)} className='ok'>Create</button>
+        </div>
+      </div>
     </div>
-  </Modal>
-    </BareModalWrapper>
   }
 }

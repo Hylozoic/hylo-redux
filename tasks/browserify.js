@@ -23,7 +23,8 @@ import uglify from 'gulp-uglify'
 import rev from 'gulp-rev'
 
 const opts = {
-  entries: ['./src/client']
+  entries: ['./src/client'],
+  debug: true
 }
 
 export function watch () {

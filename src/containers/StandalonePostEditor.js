@@ -15,6 +15,10 @@ export const editorUrl = (slug, type) => {
   return start + end
 }
 
+export const matchEditorUrl = path =>
+  path.match(/^\/p\/\d+\/edit$/) ||
+  path.match(/^\/(c\/[^\/]+|p)\/((events|projects)\/)?new$/)
+
 @prefetch(({ store, routes, dispatch, params: { id } }) =>
   (routes.slice(-1)[0].community
     ? dispatch(fetchCommunity(id))

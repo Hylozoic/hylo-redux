@@ -11,15 +11,12 @@ import {
   navigate,
   setLoginError
 } from '../actions'
-import { LOGGED_IN, STARTED_LOGIN, alias, trackEvent } from '../util/analytics'
+import { LOGGED_IN, STARTED_LOGIN, trackEvent } from '../util/analytics'
 import { Link } from 'react-router'
 import ServiceAuthButtons from '../components/ServiceAuthButtons'
 import { communityUrl } from '../routes'
 import { getCommunity } from '../models/currentUser'
 const { func, object, string } = React.PropTypes
-import ModalOnlyPage from '../components/ModalOnlyPage'
-import ModalInput from '../components/ModalInput'
-import Modal from '../components/Modal'
 
 // export the decorators below so that Signup can use them as well
 
@@ -65,8 +62,6 @@ export const connectForNext = section =>
   }, null, null, {withRef: true})
 
 export const goToNext = (currentUser, query) => {
-  alias(currentUser.id)
-
   let { next, action, token } = query
 
   if (!next) {
@@ -135,8 +130,8 @@ export default class Login extends React.Component {
   submit = event => {
     let { dispatch, location: { query } } = this.props
     event.preventDefault()
-    let email = this.refs.email.getValue()
-    let password = this.refs.password.getValue()
+    let email = this.refs.email.value
+    let password = this.refs.password.value
     return dispatch(login(email, password))
     .then(({ error }) => {
       if (error) return
@@ -146,34 +141,36 @@ export default class Login extends React.Component {
   }
 
   render () {
-    const { actionError, location: { query }, community } = this.props
-    const error = displayError(this.props.error)
-    const signupUrl = makeUrl('/signup', pick(query, 'next', 'action', 'id', 'token'))
+    let { error, actionError, location: { query }, community } = this.props
 
-    return <ModalOnlyPage id='login' className='login-signup'>
-      {community && <div className='modal-topper'>
-        <div className='medium-avatar' style={{backgroundImage: `url(${community.avatar_url})`}}/>
-        <h2>Join {community.name}</h2>
-      </div>}
-      <Modal title='Log in' standalone>
-        <form onSubmit={this.submit}>
-          {actionError && <div className='alert alert-danger'>{actionError}</div>}
-          {error && <div className='alert alert-danger'>{error}</div>}
-          <div className='oauth'>
-            <ServiceAuthButtons errorAction={setLoginError}/>
-          </div>
-          <ModalInput label='Email' ref='email'/>
-          <ModalInput label='Password' ref='password' type='password'/>
-          <div className='footer'>
-            <input ref='submit' type='submit' value='Log in'/>
-            <div className='right'>
-              <Link to={signupUrl}>Sign up</Link>
-              &nbsp;&nbsp;•&nbsp;&nbsp;
-              <Link to='/set-password'>Forgot your password?</Link>
-            </div>
-          </div>
-        </form>
-      </Modal>
-    </ModalOnlyPage>
+    error = displayError(error)
+
+    return <div id='login' className='login-signup simple-page'>
+      <form onSubmit={this.submit}>
+        <h2>Log in</h2>
+        {community && <p>To join {community.name}</p>}
+        {actionError && <div className='alert alert-danger'>{actionError}</div>}
+        {error && <div className='alert alert-danger'>{error}</div>}
+
+        <ServiceAuthButtons errorAction={setLoginError}/>
+
+        <div className='form-group'>
+          <label htmlFor='email'>Email</label>
+          <input type='text' ref='email' id='email' className='form-control'/>
+        </div>
+        <div className='form-group'>
+          <label htmlFor='password'>Password</label>
+          <input type='password' ref='password' id='password' className='form-control'/>
+        </div>
+        <div className='form-group'>
+          <input ref='submit' type='submit' value='Go'/>
+        </div>
+        <div>
+          <Link to={makeUrl('/signup', pick(query, 'next', 'action', 'id', 'token'))}>Sign up</Link>
+          &nbsp;&nbsp;•&nbsp;&nbsp;
+          <Link to='/set-password'>Forgot your password?</Link>
+        </div>
+      </form>
+    </div>
   }
 }

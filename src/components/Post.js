@@ -1,16 +1,17 @@
 import React from 'react'
-import { difference, filter, first, includes, isEmpty, map, some, sortBy } from 'lodash'
+import {
+  difference, filter, first, includes, isEmpty, map, some, sortBy
+} from 'lodash'
 import { find, get } from 'lodash/fp'
 const { array, bool, func, object, string } = React.PropTypes
 import cx from 'classnames'
 import cheerio from 'cheerio'
 import {
-  humanDate, nonbreaking, present, textLength, appendInP
+  humanDate, nonbreaking, present, textLength, truncate, appendInP
 } from '../util/text'
 import { sanitize } from 'hylo-utils/text'
 import { linkifyHashtags } from '../util/linkify'
 import { tagUrl } from '../routes'
-import truncate from 'trunc-html'
 import A from './A'
 import Avatar from './Avatar'
 import Dropdown from './Dropdown'
@@ -129,13 +130,13 @@ const Communities = ({ communities }, { community }) => {
 }
 Communities.contextTypes = {community: object}
 
-const extractTags = (shortDesc, fullDesc) => {
-  const tags = cheerio.load(fullDesc)('.hashtag').toArray()
-  if (tags.length === 0) return []
+const getTags = text =>
+  cheerio.load(text)('.hashtag').toArray().map(tag =>
+    tag.children[0].data.replace(/^#/, ''))
 
-  const shortTags = cheerio.load(shortDesc)('.hashtag').toArray()
-  const tagName = tag => tag.children[0].data.replace(/^#/, '')
-  return difference(tags, shortTags).map(tagName)
+const extractTags = (shortDesc, fullDesc) => {
+  const tags = getTags(fullDesc)
+  return tags.length === 0 ? [] : difference(tags, getTags(shortDesc))
 }
 
 const HashtagLink = ({ tag, slug }, { dispatch }) => {
@@ -154,7 +155,7 @@ export const Details = ({ expanded, onExpand }, { post, community, dispatch }) =
   const truncated = !expanded && textLength(description) > 200
   if (truncated) {
     const orig = description
-    description = truncate(description, 200).html
+    description = truncate(description, 200)
     extractedTags = extractTags(description, orig)
   }
   if (description) description = appendInP(description, '&nbsp;')
@@ -184,7 +185,7 @@ const Attachments = (props, { post }) => {
     {attachments.map((file, i) =>
       <a key={i} className='attachment' href={file.url} target='_blank' title={file.name}>
         <img src={file.thumbnail_url}/>
-        {truncate(file.name, 40).html}
+        {truncate(file.name, 40).text}
       </a>)}
   </div>
 }

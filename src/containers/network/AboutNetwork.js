@@ -1,6 +1,6 @@
 import React from 'react'
 import { connect } from 'react-redux'
-import { markdown } from '../../util/text'
+import { markdown } from 'hylo-utils/text'
 const { object } = React.PropTypes
 
 const AboutNetwork = connect((state, { params }) => ({network: state.networks[params.id]}))(props => {

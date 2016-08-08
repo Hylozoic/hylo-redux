@@ -25,6 +25,14 @@ export const hashBy = (arr, iteratee) => {
   return transform(arr, fn, {})
 }
 
+export function checkForMedia(payload, state, id) {
+    if (payload.video) {
+        return updateMedia(state[id], 'video', payload.video)
+    } else if(state[id]) {
+        return state[id] ? state[id].media : undefined
+    }
+}
+
 // for modifying a post or other object with a list of media; set an item of
 // specified type if url is set, and remove it otherwise. assumes that there is
 // can be only one item of specified type, so it should be used with images and
@@ -32,7 +40,7 @@ export const hashBy = (arr, iteratee) => {
 export function updateMedia (obj, type, url) {
   let media = filter(obj && obj.media, m => m.type !== type)
   if (url) media = media.concat({type, url})
-  return {...obj, media}
+  return media
 }
 
 export function checkNewFormForFinancialRequestsEnabled(payload, state) {

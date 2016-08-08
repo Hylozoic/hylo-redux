@@ -1,6 +1,6 @@
 import React from 'react'
 import { connect } from 'react-redux'
-import { markdown } from '../../util/text'
+import { markdown } from 'hylo-utils/text'
 const { object } = React.PropTypes
 
 @connect((state, { params }) => ({community: state.communities[params.id]}))

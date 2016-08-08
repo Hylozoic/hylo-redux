@@ -1,20 +1,17 @@
 import React from 'react'
 import { A, IndexA } from './A'
 import Icon from './Icon'
-import { NonLinkAvatar } from './Avatar'
 import Dropdown from './Dropdown'
-import SearchInput from './SearchInput'
-import { isAdmin } from '../models/currentUser'
-import { filter, find, flow, get, map, sortBy } from 'lodash/fp'
-import { throttle, merge } from 'lodash'
-import { same } from '../models'
+import { filter, find, flow, get } from 'lodash/fp'
+import { throttle } from 'lodash'
 import { MenuButton, leftNavWidth, leftNavEasing, menuButtonWidth } from './LeftNav'
 import { editorUrl } from '../containers/StandalonePostEditor'
-import { assetUrl } from '../util/assets'
 const { array, object, func, string, bool } = React.PropTypes
 import { viewportTop } from '../util/scrolling'
 import { VelocityComponent } from 'velocity-react'
 import cx from 'classnames'
+import CommunityMenu, { allCommunities } from './CommunityMenu'
+import UserMenu from './UserMenu'
 
 const getPostType = path => {
   if (path.endsWith('events')) return 'event'
@@ -31,20 +28,6 @@ const getLabel = path => {
   return 'Menu'
 }
 
-const allCommunities = () => ({
-  id: null,
-  avatar_url: assetUrl('/img/hylo-merkaba-300x300.png'),
-  name: 'All Communities'
-})
-
-const getMenuItems = (currentUser, firstItem) =>
-  [firstItem].concat(flow(
-    get('memberships'),
-    sortBy(m => -Date.parse(m.last_viewed_at || '2001-01-01')),
-    map('community'),
-    firstItem.isNetwork ? i => i : filter(c => !same('id', firstItem, c))
-  )(currentUser))
-
 const getCurrentMembership = (currentUser, community) =>
   flow(
     get('memberships'),
@@ -54,11 +37,8 @@ const getCurrentMembership = (currentUser, community) =>
 export default class TopNav extends React.Component {
   static propTypes = {
     refresh: func,
-    search: func,
     path: string,
-    logout: func,
     openLeftNav: func,
-    onChangeCommunity: func,
     opened: bool,
     community: object,
     network: object,
@@ -104,15 +84,12 @@ export default class TopNav extends React.Component {
 
   render () {
     const {
-      search, logout, openLeftNav, leftNavIsOpen, path, onChangeCommunity,
-      network, links
+      openLeftNav, leftNavIsOpen, path, network, links
     } = this.props
     const { currentUser, isMobile } = this.context
     const label = getLabel(path)
     const community = this.props.community || allCommunities()
     const { slug } = community
-    const firstItem = network ? merge(network, {isNetwork: true}) : community
-    const menuItems = getMenuItems(currentUser, firstItem)
     const membership = getCurrentMembership(currentUser, community)
     const newCount = get('new_notification_count',
       community.id ? membership : currentUser)
@@ -131,13 +108,13 @@ export default class TopNav extends React.Component {
               <MenuButton onClick={openLeftNav}/>
             </VelocityComponent>}
         {currentUser
-        ? <UserMenu {...{logout, currentUser, newCount, slug, search}}/>
+        ? <UserMenu {...{newCount, slug}}/>
         : <ul className='right'>
             <li><A to='/signup'>Sign up</A></li>
             <li><A to='/login'>Log in</A></li>
           </ul>}
 
-        {currentUser && <CommunityMenu {...{menuItems, onChangeCommunity}}/>}
+        {currentUser && <CommunityMenu {...{community, network}}/>}
         {currentUser && !network && <TopMainMenu links={links}/>}
         {currentUser &&
           <A to={editorUrl(slug, getPostType(path))} className='compose'>
@@ -169,94 +146,3 @@ const TopMainMenu = ({ community, links }) => {
     </Dropdown>
   </div>
 }
-
-const CommunityMenu = ({ menuItems, onChangeCommunity }, { isMobile, dispatch }) => {
-  const currentItem = menuItems[0]
-  const { isNetwork } = currentItem
-
-  return <Dropdown className='communities' backdrop triangle toggleChildren={
-      <div>
-        <img src={currentItem.avatar_url}/>
-        <span className={cx('name', {network: isNetwork})}>
-          {currentItem.name}
-        </span>
-        <span className='caret'></span>
-        {isNetwork && <span className='subtitle'>Network</span>}
-      </div>
-    }>
-    <li>
-      <ul className='inner-list dropdown-menu'>
-        <li key='all'>
-          <a onClick={() => onChangeCommunity()}>
-            <img src={allCommunities().avatar_url}/> All Communities
-          </a>
-        </li>
-        {menuItems.slice(1).map(community => <li key={community.id}>
-          <a onClick={() => onChangeCommunity(community)} title={community.name}>
-            <img src={community.avatar_url}/> {community.name}
-          </a>
-        </li>)}
-      </ul>
-    </li>
-    <li className='join-or-start'>
-      <div>
-        <A to='/c/join'>Join</A> or <A to='/c/new'>start</A> a community
-      </div>
-    </li>
-  </Dropdown>
-}
-CommunityMenu.contextTypes = {isMobile: bool, dispatch: func}
-
-const UserMenu = ({ slug, logout, newCount, currentUser, search }, { isMobile }) => {
-  return <ul className='right'>
-    <li className='search'>
-      <Icon name='Loupe'/>
-      <SearchInput onChange={search}/>
-    </li>
-
-    <li className='notifications'>
-      <A to={`${slug ? '/c/' + slug : ''}/notifications`}>
-        <Icon name='Bell'/>
-        {newCount > 0 && <div className='badge'>{newCount}</div>}
-      </A>
-    </li>
-
-    <li>
-      <Dropdown className='user-menu' alignRight openOnHover triangle={isMobile}
-        backdrop={isMobile} toggleChildren={
-          <div>
-            <NonLinkAvatar person={currentUser}/>
-            {newCount > 0 && <div className='dot-badge'/>}
-          </div>
-        }>
-        <li>
-          <A to={`/u/${currentUser.id}`}>
-            <Icon name='User'/> My profile
-          </A>
-        </li>
-        <li className='dropdown-notifications'>
-          <A to={slug ? `/c/${slug}/notifications` : '/notifications'}>
-            <Icon name='Bell'/> Notifications
-            {newCount > 0 && <span className='badge'>{newCount}</span>}
-          </A>
-        </li>
-        <li>
-          <A to={'/settings'}>
-            <Icon name='Settings'/> Settings
-          </A>
-        </li>
-        {isAdmin(currentUser) && <li>
-          <A to={'/admin'}>
-            <Icon name='Keypad'/> Admin
-          </A>
-        </li>}
-        <li>
-          <a href='#' onClick={logout}>
-            <Icon name='Fail'/> Log out
-          </a>
-        </li>
-      </Dropdown>
-    </li>
-  </ul>
-}
-UserMenu.contextTypes = {isMobile: bool}

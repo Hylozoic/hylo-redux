@@ -8,13 +8,17 @@ export const PROFILE_CONTEXT = 'profile'
 
 let popup
 
-export function disconnect (service, dispatch) {
-  dispatch(disconnect_hitfin(true, dispatch))
+export function disconnect (service, dispatch, errorAction) {
+  dispatch(disconnect_hitfin(true, dispatch)).then(({ error }) => {
+    if(error) dispatch(errorAction('Error disconnecting HitFin account'))
+    else {
+      dispatch(errorAction(null));
+    }
+  })
 }
 
 export function openPopup (service, authContext) {
   var width, height
-  console.log('service; ', service);
   if (service === 'google') {
     width = 420
     height = 480
@@ -67,7 +71,13 @@ export function setupPopupCallback (name, dispatch, errorAction) {
         }
         break
       case PROFILE_CONTEXT:
-        dispatch(fetchCurrentUser(true))
+        if (error) {
+          dispatch(errorAction("Unable to authenticate with hitfin"))
+        }
+        else{
+          dispatch(errorAction(null));
+          dispatch(fetchCurrentUser(true))
+        }
     }
 
     popup.close()

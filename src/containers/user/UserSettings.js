@@ -10,7 +10,8 @@ import {
   notify,
   toggleUserSettingsSection,
   updateMembershipSettings,
-  updateUserSettings
+  updateUserSettings,
+  setHitfinError
  } from '../../actions'
 import { uploadImage } from '../../actions/uploadImage'
 import A from '../../components/A'
@@ -55,11 +56,12 @@ export default class UserSettings extends React.Component {
     dispatch: func,
     location: object,
     expand: object,
-    pending: string
+    pending: string,
+    hitfinError: string
   }
 
   componentDidMount () {
-    setupPopupCallback('settings', this.props.dispatch)
+    setupPopupCallback('settings', this.props.dispatch, setHitfinError)
     if (this.props.expand.password) {
       this.setState({editing: {
         ...this.state.editing,
@@ -154,7 +156,7 @@ export default class UserSettings extends React.Component {
   unlinkHitfin = () => {
     let { dispatch } = this.props
     if (!window.confirm(`Are you sure you want to disconnect your HitFin account?`)) return
-    disconnect('hit-fin', dispatch)
+    disconnect('hit-fin', dispatch, setHitfinError)
   }
 
   updateMembership = (membership, path, value) => {
@@ -201,7 +203,7 @@ export default class UserSettings extends React.Component {
   }
 
   render () {
-    let { currentUser, expand, pending, dispatch } = this.props
+    let { currentUser, expand, pending, dispatch, hitfinError } = this.props
     let memberships = sortBy(currentUser.memberships, m => m.community.name)
     let { editing, edited, errors } = this.state
     let { avatar_url, banner_url } = currentUser
@@ -403,6 +405,9 @@ export default class UserSettings extends React.Component {
             <p>Enabling this functionality allows you to create projects
               with financial contributions and pledge funds to other
               financially enabled projects using your HitFin wallet.</p>
+          </div>
+          <div className='full-column'>
+            {hitfinError && <div className='alert alert-danger'>{hitfinError}</div>}
           </div>
           <div className='third-column'>
             {renderHitFinButton}

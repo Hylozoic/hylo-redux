@@ -122,6 +122,8 @@ export const VALIDATE_NETWORK_ATTRIBUTE_PENDING = VALIDATE_NETWORK_ATTRIBUTE + _
 export const VOTE_ON_POST = 'VOTE_ON_POST'
 export const VOTE_ON_POST_PENDING = VOTE_ON_POST + _PENDING
 export const DISCONNECT_HITFIN = 'DISCONNECT_HITFIN'
+export const SET_HITFIN_ERROR = 'SET_HITFIN_ERROR'
+
 
 import { cleanAndStringify } from '../util/caching'
 import { cloneDeep, pick } from 'lodash'
@@ -155,6 +157,10 @@ export function signup (name, email, password) {
 
 export function setSignupError (message) {
   return {type: SET_SIGNUP_ERROR, payload: message}
+}
+
+export function setHitfinError (message) {
+  return {type: SET_HITFIN_ERROR, payload: message}
 }
 
 export function setPassword (email) {

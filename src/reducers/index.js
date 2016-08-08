@@ -73,7 +73,8 @@ import {
   VALIDATE_COMMUNITY_ATTRIBUTE,
   VALIDATE_COMMUNITY_ATTRIBUTE_PENDING,
   VALIDATE_NETWORK_ATTRIBUTE,
-  VALIDATE_NETWORK_ATTRIBUTE_PENDING
+  VALIDATE_NETWORK_ATTRIBUTE_PENDING,
+  SET_HITFIN_ERROR
 } from '../actions'
 
 const combinedReducers = combineReducers({
@@ -398,6 +399,9 @@ const combinedReducers = combineReducers({
           ...state,
           expand: {...state.expand, [payload]: meta.forceOpen || !get(state.expand, payload)}
         }
+      case SET_HITFIN_ERROR:
+        if (payload) return {...state, hitfinError: payload}
+        return {...state, hitfinError: null}
     }
     return state
   },

@@ -11,7 +11,8 @@ import {
   toggleUserSettingsSection,
   updateMembershipSettings,
   updateUserSettings,
-  setHitfinError
+  setHitfinError,
+  getUserBalance
  } from '../../actions'
 import { uploadImage } from '../../actions/uploadImage'
 import A from '../../components/A'
@@ -38,6 +39,9 @@ import _ from 'lodash'
     default:
       return dispatch(toggleUserSettingsSection(query.expand, true))
   }
+  dispatch(getUserBalance()).then( () => {
+    console.log('hello')
+  })
 })
 @connect(({ people, userSettingsEditor, pending }) => ({
   pending: get(pending, `${UPLOAD_IMAGE}.subject`),
@@ -151,6 +155,11 @@ export default class UserSettings extends React.Component {
   toggle (path) {
     let { currentUser } = this.props
     this.update(path, !get(currentUser, path))
+  }
+
+  getUserBalance = () => {
+    let { dispatch } = this.props
+    dispatch(getUserBalance())
   }
 
   unlinkHitfin = () => {
@@ -408,6 +417,9 @@ export default class UserSettings extends React.Component {
           </div>
           <div className='full-column'>
             {hitfinError && <div className='alert alert-danger'>{hitfinError}</div>}
+          </div>
+          <div className='full-column'>
+            <label> HitFin Balance </label>
           </div>
           <div className='third-column'>
             {renderHitFinButton}

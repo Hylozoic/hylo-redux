@@ -125,6 +125,7 @@ export const VOTE_ON_POST = 'VOTE_ON_POST'
 export const VOTE_ON_POST_PENDING = VOTE_ON_POST + _PENDING
 export const DISCONNECT_HITFIN = 'DISCONNECT_HITFIN'
 export const SET_HITFIN_ERROR = 'SET_HITFIN_ERROR'
+export const USER_BALANCE = 'USER_BALANCE'
 
 
 import { cleanAndStringify } from '../util/caching'
@@ -756,5 +757,15 @@ export function updateComment (commentId, text, tagDescriptions) {
     type: UPDATE_COMMENT,
     payload: {api: true, path: `/noo/comment/${commentId}`, params, method: 'POST'},
     meta: {id: commentId, text, optimistic: true}
+
+export function getUserBalance () {
+  return {
+    type: USER_BALANCE,
+    payload: { api:true, path: '/noo/finance/get-balance', method: 'GET'},
+    meta: {
+      then: (resp) => {
+        console.log(error)
+      }
+    }
   }
 }

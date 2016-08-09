@@ -61,6 +61,7 @@ export const NAVIGATE = 'NAVIGATE'
 export const NOTIFY = 'NOTIFY'
 export const PIN_POST = 'PIN_POST'
 export const PIN_POST_PENDING = 'PIN_POST' + _PENDING
+export const REGISTER_TOOLTIP = 'REGISTER_TOOLTIP'
 export const REMOVE_COMMENT = 'REMOVE_COMMENT'
 export const REMOVE_COMMUNITY_MEMBER = 'REMOVE_COMMUNITY_MEMBER'
 export const REMOVE_COMMUNITY_MEMBER_PENDING = 'REMOVE_COMMUNITY_MEMBER' + _PENDING
@@ -96,6 +97,7 @@ export const THANK_PENDING = THANK + _PENDING
 export const TOGGLE_LEFT_NAV = 'TOGGLE_LEFT_NAV'
 export const TOGGLE_USER_SETTINGS_SECTION = 'TOGGLE_USER_SETTINGS_SECTION'
 export const TYPEAHEAD = 'TYPEAHEAD'
+export const UNREGISTER_TOOLTIP = 'UNREGISTER_TOOLTIP'
 export const UPDATE_COMMENT = 'UPDATE_COMMENT'
 export const UPDATE_COMMENT_PENDING = UPDATE_COMMENT + _PENDING
 export const UPDATE_COMMENT_EDITOR = 'UPDATE_COMMENT_EDITOR'
@@ -336,11 +338,11 @@ export function toggleLeftNav () {
   return {type: TOGGLE_LEFT_NAV}
 }
 
-export function updateUserSettings (id, params, prevProps) {
+export function updateUserSettings (id, params) {
   return {
     type: UPDATE_USER_SETTINGS,
     payload: {api: true, params, path: `/noo/user/${id}`, method: 'POST'},
-    meta: {id, params, prevProps}
+    meta: {id, params, optimistic: true}
   }
 }
 
@@ -738,4 +740,12 @@ export function updateComment (commentId, text, tagDescriptions) {
     payload: {api: true, path: `/noo/comment/${commentId}`, params, method: 'POST'},
     meta: {id: commentId, text, optimistic: true}
   }
+}
+
+export function registerTooltip (id, index) {
+  return {type: REGISTER_TOOLTIP, payload: {id, index}}
+}
+
+export function unregisterTooltip (id) {
+  return {type: UNREGISTER_TOOLTIP, payload: {id}}
 }

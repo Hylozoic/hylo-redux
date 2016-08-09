@@ -1032,3 +1032,41 @@ ul.tags {
     vertical-align: middle;
   }
 }
+
+.tooltip-content {
+  width: 270px;
+  padding: 10px 15px;
+  color: white;
+  font-weight: 300;
+
+  .title {
+    font-size: 13px;
+    margin-bottom: 10px;
+  }
+
+  .body {
+    font-size: 12px;
+    margin-bottom: 10px;
+  }
+
+  .links {
+    a {
+      color: black;
+      text-decoration: underline;
+      font-size: 12px;
+    }
+  }
+}
+
+#tooltip-id-topics {
+  position: fixed;
+  left: @left-nav-width;
+  top: 400px;
+  z-index: 5;
+}
+
+.isMobile {
+  #tooltip-id-topics {
+    left: 60px;
+  }  
+}

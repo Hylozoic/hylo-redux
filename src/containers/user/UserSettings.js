@@ -15,7 +15,7 @@ import {
 import { uploadImage } from '../../actions/uploadImage'
 import A from '../../components/A'
 import { formatDate } from '../../util/text'
-import { debounce, get, sortBy, throttle } from 'lodash'
+import { debounce, get, sortBy, throttle, set } from 'lodash'
 import ListItemTagInput from '../../components/ListItemTagInput'
 import { avatarUploadSettings, bannerUploadSettings } from '../../models/person'
 import { openPopup, setupPopupCallback, PROFILE_CONTEXT } from '../../util/auth'
@@ -134,7 +134,7 @@ export default class UserSettings extends React.Component {
 
   update = (path, value) => {
     let { currentUser, dispatch } = this.props
-    dispatch(reversibleUpdate(updateUserSettings, currentUser, path, value))
+    dispatch(updateUserSettings(currentUser.id, set({}, path, value)))
     .then(({ error, payload }) => error && dispatch(notify(payload.message, {type: 'error'})))
     this.trackEdit()
   }

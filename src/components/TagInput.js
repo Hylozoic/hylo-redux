@@ -3,6 +3,7 @@ import { debounce, isEmpty } from 'lodash'
 import KeyControlledList from './KeyControlledList'
 import { getKeyCode, keyMap } from '../util/textInput'
 import { NonLinkAvatar } from './Avatar'
+import cx from 'classnames'
 const { array, bool, string, func } = React.PropTypes
 
 export default class TagInput extends React.Component {
@@ -15,7 +16,8 @@ export default class TagInput extends React.Component {
     onRemove: func,
     allowNewTags: bool,
     placeholder: string,
-    filter: func
+    filter: func,
+    className: string
   }
 
   resetInput () {
@@ -65,15 +67,15 @@ export default class TagInput extends React.Component {
   }, 200)
 
   render () {
-    let { choices, tags, placeholder } = this.props
+    let { choices, tags, placeholder, className } = this.props
     if (!tags) tags = []
     if (!placeholder) placeholder = 'Type...'
 
-    return <div className='tag-input' onClick={this.focus}>
+    return <div className={cx('tag-input', className)} onClick={this.focus}>
       <ul>
         {tags.map(t => <li key={t.id} className='tag'>
           {t.avatar_url && <NonLinkAvatar person={t}/>}
-          {t.name}
+          {t.label || t.name}
           <a onClick={this.remove(t)} className='remove'>&times;</a>
         </li>)}
       </ul>

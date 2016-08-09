@@ -106,6 +106,7 @@ describe('postEdits', () => {
         x: {
           name: 'Foo and some! split-words as well',
           description: 'lol',
+          media: undefined,
           financialRequestAmount: undefined,
           financialRequestsEnabled: undefined,
           tag: 'FooAndSomeSplit',
@@ -129,6 +130,7 @@ describe('postEdits', () => {
         x: {
           name: 'Foo and some! split-words as well',
           description: 'lol',
+          media: undefined,
           financialRequestAmount: undefined,
           financialRequestsEnabled: undefined
         }
@@ -151,6 +153,7 @@ describe('postEdits', () => {
       const expected = {
         x: {
           id: 'x',
+          media: undefined,
           financialRequestAmount: undefined,
           financialRequestsEnabled: undefined,
           name: 'Foo and some! split-words as well',
@@ -177,6 +180,7 @@ describe('postEdits', () => {
         x: {
           name: 'Foo and some! split-words as well',
           description: 'lol',
+          media: undefined,
           financialRequestAmount: undefined,
           financialRequestsEnabled: undefined,
           tagEdited: true,

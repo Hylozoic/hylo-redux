@@ -40,7 +40,7 @@ export function checkForMedia(payload, state, id) {
 export function updateMedia (obj, type, url) {
   let media = filter(obj && obj.media, m => m.type !== type)
   if (url) media = media.concat({type, url})
-  return media
+  return {...obj, media}
 }
 
 export function checkNewFormForFinancialRequestsEnabled(payload, state) {

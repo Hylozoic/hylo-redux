@@ -32,9 +32,9 @@ Then it's just the usual: `npm install`, `npm start`, `npm test`.
 
 It depends on a running instance of [hylo-node](https://github.com/Hylozoic/hylo-node), the location of which is set with `UPSTREAM_HOST`.
 
-#### Generating the CSS
+## Running the app
 
-You'll need to have gulp installed, using `npm install gulp -g`. Then run `gulp build-dev-css` to build the CSS for the dev environment.
+Run the command `npm start`
 
 ## Deployment
 
@@ -60,8 +60,8 @@ Then run `git push heroku master` to deploy the most recent code.
 
 ## License
 
-    Hylo is a mobile and web application to help people do more together. 
-    Hylo helps communities better understand who in their community has what skills, 
+    Hylo is a mobile and web application to help people do more together.
+    Hylo helps communities better understand who in their community has what skills,
     and how they can create things together.
     Copyright (C) 2016, Hylozoic, Inc.
 

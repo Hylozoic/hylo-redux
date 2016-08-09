@@ -80,9 +80,9 @@ class TagPosts extends React.Component {
           arrow='right'
           position='bottom'
           parentId='follow-button'
-          title='Follow Topics'
-          body="You can (un)follow topics you're interested in for easy access and on-site notifications when there's a new post."
-        />}
+          title='Follow Topics'>
+          <p>Follow topics you’re interested in to receive an in-app notification when there is a new Conversation in that topic.</p>
+        </Tooltip>}
         {canInvite(currentUser, community) &&
           <button className='share' onClick={() => dispatch(showShareTag(tagName, id))}><Icon name='Box-Out'/></button>}
       </div>

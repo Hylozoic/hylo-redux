@@ -2,7 +2,7 @@ import React from 'react'
 import { connect } from 'react-redux'
 import ToolTip from 'react-portal-tooltip'
 import { get, omit, sortBy, flow, toPairs, keys } from 'lodash/fp'
-const { string, number, bool, object, func } = React.PropTypes
+const { string, number, bool, object, func, array } = React.PropTypes
 import { updateUserSettings, registerTooltip, unregisterTooltip } from '../actions'
 
 export const activeTooltip = (currentUser, tooltips) => {
@@ -31,7 +31,7 @@ export default class Tooltip extends React.Component {
     parentId: string,
     index: number.isRequired,
     title: string,
-    body: string,
+    children: array,
     active: bool,
     position: string,
     arrow: string,
@@ -56,7 +56,7 @@ export default class Tooltip extends React.Component {
 
   render () {
     const {
-      id, active, title, body, position, arrow, dispatch, currentUser, parentId
+      id, active, title, children, position, arrow, dispatch, currentUser, parentId
     } = this.props
 
     const ttid = `tooltip-id-${id}`
@@ -87,7 +87,9 @@ export default class Tooltip extends React.Component {
         style={style}>
         <div className='tooltip-content'>
           <div className='title'>{title}</div>
-          <div className='body'>{body}</div>
+          <div className='body'>
+            {children}
+          </div>
           <div className='links'>
             <a onClick={() => close()}>Got it</a>
           </div>

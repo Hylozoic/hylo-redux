@@ -118,8 +118,10 @@ export const LeftNav = ({ opened, community, network, tags, close, links }, { is
   {opened && <Tooltip id='topics'
     index={2}
     position='right'
-    title='Topics'
-    body='The topics you follow or create will be listed here for easy access and notifications on new activities'/>}
+    title='Topics'>
+    <p>The Topics you follow or create will be listed here for easy access and to display notifications on new activity in that Topic.</p>
+    <p>Clicking a Topic shows you just the Conversations under that Topic.</p>
+  </Tooltip>}
   </span>
 }
 LeftNav.contextTypes = {isMobile: bool}

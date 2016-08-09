@@ -1,70 +1,66 @@
 import React from 'react'
-import Tooltip from '../components/Tooltip'
+import Icon from '../components/Icon'
+
+const names = [
+  'AddContacts',
+  'Bell',
+  'Bookmark',
+  'Box-Out',
+  'Calendar',
+  'Calendar-Add',
+  'Camera',
+  'Chevron-Left',
+  'Chevron-Down',
+  'Chevron-Right',
+  'Chevron-Up',
+  'Clock',
+  'Cloud-Download',
+  'Cloud-Upload',
+  'Comment',
+  'Comment-Alt',
+  'Compose',
+  'Fail',
+  'Heart',
+  'Heart2',
+  'Help',
+  'JunkBox',
+  'Keypad',
+  'Like',
+  'Link',
+  'List',
+  'Lock',
+  'Loudspeaker',
+  'Loupe',
+  'Mail',
+  'Message-Smile',
+  'More',
+  'More-Alt',
+  'Pencil',
+  'Pin-1',
+  'Pin-2',
+  'ProjectorScreen',
+  'Settings',
+  'Star',
+  'Tag',
+  'Trash',
+  'User',
+  'Users',
+  'VideoCamera',
+  'View',
+  'big-check',
+  'facebook',
+  'hylo-script',
+  'linkedin',
+  'merkaba',
+  'twitter'
+]
 
 export default class IconTest extends React.Component {
 
   render () {
     return <div id='icon-test'>
-      <div>la</div>
-      <div>la</div>
-      <div>la</div>
-      <div>la</div>
-      <div>la</div>
-      <div>la</div>
-      <div>la</div>
-      <div>la</div>
-      <div>
-        <Tooltip
-          id='test31'
-          index={3}
-          title='Topics (3)'
-          body='The topics you follow or create will be listed here for easy access and notifications on new activities'
-          />
-      </div>
-      <div>la</div>
-      <div>la</div>
-      <div>la</div>
-      <div>la</div>
-      <div>la</div>
-      <div>la</div>
-      <div>la</div>
-      <div>la</div>
-        <div>lalalalalalalalalalalalalalala
-          lalalalalalalalalalalalalalalalalalalalalalala
-          lalalalalalalalalalalalalalalalalalalalalalalala<Tooltip
-            id='test11'
-            index={1}
-            title='Topics (1)'
-            body='The topics you follow or create will be listed here for easy access and notifications on new activities'
-            />
-        </div>
-        <div>la</div>
-        <div>la</div>
-        <div>la</div>
-        <div>la</div>
-        <div>la</div>
-        <div>la</div>
-        <div>la</div>
-        <div>la</div>
-
-        <div>la</div>
-        <div>lalalalalalalalalalalalalalala
-          lalalalalalalalalalalalalalalalalalalalalalala
-          lalalalalalalalalalalalalalalalalalalalalalalala<Tooltip
-            id='test21'
-            index={2}
-            title='Topics (2)'
-            body='The topics you follow or create will be listed here for easy access and notifications on new activities'
-            />
-        </div>
-        <div>la</div>
-        <div>la</div>
-        <div>la</div>
-        <div>la</div>
-        <div>la</div>
-        <div>la</div>
-        <div>la</div>
-        <div>la</div>
+      {names.map(name => <span key={name}><Icon name={name}/> {name}</span>)}
+      <p>{names.length} icons</p>
     </div>
   }
 }

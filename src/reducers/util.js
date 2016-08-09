@@ -28,9 +28,9 @@ export const hashBy = (arr, iteratee) => {
 export function checkForMedia(payload, state, id) {
     if (payload.video) {
         return updateMedia(state[id], 'video', payload.video)
-    } else if(state[id]) {
-        return state[id] ? state[id].media : undefined
-    }
+    } else if(state[id] && state[id].media) {
+        return state[id].media
+    } else return undefined
 }
 
 // for modifying a post or other object with a list of media; set an item of
@@ -40,7 +40,11 @@ export function checkForMedia(payload, state, id) {
 export function updateMedia (obj, type, url) {
   let media = filter(obj && obj.media, m => m.type !== type)
   if (url) media = media.concat({type, url})
-  return {...obj, media}
+  if(media["0"].type === 'video') {
+      return media
+  } else {
+     return {...obj, media}
+  }
 }
 
 export function checkNewFormForFinancialRequestsEnabled(payload, state) {

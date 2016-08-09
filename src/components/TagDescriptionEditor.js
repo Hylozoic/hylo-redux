@@ -59,22 +59,25 @@ export default class TagDescriptionEditor extends React.Component {
 
     return <BareModalWrapper>
       <Modal id='tag-description-editor' title={title}>
-        {map(tags, (description, tag, i) => <div key={creating ? i : tag}
-        className={cx('tag-group', {creating})}>
-        {creating
-          ? <ModalInput label='Topic name' defaultValue={tag}
-          onChange={event => edit(event.target.value, description)}/>
-        : <div className='topic'>
-        <label>Topic name</label>
-        <span>#{tag}</span>
-      </div>}
-      <ModalInput label='Description' defaultValue={description}
-        onChange={event => edit(tag, event.target.value)}/>
-    </div>)}
-    <div className='footer'>
-      <button onClick={creating ? createTag : () => saveParent(tags)} className='ok'>Create</button>
-    </div>
-  </Modal>
+        {map(tags, (description, tag, i) =>
+          <div key={creating ? i : tag} className={cx('tag-group', {creating})}>
+            {creating
+              ? <ModalInput label='Topic name' defaultValue={tag}
+              onChange={event => edit(event.target.value, description)}/>
+              : <div className='topic'>
+                  <label>Topic name</label>
+                  <span>#{tag}</span>
+                </div>}
+            <ModalInput label='Description' defaultValue={description}
+              onChange={event => edit(tag, event.target.value)}/>
+          </div>)}
+        <div className='footer'>
+          <button onClick={creating ? createTag : () => saveParent(tags)}
+            className='ok'>
+            Create
+          </button>
+        </div>
+      </Modal>
     </BareModalWrapper>
   }
 }

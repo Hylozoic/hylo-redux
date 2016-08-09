@@ -2,6 +2,8 @@ import { values } from 'lodash'
 import { find, pickBy } from 'lodash/fp'
 
 export const MemberRole = {DEFAULT: 0, MODERATOR: 1}
+export const defaultBanner = 'https://d3ngex8q79bk55.cloudfront.net/misc/default_community_banner.jpg'
+export const defaultAvatar = 'https://d3ngex8q79bk55.cloudfront.net/misc/default_community_avatar.png'
 
 export const avatarUploadSettings = ({ id, slug }) => ({
   id: slug,

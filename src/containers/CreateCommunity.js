@@ -1,8 +1,27 @@
 import React from 'react'
-const { object } = React.PropTypes
+import { connect } from 'react-redux'
+const { object, bool, func } = React.PropTypes
+import { toPairs, get, some } from 'lodash/fp'
+import { includes } from 'lodash'
 import ModalOnlyPage from '../components/ModalOnlyPage'
-import ModalInput, { ModalField } from '../components/ModalInput'
+import ModalInput, { ModalSelect } from '../components/ModalInput'
 import Modal from '../components/Modal'
+import { categories } from './community/CommunityEditor'
+import { uploadImage } from '../actions/uploadImage'
+import {
+  CREATE_COMMUNITY,
+  UPLOAD_IMAGE,
+  createCommunity,
+  navigate,
+  resetCommunityValidation,
+  updateCommunityEditor,
+  validateCommunityAttribute
+} from '../actions'
+import {
+  avatarUploadSettings, bannerUploadSettings, defaultAvatar, defaultBanner
+} from '../models/community'
+import { scrollToBottom } from '../util/scrolling'
+import { ADDED_COMMUNITY, trackEvent } from '../util/analytics'
 
 const merkabaUrl = 'https://www.hylo.com/img/hylo-merkaba-300x300.png'
 
@@ -28,38 +47,183 @@ export class CreateCommunityContainer extends React.Component {
   }
 }
 
-const URLInput = ({ value }) => {
-  const Field = ({ onFocus, onBlur }) => <span>
-    <span className='url-prefix'>https://hylo.com/c/</span>
-    <input type='text'
-      value={value}
-      onFocus={onFocus}
-      onBlur={onBlur} />
-  </span>
-  return <ModalField Field={Field} label='URL'/>
-}
+@connect(({ communityEditor, communityValidation, pending }) => {
+  let validating = some(id => id, communityValidation.pending)
+  let { community, errors } = communityEditor
+  let saving = pending[CREATE_COMMUNITY]
+  let uploadingImage = !!pending[UPLOAD_IMAGE]
 
+  if (!errors) errors = {}
+  errors.nameUsed = get('name.unique', communityValidation) === false
+  errors.slugUsed = get('slug.unique', communityValidation) === false
+  errors.codeUsed = get('beta_access_code.unique', communityValidation) === false
+
+  if (!community) community = {}
+  if (!community.avatar_url) community.avatar_url = defaultAvatar
+  if (!community.banner_url) community.banner_url = defaultBanner
+
+  return {community, errors, validating, saving, uploadingImage}
+})
 export class CreateCommunityOne extends React.Component {
+  static propTypes = {
+    saving: bool,
+    uploadingImage: bool,
+    validating: bool,
+    errors: object,
+    dispatch: func,
+    community: object
+  }
 
   constructor (props) {
     super(props)
-    this.state = {}
+    this.state = {
+      expanded: false
+    }
+  }
+
+  setValue = (key, value) =>
+    this.props.dispatch(updateCommunityEditor('community', {[key]: value}))
+
+  setError = obj =>
+    this.props.dispatch(updateCommunityEditor('errors', obj))
+
+  resetValidation = key =>
+    this.props.dispatch(resetCommunityValidation(key))
+
+  checkUnique = (key, value) =>
+    this.props.dispatch(validateCommunityAttribute(key, value, 'unique'))
+
+  set = key => event => {
+    let { value } = event.target
+    this.setValue(key, value)
+    this.validate(key, value)
+  }
+
+  validate (key, value) {
+    switch (key) {
+      case 'name':
+        this.setError({nameBlank: !value})
+
+        if (!value) {
+          this.resetValidation('name')
+        } else {
+          return this.checkUnique('name', value)
+        }
+        break
+      case 'description':
+        this.setError({descriptionBlank: !value})
+        break
+      case 'slug':
+        let error = {slugBlank: false, slugInvalid: false}
+
+        if (!value) {
+          error.slugBlank = true
+        } else if (!value.match(/^[a-z0-9-+]+$/)) {
+          error.slugInvalid = true
+        }
+
+        this.setError(error)
+
+        if (some(error)) {
+          this.resetValidation('slug')
+        } else {
+          return this.checkUnique('slug', value)
+        }
+        break
+      case 'beta_access_code':
+        this.setError({codeBlank: !value})
+
+        if (!value) {
+          this.resetValidation('beta_access_code')
+        } else if (includes(value, '/')) {
+          this.setError({codeInvalid: true})
+        } else {
+          return this.checkUnique('beta_access_code', value)
+        }
+        break
+    }
+  }
+
+  attachImage (type) {
+    let { dispatch } = this.props
+    let community = {id: 'new', slug: 'new'}
+    switch (type) {
+      case 'avatar':
+        dispatch(uploadImage(avatarUploadSettings(community)))
+        break
+      case 'banner':
+        dispatch(uploadImage(bannerUploadSettings(community)))
+    }
+    return false
+  }
+
+  validateAll () {
+    let { community } = this.props
+    return Promise.all(
+      ['name', 'description', 'slug', 'beta_access_code', 'category']
+      .map(key => this.validate(key, community[key]))
+    )
+  }
+
+  submit = () => {
+    let { validating, dispatch, community } = this.props
+    if (validating) return
+
+    this.validateAll().then(() => {
+      if (some(id => id, this.props.errors)) return scrollToBottom()
+
+      dispatch(createCommunity(community))
+      .then(() => {
+        if (some(this.props.errors)) {
+          return scrollToBottom()
+        } else {
+          trackEvent(ADDED_COMMUNITY, {community})
+          dispatch(navigate(`/c/${community.slug}`))
+        }
+      })
+    })
   }
 
   render () {
-    const error = false
+    const { community, errors } = this.props
+
+    const { expanded } = this.state
 
     return <Modal title='Create your community.'
+      className='create-community-one'
       subtitle="Let's get started unlocking the creative potential of your community with Hylo"
       standalone>
-      <form onSubmit={this.submit}>
-        {error && <div className='alert alert-danger'>{error}</div>}
-        <ModalInput label='Name' ref='name'/>
-        <URLInput />
-        <div className='footer'>
-          <input ref='submit' type='submit' value='Create'/>
+        <ModalInput label='Name' ref='name' onChange={this.set('name')}/>
+        {errors.nameBlank && <p className='help error'>Please fill in this field.</p>}
+        {errors.nameUsed && <p className='help error'>This name is already in use.</p>}
+        <ModalInput label='URL' ref='url' prefix='https://hylo.com/c/' onChange={this.set('slug')}/>
+        {errors.slugBlank && <p className='help error'>Please fill in this field.</p>}
+        {errors.slugInvalid && <p className='help error'>Use lowercase letters, numbers, and hyphens only.</p>}
+        {errors.slugUsed && <p className='help error'>This URL is already in use.</p>}
+        <ModalInput label='Description' ref='description' type='textarea' onChange={this.set('description')}/>
+        {errors.descriptionBlank && <p className='help error'>Please fill in this field.</p>}
+        <ModalInput label='Invitation Code' ref='beta_access_code' onChange={this.set('beta_access_code')}/>
+        {errors.codeInvalid && <p className='help error'>The code may not contain the slash ("/") character.</p>}
+        {errors.codeBlank && <p className='help error'>Please fill in a code.</p>}
+        {errors.codeUsed && <p className='help error'>This code cannot be used; please choose another.</p>}
+        <div className='toggle-advanced'>
+          <a onClick={() => this.setState({expanded: !expanded})}>More Options</a>
         </div>
-      </form>
+        {expanded && <ModalSelect label='Community Type' onChange={this.set('category')}>
+          <option value=''>Pick one:</option>
+          {toPairs(categories).map(([value, label]) => <option key={value} value={value}>
+            {label}
+          </option>)}
+        </ModalSelect>}
+        {expanded && <ModalInput label='Location' onChange={this.set('location')}/>}
+        {expanded && <div className='modal-input'>
+          <label>Logo</label>
+          <div className='small-logo' style={{backgroundImage: `url(${community.avatar_url})`}}></div>
+          <button onClick={() => this.attachImage('avatar')}>Upload</button>
+        </div>}
+        <div className='footer'>
+          <input ref='submit' type='submit' value='Create' onClick={this.submit}/>
+        </div>
     </Modal>
   }
 }

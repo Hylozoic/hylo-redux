@@ -390,7 +390,7 @@ export class PostEditor extends React.Component {
         arrow='left'
         position='bottom'
         parentId='tag-selector'
-        title='Select Topic'>
+        title='Action Topics'>
         <p>Use this pull-down menu to select from one of Hylo’s three Action Topics: Offer (something you’d like to share), Request (something you’re looking for), Intention (something you’d like to create), or create a new Topic.</p>
         <p>Action Topics help you make good things happen in your community.</p>
       </Tooltip>}

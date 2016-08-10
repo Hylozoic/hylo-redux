@@ -18,6 +18,8 @@ import AboutCommunity from './containers/community/AboutCommunity'
 import CommunitySettings from './containers/community/CommunitySettings'
 import TagSettings from './containers/TagSettings'
 import TagPosts from './containers/tag/TagPosts'
+import BioPrompt from './containers/onboarding/BioPrompt'
+import TopicsPrompt from './containers/onboarding/TopicsPrompt'
 import SkillsPrompt from './containers/onboarding/SkillsPrompt'
 import WelcomePage from './containers/onboarding/WelcomePage'
 import PersonProfile from './containers/person/PersonProfile'
@@ -81,7 +83,11 @@ export default function makeRoutes (store) {
     <Route path='signup' component={Signup}/>
     <Route path='login' component={Login}/>
     <Route path='set-password' component={SetPassword}/>
+
     <Route path='add-skills' component={SkillsPrompt} onEnter={requireLogin}/>
+    <Route path='add-bio' component={BioPrompt} onEnter={requireLogin}/>
+    <Route path='choose-topics' component={TopicsPrompt} onEnter={requireLogin}/>
+
     <Route path='c/:id/new' component={StandalonePostEditor} community onEnter={requireLogin}/>
     <Route path='c/:id/events/new' component={StandalonePostEditor} community type='event' onEnter={requireLogin}/>
     <Route path='c/:id/projects/new' component={StandalonePostEditor} community type='project' onEnter={requireLogin}/>
@@ -161,9 +167,6 @@ export const communityUrl = (community, params) =>
 
 export const networkUrl = network =>
   `/n/${network.slug}`
-
-export const communityOnboardingUrl = community =>
-  `/c/${community.slug}/onboarding`
 
 export const communityJoinUrl = community =>
   `${origin()}/c/${community.slug}/join/${community.beta_access_code}`

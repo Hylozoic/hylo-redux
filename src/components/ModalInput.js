@@ -11,7 +11,8 @@ class ModalInput extends React.Component {
     defaultValue: string,
     value: string,
     type: string,
-    onChange: func
+    onChange: func,
+    maxLength: string
   }
 
   constructor (props) {
@@ -25,7 +26,8 @@ class ModalInput extends React.Component {
 
   render () {
     const {
-      label, placeholder, defaultValue, value, onChange, className, type
+      label, placeholder, defaultValue, value, onChange, className, type,
+      maxLength
     } = this.props
     const { active } = this.state
 
@@ -33,10 +35,7 @@ class ModalInput extends React.Component {
       onClick={() => this.refs.input.focus()}>
       <label>{label}</label>
       <input type={type || 'text'} ref='input'
-        placeholder={placeholder}
-        defaultValue={defaultValue}
-        value={value}
-        onChange={onChange}
+        {...{maxLength, placeholder, defaultValue, value, onChange}}
         onFocus={() => this.setState({active: true})}
         onBlur={() => this.setState({active: false})} />
     </div>

@@ -253,8 +253,10 @@
 
 .login-signup {
   padding-top: 50px;
+  padding-bottom: 50px;
   .mobile({
     padding-top: 25px;
+    padding-bottom: 25px;
   });
 
   .oauth {
@@ -332,9 +334,11 @@
     }
   }
 
-  input[type='submit'] {
-    .round-button;
-    .green-button;
+  .footer {
+    input[type='submit'], a.button {
+      .round-button;
+      .green-button;
+    }
   }
 }
 

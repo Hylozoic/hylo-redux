@@ -1,9 +1,44 @@
 import React from 'react'
 import cx from 'classnames'
-const { func, string, array } = React.PropTypes
+const { func, string, array, object } = React.PropTypes
+import { get } from 'lodash/fp'
 
-class ModalInput extends React.Component {
+export default class ModalRow extends React.Component {
+  static propTypes = {
+    className: string,
+    children: array,
+    field: object
+  }
 
+  focus () {
+    this.setState({active: true})
+  }
+
+  blur () {
+    this.setState({active: false})
+  }
+
+  constructor (props) {
+    super(props)
+    this.state = {
+      active: false
+    }
+  }
+
+  render () {
+    const { children, className, field } = this.props
+    const { active } = this.state
+
+    const onClick = get('focus', field) && (() => field.focus())
+
+    return <div className={cx(className, 'modal-input', {active})}
+      onClick={onClick}>
+      {children}
+    </div>
+  }
+}
+
+export class ModalInput extends React.Component {
   static propTypes = {
     label: string,
     placeholder: string,
@@ -15,11 +50,6 @@ class ModalInput extends React.Component {
     prefix: string
   }
 
-  constructor (props) {
-    super(props)
-    this.state = {}
-  }
-
   getValue () {
     return this.refs.input.value
   }
@@ -28,10 +58,11 @@ class ModalInput extends React.Component {
     const {
       label, placeholder, defaultValue, value, onChange, className, type, prefix
     } = this.props
-    const { active } = this.state
 
-    return <div className={cx(className, 'modal-input', {active})}
-      onClick={() => this.refs.input.focus()}>
+    const onFocus = () => this.refs.row.focus()
+    const onBlur = () => this.refs.row.blur()
+
+    return <ModalRow className={className} field={this.refs.input} ref='row'>
       <label>{label}</label>
       {prefix && <span className='prefix'>{prefix}</span>}
       {type === 'textarea'
@@ -40,20 +71,18 @@ class ModalInput extends React.Component {
           defaultValue={defaultValue}
           value={value}
           onChange={onChange}
-          onFocus={() => this.setState({active: true})}
-          onBlur={() => this.setState({active: false})} />
+          onFocus={onFocus}
+          onBlur={onBlur} />
         : <input type={type || 'text'} ref='input'
           placeholder={placeholder}
           defaultValue={defaultValue}
           value={value}
           onChange={onChange}
-          onFocus={() => this.setState({active: true})}
-          onBlur={() => this.setState({active: false})} />}
-    </div>
+          onFocus={onFocus}
+          onBlur={onBlur} />}
+    </ModalRow>
   }
 }
-
-export default ModalInput
 
 export class ModalSelect extends React.Component {
   static propTypes = {
@@ -68,7 +97,6 @@ export class ModalSelect extends React.Component {
 
   constructor (props) {
     super(props)
-    this.state = {}
   }
 
   getValue () {
@@ -80,20 +108,20 @@ export class ModalSelect extends React.Component {
       label, placeholder, defaultValue, value, onChange, className, children
     } = this.props
 
-    const { active } = this.state
+    const onFocus = () => this.refs.row.focus()
+    const onBlur = () => this.refs.row.blur()
 
-    return <div className={cx(className, 'modal-input', {active})}
-      onClick={() => this.refs.select.focus()}>
+    return <ModalRow className={className} field={this.refs.select} ref='row'>
       <label>{label}</label>
       <select ref='select'
         placeholder={placeholder}
         defaultValue={defaultValue}
         value={value}
         onChange={onChange}
-        onFocus={() => this.setState({active: true})}
-        onBlur={() => this.setState({active: false})}>
+        onFocus={onFocus}
+        onBlur={onBlur}>
         {children}
       </select>
-    </div>
+    </ModalRow>
   }
 }

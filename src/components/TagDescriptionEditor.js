@@ -4,7 +4,7 @@ import { cancelTagDescriptionEdit, editTagDescription, editNewTagAndDescription 
 import { debounce, keys, isEmpty, map } from 'lodash'
 import { hashtagWordRegex } from '../models/hashtag'
 import { BareModalWrapper, Modal } from './Modal'
-import ModalInput from './ModalInput'
+import { ModalInput } from './ModalRow'
 import cx from 'classnames'
 const { func, object, bool } = React.PropTypes
 

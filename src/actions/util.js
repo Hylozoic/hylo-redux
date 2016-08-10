@@ -12,6 +12,7 @@ export const findError = (errors, type, bucket, id) => {
 // FIXME this shouldn't go in here; actions/util is for functions used only
 // within actions
 export const saveCurrentCommunityId = (dispatch, communityId, userId) => {
+  console.log('saveCurrentCommunityId', {communityId, userId})
   if (!communityId) return
   const settings = {currentCommunityId: communityId}
   if (userId && typeof window !== 'undefined') {

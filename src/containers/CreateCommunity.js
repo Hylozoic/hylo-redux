@@ -4,7 +4,7 @@ const { object, bool, func } = React.PropTypes
 import { toPairs, get, some } from 'lodash/fp'
 import { includes } from 'lodash'
 import ModalOnlyPage from '../components/ModalOnlyPage'
-import ModalInput, { ModalSelect } from '../components/ModalInput'
+import { ModalInput, ModalSelect } from '../components/ModalRow'
 import Modal from '../components/Modal'
 import { categories } from './community/CommunityEditor'
 import { uploadImage } from '../actions/uploadImage'
@@ -18,10 +18,15 @@ import {
   validateCommunityAttribute
 } from '../actions'
 import {
-  avatarUploadSettings, bannerUploadSettings, defaultAvatar, defaultBanner
+  avatarUploadSettings,
+  bannerUploadSettings,
+  defaultAvatar,
+  defaultBanner,
+  getCurrentCommunity
 } from '../models/community'
 import { scrollToBottom } from '../util/scrolling'
 import { ADDED_COMMUNITY, trackEvent } from '../util/analytics'
+import { saveCurrentCommunityId } from '../actions/util'
 
 const merkabaUrl = 'https://www.hylo.com/img/hylo-merkaba-300x300.png'
 
@@ -29,29 +34,34 @@ export const CreateCommunity = ({ children }) => <div className>
   {children}
 </div>
 
+@connect(state => ({community: getCurrentCommunity(state)}))
 export class CreateCommunityContainer extends React.Component {
   static propTypes = {
+    community: object,
     children: object
   }
 
   render () {
-    const { children } = this.props
+    const { children, community } = this.props
+
+    const logoUrl = community ? community.avatar_url : merkabaUrl
 
     return <ModalOnlyPage>
       <div className='modal-topper'>
-        <div className='medium-avatar' style={{backgroundImage: `url(${merkabaUrl})`}}/>
-        <h2>Create</h2>
+        <div className='medium-avatar' style={{backgroundImage: `url(${logoUrl})`}}/>
+        <h2>Create Community</h2>
       </div>}
       {children}
     </ModalOnlyPage>
   }
 }
 
-@connect(({ communityEditor, communityValidation, pending }) => {
-  let validating = some(id => id, communityValidation.pending)
+@connect(({ communityEditor, communityValidation, pending, people }) => {
+  const validating = some(id => id, communityValidation.pending)
   let { community, errors } = communityEditor
-  let saving = pending[CREATE_COMMUNITY]
-  let uploadingImage = !!pending[UPLOAD_IMAGE]
+  const saving = pending[CREATE_COMMUNITY]
+  const uploadingImage = !!pending[UPLOAD_IMAGE]
+  const currentUser = get('current', people)
 
   if (!errors) errors = {}
   errors.nameUsed = get('name.unique', communityValidation) === false
@@ -62,7 +72,7 @@ export class CreateCommunityContainer extends React.Component {
   if (!community.avatar_url) community.avatar_url = defaultAvatar
   if (!community.banner_url) community.banner_url = defaultBanner
 
-  return {community, errors, validating, saving, uploadingImage}
+  return {community, errors, validating, saving, uploadingImage, currentUser}
 })
 export class CreateCommunityOne extends React.Component {
   static propTypes = {
@@ -71,7 +81,8 @@ export class CreateCommunityOne extends React.Component {
     validating: bool,
     errors: object,
     dispatch: func,
-    community: object
+    community: object,
+    currentUser: object
   }
 
   constructor (props) {
@@ -166,19 +177,20 @@ export class CreateCommunityOne extends React.Component {
   }
 
   submit = () => {
-    let { validating, dispatch, community } = this.props
+    let { validating, dispatch, community, currentUser } = this.props
     if (validating) return
 
     this.validateAll().then(() => {
       if (some(id => id, this.props.errors)) return scrollToBottom()
 
       dispatch(createCommunity(community))
-      .then(() => {
-        if (some(this.props.errors)) {
+      .then(({ payload }) => {
+        if (some(id => id, this.props.errors)) {
           return scrollToBottom()
         } else {
           trackEvent(ADDED_COMMUNITY, {community})
-          dispatch(navigate(`/c/${community.slug}`))
+          saveCurrentCommunityId(dispatch, payload.id, currentUser.id)
+          dispatch(navigate(`/create/two`))
         }
       })
     })
@@ -233,17 +245,12 @@ export class CreateCommunityTwo extends React.Component {
   render () {
     const error = false
 
-    return <Modal title='Create your community.'
-      subtitle="Let's get started unlocking the creative potential of your community with Hylo"
+    return <Modal title='Invite Members.'
       standalone>
-      <form onSubmit={this.submit}>
-        {error && <div className='alert alert-danger'>{error}</div>}
-        <ModalInput label='Name' ref='name'/>
-        <ModalInput label='URL' ref='url'/>
-        <div className='footer'>
-          <input ref='submit' type='submit' value='Create'/>
-        </div>
-      </form>
+      <div>
+        <label>Import CSV File</label>
+        <button>Browse</button>
+      </div>
     </Modal>
   }
 }

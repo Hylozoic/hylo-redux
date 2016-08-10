@@ -5,7 +5,6 @@ import {
   FETCH_PEOPLE,
   LEAVE_COMMUNITY,
   LEAVE_COMMUNITY_PENDING,
-  UPDATE_USER_SETTINGS,
   UPDATE_USER_SETTINGS_PENDING
 } from '../../src/actions'
 
@@ -13,7 +12,8 @@ const user1 = {
   id: 'j',
   name: 'Joe',
   email: 'joe@foo.com',
-  memberships: [{community_id: 1}, {community_id: 2}, {community_id: 3}]
+  memberships: [{community_id: 1}, {community_id: 2}, {community_id: 3}],
+  tags: ['foo', 'bar', 'baz']
 }
 
 describe('people', () => {
@@ -31,52 +31,6 @@ describe('people', () => {
 
       let expectedState = {
         current: user1
-      }
-
-      expect(people(state, action)).to.deep.equal(expectedState)
-    })
-  })
-
-  describe('on UPDATE_USER_SETTINGS with error', () => {
-    it('restores current user to previous state', () => {
-      let action = {
-        type: UPDATE_USER_SETTINGS,
-        error: true,
-        meta: {
-          id: 'j',
-          prevProps: {
-            settings: {digest_frequency: 'weekly'},
-            name: 'Joe!'
-          }
-        }
-      }
-
-      let state = {
-        current: {
-          id: 'j',
-          email: 'joe@bar.com',
-          settings: {digest_frequency: 'daily', receives_email_prompts: true}
-        },
-        j: {
-          id: 'j',
-          email: 'joe@bar.com',
-          settings: {digest_frequency: 'daily', receives_email_prompts: true}
-        }
-      }
-
-      let expectedState = {
-        current: {
-          id: 'j',
-          email: 'joe@bar.com',
-          settings: {digest_frequency: 'weekly', receives_email_prompts: true},
-          name: 'Joe!'
-        },
-        j: {
-          id: 'j',
-          email: 'joe@bar.com',
-          settings: {digest_frequency: 'weekly', receives_email_prompts: true},
-          name: 'Joe!'
-        }
       }
 
       expect(people(state, action)).to.deep.equal(expectedState)
@@ -120,6 +74,46 @@ describe('people', () => {
       }
 
       expect(people(state, action)).to.deep.equal(expectedState)
+    })
+
+    it('adds tags', () => {
+      const action = {
+        type: UPDATE_USER_SETTINGS_PENDING,
+        meta: {id: user1.id, params: {tags: ['foo', 'bar', 'baz', 'klunk']}}
+      }
+
+      const state = {
+        current: user1,
+        [user1.id]: user1
+      }
+
+      const expected = {
+        current: {...user1, tags: ['foo', 'bar', 'baz', 'klunk']},
+        [user1.id]: {...user1, tags: ['foo', 'bar', 'baz', 'klunk']}
+      }
+
+      expect(people(state, action)).to.deep.equal(expected)
+    })
+
+    it('removes tags', () => {
+      const action = {
+        type: UPDATE_USER_SETTINGS_PENDING,
+        meta: {id: user1.id, params: {tags: ['foo', 'bar']}}
+      }
+
+      const state = {
+        current: user1,
+        [user1.id]: user1
+      }
+
+      const expected = {
+        current: {...user1, tags: ['foo', 'bar']},
+        [user1.id]: {...user1, tags: ['foo', 'bar']}
+      }
+
+      const newState = people(state, action)
+      expect(newState).to.deep.equal(expected)
+      expect(newState.current).not.to.equal(state.current)
     })
   })
 

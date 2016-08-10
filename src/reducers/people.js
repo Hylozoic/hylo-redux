@@ -1,4 +1,4 @@
-import { filter, get, merge, pick, find, indexOf, map, sortBy } from 'lodash'
+import { filter, get, merge, mergeWith, pick, find, indexOf, map, sortBy } from 'lodash'
 import { isNull, omitBy } from 'lodash/fp'
 import { debug } from '../util/logging'
 import {
@@ -15,7 +15,6 @@ import {
   LOGOUT,
   SIGNUP,
   UPDATE_USER_SETTINGS_PENDING,
-  UPDATE_USER_SETTINGS,
   UPDATE_COMMUNITY_SETTINGS_PENDING,
   UPDATE_MEMBERSHIP_SETTINGS_PENDING,
   USE_INVITATION
@@ -58,16 +57,15 @@ const normalize = person => {
   })
 }
 
+const updateCurrentUser = (user, params) =>
+  mergeWith({...user}, params, (objV, srcV, key, obj, src) => {
+    if (key === 'tags') return srcV
+  })
+
 export default function (state = {}, action) {
   let { type, error, payload, meta } = action
   if (error) {
     switch (type) {
-      case UPDATE_USER_SETTINGS:
-        return {
-          ...state,
-          current: merge({...state.current}, meta.prevProps),
-          [meta.id]: merge({...state[meta.id]}, meta.prevProps)
-        }
       case LEAVE_COMMUNITY:
         return {
           ...state,
@@ -104,10 +102,11 @@ export default function (state = {}, action) {
       }
     case UPDATE_USER_SETTINGS_PENDING:
       let { params, id } = meta
+      const newCurrentUser = updateCurrentUser(state.current, params)
       return {
         ...state,
-        current: merge(state.current, params),
-        [id]: merge(state[id], params)
+        current: newCurrentUser,
+        [id]: newCurrentUser
       }
     case LEAVE_COMMUNITY_PENDING:
       let memberships = filter(state.current.memberships, m => m.community_id !== meta.communityId)

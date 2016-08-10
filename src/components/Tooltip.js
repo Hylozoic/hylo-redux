@@ -1,8 +1,8 @@
 import React from 'react'
 import { connect } from 'react-redux'
-import ToolTip from 'react-portal-tooltip'
+import ReactPortalTooltip from './ReactPortalTooltip'
 import { get, omit, sortBy, flow, toPairs, keys, isEmpty } from 'lodash/fp'
-const { string, number, bool, object, func, array } = React.PropTypes
+const { string, number, bool, object, func, array, oneOfType } = React.PropTypes
 import { updateUserSettings, registerTooltip, unregisterTooltip } from '../actions'
 
 export const activeTooltip = (currentUser, tooltips) => {
@@ -31,7 +31,7 @@ export default class Tooltip extends React.Component {
     parentId: string,
     index: number.isRequired,
     title: string,
-    children: array,
+    children: oneOfType([array, object]),
     active: bool,
     position: string,
     arrow: string,
@@ -79,13 +79,12 @@ export default class Tooltip extends React.Component {
     }
 
     return <span id={ttid}>
-      <ToolTip
+      <ReactPortalTooltip
         active={active}
         parent={`#${parentId || ttid}`}
         position={position}
         arrow={arrow}
-        style={style}
-        ref='tooltip'>
+        style={style}>
         {!isEmpty(children) && <div className='tooltip-content'>
           <div className='title'>{title}</div>
           <div className='body'>
@@ -95,7 +94,7 @@ export default class Tooltip extends React.Component {
             <a onClick={() => close()}>Got it</a>
           </div>
         </div>}
-      </ToolTip>
+      </ReactPortalTooltip>
     </span>
   }
 }

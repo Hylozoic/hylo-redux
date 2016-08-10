@@ -1,5 +1,7 @@
 import { isEmpty, omitBy } from 'lodash'
 import qs from 'querystring'
+import { tagUrl } from '../routes'
+import { navigate } from '../actions'
 
 export const makeUrl = (path, params) => {
   params = omitBy(params, x => !x)
@@ -16,4 +18,20 @@ export const nextPath = (path, community, isNetwork, query) => {
   const pathEnd = match ? `/${match[1]}` : ''
 
   return makeUrl((pathStart + pathEnd) || '/app', query)
+}
+
+export const navigateAfterJoin = ({ slug }, tagName, preexisting) =>
+  preexisting
+    ? navigate(tagName ? tagUrl(tagName, slug) : `/c/${slug}`)
+    : navigate(makeUrl('/add-skills', {community: slug, tagName}))
+
+export const nextOnboardingUrl = ({ pathname, query: { tagName, community } }) => {
+  switch (pathname) {
+    case '/add-skills':
+      return makeUrl('/add-bio', {community, tagName})
+    case '/add-bio':
+      return makeUrl('/choose-topics', {community, tagName})
+    case '/choose-topics':
+      return tagName ? tagUrl(tagName, community) : `/c/${community}`
+  }
 }

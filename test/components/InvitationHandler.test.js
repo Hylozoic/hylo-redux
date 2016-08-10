@@ -31,7 +31,7 @@ describe('InvitationHandler', () => {
       })
 
       return mockPrefetch(store, {token: 'zap'})
-      .then(() => expect(redirectUrl).to.equal('/c/foo'))
+      .then(() => expect(redirectUrl).to.equal('/add-skills?community=foo'))
     })
   })
 

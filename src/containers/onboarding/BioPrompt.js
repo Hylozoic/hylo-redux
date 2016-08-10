@@ -6,11 +6,12 @@ import { updateUserSettings } from '../../actions'
 import A from '../../components/A'
 import { debounce } from 'lodash'
 import { CommunityHeader } from '../Signup'
-import { newestMembership } from '../../models/currentUser'
+import { getCommunity } from '../../models/currentUser'
+import { nextOnboardingUrl } from '../../util/navigation'
 const { func, object } = React.PropTypes
 
-const BioPrompt = (props, { currentUser, dispatch }) => {
-  const { community } = newestMembership(currentUser)
+const BioPrompt = ({ location }, { currentUser, dispatch }) => {
+  const community = getCommunity(currentUser, {slug: location.query.community})
   const update = debounce(bio =>
     dispatch(updateUserSettings(currentUser.id, {bio})), 500)
 
@@ -21,7 +22,7 @@ const BioPrompt = (props, { currentUser, dispatch }) => {
         defaultValue={currentUser.bio || ''}
         onChange={event => update(event.target.value)}/>
       <div className='footer'>
-        <A className='button' to='/choose-topics'>Next</A>
+        <A className='button' to={nextOnboardingUrl(location)}>Next</A>
       </div>
     </Modal>
   </ModalOnlyPage>

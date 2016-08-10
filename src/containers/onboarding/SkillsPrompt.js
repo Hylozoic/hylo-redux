@@ -4,13 +4,14 @@ import ModalOnlyPage from '../../components/ModalOnlyPage'
 import ListItemTagInput from '../../components/ListItemTagInput'
 import { CommunityHeader } from '../Signup'
 import { preventSpaces } from '../../util/textInput'
+import { nextOnboardingUrl } from '../../util/navigation'
 import { updateUserSettings } from '../../actions'
-import { newestMembership } from '../../models/currentUser'
+import { getCommunity } from '../../models/currentUser'
 import A from '../../components/A'
 const { func, object } = React.PropTypes
 
-const SkillsPrompt = (props, { currentUser, dispatch }) => {
-  const { community } = newestMembership(currentUser)
+const SkillsPrompt = ({ location }, { currentUser, dispatch }) => {
+  const community = getCommunity(currentUser, {slug: location.query.community})
   const update = (path, value) =>
     dispatch(updateUserSettings(currentUser.id, {[path]: value}))
 
@@ -22,7 +23,7 @@ const SkillsPrompt = (props, { currentUser, dispatch }) => {
         filter={preventSpaces}
         update={update}/>
       <div className='footer'>
-        <A className='button' to='/add-bio'>Next</A>
+        <A className='button' to={nextOnboardingUrl(location)}>Next</A>
       </div>
     </Modal>
   </ModalOnlyPage>

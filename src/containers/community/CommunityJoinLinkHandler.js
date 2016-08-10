@@ -2,23 +2,14 @@ import React from 'react'
 import { prefetch } from 'react-fetcher'
 import { connect } from 'react-redux'
 import { get } from 'lodash'
-import { communityUrl, tagUrl } from '../../routes'
-import {
-  JOIN_COMMUNITY_WITH_CODE,
-  joinCommunityWithCode,
-  navigate
-} from '../../actions'
+import { JOIN_COMMUNITY_WITH_CODE, joinCommunityWithCode } from '../../actions'
+import { navigateAfterJoin } from '../../util/navigation'
 const { func, object, string } = React.PropTypes
-
-export const navigateAfterJoin = (community, tagName) =>
-  tagName
-    ? navigate(tagUrl(tagName, community.slug))
-    : navigate(communityUrl(community))
 
 @prefetch(({ path, params: { code, tagName }, dispatch }) =>
   dispatch(joinCommunityWithCode(code, tagName))
-  .then(({ error, payload: { community } }) =>
-    error || dispatch(navigateAfterJoin(community, tagName))))
+  .then(({ error, payload: { community, preexisting } }) =>
+    error || dispatch(navigateAfterJoin(community, tagName, preexisting))))
 @connect(({ errors, people }, { tagName }) => ({
   codeError: get(errors[JOIN_COMMUNITY_WITH_CODE], 'payload.response.body'),
   currentUser: people.current

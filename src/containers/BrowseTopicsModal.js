@@ -14,7 +14,7 @@ import { same } from '../models'
 import { newestMembership } from '../models/currentUser'
 import { humanDate } from '../util/text'
 import { tagUrl } from '../routes'
-const { array, bool, func, number, object } = React.PropTypes
+const { array, bool, func, number, object, string } = React.PropTypes
 
 const subject = 'community'
 
@@ -36,7 +36,8 @@ export default class BrowseTopicsModal extends React.Component {
     total: number,
     followedTags: array,
     onCancel: func,
-    onboarding: bool
+    onboarding: bool,
+    nextUrl: string
   }
 
   componentDidMount () {
@@ -47,7 +48,7 @@ export default class BrowseTopicsModal extends React.Component {
   render () {
     const {
       tags, community, dispatch, pending, total, followedTags, onCancel,
-      onboarding
+      onboarding, nextUrl
     } = this.props
     const offset = tags.length
     const title = onboarding
@@ -74,7 +75,7 @@ export default class BrowseTopicsModal extends React.Component {
           </ul>}
       <ScrollListener {...scrollListenerProps}/>
       {onboarding && <div className='footer'>
-        <A className='button' to={`/c/${community.slug}/onboarding`}>Next</A>
+        <A className='button' to={nextUrl}>Next</A>
       </div>}
     </Modal>
   }

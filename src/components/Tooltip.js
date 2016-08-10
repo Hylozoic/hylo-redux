@@ -1,7 +1,7 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import ToolTip from 'react-portal-tooltip'
-import { get, omit, sortBy, flow, toPairs, keys } from 'lodash/fp'
+import { get, omit, sortBy, flow, toPairs, keys, isEmpty } from 'lodash/fp'
 const { string, number, bool, object, func, array } = React.PropTypes
 import { updateUserSettings, registerTooltip, unregisterTooltip } from '../actions'
 
@@ -84,8 +84,9 @@ export default class Tooltip extends React.Component {
         parent={`#${parentId || ttid}`}
         position={position}
         arrow={arrow}
-        style={style}>
-        <div className='tooltip-content'>
+        style={style}
+        ref='tooltip'>
+        {!isEmpty(children) && <div className='tooltip-content'>
           <div className='title'>{title}</div>
           <div className='body'>
             {children}
@@ -93,7 +94,7 @@ export default class Tooltip extends React.Component {
           <div className='links'>
             <a onClick={() => close()}>Got it</a>
           </div>
-        </div>
+        </div>}
       </ToolTip>
     </span>
   }

@@ -25,11 +25,11 @@ describe('CommunityJoinLinkHandler', () => {
   })
 
   describe('with a valid code', () => {
-    it('redirects to onboarding with new membership', () => {
+    it('redirects to community with new membership', () => {
       mockJoinAction(store, {community})
 
       return mockPrefetch(store)
-      .then(() => expect(redirectUrl).to.equal('/c/foomunity/onboarding'))
+      .then(() => expect(redirectUrl).to.equal('/c/foomunity'))
     })
 
     it('redirects to community profile with existing membership', () => {

@@ -34,7 +34,7 @@ const WelcomePage = compose(
       <span className='message' dangerouslySetInnerHTML={{__html: markdown(sanitize(community.welcome_message))}}></span>
     </div>
 
-    <A className='button right' to={communityUrl(community, {onboarding: true})}>
+    <A className='button right' to={communityUrl(community)}>
       Continue
     </A>
   </div>

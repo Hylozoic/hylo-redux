@@ -2,13 +2,14 @@ import React from 'react'
 import { prefetch } from 'react-fetcher'
 import { connect } from 'react-redux'
 import { get } from 'lodash'
-import { USE_INVITATION, useInvitation, navigate } from '../../actions'
+import { USE_INVITATION, useInvitation } from '../../actions'
+import { navigateAfterJoin } from './CommunityJoinLinkHandler'
 const { func, object, string } = React.PropTypes
 
 @prefetch(({ path, query: { token }, store, dispatch }) =>
   dispatch(useInvitation(token))
-  .then(({ error, payload }) =>
-    error || dispatch(navigate(`/c/${payload.community.slug}/onboarding`))))
+  .then(({ error, payload: { community } }) =>
+    error || dispatch(navigateAfterJoin(community))))
 @connect(({ errors, people, communities }, { location: { query: { token } } }) => ({
   tokenError: get(errors[USE_INVITATION], 'payload.response.body')
 }))

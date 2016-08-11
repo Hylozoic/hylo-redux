@@ -312,9 +312,16 @@ nav {
     .mobile({
       display: none;
     });
+
+    width: 36px;
+
+    &.expanded {
+      width: auto;
+    }
+
     margin-top: 20px;
     margin-left: 0 !important;
-    padding: 0 10px;
+    padding: 0 10px 0 8px;
     display: inline-block;
     vertical-align: middle;
 
@@ -336,9 +343,6 @@ nav {
       outline: none;
       max-width: 10vw;
     }
-    .mobile({
-      display:none;
-    });
   }
 
   .user-menu {

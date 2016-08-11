@@ -8,20 +8,50 @@ import A from './A'
 import Dropdown from './Dropdown'
 import { NonLinkAvatar } from './Avatar'
 import { isAdmin } from '../models/currentUser'
+import cx from 'classnames'
 const { bool, func, object } = React.PropTypes
 
+class SearchMenuItem extends React.Component {
+  static contextTypes = {dispatch: func}
+
+  constructor (props) {
+    super(props)
+    this.state = {}
+  }
+
+  render () {
+    const { dispatch } = this.context
+    const { expanded } = this.state
+    const search = text => {
+      dispatch(navigate(makeUrl('/search', {q: text})))
+      close()
+      this.refs.input.clear()
+    }
+    const open = () => {
+      this.setState({expanded: true})
+      setTimeout(() => this.refs.input.focus())
+    }
+    const close = event => {
+      this.setState({expanded: false})
+      if (event) event.stopPropagation()
+    }
+
+    return <li className={cx('search', {expanded})} onClick={open}>
+      <Icon name='Loupe'/>
+      {expanded && <SearchInput onChange={search} ref='input'/>}
+      {expanded && <Icon onClick={close} name='Fail'/>}
+    </li>
+  }
+}
+
 const UserMenu = ({ slug, newCount }, { isMobile, dispatch, currentUser }) => {
-  const search = text => dispatch(navigate(makeUrl('/search', {q: text})))
   const doLogout = () => {
     calliOSBridge({type: 'logout'})
     dispatch(logout())
   }
 
   return <ul className='right'>
-    <li className='search'>
-      <Icon name='Loupe'/>
-      <SearchInput onChange={search}/>
-    </li>
+    <SearchMenuItem/>
 
     <li className='notifications'>
       <A to={`${slug ? '/c/' + slug : ''}/notifications`}>

@@ -25,17 +25,23 @@ describe('CommunityJoinLinkHandler', () => {
   })
 
   describe('with a valid code', () => {
-    it('redirects to community with new membership', () => {
+    it('redirects to onboarding with new membership', () => {
       mockJoinAction(store, {community})
 
       return mockPrefetch(store)
-      .then(() => expect(redirectUrl).to.equal('/c/foomunity'))
+      .then(() => expect(redirectUrl).to.equal('/add-skills?community=foomunity'))
     })
 
     it('redirects to community profile with existing membership', () => {
       mockJoinAction(store, {community, preexisting: true})
       return mockPrefetch(store)
       .then(() => expect(redirectUrl).to.equal('/c/foomunity'))
+    })
+
+    it('redirects to onboarding with tag and new membership', () => {
+      mockJoinAction(store, {community})
+      return mockPrefetch(store, {tagName: 'bar'})
+      .then(() => expect(redirectUrl).to.equal('/add-skills?community=foomunity&tagName=bar'))
     })
 
     it('redirects to tag page with tag and existing membership', () => {

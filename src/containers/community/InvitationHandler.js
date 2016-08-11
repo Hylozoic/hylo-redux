@@ -3,7 +3,7 @@ import { prefetch } from 'react-fetcher'
 import { connect } from 'react-redux'
 import { get } from 'lodash'
 import { USE_INVITATION, useInvitation } from '../../actions'
-import { navigateAfterJoin } from './CommunityJoinLinkHandler'
+import { navigateAfterJoin } from '../../util/navigation'
 const { func, object, string } = React.PropTypes
 
 @prefetch(({ path, query: { token }, store, dispatch }) =>

@@ -177,6 +177,8 @@
   min-height: 100vh;
 
   .modal {
+    box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.04);
+
     .non-mobile({
       margin: 0 auto;
       width: @main-column-width;
@@ -184,10 +186,13 @@
   }
 
   .modal-topper {
-    margin: 0 auto;
+    .non-mobile({
+      margin: 0 auto;
+      width: @main-column-width;
+    });
+
     padding: 0 25px 25px;
     color: white;
-    width: @main-column-width;
     min-height: @avatar-size-medium + 25px;
     .has-bottom-triangle(#fff, #fff, 10px);
     &:after {

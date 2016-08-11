@@ -5,7 +5,8 @@ import { same, truthy } from './index'
 // this works if community is an object with an id, or just an id
 export const membership = (currentUser, community) =>
   community && find(get(currentUser, 'memberships'), m =>
-      m.community.id === (community.id || community))
+      m.community.id === (community.id || community) ||
+      m.community.slug === (community.slug || community))
 
 export const getCommunity = (currentUser, community) =>
   get(membership(currentUser, community), 'community')

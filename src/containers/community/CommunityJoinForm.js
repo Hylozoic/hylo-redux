@@ -2,7 +2,7 @@ import React from 'react'
 import { connect } from 'react-redux'
 const { func, bool, string } = React.PropTypes
 import { debounce, get, isEmpty } from 'lodash'
-import { navigateAfterJoin } from './CommunityJoinLinkHandler'
+import { navigateAfterJoin } from '../../util/navigation'
 import {
   JOIN_COMMUNITY_WITH_CODE,
   resetError,

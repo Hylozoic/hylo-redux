@@ -79,7 +79,8 @@ export default function makeRoutes (store) {
     }
   }
 
-  return <Route path='/' component={App}>
+  return <Route component={App}>
+    <Route path='/' onEnter={(_, replaceState) => replaceState({}, '/app')}/>
     <Route path='signup' component={Signup}/>
     <Route path='login' component={Login}/>
     <Route path='set-password' component={SetPassword}/>

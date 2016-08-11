@@ -474,6 +474,12 @@ nav {
     }
 
     @media (min-width: @main-menu-shrink-breakpoint) {
+      &.has-4-links {
+        .dropdown {
+          display: none;
+        }
+      }
+
       .li-Conversations, .li-Events, .li-Projects, .li-Members {
         display: none;
       }

@@ -87,17 +87,18 @@ export default class ProjectPostEditor extends React.Component {
   }
 
   valueOfEndTime = (end_time) => {
-    if (!!end_time)
-      return moment(end_time).format("MM/DD/YYYY hh:mm A")
-    else {
-      return ''
+    if (!!end_time) {
+      if (moment(end_time).format("MM/DD/YYYY hh:mm A") === 'Invalid date') {
+        return undefined
+      } else {
+        return moment(end_time).format("MM/DD/YYYY hh:mm A")
+      }
     }
   }
 
   render () {
     const { postEdit, update, requests } = this.props
     const { end_time, tag, type } = postEdit
-    const endTime = end_time ? new Date(end_time) : null
     const updateTag = tag => update({tag, tagEdited: true})
     const videoUrl = get('url', getVideo(postEdit)) || ''
     if (type !== 'project') setTimeout(() => update({type: 'project'}))
@@ -165,8 +166,8 @@ export default class ProjectPostEditor extends React.Component {
           }
           { !this.checkIfEdit() &&
           <DatetimePicker inputProps={{placeholder: 'deadline'}}
-                          value={endTime}
-                          onChange={m => update({end_time: m.toISOString()})}/>
+                          value={this.valueOfEndTime(end_time)}
+                          onChange={m => update({end_time: this.valueOfEndTime(m)})}/>
           }
         </div>
         <div className='location'>

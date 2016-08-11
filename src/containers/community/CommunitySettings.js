@@ -213,10 +213,7 @@ export default class CommunitySettings extends React.Component {
     let { community, dispatch } = this.props
     if (window.confirm(`Are you sure you wish to delete ${community.name}? This cannot be undone.`)) {
       this.update('active', false)
-      .then(({ error }) => {
-        if (error) return
-        dispatch(navigate('/'))
-      })
+      .then(({ error }) => error || dispatch(navigate('/app')))
     }
   }
 

@@ -28,7 +28,7 @@ export const hashBy = (arr, iteratee) => {
 export function checkForMedia(payload, state, id) {
     if (payload.video) {
         return updateMedia(state[id], 'video', payload.video)
-    } else if(state[id] && state[id].media) {
+    } else if(state[id] && state[id].media && payload.video !== "") {
         return state[id].media
     } else return undefined
 }

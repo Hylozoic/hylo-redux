@@ -132,7 +132,7 @@ export default class ProjectPostEditor extends React.Component {
 
                 {(postEdit.financialRequestsEnabled) &&
                 <div className='section-item financial-request'>
-                  <ConnectHitfin message='Connect a HitFin account so that you cane enable financial contributions to your project'>
+                  <ConnectHitfin message='Connect a HitFin account so that you can enable financial contributions to your project'>
                     <div className='title'>
                         How much do you need?
                     </div>

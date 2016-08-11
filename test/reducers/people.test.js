@@ -1,9 +1,8 @@
 require('../support')
 import people from '../../src/reducers/people'
-import { slice, filter } from 'lodash'
+import { filter } from 'lodash'
 import {
   FETCH_PEOPLE,
-  LEAVE_COMMUNITY,
   LEAVE_COMMUNITY_PENDING,
   UPDATE_USER_SETTINGS_PENDING
 } from '../../src/actions'
@@ -17,26 +16,6 @@ const user1 = {
 }
 
 describe('people', () => {
-  describe('on LEAVE_COMMUNITY with error', () => {
-    it('restores current user to previous state', () => {
-      let action = {
-        type: LEAVE_COMMUNITY,
-        error: true,
-        meta: {prevProps: user1}
-      }
-
-      let state = {
-        current: {...user1, memberships: slice(user1.memberships, 0, 2)}
-      }
-
-      let expectedState = {
-        current: user1
-      }
-
-      expect(people(state, action)).to.deep.equal(expectedState)
-    })
-  })
-
   describe('on LEAVE_COMMUNITY_PENDING', () => {
     it('removes the membership from current user', () => {
       let action = {

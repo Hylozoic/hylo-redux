@@ -114,68 +114,6 @@ describe('communities', () => {
     })
   })
 
-  describe('on UPDATE_COMMUNITY_SETTINGS with error', () => {
-    it('restores current community to previous state', () => {
-      let action = {
-        type: UPDATE_COMMUNITY_SETTINGS,
-        error: true,
-        meta: {prevProps: community1, slug: community1.slug}
-      }
-
-      let state = {
-        [community1.slug]: {...community1, name: 'New Name'}
-      }
-
-      let expectedState = {
-        [community1.slug]: community1
-      }
-
-      expect(communities(state, action)).to.deep.equal(expectedState)
-    })
-  })
-
-  describe('on ADD_COMMUNITY_MODERATOR with error', () => {
-    it('restores current community to previous state', () => {
-      let action = {
-        type: ADD_COMMUNITY_MODERATOR,
-        error: true,
-        meta: {prevProps: community1, slug: community1.slug}
-      }
-
-      let state = {
-        [community1.slug]: {...community1, name: 'Goal', moderators: [{name: 'Joe Mod'}]}
-      }
-
-      let expectedState = {
-        [community1.slug]: community1
-      }
-
-      expect(communities(state, action)).to.deep.equal(expectedState)
-    })
-  })
-
-  describe('on REMOVE_COMMUNITY_MODERATOR with error', () => {
-    it('restores current community to previous state', () => {
-      let prevCommunity = {...community1, moderators: [{name: 'Joe Mod'}]}
-
-      let action = {
-        type: REMOVE_COMMUNITY_MODERATOR,
-        error: true,
-        meta: {prevProps: prevCommunity, slug: community1.slug}
-      }
-
-      let state = {
-        [community1.slug]: community1
-      }
-
-      let expectedState = {
-        [community1.slug]: prevCommunity
-      }
-
-      expect(communities(state, action)).to.deep.equal(expectedState)
-    })
-  })
-
   describe('on UPDATE_COMMUNITY_SETTINGS_PENDING', () => {
     it('updates the community in the store', () => {
       let action = {

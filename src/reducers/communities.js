@@ -12,11 +12,8 @@ import {
   FETCH_PERSON,
   FETCH_POST,
   FETCH_CURRENT_USER,
-  UPDATE_COMMUNITY_SETTINGS,
   UPDATE_COMMUNITY_SETTINGS_PENDING,
-  ADD_COMMUNITY_MODERATOR,
   ADD_COMMUNITY_MODERATOR_PENDING,
-  REMOVE_COMMUNITY_MODERATOR,
   REMOVE_COMMUNITY_MODERATOR_PENDING,
   TYPEAHEAD,
   USE_INVITATION
@@ -27,20 +24,8 @@ const getPostCommunities = posts =>
   uniqBy('id', flatten(map(p => p.communities, posts)))
 
 export default function (state = {}, action) {
-  let { error, type, payload, meta } = action
-  if (error) {
-    switch (type) {
-      case UPDATE_COMMUNITY_SETTINGS:
-      case ADD_COMMUNITY_MODERATOR:
-      case REMOVE_COMMUNITY_MODERATOR:
-        return {
-          ...state,
-          [meta.slug]: {...state[meta.slug], ...meta.prevProps}
-        }
-      default:
-        return state
-    }
-  }
+  const { error, type, payload, meta } = action
+  if (error) return state
 
   let moderators
 

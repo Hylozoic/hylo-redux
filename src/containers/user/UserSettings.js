@@ -20,7 +20,6 @@ import ListItemTagInput from '../../components/ListItemTagInput'
 import { avatarUploadSettings, bannerUploadSettings } from '../../models/person'
 import { openPopup, setupPopupCallback, PROFILE_CONTEXT } from '../../util/auth'
 import { EDITED_USER_SETTINGS, trackEvent } from '../../util/analytics'
-import { reversibleUpdate } from '../../util/forms'
 import { preventSpaces } from '../../util/textInput'
 import Icon from '../../components/Icon'
 
@@ -151,10 +150,9 @@ export default class UserSettings extends React.Component {
   }
 
   updateMembership = (membership, path, value) => {
-    let { dispatch } = this.props
-    // this is so reversibleUpdate will be able to call membership.id and get the right value
-    membership.id = membership.community_id
-    dispatch(reversibleUpdate(updateMembershipSettings, membership, path, value))
+    const { dispatch } = this.props
+    const params = set({}, path, value)
+    dispatch(updateMembershipSettings(membership.community_id, params))
     this.trackEdit()
   }
 
@@ -163,9 +161,9 @@ export default class UserSettings extends React.Component {
   }
 
   leaveCommunity = (communityId, name) => {
-    let { dispatch, currentUser } = this.props
+    const { dispatch } = this.props
     if (!window.confirm(`Are you sure you want to leave ${name}?`)) return
-    dispatch(leaveCommunity(communityId, currentUser))
+    dispatch(leaveCommunity(communityId))
   }
 
   attachImage (type) {

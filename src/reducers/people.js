@@ -10,7 +10,6 @@ import {
   FETCH_PERSON,
   JOIN_COMMUNITY_WITH_CODE,
   LEAVE_COMMUNITY_PENDING,
-  LEAVE_COMMUNITY,
   LOGIN,
   LOGOUT,
   SIGNUP,
@@ -63,30 +62,8 @@ const updateCurrentUser = (user, params) =>
   })
 
 export default function (state = {}, action) {
-  let { type, error, payload, meta } = action
-  if (error) {
-    switch (type) {
-      case LEAVE_COMMUNITY:
-        return {
-          ...state,
-          current: merge({...state.current}, meta.prevProps)
-        }
-      case UPDATE_MEMBERSHIP_SETTINGS_PENDING:
-        return {
-          ...state,
-          current: {
-            ...state.current,
-            memberships: updateOneMembershipsSettings(
-              state.current.memberships,
-              meta.communityId,
-              meta.params.settings
-            )
-          }
-        }
-      default:
-        return state
-    }
-  }
+  const { type, error, payload, meta } = action
+  if (error) return state
 
   // the cases where there isn't a payload
   switch (type) {

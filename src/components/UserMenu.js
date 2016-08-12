@@ -36,10 +36,14 @@ class SearchMenuItem extends React.Component {
       if (event) event.stopPropagation()
     }
 
-    return <li className={cx('search', {expanded})} onClick={open}>
-      <Icon name='Loupe'/>
-      {expanded && <SearchInput onChange={search} ref='input'/>}
-      {expanded && <Icon onClick={close} name='Fail'/>}
+    return <li className='search-container'>
+      <div className={cx('search', {expanded})} onClick={open}>
+        <div className='search-border'>
+          <Icon name='Loupe'/>
+          {expanded && <SearchInput onChange={search} ref='input'/>}
+          {expanded && <Icon onClick={close} name='Fail'/>}
+        </div>
+      </div>
     </li>
   }
 }

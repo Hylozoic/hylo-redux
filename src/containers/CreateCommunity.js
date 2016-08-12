@@ -1,7 +1,7 @@
 import React from 'react'
 import { connect } from 'react-redux'
 const { object, bool, func } = React.PropTypes
-import { toPairs, get, some } from 'lodash/fp'
+import { toPairs, get, some, isEmpty } from 'lodash/fp'
 import { includes } from 'lodash'
 import ModalOnlyPage from '../components/ModalOnlyPage'
 import { ModalInput, ModalSelect } from '../components/ModalRow'
@@ -25,6 +25,7 @@ import {
   getCurrentCommunity
 } from '../models/community'
 import { scrollToBottom } from '../util/scrolling'
+import { emailsFromCSVFile } from '../util/text'
 import { ADDED_COMMUNITY, trackEvent } from '../util/analytics'
 import { saveCurrentCommunityId } from '../actions/util'
 
@@ -242,15 +243,41 @@ export class CreateCommunityOne extends React.Component {
 
 export class CreateCommunityTwo extends React.Component {
 
-  render () {
-    const error = false
+  constructor (props) {
+    super(props)
+    this.state = {emails: ''}
+  }
 
+  processCSV () {
+    const appendComma = string => {
+      if (isEmpty(string) || string.trim().slice(-1) === ',') return string
+      return string + ','
+    }
+
+    emailsFromCSVFile(this.refs.fileInput.files[0])
+    .then(emails => {
+      const textarea = this.refs.emails
+      this.setState({
+        emails: appendComma(textarea.getValue()) + ' ' + emails.join(', ')
+      })
+    })
+  }
+
+  render () {
     return <Modal title='Invite Members.'
+      className='create-community-two'
       standalone>
       <div>
         <label>Import CSV File</label>
-        <button>Browse</button>
+        <input type='file' onChange={() => this.processCSV()} ref='fileInput'/>
       </div>
+      <ModalInput
+        label='Enter Emails'
+        ref='emails'
+        type='textarea'
+        value={this.state.emails}
+        onChange={e => this.setState({emails: e.target.value})}
+        placeholder='Enter emails separated with commas' />
     </Modal>
   }
 }

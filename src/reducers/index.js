@@ -74,7 +74,8 @@ import {
   VALIDATE_COMMUNITY_ATTRIBUTE_PENDING,
   VALIDATE_NETWORK_ATTRIBUTE,
   VALIDATE_NETWORK_ATTRIBUTE_PENDING,
-  SET_HITFIN_ERROR
+  SET_HITFIN_ERROR,
+  USER_BALANCE
 } from '../actions'
 
 const combinedReducers = combineReducers({
@@ -402,6 +403,12 @@ const combinedReducers = combineReducers({
       case SET_HITFIN_ERROR:
         if (payload) return {...state, hitfinError: payload}
         return {...state, hitfinError: null}
+      case USER_BALANCE:
+        if (payload){
+          console.log((payload.balance/1000000000000000000).toFixed(2))
+        return {...state, accountBalance: (payload.balance/1000000000000000000).toFixed(2).toString()}
+        }
+        return {...state, accountBalance: null}
     }
     return state
   },

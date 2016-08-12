@@ -28,6 +28,10 @@ import Icon from '../../components/Icon'
 import _ from 'lodash'
 
 @prefetch(({ dispatch, params: { id }, query }) => {
+  dispatch(getUserBalance()).then( (resp) => {
+    console.log(resp)
+    this.props.accountBalance = resp
+  })
   switch (query.expand) {
     case 'password':
       dispatch(toggleUserSettingsSection('account', true))
@@ -39,9 +43,7 @@ import _ from 'lodash'
     default:
       return dispatch(toggleUserSettingsSection(query.expand, true))
   }
-  dispatch(getUserBalance()).then( () => {
-    console.log('hello')
-  })
+
 })
 @connect(({ people, userSettingsEditor, pending }) => ({
   pending: get(pending, `${UPLOAD_IMAGE}.subject`),
@@ -61,7 +63,8 @@ export default class UserSettings extends React.Component {
     location: object,
     expand: object,
     pending: string,
-    hitfinError: string
+    hitfinError: string,
+    accountBalance: string
   }
 
   componentDidMount () {
@@ -157,11 +160,6 @@ export default class UserSettings extends React.Component {
     this.update(path, !get(currentUser, path))
   }
 
-  getUserBalance = () => {
-    let { dispatch } = this.props
-    dispatch(getUserBalance())
-  }
-
   unlinkHitfin = () => {
     let { dispatch } = this.props
     if (!window.confirm(`Are you sure you want to disconnect your HitFin account?`)) return
@@ -212,7 +210,7 @@ export default class UserSettings extends React.Component {
   }
 
   render () {
-    let { currentUser, expand, pending, dispatch, hitfinError } = this.props
+    let { currentUser, expand, pending, dispatch, hitfinError, accountBalance } = this.props
     let memberships = sortBy(currentUser.memberships, m => m.community.name)
     let { editing, edited, errors } = this.state
     let { avatar_url, banner_url } = currentUser
@@ -419,7 +417,8 @@ export default class UserSettings extends React.Component {
             {hitfinError && <div className='alert alert-danger'>{hitfinError}</div>}
           </div>
           <div className='full-column'>
-            <label> HitFin Balance </label>
+            <label> Your Current HitFin Balance ${accountBalance}  sUSD</label>
+            <a className='button hit-fin-logo' onClick={() => this.getUserBalance()}> Balance </a>
           </div>
           <div className='third-column'>
             {renderHitFinButton}

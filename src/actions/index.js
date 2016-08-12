@@ -761,11 +761,6 @@ export function updateComment (commentId, text, tagDescriptions) {
 export function getUserBalance () {
   return {
     type: USER_BALANCE,
-    payload: { api:true, path: '/noo/finance/get-balance', method: 'GET'},
-    meta: {
-      then: (resp) => {
-        console.log(error)
-      }
+    payload: { api:true, path: '/noo/finance/get-balance', method: 'GET'}
     }
   }
-}

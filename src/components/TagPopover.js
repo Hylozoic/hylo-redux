@@ -101,15 +101,16 @@ export default class TagPopover extends React.Component {
 
     return <div className='popover-container' style={outerPosition}
       ref='popoverContainer'>
-      <div className='popover-mouse-padding'
-        ref='popoverMousePadding'
-        onClick={() => dispatch(navigate(`/c/${slug}/tag/${tagName}`))}
+      <div className='popover-mouse-padding' ref='popoverMousePadding'
         style={innerPosition}>
       </div>
       <div className={cx('popover', above ? 'above' : 'below')}
         style={innerPosition}>
         <div className='bottom-border'>
-          <span className='tag-name'># {tagName}</span>
+          <a className='tag-name'
+            onClick={() => dispatch(navigate(`/c/${slug}/tag/${tagName}`))}>
+            #{tagName}
+          </a>
           <span className='description meta-text'>{description}</span>
         </div>
         {activeMembers !== undefined

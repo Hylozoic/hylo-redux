@@ -99,37 +99,36 @@ export default class TagPopover extends React.Component {
     let outerPosition = {left, top: position.y + 15 + window.pageYOffset}
     let innerPosition = above ? {bottom: 5} : {}
 
-    return <div className='popover-container'
-        style={outerPosition}
-        ref='popoverContainer'>
-        <div className='popover-mouse-padding'
-          ref='popoverMousePadding'
-          onClick={() => dispatch(navigate(`/c/${slug}/tag/${tagName}`))}
-          style={innerPosition}>
+    return <div className='popover-container' style={outerPosition}
+      ref='popoverContainer'>
+      <div className='popover-mouse-padding'
+        ref='popoverMousePadding'
+        onClick={() => dispatch(navigate(`/c/${slug}/tag/${tagName}`))}
+        style={innerPosition}>
+      </div>
+      <div className={cx('popover', above ? 'above' : 'below')}
+        style={innerPosition}>
+        <div className='bottom-border'>
+          <span className='tag-name'># {tagName}</span>
+          <span className='description meta-text'>{description}</span>
         </div>
-        <div className={cx('popover', above ? 'above' : 'below')}
-          style={innerPosition}>
-          <div className='bottom-border'>
-            <span className='tag-name'># {tagName}</span>
-            <span className='description meta-text'>{description}</span>
-          </div>
-          {activeMembers !== undefined
-            ? <div className='bottom-border meta-text'>Most active members in this topic...</div>
-            : <div className='bottom-border meta-text'>Loading...</div>}
-          {activeMembers !== undefined && activeMembers.map(person =>
-            <div className='bottom-border' key={person.id}>
-              <Avatar person={person}/>
-              <A to={`/u/${person.id}`} className='name'><strong>{person.name}</strong></A><br />
-              <span className='member-post-count meta-text'>
-                {nounCount(person.post_count, 'post')}
-              </span>
-            </div>)}
-          <div className='footer'>
-            <a onClick={toggleFollow}>{followed ? 'Unf' : 'F'}ollow Topic</a>
-            {followerCount && <span>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;{followerCount} following</span>}
-            {postCount && <span>&nbsp;&nbsp;&nbsp;{nounCount(postCount, 'post')}</span>}
-          </div>
+        {activeMembers !== undefined
+          ? <div className='bottom-border meta-text'>Most active members in this topic...</div>
+          : <div className='bottom-border meta-text'>Loading...</div>}
+        {activeMembers !== undefined && activeMembers.map(person =>
+          <div className='bottom-border' key={person.id}>
+            <Avatar person={person}/>
+            <A to={`/u/${person.id}`} className='name'><strong>{person.name}</strong></A><br />
+            <span className='member-post-count meta-text'>
+              {nounCount(person.post_count, 'post')}
+            </span>
+          </div>)}
+        <div className='footer'>
+          <a onClick={toggleFollow}>{followed ? 'Unf' : 'F'}ollow Topic</a>
+          {followerCount && <span>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;{followerCount} following</span>}
+          {postCount && <span>&nbsp;&nbsp;&nbsp;{nounCount(postCount, 'post')}</span>}
         </div>
       </div>
+    </div>
   }
 }

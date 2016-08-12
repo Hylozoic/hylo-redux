@@ -21,14 +21,14 @@ export default class LiveStatusPoller extends React.Component {
     }
 
     this.pollInterval = setInterval(() =>
-      dispatch(fetchLiveStatus(get(community, 'id'), get(community, 'slug'))).then( () => {balance = dispatch(getUserBalance(get(balance, 'balance')))}),
-      60 * 500)
+      dispatch(fetchLiveStatus(get(community, 'id'), get(community, 'slug'))).then( () => {dispatch(getUserBalance())}),
+      60 * 1000)
 
   }
 
   componentDidMount () {
     let { dispatch, community, balance } = this.props
-    setTimeout(() => dispatch(fetchLiveStatus(get(community, 'id'), get(community, 'slug'))).then( () => {balance = dispatch(getUserBalance(get(balance, 'balance')))}), 10 * 1000)
+    setTimeout(() => dispatch(fetchLiveStatus(get(community, 'id'), get(community, 'slug'))).then( () => {dispatch(getUserBalance())}), 10 * 1000)
     this.setPollInterval(community, balance)
   }
 

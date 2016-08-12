@@ -28,9 +28,7 @@ import Icon from '../../components/Icon'
 import _ from 'lodash'
 
 @prefetch(({ dispatch, params: { id }, query }) => {
-  dispatch(getUserBalance()).then( (resp) => {
-    this.props.accountBalance = resp
-  })
+  dispatch(getUserBalance())
   switch (query.expand) {
     case 'password':
       dispatch(toggleUserSettingsSection('account', true))
@@ -216,7 +214,6 @@ export default class UserSettings extends React.Component {
     let {
       bio, location, url, facebook_url, twitter_name, linkedin_url
     } = {...currentUser, ...editing}
-
     var renderHitFinButton
     var hitfinLink = _.find(currentUser.linkedAccounts, (acc) => acc.provider_key === 'hit-fin')
     if (!hitfinLink) {
@@ -417,8 +414,8 @@ export default class UserSettings extends React.Component {
           </div>
           {hitfinLink &&
           <div className='full-column'>
-            {accountBalance && <label> Your Current HitFin Balance ${accountBalance}  sUSD</label>}
-            {!accountBalance && <label> HitFin Balance Loading...</label>}
+            {accountBalance && <label>Your Current HitFin Balance ${accountBalance}  sUSD</label>}
+            {!accountBalance && <label>HitFin Balance Loading...</label>}
           </div> }
           <div className='third-column'>
             {renderHitFinButton}

@@ -93,7 +93,7 @@
     "gulp-minify-css": "^1.2.1",
     "gulp-nodemon": "^2.0.4",
     "gulp-rename": "^1.2.2",
-    "gulp-rev": "^6.0.1",
+    "gulp-rev": "^7.1.1",
     "gulp-rework": "^1.1.0",
     "gulp-sourcemaps": "^1.6.0",
     "gulp-streamify": "^1.0.2",

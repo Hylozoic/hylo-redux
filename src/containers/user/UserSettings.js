@@ -29,7 +29,6 @@ import _ from 'lodash'
 
 @prefetch(({ dispatch, params: { id }, query }) => {
   dispatch(getUserBalance()).then( (resp) => {
-    console.log(resp)
     this.props.accountBalance = resp
   })
   switch (query.expand) {
@@ -416,10 +415,11 @@ export default class UserSettings extends React.Component {
           <div className='full-column'>
             {hitfinError && <div className='alert alert-danger'>{hitfinError}</div>}
           </div>
+          {hitfinLink &&
           <div className='full-column'>
-            <label> Your Current HitFin Balance ${accountBalance}  sUSD</label>
-            <a className='button hit-fin-logo' onClick={() => this.getUserBalance()}> Balance </a>
-          </div>
+            {accountBalance && <label> Your Current HitFin Balance ${accountBalance}  sUSD</label>}
+            {!accountBalance && <label> HitFin Balance Loading...</label>}
+          </div> }
           <div className='third-column'>
             {renderHitFinButton}
           </div>

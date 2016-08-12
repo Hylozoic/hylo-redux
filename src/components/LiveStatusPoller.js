@@ -35,7 +35,6 @@ export default class LiveStatusPoller extends React.Component {
   componentWillReceiveProps (nextProps) {
     if (get(nextProps, 'community.id') !== get(this.props, 'community.id')) {
       this.setPollInterval(nextProps.community, nextProps.balance)
-      console.log(this.props)
     }
   }
 

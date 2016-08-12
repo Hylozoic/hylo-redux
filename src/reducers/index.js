@@ -393,7 +393,6 @@ const combinedReducers = combineReducers({
   userSettingsEditor: (state = {}, action) => {
     let { type, payload, error, meta } = action
     if (error) return state
-
     switch (type) {
       case TOGGLE_USER_SETTINGS_SECTION:
         return {
@@ -405,7 +404,6 @@ const combinedReducers = combineReducers({
         return {...state, hitfinError: null}
       case USER_BALANCE:
         if (payload){
-          console.log((payload.balance/1000000000000000000).toFixed(2))
         return {...state, accountBalance: (payload.balance/1000000000000000000).toFixed(2).toString()}
         }
         return {...state, accountBalance: null}

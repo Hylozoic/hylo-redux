@@ -81,7 +81,7 @@ const combinedReducers = combineReducers({
     return action.type === SET_MOBILE_DEVICE ? action.payload : state
   },
 
-  currentCommunityId: (state = null, action) => {
+  currentCommunityId: (state = '1835', action) => {
     let { error, type, payload } = action
     if (error) return state
 

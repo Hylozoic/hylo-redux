@@ -22,10 +22,10 @@ import { canInvite } from '../../models/currentUser'
 import { INVITED_COMMUNITY_MEMBERS, trackEvent } from '../../util/analytics'
 import { parseEmailString } from '../../util/text'
 
-const defaultSubject = name =>
+export const defaultSubject = name =>
   `Join ${name} on Hylo`
 
-const defaultMessage = name =>
+export const defaultMessage = name =>
   `${name} is using Hylo, a new kind of social network that's designed to help communities and organizations create things together.\n\n` +
   "We're surrounded by incredible people, skills, and resources. But it can be hard to know whom to connect with, for what, and when. Often the things we need most are closer than we think.\n\n" +
   'Hylo makes it easy to discover the abundant skills, resources, and opportunities in your communities that might otherwise go unnoticed. Together, we can create whatever we can imagine.'

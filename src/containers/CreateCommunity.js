@@ -1,11 +1,14 @@
 import React from 'react'
 import { connect } from 'react-redux'
+import { prefetch } from 'react-fetcher'
 const { object, bool, func } = React.PropTypes
-import { toPairs, get, some, isEmpty } from 'lodash/fp'
+import { toPairs, get, some, isEmpty, filter } from 'lodash/fp'
 import { includes } from 'lodash'
+import validator from 'validator'
 import ModalOnlyPage from '../components/ModalOnlyPage'
 import { ModalInput, ModalSelect } from '../components/ModalRow'
 import Modal from '../components/Modal'
+import A from '../components/A'
 import { categories } from './community/CommunityEditor'
 import { uploadImage } from '../actions/uploadImage'
 import {
@@ -15,19 +18,25 @@ import {
   navigate,
   resetCommunityValidation,
   updateCommunityEditor,
-  validateCommunityAttribute
+  validateCommunityAttribute,
+  updateInvitationEditor,
+  sendCommunityInvitation,
+  fetchCommunity
 } from '../actions'
 import {
   avatarUploadSettings,
   bannerUploadSettings,
   defaultAvatar,
   defaultBanner,
-  getCurrentCommunity
+  getCurrentOrLastCommunity,
+  getCheckList
 } from '../models/community'
+import { canInvite } from '../models/currentUser'
 import { scrollToBottom } from '../util/scrolling'
-import { emailsFromCSVFile } from '../util/text'
-import { ADDED_COMMUNITY, trackEvent } from '../util/analytics'
+import { parseEmailString, emailsFromCSVFile } from '../util/text'
+import { ADDED_COMMUNITY, INVITED_COMMUNITY_MEMBERS, trackEvent } from '../util/analytics'
 import { saveCurrentCommunityId } from '../actions/util'
+import { defaultSubject, defaultMessage } from './community/CommunityInvitations'
 
 const merkabaUrl = 'https://www.hylo.com/img/hylo-merkaba-300x300.png'
 
@@ -35,7 +44,7 @@ export const CreateCommunity = ({ children }) => <div className>
   {children}
 </div>
 
-@connect(state => ({community: getCurrentCommunity(state)}))
+@connect(state => ({community: getCurrentOrLastCommunity(state)}))
 export class CreateCommunityContainer extends React.Component {
   static propTypes = {
     community: object,
@@ -190,7 +199,7 @@ export class CreateCommunityOne extends React.Component {
           return scrollToBottom()
         } else {
           trackEvent(ADDED_COMMUNITY, {community})
-          saveCurrentCommunityId(dispatch, payload.id, currentUser.id)
+          saveCurrentCommunityId(dispatch, payload.community_id, currentUser.id)
           dispatch(navigate(`/create/two`))
         }
       })
@@ -241,14 +250,31 @@ export class CreateCommunityOne extends React.Component {
   }
 }
 
+@connect(state => ({
+  community: getCurrentOrLastCommunity(state),
+  currentUser: get('people.current', state),
+  invitationEditor: get('invitationEditor', state)
+}))
 export class CreateCommunityTwo extends React.Component {
+
+  static propTypes = {
+    community: object,
+    currentUser: object,
+    invitationEditor: object,
+    dispatch: func
+  }
 
   constructor (props) {
     super(props)
-    this.state = {emails: ''}
+    this.state = {
+      emails: '',
+      expanded: true
+    }
   }
 
   processCSV () {
+    const { dispatch } = this.props
+
     const appendComma = string => {
       if (isEmpty(string) || string.trim().slice(-1) === ',') return string
       return string + ','
@@ -257,14 +283,59 @@ export class CreateCommunityTwo extends React.Component {
     emailsFromCSVFile(this.refs.fileInput.files[0])
     .then(emails => {
       const textarea = this.refs.emails
-      this.setState({
-        emails: appendComma(textarea.getValue()) + ' ' + emails.join(', ')
-      })
+      dispatch(updateInvitationEditor('recipients',
+        appendComma(textarea.getValue()) + ' ' + emails.join(', ')))
     })
   }
 
   render () {
-    return <Modal title='Invite Members.'
+    const { expanded } = this.state
+    const { community, currentUser, dispatch, invitationEditor } = this.props
+
+    if (!canInvite(currentUser, community)) {
+      return <div>
+        You don&#39;t have permission to view this page. <a href='javascript:history.go(-1)'>Back</a>
+      </div>
+    }
+
+    let { subject, message, recipients, moderator, error } = invitationEditor
+    if (subject === undefined) {
+      dispatch(updateInvitationEditor('subject', defaultSubject(community.name)))
+    }
+    if (message === undefined) {
+      dispatch(updateInvitationEditor('message', defaultMessage(community.name)))
+    }
+
+    let setError = text => dispatch(updateInvitationEditor('error', text))
+
+    let update = (field, toggle) => event => {
+      let { value } = event.target
+      if (toggle) value = !invitationEditor[field]
+      dispatch(updateInvitationEditor(field, value))
+    }
+
+    let submit = () => {
+      dispatch(updateInvitationEditor('results', null))
+      setError(null)
+
+      if (!subject) return setError('The subject may not be blank.')
+      if (!message) return setError('The message may not be blank.')
+
+      let emails = parseEmailString(recipients)
+      if (isEmpty(emails)) return setError('Enter at least one email address.')
+
+      let badEmails = emails.filter(email => !validator.isEmail(email))
+      if (some(id => id, badEmails)) return setError(`These emails are invalid: ${badEmails.join(', ')}`)
+
+      dispatch(sendCommunityInvitation(community.id, {subject, message, emails, moderator}))
+      .then(({ error }) => {
+        if (error) return
+        trackEvent(INVITED_COMMUNITY_MEMBERS, {community})
+        dispatch(navigate('/create/three?invite-success'))
+      })
+    }
+
+    return <Modal title={`Invite Members to ${community.name}.`}
       className='create-community-two'
       standalone>
       <div>
@@ -275,29 +346,75 @@ export class CreateCommunityTwo extends React.Component {
         label='Enter Emails'
         ref='emails'
         type='textarea'
-        value={this.state.emails}
-        onChange={e => this.setState({emails: e.target.value})}
-        placeholder='Enter emails separated with commas' />
+        value={recipients}
+        onChange={update('recipients')}
+        placeholder='Enter email addresses, separated by commas or line breaks'/>
+      <div className='modal-toggle-message'>
+        <a onClick={() => this.setState({expanded: !expanded})}>Customize Message {expanded ? '&and;' : '&or;'}</a>
+      </div>
+      <ModalInput
+        label='Subject'
+        ref='subject'
+        value={subject}
+        onChange={update('subject')}/>
+      <ModalInput
+        label='Message'
+        ref='message'
+        type='textarea'
+        value={message}
+        onChange={update('message')}/>
+      {error && <div className='alert alert-danger'>{error}</div>}
+      <button onClick={submit}>Invite</button>
+      <A to='/create/three' className='skip'>Skip</A>
     </Modal>
   }
 }
 
+@prefetch(({ dispatch, store }) => {
+  dispatch(fetchCommunity(get('slug', getCurrentOrLastCommunity(store.getState()))))
+})
+@connect(state => ({community: getCurrentOrLastCommunity(state)}))
 export class CreateCommunityThree extends React.Component {
 
-  render () {
-    const error = false
+  static propTypes = {
+    dispatch: func,
+    community: object
+  }
 
-    return <Modal title='Create your community.'
-      subtitle="Let's get started unlocking the creative potential of your community with Hylo"
+  render () {
+    const { dispatch, community } = this.props
+
+    const checkList = getCheckList(community)
+
+    console.log('checkList', checkList)
+
+    const percent = (filter(ci => ci.done, checkList).length / checkList.length) * 100
+
+    return <Modal title='Getting Started.'
+      className='create-community-three'
       standalone>
-      <form onSubmit={this.submit}>
-        {error && <div className='alert alert-danger'>{error}</div>}
-        <ModalInput label='Name' ref='name'/>
-        <ModalInput label='URL' ref='url'/>
-        <div className='footer'>
-          <input ref='submit' type='submit' value='Create'/>
-        </div>
-      </form>
+      <PercentBar percent={percent}/>
+      <div className='subtitle'>
+        To create a successful community with Hylo, we suggest completing the following:
+      </div>
+      {checkList.map(({ title, link, done, id }) =>
+        <CheckItem title={title} link={link} done={done} key={id} />)}
+      <button onClick={() => dispatch(navigate(`/c/${community.slug}`))}>Done</button>
+      <A to='/create/three' className='skip'>Do this later</A>
     </Modal>
   }
+}
+
+const CheckItem = ({ title, link, done }) => {
+  return <div className='check-item form-sections'>
+    <input type='checkbox' checked={done} />
+    {title}
+    <A to={link}>></A>
+  </div>
+}
+
+const PercentBar = ({ percent }) => {
+  return <div className='percent-bar'>
+    {percent}% completed
+  </div>
 }

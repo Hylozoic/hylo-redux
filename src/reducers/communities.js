@@ -48,8 +48,11 @@ export default function (state = {}, action) {
     case FETCH_COMMUNITY:
     case FETCH_COMMUNITY_SETTINGS:
       let slug = payload.slug || meta.cache.id
+      console.log('Fetched Community, payload')
+      console.log(payload)
       community = {...state[slug], ...payload}
       debug('caching community:', community.slug)
+      console.log('result', {...state, [slug]: community})
       return {...state, [slug]: community}
     case FETCH_COMMUNITY_FOR_INVITATION:
       return {...state, [meta.token]: payload}

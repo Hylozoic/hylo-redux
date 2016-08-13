@@ -19,6 +19,7 @@ import postsByQuery from './postsByQuery'
 import { tagsByCommunity, tagsByQuery, totalTagsByQuery } from './tags'
 import tagInvitationEditor from './tagInvitationEditor'
 import posts from './posts'
+import tooltips from './tooltips'
 import {
   appendPayloadByPath, keyedCounter, keyedCount, composeReducers, handleSetState
 } from './util'
@@ -209,6 +210,7 @@ const combinedReducers = combineReducers({
   tagDescriptionEdits,
   tagInvitationEditor,
   thanks: appendPayloadByPath(FETCH_THANKS, 'meta.id'),
+  tooltips,
   totalActivities: keyedCounter(FETCH_ACTIVITY, 'total', 'meta.id'),
   totalCommunitiesByQuery: keyedCounter(FETCH_COMMUNITIES, 'communities_total'),
   totalInvitations: keyedCounter(FETCH_INVITATIONS, 'total', 'meta.communityId'),

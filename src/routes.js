@@ -21,7 +21,10 @@ import AboutCommunity from './containers/community/AboutCommunity'
 import CommunitySettings from './containers/community/CommunitySettings'
 import TagSettings from './containers/TagSettings'
 import TagPosts from './containers/tag/TagPosts'
-import Onboarding from './containers/Onboarding'
+import BioPrompt from './containers/onboarding/BioPrompt'
+import TopicsPrompt from './containers/onboarding/TopicsPrompt'
+import SkillsPrompt from './containers/onboarding/SkillsPrompt'
+import WelcomePage from './containers/onboarding/WelcomePage'
 import PersonProfile from './containers/person/PersonProfile'
 import UserSettings from './containers/user/UserSettings'
 import SinglePost from './containers/SinglePost'
@@ -79,7 +82,8 @@ export default function makeRoutes (store) {
     }
   }
 
-  return <Route path='/' component={App}>
+  return <Route component={App}>
+    <Route path='/' onEnter={(_, replaceState) => replaceState({}, '/app')}/>
     <Route path='signup' component={Signup}/>
     <Route path='login' component={Login}/>
 
@@ -91,6 +95,11 @@ export default function makeRoutes (store) {
     </Route>
 
     <Route path='set-password' component={SetPassword}/>
+
+    <Route path='add-skills' component={SkillsPrompt} onEnter={requireLogin}/>
+    <Route path='add-bio' component={BioPrompt} onEnter={requireLogin}/>
+    <Route path='choose-topics' component={TopicsPrompt} onEnter={requireLogin}/>
+
     <Route path='c/:id/new' component={StandalonePostEditor} community onEnter={requireLogin}/>
     <Route path='c/:id/events/new' component={StandalonePostEditor} community type='event' onEnter={requireLogin}/>
     <Route path='c/:id/projects/new' component={StandalonePostEditor} community type='project' onEnter={requireLogin}/>
@@ -122,7 +131,7 @@ export default function makeRoutes (store) {
           addParams: ({ params: { id } }) => ({id, action: 'join-community-tag'})
         })}/>
 
-      <Route path='c/:id/onboarding' component={Onboarding} onEnter={requireLogin}/>
+      <Route path='c/:id/onboarding' component={WelcomePage} onEnter={requireLogin}/>
       <Route path='c/:id' component={CommunityProfile}>
         <IndexRoute component={CommunityPosts}/>
         <Route path='people' component={People} onEnter={requireLogin}/>
@@ -134,6 +143,7 @@ export default function makeRoutes (store) {
         <Route path='invite' component={CommunityInvitations} onEnter={requireLogin}/>
         <Route path='tag/:tagName' component={TagPosts} onEnter={requireLogin} />
         <Route path='notifications' component={Notifications} onEnter={requireLogin}/>
+
       </Route>
 
       <Route path='p/new' component={StandalonePostEditor} onEnter={requireLogin}/>
@@ -170,9 +180,6 @@ export const communityUrl = (community, params) =>
 
 export const networkUrl = network =>
   `/n/${network.slug}`
-
-export const communityOnboardingUrl = community =>
-  `/c/${community.slug}/onboarding`
 
 export const communityJoinUrl = community =>
   `${origin()}/c/${community.slug}/join/${community.beta_access_code}`

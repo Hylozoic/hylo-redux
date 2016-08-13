@@ -3,7 +3,7 @@ import { connect } from 'react-redux'
 import { prefetch } from 'react-fetcher'
 import cx from 'classnames'
 const { object, func } = React.PropTypes
-import { find, get, reduce, isEmpty } from 'lodash'
+import { find, get, isEmpty, reduce, set } from 'lodash'
 import { markdown, sanitize } from 'hylo-utils/text'
 import {
   updateCommunitySettings,
@@ -19,7 +19,6 @@ import { avatarUploadSettings, bannerUploadSettings } from '../../models/communi
 import A from '../../components/A'
 import { uploadImage } from '../../actions/uploadImage'
 import PersonChooser from '../../components/PersonChooser'
-import { reversibleUpdate } from '../../util/forms'
 import { communityJoinUrl } from '../../routes'
 import { makeUrl } from '../../util/navigation'
 
@@ -130,12 +129,15 @@ export default class CommunitySettings extends React.Component {
     let { editing, edited } = this.state
     let { slug } = community
     let newEditing = reduce(args, (m, field) => { m[field] = false; return m }, {})
-    let oldSettings = reduce(args, (m, field) => { m[field] = community[field]; return m }, {})
     this.setState({editing: {...editing, ...newEditing}})
-    dispatch(updateCommunitySettings(community.id, {slug, ...edited}, oldSettings))
+    dispatch(updateCommunitySettings(community.id, {slug, ...edited}))
     .then(({ error }) => {
-      if (error || !edited.slug) return
-      dispatch(navigate(makeUrl(`/c/${edited.slug}/settings`, {expand: 'appearance'})))
+      if (error) return
+      this.setState({edited: {}})
+
+      if (edited.slug) { // if the slug was changed, go to the new URL
+        dispatch(navigate(makeUrl(`/c/${edited.slug}/settings`, {expand: 'appearance'})))
+      }
     })
   }
 
@@ -174,8 +176,8 @@ export default class CommunitySettings extends React.Component {
   }
 
   update (path, value) {
-    let { dispatch, community } = this.props
-    return dispatch(reversibleUpdate(updateCommunitySettings, community, path, value, 'community'))
+    let { dispatch, community: { id, slug } } = this.props
+    return dispatch(updateCommunitySettings(id, set({slug}, path, value)))
   }
 
   toggle (path) {
@@ -188,8 +190,9 @@ export default class CommunitySettings extends React.Component {
   }
 
   addModerator = person => {
-    let { dispatch, community } = this.props
-    dispatch(addCommunityModerator(community, person, { moderators: community.moderators }))
+    const { dispatch, community } = this.props
+    const { moderators } = community
+    dispatch(addCommunityModerator(community, person, {moderators}))
   }
 
   removeModerator (id) {
@@ -210,10 +213,7 @@ export default class CommunitySettings extends React.Component {
     let { community, dispatch } = this.props
     if (window.confirm(`Are you sure you wish to delete ${community.name}? This cannot be undone.`)) {
       this.update('active', false)
-      .then(({ error }) => {
-        if (error) return
-        dispatch(navigate('/'))
-      })
+      .then(({ error }) => error || dispatch(navigate('/app')))
     }
   }
 
@@ -322,7 +322,7 @@ export default class CommunitySettings extends React.Component {
         <div className='section-item icon'>
           <div className='half-column'>
             <label>Icon</label>
-            <p className='summary'>This image appears next to your community's name. (Tip: Try a transparent PNG image.)</p>
+            <p className='summary'>This image appears next to your community&rsquo;s name. (Tip: Try a transparent PNG image.)</p>
           </div>
           <div className='half-column right-align'>
             <div className='medium-logo' style={{backgroundImage: `url(${avatar_url})`}}/>

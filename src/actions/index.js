@@ -61,6 +61,7 @@ export const NAVIGATE = 'NAVIGATE'
 export const NOTIFY = 'NOTIFY'
 export const PIN_POST = 'PIN_POST'
 export const PIN_POST_PENDING = 'PIN_POST' + _PENDING
+export const REGISTER_TOOLTIP = 'REGISTER_TOOLTIP'
 export const REMOVE_COMMENT = 'REMOVE_COMMENT'
 export const REMOVE_COMMUNITY_MEMBER = 'REMOVE_COMMUNITY_MEMBER'
 export const REMOVE_COMMUNITY_MEMBER_PENDING = 'REMOVE_COMMUNITY_MEMBER' + _PENDING
@@ -96,6 +97,7 @@ export const THANK_PENDING = THANK + _PENDING
 export const TOGGLE_LEFT_NAV = 'TOGGLE_LEFT_NAV'
 export const TOGGLE_USER_SETTINGS_SECTION = 'TOGGLE_USER_SETTINGS_SECTION'
 export const TYPEAHEAD = 'TYPEAHEAD'
+export const UNREGISTER_TOOLTIP = 'UNREGISTER_TOOLTIP'
 export const UPDATE_COMMENT = 'UPDATE_COMMENT'
 export const UPDATE_COMMENT_PENDING = UPDATE_COMMENT + _PENDING
 export const UPDATE_COMMENT_EDITOR = 'UPDATE_COMMENT_EDITOR'
@@ -336,53 +338,53 @@ export function toggleLeftNav () {
   return {type: TOGGLE_LEFT_NAV}
 }
 
-export function updateUserSettings (id, params, prevProps) {
+export function updateUserSettings (id, params) {
   return {
     type: UPDATE_USER_SETTINGS,
     payload: {api: true, params, path: `/noo/user/${id}`, method: 'POST'},
-    meta: {id, params, prevProps}
+    meta: {id, params, optimistic: true}
   }
 }
 
-export function leaveCommunity (communityId, prevProps) {
+export function leaveCommunity (communityId) {
   return {
     type: LEAVE_COMMUNITY,
     payload: {api: true, path: `/noo/membership/${communityId}`, method: 'DELETE'},
-    meta: {communityId, prevProps}
+    meta: {communityId, optimistic: true}
   }
 }
 
-export function updateCommunitySettings (id, params, prevProps) {
+export function updateCommunitySettings (id, params) {
   invariant(params.slug, 'must include slug in params')
   if (params.leader) params.leader_id = params.leader.id
   return {
     type: UPDATE_COMMUNITY_SETTINGS,
     payload: {api: true, params, path: `/noo/community/${id}`, method: 'POST'},
-    meta: {slug: params.slug, params, prevProps}
+    meta: {slug: params.slug, params, optimistic: true}
   }
 }
 
-export function updateMembershipSettings (communityId, params, prevProps) {
+export function updateMembershipSettings (communityId, params) {
   return {
     type: UPDATE_MEMBERSHIP_SETTINGS,
     payload: {api: true, params, path: `/noo/membership/${communityId}`, method: 'POST'},
-    meta: {communityId, params, prevProps}
+    meta: {communityId, params, optimistic: true}
   }
 }
 
-export function addCommunityModerator (community, moderator, prevProps) {
+export function addCommunityModerator (community, moderator) {
   return {
     type: ADD_COMMUNITY_MODERATOR,
     payload: {api: true, params: {userId: moderator.id}, path: `/noo/community/${community.id}/moderators`, method: 'POST'},
-    meta: {slug: community.slug, moderator, prevProps}
+    meta: {slug: community.slug, moderator, optimistic: true}
   }
 }
 
-export function removeCommunityModerator (community, moderatorId, prevProps) {
+export function removeCommunityModerator (community, moderatorId) {
   return {
     type: REMOVE_COMMUNITY_MODERATOR,
     payload: {api: true, path: `/noo/community/${community.id}/moderator/${moderatorId}`, method: 'DELETE'},
-    meta: {slug: community.slug, moderatorId, prevProps}
+    meta: {slug: community.slug, moderatorId, optimistic: true}
   }
 }
 
@@ -566,7 +568,7 @@ export function voteOnPost (post, currentUser) {
   return {
     type: VOTE_ON_POST,
     payload: {api: true, path: `/noo/post/${post.id}/vote`, method: 'POST'},
-    meta: {id: post.id, prevProps: post, currentUser: pick(currentUser, 'id', 'name', 'avatar_url')}
+    meta: {id: post.id, optimistic: true, currentUser: pick(currentUser, 'id', 'name', 'avatar_url')}
   }
 }
 
@@ -738,4 +740,12 @@ export function updateComment (commentId, text, tagDescriptions) {
     payload: {api: true, path: `/noo/comment/${commentId}`, params, method: 'POST'},
     meta: {id: commentId, text, optimistic: true}
   }
+}
+
+export function registerTooltip (id, index) {
+  return {type: REGISTER_TOOLTIP, payload: {id, index}}
+}
+
+export function unregisterTooltip (id) {
+  return {type: UNREGISTER_TOOLTIP, payload: {id}}
 }

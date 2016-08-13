@@ -15,12 +15,11 @@ import {
 import { uploadImage } from '../../actions/uploadImage'
 import A from '../../components/A'
 import { formatDate } from '../../util/text'
-import { debounce, get, sortBy, throttle } from 'lodash'
+import { debounce, get, sortBy, throttle, set } from 'lodash'
 import ListItemTagInput from '../../components/ListItemTagInput'
 import { avatarUploadSettings, bannerUploadSettings } from '../../models/person'
 import { openPopup, setupPopupCallback, PROFILE_CONTEXT } from '../../util/auth'
 import { EDITED_USER_SETTINGS, trackEvent } from '../../util/analytics'
-import { reversibleUpdate } from '../../util/forms'
 import { preventSpaces } from '../../util/textInput'
 import Icon from '../../components/Icon'
 
@@ -134,7 +133,7 @@ export default class UserSettings extends React.Component {
 
   update = (path, value) => {
     let { currentUser, dispatch } = this.props
-    dispatch(reversibleUpdate(updateUserSettings, currentUser, path, value))
+    dispatch(updateUserSettings(currentUser.id, set({}, path, value)))
     .then(({ error, payload }) => error && dispatch(notify(payload.message, {type: 'error'})))
     this.trackEdit()
   }
@@ -151,10 +150,9 @@ export default class UserSettings extends React.Component {
   }
 
   updateMembership = (membership, path, value) => {
-    let { dispatch } = this.props
-    // this is so reversibleUpdate will be able to call membership.id and get the right value
-    membership.id = membership.community_id
-    dispatch(reversibleUpdate(updateMembershipSettings, membership, path, value))
+    const { dispatch } = this.props
+    const params = set({}, path, value)
+    dispatch(updateMembershipSettings(membership.community_id, params))
     this.trackEdit()
   }
 
@@ -163,9 +161,9 @@ export default class UserSettings extends React.Component {
   }
 
   leaveCommunity = (communityId, name) => {
-    let { dispatch, currentUser } = this.props
+    const { dispatch } = this.props
     if (!window.confirm(`Are you sure you want to leave ${name}?`)) return
-    dispatch(leaveCommunity(communityId, currentUser))
+    dispatch(leaveCommunity(communityId))
   }
 
   attachImage (type) {

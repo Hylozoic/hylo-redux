@@ -55,11 +55,12 @@ export default class App extends React.Component {
   static childContextTypes = {
     dispatch: func,
     currentUser: object,
-    isMobile: bool
+    isMobile: bool,
+    location: object
   }
 
   getChildContext () {
-    return pick(this.props, 'dispatch', 'currentUser', 'isMobile')
+    return pick(this.props, 'dispatch', 'currentUser', 'isMobile', 'location')
   }
 
   componentDidMount () {

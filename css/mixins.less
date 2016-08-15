@@ -1,3 +1,5 @@
+@round-button-height: 40px;
+
 .no-bullets() {
   margin-bottom: 0;
   padding-left: 0;
@@ -38,13 +40,12 @@
     linear-gradient(to bottom, @clear, @clear, @clear, @dark1, @dark3);
 }
 
-.has-bottom-triangle(@color: @off-white, @border-color: @off-white) {
+.has-bottom-triangle(@color: @off-white, @border-color: @off-white, @side-length: 7px) {
   position: relative;
   &:after {
     content: '';
     display: block;
     position: absolute;
-    @side-length: 7px;
     left: 50%;
     width: @side-length * 2;
     height: @side-length * 2;
@@ -208,11 +209,24 @@
 }
 
 .round-button() {
-  height: 40px;
-  border-radius: 40px;
-  line-height: 38px;
+  height: @round-button-height;
+  border-radius: @round-button-height;
+  line-height: @round-button-height - 2;
   text-align: center;
   padding: 0 32px;
+  display: inline-block;
+  text-decoration: none;
+}
+
+.green-button() {
+  &, &:hover {
+    background-color: @damian-green;
+    border-color: @damian-green;
+    color: white;
+  }
+  &:hover {
+    opacity: 0.7;
+  }
 }
 
 .ellipsis() {

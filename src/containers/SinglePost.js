@@ -26,8 +26,7 @@ const { array, bool, object, string } = React.PropTypes
 const subject = 'community'
 
 const showTaggedPosts = post =>
-  post.tag && !includes(['event', 'chat'], post.tag) &&
-  includes(['event', 'project'], post.type)
+  post.tag && post.tag !== 'event' && includes(['event', 'project'], post.type)
 
 @prefetch(({ store, dispatch, params: { id }, query }) =>
   dispatch(fetchPost(id))

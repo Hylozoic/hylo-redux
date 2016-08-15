@@ -11,14 +11,16 @@ import { modalWrapperCSSId, Modal } from '../components/Modal'
 import { isEmpty, some } from 'lodash'
 import { find } from 'lodash/fp'
 import { same } from '../models'
+import { newestMembership } from '../models/currentUser'
 import { humanDate } from '../util/text'
 import { tagUrl } from '../routes'
-const { array, bool, func, number, object } = React.PropTypes
+const { array, bool, func, number, object, string } = React.PropTypes
 
 const subject = 'community'
 
 @connect(state => {
-  const community = getCurrentCommunity(state)
+  const community = getCurrentCommunity(state) ||
+    newestMembership(state.people.current).community
   return {
     community,
     ...connectedListProps(state, {subject, id: community.slug}, 'tags'),
@@ -33,7 +35,9 @@ export default class BrowseTopicsModal extends React.Component {
     pending: bool,
     total: number,
     followedTags: array,
-    onCancel: func
+    onCancel: func,
+    onboarding: bool,
+    nextUrl: string
   }
 
   componentDidMount () {
@@ -43,15 +47,24 @@ export default class BrowseTopicsModal extends React.Component {
 
   render () {
     const {
-      tags, community, dispatch, pending, total, followedTags, onCancel
+      tags, community, dispatch, pending, total, followedTags, onCancel,
+      onboarding, nextUrl
     } = this.props
     const offset = tags.length
-    const title = total ? `Browse all ${total} topics` : 'Browse all topics'
+    const title = onboarding
+      ? 'What are you interested in?'
+      : (total ? `Browse all ${total} topics` : 'Browse all topics')
     const loadMore = !pending && offset < total
       ? () => dispatch(fetchTags({subject, id: community.slug, offset}))
       : () => {}
 
-    return <Modal title={title} id='browse-all-topics' onCancel={onCancel}>
+    const scrollListenerProps = {
+      onBottom: loadMore,
+      elementId: onboarding ? null : modalWrapperCSSId
+    }
+
+    return <Modal title={title} id='browse-all-topics' onCancel={onCancel}
+      standalone={onboarding}>
       {isEmpty(tags) ? <div className='loading'>Loading...</div>
         : <ul>
             {tags.map(tag => {
@@ -60,8 +73,10 @@ export default class BrowseTopicsModal extends React.Component {
                 followed={followed}/>
             })}
           </ul>}
-      <ScrollListener elementId={modalWrapperCSSId}
-        onBottom={loadMore}/>
+      <ScrollListener {...scrollListenerProps}/>
+      {onboarding && <div className='footer'>
+        <A className='button' to={nextUrl}>Next</A>
+      </div>}
     </Modal>
   }
 }

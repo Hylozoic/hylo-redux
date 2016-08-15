@@ -3,7 +3,10 @@ import promiseMiddleware from 'redux-promise'
 import rootReducer from '../reducers'
 import createLogger from 'redux-logger'
 import { compact } from 'lodash'
-import { serverLogger, apiMiddleware, cacheMiddleware, pendingPromiseMiddleware, optimisticMiddleware } from '../middleware'
+import {
+  serverLogger, apiMiddleware, cacheMiddleware, pendingPromiseMiddleware,
+  optimisticMiddleware
+} from '../middleware'
 
 export function configureStore (initialState, req) {
   const isServer = typeof window === 'undefined'

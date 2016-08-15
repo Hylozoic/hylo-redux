@@ -26,7 +26,10 @@ describe('Login', () => {
     it("redirects to the person's profile by default", () => {
       setup({location: {query: {}}})
       return node.submit(mocks.event())
-      .then(() => expect(redirectUrl).to.equal('/u/42'))
+      .then(() => {
+        expect(redirectUrl).to.equal('/u/42')
+        expect(window.analytics.alias).to.have.been.called()
+      })
     })
 
     it('redirects to the last visited community if available', () => {

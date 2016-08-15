@@ -15,8 +15,10 @@
   }
 }
 
+@modal-row-side-padding: 25px;
+
 .modal-row() {
-  padding: 10px 25px;
+  padding: 10px @modal-row-side-padding;
   background-color: @faint-gray-bg;
   border-top: 1px solid @post-border;
   border-left: none;
@@ -80,6 +82,7 @@
   h2 {
     padding: 25px 25px 10px 25px;
     margin: 0;
+    line-height: 1.3em;
   }
 
   .subtitle {
@@ -113,6 +116,10 @@
 
   .modal-input {
     .modal-input-row;
+  }
+
+  > .meta {
+    padding: 0 @modal-row-side-padding;
   }
 }
 
@@ -218,11 +225,24 @@
     border-bottom: none;
   }
 
+  .subtitle {
+    padding-bottom: 0;
+  }
+
   .tag {
     border-radius: 26px;
     padding: 0 10px;
     background-color: white;
     border: 1px solid @post-border;
+  }
+
+  .modal-input {
+    border-bottom: 1px solid @post-border;
+    margin-bottom: @p-bottom-margin;
+  }
+
+  .footer {
+    border-top: none;
   }
 }
 

@@ -245,6 +245,7 @@ export default class CommunitySettings extends React.Component {
     let labelProps = {expand, toggle: this.toggleSection}
     let joinUrl, codeNotUnique, slugNotUnique, addSlackUrl
     let { is_admin } = this.props.currentUser
+    let slackerror = this.props.location.query.slackerror
 
     if (expand.appearance) {
       slugNotUnique = get(this.props.validation, 'slug.unique') === false
@@ -506,6 +507,9 @@ export default class CommunitySettings extends React.Component {
       {expand.slack && <div className='section slack'>
         <div className='section-item'>
           <div className='full-column'>
+            {slackerror && <div className='alert alert-danger'>
+              There was an error connecting this community to your Slack team.
+            </div>}
             {!community.slack_hook_url && <div>
               <p className='summary'>Connect this community to a <a href="https://slack.com" target="_blank">Slack</a> team and Hylo will notify a channel when there are new posts.</p>
               <a href={"https://slack.com/oauth/authorize?scope=incoming-webhook&client_id=" + slackClientId + "&redirect_uri=" + addSlackUrl}><img alt="Add to Slack" height="40" width="139" src="https://platform.slack-edge.com/img/add_to_slack.png" srcset="https://platform.slack-edge.com/img/add_to_slack.png 1x, https://platform.slack-edge.com/img/add_to_slack@2x.png 2x"></img></a> 

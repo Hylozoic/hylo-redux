@@ -86,7 +86,7 @@
   }
 
   .subtitle {
-    padding: 0px 25px 5px 25px;
+    padding: 0px @modal-row-side-padding;
   }
 
   .close {
@@ -225,10 +225,6 @@
     border-bottom: none;
   }
 
-  .subtitle {
-    padding-bottom: 0;
-  }
-
   .tag {
     border-radius: 26px;
     padding: 0 10px;
@@ -249,6 +245,10 @@
 #topics-prompt {
   ul {
     margin-bottom: 0;
+  }
+
+  .modal > p {
+    padding: 0 @modal-row-side-padding;
   }
 
   .footer {

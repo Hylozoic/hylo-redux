@@ -54,6 +54,11 @@ export default class BrowseTopicsModal extends React.Component {
     const title = onboarding
       ? 'What are you interested in?'
       : (total ? `Browse all ${total} topics` : 'Browse all topics')
+
+    const subtitle = onboarding
+      ? `Follow the topics you're interested in to join the conversation with other members.`
+      : null
+
     const loadMore = !pending && offset < total
       ? () => dispatch(fetchTags({subject, id: community.slug, offset}))
       : () => {}
@@ -63,7 +68,7 @@ export default class BrowseTopicsModal extends React.Component {
       elementId: onboarding ? null : modalWrapperCSSId
     }
 
-    return <Modal title={title} id='browse-all-topics' onCancel={onCancel}
+    return <Modal {...{title, subtitle}} id='browse-all-topics' onCancel={onCancel}
       standalone={onboarding}>
       {isEmpty(tags) ? <div className='loading'>Loading...</div>
         : <ul>

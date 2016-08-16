@@ -1,4 +1,5 @@
 import React from 'react'
+import CurrencyInput from 'react-currency-input'
 import { connect } from 'react-redux'
 import { Header, CommentSection, presentDescription } from './Post'
 import decode from 'ent/decode'
@@ -94,6 +95,13 @@ const Supporters = ({ post, simple }, { currentUser, dispatch }) => {
   const { followers, end_time } = post
   const isFollowing = some(same('id', currentUser), followers)
   const follow = () => dispatch(followPost(post.id, currentUser))
+  // console.log('financiallyEnabled on supporters: ', this.props.financiallyEnabled)
+  let financiallyEnabled = () => {
+    // this.props.financiallyEnabled
+  }
+  let pledgeDialogueVisible = true
+  const togglePledgeDialogue = () => {
+  }
 
   return <div className='supporters'>
     {!simple && <div className='top'>
@@ -113,6 +121,18 @@ const Supporters = ({ post, simple }, { currentUser, dispatch }) => {
       <Icon name={isFollowing ? 'ok-sign' : 'plus-sign'} glyphicon/>
       {isFollowing ? 'Supporting' : 'Support this'}
     </a>}
+    {!simple && financiallyEnabled &&
+      <button type='button' className='button pledge' onClick={(togglePledgeDialogue)} >Pledge</button>
+    }
+    {!simple && pledgeDialogueVisible &&
+      <div className='pledge'>
+        <div> How much would you like to pledge?</div>
+        USD $
+        <CurrencyInput className='pledge-amount' thousandSeparator=''/>
+        <button type='button' className='button cancel-pledge' onClick={togglePledgeDialogue} >Cancel</button>
+        <button type='button' className='button submit-pledge' >Pledge</button>
+      </div>
+    }
   </div>
 }
 Supporters.contextTypes = {currentUser: object, dispatch: func}
@@ -132,12 +152,14 @@ const PledgeProgress = ({ post, simple }, { currentUser, dispatch }) => {
 }
 
 @connect((state, { id }) => ({
-  post: getPost(id, state)
+  post: getPost(id, state),
+ financiallyEnabled: getFinanciallyEnabled(id, state)
 }))
 class ProjectRequest extends React.Component {
   static propTypes = {
     post: object.isRequired,
-    community: object
+    community: object,
+    financiallyEnabled: bool
   }
 
   static contextTypes = {

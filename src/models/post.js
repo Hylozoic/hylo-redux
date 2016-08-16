@@ -29,5 +29,10 @@ export const getEditingPostIds = (posts, state) =>
 
 export const getPost = (id, state) => id ? get(id, state.posts) : null
 
+export const getFinanciallyEnabled = (id, post) => {
+  let amount = get(financialRequestAmount, state.posts[id])
+  amount ? true : null
+}
+
 export const isPinned = (post, community) =>
  community ? get(['memberships', community.slug, 'pinned'], post) : null

@@ -331,7 +331,7 @@ export class CreateCommunityTwo extends React.Component {
       .then(({ error }) => {
         if (error) return
         trackEvent(INVITED_COMMUNITY_MEMBERS, {community})
-        dispatch(navigate('/create/three?invite-success'))
+        dispatch(navigate(`/c/${community.slug}?invite-success`))
       })
     }
 
@@ -385,8 +385,6 @@ export class CreateCommunityThree extends React.Component {
     const { dispatch, community } = this.props
 
     const checkList = getCheckList(community)
-
-    console.log('checkList', checkList)
 
     const percent = (filter(ci => ci.done, checkList).length / checkList.length) * 100
 

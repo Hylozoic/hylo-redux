@@ -35,8 +35,6 @@ export const getFollowedTags = ({ slug }, state) =>
   values(pickBy('followed', state.tagsByCommunity[slug]))
 
 export const getCheckList = community => {
-  console.log('called getCheckList')
-  console.log('getCL', community)
   const checkedItems = get('checkedItems', community)
   const slug = get('slug', community)
   return [

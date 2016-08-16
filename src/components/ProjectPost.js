@@ -30,16 +30,30 @@ const Deadline = ({ time }) => {
   </span>
 }
 
-const ProjectPost = (props, context) => {
-  const { post, community, comments, communities } = context
-  const { tag, media, location, user } = post
-  const title = decode(post.name || '')
-  const video = find(m => m.type === 'video', media)
-  const image = find(m => m.type === 'image', media)
-  const description = presentDescription(post, community)
-  const requests = post.children || []
+class ProjectPost extends React.Component {
+  static propTypes = {
+    post: object.isRequired,
+    financiallyEnabled: bool,
+    community: object,
+    comments: array,
+    communities: array,
+    dispatch: func
+  }
 
-  return <div className='post project boxy-post'>
+  constructor (props) {
+    super(props)
+  }
+
+  render () {
+    const {community, post, communities, comments } = this.props
+    const { tag, media, location, user, children, name } = post
+    const title = decode(name || '')
+    const video = find(m => m.type === 'video', media)
+    const image = find(m => m.type === 'image', media)
+    const description = presentDescription(post, community)
+    const requests = children || []
+
+  return (<div className='post project boxy-post'>
     <Header communities={communities}/>
     <p className='title post-section'>{title}</p>
     {tag && <p className='hashtag'>#{tag}</p>}
@@ -80,13 +94,9 @@ const ProjectPost = (props, context) => {
       {requests.map(id => <ProjectRequest key={id} {...{id, community}}/>)}
     </div>}
     <CommentSection post={post} comments={comments} expanded/>
-  </div>
-}
-ProjectPost.contextTypes = {
-  community: object,
-  communities: array,
-  post: object,
-  comments: array
+  </div>);
+
+  }
 }
 
 export default ProjectPost
@@ -95,7 +105,6 @@ const Supporters = ({ post, simple }, { currentUser, dispatch }) => {
   const { followers, end_time } = post
   const isFollowing = some(same('id', currentUser), followers)
   const follow = () => dispatch(followPost(post.id, currentUser))
-  // console.log('financiallyEnabled on supporters: ', this.props.financiallyEnabled)
   let financiallyEnabled = () => {
     // this.props.financiallyEnabled
   }

@@ -104,7 +104,7 @@ export default class SinglePost extends React.Component {
 const showPost = (post) => {
   switch (post.type) {
     case 'event': return <EventPost post={post}/>
-    case 'project': return <ProjectPost/>
+    case 'project': return <ProjectPost post={post}/>
   }
   return <Post post={post} expanded/>
 }

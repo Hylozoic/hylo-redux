@@ -107,7 +107,7 @@ describe('ProjectPostEditor', () => {
         if(deadline.getElementsByTagName('input').length > 0){
           deadline = deadline.getElementsByTagName('input')[0]
         }
-        expect(deadline.value).to.equal(moment('2080-08-24T14:00:00.000Z').format("MM/DD/YYYY hh:mm A"))
+        expect(deadline.value).to.equal(moment('2080-08-24T14:00:00.000Z').format("MM/DD/YYYY h:mm A"))
       })
 
     })

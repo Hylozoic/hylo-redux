@@ -14,6 +14,9 @@ export const filepickerKey = process.env.FILEPICKER_API_KEY
 export const logLevel = process.env.LOG_LEVEL
 export const upstreamHost = process.env.UPSTREAM_HOST
 export const host = process.env.HOST
+export const slack = {
+  clientId: process.env.SLACK_APP_CLIENT_ID
+}
 export const s3 = {
   bucket: process.env.AWS_S3_BUCKET,
   host: process.env.AWS_S3_HOST
@@ -31,7 +34,7 @@ export const segment = {
 
 const config = {
   environment, useAssetManifest, assetHost, assetPath, filepickerKey, logLevel,
-  upstreamHost, host, s3, google, facebook, segment
+  upstreamHost, host, slack, s3, google, facebook, segment
 }
 
 if (!upstreamHost || !parse(upstreamHost).protocol) {

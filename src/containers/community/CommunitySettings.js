@@ -15,6 +15,9 @@ import {
   validateCommunityAttribute,
   navigate
 } from '../../actions'
+import config from '../../config'
+const { upstreamHost } = config
+const slackClientId = config.slack.clientId
 import { avatarUploadSettings, bannerUploadSettings } from '../../models/community'
 import A from '../../components/A'
 import { uploadImage } from '../../actions/uploadImage'
@@ -204,6 +207,18 @@ export default class CommunitySettings extends React.Component {
     }
   }
 
+  removeSlackhook () {
+    let { dispatch, community } = this.props
+    let { slug, slack_hook_url, slack_team, slack_configure_url } = community
+    let oldSettings = { slack_hook_url, slack_team, slack_configure_url }
+    let edited = { 
+      slack_hook_url: "",
+      slack_team: "",
+      slack_configure_url: ""
+    }
+    dispatch(updateCommunitySettings(community.id, {slug, ...edited}, oldSettings))
+  }
+
   changeLeader = person => {
     let { edited } = this.state
     this.setState({edited: {...edited, leader: person}})
@@ -228,8 +243,9 @@ export default class CommunitySettings extends React.Component {
     let { avatar_url, banner_url } = community
     let { editing, edited, errors, expand } = this.state
     let labelProps = {expand, toggle: this.toggleSection}
-    let joinUrl, codeNotUnique, slugNotUnique
+    let joinUrl, codeNotUnique, slugNotUnique, addSlackUrl
     let { is_admin } = this.props.currentUser
+    let slackerror = this.props.location.query.slackerror
 
     if (expand.appearance) {
       slugNotUnique = get(this.props.validation, 'slug.unique') === false
@@ -239,6 +255,10 @@ export default class CommunitySettings extends React.Component {
       joinUrl = communityJoinUrl(community)
 
       codeNotUnique = get(this.props.validation, 'beta_access_code.unique') === false
+    }
+
+    if (expand.slack) {
+      addSlackUrl = upstreamHost + '/noo/community/' + community.id + '/settings/slack'
     }
 
     return <div className='form-sections' id='community-settings'>
@@ -479,6 +499,25 @@ export default class CommunitySettings extends React.Component {
           </div>
           <div className='half-column right-align'>
             <input type='checkbox' checked={community.settings.sends_email_prompts} onChange={() => this.toggle('settings.sends_email_prompts')}/>
+          </div>
+        </div>
+      </div>}
+
+      <SectionLabel name='slack' {...labelProps}>Send Updates to Slack</SectionLabel>
+      {expand.slack && <div className='section slack'>
+        <div className='section-item'>
+          <div className='full-column'>
+            {slackerror && <div className='alert alert-danger'>
+              There was an error connecting this community to your Slack team.
+            </div>}
+            {!community.slack_hook_url && <div>
+              <p className='summary'>Connect this community to a <a href="https://slack.com" target="_blank">Slack</a> team and Hylo will notify a channel when there are new posts.</p>
+              <a href={"https://slack.com/oauth/authorize?scope=incoming-webhook&client_id=" + slackClientId + "&redirect_uri=" + addSlackUrl}><img alt="Add to Slack" height="40" width="139" src="https://platform.slack-edge.com/img/add_to_slack.png" srcset="https://platform.slack-edge.com/img/add_to_slack.png 1x, https://platform.slack-edge.com/img/add_to_slack@2x.png 2x"></img></a> 
+            </div>}
+            {community.slack_hook_url && <div>
+              <p>This community is connected to the <span class="slack_team">{community.slack_team}</span> team on Slack.</p>
+              <button type='button' onClick={() => this.removeSlackhook()}>Remove</button>
+            </div>}
           </div>
         </div>
       </div>}

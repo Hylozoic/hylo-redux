@@ -101,13 +101,20 @@ class ProjectPost extends React.Component {
 
 export default ProjectPost
 
-const Supporters = ({ post, simple }, { currentUser, dispatch }) => {
+class Supporters extends React.Component {
+  static propTypes = {
+    post: object,
+    simple: bool,
+    currentUser: object,
+    dispatch: func,
+    financiallyEnabled: bool
+  }
+
+  render() {
+  const { post, simple, currentUser, financiallyEnabled } = this.props
   const { followers, end_time } = post
   const isFollowing = some(same('id', currentUser), followers)
   const follow = () => dispatch(followPost(post.id, currentUser))
-  let financiallyEnabled = () => {
-    // this.props.financiallyEnabled
-  }
   let pledgeDialogueVisible = true
   const togglePledgeDialogue = () => {
   }
@@ -144,7 +151,7 @@ const Supporters = ({ post, simple }, { currentUser, dispatch }) => {
     }
   </div>
 }
-Supporters.contextTypes = {currentUser: object, dispatch: func}
+}
 
 const PledgeProgress = ({ post, simple }, { currentUser, dispatch }) => {
   const { financialRequestAmount } = post

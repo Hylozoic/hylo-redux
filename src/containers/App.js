@@ -71,7 +71,7 @@ export default class App extends React.Component {
 
     window.addEventListener('resize', debounce(event => {
       this.props.dispatch(setMobileDevice(testIsMobile()))
-    }), 1000)
+    }, 1000))
   }
 
   render () {

@@ -97,18 +97,14 @@ describe('ProjectPostEditor', () => {
       it('deadline should be blank when deadline is not given', () => {
         render(newState, post, newPostEdit)
         let deadline = findRenderedDOMComponentWithClass(node, 'end_time')
-        expect(deadline.value).to.equal(undefined)
+        expect(deadline.value).to.equal('')
       })
 
       it('there is a deadline when deadline is given', () => {
         set(newPostEdit, 'end_time', '2080-08-24T14:00:00.000Z')
         render(newState, post, newPostEdit)
         let deadline = findRenderedDOMComponentWithClass(node, 'end_time')
-        if(deadline.getElementsByTagName('input').length > 0){
-          deadline = deadline.getElementsByTagName('input')[0]
-        }
         expect(deadline.value).to.equal(moment('2080-08-24T14:00:00.000Z').format("MM/DD/YYYY hh:mm A"))
       })
-
     })
 })

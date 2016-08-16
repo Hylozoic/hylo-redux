@@ -56,11 +56,11 @@ export class CreateCommunityContainer extends React.Component {
 
     const logoUrl = community ? community.avatar_url : merkabaUrl
 
-    return <ModalOnlyPage>
+    return <ModalOnlyPage className='create-community'>
       <div className='modal-topper'>
         <div className='medium-avatar' style={{backgroundImage: `url(${logoUrl})`}}/>
         <h2>Create Community</h2>
-      </div>}
+      </div>
       {children}
     </ModalOnlyPage>
   }
@@ -228,7 +228,7 @@ export class CreateCommunityOne extends React.Component {
         {errors.codeInvalid && <p className='help error'>The code may not contain the slash ("/") character.</p>}
         {errors.codeBlank && <p className='help error'>Please fill in a code.</p>}
         {errors.codeUsed && <p className='help error'>This code cannot be used; please choose another.</p>}
-        <div className='toggle-advanced'>
+        <div className='toggle-section'>
           <a onClick={() => this.setState({expanded: !expanded})}>More Options</a>
         </div>
         {expanded && <ModalSelect label='Community Type' onChange={this.set('category')}>
@@ -241,10 +241,10 @@ export class CreateCommunityOne extends React.Component {
         {expanded && <div className='modal-input'>
           <label>Logo</label>
           <div className='small-logo' style={{backgroundImage: `url(${community.avatar_url})`}}></div>
-          <button onClick={() => this.attachImage('avatar')}>Upload</button>
+          <a className='button upload' onClick={() => this.attachImage('avatar')}>Upload</a>
         </div>}
         <div className='footer'>
-          <input ref='submit' type='submit' value='Create' onClick={this.submit}/>
+          <a className='button' ref='submit' onClick={this.submit}>Create</a>
         </div>
     </Modal>
   }

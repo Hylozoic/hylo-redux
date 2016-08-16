@@ -64,22 +64,41 @@ export class ModalInput extends React.Component {
 
     return <ModalRow className={className} field={this.refs.input} ref='row'>
       <label>{label}</label>
-      {prefix && <span className='prefix'>{prefix}</span>}
-      {type === 'textarea'
-        ? <textarea ref='input'
-          placeholder={placeholder}
-          defaultValue={defaultValue}
-          value={value}
-          onChange={onChange}
-          onFocus={onFocus}
-          onBlur={onBlur} />
-        : <input type={type || 'text'} ref='input'
-          placeholder={placeholder}
-          defaultValue={defaultValue}
-          value={value}
-          onChange={onChange}
-          onFocus={onFocus}
-          onBlur={onBlur} />}
+      {prefix
+        ? <div className='prefix-group'>
+          <span className='prefix'>{prefix}</span>
+          {type === 'textarea'
+            ? <textarea ref='input'
+              placeholder={placeholder}
+              defaultValue={defaultValue}
+              value={value}
+              onChange={onChange}
+              onFocus={onFocus}
+              onBlur={onBlur} />
+            : <input type={type || 'text'} ref='input'
+              placeholder={placeholder}
+              defaultValue={defaultValue}
+              value={value}
+              onChange={onChange}
+              onFocus={onFocus}
+              onBlur={onBlur} />}
+        </div>
+        : type === 'textarea'
+            ? <textarea ref='input'
+              placeholder={placeholder}
+              defaultValue={defaultValue}
+              value={value}
+              onChange={onChange}
+              onFocus={onFocus}
+              onBlur={onBlur} />
+            : <input type={type || 'text'} ref='input'
+              placeholder={placeholder}
+              defaultValue={defaultValue}
+              value={value}
+              onChange={onChange}
+              onFocus={onFocus}
+              onBlur={onBlur} />
+      }
     </ModalRow>
   }
 }

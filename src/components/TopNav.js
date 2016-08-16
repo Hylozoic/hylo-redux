@@ -2,7 +2,7 @@ import React from 'react'
 import { A, IndexA } from './A'
 import Icon from './Icon'
 import Dropdown from './Dropdown'
-import { filter, find, flow, get } from 'lodash/fp'
+import { filter, get } from 'lodash/fp'
 import { throttle } from 'lodash'
 import { MenuButton, leftNavWidth, leftNavEasing, menuButtonWidth } from './LeftNav'
 import { editorUrl } from '../containers/StandalonePostEditor'
@@ -27,12 +27,6 @@ const getLabel = path => {
   if (path === '/app' || path.match(/^\/c\/[^\/]+$/)) return 'Conversations'
   return 'Menu'
 }
-
-const getCurrentMembership = (currentUser, community) =>
-  flow(
-    get('memberships'),
-    find(m => m.community.id === get('id', community))
-  )(currentUser)
 
 export default class TopNav extends React.Component {
   static propTypes = {
@@ -90,9 +84,7 @@ export default class TopNav extends React.Component {
     const label = getLabel(path)
     const community = this.props.community || allCommunities()
     const { slug } = community
-    const membership = getCurrentMembership(currentUser, community)
-    const newCount = get('new_notification_count',
-      community.id ? membership : currentUser)
+    const newCount = get('new_notification_count', currentUser)
 
     const moveWithMenu = isMobile
       ? {marginLeft: leftNavIsOpen ? leftNavWidth : 0}

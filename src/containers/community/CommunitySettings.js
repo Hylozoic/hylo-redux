@@ -208,15 +208,9 @@ export default class CommunitySettings extends React.Component {
   }
 
   removeSlackhook () {
-    let { dispatch, community } = this.props
-    let { slug, slack_hook_url, slack_team, slack_configure_url } = community
-    let oldSettings = { slack_hook_url, slack_team, slack_configure_url }
-    let edited = { 
-      slack_hook_url: "",
-      slack_team: "",
-      slack_configure_url: ""
-    }
-    dispatch(updateCommunitySettings(community.id, {slug, ...edited}, oldSettings))
+    const { dispatch, community: { id, slug } } = this.props
+    const edited = {slack_hook_url: '', slack_team: '', slack_configure_url: ''}
+    dispatch(updateCommunitySettings(id, {slug, ...edited}))
   }
 
   changeLeader = person => {
@@ -511,11 +505,15 @@ export default class CommunitySettings extends React.Component {
               There was an error connecting this community to your Slack team.
             </div>}
             {!community.slack_hook_url && <div>
-              <p className='summary'>Connect this community to a <a href="https://slack.com" target="_blank">Slack</a> team and Hylo will notify a channel when there are new posts.</p>
-              <a href={"https://slack.com/oauth/authorize?scope=incoming-webhook&client_id=" + slackClientId + "&redirect_uri=" + addSlackUrl}><img alt="Add to Slack" height="40" width="139" src="https://platform.slack-edge.com/img/add_to_slack.png" srcset="https://platform.slack-edge.com/img/add_to_slack.png 1x, https://platform.slack-edge.com/img/add_to_slack@2x.png 2x"></img></a> 
+              <p className='summary'>
+                Connect this community to a <a href='https://slack.com' target='_blank'>Slack</a> team and Hylo will notify a channel when there are new posts.
+              </p>
+              <a href={`https://slack.com/oauth/authorize?scope=incoming-webhook&client_id=${slackClientId}&redirect_uri=${addSlackUrl}`}>
+                <img alt='Add to Slack' height='40' width='139' src='https://platform.slack-edge.com/img/add_to_slack.png' srcSet='https://platform.slack-edge.com/img/add_to_slack.png 1x, https://platform.slack-edge.com/img/add_to_slack@2x.png 2x'/>
+              </a>
             </div>}
             {community.slack_hook_url && <div>
-              <p>This community is connected to the <span class="slack_team">{community.slack_team}</span> team on Slack.</p>
+              <p>This community is connected to the <span className='slack_team'>{community.slack_team}</span> team on Slack.</p>
               <button type='button' onClick={() => this.removeSlackhook()}>Remove</button>
             </div>}
           </div>

@@ -52,6 +52,7 @@ const UserMenu = ({ slug, newCount }, { isMobile, dispatch, currentUser }) => {
   const doLogout = () => {
     calliOSBridge({type: 'logout'})
     dispatch(logout())
+    dispatch(navigate('/login'))
   }
 
   return <ul className='right'>

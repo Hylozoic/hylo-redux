@@ -154,7 +154,7 @@ class Supporters extends React.Component {
     {!simple && financiallyEnabled &&
       <button type='button' className='button pledge' onClick={this.setPledgeDialogueVisible} >Make A Pledge</button>
     }
-    {!simple && pledgeDialogueVisible &&
+    {!simple && pledgeDialogueVisible && financiallyEnabled &&
       <div className='pledge'>
         <div> How much would you like to pledge?</div>
         USD $

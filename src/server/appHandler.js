@@ -5,9 +5,9 @@ import { promisify } from 'bluebird'
 import makeRoutes from '../routes'
 import { configureStore } from '../store'
 import { Provider } from 'react-redux'
-import { match, RoutingContext } from 'react-router'
+import { match, RouterContext } from 'react-router'
 import createHistory from 'history/lib/createMemoryHistory'
-import { syncReduxAndRouter } from 'redux-simple-router'
+import { syncHistoryWithStore } from 'react-router-redux'
 import { getPrefetchedData } from 'react-fetcher'
 import { cyan, red } from 'chalk'
 import { info, debug } from '../util/logging'
@@ -88,7 +88,7 @@ function renderApp (res, renderProps, history, store) {
 
     // if this runs before getPrefetchedData it hangs -- infinite loop?
     history.transitionTo(renderProps.location)
-    syncReduxAndRouter(history, store)
+    syncHistoryWithStore(history, store)
 
     // if navigate was called during prefetch, redirect.
     if (path && path !== currentPath) {
@@ -101,7 +101,7 @@ function renderApp (res, renderProps, history, store) {
     }
 
     const markup = renderToString(<Provider store={store}>
-      <RoutingContext location='history' {...renderProps}/>
+      <RouterContext location='history' {...renderProps}/>
     </Provider>)
 
     return React.createElement(Html, {

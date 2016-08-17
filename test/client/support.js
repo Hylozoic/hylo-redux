@@ -26,6 +26,10 @@ window.analytics = {
 window._originalAlert = window.alert
 window._originalConfirm = window.confirm
 
+// for masonry-layout
+global.Element = function () {}
+global.Element.prototype = {}
+
 // needs to be required after the globals are declared, because they must be
 // declared before React is loaded
 require('../support')

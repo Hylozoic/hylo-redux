@@ -15,7 +15,7 @@ import Avatar from './Avatar'
 import LinkedPersonSentence from './LinkedPersonSentence'
 import A from './A'
 import { ClickCatchingSpan } from './ClickCatcher'
-import { fetchPost, followPost, navigate, contributeProject, fetchPostPledgeProgress} from '../actions'
+import { fetchPost, followPost, navigate} from '../actions'
 import moment from 'moment'
 import numeral from 'numeral'
 const { array, bool, func, object } = React.PropTypes
@@ -30,14 +30,19 @@ const Deadline = ({ time }) => {
   </span>
 }
 
+
+function getFinanciallyEnabled(post) {
+  return !!post.financialRequestAmount
+}
+
 class ProjectPost extends React.Component {
   static propTypes = {
     post: object.isRequired,
-    financiallyEnabled: bool,
     community: object,
     comments: array,
     communities: array,
-    dispatch: func
+    dispatch: func,
+    financiallyEnabled: bool
   }
 
   constructor (props) {
@@ -46,6 +51,7 @@ class ProjectPost extends React.Component {
 
   render () {
     const {community, post, communities, comments } = this.props
+    const financiallyEnabled = getFinanciallyEnabled(post)
     const { tag, media, location, user, children, name } = post
     const title = decode(name || '')
     const video = find(m => m.type === 'video', media)
@@ -82,7 +88,7 @@ class ProjectPost extends React.Component {
         </div>
         <div className='side-col'>
           {post.financialRequestAmount && <PledgeProgress post={post}/> }
-          <Supporters post={post}/>
+          <Supporters post={post} financiallyEnabled={financiallyEnabled}/>
         </div>
       </div>
     </div>
@@ -152,11 +158,6 @@ class Supporters extends React.Component {
   </div>
 }
 }
-
-function getFinanciallyEnabled(id, state) {
-  return true
-}
-
 const PledgeProgress = ({ post, simple }, { currentUser, dispatch }) => {
   const { financialRequestAmount } = post
   const currencyAmount = numeral(financialRequestAmount).format('$0,0.00')
@@ -171,10 +172,6 @@ const PledgeProgress = ({ post, simple }, { currentUser, dispatch }) => {
   </div>
 }
 
-@connect((state, { id }) => ({
-  post: getPost(id, state),
-  financiallyEnabled: getFinanciallyEnabled(id, state)
-}))
 class ProjectRequest extends React.Component {
   static propTypes = {
     post: object.isRequired,

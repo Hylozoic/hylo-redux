@@ -11,7 +11,7 @@ const matchPromise = promisify(match, {multiArgs: true})
 
 describe('server-side rendering without prefetching', () => {
   it('renders the login page', () => {
-    const store = configureStore({})
+    const store = configureStore({}).store
     const routes = makeRoutes(store)
 
     return matchPromise({routes, location: '/login'})

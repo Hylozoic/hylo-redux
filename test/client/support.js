@@ -1,6 +1,12 @@
-const jsdom = require('jsdom')
+import dotenv from 'dotenv'
+import jsdom from 'jsdom'
+
+dotenv.load({path: './.env.test', silent: true})
 global.document = jsdom.jsdom('<!doctype html><html><body></body></html>')
 global.window = document.defaultView
+
+jsdom.changeURL(window, process.env.UPSTREAM_HOST)
+
 window.tinymce = {
   init: () => {},
   EditorManager: {

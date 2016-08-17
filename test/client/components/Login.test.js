@@ -1,33 +1,38 @@
 require('../support')
 import { mocks, helpers } from '../../support'
 import Login from '../../../src/containers/Login.js'
-import { LOGIN, NAVIGATE, FETCH_COMMUNITY } from '../../../src/actions'
+import { FETCH_COMMUNITY } from '../../../src/actions'
 import { renderIntoDocument } from 'react-addons-test-utils'
 const { createElement } = helpers
+import { HOST } from '../../../src/util/api'
+import nock from 'nock'
+import { configureStore } from '../../../src/store'
+import { getUrlFromLocation } from '../../../src/util/navigation'
+
+const redirectUrl = store => {
+  const location = store.getState().routing.locationBeforeTransitions
+  return getUrlFromLocation(location)
+}
 
 describe('Login', () => {
   describe('on successful login', () => {
-    var store, redirectUrl, node
+    var store, node
 
-    const setup = props => {
+    const setup = (loginResponse, props) => {
+      nock(HOST).post('/login').reply(200, loginResponse)
       const component = createElement(Login, props, {store})
       node = renderIntoDocument(component).getWrappedInstance()
     }
 
     beforeEach(() => {
-      store = mocks.redux.store({
-        people: {current: {id: 42}}
-      })
-
-      store.transformAction(LOGIN, () => Promise.resolve({payload: store.getState().people.current}))
-      store.transformAction(NAVIGATE, action => redirectUrl = action.payload)
+      store = configureStore({}).store
     })
 
     it("redirects to the person's profile by default", () => {
-      setup({location: {query: {}}})
+      setup({id: 42}, {location: {query: {}}})
       return node.submit(mocks.event())
       .then(() => {
-        expect(redirectUrl).to.equal('/u/42')
+        expect(redirectUrl(store)).to.equal('/u/42')
         expect(window.analytics.alias).to.have.been.called()
       })
     })
@@ -35,19 +40,21 @@ describe('Login', () => {
     it('redirects to the last visited community if available', () => {
       const slug = 'foomunity'
       const communityId = '5'
-      let currentUser = store.getState().people.current
-      currentUser.settings = {currentCommunityId: communityId}
-      currentUser.memberships = [{community_id: communityId, community: {id: communityId, slug}}]
-      store.transformAction(FETCH_COMMUNITY, action => Promise.resolve({payload: {slug}}))
-      setup({location: {query: {}}})
+      nock(HOST).get('/noo/community/foomunity').reply(200, {slug})
+      const user = {
+        id: 42,
+        settings: {currentCommunityId: communityId},
+        memberships: [{community_id: communityId, community: {id: communityId, slug}}]
+      }
+      setup(user, {location: {query: {}}})
       return node.submit(mocks.event())
-      .then(() => expect(redirectUrl).to.equal(`/c/${slug}`))
+      .then(() => expect(redirectUrl(store)).to.equal(`/c/${slug}`))
     })
 
     it('redirects to a specified location', () => {
-      setup({location: {query: {next: '/c/sandbox'}}})
+      setup({id: 42}, {location: {query: {next: '/c/sandbox'}}})
       return node.submit(mocks.event())
-      .then(() => expect(redirectUrl).to.equal('/c/sandbox'))
+      .then(() => expect(redirectUrl(store)).to.equal('/c/sandbox'))
     })
   })
 })

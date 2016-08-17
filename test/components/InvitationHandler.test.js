@@ -2,41 +2,39 @@ import { mocks, helpers } from '../support'
 import InvitationHandler from '../../src/containers/community/InvitationHandler'
 import { renderToString } from 'react-dom/server'
 import cheerio from 'cheerio'
-import { NAVIGATE, USE_INVITATION } from '../../src/actions'
+import { USE_INVITATION } from '../../src/actions'
 import { getPrefetchedData } from 'react-fetcher'
 const { createElement } = helpers
+import { configureStore } from '../../src/store'
+import { getUrlFromLocation } from '../../src/util/navigation'
+import { HOST } from '../../src/util/api'
+import nock from 'nock'
 
-const mockPrefetch = ({ dispatch }, query) =>
-  getPrefetchedData([InvitationHandler], {query, dispatch})
+const redirectUrl = store => {
+  const location = store.getState().routing.locationBeforeTransitions
+  return getUrlFromLocation(location)
+}
 
 describe('InvitationHandler', () => {
-  var store
-
   describe('when successful', () => {
-    var redirectUrl
-
-    beforeEach(() => {
-      store = mocks.redux.store()
-      store.transformAction(NAVIGATE, ({ payload }) => redirectUrl = payload)
-    })
-
     it('redirects', () => {
-      store.transformAction(USE_INVITATION, action => {
-        expect(action.payload.path).to.equal('/noo/invitation/zap')
-        return Promise.resolve({
-          payload: {
-            community: {id: 1, name: 'Foo', slug: 'foo'}
-          }
-        })
+      const store = configureStore({people: {current: {memberships: []}}}).store
+
+      nock(HOST).post('/noo/invitation/zap').reply(200, {
+        community: {id: 1, name: 'Foo', slug: 'foo'}
       })
 
-      return mockPrefetch(store, {token: 'zap'})
-      .then(() => expect(redirectUrl).to.equal('/add-skills?community=foo'))
+      return getPrefetchedData([InvitationHandler], {
+        query: {token: 'zap'},
+        dispatch: store.dispatch
+      })
+      .then(() => expect(redirectUrl(store)).to.equal('/add-skills?community=foo'))
     })
   })
 
   describe('when unsuccessful', () => {
-    var props
+    var props, store
+
     beforeEach(() => {
       store = mocks.redux.store({
         errors: {

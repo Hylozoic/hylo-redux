@@ -39,7 +39,7 @@ describe('ShareTopicModal', () => {
   it('is rendered with correct join link', () => {
     let appNode = setup()
     let joinUrlDiv = findRenderedDOMComponentWithClass(appNode, 'join-url')
-    let expected = `<label>People with this link can join</label><a>null/c/foomunity/join/${beta_access_code}/tag/${tagName}</a>`
+    let expected = `<label>People with this link can join</label><a>${window.location.origin}/c/foomunity/join/${beta_access_code}/tag/${tagName}</a>`
     expect(joinUrlDiv.innerHTML).to.equal(expected)
   })
 })

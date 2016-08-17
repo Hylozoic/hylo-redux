@@ -94,6 +94,22 @@ export default class ProjectPostEditor extends React.Component {
         return moment(end_time).format("MM/DD/YYYY hh:mm A")
       }
     }
+    return null
+  }
+
+  deadlineDatePicker = (end_time) => {
+    let deadlineDatePicker
+    if(this.checkIfEdit && this.financialRequestsEnabled){
+      deadlineDatePicker = <input type="text" className="end_time"
+             value={this.valueOfEndTime(end_time)}
+             disabled/>
+    }
+    else {
+      deadlineDatePicker = <DatetimePicker inputProps={{placeholder: 'deadline'}}
+                      value={this.valueOfEndTime(this.props.postEdit.end_time)}
+                      onChange={m => this.props.update({end_time: this.valueOfEndTime(m)})}/>
+    }
+    return deadlineDatePicker
   }
 
   render () {
@@ -158,17 +174,7 @@ export default class ProjectPostEditor extends React.Component {
         </div>
         <div className='deadline'>
           <Icon name='Calendar'/>
-          { this.checkIfEdit() &&
-
-          <input type="text" className="end_time"
-                 value={this.valueOfEndTime(end_time)}
-                 disabled={true}/>
-          }
-          { !this.checkIfEdit() &&
-          <DatetimePicker inputProps={{placeholder: 'deadline'}}
-                          value={this.valueOfEndTime(end_time)}
-                          onChange={m => update({end_time: this.valueOfEndTime(m)})}/>
-          }
+          {this.deadlineDatePicker()}
         </div>
         <div className='location'>
           <Icon name='Pin-1'/>

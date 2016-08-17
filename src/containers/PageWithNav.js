@@ -100,6 +100,6 @@ export default connect((state, props) => {
   return {
     leftNavIsOpen, community, networkCommunities, network,
     tags: get(get('slug', community), tagsByCommunity) || aggregatedTags(state),
-    path: state.routing.path
+    path: state.routing.locationBeforeTransitions.pathname
   }
 })(PageWithNav)

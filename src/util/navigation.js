@@ -8,6 +8,9 @@ export const makeUrl = (path, params) => {
   return `${path}${!isEmpty(params) ? '?' + qs.stringify(params) : ''}`
 }
 
+export const getUrlFromLocation = location =>
+  makeUrl(location.pathname, location.query)
+
 // when switching communities, this method determines whether to preserve the
 // current subsection and query params
 export const nextPath = (path, community, isNetwork, query) => {

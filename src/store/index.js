@@ -1,25 +1,33 @@
 import { createStore, applyMiddleware, compose } from 'redux'
 import promiseMiddleware from 'redux-promise'
+import { routerMiddleware } from 'react-router-redux'
 import rootReducer from '../reducers'
 import createLogger from 'redux-logger'
-import { compact } from 'lodash'
+import { compact, flatten } from 'lodash'
 import {
   serverLogger, apiMiddleware, cacheMiddleware, pendingPromiseMiddleware,
   optimisticMiddleware
 } from '../middleware'
+import { syncHistoryWithStore } from 'react-router-redux'
+import createHistory from 'history/lib/createMemoryHistory'
+import { useRouterHistory } from 'react-router'
 
-export function configureStore (initialState, req) {
+export function configureStore (initialState, opts = {}) {
   const isServer = typeof window === 'undefined'
+  const isTesting = process.env.NODE_ENV === 'test'
+  const history = opts.history || useRouterHistory(createHistory)()
 
-  var middleware = compact([
+  var middleware = compact(flatten([
+    opts.middleware,
+    routerMiddleware(history),
     isServer && serverLogger,
     cacheMiddleware,
-    apiMiddleware(req),
+    apiMiddleware(opts.request),
     optimisticMiddleware,
     pendingPromiseMiddleware,
     promiseMiddleware,
-    !isServer && createLogger({collapsed: true})
-  ])
+    !isServer && !isTesting && createLogger({collapsed: true})
+  ]))
 
   const store = compose(
     applyMiddleware(...middleware),
@@ -34,5 +42,5 @@ export function configureStore (initialState, req) {
     })
   }
 
-  return store
+  return {store, history: syncHistoryWithStore(history, store)}
 }

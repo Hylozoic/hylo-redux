@@ -161,7 +161,8 @@ export default function makeRoutes (store) {
   </Route>
 }
 
-export const origin = () => typeof window !== 'undefined' ? window.location.origin : config.host
+export const origin = () =>
+  typeof window !== 'undefined' ? window.location.origin : config.host
 
 export const communityUrl = (community, params) =>
   makeUrl(`/c/${community.slug}`, params)

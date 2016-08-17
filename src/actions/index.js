@@ -1,5 +1,6 @@
 import invariant from 'invariant'
 import qs from 'querystring'
+import { push } from 'react-router-redux'
 
 export const _PENDING = '_PENDING'
 export const ADD_COMMUNITY_MODERATOR = 'ADD_COMMUNITY_MODERATOR'
@@ -213,10 +214,7 @@ export function fetchCommunityModerators (id) {
 }
 
 export function navigate (path) {
-  return {
-    type: NAVIGATE,
-    payload: path
-  }
+  return push(path)
 }
 
 export function fetchComments (postId, opts = {}) {

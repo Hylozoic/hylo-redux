@@ -5,16 +5,14 @@ import { configureStore } from '../store'
 import { Provider } from 'react-redux'
 import { Router, browserHistory } from 'react-router'
 import makeRoutes from '../routes'
-import { syncHistoryWithStore } from 'react-router-redux'
 import { setManifest } from '../util/assets'
 import fbAsyncInit from './fbAsyncInit'
 import setupSegment from './segment'
 import trackClickthrough from './clickthrough'
 import updateLocation from './updateLocation'
 
-const store = configureStore(window.INITIAL_STATE)
+const { history, store } = configureStore(window.INITIAL_STATE, {history: browserHistory})
 const routes = makeRoutes(store)
-const history = syncHistoryWithStore(browserHistory, store)
 setManifest(window.ASSET_MANIFEST)
 setupSegment()
 fbAsyncInit()

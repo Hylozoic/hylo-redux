@@ -38,6 +38,8 @@ export const FETCH_ONBOARDING = 'FETCH_ONBOARDING'
 export const FETCH_PEOPLE = 'FETCH_PEOPLE'
 export const FETCH_PERSON = 'FETCH_PERSON'
 export const FETCH_POST = 'FETCH_POST'
+export const FETCH_PROJECT_PLEDGE_PROGRESS = 'FETCH_PROJECT_PLEDGE_PROGRESS'
+export const CONTRIBUTE_PROJECT = 'CONTRIBUTE_PROJECT'
 export const FETCH_POSTS = 'FETCH_POSTS'
 export const FETCH_RAW_ADMIN_METRICS = 'FETCH_RAW_ADMIN_METRICS'
 export const FETCH_TAG = 'FETCH_TAG'
@@ -222,6 +224,20 @@ export function navigate (path) {
   return {
     type: NAVIGATE,
     payload: path
+  }
+}
+
+export function fetchPostPledgeProgress(postId){
+  return {
+    type: FETCH_PROJECT_PLEDGE_PROGRESS,
+    payload: {api: true, path: `/noo/post/${postId}/pledge-progress`}
+  }
+}
+
+export function contributeProject(postId, params){
+  return {
+    type: CONTRIBUTE_PROJECT,
+    payload: {api: true, path: `/noo/post/${postId}/contribute`, params, method: 'POST'}
   }
 }
 

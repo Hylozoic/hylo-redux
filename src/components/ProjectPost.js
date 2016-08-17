@@ -15,7 +15,7 @@ import Avatar from './Avatar'
 import LinkedPersonSentence from './LinkedPersonSentence'
 import A from './A'
 import { ClickCatchingSpan } from './ClickCatcher'
-import { fetchPost, followPost, navigate } from '../actions'
+import { fetchPost, followPost, navigate, contributeProject, fetchPostPledgeProgress} from '../actions'
 import moment from 'moment'
 import numeral from 'numeral'
 const { array, bool, func, object } = React.PropTypes
@@ -161,9 +161,9 @@ const PledgeProgress = ({ post, simple }, { currentUser, dispatch }) => {
   const { financialRequestAmount } = post
   const currencyAmount = numeral(financialRequestAmount).format('$0,0.00')
 
-  return <div className='supporters'> 
+  return <div className='supporters'>
     <div className='top'>
-      <h2>$0</h2>    
+      <h2>$0</h2>
       <span className='meta'>
       pledged of {currencyAmount} goal
     </span>

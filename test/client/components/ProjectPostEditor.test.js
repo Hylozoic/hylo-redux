@@ -96,8 +96,8 @@ describe('ProjectPostEditor', () => {
 
       it('deadline should be blank when deadline is not given', () => {
         render(newState, post, newPostEdit)
-        let deadline = findRenderedDOMComponentWithClass(node, 'end_time')
-        expect(deadline.value).to.equal('')
+        let deadline = findRenderedDOMComponentWithClass(node, 'deadline-date-picker')
+        expect(deadline.value).to.equal(undefined)
       })
 
       it('there is a deadline when deadline is given', () => {

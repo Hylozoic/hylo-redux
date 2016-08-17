@@ -105,7 +105,8 @@ export default class ProjectPostEditor extends React.Component {
              disabled/>
     }
     else {
-      deadlineDatePicker = <DatetimePicker inputProps={{placeholder: 'deadline'}}
+      deadlineDatePicker = <DatetimePicker className="deadline-date-picker"
+                      inputProps={{placeholder: 'deadline'}}
                       value={this.valueOfEndTime(this.props.postEdit.end_time)}
                       onChange={m => this.props.update({end_time: this.valueOfEndTime(m)})}/>
     }

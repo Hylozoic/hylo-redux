@@ -65,6 +65,7 @@ export default class UserSettings extends React.Component {
   }
 
   componentDidMount () {
+    let { dispatch } = this.props
     setupPopupCallback('settings', this.props.dispatch, setHitfinError)
     if (this.props.expand.password) {
       this.setState({editing: {
@@ -72,6 +73,7 @@ export default class UserSettings extends React.Component {
         password: true
       }})
     }
+    dispatch(getUserBalance())
   }
 
   validate () {

@@ -2,6 +2,7 @@ import { match } from 'react-router'
 import { getPrefetchedData, getDeferredData } from 'react-fetcher'
 import { debug } from '../util/logging'
 import { get, isEqual } from 'lodash'
+import { pick } from 'lodash/fp'
 import { localsForPrefetch } from '../util/universal'
 import { identify } from '../util/analytics'
 import { calliOSBridge } from './util'
@@ -13,7 +14,7 @@ const updateLocation = opts => location => {
 
   match({routes, location}, (error, redirectLocation, renderProps) => {
     if (redirectLocation) {
-      history.replaceState({}, redirectLocation.pathname + redirectLocation.search)
+      history.replace(redirectLocation)
       return
     }
 

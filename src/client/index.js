@@ -2,11 +2,10 @@ import 'babel-polyfill'
 import React from 'react'
 import { render } from 'react-dom'
 import { configureStore } from '../store'
-import createHistory from 'history/lib/createBrowserHistory'
 import { Provider } from 'react-redux'
-import { Router } from 'react-router'
+import { Router, browserHistory } from 'react-router'
 import makeRoutes from '../routes'
-import { syncReduxAndRouter } from 'redux-simple-router'
+import { syncHistoryWithStore } from 'react-router-redux'
 import { setManifest } from '../util/assets'
 import fbAsyncInit from './fbAsyncInit'
 import setupSegment from './segment'
@@ -15,8 +14,7 @@ import updateLocation from './updateLocation'
 
 const store = configureStore(window.INITIAL_STATE)
 const routes = makeRoutes(store)
-const history = createHistory()
-syncReduxAndRouter(history, store)
+const history = syncHistoryWithStore(browserHistory, store)
 setManifest(window.ASSET_MANIFEST)
 setupSegment()
 fbAsyncInit()

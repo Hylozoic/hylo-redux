@@ -45,11 +45,11 @@ import { get, isEmpty, pick } from 'lodash'
 import config from './config'
 
 export default function makeRoutes (store) {
-  const requireLoginWithOptions = (options = {}) => (nextState, replaceState) => {
+  const requireLoginWithOptions = (options = {}) => (nextState, replace) => {
     let { startAtSignup, addParams } = options
     if (store.getState().people.current) return true
 
-    let start = startAtSignup ? 'signup' : 'login'
+    const start = startAtSignup ? 'signup' : 'login'
     debug(`redirecting to ${start}`)
 
     const { location: { pathname, query } } = nextState
@@ -59,28 +59,28 @@ export default function makeRoutes (store) {
       ...(addParams ? addParams(nextState) : null)
     }
 
-    replaceState({}, makeUrl(`/${start}`, params))
+    replace(makeUrl(`/${start}`, params))
   }
 
   const requireLogin = requireLoginWithOptions()
 
-  const requireAdmin = (nextState, replaceState) => {
+  const requireAdmin = (nextState, replace) => {
     const currentUser = store.getState().people.current
     if (!get(currentUser, 'is_admin')) {
-      replaceState({}, '/noo/admin/login')
+      replace('/noo/admin/login')
     }
   }
 
-  const requireCommunity = (options = {}) => (nextState, replaceState) => {
-    if (!requireLoginWithOptions(options)(nextState, replaceState)) return
+  const requireCommunity = (options = {}) => (nextState, replace) => {
+    if (!requireLoginWithOptions(options)(nextState, replace)) return
 
     if (isEmpty(get(store.getState().people.current, 'memberships'))) {
-      replaceState({}, '/c/join')
+      replace('/c/join')
     }
   }
 
   return <Route component={App}>
-    <Route path='/' onEnter={(_, replaceState) => replaceState({}, '/app')}/>
+    <Route path='/' onEnter={(_, replace) => replace('/app')}/>
     <Route path='signup' component={Signup}/>
     <Route path='login' component={Login}/>
     <Route path='set-password' component={SetPassword}/>

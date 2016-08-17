@@ -1,5 +1,5 @@
 import { combineReducers } from 'redux'
-import { routeReducer } from 'redux-simple-router'
+import { routerReducer } from 'react-router-redux'
 import { some, get, partition, transform } from 'lodash'
 import { activities, activitiesByCommunity } from './activities'
 import comments from './comments'
@@ -144,7 +144,7 @@ const combinedReducers = combineReducers({
       case NAVIGATE:
         return {path: action.payload}
       default:
-        return routeReducer(state, action)
+        return routerReducer(state, action)
     }
   },
 

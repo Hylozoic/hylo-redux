@@ -227,7 +227,7 @@ export function navigate (path) {
   }
 }
 
-export function fetchPostPledgeProgress(postId){
+export function fetchProjectPledgeProgress(postId){
   return {
     type: FETCH_PROJECT_PLEDGE_PROGRESS,
     payload: {api: true, path: `/noo/post/${postId}/pledge-progress`}

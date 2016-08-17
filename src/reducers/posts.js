@@ -3,6 +3,8 @@ import {
   CREATE_COMMENT,
   CREATE_POST,
   FETCH_POST,
+  FETCH_PROJECT_PLEDGE_PROGRESS,
+  CONTRIBUTE_PROJECT,
   FETCH_POSTS,
   FETCH_PERSON,
   FOLLOW_POST,
@@ -90,6 +92,10 @@ export default function (state = {}, action) {
   switch (type) {
     case FETCH_POSTS:
       return mergeList(state, payload.posts.map(normalize), 'id')
+    case FETCH_PROJECT_PLEDGE_PROGRESS:
+      return {...state, pledgeAmount: payload.pledgeAmount }
+    case CONTRIBUTE_PROJECT:
+        return {...state }
     case CREATE_POST:
     case FETCH_POST:
       return mergeList(state, listWithChildren(normalize(payload), payload), 'id')

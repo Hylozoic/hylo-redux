@@ -153,6 +153,10 @@ class Supporters extends React.Component {
 }
 }
 
+function getFinanciallyEnabled(id, state) {
+  return true
+}
+
 const PledgeProgress = ({ post, simple }, { currentUser, dispatch }) => {
   const { financialRequestAmount } = post
   const currencyAmount = numeral(financialRequestAmount).format('$0,0.00')
@@ -169,7 +173,7 @@ const PledgeProgress = ({ post, simple }, { currentUser, dispatch }) => {
 
 @connect((state, { id }) => ({
   post: getPost(id, state),
- financiallyEnabled: getFinanciallyEnabled(id, state)
+  financiallyEnabled: getFinanciallyEnabled(id, state)
 }))
 class ProjectRequest extends React.Component {
   static propTypes = {

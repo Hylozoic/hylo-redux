@@ -116,15 +116,23 @@ class Supporters extends React.Component {
     financiallyEnabled: bool
   }
 
+  constructor(props) {
+    super(props)
+    this.state = {
+      pledgeDialogueVisible: true
+    }
+  }
+
+  setPledgeDialogueVisible = () => {
+    this.setState({pledgeDialogueVisible: !this.state.pledgeDialogueVisible})
+  }
+
   render() {
   const { post, simple, currentUser, financiallyEnabled } = this.props
+  let { pledgeDialogueVisible } = this.state
   const { followers, end_time } = post
   const isFollowing = some(same('id', currentUser), followers)
   const follow = () => dispatch(followPost(post.id, currentUser))
-  let pledgeDialogueVisible = true
-  const togglePledgeDialogue = () => {
-  }
-
   return <div className='supporters'>
     {!simple && <div className='top'>
       <h3>
@@ -144,15 +152,15 @@ class Supporters extends React.Component {
       {isFollowing ? 'Supporting' : 'Support this'}
     </a>}
     {!simple && financiallyEnabled &&
-      <button type='button' className='button pledge' onClick={(togglePledgeDialogue)} >Pledge</button>
+      <button type='button' className='button pledge' onClick={this.setPledgeDialogueVisible} >Make A Pledge</button>
     }
     {!simple && pledgeDialogueVisible &&
       <div className='pledge'>
         <div> How much would you like to pledge?</div>
         USD $
         <CurrencyInput className='pledge-amount' thousandSeparator=''/>
-        <button type='button' className='button cancel-pledge' onClick={togglePledgeDialogue} >Cancel</button>
-        <button type='button' className='button submit-pledge' >Pledge</button>
+        <button type='button' className='button cancel-pledge' onClick={this.setPledgeDialogueVisible} >Cancel</button>
+        <button type='button' className='button submit-pledge'>Pledge</button>
       </div>
     }
   </div>

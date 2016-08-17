@@ -5,7 +5,7 @@ import { promisify } from 'bluebird'
 import makeRoutes from '../routes'
 import { configureStore } from '../store'
 import { Provider } from 'react-redux'
-import { match, RouterContext } from 'react-router'
+import { match, RouterContext, useRouterHistory } from 'react-router'
 import createHistory from 'history/lib/createMemoryHistory'
 import { syncHistoryWithStore } from 'react-router-redux'
 import { getPrefetchedData } from 'react-fetcher'
@@ -38,7 +38,6 @@ export default function (req, res) {
 
   const store = configureStore({}, req)
   const routes = makeRoutes(store)
-  const history = createHistory()
   const md = new MobileDetect(req.headers['user-agent'])
   if (md.mobile() && !md.tablet()) store.dispatch(setMobileDevice())
 
@@ -58,6 +57,7 @@ export default function (req, res) {
       newrelic.setTransactionName(`${req.method.toLowerCase()} ${txPath}`)
     }
 
+    const history = useRouterHistory(createHistory)()
     return renderApp(res, renderProps, history, store)
     .then(app => {
       if (app.shouldRedirect) return res.redirect(302, app.shouldRedirect)

@@ -22,26 +22,33 @@ export default class PledgeProgress extends React.Component {
 
   updateProjectPledgeProgress (post, dispatch) {
     dispatch(fetchProjectPledgeProgress(post.id))
-     .then((res) => this.setState({currencyPledgeAmount: numeral(res).format('$0,0.00')}))
-  }
-
-  setPollInterval (post, dispatch) {
-    if (this.pollInterval) {
-      clearInterval(this.pollInterval)
-    }
-
-    this.pollInterval = setInterval(() => { this.updateProjectPledgeProgress (post, dispatch) } , 60 * 1000)
+     .then((res) => {
+       if(res){
+         if(res.error){
+           console.error(res.payload.message)
+           this.timeoutPointer = setTimeout(() => { this.updateProjectPledgeProgress (post, dispatch) } , 60 * 1000)
+         }else{
+           const pledgeAmount = res.payload.pledgeAmount
+           if(pledgeAmount){
+             this.setState({currencyPledgeAmount: numeral(pledgeAmount).format('$0,0.00')})
+           }
+           this.timeoutPointer = setTimeout(() => { this.updateProjectPledgeProgress (post, dispatch) } , 60 * 1000)
+         }
+       }
+     }, (err) => {
+       console.error(err)
+       this.timeoutPointer = setTimeout(() => { this.updateProjectPledgeProgress (post, dispatch) } , 60 * 1000)
+     })
   }
 
   componentDidMount (){
     const { post } = this.props
     const { dispatch } = this.context
-    //setTimeout(() => { this.updateProjectPledgeProgress (post, dispatch) } , 3 * 1000)
-    //this.setPollInterval(post, dispatch)
+    this.timeoutPointer = setTimeout(() => { this.updateProjectPledgeProgress (post, dispatch) } , 3 * 1000)
   }
 
   componentWillUnmount () {
-    clearInterval(this.pollInterval)
+    clearTimeout(this.timeoutPointer)
   }
 
   render () {

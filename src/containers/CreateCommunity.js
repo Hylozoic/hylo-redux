@@ -28,6 +28,7 @@ import {
   bannerUploadSettings,
   defaultAvatar,
   defaultBanner,
+  getCurrentCommunity,
   getCurrentOrLastCommunity,
   getCheckList
 } from '../models/community'
@@ -44,7 +45,7 @@ export const CreateCommunity = ({ children }) => <div className>
   {children}
 </div>
 
-@connect(state => ({community: getCurrentOrLastCommunity(state)}))
+@connect(state => ({community: getCurrentCommunity(state)}))
 export class CreateCommunityContainer extends React.Component {
   static propTypes = {
     community: object,
@@ -268,7 +269,7 @@ export class CreateCommunityTwo extends React.Component {
     super(props)
     this.state = {
       emails: '',
-      expanded: true
+      expanded: false
     }
   }
 
@@ -288,23 +289,29 @@ export class CreateCommunityTwo extends React.Component {
     })
   }
 
-  render () {
-    const { expanded } = this.state
-    const { community, currentUser, dispatch, invitationEditor } = this.props
+  componentDidMount () {
+    const { dispatch, community, invitationEditor } = this.props
+    const { subject, message } = invitationEditor
 
-    if (!canInvite(currentUser, community)) {
-      return <div>
-        You don&#39;t have permission to view this page. <a href='javascript:history.go(-1)'>Back</a>
-      </div>
-    }
-
-    let { subject, message, recipients, moderator, error } = invitationEditor
     if (subject === undefined) {
       dispatch(updateInvitationEditor('subject', defaultSubject(community.name)))
     }
     if (message === undefined) {
       dispatch(updateInvitationEditor('message', defaultMessage(community.name)))
     }
+  }
+
+  render () {
+    const { expanded } = this.state
+    const { community, currentUser, dispatch, invitationEditor } = this.props
+
+    if (!canInvite(currentUser, community)) {
+      return <div>
+        You don&#39;t have permission to view this page.
+      </div>
+    }
+
+    let { subject, message, recipients, moderator, error } = invitationEditor
 
     let setError = text => dispatch(updateInvitationEditor('error', text))
 
@@ -338,42 +345,48 @@ export class CreateCommunityTwo extends React.Component {
     return <Modal title={`Invite Members to ${community.name}.`}
       className='create-community-two'
       standalone>
-      <div>
-        <label>Import CSV File</label>
-        <input type='file' onChange={() => this.processCSV()} ref='fileInput'/>
+      <div className='modal-input csv-upload'>
+        <label className='normal-label'>Import CSV File</label>
+        <label className='custom-file-upload'>
+          <input type='file' onChange={() => this.processCSV()} ref='fileInput'/>
+          Browse
+        </label>
       </div>
       <ModalInput
+        className='emails'
         label='Enter Emails'
         ref='emails'
         type='textarea'
         value={recipients}
         onChange={update('recipients')}
         placeholder='Enter email addresses, separated by commas or line breaks'/>
-      <div className='modal-toggle-message'>
-        <a onClick={() => this.setState({expanded: !expanded})}>Customize Message {expanded ? '&and;' : '&or;'}</a>
+      <div className='toggle-section'>
+        <a onClick={() => this.setState({expanded: !expanded})}>Customize Message {expanded ? '&#8743;' : '&#8744;'}</a>
       </div>
-      <ModalInput
+      {expanded && <ModalInput
         label='Subject'
         ref='subject'
         value={subject}
-        onChange={update('subject')}/>
-      <ModalInput
+        onChange={update('subject')}/>}
+      {expanded && <ModalInput
         label='Message'
         ref='message'
         type='textarea'
         value={message}
-        onChange={update('message')}/>
+        onChange={update('message')}/>}
       {error && <div className='alert alert-danger'>{error}</div>}
-      <button onClick={submit}>Invite</button>
-      <A to='/create/three' className='skip'>Skip</A>
+      <div className='footer'>
+        <a className='button' onClick={submit}>Invite</a>
+        <A to={`/c/${community.slug}`} className='skip'>Skip</A>
+      </div>
     </Modal>
   }
 }
 
 @prefetch(({ dispatch, store }) => {
-  dispatch(fetchCommunity(get('slug', getCurrentOrLastCommunity(store.getState()))))
+  dispatch(fetchCommunity(get('slug', getCurrentCommunity(store.getState()))))
 })
-@connect(state => ({community: getCurrentOrLastCommunity(state)}))
+@connect(state => ({community: getCurrentCommunity(state)}))
 export class CreateCommunityThree extends React.Component {
 
   static propTypes = {

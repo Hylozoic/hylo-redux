@@ -241,7 +241,6 @@ describe('PostEditor', () => {
 
     it('should not show validation on financial contributions', () => {
       let postEditor = findRenderedDOMComponentWithClass(node, 'post-editor clearfix')
-      click(node.refs.save)
       expect(window.alert).to.have.been.called
     })
   })

@@ -19,7 +19,7 @@ const { array, bool, func, object } = React.PropTypes
 @prefetch(({ store, dispatch }) => {
   const { isMobile, people } = store.getState()
   if (!isMobile && typeof window === 'undefined' &&
-    get('settings.leftNavIsOpen', people.current)) {
+    get('settings.leftNavIsOpen', people.current) !== false) {
     return dispatch(toggleLeftNav())
   }
 })

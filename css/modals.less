@@ -15,10 +15,16 @@
   }
 }
 
+@modal-row-side-padding: 25px;
+
 .modal-row() {
-  padding: 10px 25px;
+  padding: 10px @modal-row-side-padding;
   background-color: @faint-gray-bg;
   border-top: 1px solid @post-border;
+  border-left: none;
+  border-right: none;
+  border-radius: 0;
+  box-shadow: none;
 
   label {
     .small-caps-list-header;
@@ -66,15 +72,21 @@
   > .title {
     border-bottom: 1px solid @post-border;
     padding-bottom: 15px;
+
+    .icon {
+      padding-right: 0;
+      font-size: inherit;
+    }
   }
 
   h2 {
     padding: 25px 25px 10px 25px;
     margin: 0;
+    line-height: 1.3em;
   }
 
   .subtitle {
-    padding: 0px 25px 5px 25px;
+    padding: 0px @modal-row-side-padding;
   }
 
   .close {
@@ -104,6 +116,10 @@
 
   .modal-input {
     .modal-input-row;
+  }
+
+  > .meta {
+    padding: 0 @modal-row-side-padding;
   }
 }
 
@@ -168,6 +184,8 @@
   min-height: 100vh;
 
   .modal {
+    box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.04);
+
     .non-mobile({
       margin: 0 auto;
       width: @main-column-width;
@@ -175,10 +193,13 @@
   }
 
   .modal-topper {
-    margin: 0 auto;
+    .non-mobile({
+      margin: 0 auto;
+      width: @main-column-width;
+    });
+
     padding: 0 25px 25px;
     color: white;
-    width: @main-column-width;
     min-height: @avatar-size-medium + 25px;
     .has-bottom-triangle(#fff, #fff, 10px);
     &:after {
@@ -188,6 +209,7 @@
     .medium-avatar {
       float: left;
       margin-right: 15px;
+      border-radius: 0;
     }
 
     h2 {
@@ -196,5 +218,41 @@
       margin-bottom: 4px;
       .regular;
     }
+  }
+}
+
+#skills-prompt {
+  .title {
+    border-bottom: none;
+  }
+
+  .tag {
+    border-radius: 26px;
+    padding: 0 10px;
+    background-color: white;
+    border: 1px solid @post-border;
+  }
+
+  .modal-input {
+    border-bottom: 1px solid @post-border;
+    margin-bottom: @p-bottom-margin;
+  }
+
+  .footer {
+    border-top: none;
+  }
+}
+
+#topics-prompt {
+  ul {
+    margin-bottom: 0;
+  }
+
+  .modal > p {
+    padding: 0 @modal-row-side-padding;
+  }
+
+  .footer {
+    border-top: 0;
   }
 }

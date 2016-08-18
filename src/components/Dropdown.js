@@ -13,6 +13,7 @@ export default class Dropdown extends React.Component {
 
   static propTypes = {
     children: array,
+    id: string,
     className: string,
     alignRight: bool,
     toggleChildren: object.isRequired,
@@ -61,7 +62,7 @@ export default class Dropdown extends React.Component {
 
   render () {
     const {
-      toggleChildren, children, alignRight, backdrop, triangle, openOnHover
+      toggleChildren, children, alignRight, backdrop, triangle, openOnHover, id
     } = this.props
     const { hoverOpened } = this.state
     const { isMobile } = this.context
@@ -69,7 +70,7 @@ export default class Dropdown extends React.Component {
     const className = cx('dropdown', this.props.className,
       {active, 'has-triangle': triangle})
 
-    return <div className={className} ref='parent'>
+    return <div id={id} className={className} ref='parent'>
       <a className='dropdown-toggle' onClick={this.toggle}
         onMouseEnter={ev => openOnHover && this.toggle(ev, 'hover')}>
         {toggleChildren}

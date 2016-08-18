@@ -16,8 +16,8 @@ export const getUrlFromLocation = location =>
 export const nextPath = (path, community, isNetwork, query) => {
   const pathStart = community ? `/${isNetwork ? 'n' : 'c'}/${community.slug}` : ''
   const match = community
-    ? path.match(/(events|projects|people|notifications|about|invite)$/)
-    : path.match(/(events|projects|people|notifications)$/)
+    ? path.match(/(events|projects|people|about|invite)$/)
+    : path.match(/(events|projects|people)$/)
   const pathEnd = match ? `/${match[1]}` : ''
 
   return makeUrl((pathStart + pathEnd) || '/app', query)

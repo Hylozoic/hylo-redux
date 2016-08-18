@@ -39,6 +39,7 @@ import { createTagInPostEditor } from '../actions'
 import { ADDED_POST, EDITED_POST, trackEvent } from '../util/analytics'
 import { getCurrentCommunity } from '../models/community'
 import TagDescriptionEditor from './TagDescriptionEditor'
+import { validate } from '../util/validator'
 const { array, bool, func, object, string } = React.PropTypes
 
 const specialTags = ['request', 'offer', 'intention']
@@ -147,7 +148,8 @@ export class PostEditor extends React.Component {
     this.updateStore({communities: filter(communities, cid => cid !== community.id)})
   }
 
-  validate () {
+
+  /*validate () {
     let { postEdit } = this.props
     const { title, subeditor } = this.refs
 
@@ -189,7 +191,7 @@ export class PostEditor extends React.Component {
     }
 
     return Promise.resolve(true)
-  }
+  }*/
 
   saveIfValid () {
     const self = this._self()
@@ -198,7 +200,7 @@ export class PostEditor extends React.Component {
     const { tagSelector, title } = self.refs
     tagSelector ? tagSelector.focus() : title.focus()
 
-    self.validate().then(valid => {
+    validate(self).then(valid => {
       if (!valid) return
       // we use setTimeout here to avoid a race condition. the description field
       // (tinymce) doesn't fire its change event until it loses focus, and

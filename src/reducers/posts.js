@@ -3,13 +3,14 @@ import {
   CREATE_COMMENT,
   CREATE_POST,
   FETCH_POST,
+  FETCH_PROJECT_PLEDGE_PROGRESS,
+  CONTRIBUTE_PROJECT,
   FETCH_POSTS,
   FETCH_PERSON,
   FOLLOW_POST,
   PIN_POST_PENDING,
   REMOVE_POST,
   UPDATE_POST,
-  VOTE_ON_POST,
   VOTE_ON_POST_PENDING
 } from '../actions'
 import { compact, omit, find, some, without, includes, map, filter } from 'lodash'
@@ -71,18 +72,8 @@ const addFollower = (state, id, person) => {
 }
 
 export default function (state = {}, action) {
-  let { error, type, payload, meta } = action
-  if (error) {
-    switch (type) {
-      case VOTE_ON_POST:
-        return {
-          ...state,
-          [meta.id]: {...state[meta.id], ...meta.prevProps}
-        }
-      default:
-        return state
-    }
-  }
+  const { error, type, payload, meta } = action
+  if (error) return state
 
   let { id } = meta || {}
   let post = state[id]

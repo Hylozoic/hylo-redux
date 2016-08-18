@@ -53,6 +53,13 @@ export default class Search extends React.Component {
     return pick(this.props, 'currentUser', 'dispatch')
   }
 
+  componentWillReceiveProps (nextProps) {
+    const newQ = nextProps.location.query.q
+    if (this.props.location.query.q !== newQ) {
+      this.setState({textInput: newQ})
+    }
+  }
+
   updateSearch = debounce(opts => {
     let { dispatch, location } = this.props
     return dispatch(refetch(opts, location))
@@ -85,7 +92,7 @@ export default class Search extends React.Component {
           value={this.state.textInput}
           onChange={event => updateTextInput(event.target.value)}/>
         <Select className='type' choices={types} selected={selectedType}
-          onChange={t => this.updateSearch({type: t.id})} alignRight={true}/>
+          onChange={t => this.updateSearch({type: t.id})} alignRight/>
       </div>
       <Results results={searchResults}
         onTagClick={tag => updateTextInput(tag)}
@@ -147,7 +154,7 @@ const CommentResult = ({ comment }, { dispatch }) => {
           : `"${decode(post.name)}"`}
       </A>
     </strong>
-    <Comment comment={comment} truncate={true} expand={visit}/>
+    <Comment comment={comment} truncate expand={visit}/>
   </div>
 }
 CommentResult.contextTypes = {dispatch: func}

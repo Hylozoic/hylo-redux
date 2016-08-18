@@ -1,6 +1,7 @@
 import React from 'react'
 import { A, IndexA } from './A'
 import Icon from './Icon'
+import Tooltip from './Tooltip'
 import { VelocityTransitionGroup } from 'velocity-react'
 import { isEmpty } from 'lodash'
 import { filter, get } from 'lodash/fp'
@@ -104,7 +105,7 @@ export const LeftNav = ({ opened, community, network, tags, close, links }, { is
     event.stopPropagation()
   }
 
-  return <VelocityTransitionGroup {...animations}>
+  return <span><VelocityTransitionGroup {...animations}>
     {opened && <nav id='leftNav' onClick={() => isMobile && close()}>
       <MenuButton onClick={onMenuClick} label={isMobile ? 'Menu' : 'Topics'} showClose/>
       {network
@@ -114,6 +115,14 @@ export const LeftNav = ({ opened, community, network, tags, close, links }, { is
     </nav>}
     {opened && <div id='leftNavBackdrop' onClick={close}/>}
   </VelocityTransitionGroup>
+  {opened && <Tooltip id='topics'
+    index={2}
+    position='right'
+    title='Topics'>
+    <p>The Topics you follow or create will be listed here for easy access and to display notifications on new activity in that Topic.</p>
+    <p>Clicking a Topic shows you just the Conversations under that Topic.</p>
+  </Tooltip>}
+  </span>
 }
 LeftNav.contextTypes = {isMobile: bool}
 

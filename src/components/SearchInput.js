@@ -1,4 +1,5 @@
 import React from 'react'
+import { onEnter } from '../util/textInput'
 const { func } = React.PropTypes
 
 export default class SearchInput extends React.Component {
@@ -11,12 +12,19 @@ export default class SearchInput extends React.Component {
     onChange: func.isRequired
   }
 
+  focus () {
+    this.refs.input.focus()
+  }
+
+  clear () {
+    this.refs.input.value = ''
+  }
+
   render () {
     const handleChange = ({ target: { value } }) => this.setState({value})
-    const handleKeyUp = ({ which }) =>
-      which === 13 && this.props.onChange(this.state.value)
+    const handleKeyUp = onEnter(() => this.props.onChange(this.state.value))
 
-    return <input type='text' placeholder='Search'
+    return <input type='text' placeholder='Search' ref='input'
       onKeyUp={handleKeyUp} onChange={handleChange}/>
   }
 }

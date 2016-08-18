@@ -13,9 +13,10 @@ import Post from './Post'
 import Video from './Video'
 import Avatar from './Avatar'
 import LinkedPersonSentence from './LinkedPersonSentence'
+import PledgeProgress from './PledgeProgress'
 import A from './A'
 import { ClickCatchingSpan } from './ClickCatcher'
-import { fetchPost, followPost, navigate} from '../actions'
+import { fetchPost, followPost, navigate, contributeProject } from '../actions'
 import moment from 'moment'
 import numeral from 'numeral'
 import { validatePledge } from '../util/validator'
@@ -201,20 +202,15 @@ class Supporters extends React.Component {
   </div>
 }
 }
-const PledgeProgress = ({ post, simple }, { currentUser, dispatch }) => {
-  const { financialRequestAmount } = post
-  const currencyAmount = numeral(financialRequestAmount).format('$0,0.00')
 
-  return <div className='supporters'>
-    <div className='top'>
-      <h2>$0</h2>
-      <span className='meta'>
-      pledged of {currencyAmount} goal
-    </span>
-    </div>
-  </div>
+function getFinanciallyEnabled(id, state) {
+  return true
 }
 
+@connect((state, { id }) => ({
+  post: getPost(id, state),
+  financiallyEnabled: getFinanciallyEnabled(id, state)
+}))
 class ProjectRequest extends React.Component {
   static propTypes = {
     post: object.isRequired,

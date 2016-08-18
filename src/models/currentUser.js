@@ -1,11 +1,12 @@
 import { MemberRole } from './community'
-import { curry, find, get, some } from 'lodash'
+import { curry, find, get, maxBy, some } from 'lodash'
 import { same, truthy } from './index'
 
 // this works if community is an object with an id, or just an id
 export const membership = (currentUser, community) =>
   community && find(get(currentUser, 'memberships'), m =>
-      m.community.id === (community.id || community))
+      m.community.id === (community.id || community) ||
+      m.community.slug === (community.slug || community))
 
 export const getCommunity = (currentUser, community) =>
   get(membership(currentUser, community), 'community')
@@ -30,3 +31,6 @@ export const canEditPost = (currentUser, post) => {
 
 export const canEditComment = (currentUser, comment, community) =>
   canModerate(currentUser, community) || same('id', currentUser, comment.user)
+
+export const newestMembership = currentUser =>
+  maxBy(get(currentUser, 'memberships'), 'created_at')

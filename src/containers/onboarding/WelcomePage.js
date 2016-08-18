@@ -2,13 +2,13 @@ import React from 'react'
 import { compose } from 'redux'
 import { prefetch } from 'react-fetcher'
 import { connect } from 'react-redux'
-import { fetchCommunity } from '../actions'
-import A from '../components/A'
-import { communityUrl } from '../routes'
+import { fetchCommunity } from '../../actions'
+import A from '../../components/A'
+import { communityUrl } from '../../routes'
 import { isEmpty } from 'lodash'
 import { markdown, sanitize } from 'hylo-utils/text'
 
-const Onboarding = compose(
+const WelcomePage = compose(
   prefetch(({ dispatch, params: { id } }) => dispatch(fetchCommunity(id))),
   connect(({ communities }, { params }) => ({
     community: communities[params.id]
@@ -34,10 +34,10 @@ const Onboarding = compose(
       <span className='message' dangerouslySetInnerHTML={{__html: markdown(sanitize(community.welcome_message))}}></span>
     </div>
 
-    <A className='button right' to={communityUrl(community, {onboarding: true})}>
+    <A className='button right' to={communityUrl(community)}>
       Continue
     </A>
   </div>
 })
 
-export default Onboarding
+export default WelcomePage

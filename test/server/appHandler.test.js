@@ -59,7 +59,7 @@ describe('appHandler', () => {
         expect(res.send).to.have.been.called
         expect(res.body).to.contain('<!DOCTYPE html>')
         expect(res.body).to.contain('Log in')
-        expect(res.body).to.match(/<a class="" href="\/signup" .*>Sign up<\/a>/)
+        expect(res.body).to.match(/<a .*href="\/signup" .*>Sign up<\/a>/)
       })
     })
 

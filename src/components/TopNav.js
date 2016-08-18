@@ -2,7 +2,7 @@ import React from 'react'
 import { A, IndexA } from './A'
 import Icon from './Icon'
 import Dropdown from './Dropdown'
-import { filter, find, flow, get } from 'lodash/fp'
+import { filter, get } from 'lodash/fp'
 import { throttle } from 'lodash'
 import { MenuButton, leftNavWidth, leftNavEasing, menuButtonWidth } from './LeftNav'
 import { editorUrl } from '../containers/StandalonePostEditor'
@@ -27,12 +27,6 @@ const getLabel = path => {
   if (path === '/app' || path.match(/^\/c\/[^\/]+$/)) return 'Conversations'
   return 'Menu'
 }
-
-const getCurrentMembership = (currentUser, community) =>
-  flow(
-    get('memberships'),
-    find(m => m.community.id === get('id', community))
-  )(currentUser)
 
 export default class TopNav extends React.Component {
   static propTypes = {
@@ -90,9 +84,7 @@ export default class TopNav extends React.Component {
     const label = getLabel(path)
     const community = this.props.community || allCommunities()
     const { slug } = community
-    const membership = getCurrentMembership(currentUser, community)
-    const newCount = get('new_notification_count',
-      community.id ? membership : currentUser)
+    const newCount = get('new_notification_count', currentUser)
 
     const moveWithMenu = isMobile
       ? {marginLeft: leftNavIsOpen ? leftNavWidth : 0}
@@ -114,7 +106,7 @@ export default class TopNav extends React.Component {
             <li><A to='/login'>Log in</A></li>
           </ul>}
 
-        {currentUser && <CommunityMenu {...{community, network}}/>}
+        <CommunityMenu {...{community, network}}/>
         {currentUser && !network && <TopMainMenu links={links}/>}
         {currentUser &&
           <A to={editorUrl(slug, getPostType(path))} className='compose'>
@@ -134,8 +126,8 @@ const TopMainMenu = ({ community, links }) => {
 
   const topLinks = filter(l => l.label !== 'Network', links)
 
-  return <div className='main-menu'>
-    {topLinks.slice(0, 4).map(link =>
+  return <div className={`main-menu has-${topLinks.length}-links`}>
+    {topLinks.slice(1, 4).map(link =>
       <LinkItem className={`a-${link.label}`} link={link} key={link.label}/>)}
     <Dropdown triangle className='overflow-menu' openOnHover
       toggleChildren={<Icon name='More'/>}>

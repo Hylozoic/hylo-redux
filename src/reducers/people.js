@@ -1,4 +1,4 @@
-import { filter, get, merge, pick, find, indexOf, map, sortBy } from 'lodash'
+import { filter, get, mergeWith, pick, find, indexOf, map } from 'lodash'
 import { isNull, omitBy } from 'lodash/fp'
 import { debug } from '../util/logging'
 import {
@@ -10,12 +10,10 @@ import {
   FETCH_PERSON,
   JOIN_COMMUNITY_WITH_CODE,
   LEAVE_COMMUNITY_PENDING,
-  LEAVE_COMMUNITY,
   LOGIN,
   LOGOUT,
   SIGNUP,
   UPDATE_USER_SETTINGS_PENDING,
-  UPDATE_USER_SETTINGS,
   UPDATE_COMMUNITY_SETTINGS_PENDING,
   UPDATE_MEMBERSHIP_SETTINGS_PENDING,
   USE_INVITATION
@@ -58,37 +56,14 @@ const normalize = person => {
   })
 }
 
+const updateCurrentUser = (user, params) =>
+  mergeWith({...user}, params, (objV, srcV, key, obj, src) => {
+    if (key === 'tags') return srcV
+  })
+
 export default function (state = {}, action) {
-  let { type, error, payload, meta } = action
-  if (error) {
-    switch (type) {
-      case UPDATE_USER_SETTINGS:
-        return {
-          ...state,
-          current: merge({...state.current}, meta.prevProps),
-          [meta.id]: merge({...state[meta.id]}, meta.prevProps)
-        }
-      case LEAVE_COMMUNITY:
-        return {
-          ...state,
-          current: merge({...state.current}, meta.prevProps)
-        }
-      case UPDATE_MEMBERSHIP_SETTINGS_PENDING:
-        return {
-          ...state,
-          current: {
-            ...state.current,
-            memberships: updateOneMembershipsSettings(
-              state.current.memberships,
-              meta.communityId,
-              meta.params.settings
-            )
-          }
-        }
-      default:
-        return state
-    }
-  }
+  const { type, error, payload, meta } = action
+  if (error) return state
 
   // the cases where there isn't a payload
   switch (type) {
@@ -104,10 +79,11 @@ export default function (state = {}, action) {
       }
     case UPDATE_USER_SETTINGS_PENDING:
       let { params, id } = meta
+      const newCurrentUser = updateCurrentUser(state.current, params)
       return {
         ...state,
-        current: {...state.current, ...params},
-        [id]: {...state[id], ...params}
+        current: newCurrentUser,
+        [id]: newCurrentUser
       }
     case LEAVE_COMMUNITY_PENDING:
       let memberships = filter(state.current.memberships, m => m.community_id !== meta.communityId)
@@ -207,11 +183,7 @@ export default function (state = {}, action) {
         ...state,
         current: {
           ...state.current,
-          new_notification_count: payload.new_notification_count,
-          memberships: merge([],
-            sortBy(state.current.memberships, 'id'),
-            sortBy(payload.memberships, 'id')
-          )
+          new_notification_count: payload.new_notification_count
         }
       }
   }

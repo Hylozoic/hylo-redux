@@ -52,13 +52,14 @@ const UserMenu = ({ slug, newCount }, { isMobile, dispatch, currentUser }) => {
   const doLogout = () => {
     calliOSBridge({type: 'logout'})
     dispatch(logout())
+    dispatch(navigate('/login'))
   }
 
   return <ul className='right'>
     <SearchMenuItem/>
 
     <li className='notifications'>
-      <A to={`${slug ? '/c/' + slug : ''}/notifications`}>
+      <A to='/notifications'>
         <Icon name='Bell'/>
         {newCount > 0 && <div className='badge'>{newCount}</div>}
       </A>
@@ -78,7 +79,7 @@ const UserMenu = ({ slug, newCount }, { isMobile, dispatch, currentUser }) => {
           </A>
         </li>
         <li className='dropdown-notifications'>
-          <A to={slug ? `/c/${slug}/notifications` : '/notifications'}>
+          <A to='/notifications'>
             <Icon name='Bell'/> Notifications
             {newCount > 0 && <span className='badge'>{newCount}</span>}
           </A>

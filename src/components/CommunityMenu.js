@@ -1,12 +1,10 @@
 import React from 'react'
-import qs from 'querystring'
 import cx from 'classnames'
 import { nextPath } from '../util/navigation'
 import { merge } from 'lodash'
 import { filter, flow, get, map, sortBy } from 'lodash/fp'
 import { same } from '../models'
-import { navigate } from '../actions'
-import A from './A'
+import { IndexA, A } from './A'
 import Dropdown from './Dropdown'
 import { assetUrl } from '../util/assets'
 const { object, func, bool } = React.PropTypes
@@ -25,48 +23,55 @@ export const allCommunities = () => ({
   name: 'All Communities'
 })
 
-const CommunityMenu = ({ network, community }, { isMobile, dispatch, currentUser }) => {
+const CommunityMenu = ({ network, community }, { isMobile, dispatch, currentUser, location }) => {
   const firstItem = network ? merge(network, {isNetwork: true}) : community
   const menuItems = getMenuItems(currentUser, firstItem)
   const currentItem = menuItems[0]
   const { isNetwork } = currentItem
-  const visit = community => {
-    const { search, pathname } = window.location
-    const query = qs.parse(search.replace(/^\?/, ''))
-    return dispatch(navigate(nextPath(pathname, community, false, query)))
+
+  const url = community => {
+    const { query, pathname } = location
+    return nextPath(pathname, community, false, query)
   }
 
-  return <Dropdown className='communities' backdrop triangle toggleChildren={
-      <div>
-        <img src={currentItem.avatar_url}/>
-        <span className={cx('name', {network: isNetwork})}>
-          {currentItem.name}
-        </span>
-        <span className='caret'></span>
-        {isNetwork && <span className='subtitle'>Network</span>}
-      </div>
-    }>
-    <li>
-      <ul className='inner-list dropdown-menu'>
-        <li key='all'>
-          <a onClick={() => visit()}>
-            <img src={allCommunities().avatar_url}/> All Communities
-          </a>
-        </li>
-        {menuItems.slice(1).map(community => <li key={community.id}>
-          <a onClick={() => visit(community)} title={community.name}>
-            <img src={community.avatar_url}/> {community.name}
-          </a>
-        </li>)}
-      </ul>
-    </li>
-    <li className='join-or-start'>
-      <div>
-        <A to='/c/join'>Join</A> or <A to='/create/one'>start</A> a community
-      </div>
-    </li>
-  </Dropdown>
+  const conversationsUrl = firstItem.id
+    ? `/${network ? 'n' : 'c'}/${firstItem.slug}`
+    : '/app'
+
+  const toggle = isMobile
+    ? <img src={currentItem.avatar_url}/>
+    : <span className='caret'/>
+
+  return <div id='community-menu'>
+    <IndexA to={conversationsUrl}>
+      <img src={currentItem.avatar_url}/>
+      <span className={cx('name', {network: isNetwork})}>
+        {currentItem.name}
+      </span>
+    </IndexA>
+    <Dropdown backdrop triangle toggleChildren={toggle}>
+      <li>
+        <ul className='inner-list dropdown-menu'>
+          <li key='all'>
+            <A to={url()}>
+              <img src={allCommunities().avatar_url}/> All Communities
+            </A>
+          </li>
+          {menuItems.slice(1).map(community => <li key={community.id}>
+            <A to={url(community)} title={community.name}>
+              <img src={community.avatar_url}/> {community.name}
+            </A>
+          </li>)}
+        </ul>
+      </li>
+      <li className='join-or-start'>
+        <div>
+          <A to='/c/join'>Join</A> or <A to='/create'>start</A> a community
+        </div>
+      </li>
+    </Dropdown>
+  </div>
 }
-CommunityMenu.contextTypes = {isMobile: bool, dispatch: func, currentUser: object}
+CommunityMenu.contextTypes = {isMobile: bool, dispatch: func, currentUser: object, location: object}
 
 export default CommunityMenu

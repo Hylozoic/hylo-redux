@@ -78,7 +78,7 @@ describe('Post', () => {
     let component = helpers.createElement(Post, props, context)
     let node = renderIntoDocument(component)
     let communities = findRenderedDOMComponentWithClass(node, 'communities')
-    let expected = '&nbsp;in <a class="">Foomunity</a><div class="dropdown post-communities-dropdown"><a class="dropdown-toggle"><span> + 3 others</span></a><ul class="dropdown-menu"><li><a class="">Foomunity</a></li><li><a class="">Barmunity</a></li><li><a class="">Bazmunity</a></li><li><a class="">Quxmunity</a></li></ul><span></span></div>'
+    let expected = '&nbsp;in <a>Foomunity</a><div class="dropdown post-communities-dropdown"><a class="dropdown-toggle"><span> + 3 others</span></a><ul class="dropdown-menu"><li><a>Foomunity</a></li><li><a>Barmunity</a></li><li><a>Bazmunity</a></li><li><a>Quxmunity</a></li></ul><span></span></div>'
     expect(stripComments(communities.innerHTML)).to.equal(expected)
   })
 })

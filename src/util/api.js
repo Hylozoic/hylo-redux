@@ -5,8 +5,8 @@ export const HOST = typeof window === 'undefined'
   ? upstreamHost
   : window.location.origin
 
-export const fetchJSON = (path, params, options = {}) => {
-  return fetch((options.host || HOST) + path, {
+export const fetchJSON = (path, params, options = {}) =>
+  fetch((options.host || HOST) + path, {
     method: options.method || 'get',
     headers: {
       'Accept': 'application/json',
@@ -25,4 +25,3 @@ export const fetchJSON = (path, params, options = {}) => {
       throw error
     })
   })
-}

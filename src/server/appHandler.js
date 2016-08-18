@@ -1,28 +1,25 @@
 import React from 'react'
 import { renderToString, renderToStaticMarkup } from 'react-dom/server'
 import Html from '../containers/Html'
-import { promisify } from 'bluebird'
 import makeRoutes from '../routes'
 import { configureStore } from '../store'
 import { Provider } from 'react-redux'
-import { match, RoutingContext } from 'react-router'
-import createHistory from 'history/lib/createMemoryHistory'
-import { syncReduxAndRouter } from 'redux-simple-router'
+import { match, RouterContext } from 'react-router'
 import { getPrefetchedData } from 'react-fetcher'
 import { cyan, red } from 'chalk'
 import { info, debug } from '../util/logging'
 import { fetchCurrentUser, setMobileDevice } from '../actions'
 import { localsForPrefetch } from '../util/universal'
 import { getManifest } from '../util/assets'
+import { makeUrl } from '../util/navigation'
 import { some, isEmpty, toPairs } from 'lodash'
-import { map } from 'lodash/fp'
+import { flow, map } from 'lodash/fp'
 import { parse } from 'url'
 import MobileDetect from 'mobile-detect'
 
-const newrelic = process.env.NEW_RELIC_LICENSE_KEY ? require('newrelic') : null
-const matchPromise = promisify(match, {multiArgs: true})
+const checkAPIErrors = (res, errors) => {
+  if (!isEmpty(errors)) res.errors = errors
 
-const checkAPIErrors = ({ errors }) => {
   return some(toPairs(errors), ([key, { payload: { response } }]) => {
     if (!response) return false
     let { status, url } = response
@@ -31,38 +28,73 @@ const checkAPIErrors = ({ errors }) => {
   })
 }
 
-const getPath = location => location.pathname + location.search
+const getPath = ({ pathname, query }) => makeUrl(pathname, query)
+
+const detectMobileDevice = (req, store) => {
+  const md = new MobileDetect(req.headers['user-agent'])
+  if (md.mobile() && !md.tablet()) store.dispatch(setMobileDevice())
+}
+
+const setupNewRelic = (req, props) => {
+  const newrelic = process.env.NEW_RELIC_LICENSE_KEY ? require('newrelic') : null
+  if (newrelic) {
+    const txPath = map('path', props.routes).join('/').replace('//', '/')
+    newrelic.setTransactionName(`${req.method.toLowerCase()} ${txPath}`)
+  }
+}
+
+const matchLocation = (req, store) =>
+  new Promise((resolve, reject) => {
+    match({routes: makeRoutes(store), location: req.originalUrl},
+      (err, redirectLocation, props) =>
+        err ? reject(err) : resolve([redirectLocation, props]))
+  })
+
+const prefetch = (props, store) =>
+  getPrefetchedData(map('component', props.routes), localsForPrefetch(props, store))
+
+const renderComponent = (props, store) =>
+  renderToString(<Provider store={store}>
+    <RouterContext location='history' {...props}/>
+  </Provider>)
+
+const createElement = state => markup =>
+  React.createElement(Html, {
+    markup: markup,
+    state: `window.INITIAL_STATE=${JSON.stringify(state).replace('</script>', '')}`,
+    assetManifest: `window.ASSET_MANIFEST=${JSON.stringify(getManifest())}`,
+    metaTags: state.metaTags
+  })
 
 export default function (req, res) {
   info(cyan(`${req.method} ${req.originalUrl}`))
-
-  const store = configureStore({}, req)
-  const routes = makeRoutes(store)
-  const history = createHistory()
-  const md = new MobileDetect(req.headers['user-agent'])
-  if (md.mobile() && !md.tablet()) store.dispatch(setMobileDevice())
+  const { history, store } = configureStore({}, {request: req})
+  detectMobileDevice(req, store)
 
   return store.dispatch(fetchCurrentUser())
-  .then(() => matchPromise({routes, location: req.originalUrl}))
-  .then(([redirectLocation, renderProps]) => {
-    if (redirectLocation) {
-      return res.redirect(302, getPath(redirectLocation))
-    }
+  .then(() => matchLocation(req, store))
+  .then(([redirectLocation, props]) => {
+    if (redirectLocation) return res.redirect(302, getPath(redirectLocation))
+    if (!props) return res.status(404).send('Not found')
+    setupNewRelic(req, props)
 
-    if (!renderProps) {
-      return res.status(404).send('Not found')
-    }
+    return prefetch(props, store).then(() => {
+      const state = store.getState()
 
-    if (newrelic) {
-      const txPath = map('path', renderProps.routes).join('/').replace('//', '/')
-      newrelic.setTransactionName(`${req.method.toLowerCase()} ${txPath}`)
-    }
+      // redirect if the navigate action was dispatched during prefetching
+      const { pathname, query } = state.routing.locationBeforeTransitions || {}
+      if (pathname && props.location.pathname !== pathname) {
+        return res.redirect(302, makeUrl(pathname, query))
+      }
 
-    return renderApp(res, renderProps, history, store)
-    .then(app => {
-      if (app.shouldRedirect) return res.redirect(302, app.shouldRedirect)
+      history.transitionTo(props.location)
+      checkAPIErrors(res, state.errors)
 
-      const html = renderToStaticMarkup(app)
+      const html = flow(
+        renderComponent,
+        createElement(state),
+        renderToStaticMarkup
+      )(props, store)
       res.status(200).send('<!DOCTYPE html>' + html)
     })
   })
@@ -73,42 +105,5 @@ export default function (req, res) {
       ? JSON.stringify(store.getState(), null, 2)
       : ''
     res.status(500).send(`${err.stack}\n\n${state}`)
-  })
-}
-
-function renderApp (res, renderProps, history, store) {
-  const components = renderProps.routes.map(r => r.component)
-  const locals = localsForPrefetch(renderProps, store)
-
-  return getPrefetchedData(components, locals)
-  .then(() => {
-    const currentPath = getPath(renderProps.location)
-    const state = store.getState()
-    const { path } = state.routing
-
-    // if this runs before getPrefetchedData it hangs -- infinite loop?
-    history.transitionTo(renderProps.location)
-    syncReduxAndRouter(history, store)
-
-    // if navigate was called during prefetch, redirect.
-    if (path && path !== currentPath) {
-      return {shouldRedirect: path}
-    }
-
-    checkAPIErrors(state)
-    if (!isEmpty(state.errors)) {
-      res.errors = state.errors
-    }
-
-    const markup = renderToString(<Provider store={store}>
-      <RoutingContext location='history' {...renderProps}/>
-    </Provider>)
-
-    return React.createElement(Html, {
-      markup: markup,
-      state: `window.INITIAL_STATE=${JSON.stringify(state).replace('</script>', '')}`,
-      assetManifest: `window.ASSET_MANIFEST=${JSON.stringify(getManifest())}`,
-      metaTags: state.metaTags
-    })
   })
 }

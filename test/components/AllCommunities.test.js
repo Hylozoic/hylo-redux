@@ -1,24 +1,28 @@
-import { mocks } from '../support'
 import { allPostsPrefetch } from '../../src/containers/AllCommunities.js'
-import { NAVIGATE } from '../../src/actions/'
+import { configureStore } from '../../src/store'
 
 describe('allPostsPrefetch', () => {
   describe('with currentCommunityId', () => {
-    it('redirects to the community', () => {
-      var redirectUrl
-      const slug = 'bazmunity'
-      const communityId = '4'
-      const currentUser = {
+    var store, currentUser
+
+    const slug = 'bazmunity'
+    const communityId = '4'
+
+    before(() => {
+      currentUser = {
         id: 42,
         settings: {currentCommunityId: communityId},
         memberships: [{community_id: communityId, community: {slug, id: communityId}}]
       }
-      const store = mocks.redux.store({
-        people: {current: currentUser}
-      })
-      store.transformAction(NAVIGATE, action => redirectUrl = action.payload)
+
+      const state = {people: {current: currentUser}}
+      store = configureStore(state).store
+    })
+
+    it('redirects to the community', () => {
       allPostsPrefetch({dispatch: store.dispatch, query: {rd: 1}, currentUser})
-      expect(redirectUrl).to.equal(`/c/${slug}`)
+      const { pathname } = store.getState().routing.locationBeforeTransitions
+      expect(pathname).to.equal(`/c/${slug}`)
     })
   })
 })

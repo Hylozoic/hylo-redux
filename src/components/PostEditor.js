@@ -425,7 +425,7 @@ export class PostEditor extends React.Component {
           imagePending={imagePending}/>
 
         <label className='visibility'>
-          <input type='checkbox' value={postEdit.public || false}
+          <input type='checkbox' checked={postEdit.public || false}
             onChange={() => this.updateStore({public: !postEdit.public})}/>
           &nbsp;
           Public

@@ -2,52 +2,58 @@ import { mocks, helpers } from '../support'
 import CommunityJoinLinkHandler from '../../src/containers/community/CommunityJoinLinkHandler'
 import { renderToString } from 'react-dom/server'
 import cheerio from 'cheerio'
-import { JOIN_COMMUNITY_WITH_CODE, NAVIGATE } from '../../src/actions'
+import { JOIN_COMMUNITY_WITH_CODE } from '../../src/actions'
 import { getPrefetchedData } from 'react-fetcher'
 const { createElement } = helpers
+import { configureStore } from '../../src/store'
+import { getUrlFromLocation } from '../../src/util/navigation'
+import { HOST } from '../../src/util/api'
+import nock from 'nock'
 
-const mockJoinAction = (store, payload, error) => {
-  store.transformAction(JOIN_COMMUNITY_WITH_CODE, action =>
-    Promise.resolve({error, payload}))
-}
+const mockJoinAction = payload =>
+  nock(HOST).post('/noo/community/code').reply(200, payload)
 
 const mockPrefetch = ({ dispatch }, params = {}) =>
   getPrefetchedData([CommunityJoinLinkHandler], {params, dispatch})
 
 const community = {id: '1', name: 'Foomunity', slug: 'foomunity'}
 
+const redirectUrl = store => {
+  const location = store.getState().routing.locationBeforeTransitions
+  return getUrlFromLocation(location)
+}
+
 describe('CommunityJoinLinkHandler', () => {
-  var store, redirectUrl
+  var store
 
   beforeEach(() => {
-    store = mocks.redux.store()
-    store.transformAction(NAVIGATE, ({ payload }) => redirectUrl = payload)
+    store = configureStore({people: {current: {memberships: []}}}).store
   })
 
   describe('with a valid code', () => {
     it('redirects to onboarding with new membership', () => {
-      mockJoinAction(store, {community})
+      mockJoinAction({community})
 
       return mockPrefetch(store)
-      .then(() => expect(redirectUrl).to.equal('/add-skills?community=foomunity'))
+      .then(() => expect(redirectUrl(store)).to.equal('/add-skills?community=foomunity'))
     })
 
     it('redirects to community profile with existing membership', () => {
-      mockJoinAction(store, {community, preexisting: true})
+      mockJoinAction({community, preexisting: true})
       return mockPrefetch(store)
-      .then(() => expect(redirectUrl).to.equal('/c/foomunity'))
+      .then(() => expect(redirectUrl(store)).to.equal('/c/foomunity'))
     })
 
     it('redirects to onboarding with tag and new membership', () => {
-      mockJoinAction(store, {community})
+      mockJoinAction({community})
       return mockPrefetch(store, {tagName: 'bar'})
-      .then(() => expect(redirectUrl).to.equal('/add-skills?community=foomunity&tagName=bar'))
+      .then(() => expect(redirectUrl(store)).to.equal('/add-skills?community=foomunity&tagName=bar'))
     })
 
     it('redirects to tag page with tag and existing membership', () => {
-      mockJoinAction(store, {community, preexisting: true})
+      mockJoinAction({community, preexisting: true})
       return mockPrefetch(store, {tagName: 'bar'})
-      .then(() => expect(redirectUrl).to.equal('/c/foomunity/tag/bar'))
+      .then(() => expect(redirectUrl(store)).to.equal('/c/foomunity/tag/bar'))
     })
   })
 

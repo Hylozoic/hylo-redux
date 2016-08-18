@@ -6,7 +6,7 @@ import { fetchCommunity, fetchPost, navigate, startPostEdit, CREATE_POST, UPDATE
 import { getCommunities, getPost } from '../models/post'
 import { getCommunity } from '../models/community'
 import { PostEditor, newPostId } from '../components/PostEditor'
-import createHistory from 'history/lib/createBrowserHistory'
+import { browserHistory } from 'react-router'
 const { func, object, bool } = React.PropTypes
 
 export const editorUrl = (slug, type) => {
@@ -60,7 +60,7 @@ export default class StandalonePostEditor extends React.Component {
 
     const goBack = () => {
       if (window.history && window.history.length > 2) {
-        createHistory().goBack()
+        browserHistory.goBack()
       } else {
         dispatch(navigate(post ? `/p/${post.id}` : '/app'))
       }

@@ -11,7 +11,6 @@ import TagPopover from '../components/TagPopover'
 import { removeNotification, toggleLeftNav } from '../actions'
 import { iOSAppVersion, isMobile as testIsMobile } from '../client/util'
 import { ModalWrapper } from '../components/Modal'
-import Tooltip from '../components/Tooltip'
 import { setMobileDevice } from '../actions'
 import { getCurrentCommunity } from '../models/community'
 import { getCurrentNetwork } from '../models/network'
@@ -19,8 +18,8 @@ const { array, bool, func, object } = React.PropTypes
 
 @prefetch(({ store, dispatch }) => {
   const { isMobile, people } = store.getState()
-  if (!isMobile && typeof window === 'undefined' &&
-    get('settings.leftNavIsOpen', people.current)) {
+  if (!isMobile && typeof window === 'undefined' && people.current &&
+    get('settings.leftNavIsOpen', people.current) !== false) {
     return dispatch(toggleLeftNav())
   }
 })
@@ -55,11 +54,12 @@ export default class App extends React.Component {
   static childContextTypes = {
     dispatch: func,
     currentUser: object,
-    isMobile: bool
+    isMobile: bool,
+    location: object
   }
 
   getChildContext () {
-    return pick(this.props, 'dispatch', 'currentUser', 'isMobile')
+    return pick(this.props, 'dispatch', 'currentUser', 'isMobile', 'location')
   }
 
   componentDidMount () {
@@ -70,7 +70,7 @@ export default class App extends React.Component {
 
     window.addEventListener('resize', debounce(event => {
       this.props.dispatch(setMobileDevice(testIsMobile()))
-    }), 1000)
+    }, 1000))
   }
 
   render () {
@@ -88,7 +88,6 @@ export default class App extends React.Component {
       <PageTitleController/>
       <TagPopover/>
       <ModalWrapper show={get('show', showModal)} params={get('params', showModal)}/>
-      <Tooltip id='final' index={99}/>
     </div>
   }
 }

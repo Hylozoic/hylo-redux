@@ -1,4 +1,4 @@
-import { filter, get, merge, mergeWith, pick, find, indexOf, map, sortBy } from 'lodash'
+import { filter, get, mergeWith, pick, find, indexOf, map } from 'lodash'
 import { isNull, omitBy } from 'lodash/fp'
 import { debug } from '../util/logging'
 import {
@@ -183,11 +183,7 @@ export default function (state = {}, action) {
         ...state,
         current: {
           ...state.current,
-          new_notification_count: payload.new_notification_count,
-          memberships: merge([],
-            sortBy(state.current.memberships, 'id'),
-            sortBy(payload.memberships, 'id')
-          )
+          new_notification_count: payload.new_notification_count
         }
       }
   }

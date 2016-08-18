@@ -18,7 +18,7 @@ import { ClickCatchingSpan } from './ClickCatcher'
 import { fetchPost, followPost, navigate} from '../actions'
 import moment from 'moment'
 import numeral from 'numeral'
-const { array, bool, func, object } = React.PropTypes
+const { array, bool, func, object, number } = React.PropTypes
 
 const Deadline = ({ time }) => {
   const then = moment(time)
@@ -34,6 +34,7 @@ const Deadline = ({ time }) => {
 function getFinanciallyEnabled(post) {
   return !!post.financialRequestAmount
 }
+
 
 class ProjectPost extends React.Component {
   static propTypes = {
@@ -113,7 +114,8 @@ class Supporters extends React.Component {
     simple: bool,
     currentUser: object,
     dispatch: func,
-    financiallyEnabled: bool
+    financiallyEnabled: bool,
+    pledgeAmount: number
   }
 
   constructor(props) {
@@ -125,10 +127,22 @@ class Supporters extends React.Component {
 
   setPledgeDialogueVisible = () => {
     this.setState({pledgeDialogueVisible: !this.state.pledgeDialogueVisible})
+    if(!this.state.pledgeDialogueVisible) {
+      this.props.post.pledgeAmount = undefined
+    }
+  }
+
+  updatePledge = (pledgeAmount) => {
+    this.props.post.pledgeAmount = pledgeAmount
+  }
+
+  makePledge = (pledgeAmount) => {
+    console.log('PLEDGE AMOUNT: ', pledgeAmount)
+
   }
 
   render() {
-  const { post, simple, currentUser, financiallyEnabled } = this.props
+  const { post, simple, currentUser, financiallyEnabled, update } = this.props
   let { pledgeDialogueVisible } = this.state
   const { followers, end_time } = post
   const isFollowing = some(same('id', currentUser), followers)
@@ -158,9 +172,14 @@ class Supporters extends React.Component {
       <div className='pledge'>
         <div> How much would you like to pledge?</div>
         USD $
-        <CurrencyInput className='pledge-amount' thousandSeparator=''/>
+        <CurrencyInput
+            value={this.props.post.pledgeAmount}
+            className='pledge-amount'
+            onChange={maskedValue => this.updatePledge(maskedValue)}
+            thousandSeparator=''/>
         <button type='button' className='button cancel-pledge' onClick={this.setPledgeDialogueVisible} >Cancel</button>
-        <button type='button' className='button submit-pledge'>Pledge</button>
+        <button type='button' className='button submit-pledge' onClick={() => this.makePledge(this.props.post.pledgeAmount)}>Pledge</button>
+
       </div>
     }
   </div>

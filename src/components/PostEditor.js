@@ -39,7 +39,7 @@ import { createTagInPostEditor } from '../actions'
 import { ADDED_POST, EDITED_POST, trackEvent } from '../util/analytics'
 import { getCurrentCommunity } from '../models/community'
 import TagDescriptionEditor from './TagDescriptionEditor'
-import { validate } from '../util/validator'
+import { validateForm } from '../util/validator'
 const { array, bool, func, object, string } = React.PropTypes
 
 const specialTags = ['request', 'offer', 'intention']
@@ -148,51 +148,6 @@ export class PostEditor extends React.Component {
     this.updateStore({communities: filter(communities, cid => cid !== community.id)})
   }
 
-
-  /*validate () {
-    let { postEdit } = this.props
-    const { title, subeditor } = this.refs
-
-    if (!postEdit.name) {
-      window.alert('The title of a post cannot be blank.')
-      title.focus()
-      return Promise.resolve(false)
-    }
-
-    if (isEmpty(postEdit.communities)) {
-      window.alert('Please pick at least one community.')
-      return Promise.resolve(false)
-    }
-
-    if (postEdit.financialRequestsEnabled &&
-        (!postEdit.financialRequestAmount || parseFloat(postEdit.financialRequestAmount) === 0.00)) {
-      window.alert('Enter an amount for financial contributions.')
-      return Promise.resolve(false)
-    }
-
-    if (new Date(postEdit.end_time).getTime() < new Date().getTime()) {
-      window.alert('Deadline must have not yet passed.')
-      return Promise.resolve(false)
-    }
-
-    if (parseFloat(postEdit.financialRequestAmount) > 100000) {
-      window.alert('Please enter an amount less than $100000.')
-      return Promise.resolve(false)
-    }
-
-    if (postEdit.financialRequestsEnabled && !postEdit.end_time) {
-      window.alert('Enter a project deadline.')
-      return Promise.resolve(false)
-    }
-
-    if (subeditor) {
-      const subvalidate = subeditor.validate || subeditor.getWrappedInstance().validate
-      return Promise.resolve(subvalidate())
-    }
-
-    return Promise.resolve(true)
-  }*/
-
   saveIfValid () {
     const self = this._self()
 
@@ -200,7 +155,7 @@ export class PostEditor extends React.Component {
     const { tagSelector, title } = self.refs
     tagSelector ? tagSelector.focus() : title.focus()
 
-    validate(self).then(valid => {
+    validateForm(self).then(valid => {
       if (!valid) return
       // we use setTimeout here to avoid a race condition. the description field
       // (tinymce) doesn't fire its change event until it loses focus, and

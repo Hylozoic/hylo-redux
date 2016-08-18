@@ -18,6 +18,7 @@ import { ClickCatchingSpan } from './ClickCatcher'
 import { fetchPost, followPost, navigate} from '../actions'
 import moment from 'moment'
 import numeral from 'numeral'
+import { validatePledge } from '../util/validator'
 const { array, bool, func, object, number } = React.PropTypes
 
 const Deadline = ({ time }) => {
@@ -137,8 +138,23 @@ class Supporters extends React.Component {
   }
 
   makePledge = (pledgeAmount) => {
-    console.log('PLEDGE AMOUNT: ', pledgeAmount)
+    console.log('pledgeAmount: ', pledgeAmount)
 
+   validatePledge(pledgeAmount).then(valid => {
+     if (!valid) return
+      // we use setTimeout here to avoid a race condition. the description field
+      // (tinymce) doesn't fire its change event until it loses focus, and
+      // there's an additional delay due to the use of setDelayed.
+      //
+      // so if we click Save immediately after typing in the description
+      // field, we have to wait for events from the description field to be
+      // handled, otherwise the last edit will be lost.
+     setTimeout(() => this.save(), 200)
+   })
+  }
+
+  save = () => {
+    console.log('SAVED!!!!')
   }
 
   render() {

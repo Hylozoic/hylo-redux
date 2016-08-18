@@ -1,6 +1,6 @@
 import { isEmpty } from 'lodash'
 
-export const validate = component => {
+export const validateForm = component => {
     let { postEdit } = component.props
     const { title, subeditor } = component.refs
 
@@ -39,6 +39,20 @@ export const validate = component => {
     if (subeditor) {
         const subvalidate = subeditor.validate || subeditor.getWrappedInstance().validate
         return Promise.resolve(subvalidate())
+    }
+
+    return Promise.resolve(true)
+}
+
+export const validatePledge = pledgeAmount => {
+    if(pledgeAmount && parseFloat(pledgeAmount) > 5000.00) {
+        window.alert('Pledge amount must be less than $5000.')
+        return Promise.resolve(false)
+    }
+
+    if(pledgeAmount && pledgeAmount === '0.00') {
+        window.alert('Pledge amount can not be $0.')
+        return Promise.resolve(false)
     }
 
     return Promise.resolve(true)

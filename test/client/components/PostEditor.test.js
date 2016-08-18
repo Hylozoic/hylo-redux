@@ -228,20 +228,4 @@ describe('PostEditor', () => {
       })
     })
   })
-
-  describe('financial request enabled and community financially disabled', () => {
-    beforeEach(() =>
-    {
-      const newState = cloneDeep(state)
-      set(newState, 'communities.f.financial_requests_enabled', false)
-      set(newState, 'postEdits.foo.financialRequestsEnabled', true)
-
-      render(newState, post)
-    })
-
-    it('should not show validation on financial contributions', () => {
-      let postEditor = findRenderedDOMComponentWithClass(node, 'post-editor clearfix')
-      expect(window.alert).to.have.been.called
-    })
-  })
 })

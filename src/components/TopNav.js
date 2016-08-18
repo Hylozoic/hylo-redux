@@ -106,7 +106,7 @@ export default class TopNav extends React.Component {
             <li><A to='/login'>Log in</A></li>
           </ul>}
 
-        {currentUser && <CommunityMenu {...{community, network}}/>}
+        <CommunityMenu {...{community, network}}/>
         {currentUser && !network && <TopMainMenu links={links}/>}
         {currentUser &&
           <A to={editorUrl(slug, getPostType(path))} className='compose'>

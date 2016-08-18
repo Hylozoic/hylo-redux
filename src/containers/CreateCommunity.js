@@ -9,6 +9,7 @@ import ModalOnlyPage from '../components/ModalOnlyPage'
 import { ModalInput, ModalSelect } from '../components/ModalRow'
 import Modal from '../components/Modal'
 import A from '../components/A'
+import Icon from '../components/Icon'
 import { categories } from './community/CommunityEditor'
 import { uploadImage } from '../actions/uploadImage'
 import {
@@ -230,7 +231,10 @@ export class CreateCommunityOne extends React.Component {
         {errors.codeBlank && <p className='help error'>Please fill in a code.</p>}
         {errors.codeUsed && <p className='help error'>This code cannot be used; please choose another.</p>}
         <div className='toggle-section'>
-          <a onClick={() => this.setState({expanded: !expanded})}>More Options</a>
+          <a onClick={() => this.setState({expanded: !expanded})}>
+            More Options
+            <Icon name={expanded ? 'Chevron-Up2' : 'Chevron-Down2'} />
+          </a>
         </div>
         {expanded && <ModalSelect label='Community Type' onChange={this.set('category')}>
           <option value=''>Pick one:</option>
@@ -360,9 +364,13 @@ export class CreateCommunityTwo extends React.Component {
         value={recipients}
         onChange={update('recipients')}
         placeholder='Enter email addresses, separated by commas or line breaks'/>
-      <div className='toggle-section'>
-        <a onClick={() => this.setState({expanded: !expanded})}>Customize Message {expanded ? '&#8743;' : '&#8744;'}</a>
-      </div>
+        <div className='toggle-section'>
+          <a onClick={() => this.setState({expanded: !expanded})}>
+            Customize Message
+            <Icon name={expanded ? 'Chevron-Up2' : 'Chevron-Down2'} />
+          </a>
+        </div>
+
       {expanded && <ModalInput
         label='Subject'
         ref='subject'

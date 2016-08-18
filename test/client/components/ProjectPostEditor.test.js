@@ -105,7 +105,7 @@ describe('ProjectPostEditor', () => {
         render(newState, post, newPostEdit)
         let deadline = findRenderedDOMComponentWithClass(node, 'deadline-date-picker')
         let deadlineInput = deadline.getElementsByClassName('form-control')
-        expect(deadlineInput[0].value).to.equal(moment('2080-08-24T14:00:00.000Z').format("MM/DD/YYYY hh:mm A"))
+        expect(deadlineInput[0].value).to.equal(moment('2080-08-24T14:00:00.000Z').format("MM/DD/YYYY h:mm A"))
       })
     })
 })

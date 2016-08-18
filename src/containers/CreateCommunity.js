@@ -30,7 +30,6 @@ import {
   defaultAvatar,
   defaultBanner,
   getCurrentCommunity,
-  getCurrentOrLastCommunity,
   getCheckList
 } from '../models/community'
 import { canInvite } from '../models/currentUser'
@@ -41,10 +40,6 @@ import { saveCurrentCommunityId } from '../actions/util'
 import { defaultSubject, defaultMessage } from './community/CommunityInvitations'
 
 const merkabaUrl = 'https://www.hylo.com/img/hylo-merkaba-300x300.png'
-
-export const CreateCommunity = ({ children }) => <div className>
-  {children}
-</div>
 
 @connect(state => ({community: getCurrentCommunity(state)}))
 export class CreateCommunityContainer extends React.Component {
@@ -86,7 +81,7 @@ export class CreateCommunityContainer extends React.Component {
 
   return {community, errors, validating, saving, uploadingImage, currentUser}
 })
-export class CreateCommunityOne extends React.Component {
+export class CreateCommunity extends React.Component {
   static propTypes = {
     saving: bool,
     uploadingImage: bool,
@@ -202,7 +197,7 @@ export class CreateCommunityOne extends React.Component {
         } else {
           trackEvent(ADDED_COMMUNITY, {community})
           saveCurrentCommunityId(dispatch, payload.community_id, currentUser.id)
-          dispatch(navigate(`/create/two`))
+          dispatch(navigate(`/create/invite`))
         }
       })
     })
@@ -256,11 +251,11 @@ export class CreateCommunityOne extends React.Component {
 }
 
 @connect(state => ({
-  community: getCurrentOrLastCommunity(state),
+  community: getCurrentCommunity(state),
   currentUser: get('people.current', state),
   invitationEditor: get('invitationEditor', state)
 }))
-export class CreateCommunityTwo extends React.Component {
+export class CreateCommunityInvite extends React.Component {
 
   static propTypes = {
     community: object,

@@ -8,7 +8,7 @@ import AllCommunities, { AllPosts } from './containers/AllCommunities'
 import People from './containers/People'
 import Projects from './containers/Projects'
 import {
-  CreateCommunityContainer, CreateCommunityOne, CreateCommunityTwo
+  CreateCommunityContainer, CreateCommunity, CreateCommunityInvite
 } from './containers/CreateCommunity'
 import CommunityProfile from './containers/community/CommunityProfile'
 import CommunityPosts from './containers/community/CommunityPosts'
@@ -88,9 +88,8 @@ export default function makeRoutes (store) {
     <Route path='login' component={Login}/>
 
     <Route path='create' component={CreateCommunityContainer}>
-      <IndexRoute component={CreateCommunityOne}/>
-      <Route path='one' component={CreateCommunityOne}/>
-      <Route path='two' component={CreateCommunityTwo}/>
+      <IndexRoute component={CreateCommunity}/>
+      <Route path='invite' component={CreateCommunityInvite}/>
     </Route>
 
     <Route path='set-password' component={SetPassword}/>

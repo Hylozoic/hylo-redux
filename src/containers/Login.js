@@ -80,14 +80,7 @@ export const goToNext = (currentUser, query) => {
     }
   }
 
-  let params
-  switch (action) {
-    case 'use-invitation':
-      params = {token}
-      break
-    default:
-      params = {action}
-  }
+  const params = action === 'use-invitation' ? {token} : {action}
   return navigate(makeUrl(next, params))
 }
 

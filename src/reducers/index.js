@@ -1,5 +1,5 @@
 import { combineReducers } from 'redux'
-import { routeReducer } from 'redux-simple-router'
+import { routerReducer } from 'react-router-redux'
 import { some, get, partition, transform } from 'lodash'
 import { activities, activitiesByCommunity } from './activities'
 import comments from './comments'
@@ -19,6 +19,7 @@ import postsByQuery from './postsByQuery'
 import { tagsByCommunity, tagsByQuery, totalTagsByQuery } from './tags'
 import tagInvitationEditor from './tagInvitationEditor'
 import posts from './posts'
+import tooltips from './tooltips'
 import {
   appendPayloadByPath, keyedCounter, keyedCount, composeReducers, handleSetState
 } from './util'
@@ -41,7 +42,6 @@ import {
   FETCH_THANKS,
   HIDE_TAG_POPOVER,
   LOGIN,
-  LOGOUT,
   NAVIGATE,
   NOTIFY,
   REMOVE_NOTIFICATION,
@@ -134,19 +134,6 @@ const combinedReducers = combineReducers({
     return {...state, [type]: {error, payload, meta}}
   },
 
-  routing: (state = {path: ''}, action) => {
-    if (action.error) return state
-
-    switch (action.type) {
-      case LOGOUT:
-        return {path: '/login'}
-      case NAVIGATE:
-        return {path: action.payload}
-      default:
-        return routeReducer(state, action)
-    }
-  },
-
   login: (state = {}, action) => {
     let { type, payload, error } = action
     switch (type) {
@@ -190,6 +177,7 @@ const combinedReducers = combineReducers({
   posts,
   postsByQuery,
   postEdits,
+  routing: routerReducer,
   searchResultsByQuery: appendPayloadByPath(SEARCH, 'meta.cache.id', 'items'),
 
   tagPopover: (state = {}, action) => {
@@ -209,6 +197,7 @@ const combinedReducers = combineReducers({
   tagDescriptionEdits,
   tagInvitationEditor,
   thanks: appendPayloadByPath(FETCH_THANKS, 'meta.id'),
+  tooltips,
   totalActivities: keyedCounter(FETCH_ACTIVITY, 'total', 'meta.id'),
   totalCommunitiesByQuery: keyedCounter(FETCH_COMMUNITIES, 'communities_total'),
   totalInvitations: keyedCounter(FETCH_INVITATIONS, 'total', 'meta.communityId'),

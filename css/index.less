@@ -229,8 +229,8 @@ ul.tags {
     .bold;
     cursor: pointer;
     position: relative;
+    top: 1px;
     text-decoration: none;
-    line-height: 20px;
     font-size: 15px;
     &:hover {
       color: @off-black;
@@ -874,7 +874,7 @@ ul.tags {
   position: absolute;
   top: -25px;
   left: 25px;
-  padding: 50px;
+  padding-top: 50px;
 }
 .popover {
   width: 290px;
@@ -964,6 +964,7 @@ ul.tags {
     min-height: 81px;
     border-bottom: 1px solid @post-border;
     list-style-type: none;
+    .clearfix;
 
     .name {
       display: block;
@@ -1031,4 +1032,48 @@ ul.tags {
     top: -1px;
     vertical-align: middle;
   }
+}
+
+.tooltip-content {
+  width: 270px;
+  padding: 10px 15px;
+  color: white;
+  font-weight: 300;
+
+  .title {
+    font-size: 13px;
+    margin-bottom: 10px;
+  }
+
+  .body {
+    font-size: 12px;
+    margin-bottom: 10px;
+  }
+
+  .links {
+    a {
+      color: black;
+      text-decoration: underline;
+      font-size: 12px;
+    }
+  }
+}
+
+#tooltip-id-topics {
+  position: fixed;
+  left: @left-nav-width;
+  top: 400px;
+  z-index: 5;
+}
+
+.isMobile {
+  #tooltip-id-topics {
+    left: 60px;
+  }
+}
+
+#tooltip-id-final {
+  position: fixed;
+  top: -200px;
+  left: -200px;
 }

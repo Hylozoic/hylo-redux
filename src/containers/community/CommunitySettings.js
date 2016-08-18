@@ -3,7 +3,7 @@ import { connect } from 'react-redux'
 import { prefetch } from 'react-fetcher'
 import cx from 'classnames'
 const { object, func } = React.PropTypes
-import { find, get, reduce, isEmpty } from 'lodash'
+import { find, get, isEmpty, reduce, set } from 'lodash'
 import { markdown, sanitize } from 'hylo-utils/text'
 import {
   updateCommunitySettings,
@@ -15,11 +15,13 @@ import {
   validateCommunityAttribute,
   navigate
 } from '../../actions'
+import config from '../../config'
+const { upstreamHost } = config
+const slackClientId = config.slack.clientId
 import { avatarUploadSettings, bannerUploadSettings } from '../../models/community'
 import A from '../../components/A'
 import { uploadImage } from '../../actions/uploadImage'
 import PersonChooser from '../../components/PersonChooser'
-import { reversibleUpdate } from '../../util/forms'
 import { communityJoinUrl } from '../../routes'
 import { makeUrl } from '../../util/navigation'
 
@@ -130,12 +132,15 @@ export default class CommunitySettings extends React.Component {
     let { editing, edited } = this.state
     let { slug } = community
     let newEditing = reduce(args, (m, field) => { m[field] = false; return m }, {})
-    let oldSettings = reduce(args, (m, field) => { m[field] = community[field]; return m }, {})
     this.setState({editing: {...editing, ...newEditing}})
-    dispatch(updateCommunitySettings(community.id, {slug, ...edited}, oldSettings))
+    dispatch(updateCommunitySettings(community.id, {slug, ...edited}))
     .then(({ error }) => {
-      if (error || !edited.slug) return
-      dispatch(navigate(makeUrl(`/c/${edited.slug}/settings`, {expand: 'appearance'})))
+      if (error) return
+      this.setState({edited: {}})
+
+      if (edited.slug) { // if the slug was changed, go to the new URL
+        dispatch(navigate(makeUrl(`/c/${edited.slug}/settings`, {expand: 'appearance'})))
+      }
     })
   }
 
@@ -174,8 +179,8 @@ export default class CommunitySettings extends React.Component {
   }
 
   update (path, value) {
-    let { dispatch, community } = this.props
-    return dispatch(reversibleUpdate(updateCommunitySettings, community, path, value, 'community'))
+    let { dispatch, community: { id, slug } } = this.props
+    return dispatch(updateCommunitySettings(id, set({slug}, path, value)))
   }
 
   toggle (path) {
@@ -188,8 +193,9 @@ export default class CommunitySettings extends React.Component {
   }
 
   addModerator = person => {
-    let { dispatch, community } = this.props
-    dispatch(addCommunityModerator(community, person, { moderators: community.moderators }))
+    const { dispatch, community } = this.props
+    const { moderators } = community
+    dispatch(addCommunityModerator(community, person, {moderators}))
   }
 
   removeModerator (id) {
@@ -201,6 +207,12 @@ export default class CommunitySettings extends React.Component {
     }
   }
 
+  removeSlackhook () {
+    const { dispatch, community: { id, slug } } = this.props
+    const edited = {slack_hook_url: '', slack_team: '', slack_configure_url: ''}
+    dispatch(updateCommunitySettings(id, {slug, ...edited}))
+  }
+
   changeLeader = person => {
     let { edited } = this.state
     this.setState({edited: {...edited, leader: person}})
@@ -210,10 +222,7 @@ export default class CommunitySettings extends React.Component {
     let { community, dispatch } = this.props
     if (window.confirm(`Are you sure you wish to delete ${community.name}? This cannot be undone.`)) {
       this.update('active', false)
-      .then(({ error }) => {
-        if (error) return
-        dispatch(navigate('/'))
-      })
+      .then(({ error }) => error || dispatch(navigate('/app')))
     }
   }
 
@@ -228,8 +237,9 @@ export default class CommunitySettings extends React.Component {
     let { avatar_url, banner_url } = community
     let { editing, edited, errors, expand } = this.state
     let labelProps = {expand, toggle: this.toggleSection}
-    let joinUrl, codeNotUnique, slugNotUnique
+    let joinUrl, codeNotUnique, slugNotUnique, addSlackUrl
     let { is_admin } = this.props.currentUser
+    let slackerror = this.props.location.query.slackerror
 
     if (expand.appearance) {
       slugNotUnique = get(this.props.validation, 'slug.unique') === false
@@ -239,6 +249,10 @@ export default class CommunitySettings extends React.Component {
       joinUrl = communityJoinUrl(community)
 
       codeNotUnique = get(this.props.validation, 'beta_access_code.unique') === false
+    }
+
+    if (expand.slack) {
+      addSlackUrl = upstreamHost + '/noo/community/' + community.id + '/settings/slack'
     }
 
     return <div className='form-sections' id='community-settings'>
@@ -322,7 +336,7 @@ export default class CommunitySettings extends React.Component {
         <div className='section-item icon'>
           <div className='half-column'>
             <label>Icon</label>
-            <p className='summary'>This image appears next to your community's name. (Tip: Try a transparent PNG image.)</p>
+            <p className='summary'>This image appears next to your community&rsquo;s name. (Tip: Try a transparent PNG image.)</p>
           </div>
           <div className='half-column right-align'>
             <div className='medium-logo' style={{backgroundImage: `url(${avatar_url})`}}/>
@@ -479,6 +493,29 @@ export default class CommunitySettings extends React.Component {
           </div>
           <div className='half-column right-align'>
             <input type='checkbox' checked={community.settings.sends_email_prompts} onChange={() => this.toggle('settings.sends_email_prompts')}/>
+          </div>
+        </div>
+      </div>}
+
+      <SectionLabel name='slack' {...labelProps}>Send Updates to Slack</SectionLabel>
+      {expand.slack && <div className='section slack'>
+        <div className='section-item'>
+          <div className='full-column'>
+            {slackerror && <div className='alert alert-danger'>
+              There was an error connecting this community to your Slack team.
+            </div>}
+            {!community.slack_hook_url && <div>
+              <p className='summary'>
+                Connect this community to a <a href='https://slack.com' target='_blank'>Slack</a> team and Hylo will notify a channel when there are new posts.
+              </p>
+              <a href={`https://slack.com/oauth/authorize?scope=incoming-webhook&client_id=${slackClientId}&redirect_uri=${addSlackUrl}`}>
+                <img alt='Add to Slack' height='40' width='139' src='https://platform.slack-edge.com/img/add_to_slack.png' srcSet='https://platform.slack-edge.com/img/add_to_slack.png 1x, https://platform.slack-edge.com/img/add_to_slack@2x.png 2x'/>
+              </a>
+            </div>}
+            {community.slack_hook_url && <div>
+              <p>This community is connected to the <span className='slack_team'>{community.slack_team}</span> team on Slack.</p>
+              <button type='button' onClick={() => this.removeSlackhook()}>Remove</button>
+            </div>}
           </div>
         </div>
       </div>}

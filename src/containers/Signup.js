@@ -61,10 +61,10 @@ export default class Signup extends React.Component {
     event.preventDefault()
     if (!this.validate()) return
 
-    let { dispatch, location: { query } } = this.props
-    let name = this.refs.name.getValue()
-    let email = this.refs.email.getValue()
-    let password = this.refs.password.getValue()
+    const { dispatch, location: { query } } = this.props
+    const name = this.refs.name.getValue()
+    const email = this.refs.email.getValue()
+    const password = this.refs.password.getValue()
     dispatch(signup(name, email, password))
     .then(({ error }) => {
       if (error) return
@@ -89,10 +89,7 @@ export default class Signup extends React.Component {
     const loginUrl = makeUrl('/login', pick(query, 'next', 'action', 'id', 'token'))
 
     return <ModalOnlyPage id='signup' className='login-signup'>
-      {community && <div className='modal-topper'>
-        <div className='medium-avatar' style={{backgroundImage: `url(${community.avatar_url})`}}/>
-        <h2>Join {community.name}</h2>
-      </div>}
+      <CommunityHeader community={community}/>
       <Modal title='Create your account.' standalone>
         <form onSubmit={this.submit}>
           {actionError && <div className='alert alert-danger'>{actionError}</div>}
@@ -119,3 +116,9 @@ export default class Signup extends React.Component {
     </ModalOnlyPage>
   }
 }
+
+export const CommunityHeader = ({ community }) =>
+  !community ? null : <div className='modal-topper'>
+    <div className='medium-avatar' style={{backgroundImage: `url(${community.avatar_url})`}}/>
+    <h2>Join {community.name}</h2>
+  </div>

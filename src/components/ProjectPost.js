@@ -120,6 +120,10 @@ class Supporters extends React.Component {
     pledgeAmount: number
   }
 
+  static contextTypes = {
+    dispatch: func
+  }
+
   constructor(props) {
     super(props)
     this.state = {
@@ -139,8 +143,6 @@ class Supporters extends React.Component {
   }
 
   makePledge = (pledgeAmount) => {
-    console.log('pledgeAmount: ', pledgeAmount)
-
    validatePledge(pledgeAmount).then(valid => {
      if (!valid) return
       // we use setTimeout here to avoid a race condition. the description field
@@ -150,12 +152,22 @@ class Supporters extends React.Component {
       // so if we click Save immediately after typing in the description
       // field, we have to wait for events from the description field to be
       // handled, otherwise the last edit will be lost.
-     setTimeout(() => this.save(), 200)
+     setTimeout(() => this.save(pledgeAmount), 200)
    })
   }
 
-  save = () => {
-    console.log('SAVED!!!!')
+  save = (pledgeAmount) => {
+    const {dispatch} = this.context
+    //disable the button
+    dispatch(contributeProject(this.props.post.id, {amount: pledgeAmount})).
+    then((res) => {
+      if(res.error){
+        alert('Failed. Please try again in a few minutes')
+      }else {
+        //enable the button
+        alert('Done')
+      }
+    })
   }
 
   render() {

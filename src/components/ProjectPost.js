@@ -220,7 +220,7 @@ export const ProjectPostCard = connect(
     <A className='title' to={url}>{name}</A>
     {!isMobile && description && <div className='details-row'>
       <ClickCatchingSpan className='details'
-        dangerouslySetInnerHTML={{__html: description}}/>}
+        dangerouslySetInnerHTML={{__html: description}}/>
       {truncated && <span>
         <A to={`/p/${id}`} className='show-more'>Show&nbsp;more</A>
       </span>}

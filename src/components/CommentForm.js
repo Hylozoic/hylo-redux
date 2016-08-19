@@ -75,10 +75,10 @@ export default class CommentForm extends React.Component {
     const placeholder = this.props.placeholder || 'Add a comment...'
     const keyDown = e => {
       this.setState({enabled: this.refs.editor.getContent().length > 0})
-      return onCmdEnter(e => {
+      onCmdEnter(e => {
         e.preventDefault()
         this.submit()
-      })
+      })(e)
     }
 
     const { enabled } = this.state

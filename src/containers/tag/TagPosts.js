@@ -60,9 +60,7 @@ class TagPosts extends React.Component {
     if (!tag || !tag.id || redirecting) {
       return <div className='loading'>Please wait...</div>
     }
-    const { owner, followers } = tag
-
-    const followerCount = 22343
+    const { owner, followers, followerCount } = tag
 
     const toggleFollow = () => dispatch(followTag(id, tagName))
 

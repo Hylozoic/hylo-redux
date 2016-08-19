@@ -127,7 +127,7 @@ class Supporters extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      pledgeDialogueVisible: true
+      pledgeDialogueVisible: false
     }
   }
 

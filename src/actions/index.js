@@ -1,10 +1,13 @@
 import invariant from 'invariant'
 import qs from 'querystring'
 import { push } from 'react-router-redux'
+import { cleanAndStringify } from '../util/caching'
+import { cloneDeep, pick } from 'lodash'
 
 export const _PENDING = '_PENDING'
 export const ADD_COMMUNITY_MODERATOR = 'ADD_COMMUNITY_MODERATOR'
 export const ADD_COMMUNITY_MODERATOR_PENDING = ADD_COMMUNITY_MODERATOR + _PENDING
+export const ADD_DATA_TO_STORE = 'ADD_DATA_TO_STORE'
 export const CANCEL_POST_EDIT = 'CANCEL_POST_EDIT'
 export const CANCEL_TAG_DESCRIPTION_EDIT = 'CANCEL_TAG_DESCRIPTION_EDIT'
 export const CANCEL_TYPEAHEAD = 'CANCEL_TYPEAHEAD'
@@ -126,9 +129,6 @@ export const VALIDATE_NETWORK_ATTRIBUTE = 'VALIDATE_NETWORK_ATTRIBUTE'
 export const VALIDATE_NETWORK_ATTRIBUTE_PENDING = VALIDATE_NETWORK_ATTRIBUTE + _PENDING
 export const VOTE_ON_POST = 'VOTE_ON_POST'
 export const VOTE_ON_POST_PENDING = VOTE_ON_POST + _PENDING
-
-import { cleanAndStringify } from '../util/caching'
-import { cloneDeep, pick } from 'lodash'
 
 // this is a client-only action
 export function login (email, password) {
@@ -439,24 +439,6 @@ export function toggleUserSettingsSection (sectionName, forceOpen) {
   }
 }
 
-export function fetchActivity (offset = 0, resetCount, id = 'all') {
-  const limit = 20
-  const query = cleanAndStringify({limit, offset, paginate: true, resetCount})
-  const path = id !== 'all'
-    ? `/noo/community/${id}/activity/?${query}`
-    : `/noo/activity?${query}`
-
-  return {
-    type: FETCH_ACTIVITY,
-    payload: {api: true, path},
-    meta: {
-      cache: {id, bucket: 'activitiesByCommunity', limit, offset, array: true},
-      resetCount,
-      id
-    }
-  }
-}
-
 export function fetchThanks (id, offset = 0) {
   return {
     type: FETCH_THANKS,
@@ -746,4 +728,12 @@ export function registerTooltip (id, index) {
 
 export function unregisterTooltip (id) {
   return {type: UNREGISTER_TOOLTIP, payload: {id}}
+}
+
+export function addDataToStore (bucket, payload) {
+  return {
+    type: ADD_DATA_TO_STORE,
+    payload,
+    meta: {bucket}
+  }
 }

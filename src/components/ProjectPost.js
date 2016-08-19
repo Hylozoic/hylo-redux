@@ -190,9 +190,10 @@ const spacer = <span>&nbsp; •&nbsp; </span>
 export const ProjectPostCard = connect(
   (state, { post }) => ({
     comments: getComments(post, state),
-    community: getCurrentCommunity(state)
+    community: getCurrentCommunity(state),
+    isMobile: state.isMobile
   })
-)(({ post, community, comments, dispatch }) => {
+)(({ post, community, comments, dispatch, isMobile }) => {
   const { name, user, tag, end_time, id } = post
   const url = `/p/${post.id}`
   const backgroundImage = `url(${imageUrl(post)})`
@@ -217,13 +218,13 @@ export const ProjectPostCard = connect(
       <A to={`/u/${user.id}`}>{user.name}</A>
     </div>
     <A className='title' to={url}>{name}</A>
-    <div className='details-row'>
-      {description && <ClickCatchingSpan className='details'
+    {!isMobile && description && <div className='details-row'>
+      <ClickCatchingSpan className='details'
         dangerouslySetInnerHTML={{__html: description}}/>}
       {truncated && <span>
         <A to={`/p/${id}`} className='show-more'>Show&nbsp;more</A>
       </span>}
-    </div>
+    </div>}
     <Supporters post={post} simple/>
     <div className='comments-section-spacer'/>
     <CommentSection post={post} comments={comments}

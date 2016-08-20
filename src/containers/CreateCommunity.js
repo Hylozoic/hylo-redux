@@ -337,11 +337,11 @@ export class CreateCommunityInvite extends React.Component {
       .then(({ error }) => {
         if (error) return
         trackEvent(INVITED_COMMUNITY_MEMBERS, {community})
-        dispatch(navigate(`/c/${community.slug}?invite-success`))
+        dispatch(navigate(`/c/${community.slug}`))
       })
     }
 
-    return <Modal title={`Invite Members to ${community.name}.`}
+    return <Modal title={`Invite members to ${community.name}.`}
       className='create-community-two'
       standalone>
       <div className='modal-input csv-upload'>

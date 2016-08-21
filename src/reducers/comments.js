@@ -1,7 +1,7 @@
 import { hashBy, mergeList, toggleIncludes } from './util'
-import { filter, some } from 'lodash'
+import { some } from 'lodash'
 import {
-  FETCH_ACTIVITY,
+  ADD_DATA_TO_STORE,
   FETCH_COMMENTS,
   FETCH_POST,
   FETCH_POSTS,
@@ -34,36 +34,22 @@ export default function (state = {}, action) {
 
   if (!payload) return state
 
+  let comments
   switch (type) {
-    case FETCH_ACTIVITY:
-      let comments = filter(payload.items.map(a => a.comment))
-      return mergeList(state, comments, 'id')
+    case ADD_DATA_TO_STORE:
+      if (meta.bucket === 'comments') return mergeList(state, payload, 'id')
+      break
     case FETCH_COMMENTS:
-      return {
-        ...state,
-        ...hashBy(payload, 'id')
-      }
+      return {...state, ...hashBy(payload, 'id')}
     case CREATE_COMMENT:
-      return {
-        ...state,
-        [payload.id]: payload
-      }
+      return {...state, [payload.id]: payload}
     case FETCH_POSTS:
       comments = payload.posts.reduce((acc, post) => acc.concat(post.comments || []), [])
-      return {
-        ...state,
-        ...hashBy(comments, 'id')
-      }
+      return {...state, ...hashBy(comments, 'id')}
     case FETCH_POST:
-      return {
-        ...state,
-        ...hashBy(payload.comments, 'id')
-      }
+      return {...state, ...hashBy(payload.comments, 'id')}
     case REMOVE_COMMENT:
-      return {
-        ...state,
-        [meta.id]: null
-      }
+      return {...state, [meta.id]: null}
   }
 
   return state

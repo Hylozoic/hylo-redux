@@ -5,7 +5,6 @@ import { connect } from 'react-redux'
 import {
   FETCH_INVITATIONS,
   SEND_COMMUNITY_INVITATION,
-  fetchCommunity,
   fetchCommunitySettings,
   fetchInvitations,
   sendCommunityInvitation,
@@ -32,7 +31,6 @@ const defaultMessage = name =>
 
 const CommunityInvitations = compose(
   prefetch(({ params: { id }, dispatch }) => Promise.all([
-    dispatch(fetchCommunity(id)),
     dispatch(fetchCommunitySettings(id)),
     dispatch(fetchInvitations(id))
   ])),

@@ -212,19 +212,30 @@ export class CreateCommunity extends React.Component {
       className='create-community-one'
       subtitle="Let's get started unlocking the creative potential of your community with Hylo"
       standalone>
-        <ModalInput label='Name' ref='name' onChange={this.set('name')}/>
-        {errors.nameBlank && <p className='help error'>Please fill in this field.</p>}
-        {errors.nameUsed && <p className='help error'>This name is already in use.</p>}
-        <ModalInput label='URL' ref='url' prefix='https://hylo.com/c/' onChange={this.set('slug')}/>
-        {errors.slugBlank && <p className='help error'>Please fill in this field.</p>}
-        {errors.slugInvalid && <p className='help error'>Use lowercase letters, numbers, and hyphens only.</p>}
-        {errors.slugUsed && <p className='help error'>This URL is already in use.</p>}
-        <ModalInput label='Description' ref='description' type='textarea' onChange={this.set('description')}/>
-        {errors.descriptionBlank && <p className='help error'>Please fill in this field.</p>}
-        <ModalInput label='Invitation Code' ref='beta_access_code' onChange={this.set('beta_access_code')}/>
-        {errors.codeInvalid && <p className='help error'>The code may not contain the slash ("/") character.</p>}
-        {errors.codeBlank && <p className='help error'>Please fill in a code.</p>}
-        {errors.codeUsed && <p className='help error'>This code cannot be used; please choose another.</p>}
+        <ModalInput label='Name' ref='name' onChange={this.set('name')}
+          errors={<div className='errors'>
+            {errors.nameBlank && <p className='help error'>Please fill in this field.</p>}
+            {errors.nameUsed && <p className='help error'>This name is already in use.</p>}
+          </div>}/>
+        <ModalInput label='URL' ref='url' prefix='https://hylo.com/c/' onChange={this.set('slug')}
+          errors={
+            <div className='errors'>
+              {errors.slugBlank && <p className='help error'>Please fill in this field.</p>}
+              {errors.slugInvalid && <p className='help error'>Use lowercase letters, numbers, and hyphens only.</p>}
+              {errors.slugUsed && <p className='help error'>This URL is already in use.</p>}
+            </div>}/>
+        <ModalInput label='Description' ref='description' type='textarea' onChange={this.set('description')}
+          errors={
+            <div className='errors'>
+              {errors.descriptionBlank && <p className='help error'>Please fill in this field.</p>}
+            </div>}/>
+        <ModalInput label='Invitation Code' ref='beta_access_code' onChange={this.set('beta_access_code')}
+          errors={
+            <div className='errors'>
+              {errors.codeInvalid && <p className='help error'>The code may not contain the slash ("/") character.</p>}
+              {errors.codeBlank && <p className='help error'>Please fill in a code.</p>}
+              {errors.codeUsed && <p className='help error'>This code cannot be used; please choose another.</p>}
+            </div>}/>
         <div className='toggle-section'>
           <a onClick={() => this.setState({expanded: !expanded})}>
             More Options

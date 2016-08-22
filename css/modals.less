@@ -132,6 +132,20 @@
         display: table-cell;
       }
     }
+
+    label {
+      display: inline-block;
+    }
+
+    .errors {
+      float: right;
+      display: inline;
+      .help.error {
+        padding-left: 15px;
+        color: @error-color;
+        display: inline;
+      }
+    }
   }
 
   > .meta {
@@ -245,12 +259,6 @@
     padding-bottom: 25px;
   });
 
-  .help.error {
-    padding-left: 15px;
-    padding-top: 15px;
-    color: @error-color;
-  }
-
   textarea {
     width: 100%;
     border: none;
@@ -286,7 +294,6 @@
       top: 2px;
     }
   }
-
 }
 
 .create-community-one {

@@ -47,7 +47,8 @@ export class ModalInput extends React.Component {
     value: string,
     type: string,
     onChange: func,
-    prefix: string
+    prefix: string,
+    errors: object
   }
 
   getValue () {
@@ -56,7 +57,8 @@ export class ModalInput extends React.Component {
 
   render () {
     const {
-      label, placeholder, defaultValue, value, onChange, className, type, prefix
+      label, placeholder, defaultValue, value, onChange, className, type, prefix,
+      errors
     } = this.props
 
     const onFocus = () => this.refs.row.focus()
@@ -64,6 +66,7 @@ export class ModalInput extends React.Component {
 
     return <ModalRow className={className} field={this.refs.input} ref='row'>
       <label>{label}</label>
+      {errors}
       {prefix
         ? <div className='prefix-group'>
           <span className='prefix'>{prefix}</span>

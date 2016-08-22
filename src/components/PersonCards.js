@@ -46,9 +46,9 @@ export const PersonCard = ({ person, slug, onSkillClick, removeMember }) => {
       {bio && <div className='details'>{bio}</div>}
       {offersText && <div className='offerCount'>{offersText}</div>}
       {!isEmpty(tags) && tags.map(tag =>
-        <span key={tag}>
-          <a className='hashtag' onClick={() => onSkillClick(tag)}>
-            #{tag}
+        <span key={tag.name}>
+          <a className='hashtag' onClick={() => onSkillClick(tag.name)}>
+            #{tag.name}
           </a>
           &nbsp;<wbr/>
         </span>)}

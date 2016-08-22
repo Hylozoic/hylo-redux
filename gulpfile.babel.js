@@ -26,12 +26,6 @@ gulp.task('serve', function () {
   })
 })
 
-function clearScreen () {
-  process.stdout.write('\u001b[2J')
-  process.stdout.write('\u001b[1;3H')
-  process.stdout.write(new Date().toString() + '\n')
-}
-
 gulp.task('autotest', function () {
   const argv = require('minimist')(process.argv)
   const file = argv.file || argv.f
@@ -40,9 +34,8 @@ gulp.task('autotest', function () {
     ? `${run} -- ${file}`
     : `${run} && ${run} -- test/client/index.js`
   gulp.watch(['src/**/*', 'test/**/*'], debounce(function () {
-    clearScreen()
     spawn('bash', ['-c', cmd], {stdio: 'inherit'})
-  }, 5000, true))
+  }, 500, true))
 })
 
 gulp.task('watch', function () {

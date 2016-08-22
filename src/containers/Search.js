@@ -2,7 +2,6 @@ import React from 'react'
 import { prefetch } from 'react-fetcher'
 import { connect } from 'react-redux'
 import { connectedListProps, fetchWithCache, refetch } from '../util/caching'
-import { makeUrl } from '../util/navigation'
 import { navigate, search } from '../actions'
 import { debounce, get, isEmpty, pick } from 'lodash'
 import Select from '../components/Select'
@@ -125,7 +124,7 @@ const PostResult = ({ post }, { dispatch }) =>
 PostResult.contextTypes = {dispatch: func}
 
 const PersonResult = ({ person, onTagClick }) => {
-  let { bio, tags } = person
+  let { bio, work, intention } = person
   return <div className='person-result'>
     <div className='hello'>
       <Avatar person={person}/>
@@ -134,13 +133,8 @@ const PersonResult = ({ person, onTagClick }) => {
     </div>
     <div className='content'>
       {bio && <p><strong>About me:</strong> {bio}</p>}
-      {!isEmpty(tags) && tags.map(tag =>
-        <span key={tag}>
-          <A className='hashtag' to={makeUrl('/people', {search: '#' + tag})}>
-            #{tag}
-          </A>
-          &nbsp;<wbr/>
-        </span>)}
+      {work && <p><strong>What I'm doing:</strong> {work}</p>}
+      {intention && <p><strong>What I'd like to do:</strong> {intention}</p>}
     </div>
   </div>
 }

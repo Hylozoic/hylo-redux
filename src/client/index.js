@@ -10,7 +10,6 @@ import fbAsyncInit from './fbAsyncInit'
 import setupSegment from './segment'
 import trackClickthrough from './clickthrough'
 import updateLocation from './updateLocation'
-import polyfills from './polyfills'
 
 const { history, store } = configureStore(window.INITIAL_STATE, {history: browserHistory})
 const routes = makeRoutes(store)
@@ -18,7 +17,6 @@ setManifest(window.ASSET_MANIFEST)
 setupSegment()
 fbAsyncInit()
 trackClickthrough()
-polyfills()
 history.listen(updateLocation({store, routes, history}))
 
 const component = (

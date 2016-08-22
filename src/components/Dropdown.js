@@ -5,8 +5,6 @@ import { VelocityTransitionGroup } from 'velocity-react'
 import { position } from '../util/scrolling'
 const { array, bool, func, object, string } = React.PropTypes
 
-const DROPDOWN_OPENED = 'dropdown-opened'
-
 export default class Dropdown extends React.Component {
   constructor (props) {
     super(props)
@@ -22,8 +20,7 @@ export default class Dropdown extends React.Component {
     onFirstOpen: func,
     backdrop: bool,
     triangle: bool,
-    openOnHover: bool,
-    rivalrous: string
+    openOnHover: bool
   }
 
   static contextTypes = {
@@ -43,11 +40,6 @@ export default class Dropdown extends React.Component {
         this.setState({neverOpened: false})
         if (this.props.onFirstOpen) this.props.onFirstOpen()
       }
-      if (this.props.rivalrous) {
-        window.dispatchEvent(new window.CustomEvent(DROPDOWN_OPENED, {
-          detail: {name: this.props.rivalrous}
-        }))
-      }
     }
     if (event) {
       event.stopPropagation()
@@ -55,29 +47,17 @@ export default class Dropdown extends React.Component {
     }
   }
 
-  hide = () => {
+  hide = event => {
     if (this.state.active) this.setState({active: false})
     return true
   }
 
-  rivalrousHide = event => {
-    if (event.detail.name === this.props.rivalrous) {
-      return this.hide()
-    }
-  }
-
   componentDidMount () {
     window.addEventListener('click', this.hide)
-    if (this.props.rivalrous) {
-      window.addEventListener(DROPDOWN_OPENED, this.rivalrousHide)
-    }
   }
 
   componentWillUnmount () {
     window.removeEventListener('click', this.hide)
-    if (this.props.rivalrous) {
-      window.removeEventListener(DROPDOWN_OPENED, this.rivalrousHide)
-    }
   }
 
   render () {

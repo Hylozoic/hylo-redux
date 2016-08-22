@@ -1,14 +1,11 @@
 require('../support')
 import comments from '../../src/reducers/comments'
 import {
+  FETCH_ACTIVITY,
   FETCH_COMMENTS,
   CREATE_COMMENT,
   THANK_PENDING
 } from '../../src/actions'
-import { fetchActivity } from '../../src/actions/activity'
-import { configureStore } from '../../src/store'
-import { HOST } from '../../src/util/api'
-import nock from 'nock'
 
 describe('comments', () => {
   describe('on FETCH_COMMENTS', () => {
@@ -56,43 +53,28 @@ describe('comments', () => {
   })
 
   describe('on FETCH_ACTIVITY', () => {
-    let store
-
-    beforeEach(() => {
-      store = configureStore({
-        comments: {
-          '1': {id: '1', text: 'foo'},
-          '2': {id: '2', user_id: '7'}
-        }
-      }).store
-
-      nock(HOST).get('/noo/activity?limit=20&offset=0&paginate=true&resetCount=true')
-      .reply(200, {
-        items: [
+    it('extracts comments and appends to state', () => {
+      let action = {
+        type: FETCH_ACTIVITY,
+        payload: {items: [
           {id: '20', comment: {id: '2', text: 'bar'}},
           {id: '30', comment: {id: '3', text: 'baz'}},
           {id: '40'}
-        ]
-      })
-    })
+        ]}
+      }
 
-    it('extracts comments and appends to state', () => {
-      store.dispatch(fetchActivity(0, true))
-      .then(() => {
-        const { comments, activities } = store.getState()
+      let state = {
+        '1': {id: '1', text: 'foo'},
+        '3': {id: '3', text: 'baz', user: {id: 'a', name: 'Alf'}}
+      }
 
-        expect(comments).to.deep.equal({
-          '1': {id: '1', text: 'foo'},
-          '2': {id: '2', user_id: '7', text: 'bar'},
-          '3': {id: '3', text: 'baz', user: {id: 'a', name: 'Alf'}}
-        })
+      let expectedState = {
+        '1': {id: '1', text: 'foo'},
+        '2': {id: '2', text: 'bar'},
+        '3': {id: '3', text: 'baz', user: {id: 'a', name: 'Alf'}}
+      }
 
-        expect(activities).to.deep.equal({
-          '20': {id: '20', comment_id: '2'},
-          '30': {id: '30', comment_id: '3'},
-          '40': {id: '40'}
-        })
-      })
+      expect(comments(state, action)).to.deep.equal(expectedState)
     })
   })
 
@@ -117,7 +99,9 @@ describe('comments', () => {
 
       expect(comments(state, action)).to.deep.equal(expectedState)
     })
+  })
 
+  describe('on THANK_PENDING', () => {
     it('removes a thanks', () => {
       let action = {
         type: THANK_PENDING,

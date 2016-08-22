@@ -2,8 +2,8 @@ import { inspect } from 'util'
 import { fetchJSON } from './util/api'
 import { debug } from './util/logging'
 import { blue } from 'chalk'
-import { find, forEach, values, get, has, omit } from 'lodash'
-import { _PENDING, SET_STATE, addDataToStore } from './actions'
+import { find, values, get, has, omit } from 'lodash'
+import { _PENDING, SET_STATE } from './actions'
 
 // TODO cache expiration
 export function cacheMiddleware (store) {
@@ -42,26 +42,30 @@ export function cacheMiddleware (store) {
 
 export function apiMiddleware (req) {
   return store => next => action => {
-    const { payload, meta } = action
-    if (!payload || !payload.api) return next(action)
-
-    const { path, params, method } = payload
-    const cookie = req && req.headers.cookie
-    let promise = fetchJSON(path, params, {method, cookie})
-
-    if (meta) {
-      if (meta.addDataToStore) {
-        promise = promise.then(payload => {
-          forEach(meta.addDataToStore, (fn, bucket) =>
-            store.dispatch(addDataToStore(bucket, fn(payload))))
-          return payload
-        })
+    let { payload, meta } = action
+    if (payload && payload.api) {
+      let { path, params, method } = payload
+      let cookie = req && req.headers.cookie
+      let promise = fetchJSON(path, params, {method, cookie})
+      if (meta && meta.then) {
+        promise = promise.then(meta.then)
       }
 
-      if (meta.then) promise = promise.then(meta.then)
-    }
+      // TODO
+      // here, we could check for a flag in the action that indicates that the
+      // API response will contain entities that should be added to the store
+      // according to a standard pattern.
+      //
+      // we could respond to this flag by dispatching another action with a type
+      // like ADD_DATA_TO_STORE. this would simplify the reducers, because they
+      // wouldn't have to listen to a dozen different actions, just one.
+      //
+      // the flag could have values like "append", "merge", "replace", etc. to
+      // trigger different behavior.
 
-    return next({...action, payload: promise})
+      return next({...action, payload: promise})
+    }
+    return next(action)
   }
 }
 

@@ -49,7 +49,7 @@ const CommunityMenu = ({ network, community }, { isMobile, dispatch, currentUser
         {currentItem.name}
       </span>
     </IndexA>
-    <Dropdown backdrop triangle toggleChildren={toggle} rivalrous='nav'>
+    <Dropdown backdrop triangle toggleChildren={toggle}>
       <li>
         <ul className='inner-list dropdown-menu'>
           <li key='all'>

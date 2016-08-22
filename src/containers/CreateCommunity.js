@@ -346,6 +346,7 @@ export class CreateCommunityInvite extends React.Component {
       standalone>
       <div className='modal-input csv-upload'>
         <label className='normal-label'>Import CSV File</label>
+        <div className='help-text'>The file should have a header row named "email" for the email column. Or it can be a file in which each line is a single email address.</div>
         <label className='custom-file-upload'>
           <input type='file' onChange={() => this.processCSV()} ref='fileInput'/>
           Browse

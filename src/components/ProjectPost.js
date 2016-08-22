@@ -14,6 +14,7 @@ import Video from './Video'
 import Avatar from './Avatar'
 import LinkedPersonSentence from './LinkedPersonSentence'
 import PledgeProgress from './PledgeProgress'
+import uuid from 'uuid'
 import A from './A'
 import { ClickCatchingSpan } from './ClickCatcher'
 import { fetchPost, followPost, navigate, contributeProject } from '../actions'
@@ -164,15 +165,14 @@ class Supporters extends React.Component {
 
   save = (pledgeAmount) => {
     const {dispatch} = this.context
-    //disable the button
-    dispatch(contributeProject(this.props.post.id, {amount: pledgeAmount})).
+    this.setState({pledgeDialogueVisible: false})
+    const transactionId = uuid.v1()
+    dispatch(contributeProject(this.props.post.id, {amount: pledgeAmount, transactionId: transactionId})).
     then((res) => {
-      if(res.error){
+      if(res && res.error){
         alert('Failed. Please try again in a few minutes')
-      }else {
-        //enable the button
-        alert('Done')
       }
+      this.setState({pledgeDialogueVisible: true})
     })
   }
 

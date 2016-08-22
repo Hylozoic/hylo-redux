@@ -164,6 +164,11 @@ export default class UserSettings extends React.Component {
     disconnect('hit-fin', dispatch, setHitfinError)
   }
 
+
+  manageHitfinAccount = () => {
+    window.open('https://sandbox.hitfin.com/app/wallet')
+  }
+
   updateMembership = (membership, path, value) => {
     const { dispatch } = this.props
     const params = set({}, path, value)
@@ -416,9 +421,16 @@ export default class UserSettings extends React.Component {
           <div className='full-column'>
             {accountBalance && <label>Your Current HitFin Balance ${accountBalance}  sUSD</label>}
             {!accountBalance && <label>HitFin Balance Loading...</label>}
-          </div> }
-          <div className='third-column'>
-            {renderHitFinButton}
+          </div>
+           }
+          <div>
+            <div className='half-column'>
+              {renderHitFinButton}
+            </div>
+            {hitfinLink && <div className='half-column right-align'>
+                <a className='button hit-fin-logo' onClick={ () => this.manageHitfinAccount() }> Manage Account </a>
+              </div>
+            }
           </div>
         </Item>
         <Item>

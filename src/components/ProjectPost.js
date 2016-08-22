@@ -20,6 +20,7 @@ import { fetchPost, followPost, navigate, contributeProject } from '../actions'
 import moment from 'moment'
 import numeral from 'numeral'
 import { validatePledge } from '../util/validator'
+import _ from 'lodash'
 const { array, bool, func, object, number } = React.PropTypes
 
 const Deadline = ({ time }) => {
@@ -37,7 +38,9 @@ function getFinanciallyEnabled(post) {
   return !!post.financialRequestAmount
 }
 
-
+@connect((state) => ({
+  currentUser: state.people.current
+}))
 class ProjectPost extends React.Component {
   static propTypes = {
     post: object.isRequired,
@@ -45,7 +48,8 @@ class ProjectPost extends React.Component {
     comments: array,
     communities: array,
     dispatch: func,
-    financiallyEnabled: bool
+    financiallyEnabled: bool,
+    currentUser: object
   }
 
   constructor (props) {
@@ -53,7 +57,7 @@ class ProjectPost extends React.Component {
   }
 
   render () {
-    const {community, post, communities, comments } = this.props
+    const {community, post, communities, comments, currentUser } = this.props
     const financiallyEnabled = getFinanciallyEnabled(post)
     const { tag, media, location, user, children, name } = post
     const title = decode(name || '')
@@ -91,7 +95,7 @@ class ProjectPost extends React.Component {
         </div>
         <div className='side-col'>
           {post.financialRequestAmount && <PledgeProgress post={post}/> }
-          <Supporters post={post} financiallyEnabled={financiallyEnabled}/>
+          <Supporters post={post} financiallyEnabled={financiallyEnabled} currentUser={currentUser}/>
         </div>
       </div>
     </div>
@@ -117,7 +121,8 @@ class Supporters extends React.Component {
     currentUser: object,
     dispatch: func,
     financiallyEnabled: bool,
-    pledgeAmount: number
+    pledgeAmount: number,
+    currentUser: object
   }
 
   static contextTypes = {
@@ -170,12 +175,18 @@ class Supporters extends React.Component {
     })
   }
 
+  currentUserIsEconomicAgent = () => {
+    let currentUserHitfinLinkedAccount = _.find(this.props.currentUser.linkedAccounts, (acc) => acc.provider_key === 'hit-fin')
+    return !!currentUserHitfinLinkedAccount
+  }
+
   render() {
   const { post, simple, currentUser, financiallyEnabled, update } = this.props
   let { pledgeDialogueVisible } = this.state
   const { followers, end_time } = post
   const isFollowing = some(same('id', currentUser), followers)
   const follow = () => dispatch(followPost(post.id, currentUser))
+
   return <div className='supporters'>
     {!simple && <div className='top'>
       <h3>
@@ -197,7 +208,7 @@ class Supporters extends React.Component {
     {!simple && financiallyEnabled &&
       <button type='button' className='button pledge' onClick={this.setPledgeDialogueVisible} >Make A Pledge</button>
     }
-    {!simple && pledgeDialogueVisible && financiallyEnabled &&
+    {!simple && pledgeDialogueVisible && financiallyEnabled && this.currentUserIsEconomicAgent() &&
       <div className='pledge'>
         <div> How much would you like to pledge?</div>
         USD $
@@ -211,8 +222,26 @@ class Supporters extends React.Component {
 
       </div>
     }
+    {!simple && pledgeDialogueVisible && !this.currentUserIsEconomicAgent() &&
+      <PromptBecomeEconomicAgent />
+    }
   </div>
 }
+}
+
+class PromptBecomeEconomicAgent extends React.Component {
+
+  constructor(props) {
+    super(props)
+  }
+
+  render () {
+    const { thing } = this.props
+
+    return(
+      <div className='prompt-become-economic-agent'>Connect your account</div>
+    )
+  }
 }
 
 function getFinanciallyEnabled(id, state) {

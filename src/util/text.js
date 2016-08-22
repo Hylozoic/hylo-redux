@@ -1,4 +1,3 @@
-/* global FileReader */
 import prettyDate from 'pretty-date'
 import truncHtml from 'trunc-html'
 import linkify from './linkify'
@@ -135,7 +134,7 @@ export const emailsFromCSVFile = file => {
   const textType = /text.*/
   return new Promise((resolve, reject) => {
     if (!file.type.match(textType)) return reject('Not valid file format')
-    var reader = new FileReader()
+    var reader = new window.FileReader()
     reader.onload = () => {
       return emailsFromCSVString(reader.result)
       .then(resolve, reject)

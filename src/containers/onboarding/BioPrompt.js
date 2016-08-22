@@ -1,7 +1,7 @@
 import React from 'react'
 import Modal from '../../components/Modal'
 import ModalOnlyPage from '../../components/ModalOnlyPage'
-import ModalInput from '../../components/ModalInput'
+import { ModalInput } from '../../components/ModalRow'
 import { updateUserSettings } from '../../actions'
 import A from '../../components/A'
 import { debounce } from 'lodash'

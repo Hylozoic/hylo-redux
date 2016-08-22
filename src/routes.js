@@ -7,6 +7,9 @@ import App from './containers/App'
 import AllCommunities, { AllPosts } from './containers/AllCommunities'
 import People from './containers/People'
 import Projects from './containers/Projects'
+import {
+  CreateCommunityContainer, CreateCommunity, CreateCommunityInvite
+} from './containers/CreateCommunity'
 import CommunityProfile from './containers/community/CommunityProfile'
 import CommunityPosts from './containers/community/CommunityPosts'
 import CommunityEditor from './containers/community/CommunityEditor'
@@ -83,6 +86,12 @@ export default function makeRoutes (store) {
     <Route path='/' onEnter={(_, replace) => replace('/app')}/>
     <Route path='signup' component={Signup}/>
     <Route path='login' component={Login}/>
+
+    <Route path='create' component={CreateCommunityContainer}>
+      <IndexRoute component={CreateCommunity}/>
+      <Route path='invite' component={CreateCommunityInvite}/>
+    </Route>
+
     <Route path='set-password' component={SetPassword}/>
 
     <Route path='add-skills' component={SkillsPrompt} onEnter={requireLogin}/>
@@ -132,6 +141,7 @@ export default function makeRoutes (store) {
         <Route path='invite' component={CommunityInvitations} onEnter={requireLogin}/>
         <Route path='tag/:tagName' component={TagPosts} onEnter={requireLogin} />
         <Route path='notifications' component={Notifications} onEnter={requireLogin}/>
+
       </Route>
 
       <Route path='p/new' component={StandalonePostEditor} onEnter={requireLogin}/>

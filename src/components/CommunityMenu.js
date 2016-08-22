@@ -66,7 +66,7 @@ const CommunityMenu = ({ network, community }, { isMobile, dispatch, currentUser
       </li>
       <li className='join-or-start'>
         <div>
-          <A to='/c/join'>Join</A> or <A to='/c/new'>start</A> a community
+          <A to='/c/join'>Join</A> or <A to='/create'>start</A> a community
         </div>
       </li>
     </Dropdown>

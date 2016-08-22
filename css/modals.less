@@ -55,6 +55,9 @@
     input:focus {
       outline: none;
     }
+    textarea:focus {
+      outline: none;
+    }
   }
 }
 
@@ -116,6 +119,29 @@
 
   .modal-input {
     .modal-input-row;
+
+    .prefix-group {
+      display: table;
+      width: 100%;
+      .prefix {
+        color: @faint-gray-text;
+        width: 1%;
+        display: table-cell;
+      }
+      input {
+        display: table-cell;
+      }
+    }
+
+    .errors {
+      float: right;
+      display: inline;
+      .help.error {
+        padding-left: 15px;
+        color: @error-color;
+        display: inline;
+      }
+    }
   }
 
   > .meta {
@@ -219,6 +245,109 @@
       .regular;
     }
   }
+}
+
+.create-community {
+  padding-top: 50px;
+  padding-bottom: 50px;
+  .mobile({
+    padding-top: 25px;
+    padding-bottom: 25px;
+  });
+
+  textarea {
+    width: 100%;
+    border: none;
+    resize: none;
+    background-color: @faint-gray-bg;
+  }
+
+  .active {
+    textarea {
+      background-color: white;
+    }
+  }
+
+  a.button {
+    .green-button;
+  }
+
+  .toggle-section {
+    padding: 15px 0px 15px 30px;
+    a {
+      color: @damian-green;
+      &:hover {
+        text-decoration: none;
+      }
+    }
+    font-size: 12px;
+    .icon {
+      margin-left: 5px;
+      font-size: 13px;
+      position: relative;
+      top: 2px;
+    }
+  }
+}
+
+.create-community-one {
+  .small-logo {
+    .image-div(40px);
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: 10px;
+  }
+
+  .button.upload {
+    .round-button;
+    padding: 0 20px;
+    background-color: white;
+    border-color: @damian-green;
+    color: @damian-green;
+  }
+}
+
+.create-community-two {
+  input[type="file"] {
+    display: none
+  }
+
+  .csv-upload {
+    .help-text {
+      .meta;
+      display: inline-block;
+      width: 80%;
+    }
+
+    label.custom-file-upload {
+      .round-button;
+      line-height: 40px;
+      display: inline;
+      position: relative;
+      top: -20px;
+      cursor: pointer;
+      float: right;
+      padding: 0 20px;
+      background-color: white;
+      border: 1px solid @post-border;
+      color: @damian-green;
+    }
+  }
+
+  .emails {
+    textarea {
+      height: 100px;
+    }
+  }
+
+  .skip {
+    margin-left: 10px;
+    font-size: 12px;
+    color: @gray-text;
+  }
+}
+
+.create-community-three {
 }
 
 #skills-prompt {

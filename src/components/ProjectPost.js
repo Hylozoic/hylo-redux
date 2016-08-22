@@ -21,6 +21,7 @@ import moment from 'moment'
 import numeral from 'numeral'
 import { validatePledge } from '../util/validator'
 import _ from 'lodash'
+import PromptBecomeEconomicAgent from './PromptBecomeEconomicAgent'
 const { array, bool, func, object, number } = React.PropTypes
 
 const Deadline = ({ time }) => {
@@ -227,21 +228,6 @@ class Supporters extends React.Component {
     }
   </div>
 }
-}
-
-class PromptBecomeEconomicAgent extends React.Component {
-
-  constructor(props) {
-    super(props)
-  }
-
-  render () {
-    const { thing } = this.props
-
-    return(
-      <div className='prompt-become-economic-agent'>Connect your account</div>
-    )
-  }
 }
 
 function getFinanciallyEnabled(id, state) {

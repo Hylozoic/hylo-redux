@@ -221,6 +221,7 @@ export function fetchComments (postId, opts = {}) {
   // these are ignored since the comment API doesn't do pagination yet
   let limit = opts.limit || 1000
   let offset = opts.offset || 0
+  let refresh = opts.refresh || false
 
   return {
     type: FETCH_COMMENTS,
@@ -228,7 +229,7 @@ export function fetchComments (postId, opts = {}) {
     meta: {
       id: postId,
       subject: 'post',
-      cache: {id: postId, bucket: 'commentsByPost', limit, offset, array: true}
+      cache: {id: postId, bucket: 'commentsByPost', limit, offset, refresh, array: true}
     }
   }
 }

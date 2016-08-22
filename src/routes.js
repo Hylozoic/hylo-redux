@@ -39,10 +39,16 @@ import StandalonePostEditor from './containers/StandalonePostEditor'
 import Admin from './containers/Admin'
 import PageWithNav from './containers/PageWithNav'
 import TestBench from './containers/TestBench'
+import socketIOClient from 'socket.io-client'
+import sailsIOClient from 'sails.io.js'
 import { debug } from './util/logging'
 import { makeUrl } from './util/navigation'
 import { get, isEmpty, pick } from 'lodash'
 import config from './config'
+
+let io = sailsIOClient(socketIOClient)
+io.sails.url = config.upstreamHost
+io.sails.environment = config.environment
 
 export default function makeRoutes (store) {
   const requireLoginWithOptions = (options = {}) => (nextState, replace) => {
@@ -79,7 +85,7 @@ export default function makeRoutes (store) {
     }
   }
 
-  return <Route component={App}>
+  return <Route component={App} socket={ io.socket }>
     <Route path='/' onEnter={(_, replace) => replace('/app')}/>
     <Route path='signup' component={Signup}/>
     <Route path='login' component={Login}/>
@@ -135,7 +141,7 @@ export default function makeRoutes (store) {
       </Route>
 
       <Route path='p/new' component={StandalonePostEditor} onEnter={requireLogin}/>
-      <Route path='p/:id' component={SinglePost}/>
+      <Route path='p/:id' component={SinglePost} socket={ io.socket }/>
       <Route path='p/:id/edit' component={StandalonePostEditor} onEnter={requireLogin}/>
       <Route path='n/new' component={NetworkEditor} onEnter={requireLogin}/>
       <Route path='n/:id' component={NetworkProfile} onEnter={requireLogin}>

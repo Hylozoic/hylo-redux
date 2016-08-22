@@ -76,7 +76,7 @@ export default class App extends React.Component {
   render () {
     const {
       children, community, dispatch, leftNavIsOpen, notifierMessages, isMobile,
-      showModal
+      showModal, route: { socket }
     } = this.props
 
     return <div className={cx({leftNavIsOpen, isMobile, showModal: !isEmpty(showModal)})}>
@@ -87,7 +87,7 @@ export default class App extends React.Component {
       <LiveStatusPoller community={community}/>
       <PageTitleController/>
       <TagPopover/>
-      <ModalWrapper show={get('show', showModal)} params={get('params', showModal)}/>
+      <ModalWrapper socket={ socket } show={get('show', showModal)} params={get('params', showModal)}/>
     </div>
   }
 }

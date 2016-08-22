@@ -21,7 +21,7 @@ import ProjectPost from '../components/ProjectPost'
 import { getCurrentCommunity } from '../models/community'
 import { getComments, getCommunities, getPost } from '../models/post'
 import { fetch, ConnectedPostList } from './ConnectedPostList'
-const { array, bool, object, string } = React.PropTypes
+const { array, bool, object, string, func } = React.PropTypes
 
 const subject = 'community'
 
@@ -50,6 +50,7 @@ export default class SinglePost extends React.Component {
     community: object,
     editing: bool,
     error: string,
+    dispatch: func,
     location: object
   }
 
@@ -63,6 +64,18 @@ export default class SinglePost extends React.Component {
   static contextTypes = {
     isMobile: bool,
     currentUser: object
+  }
+
+  componentDidMount () {
+    const { post: { id, numComments }, dispatch } = this.props
+    this.props.route.socket.on(`p/${id}/comment_added`, function (){
+      dispatch(fetchComments(id, {offset: numComments, refresh: true}))
+    })
+  }
+
+  componentWillUnmount () {
+    const { post: { id } } = this.props
+    this.props.route.socket.off(`p/${id}/comment_added`)
   }
 
   getChildContext () {

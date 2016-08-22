@@ -166,7 +166,7 @@ export default class UserSettings extends React.Component {
 
 
   manageHitfinAccount = () => {
-    window.open('https://sandbox.hitfin.com/app/wallet')
+    window.open(process.env.HITFIN_API_URL + '/app/wallet')
   }
 
   updateMembership = (membership, path, value) => {

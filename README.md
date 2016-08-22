@@ -24,6 +24,7 @@ LIVERELOAD=true
 PORT=9000
 UPSTREAM_HOST=http://localhost:3001
 LOG_LEVEL=debug
+HITFIN_API_URL=https://sandbox.hitfin.com
 ```
 
 Create a file named `.env.test` with the same contents, except with `LOG_LEVEL` changed to `warn`, to reduce noise when running tests.

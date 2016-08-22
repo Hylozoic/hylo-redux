@@ -74,21 +74,23 @@ class TagPosts extends React.Component {
         {!isMobile && followers &&
           <Followers followers={sortBy(followers, f => f.id !== owner.id)}
             followerCount={followerCount}/>}
-        {id && <button id='follow-button'
-          className={tag.followed ? 'unfollow' : 'follow'}
-          onClick={toggleFollow}>
-          {tag.followed ? 'Unfollow' : 'Follow'}
-        </button>}
-        {id && <Tooltip id='follow'
-          index={3}
-          arrow='right'
-          position='bottom'
-          parentId='follow-button'
-          title='Follow Topics'>
-          <p>Follow topics you’re interested in to receive an in-app notification when there is a new Conversation in that topic.</p>
-        </Tooltip>}
-        {canInvite(currentUser, community) &&
-          <button className='share' onClick={() => dispatch(showShareTag(tagName, id))}><Icon name='Box-Out'/></button>}
+        <span className='buttons'>
+          {id && <button id='follow-button'
+            className={tag.followed ? 'unfollow' : 'follow'}
+            onClick={toggleFollow}>
+            {tag.followed ? 'Unfollow' : 'Follow'}
+          </button>}
+          {id && <Tooltip id='follow'
+            index={3}
+            arrow='right'
+            position='bottom'
+            parentId='follow-button'
+            title='Follow Topics'>
+            <p>Follow topics you’re interested in to receive an in-app notification when there is a new Conversation in that topic.</p>
+          </Tooltip>}
+          {canInvite(currentUser, community) &&
+            <button className='share' onClick={() => dispatch(showShareTag(tagName, id))}><Icon name='Box-Out'/></button>}
+        </span>
       </div>
       <ConnectedPostList {...{subject, id: id || 'all', query: {...query, tag: tagName}}}/>
     </div>
@@ -115,12 +117,22 @@ export default compose(
 )(TagPosts)
 
 const Followers = ({followers, followerCount}) => {
+  const adjustedCount = followerCount - 3
+  let displayedCount = `+${adjustedCount}`
+  if (followerCount > 99) {
+    if (followerCount < 1000) {
+      displayedCount = '99+'
+    } else {
+      displayedCount = `${Math.floor(followerCount / 1000)}k`
+    }
+  }
+
   return <div className='followers'>
     <span>Followed by</span>
     {followers.slice(0, 3).map(follower => <Avatar key={follower.id} person={follower} />)}
     {followers.length > 3 && <Dropdown toggleChildren={
       <span className='plus-button'>
-        <span className='content'>+{followerCount - 3}</span>
+        <span className='content'>{displayedCount}</span>
       </span>}>
       {followers.slice(3).map(follower =>
         <PersonDropdownItem key={follower.id} person={follower}/>)}

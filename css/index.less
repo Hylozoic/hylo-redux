@@ -306,13 +306,12 @@ ul.tags {
   position: relative;
   line-height: 34px;
   min-height: 70px;
-  text-align: right;
   background-color: @faint-gray-bg;
   padding: 15px;
 
   > * {
     vertical-align: middle;
-    margin-right: 5px;
+    margin-right: 15px;
     &:last-child {
       margin-right: 0;
     }
@@ -330,8 +329,6 @@ ul.tags {
 .list-controls.tag-header {
 
   .title {
-    position: absolute;
-    left: 20px;
     .tag-name {
       .tag-header-name-text;
     }
@@ -371,6 +368,10 @@ ul.tags {
         top: -4px;
       }
     }
+  }
+
+  .buttons {
+    float: right;
   }
 
   button {

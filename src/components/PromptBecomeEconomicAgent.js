@@ -9,11 +9,13 @@ class PromptBecomeEconomicAgent extends React.Component {
 
   render () {
     const { thing } = this.props
-    const promptText = "Please connect a HitFin account to pledge funds to projects. You can do this in the Payment Details section of your Account Settings"
+    const promptText = "Please connect a HitFin account to pledge funds to projects. You can do this in the Payment Details section of your "
+    const accountSettings = "Account Settings"
     return(
       <div className='prompt-become-economic-agent'>
-        <Link to='/settings'>
-          {promptText}
+        {promptText}
+        <Link className='account-settings-link' to='/settings'>
+          {accountSettings}
         </Link>
       </div>
     )

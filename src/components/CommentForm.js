@@ -6,7 +6,7 @@ import RichTextEditor from './RichTextEditor'
 import { createComment, updateCommentEditor, updateComment } from '../actions'
 import { ADDED_COMMENT, trackEvent } from '../util/analytics'
 import { textLength } from '../util/text'
-import { onCmdEnter } from '../util/textInput'
+import { onCmdOrCtrlEnter } from '../util/textInput'
 import TagDescriptionEditor from './TagDescriptionEditor'
 import cx from 'classnames'
 var { array, bool, func, object, string } = React.PropTypes
@@ -75,7 +75,7 @@ export default class CommentForm extends React.Component {
     const placeholder = this.props.placeholder || 'Add a comment...'
     const keyDown = e => {
       this.setState({enabled: this.refs.editor.getContent().length > 0})
-      onCmdEnter(e => {
+      onCmdOrCtrlEnter(e => {
         e.preventDefault()
         this.submit()
       }, e)
@@ -97,7 +97,7 @@ export default class CommentForm extends React.Component {
             <input type='submit' value='Post' ref='button'
               className={cx({enabled})}/>
             {close && <button onClick={close}>Cancel</button>}
-            <span className='meta help-text'>or press 'CMD + Enter' or 'Windows Key + Enter' to post.</span>
+            <span className='meta help-text'>or press 'CTRL + Enter' or 'CMD + Enter' to post.</span>
           </div>
         : <div className='content placeholder' onClick={edit}>
             {placeholder}

@@ -78,7 +78,7 @@ export default class CommentForm extends React.Component {
       onCmdEnter(e => {
         e.preventDefault()
         this.submit()
-      })(e)
+      }, e)
     }
 
     const { enabled } = this.state
@@ -97,7 +97,7 @@ export default class CommentForm extends React.Component {
             <input type='submit' value='Post' ref='button'
               className={cx({enabled})}/>
             {close && <button onClick={close}>Cancel</button>}
-            <span className='meta help-text'>or press 'CMD + Enter' or 'CTRL + Enter' to post.</span>
+            <span className='meta help-text'>or press 'CMD + Enter' or 'Windows Key + Enter' to post.</span>
           </div>
         : <div className='content placeholder' onClick={edit}>
             {placeholder}

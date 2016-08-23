@@ -28,6 +28,10 @@ server.post('/logout', function (req, res) {
   req.pipe(request.del(url, {headers})).pipe(res)
 })
 
+const notFound = (req, res) => res.status(404).end()
+server.get('/favicon.ico', notFound)
+server.get('/robots.txt', notFound)
+
 // api proxy
 server.use((req, res, next) => {
   if (!req.originalUrl.startsWith('/noo')) return next()

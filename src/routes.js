@@ -32,7 +32,6 @@ import AboutNetwork from './containers/network/AboutNetwork'
 import IconTest from './containers/IconTest'
 import NetworkCommunities from './containers/network/NetworkCommunities'
 import NetworkEditor from './containers/network/NetworkEditor'
-import Notifications from './containers/Notifications'
 import Search from './containers/Search'
 import Events from './containers/Events'
 import StandalonePostEditor from './containers/StandalonePostEditor'
@@ -131,7 +130,6 @@ export default function makeRoutes (store) {
         <Route path='settings' component={CommunitySettings} onEnter={requireLogin}/>
         <Route path='invite' component={CommunityInvitations} onEnter={requireLogin}/>
         <Route path='tag/:tagName' component={TagPosts} onEnter={requireLogin} />
-        <Route path='notifications' component={Notifications} onEnter={requireLogin}/>
       </Route>
 
       <Route path='p/new' component={StandalonePostEditor} onEnter={requireLogin}/>
@@ -149,7 +147,6 @@ export default function makeRoutes (store) {
       <Route component={AllCommunities}>
         <Route path='app' component={AllPosts} onEnter={requireCommunity()}/>
         <Route path='tag/:tagName' component={TagPosts}/>
-        <Route path='notifications' component={Notifications} onEnter={requireLogin}/>
         <Route path='projects' component={Projects} onEnter={requireLogin}/>
         <Route path='events' component={Events} onEnter={requireLogin}/>
         <Route path='people' component={People} onEnter={requireLogin}/>

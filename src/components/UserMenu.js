@@ -1,21 +1,15 @@
 import React from 'react'
-import { navigate, logout, markActivityRead } from '../actions'
+import { navigate, logout } from '../actions'
 import { makeUrl } from '../util/navigation'
 import { calliOSBridge } from '../client/util'
 import Icon from './Icon'
 import SearchInput from './SearchInput'
+import { NotificationsDropdown } from '../containers/Notifications'
 import A from './A'
 import Dropdown from './Dropdown'
 import { NonLinkAvatar } from './Avatar'
 import { isAdmin } from '../models/currentUser'
-import { actionText, getActivitiesProps } from '../models/activity'
 import cx from 'classnames'
-import { connect } from 'react-redux'
-import { fetchActivity } from '../actions/activity'
-import truncate from 'trunc-html'
-import decode from 'ent/decode'
-import { postUrl } from '../routes'
-import { get } from 'lodash/fp'
 
 const { bool, func, object } = React.PropTypes
 
@@ -55,40 +49,6 @@ class SearchMenuItem extends React.Component {
     </li>
   }
 }
-
-const NotificationsDropdown = connect(
-  (state, props) => getActivitiesProps('all', state)
-)(props => {
-  const { dispatch, newCount, activities, comments } = props
-  return <Dropdown alignRight rivalrous='nav'
-    onFirstOpen={() => dispatch(fetchActivity(0, true))}
-    toggleChildren={<span>
-      <Icon name='Bell'/>
-      {newCount > 0 && <div className='badge'>{newCount}</div>}
-    </span>}>
-    {activities.map(activity => <li key={activity.id}>
-      <NotificationsDropdownItem activity={activity}
-        comment={comments[activity.comment_id]}/>
-    </li>)}
-    <li className='bottom'><A to='/notifications'>See all</A></li>
-  </Dropdown>
-})
-
-const NotificationsDropdownItem = ({ activity, comment }, { dispatch }) => {
-  const { id, actor, action, post, unread, meta: { reasons } } = activity
-  const postName = truncate(decode(post.name), 140).html
-  const markAsRead = () => unread && dispatch(markActivityRead(id))
-  return <A to={postUrl(post.id, get('id', comment))} className={cx({unread})}
-    onClick={markAsRead}>
-    {unread && <div className='dot-badge'/>}
-    <NonLinkAvatar person={actor}/>
-    <span>
-      <strong>{actor.name}</strong>&nbsp;
-      {actionText(action, comment, post, reasons)} {postName}
-    </span>
-  </A>
-}
-NotificationsDropdownItem.contextTypes = {dispatch: func}
 
 const UserMenu = ({ slug, newCount }, { isMobile, dispatch, currentUser }) => {
   const doLogout = () => {

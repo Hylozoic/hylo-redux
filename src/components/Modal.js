@@ -6,6 +6,7 @@ import { closeModal } from '../actions'
 import BrowseTopicsModal from '../containers/BrowseTopicsModal'
 import ShareTopicModal from '../containers/ShareTopicModal'
 import ExpandedPostModal from '../containers/ExpandedPostModal'
+import { NotificationsModal } from '../containers/Notifications'
 import cx from 'classnames'
 import { get } from 'lodash'
 const { array, bool, func, object, string, oneOfType } = React.PropTypes
@@ -67,6 +68,9 @@ export class ModalWrapper extends React.Component {
         modal = <ExpandedPostModal id={params.id} commentId={params.commentId}/>
         clickToClose = true
         break
+      case 'notifications':
+        modal = <NotificationsModal/>
+        clickToClose = true
     }
 
     return <BareModalWrapper onClick={() => clickToClose && dispatch(closeModal())}>

@@ -52,7 +52,11 @@ const names = [
   'hylo-script',
   'linkedin',
   'merkaba',
-  'twitter'
+  'twitter',
+  'Chevron-Up2',
+  'Chevron-Down2',
+  'Chevron-Left2',
+  'Chevron-Right2'
 ]
 
 export default class IconTest extends React.Component {

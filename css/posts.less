@@ -828,6 +828,10 @@ ul.posts {
       margin-bottom: @p-bottom-margin;
     }
 
+    .avatar-list {
+        margin-bottom: @p-bottom-margin;
+    }
+
     div.pledge {
       margin: 5px;
       color: #888;
@@ -946,6 +950,32 @@ ul.posts {
 
 .post.project-summary {
   .special-post-summary-card;
+
+  .image {
+    .fluid-height(100%);
+  }
+
+  .details-row {
+    margin-bottom: 10px;
+  }
+
+  .details {
+    color: @gray-text;
+    font-weight: 300;
+    padding-right: 0px;
+  }
+
+  .show-more {
+    margin-left: 5px;
+    font-weight: 300;
+  }
+
+  .supporters {
+    .blurb {
+      margin-bottom: 5px;
+    }
+  }
+
 }
 
 .comment {
@@ -1055,7 +1085,21 @@ ul.posts {
 
   input[type='submit'] {
     .round-button;
-    float: right;
+
+    color: @faint-gray-text;
+    background-color: white;
+    border: 1px solid @faint-gray-border;
+    margin-right: 10px;
+
+    &.enabled {
+      border: 1px solid transparent;
+      color: white;
+      background-color: @damian-green;
+    }
+  }
+
+  .help-text {
+    font-size: 12px;
   }
 }
 

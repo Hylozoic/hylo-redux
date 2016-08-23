@@ -8,6 +8,7 @@ import { isEmpty } from 'lodash'
 import { find, some } from 'lodash/fp'
 import { same } from '../models'
 import { getComments, getPost, imageUrl } from '../models/post'
+import { getCurrentCommunity } from '../models/community'
 import Icon from './Icon'
 import Post from './Post'
 import Video from './Video'
@@ -195,13 +196,13 @@ class Supporters extends React.Component {
       </h3>
       {end_time && <Deadline time={end_time}/>}
     </div>}
-    <div className='avatar-list'>
-      {followers.map(person => <Avatar person={person} key={person.id}/>)}
-    </div>
     {!isEmpty(followers) && <LinkedPersonSentence people={followers} className='blurb meta'>
       support{followers.length > 1 || some(same('id', currentUser), followers) ? '' : 's'}
       <span>&nbsp;this.</span>
     </LinkedPersonSentence>}
+    <div className='avatar-list'>
+      {followers.map(person => <Avatar person={person} key={person.id}/>)}
+    </div>
     {!simple && <a className='support button has-icon' onClick={follow}>
       <Icon name={isFollowing ? 'ok-sign' : 'plus-sign'} glyphicon/>
       {isFollowing ? 'Supporting' : 'Support this'}
@@ -310,11 +311,21 @@ class ProjectRequest extends React.Component {
 const spacer = <span>&nbsp; •&nbsp; </span>
 
 export const ProjectPostCard = connect(
-  (state, { post }) => ({comments: getComments(post, state)})
-)(({ post, comments, dispatch }) => {
-  const { name, user, tag, end_time } = post
+  (state, { post }) => ({
+    comments: getComments(post, state),
+    community: getCurrentCommunity(state),
+    isMobile: state.isMobile
+  })
+)(({ post, community, comments, dispatch, isMobile }) => {
+  const { name, user, tag, end_time, id } = post
   const url = `/p/${post.id}`
   const backgroundImage = `url(${imageUrl(post)})`
+
+  let description = presentDescription(post, community)
+  const truncated = textLength(description) > 140
+  if (truncated) {
+    description = truncate(description, 140)
+  }
 
   return <div className='post project-summary'>
     <A className='image' to={url} style={{backgroundImage}}/>
@@ -330,6 +341,13 @@ export const ProjectPostCard = connect(
       <A to={`/u/${user.id}`}>{user.name}</A>
     </div>
     <A className='title' to={url}>{name}</A>
+    {!isMobile && description && <div className='details-row'>
+      <ClickCatchingSpan className='details'
+        dangerouslySetInnerHTML={{__html: description}}/>
+      {truncated && <span>
+        <A to={`/p/${id}`} className='show-more'>Show&nbsp;more</A>
+      </span>}
+    </div>}
     <Supporters post={post} simple/>
     <div className='comments-section-spacer'/>
     <CommentSection post={post} comments={comments}

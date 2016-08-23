@@ -1,5 +1,12 @@
 require('../support')
-import { appendInP, humanDate, present, textLength, timeRange } from '../../src/util/text'
+import {
+  appendInP,
+  humanDate,
+  present,
+  textLength,
+  timeRange,
+  emailsFromCSVString
+} from '../../src/util/text'
 
 describe('appendInP', () => {
   it('works correctly', () => {
@@ -65,5 +72,19 @@ describe('present', () => {
     const text = '<p>Hi,<br>how are you? Lorem ipsum and <b>all that rot</b></p>'
     const expected = '<p>Hi,<br/>how are you? Lorem ipsum and <b>all …</b></p>'
     expect(present(text, {maxlength: 36})).to.equal(expected)
+  })
+})
+
+describe('emailsFromCSVString', () => {
+  it('returns an array of emails', () => {
+    const text = 'name,email,other\n' +
+    'jo,jo@jo.com,stuff\n' +
+    'bob,bob@bob.com,stuff\n' +
+    'su,su@su.com,stuff\n'
+    const expected = ['jo@jo.com', 'bob@bob.com', 'su@su.com']
+    return emailsFromCSVString(text)
+    .then(emails => {
+      expect(emails).to.deep.equal(expected)
+    })
   })
 })

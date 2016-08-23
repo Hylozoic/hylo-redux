@@ -1,5 +1,4 @@
-// appHandler loads New Relic so it should be imported first
-import appHandler from './appHandler'
+import appHandler from './appHandler' // this line must be first
 import { upstreamHost, useAssetManifest, assetHost, assetPath } from '../config'
 import { magenta, red } from 'chalk'
 import { info } from '../util/logging'
@@ -28,6 +27,10 @@ server.post('/logout', function (req, res) {
   let url = `${upstreamHost}/noo/session`
   req.pipe(request.del(url, {headers})).pipe(res)
 })
+
+const notFound = (req, res) => res.status(404).end()
+server.get('/favicon.ico', notFound)
+server.get('/robots.txt', notFound)
 
 // api proxy
 server.use((req, res, next) => {

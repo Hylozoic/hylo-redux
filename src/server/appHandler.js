@@ -1,3 +1,4 @@
+import { setTransactionNameFromProps } from './newrelic' // this line must be first
 import React from 'react'
 import { renderToString, renderToStaticMarkup } from 'react-dom/server'
 import Html from '../containers/Html'
@@ -35,14 +36,6 @@ const detectMobileDevice = (req, store) => {
   if (md.mobile() && !md.tablet()) store.dispatch(setMobileDevice())
 }
 
-const setupNewRelic = (req, props) => {
-  const newrelic = process.env.NEW_RELIC_LICENSE_KEY ? require('newrelic') : null
-  if (newrelic) {
-    const txPath = map('path', props.routes).join('/').replace('//', '/')
-    newrelic.setTransactionName(`${req.method.toLowerCase()} ${txPath}`)
-  }
-}
-
 const matchLocation = (req, store) =>
   new Promise((resolve, reject) => {
     match({routes: makeRoutes(store), location: req.originalUrl},
@@ -76,7 +69,7 @@ export default function (req, res) {
   .then(([redirectLocation, props]) => {
     if (redirectLocation) return res.redirect(302, getPath(redirectLocation))
     if (!props) return res.status(404).send('Not found')
-    setupNewRelic(req, props)
+    setTransactionNameFromProps(req, props)
 
     return prefetch(props, store).then(() => {
       const state = store.getState()

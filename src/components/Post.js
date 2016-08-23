@@ -36,8 +36,8 @@ import decode from 'ent/decode'
 
 const spacer = <span>&nbsp; •&nbsp; </span>
 
-export const presentDescription = (post, community) =>
-  present(sanitize(post.description), {slug: get('slug', community)})
+export const presentDescription = (post, community, opts = {}) =>
+  present(sanitize(post.description), {slug: get('slug', community), ...opts})
 
 class Post extends React.Component {
   static propTypes = {

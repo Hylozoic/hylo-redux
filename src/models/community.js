@@ -1,7 +1,9 @@
 import { values } from 'lodash'
-import { find, pickBy } from 'lodash/fp'
+import { find, pickBy, get, includes } from 'lodash/fp'
 
 export const MemberRole = {DEFAULT: 0, MODERATOR: 1}
+export const defaultBanner = 'https://d3ngex8q79bk55.cloudfront.net/misc/default_community_banner.jpg'
+export const defaultAvatar = 'https://d3ngex8q79bk55.cloudfront.net/misc/default_community_avatar.png'
 
 export const avatarUploadSettings = ({ id, slug }) => ({
   id: slug,
@@ -23,5 +25,22 @@ export const getCommunity = (idOrSlug, state) =>
 export const getCurrentCommunity = state =>
   getCommunity(state.currentCommunityId, state)
 
+export const getLastCommunity = state =>
+  getCommunity(get('people.current.settings.currentCommunityId', state), state)
+
+export const getCurrentOrLastCommunity = state =>
+  state.currentCommunityId ? getCurrentCommunity(state) : getLastCommunity(state)
+
 export const getFollowedTags = ({ slug }, state) =>
   values(pickBy('followed', state.tagsByCommunity[slug]))
+
+export const getCheckList = community => {
+  const checkedItems = get('checkedItems', community)
+  const slug = get('slug', community)
+  return [
+    {title: 'Invite Members', link: `/c/${slug}/invite`, id: 1, done: includes('invite', checkedItems)},
+    {title: 'Setup topics and skills', link: `/c/${slug}/invite`, id: 2, done: includes('topics', checkedItems)},
+    {title: 'Add about info', link: `/c/${slug}/settings`, id: 3, done: includes('about', checkedItems)},
+    {title: 'Make your first post', link: `/c/${slug}`, id: 4, done: includes('post', checkedItems)}
+  ]
+}

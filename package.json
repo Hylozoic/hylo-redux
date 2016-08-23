@@ -41,6 +41,7 @@
     "chalk": "^1.1.1",
     "cheerio": "^0.20.0",
     "classnames": "^2.2.0",
+    "csv-parser": "^1.9.3",
     "dotenv": "^2.0.0",
     "ent": "^2.2.0",
     "express": "^4.13.3",

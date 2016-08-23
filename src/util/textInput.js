@@ -33,5 +33,8 @@ const onKeyCode = curry((modifier, keyCode, callback, event) =>
 // use like: <input type='text' onKeyDown={onEnter(callback)}/>
 export const onEnter = onKeyCode(null, keyMap.ENTER)
 export const onCmdEnter = onKeyCode('metaKey', keyMap.ENTER)
+export const onCtrlEnter = onKeyCode('ctrlKey', keyMap.ENTER)
+export const onCmdOrCtrlEnter = (callback, event) =>
+  onCtrlEnter(callback, event) || onCmdEnter(callback, event)
 
 export const preventSpaces = onKeyCode(null, keyMap.SPACE, e => e.preventDefault())

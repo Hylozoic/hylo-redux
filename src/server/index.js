@@ -1,5 +1,4 @@
-// appHandler loads New Relic so it should be imported first
-import appHandler from './appHandler'
+import appHandler from './appHandler' // this line must be first
 import { upstreamHost, useAssetManifest, assetHost, assetPath } from '../config'
 import { magenta, red } from 'chalk'
 import { info } from '../util/logging'

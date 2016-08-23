@@ -1,5 +1,5 @@
 import React from 'react'
-import { navigate, logout } from '../actions'
+import { navigate, logout, showModal } from '../actions'
 import { makeUrl } from '../util/navigation'
 import { calliOSBridge } from '../client/util'
 import Icon from './Icon'
@@ -78,10 +78,10 @@ const UserMenu = ({ slug, newCount }, { isMobile, dispatch, currentUser }) => {
           </A>
         </li>
         <li className='dropdown-notifications'>
-          <A to='/notifications'>
+          <a onClick={() => dispatch(showModal('notifications'))}>
             <Icon name='Bell'/> Notifications
             {newCount > 0 && <span className='badge'>{newCount}</span>}
-          </A>
+          </a>
         </li>
         <li>
           <A to={'/settings'}>

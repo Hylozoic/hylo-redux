@@ -18,7 +18,7 @@ import { getCurrentCommunity } from '../models/community'
 const { array, bool, func, number, object } = React.PropTypes
 import decode from 'ent/decode'
 import { getActivitiesProps, actionText, bodyText } from '../models/activity'
-import { ModalContainer } from '../components/Modal'
+import { Modal } from '../components/Modal'
 import A from '../components/A'
 import { NonLinkAvatar } from '../components/Avatar'
 import Dropdown from '../components/Dropdown'
@@ -131,7 +131,8 @@ export class NotificationsModal extends React.Component {
     activities: array,
     comments: object,
     total: number,
-    pending: bool
+    pending: bool,
+    onCancel: func
   }
 
   componentDidMount () {
@@ -139,7 +140,7 @@ export class NotificationsModal extends React.Component {
   }
 
   render () {
-    const { dispatch, activities, comments, total, pending } = this.props
+    const { dispatch, activities, comments, total, pending, onCancel } = this.props
     const offset = activities.length
     const loadMore = !pending && offset < total
       ? () => dispatch(fetchActivity(offset, false))
@@ -153,20 +154,18 @@ export class NotificationsModal extends React.Component {
     const markAllRead = () =>
       dispatch(markAllActivitiesRead(null, map('id', activities)))
 
-    return <ModalContainer id='notifications-modal'>
-      <div>
-        <button onClick={markAllRead}>
-          Mark all as read
-        </button>
-      </div>
-      <ul className='notifications-list'>
+    return <Modal id='notifications-modal' onCancel={onCancel}
+      title={<button onClick={markAllRead}>
+        Mark all as read
+      </button>}>
+      <ul className='notifications-list' onClick={onCancel}>
         {activities.map(activity => <li key={activity.id}>
           <NotificationsDropdownItem activity={activity}
             comment={comments[activity.comment_id]}/>
         </li>)}
       </ul>
       <ScrollListener {...scrollListenerProps}/>
-    </ModalContainer>
+    </Modal>
   }
 }
 

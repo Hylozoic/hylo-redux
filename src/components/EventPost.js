@@ -32,7 +32,7 @@ export const EventPostCard = connect(
   const time = timeRangeBrief(start, end)
   const timeFull = timeRangeFull(start, end)
 
-  const description = presentDescription(post, community)
+  const description = presentDescription(post, community, {maxlength: 200})
   const url = `/p/${id}`
   const backgroundImage = `url(${imageUrl(post)})`
 

@@ -3,6 +3,8 @@ import truncHtml from 'trunc-html'
 import linkify from './linkify'
 import moment from 'moment-timezone'
 import { compact } from 'lodash'
+import csv from 'csv-parser'
+import { Readable } from 'stream'
 
 export const truncate = (text, length) =>
   truncHtml(text, length, {
@@ -127,3 +129,36 @@ export const parseEmailString = emails =>
   }))
 
 export const nounCount = (n, noun) => `${n} ${noun}${Number(n) !== 1 ? 's' : ''}`
+
+export const emailsFromCSVFile = file => {
+  const textType = /text.*/
+  return new Promise((resolve, reject) => {
+    if (!file.type.match(textType)) return reject('Not valid file format')
+    var reader = new window.FileReader()
+    reader.onload = () => {
+      return emailsFromCSVString(reader.result)
+      .then(resolve, reject)
+    }
+    reader.readAsText(file)
+  })
+}
+
+export const emailsFromCSVString = csvString => {
+  var stream = new Readable()
+  stream.push(csvString)
+  stream.push(null)
+  return new Promise((resolve, reject) => {
+    var emails = []
+    stream.on('end', () => resolve(emails))
+    stream.on('error', reject)
+    stream
+    .pipe(csv())
+    .on('data', data => {
+      if (data.email) {
+        emails.push(data.email)
+      } else {
+        emails.push(data)
+      }
+    })
+  })
+}

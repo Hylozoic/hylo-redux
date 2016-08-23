@@ -11,15 +11,14 @@ import {
   validateCommunityAttribute
 } from '../../actions'
 import { uploadImage } from '../../actions/uploadImage'
-import { avatarUploadSettings, bannerUploadSettings } from '../../models/community'
+import {
+  avatarUploadSettings, bannerUploadSettings, defaultAvatar, defaultBanner
+} from '../../models/community'
 import { scrollToBottom } from '../../util/scrolling'
 import { ADDED_COMMUNITY, trackEvent } from '../../util/analytics'
 const { bool, func, object } = React.PropTypes
 
-const defaultBanner = 'https://d3ngex8q79bk55.cloudfront.net/misc/default_community_banner.jpg'
-const defaultAvatar = 'https://d3ngex8q79bk55.cloudfront.net/misc/default_community_avatar.png'
-
-const categories = {
+export const categories = {
   'coworking': 'Co-working space',
   'makerspace': 'Maker space',
   'startupAccelerator': 'Startup accelerator',

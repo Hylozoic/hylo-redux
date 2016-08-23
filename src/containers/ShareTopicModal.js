@@ -7,7 +7,7 @@ import {
 } from '../actions'
 import A from '../components/A'
 import { Modal } from '../components/Modal'
-import ModalInput from '../components/ModalInput'
+import { ModalInput } from '../components/ModalRow'
 import { communityTagJoinUrl } from '../routes'
 import { parseEmailString } from '../util/text'
 import { get, isEmpty, some } from 'lodash'

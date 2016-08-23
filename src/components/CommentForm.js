@@ -6,8 +6,9 @@ import RichTextEditor from './RichTextEditor'
 import { createComment, updateCommentEditor, updateComment } from '../actions'
 import { ADDED_COMMENT, trackEvent } from '../util/analytics'
 import { textLength } from '../util/text'
-import { onCmdEnter } from '../util/textInput'
+import { onCmdOrCtrlEnter } from '../util/textInput'
 import TagDescriptionEditor from './TagDescriptionEditor'
+import cx from 'classnames'
 var { array, bool, func, object, string } = React.PropTypes
 
 @connect((state, { postId, commentId }) => {
@@ -40,6 +41,7 @@ export default class CommentForm extends React.Component {
   submit = event => {
     const { dispatch, postId, commentId, newComment, close } = this.props
     if (event) event.preventDefault()
+    if (!this.state.enabled) return
     const text = this.refs.editor.getContent().replace(/<p>&nbsp;<\/p>$/m, '')
     if (!text || textLength(text) < 2) return false
 
@@ -71,10 +73,15 @@ export default class CommentForm extends React.Component {
 
     const setText = event => updateStore(event.target.value)
     const placeholder = this.props.placeholder || 'Add a comment...'
-    const quickSubmit = onCmdEnter(e => {
-      e.preventDefault()
-      this.submit()
-    })
+    const keyDown = e => {
+      this.setState({enabled: this.refs.editor.getContent().length > 0})
+      onCmdOrCtrlEnter(e => {
+        e.preventDefault()
+        this.submit()
+      }, e)
+    }
+
+    const { enabled } = this.state
 
     return <form onSubmit={this.submit} className='comment-form'>
       <Avatar person={currentUser}/>
@@ -86,9 +93,11 @@ export default class CommentForm extends React.Component {
               content={text}
               onBlur={() => updateStore(this.refs.editor.getContent())}
               onChange={setText}
-              onKeyDown={quickSubmit}/>
-            <input type='submit' value='Comment' ref='button'/>
+              onKeyDown={keyDown}/>
+            <input type='submit' value='Post' ref='button'
+              className={cx({enabled})}/>
             {close && <button onClick={close}>Cancel</button>}
+            <span className='meta help-text'>or press 'CTRL + Enter' or 'CMD + Enter' to post.</span>
           </div>
         : <div className='content placeholder' onClick={edit}>
             {placeholder}

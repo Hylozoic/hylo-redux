@@ -3,46 +3,37 @@ import { compose } from 'redux'
 import { connect } from 'react-redux'
 import { defer, prefetch } from 'react-fetcher'
 import {
-  FETCH_ACTIVITY,
-  fetchActivity,
   markActivityRead,
   markAllActivitiesRead,
   navigate,
   thank
 } from '../actions'
-import { filter, get, includes, map } from 'lodash'
-import { find } from 'lodash/fp'
+import { fetchActivity } from '../actions/activity'
+import { get, map } from 'lodash/fp'
 import cx from 'classnames'
 import ScrollListener from '../components/ScrollListener'
 import Avatar from '../components/Avatar'
 import truncate from 'trunc-html'
-import { present, humanDate } from '../util/text'
+import { humanDate } from '../util/text'
 import { VIEWED_NOTIFICATIONS, trackEvent } from '../util/analytics'
 import { postUrl } from '../routes'
 import { getCurrentCommunity } from '../models/community'
 const { array, bool, func, number, object } = React.PropTypes
 import decode from 'ent/decode'
+import { getActivitiesProps, actionText, bodyText } from '../models/activity'
 
 const Notifications = compose(
   prefetch(({ dispatch, params: { id } }) => dispatch(fetchActivity(0, true, id))),
   connect(state => {
-    const { activitiesByCommunity, totalActivities } = state
     const community = getCurrentCommunity(state)
-    const slug = community ? community.slug : 'all'
-    const activities = map(activitiesByCommunity[slug], id => state.activities[id])
-    const comments = filter(activities.map(a => a.comment_id))
-    .reduce((acc, cid) => ({...acc, [cid]: state.comments[cid]}), {})
-
+    const slug = get('slug', community) || 'all'
     return {
-      activities,
-      comments,
-      currentUser: state.people.current,
-      total: Number(totalActivities[slug]),
-      pending: state.pending[FETCH_ACTIVITY]
+      ...getActivitiesProps(slug, state),
+      currentUser: state.people.current
     }
   }),
   defer(() => trackEvent(VIEWED_NOTIFICATIONS))
-)(props => {
+)((props, context) => {
   const { currentUser, dispatch, total, pending, params } = props
   const offset = props.activities.length
   const loadMore = !pending && offset < total
@@ -55,7 +46,7 @@ const Notifications = compose(
       : activity)
 
   const markAllRead = () =>
-    dispatch(markAllActivitiesRead(params.id, map(activities, 'id')))
+    dispatch(markAllActivitiesRead(params.id, map('id', activities)))
 
   return <div>
     <div className='list-controls'>
@@ -82,35 +73,6 @@ Notifications.propTypes = {
 
 export default Notifications
 
-const actionText = (action, comment, post, reasons) => {
-  switch (action) {
-    case 'mention':
-      if (!comment) return `mentioned you in their post`
-      return 'mentioned you in a comment on'
-    case 'comment':
-      return 'commented on'
-    case 'followAdd':
-      return `added you to the ${post.tag}`
-    case 'follow':
-      return 'followed'
-    case 'unfollow':
-      return 'stopped following'
-    case 'tag':
-      const tagReason = find(r => r.startsWith('tag: '), reasons)
-      const tag = tagReason.split(': ')[1]
-      return `made a new post tagged with #${tag}:`
-  }
-}
-
-const bodyText = (action, comment, post) => {
-  if (includes(['followAdd', 'follow', 'unfollow'], action)) {
-    return ''
-  }
-  const text = get(comment, 'text') || get(post, 'description')
-  const slug = get(post, 'communities.0.slug')
-  return present(text, {slug, maxlength: 200})
-}
-
 const Activity = ({ activity, currentUser, dispatch }) => {
   const {
     actor, action, post, comment, comment_id, unread, created_at, meta: { reasons }
@@ -130,7 +92,7 @@ const Activity = ({ activity, currentUser, dispatch }) => {
 
   let visit = () => {
     if (unread) dispatch(markActivityRead(activity.id))
-    dispatch(navigate(postUrl(post.id, get(comment, 'id'))))
+    dispatch(navigate(postUrl(post.id, get('id', comment))))
   }
 
   return <div key={activity.id} className={cx('activity', {unread})}>

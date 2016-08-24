@@ -54,10 +54,20 @@ To deploy, first run `gulp deploy`. This will:
 
 Then run `git push heroku master` to deploy the most recent code.
 
+## Asset management
+
+We use `gulp-rev` to create "fingerprinted" static assets (CSS, JS, and images), so that when we upload assets to S3 during deployment, we only have to upload new files if there are changes. This improves cacheability and shortens deployment time a bit. `gulp-rev` creates a `manifest.json` file which maps filenames (e.g. `index.js`) to their fingerprinted versions (e.g. `index-5dfc4e8f97.js`).
+
+The final path to each static asset is determined with the use of the environment variables `ASSET_HOST` and `ASSET_PATH`. See `util/assets.js`.
+
+If you want to test asset management in development, set `ASSET_PATH` to `dist`, leave `ASSET_HOST` blank, and `USE_ASSET_MANIFEST` to anything. Create a symlink from `$PROJECT_ROOT/public/dist` to `$PROJECT_ROOT/dist`. You will then have to run `gulp build-dev` to regenerate fingerprinted assets and `manifest.json` after any changes.
+
+If you want to have your development instance point to assets that were deployed to production (e.g. to test a production issue), set `ASSET_HOST`, `ASSET_PATH`, `SOURCE_VERSION`, and `USE_ASSET_MANIFEST` to match their values in production. Also set `NODE_ENV` to 'production'.
+
 ## License
 
-    Hylo is a mobile and web application to help people do more together. 
-    Hylo helps communities better understand who in their community has what skills, 
+    Hylo is a mobile and web application to help people do more together.
+    Hylo helps communities better understand who in their community has what skills,
     and how they can create things together.
     Copyright (C) 2016, Hylozoic, Inc.
 

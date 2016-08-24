@@ -1,4 +1,3 @@
-import { assetHost, assetPath } from '../config'
 import { info } from '../util/logging'
 import { readFileSync } from 'fs'
 import request from 'request'
@@ -9,10 +8,14 @@ var manifest = {}
 export const setManifest = data => manifest = data
 export const getManifest = () => manifest
 
+const qualifiedUrl = path => {
+  const { ASSET_HOST, ASSET_PATH } = process.env
+  return `${ASSET_HOST || ''}/${ASSET_PATH}/${path}`
+}
+
 export const assetUrl = path => {
-  path = path.replace(/^\//, '')
-  if (!manifest[path]) return path
-  return `${assetHost}/${assetPath}/${manifest[path]}`
+  const newPath = manifest[path.replace(/^\//, '')]
+  return newPath ? qualifiedUrl(newPath) : path
 }
 
 export const setupAssetManifest = callback => {
@@ -24,7 +27,7 @@ export const setupAssetManifest = callback => {
     return callback()
   }
 
-  const url = `${assetHost}/${assetPath}/manifest-${process.env.SOURCE_VERSION}.json`
+  const url = qualifiedUrl(`manifest-${process.env.SOURCE_VERSION}.json`)
   info(`using asset manifest: ${url}`)
   request.get(url, {json: true}, (err, res) => {
     if (err) throw err

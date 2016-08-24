@@ -21,7 +21,7 @@ export const validateForm = component => {
         return Promise.resolve(false)
     }
 
-    if (new Date(postEdit.end_time).getTime() < new Date().getTime()) {
+    if (postEdit.end_time && new Date(postEdit.end_time).getTime() < new Date().getTime()) {
         window.alert('Deadline must have not yet passed.')
         return Promise.resolve(false)
     }

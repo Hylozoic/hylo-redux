@@ -99,7 +99,7 @@ export default class ProjectPostEditor extends React.Component {
 
   deadlineDatePicker = (end_time) => {
     let deadlineDatePicker
-    if(this.checkIfEdit && this.financialRequestsEnabled){
+    if(this.checkIfEdit && this.props.postEdit.financialRequestsEnabled){
       deadlineDatePicker = <input type="text" className="end_time"
              value={this.valueOfEndTime(end_time)}
              disabled/>
@@ -175,7 +175,7 @@ export default class ProjectPostEditor extends React.Component {
         </div>
         <div className='deadline'>
           <Icon name='Calendar'/>
-          {this.deadlineDatePicker()}
+          {this.deadlineDatePicker(postEdit.end_time)}
         </div>
         <div className='location'>
           <Icon name='Pin-1'/>

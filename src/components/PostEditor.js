@@ -439,8 +439,8 @@ export class PostEditor extends React.Component {
 
 const VisibilityDropdown = ({ isPublic, setPublic }, { dispatch }) => {
   const toggle = isPublic
-    ? <button><Icon name='merkaba'/>Public <span className='caret'></span></button>
-    : <button><Icon name='merkaba'/>Public <span className='caret'></span></button>
+    ? <button><Icon name='World'/>Public <span className='caret'/></button>
+    : <button><Icon name='Users'/>Only Communities <span className='caret'/></button>
 
   const communityOption = <li><a onClick={() => setPublic(false)}><div>
     <span className='option-title'> <Icon name='Users'/>Only Communities</span>
@@ -448,7 +448,7 @@ const VisibilityDropdown = ({ isPublic, setPublic }, { dispatch }) => {
   </div></a></li>
 
   const publicOption = <li><a onClick={() => setPublic(true)}><div>
-    <span className='option-title'><Icon name='merkaba'/>Public</span>
+    <span className='option-title'><Icon name='World'/>Public</span>
     <span className='description'>Allow anyone on the internet to see this post.</span>
   </div></a></li>
 
@@ -477,7 +477,7 @@ const AttachmentsDropdown = (props, { dispatch }) => {
 
   return <Dropdown className='attachments' toggleChildren={
     <span>
-      <span className='icon-Camera'></span>
+      <button>+</button>
       {imagePending
         ? ' Uploading...'
         : length > 0 && ` (${length})`}

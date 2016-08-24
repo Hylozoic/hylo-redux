@@ -158,9 +158,6 @@
     padding-top: 15px;
     border-top: 1px solid @faint-gray-border;
     line-height: 40px;
-    > *, span {
-      vertical-align: middle;
-    }
 
     div {
       display: inline-block;
@@ -192,12 +189,6 @@
     }
   }
 
-  .icon-Camera {
-    font-size: 18px;
-    position: relative;
-    top: -2px;
-  }
-
   .attachments {
     margin-right: 10px;
 
@@ -208,7 +199,12 @@
       line-height: 25px;
       vertical-align: middle;
       padding: 0;
-      color: @faint-gray-text;
+      color: @gray-text;
+      &:focus {
+        color: white;
+        background-color: @damian-green;
+        border-color: @damian-green;
+      }
     }
 
     a.dropdown-toggle:hover {
@@ -217,8 +213,23 @@
     }
 
     .dropdown-menu {
-      max-width: 300px;
+      width: 300px;
+
+      .icon {
+        margin-right: 5px;
+      }
+
+      .description {
+        color: @faint-gray-text;
+        font-size: 13px;
+        overflow: auto;
+        display: block;
+        white-space: normal;
+        margin-left: 22px;
+        font-weight: 300;
+      }
     }
+
     .image {
       position: relative;
       img {
@@ -238,6 +249,12 @@
       overflow: hidden;
       white-space: nowrap;
       text-overflow: ellipsis;
+    }
+    ul {
+      line-height: none;
+      icon {
+        margin-right: 5px;
+      }
     }
   }
 
@@ -309,7 +326,7 @@
       vertical-align: middle;
       text-align: center;
       padding: 0 10px;
-      color: @faint-gray-text;
+      color: @gray-text;
       border: 1px solid @faint-gray-border;
       &:hover {
         background-color: @faint-gray-border;
@@ -320,21 +337,25 @@
       }
     }
 
-    .option-title {
-      .icon {
-        margin-right: 5px;
+    .dropdown-menu {
+      width: 300px;
+
+      .option-title {
+        .icon {
+          margin-right: 5px;
+        }
+      }
+      .description {
+        color: @faint-gray-text;
+        font-size: 13px;
+        overflow: auto;
+        display: block;
+        white-space: normal;
+        margin-left: 21px;
+        font-weight: 300;
       }
     }
-    .description {
-      color: @faint-gray-text;
-      font-size: 13px;
-      overflow: auto;
-      width: 250px;
-      display: block;
-      white-space: normal;
-      margin-left: 22px;
-      font-weight: 300;
-    }
+
   }
 
   .link-preview-section {

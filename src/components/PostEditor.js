@@ -21,7 +21,7 @@ import ProjectPostEditor from './ProjectPostEditor'
 import RichTextEditor from './RichTextEditor'
 import { NonLinkAvatar } from './Avatar'
 import AutosizingTextarea from './AutosizingTextarea'
-import Icon from './Icon'
+import Icon, { IconGoogleDrive } from './Icon'
 import LinkPreview from './LinkPreview'
 import Tooltip from './Tooltip'
 import { connect } from 'react-redux'
@@ -485,10 +485,25 @@ const AttachmentsDropdown = (props, { dispatch }) => {
   }>
     <li>
       <a onClick={attachImage}>
-        {image ? 'Change' : 'Attach'} Image
+        <span>
+          <Icon name='Cloud-Upload' />
+          {image ? 'Change' : 'Upload'} Image
+        </span>
+        <div className='description'>
+          Upload an image from your computer, a URL or social media.
+        </div>
       </a>
     </li>
-    <li><a onClick={attachDoc}>Attach File with Google Drive</a></li>
+    <li>
+      <a onClick={attachDoc}>
+        <span>
+          <IconGoogleDrive />Google Drive
+        </span>
+        <div className='description'>
+          Attach documents, images or videos from Google Drive.
+        </div>
+        </a>
+    </li>
     {(image || some(docs)) && <li role='separator' className='divider'></li>}
     {image && <li className='image'>
       <a className='remove' onClick={() => dispatch(removeImage('post', id))}>

@@ -44,7 +44,7 @@ export default class PledgeProgress extends React.Component {
   componentDidMount (){
     const { post } = this.props
     const { dispatch } = this.context
-    this.timeoutPointer = setTimeout(() => { this.updateProjectPledgeProgress (post, dispatch) } , 3 * 1000)
+    this.timeoutPointer = setTimeout(() => { this.updateProjectPledgeProgress (post, dispatch) } , 500)
   }
 
   componentWillUnmount () {

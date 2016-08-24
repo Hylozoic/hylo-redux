@@ -26,18 +26,18 @@ export default class PledgeProgress extends React.Component {
        if(res){
          if(res.error){
            console.error(res.payload.message)
-           this.timeoutPointer = setTimeout(() => { this.updateProjectPledgeProgress (post, dispatch) } , 60 * 1000)
+           this.timeoutPointer = setTimeout(() => { this.updateProjectPledgeProgress (post, dispatch) } , 10 * 1000)
          }else{
            const pledgeAmount = res.payload.pledgeAmount
            if(pledgeAmount){
              this.setState({currencyPledgeAmount: numeral(pledgeAmount).format('$0,0.00')})
            }
-           this.timeoutPointer = setTimeout(() => { this.updateProjectPledgeProgress (post, dispatch) } , 60 * 1000)
+           this.timeoutPointer = setTimeout(() => { this.updateProjectPledgeProgress (post, dispatch) } , 1 * 1000)
          }
        }
      }, (err) => {
        console.error(err)
-       this.timeoutPointer = setTimeout(() => { this.updateProjectPledgeProgress (post, dispatch) } , 60 * 1000)
+       this.timeoutPointer = setTimeout(() => { this.updateProjectPledgeProgress (post, dispatch) } , 10 * 1000)
      })
   }
 

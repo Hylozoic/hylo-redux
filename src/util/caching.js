@@ -77,7 +77,7 @@ export const connectedListProps = (state, props, itemType) => {
 
 export const fetchWithCache = action => (subject, id, query = {}) => {
   let cacheId = createCacheId(subject, id, query)
-  return action({subject, id, limit: 20, ...query, cacheId})
+  return action({subject, id, limit: 10, ...query, cacheId})
 }
 
 export const refetch = (opts, location, defaults) => {

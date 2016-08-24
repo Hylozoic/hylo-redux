@@ -8,12 +8,14 @@ import { handleStaticPages } from './proxy'
 import express from 'express'
 import request from 'request'
 import { readFileSync } from 'fs'
+import compression from 'compression'
 
 const port = process.env.PORT || 9000
 const upstreamHostname = parse(upstreamHost).hostname
 const fixHeaders = headers => ({...headers, host: upstreamHostname})
 
 const server = express()
+server.use(compression())
 server.use(express.static('public'))
 handleStaticPages(server)
 

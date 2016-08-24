@@ -19,6 +19,7 @@ import { ClickCatchingSpan } from './ClickCatcher'
 import { handleMouseOver } from './TagPopover'
 import Comment from './Comment'
 import CommentForm from './CommentForm'
+import LazyLoader from './LazyLoader'
 import Icon from './Icon'
 import LinkedPersonSentence from './LinkedPersonSentence'
 import LinkPreview from './LinkPreview'
@@ -68,7 +69,9 @@ class Post extends React.Component {
       <a name={`post-${post.id}`}></a>
       <Header communities={communities}/>
       <p className='title post-section' dangerouslySetInnerHTML={{__html: title}}></p>
-      {image && <img src={image.url} className='post-section full-image'/>}
+      {image && <LazyLoader>
+        <img src={image.url} className='post-section full-image'/>
+      </LazyLoader>}
       <Details {...{expanded, onExpand}}/>
       {linkPreview && <LinkPreview {...{linkPreview}}/>}
       <div className='voting post-section'><VoteButton/><Voters/></div>

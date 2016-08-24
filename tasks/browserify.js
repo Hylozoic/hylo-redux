@@ -28,6 +28,7 @@ const opts = {
 const setup = b => {
   b.transform('babelify')
   b.transform('envify')
+  b.transform('uglifyify')
   return b
 }
 

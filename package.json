@@ -116,6 +116,7 @@
     "rework-plugin-url": "^1.1.0",
     "run-sequence": "^1.1.5",
     "shelljs": "^0.7.3",
+    "uglifyify": "^3.0.2",
     "vinyl-buffer": "^1.0.0",
     "vinyl-source-stream": "^1.1.0",
     "walk": "^2.3.9",

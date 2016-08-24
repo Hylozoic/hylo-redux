@@ -408,25 +408,26 @@ export class PostEditor extends React.Component {
       </div>
 
       <div className='buttons'>
-        <div className='right'>
-          <a className='cancel' onClick={() => this.cancel()}>
-            <Icon name='Fail'/>
-          </a>
-        </div>
 
-        <button className='save' ref='save' onClick={() => this.saveIfValid()}
-          disabled={saving}>
-          {post ? 'Save Changes' : 'Post'}
-        </button>
+        <VisibilityDropdown
+          isPublic={postEdit.public || false}
+          setPublic={isPublic => this.updateStore({public: isPublic})}/>
 
         <AttachmentsDropdown id={this.props.id}
           media={postEdit.media}
           path={`user/${currentUser.id}/seeds`}
           imagePending={imagePending}/>
 
-        <VisibilityDropdown
-          isPublic={postEdit.public || false}
-          setPublic={isPublic => this.updateStore({public: isPublic})}/>
+        <div className='right'>
+          <a className='cancel' onClick={() => this.cancel()}>
+            <Icon name='Fail'/>
+          </a>
+        </div>
+
+        <button className='save right' ref='save' onClick={() => this.saveIfValid()}
+          disabled={saving}>
+          {post ? 'Save Changes' : 'Post'}
+        </button>
 
       </div>
       {(editingTagDescriptions || creatingTagAndDescription) && <TagDescriptionEditor

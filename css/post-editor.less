@@ -291,9 +291,40 @@
   }
 
   .visibility {
-    color: @placeholder-color;
-    .light;
-    font-size: 13px;
+
+    button {
+      height: 24px;
+      border-radius: 24px;
+      line-height: 22px;
+      vertical-align: middle;
+      text-align: center;
+      padding: 0 10px;
+      color: @faint-gray-text;
+      border: 1px solid @faint-gray-border;
+      &:hover {
+        background-color: @faint-gray-border;
+        color: black;
+      }
+      .icon {
+        margin-right: 5px;
+      }
+    }
+
+    .option-title {
+      .icon {
+        margin-right: 5px;
+      }
+    }
+    .description {
+      color: @faint-gray-text;
+      font-size: 13px;
+      overflow: auto;
+      width: 250px;
+      display: block;
+      white-space: normal;
+      margin-left: 22px;
+      font-weight: 300;
+    }
   }
 
   .link-preview-section {

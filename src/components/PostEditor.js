@@ -424,18 +424,40 @@ export class PostEditor extends React.Component {
           path={`user/${currentUser.id}/seeds`}
           imagePending={imagePending}/>
 
-        <label className='visibility'>
-          <input type='checkbox' checked={postEdit.public || false}
-            onChange={() => this.updateStore({public: !postEdit.public})}/>
-          &nbsp;
-          Public
-        </label>
+        <VisibilityDropdown
+          isPublic={postEdit.public || false}
+          setPublic={isPublic => this.updateStore({public: isPublic})}/>
+
       </div>
       {(editingTagDescriptions || creatingTagAndDescription) && <TagDescriptionEditor
         saveParent={this.saveWithTagDescriptions}
         updatePostTag={this.updatePostTagAndDescription} />}
     </div>
   }
+}
+
+const VisibilityDropdown = ({ isPublic, setPublic }, { dispatch }) => {
+  const toggle = isPublic
+    ? <button><Icon name='merkaba'/>Public <span className='caret'></span></button>
+    : <button><Icon name='merkaba'/>Public <span className='caret'></span></button>
+
+  const communityOption = <li><a onClick={() => setPublic(false)}><div>
+    <span className='option-title'> <Icon name='Users'/>Only Communities</span>
+    <span className='description'>Allow communities and people who are tagged to see this post.</span>
+  </div></a></li>
+
+  const publicOption = <li><a onClick={() => setPublic(true)}><div>
+    <span className='option-title'><Icon name='merkaba'/>Public</span>
+    <span className='description'>Allow anyone on the internet to see this post.</span>
+  </div></a></li>
+
+  const options = isPublic
+    ? [publicOption, communityOption]
+    : [communityOption, publicOption]
+
+  return <Dropdown toggleChildren={toggle} className='visibility'>
+    {options}
+  </Dropdown>
 }
 
 const AttachmentsDropdown = (props, { dispatch }) => {

@@ -2,11 +2,12 @@ import appHandler from './appHandler' // this line must be first
 import { upstreamHost } from '../config'
 import { magenta, red } from 'chalk'
 import { info } from '../util/logging'
-import { setupAssetManifest } from '../util/assets'
+import { qualifiedUrl, setManifest } from '../util/assets'
 import { parse } from 'url'
 import { handleStaticPages } from './proxy'
 import express from 'express'
 import request from 'request'
+import { readFileSync } from 'fs'
 
 const port = process.env.PORT || 9000
 const upstreamHostname = parse(upstreamHost).hostname
@@ -50,6 +51,25 @@ server.use((req, res, next) => {
 })
 
 server.use(appHandler)
+
+const setupAssetManifest = callback => {
+  if (!process.env.USE_ASSET_MANIFEST) return callback()
+
+  if (process.env.NODE_ENV !== 'production') {
+    info('using local asset manifest: dist/manifest.json')
+    setManifest(JSON.parse(readFileSync(__dirname + '/../../dist/manifest.json')))
+    return callback()
+  }
+
+  const url = qualifiedUrl(`manifest-${process.env.SOURCE_VERSION}.json`)
+  info(`using asset manifest: ${url}`)
+  request.get(url, {json: true}, (err, res) => {
+    if (err) throw err
+    if (res.statusCode !== 200) throw new Error(`${url} => ${res.statusCode}`)
+    setManifest(res.body)
+    callback()
+  })
+}
 
 setupAssetManifest(() => server.listen(port, err => {
   if (err) throw err

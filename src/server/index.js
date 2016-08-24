@@ -1,8 +1,8 @@
 import appHandler from './appHandler' // this line must be first
-import { upstreamHost, useAssetManifest, assetHost, assetPath } from '../config'
+import { upstreamHost } from '../config'
 import { magenta, red } from 'chalk'
 import { info } from '../util/logging'
-import { setManifest } from '../util/assets'
+import { setupAssetManifest } from '../util/assets'
 import { parse } from 'url'
 import { handleStaticPages } from './proxy'
 import express from 'express'
@@ -51,23 +51,7 @@ server.use((req, res, next) => {
 
 server.use(appHandler)
 
-const start = () => {
-  server.listen(port, function (err) {
-    if (err) throw err
-    info('listening on port ' + port)
-  })
-}
-
-if (useAssetManifest) {
-  let url = `${assetHost}/${assetPath}/manifest-${process.env.SOURCE_VERSION}.json`
-  info(`using manifest: ${url}`)
-  request.get(url, {json: true}, (err, res) => {
-    if (err) throw err
-    if (res.statusCode !== 200) throw new Error(`${url} => ${res.statusCode}`)
-
-    setManifest(res.body)
-    start()
-  })
-} else {
-  start()
-}
+setupAssetManifest(() => server.listen(port, err => {
+  if (err) throw err
+  info('listening on port ' + port)
+}))

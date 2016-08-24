@@ -87,6 +87,17 @@ gulp.task('build', function (done) {
   )
 })
 
+gulp.task('dotenv', () => require('dotenv').load())
+
+gulp.task('build-dev', function (done) {
+  runSequence(
+    'clean-dist',
+    'dotenv',
+    ['build-dist-css', 'build-dist-js'],
+    done
+  )
+})
+
 gulp.task('deploy', function (done) {
   runSequence(
     'clean-dist',

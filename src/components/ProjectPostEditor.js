@@ -99,12 +99,18 @@ export default class ProjectPostEditor extends React.Component {
 
   deadlineDatePicker = (end_time) => {
     let deadlineDatePicker
-    if(this.checkIfEdit && this.props.postEdit.financialRequestsEnabled){
-      deadlineDatePicker = <input type="text" className="end_time"
-             value={this.valueOfEndTime(end_time)}
-             disabled/>
+    if(!this.checkIfEdit()){
+      deadlineDatePicker = <DatetimePicker className="deadline-date-picker"
+                      inputProps={{placeholder: 'deadline'}}
+                      value={this.valueOfEndTime(this.props.postEdit.end_time)}
+                      onChange={m => this.props.update({end_time: this.valueOfEndTime(m)})}/>
     }
-    else {
+    else if (this.props.postEdit.financialRequestsEnabled){
+      deadlineDatePicker = <input type="text" className="end_time"
+      value={this.valueOfEndTime(end_time)}
+      disabled/>
+    }
+    else{
       deadlineDatePicker = <DatetimePicker className="deadline-date-picker"
                       inputProps={{placeholder: 'deadline'}}
                       value={this.valueOfEndTime(this.props.postEdit.end_time)}

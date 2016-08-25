@@ -273,7 +273,7 @@ export class PostEditor extends React.Component {
   }
 
   tabToDetails = event => {
-    if (isKey(event, 'TAB')) {
+    if (isKey(event, 'TAB') && !event.shiftKey) {
       event.preventDefault()
       this.goToDetails()
     }
@@ -356,12 +356,11 @@ export class PostEditor extends React.Component {
         <AutosizingTextarea type='text' ref='title' className='title'
           value={name}
           placeholder={placeholderText(this.editorType())}
-          onKeyDown={this.tabToDetails}
           onChange={event => this.updateTitle(event)}/>
       </div>
 
       {shouldSelectTag && <Dropdown className='hashtag-selector' toggleChildren={
-        <button ref='tagSelector' id='tag-selector'>
+        <button ref='tagSelector' id='tag-selector' onKeyDown={this.tabToDetails}>
           #{tag || 'all-topics'}&nbsp;
           <span className='caret'></span>
         </button>

@@ -231,13 +231,8 @@ class Supporters extends React.Component {
 }
 }
 
-function getFinanciallyEnabled(id, state) {
-  return true
-}
-
 @connect((state, { id }) => ({
-  post: getPost(id, state),
-  financiallyEnabled: getFinanciallyEnabled(id, state)
+  post: getPost(id, state)
 }))
 class ProjectRequest extends React.Component {
   static propTypes = {

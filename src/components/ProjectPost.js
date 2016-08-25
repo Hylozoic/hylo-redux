@@ -11,6 +11,7 @@ import { getCurrentCommunity } from '../models/community'
 import Icon from './Icon'
 import Post from './Post'
 import Video from './Video'
+import LazyLoader from './LazyLoader'
 import Avatar from './Avatar'
 import LinkedPersonSentence from './LinkedPersonSentence'
 import A from './A'
@@ -45,7 +46,7 @@ const ProjectPost = (props, context) => {
     <div className='box'>
       {video
         ? <div className='video-wrapper'><Video url={video.url}/></div>
-      : image && <div className='image'><img src={image.url}/></div>}
+        : image && <div className='image'><img src={image.url}/></div>}
       <div className='row'>
         <div className='main-col'>
           {location && <div className='meta location'>
@@ -205,7 +206,9 @@ export const ProjectPostCard = connect(
   }
 
   return <div className='post project-summary'>
-    <A className='image' to={url} style={{backgroundImage}}/>
+    <LazyLoader className='image'>
+      <A to={url} style={{backgroundImage}}/>
+    </LazyLoader>
     <div className='meta'>
       {end_time && <span>
         <Deadline time={end_time}/>

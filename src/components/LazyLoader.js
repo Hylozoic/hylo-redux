@@ -1,6 +1,7 @@
 import React from 'react'
 import { debounce } from 'lodash'
-const { func, node } = React.PropTypes
+import cx from 'classnames'
+const { func, node, string } = React.PropTypes
 
 var loaders
 
@@ -43,7 +44,8 @@ export const init = () => {
 export default class LazyLoader extends React.Component {
   static propTypes = {
     children: node,
-    onContentVisible: func
+    onContentVisible: func,
+    className: string
   }
 
   constructor (props) {
@@ -64,8 +66,9 @@ export default class LazyLoader extends React.Component {
   }
 
   render () {
-    return <div className='lazy-loader' ref='loader'>
-      {this.state.visible && this.props.children}
+    const { className, children } = this.props
+    return <div className={cx('lazy-loader', className)} ref='loader'>
+      {this.state.visible && children}
     </div>
   }
 }

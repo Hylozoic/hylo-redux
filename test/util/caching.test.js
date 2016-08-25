@@ -88,7 +88,7 @@ describe('fetchWithCache', () => {
         id: 1,
         search: 'foo',
         type: 'weird',
-        limit: 20,
+        limit: 10,
         cacheId: 'subject=subject&id=1&type=weird&search=foo'
       }
     }

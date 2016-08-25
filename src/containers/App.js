@@ -63,7 +63,6 @@ export default class App extends React.Component {
     currentUser: object,
     isMobile: bool,
     location: object,
-    sails: object,
     socket: object
   }
 
@@ -74,7 +73,6 @@ export default class App extends React.Component {
       currentUser,
       isMobile,
       location,
-      sails: io.sails,
       socket: io.socket
     }
   }
@@ -93,7 +91,7 @@ export default class App extends React.Component {
   render () {
     const {
       children, community, dispatch, leftNavIsOpen, notifierMessages, isMobile,
-      showModal, route: { socket }
+      showModal
     } = this.props
 
     return <div className={cx({leftNavIsOpen, isMobile, showModal: !isEmpty(showModal)})}>
@@ -104,7 +102,7 @@ export default class App extends React.Component {
       <LiveStatusPoller community={community}/>
       <PageTitleController/>
       <TagPopover/>
-      <ModalWrapper socket={ socket } show={get('show', showModal)} params={get('params', showModal)}/>
+      <ModalWrapper show={get('show', showModal)} params={get('params', showModal)}/>
     </div>
   }
 }

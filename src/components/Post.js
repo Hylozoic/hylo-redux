@@ -258,7 +258,6 @@ export class CommentSection extends React.Component {
     community: object,
     currentUser: object,
     isProjectRequest: bool,
-    sails: object,
     socket: object
   }
 

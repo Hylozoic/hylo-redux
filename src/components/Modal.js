@@ -31,7 +31,7 @@ export const BareModalWrapper = ({ children, onClick }) => {
 }
 
 export class ModalWrapper extends React.Component {
-  static propTypes = {socket: object, show: string, params: object}
+  static propTypes = {show: string, params: object}
   static contextTypes = {dispatch: func}
 
   lockScrolling = () => {
@@ -48,7 +48,7 @@ export class ModalWrapper extends React.Component {
   }
 
   render () {
-    const { socket, show, params } = this.props
+    const { show, params } = this.props
     const { dispatch } = this.context
     if (!show) return null
 
@@ -64,7 +64,7 @@ export class ModalWrapper extends React.Component {
         clickToClose = true
         break
       case 'expanded-post':
-        modal = <ExpandedPostModal socket={socket} id={params.id} commentId={params.commentId}/>
+        modal = <ExpandedPostModal id={params.id} commentId={params.commentId}/>
         clickToClose = true
         break
     }

@@ -32,6 +32,7 @@ import { getComments, getCommunities, isPinned } from '../models/post'
 import { getCurrentCommunity } from '../models/community'
 import { canEditPost, canModerate } from '../models/currentUser'
 import { isMobile } from '../client/util'
+import config from '../config'
 import decode from 'ent/decode'
 
 const spacer = <span>&nbsp; •&nbsp; </span>
@@ -256,7 +257,27 @@ export class CommentSection extends React.Component {
   static contextTypes = {
     community: object,
     currentUser: object,
-    isProjectRequest: bool
+    isProjectRequest: bool,
+    sails: object,
+    socket: object
+  }
+
+  componentDidMount () {
+    const { post: { id }, expanded, comments } = this.props
+    if (expanded) {
+      this.context.socket.post(`${config.upstreamHost}/noo/post/${id}/subscribe`, function (response, status) {})
+      this.context.socket.on('comment_added', function (comment){
+        comments.push(comment) // this isn't right, but I don't know what would be
+      })
+    }
+  }
+
+  componentWillUnmount () {
+    const { post: { id }, expanded } = this.props
+    if (expanded) {
+      this.context.socket.post(`${config.upstreamHost}/noo/post/${id}/unsubscribe`, function (response, status) {})
+      this.context.socket.off('comment_added')
+    }
   }
 
   render () {

@@ -66,18 +66,6 @@ export default class SinglePost extends React.Component {
     currentUser: object
   }
 
-  componentDidMount () {
-    const { post: { id, numComments }, dispatch } = this.props
-    this.props.route.socket.on(`p/${id}/comment_added`, function (){
-      dispatch(fetchComments(id, {offset: numComments, refresh: true}))
-    })
-  }
-
-  componentWillUnmount () {
-    const { post: { id } } = this.props
-    this.props.route.socket.off(`p/${id}/comment_added`)
-  }
-
   getChildContext () {
     return pick(['community', 'post', 'comments', 'communities'], this.props)
   }

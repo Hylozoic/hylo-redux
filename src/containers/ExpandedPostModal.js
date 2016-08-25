@@ -10,13 +10,12 @@ import Post from '../components/Post'
 export default class ExpandedPostModal extends React.Component {
   static propTypes = {
     dispatch: func,
-    socket: object,
     commentId: string,
     post: object
   }
 
   componentDidMount () {
-    const { commentId, post: { id, numComments }, dispatch, socket } = this.props
+    const { commentId, post: { id }, dispatch } = this.props
     dispatch(fetchComments(id, {offset: 3}))
     .then(() => {
       if (commentId) {
@@ -24,14 +23,6 @@ export default class ExpandedPostModal extends React.Component {
         scrollToComment(commentId, wrapper)
       }
     })
-    socket.on(`p/${id}/comment_added`, function (){
-      dispatch(fetchComments(id, {offset: numComments, refresh: true}))
-    })
-  }
-
-  componentWillUnmount () {
-    const { socket, post: { id } } = this.props
-    socket.off(`p/${id}/comment_added`)
   }
 
   render () {

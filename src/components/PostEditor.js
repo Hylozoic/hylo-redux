@@ -360,19 +360,6 @@ export class PostEditor extends React.Component {
           onChange={event => this.updateTitle(event)}/>
       </div>
 
-      <RichTextEditor className={cx('details', {empty: !description && !showDetails})}
-        ref='details'
-        name={post ? `post${id}` : id}
-        content={description}
-        onChange={ev => this.updateDescription(ev.target.value)}
-        onKeyUp={this.goBackToTitle}
-        onAddTag={this.handleAddTag}
-        onBlur={() => this.setState({showDetails: false})}/>
-      {!description && !showDetails &&
-        <div className='details-placeholder' onClick={this.goToDetails}>
-          More details
-        </div>}
-
       {shouldSelectTag && <Dropdown className='hashtag-selector' toggleChildren={
         <button ref='tagSelector' id='tag-selector'>
           #{tag || 'all-topics'}&nbsp;
@@ -394,6 +381,19 @@ export class PostEditor extends React.Component {
         <p>Use this pull-down menu to select from one of Hylo’s three Action Topics: Offer (something you’d like to share), Request (something you’re looking for), Intention (something you’d like to create), or create a new Topic.</p>
         <p>Action Topics help you make good things happen in your community.</p>
       </Tooltip>}
+
+      <RichTextEditor className={cx('details', {empty: !description && !showDetails})}
+        ref='details'
+        name={post ? `post${id}` : id}
+        content={description}
+        onChange={ev => this.updateDescription(ev.target.value)}
+        onKeyUp={this.goBackToTitle}
+        onAddTag={this.handleAddTag}
+        onBlur={() => this.setState({showDetails: false})}/>
+      {!description && !showDetails &&
+        <div className='details-placeholder' onClick={this.goToDetails}>
+          More details
+        </div>}
 
       {linkPreview && <LinkPreview {...{linkPreview}} onClose={removeLinkPreview}/>}
 

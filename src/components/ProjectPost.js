@@ -97,7 +97,7 @@ class ProjectPost extends React.Component {
           </div>
         </div>
         <div className='side-col'>
-          {post.financialRequestAmount && <PledgeProgress post={post}/> }
+          {post.financialRequestAmount && post.syndicateIssueId && <PledgeProgress post={post}/> }
           <Supporters post={post} financiallyEnabled={financiallyEnabled} currentUser={currentUser}/>
         </div>
       </div>

@@ -442,12 +442,12 @@ const VisibilityDropdown = ({ isPublic, setPublic }, { dispatch }) => {
     ? <button><Icon name='World'/>Public <span className='caret'/></button>
     : <button><Icon name='Users'/>Only Communities <span className='caret'/></button>
 
-  const communityOption = <li><a onClick={() => setPublic(false)}><div>
+  const communityOption = <li key='community'><a onClick={() => setPublic(false)}><div>
     <span className='option-title'> <Icon name='Users'/>Only Communities</span>
     <span className='description'>Allow communities and people who are tagged to see this post.</span>
   </div></a></li>
 
-  const publicOption = <li><a onClick={() => setPublic(true)}><div>
+  const publicOption = <li key='public'><a onClick={() => setPublic(true)}><div>
     <span className='option-title'><Icon name='World'/>Public</span>
     <span className='description'>Allow anyone on the internet to see this post.</span>
   </div></a></li>

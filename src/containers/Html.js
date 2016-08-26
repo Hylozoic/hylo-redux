@@ -24,7 +24,6 @@ const Html = props => {
     </head>
     <body>
       <div id='app' dangerouslySetInnerHTML={{__html: markup}}></div>
-      <script src='//cdn.tinymce.com/4/tinymce.min.js'></script>
       {rawScript(state)}
       {rawScript(assetManifest)}
       <script src={assetUrl('/index.js')} defer></script>

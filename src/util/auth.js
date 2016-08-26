@@ -1,4 +1,4 @@
-import { fetchCurrentUser, disconnect_hitfin } from '../actions'
+import { fetchCurrentUser, disconnect_hitfin, getUserBalance } from '../actions'
 import { get } from 'lodash'
 import { goToNext } from '../containers/Login'
 import qs from 'querystring'
@@ -76,7 +76,7 @@ export function setupPopupCallback (name, dispatch, errorAction) {
         }
         else{
           dispatch(errorAction(null));
-          dispatch(fetchCurrentUser(true))
+          dispatch(fetchCurrentUser(true)).then( () => { dispatch(getUserBalance())})
         }
     }
 

@@ -8,6 +8,7 @@ export const _PENDING = '_PENDING'
 export const ADD_COMMUNITY_MODERATOR = 'ADD_COMMUNITY_MODERATOR'
 export const ADD_COMMUNITY_MODERATOR_PENDING = ADD_COMMUNITY_MODERATOR + _PENDING
 export const ADD_DATA_TO_STORE = 'ADD_DATA_TO_STORE'
+export const APPEND_COMMENT = 'APPEND_COMMENT'
 export const CANCEL_POST_EDIT = 'CANCEL_POST_EDIT'
 export const CANCEL_TAG_DESCRIPTION_EDIT = 'CANCEL_TAG_DESCRIPTION_EDIT'
 export const CANCEL_TYPEAHEAD = 'CANCEL_TYPEAHEAD'
@@ -231,6 +232,10 @@ export function fetchComments (postId, opts = {}) {
       cache: {id: postId, bucket: 'commentsByPost', limit, offset, array: true}
     }
   }
+}
+
+export function appendComment (postId, comment) {
+  return {type: APPEND_COMMENT, payload: comment, meta: {id: postId}}
 }
 
 export function createComment (postId, text, tagDescriptions) {

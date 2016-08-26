@@ -2,6 +2,7 @@ import { hashBy, mergeList, toggleIncludes } from './util'
 import { some } from 'lodash'
 import {
   ADD_DATA_TO_STORE,
+  APPEND_COMMENT,
   FETCH_COMMENTS,
   FETCH_POST,
   FETCH_POSTS,
@@ -39,6 +40,8 @@ export default function (state = {}, action) {
     case ADD_DATA_TO_STORE:
       if (meta.bucket === 'comments') return mergeList(state, payload, 'id')
       break
+    case APPEND_COMMENT:
+      return {...state, [payload.id]: payload}
     case FETCH_COMMENTS:
       return {...state, ...hashBy(payload, 'id')}
     case CREATE_COMMENT:

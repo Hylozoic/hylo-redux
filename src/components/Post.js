@@ -25,7 +25,7 @@ import LinkPreview from './LinkPreview'
 import { connect } from 'react-redux'
 import { compose } from 'redux'
 import {
-  followPost, navigate, removePost, startPostEdit, voteOnPost, pinPost
+  appendComment, followPost, navigate, removePost, startPostEdit, voteOnPost, pinPost
 } from '../actions'
 import { same } from '../models'
 import { getComments, getCommunities, isPinned } from '../models/post'
@@ -258,15 +258,20 @@ export class CommentSection extends React.Component {
     community: object,
     currentUser: object,
     isProjectRequest: bool,
+    dispatch: func,
     socket: object
   }
 
   componentDidMount () {
     const { post: { id }, expanded, comments } = this.props
+    const { dispatch } = this.context
     if (expanded) {
       this.context.socket.post(`${config.upstreamHost}/noo/post/${id}/subscribe`, function (response, status) {})
-      this.context.socket.on('comment_added', function (comment){
-        comments.push(comment) // this isn't right, but I don't know what would be
+      this.context.socket.on('commentAdded', function (comment){
+        dispatch(appendComment(id, comment))
+      })
+      this.context.socket.on('userTyping', function (data){
+        console.log(data)
       })
     }
   }
@@ -275,7 +280,8 @@ export class CommentSection extends React.Component {
     const { post: { id }, expanded } = this.props
     if (expanded) {
       this.context.socket.post(`${config.upstreamHost}/noo/post/${id}/unsubscribe`, function (response, status) {})
-      this.context.socket.off('comment_added')
+      this.context.socket.off('commentAdded')
+      this.context.socket.off('userTyping')
     }
   }
 

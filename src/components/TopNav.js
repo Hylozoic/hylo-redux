@@ -6,7 +6,7 @@ import { filter, get } from 'lodash/fp'
 import { throttle } from 'lodash'
 import { MenuButton, leftNavWidth, leftNavEasing, menuButtonWidth } from './LeftNav'
 import { editorUrl } from '../containers/StandalonePostEditor'
-const { array, object, func, string, bool } = React.PropTypes
+const { array, object, func, string, bool, number } = React.PropTypes
 import { viewportTop } from '../util/scrolling'
 import { VelocityComponent } from 'velocity-react'
 import cx from 'classnames'
@@ -37,7 +37,8 @@ export default class TopNav extends React.Component {
     community: object,
     network: object,
     leftNavIsOpen: bool,
-    links: array
+    links: array,
+    notificationCount: number
   }
 
   static contextTypes = {
@@ -78,7 +79,7 @@ export default class TopNav extends React.Component {
 
   render () {
     const {
-      openLeftNav, leftNavIsOpen, path, network, links
+      openLeftNav, leftNavIsOpen, path, network, links, notificationCount
     } = this.props
     const { currentUser, isMobile } = this.context
     const label = getLabel(path)
@@ -95,9 +96,9 @@ export default class TopNav extends React.Component {
     return <VelocityComponent animation={moveWithMenu} easing={leftNavEasing}>
       <nav id='topNav' className={cx('clearfix', {scrolling: this.state.isScrolling})}>
         {isMobile
-          ? <MenuButton onClick={openLeftNav} label={label}/>
+          ? <MenuButton onClick={openLeftNav} label={label} notificationCount={notificationCount}/>
           : <VelocityComponent animation={widenMenuButton} easing={leftNavEasing}>
-              <MenuButton onClick={openLeftNav}/>
+              <MenuButton onClick={openLeftNav} notificationCount={notificationCount}/>
             </VelocityComponent>}
         {currentUser
         ? <UserMenu {...{newCount, slug}}/>

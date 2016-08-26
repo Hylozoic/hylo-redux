@@ -207,10 +207,10 @@ class Supporters extends React.Component {
       <Icon name={isFollowing ? 'ok-sign' : 'plus-sign'} glyphicon/>
       {isFollowing ? 'Supporting' : 'Support this'}
     </a>}
-    {!simple && financiallyEnabled &&
+    {!simple && financiallyEnabled && post.syndicateIssueId &&
       <button type='button' className='button pledge' onClick={this.setPledgeDialogueVisible} >Make A Pledge</button>
     }
-    {!simple && pledgeDialogueVisible && financiallyEnabled && this.currentUserIsEconomicAgent() &&
+    {!simple && pledgeDialogueVisible && financiallyEnabled && post.syndicateIssueId && this.currentUserIsEconomicAgent() &&
       <div className='pledge'>
         <div> How much would you like to pledge?</div>
         USD $

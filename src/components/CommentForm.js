@@ -1,5 +1,5 @@
 import React from 'react'
-import { get } from 'lodash'
+import { get, debounce, throttle } from 'lodash'
 import { connect } from 'react-redux'
 import Avatar from './Avatar'
 import RichTextEditor from './RichTextEditor'
@@ -9,6 +9,8 @@ import { textLength } from '../util/text'
 import { onCmdEnter } from '../util/textInput'
 import TagDescriptionEditor from './TagDescriptionEditor'
 var { array, bool, func, object, string } = React.PropTypes
+const MAX_TYPING_INTERVAL = 3000
+const STOPPED_TYPING_WAITTIME = 2000
 
 @connect((state, { postId, commentId }) => {
   return ({
@@ -22,6 +24,8 @@ export default class CommentForm extends React.Component {
   static propTypes = {
     currentUser: object,
     dispatch: func,
+    startedTyping: func,
+    stoppedTyping: func,
     postId: string,
     commentId: string,
     mentionOptions: array,
@@ -30,6 +34,11 @@ export default class CommentForm extends React.Component {
     text: string,
     newComment: bool,
     close: func
+  }
+
+  static defaultProps = {
+    startedTyping: function () {},
+    stoppedTyping: function () {}
   }
 
   constructor (props) {
@@ -63,7 +72,7 @@ export default class CommentForm extends React.Component {
   }
 
   render () {
-    let { currentUser, editingTagDescriptions, dispatch, postId, commentId, text, newComment, close } = this.props
+    let { currentUser, editingTagDescriptions, dispatch, postId, commentId, text, newComment, close, startedTyping, stoppedTyping } = this.props
     const editing = text !== undefined
     const storeId = newComment ? postId : commentId
     const updateStore = text => dispatch(updateCommentEditor(storeId, text, newComment))
@@ -71,10 +80,16 @@ export default class CommentForm extends React.Component {
 
     const setText = event => updateStore(event.target.value)
     const placeholder = this.props.placeholder || 'Add a comment...'
-    const quickSubmit = onCmdEnter(e => {
-      e.preventDefault()
-      this.submit()
-    })
+
+    const onKeyUp = debounce(stoppedTyping, STOPPED_TYPING_WAITTIME)
+    const startThrottled = throttle(startedTyping, MAX_TYPING_INTERVAL, { trailing: false })
+    const onKeyDown = event => {
+      startThrottled()
+      onCmdEnter(e => {
+        e.preventDefault()
+        this.submit()
+      })(event)
+    }
 
     return <form onSubmit={this.submit} className='comment-form'>
       <Avatar person={currentUser}/>
@@ -86,7 +101,8 @@ export default class CommentForm extends React.Component {
               content={text}
               onBlur={() => updateStore(this.refs.editor.getContent())}
               onChange={setText}
-              onKeyDown={quickSubmit}/>
+              onKeyDown={onKeyDown}
+              onKeyUp={onKeyUp}/>
             <input type='submit' value='Comment' ref='button'/>
             {close && <button onClick={close}>Cancel</button>}
           </div>

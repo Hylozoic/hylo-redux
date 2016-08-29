@@ -1,6 +1,6 @@
 import React from 'react'
 import {
-  difference, filter, first, includes, isEmpty, map, some, sortBy
+  difference, filter, first, includes, isEmpty, map, some, sortBy, values
 } from 'lodash'
 import { find, get } from 'lodash/fp'
 const { array, bool, func, object, string } = React.PropTypes
@@ -19,6 +19,7 @@ import { ClickCatchingSpan } from './ClickCatcher'
 import { handleMouseOver } from './TagPopover'
 import Comment from './Comment'
 import CommentForm from './CommentForm'
+import PeopleTyping from './PeopleTyping'
 import Icon from './Icon'
 import LinkedPersonSentence from './LinkedPersonSentence'
 import LinkPreview from './LinkPreview'
@@ -262,27 +263,52 @@ export class CommentSection extends React.Component {
     socket: object
   }
 
+  constructor (props) {
+    super(props)
+    this.state = {
+      peopleTyping: {}
+    }
+  }
+
   componentDidMount () {
     const { post: { id }, expanded, comments } = this.props
     const { dispatch } = this.context
     if (expanded) {
-      this.context.socket.post(`${config.upstreamHost}/noo/post/${id}/subscribe`, function (response, status) {})
+      this.context.socket.post(`${config.upstreamHost}/noo/post/${id}/subscribe`)
       this.context.socket.on('commentAdded', function (comment){
         dispatch(appendComment(id, comment))
       })
-      this.context.socket.on('userTyping', function (data){
-        console.log(data)
-      })
+      this.context.socket.on('userTyping', this.userTyping.bind(this))
     }
   }
 
   componentWillUnmount () {
     const { post: { id }, expanded } = this.props
     if (expanded) {
-      this.context.socket.post(`${config.upstreamHost}/noo/post/${id}/unsubscribe`, function (response, status) {})
+      this.context.socket.post(`${config.upstreamHost}/noo/post/${id}/unsubscribe`)
       this.context.socket.off('commentAdded')
       this.context.socket.off('userTyping')
     }
+  }
+
+  userTyping (data) {
+    let newState = this.state
+    if (data.isTyping) {
+      newState.peopleTyping[data.userId] = data.userName
+    } else {
+      delete newState.peopleTyping[data.userId]
+    }
+    this.setState(newState)
+  }
+
+  startedTyping () {
+    const { post: { id } } = this.props
+    this.context.socket.post(`${config.upstreamHost}/noo/post/${id}/typing`, { isTyping: true })
+  }
+
+  stoppedTyping () {
+    const { post: { id } } = this.props
+    this.context.socket.post(`${config.upstreamHost}/noo/post/${id}/typing`, { isTyping: false })
   }
 
   render () {
@@ -290,6 +316,7 @@ export class CommentSection extends React.Component {
     const truncate = !expanded
     const { currentUser, community, isProjectRequest } = this.context
     const placeholder = isProjectRequest ? 'How can you help?' : null
+    const peopleTyping = values(this.state.peopleTyping)
 
     if (!comments) comments = []
     comments = sortBy(comments, c => c.created_at)
@@ -305,7 +332,8 @@ export class CommentSection extends React.Component {
         community={community}
         expanded={expanded}
         key={c.id}/>)}
-      {currentUser && <CommentForm postId={post.id} {...{placeholder}}/>}
+      {peopleTyping.length > 0 && <PeopleTyping names={peopleTyping} showNames={false}/>}
+      {currentUser && <CommentForm startedTyping={this.startedTyping.bind(this)} stoppedTyping={this.stoppedTyping.bind(this)} postId={post.id} {...{placeholder}}/>}
     </div>
   }
 }

@@ -32,7 +32,7 @@ export default class PledgeProgress extends React.Component {
            if(pledgeAmount){
              this.setState({currencyPledgeAmount: numeral(pledgeAmount).format('$0,0.00')})
            }
-           this.timeoutPointer = setTimeout(() => { this.updateProjectPledgeProgress (post, dispatch) } , 1 * 1000)
+           this.timeoutPointer = setTimeout(() => { this.updateProjectPledgeProgress (post, dispatch) } , 2 * 1000)
          }
        }
      }, (err) => {

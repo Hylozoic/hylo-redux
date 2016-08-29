@@ -67,6 +67,7 @@ export const NAVIGATE = 'NAVIGATE'
 export const NOTIFY = 'NOTIFY'
 export const PIN_POST = 'PIN_POST'
 export const PIN_POST_PENDING = 'PIN_POST' + _PENDING
+export const QUERY_POST_RESULT = "QUERY_POST_RESULT"
 export const REGISTER_TOOLTIP = 'REGISTER_TOOLTIP'
 export const REMOVE_COMMENT = 'REMOVE_COMMENT'
 export const REMOVE_COMMUNITY_MEMBER = 'REMOVE_COMMUNITY_MEMBER'
@@ -239,6 +240,13 @@ export function contributeProject(postId, params){
   return {
     type: CONTRIBUTE_PROJECT,
     payload: {api: true, path: `/noo/post/${postId}/contribute`, params, method: 'POST'}
+  }
+}
+
+export function queryPostResult(transactionId){
+  return {
+    type: QUERY_POST_RESULT,
+    payload: {api: true, path: `/noo/post/transaction/${transactionId}` }
   }
 }
 
@@ -765,7 +773,7 @@ export function getUserBalance () {
     payload: { api:true, path: '/noo/finance/get-balance', method: 'GET'}
     }
   }
-  
+
 export function registerTooltip (id, index) {
   return {type: REGISTER_TOOLTIP, payload: {id, index}}
 }

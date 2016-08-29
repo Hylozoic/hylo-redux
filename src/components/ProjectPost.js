@@ -18,7 +18,7 @@ import PledgeProgress from './PledgeProgress'
 import uuid from 'uuid'
 import A from './A'
 import { ClickCatchingSpan } from './ClickCatcher'
-import { fetchPost, followPost, navigate, contributeProject } from '../actions'
+import { fetchPost, followPost, navigate, contributeProject, queryPostResult } from '../actions'
 import moment from 'moment'
 import numeral from 'numeral'
 import { validatePledge } from '../util/validator'
@@ -171,6 +171,21 @@ class Supporters extends React.Component {
     })
   }
 
+  waitForPostResult = (transactionId) => {
+    const {dispatch} = this.context
+    dispatch(queryPostResult(transactionId)).then( (res) => {
+        if(res.payload && res.payload.status && res.payload.status == 'done'){
+            this.setState({pledging: false})
+        }
+        else
+        {
+          setTimeout(() => {
+                this.waitForPostResult(transactionId)
+              }, 1000)
+        }
+    })
+  }
+
   save = (pledgeAmount) => {
     const {dispatch} = this.context
     this.setState({pledgeDialogueVisible: false})
@@ -180,7 +195,9 @@ class Supporters extends React.Component {
       if (res && res.error) {
         alert('Failed. Please try again in a few minutes')
       }
-      this.setState({pledging: false})
+      else {
+        this.waitForPostResult(transactionId)
+      }
     })
   }
 

@@ -2,14 +2,15 @@ import React from 'react'
 import { indexOf, isEmpty } from 'lodash'
 import { find } from 'lodash/fp'
 import { getKeyCode, keyMap } from '../util/textInput'
-var { array, func, object } = React.PropTypes
+var { array, func, object, bool } = React.PropTypes
 
 export class KeyControlledItemList extends React.Component {
 
   static propTypes = {
     onChange: func.isRequired,
     items: array,
-    selected: object
+    selected: object,
+    tabChooses: bool
   }
 
   // this method is called from other components
@@ -31,7 +32,7 @@ export class KeyControlledItemList extends React.Component {
   // provide an API for configuring them
   render () {
     let { items, onChange, ...props } = this.props
-    return <KeyControlledList ref='gkcl'
+    return <KeyControlledList ref='gkcl' tabChooses
       onChange={this.onChangeExtractingItem} {...props}>
       {items.map((c, i) =>
         <li key={c.id || 'blank'}>
@@ -46,7 +47,12 @@ export class KeyControlledList extends React.Component {
   static propTypes = {
     onChange: func,
     children: array,
-    selected: object
+    selected: object,
+    tabChooses: bool
+  }
+
+  static defaultProps = {
+    tabChooses: false
   }
 
   constructor (props) {
@@ -80,12 +86,16 @@ export class KeyControlledList extends React.Component {
   handleKeys = event => {
     switch (getKeyCode(event)) {
       case keyMap.UP:
+        event.preventDefault()
         this.changeSelection(-1)
         return true
       case keyMap.DOWN:
+        event.preventDefault()
         this.changeSelection(1)
         return true
       case keyMap.TAB:
+        if (!this.props.tabChooses) return true
+        // otherwise execution continues in the next case
       case keyMap.ENTER:
         if (!isEmpty(this.props.children)) {
           var choice = this.props.children[this.state.selectedIndex]

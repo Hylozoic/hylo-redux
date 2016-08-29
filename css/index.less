@@ -1,18 +1,19 @@
 // @import '../node_modules/bootstrap/less/bootstrap';
 @import 'bootstrap-lite';
-@import 'globals';
-@import 'type';
-@import 'icons';
-@import 'mixins';
-@import 'modals';
 @import 'dropdown';
 @import 'forms';
-@import 'tinymce';
-@import 'nav';
+@import 'globals';
+@import 'icons';
 @import 'layout';
+@import 'mixins';
+@import 'modals';
+@import 'nav';
+@import 'people';
+@import 'popovers';
 @import 'posts';
 @import 'post-editor';
-@import 'people';
+@import 'tinymce';
+@import 'type';
 @import (inline) '../node_modules/react-datetime/css/react-datetime.css';
 
 body {
@@ -326,7 +327,13 @@ ul.tags {
   margin-top: 15px;
 }
 
+.tag-posts {
+  .post-editor {
+    border-top: 2px solid @faint-gray-border;
+  }
+}
 .list-controls.tag-header {
+  border-bottom: 1px solid @post-border;
 
   .title {
     .tag-name {
@@ -864,92 +871,6 @@ ul.tags {
     .right a {
       margin-left: 20px;
     }
-  }
-}
-
-.popover-container {
-  position: absolute;
-}
-.popover-mouse-padding {
-  width: 290px;
-  position: absolute;
-  top: -25px;
-  left: 25px;
-  padding-top: 50px;
-}
-.popover {
-  width: 290px;
-  margin: 25px;
-  position: absolute;
-  background-color: white;
-  border: 1px solid @light-gray-border;
-  .meta-text {
-    .meta-text;
-  }
-  .tag-name {
-    .tag-header-name-text;
-    display: block;
-  }
-  .avatar {
-    float: left;
-  }
-  .name {
-    padding-left: 5px;
-  }
-  .member-post-count {
-    padding-left: 5px;
-  }
-  .bottom-border {
-    border-bottom: 1px solid @light-gray-border;
-    padding: 10px 15px;
-  }
-  .footer {
-    .meta-text;
-    background-color: @faint-gray-bg;
-    padding: 15px 15px;
-    a {
-      color: @damian-green;
-    }
-  }
-  &.below:after, &.below:before {
-    bottom: 100%;
-    left: 50%;
-    border: solid transparent;
-    content: " ";
-    height: 0;
-    width: 0;
-    position: absolute;
-    pointer-events: none;
-  }
-  &.below:after {
-    border-bottom-color: white;
-    border-width: 10px;
-    margin-left: -10px;
-  }
-  &.below:before {
-    border-bottom-color: @light-gray-border;
-    border-width: 11px;
-    margin-left: -11px;
-  }
-  &.above:after, &.above:before {
-    top: 100%;
-    left: 50%;
-    border: solid transparent;
-    content: " ";
-    height: 0;
-    width: 0;
-    position: absolute;
-    pointer-events: none;
-  }
-  &.above:after {
-    border-top-color: @faint-gray-bg;
-    border-width: 10px;
-    margin-left: -10px;
-  }
-  &.above:before {
-    border-top-color: @light-gray-border;
-    border-width: 11px;
-    margin-left: -11px;
   }
 }
 

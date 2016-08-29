@@ -1,6 +1,5 @@
 import React from 'react'
-import Icon from '../components/Icon'
-import Dropdown from '../components/Dropdown'
+import Icon, { IconGoogleDrive } from '../components/Icon'
 
 const names = [
   'AddContacts',
@@ -57,20 +56,17 @@ const names = [
   'Chevron-Up2',
   'Chevron-Down2',
   'Chevron-Left2',
-  'Chevron-Right2'
+  'Chevron-Right2',
+  'World'
 ]
 
 export default class IconTest extends React.Component {
 
   render () {
-    const childs = ['Porridge', 'Oatmeal', 'Gruel']
-
     return <div id='icon-test'>
-      <Dropdown keyControlled toggleChildren={<span>Show Breakfasts</span>}>
-        {childs.map(c => <li className={c} key={c}>
-          <a onClick={() => console.log(c)}>{c}</a>
-        </li>)}
-      </Dropdown>
+      {names.map(name => <span key={name}><Icon name={name}/> {name}</span>)}
+      <span><IconGoogleDrive/> Google Drive</span>
+      <p>{names.length} icons</p>
     </div>
   }
 }

@@ -11,6 +11,7 @@ import { debounce, get, isEmpty, merge } from 'lodash'
 import { typeahead } from '../actions'
 const { array, bool, func, string } = React.PropTypes
 import { position } from '../util/scrolling'
+import { loadScript } from '../client/util'
 
 const editorConfig = {
   menubar: false,
@@ -85,8 +86,8 @@ export default class RichTextEditor extends React.Component {
     return this.props.onChange(event)
   }
 
-  // getting the editor is asynchronous because tinymce loads plugins and
-  // stylesheets from the network when the first editor is rendered
+  // getting the editor is asynchronous because we don't load tinymce until the
+  // first editor is rendered
   _pollForEditor (callback) {
     const self = this._self()
     if (!self._editorPoller) {
@@ -114,7 +115,9 @@ export default class RichTextEditor extends React.Component {
       startFocused
     } = this.props
 
-    this._pollForEditor(editor => {
+    Promise.resolve(window.tinymce || loadScript('https://cdn.tinymce.com/4/tinymce.min.js'))
+    .then(() => this.setState({loadedTinyMCE: true}))
+    .then(() => this._pollForEditor(editor => {
       onReady && onReady(editor)
       startFocused && setTimeout(() => editor.focus())
 
@@ -145,7 +148,7 @@ export default class RichTextEditor extends React.Component {
           return onBlur(event)
         })
       }
-    })
+    }))
   }
 
   componentWillUnmount () {
@@ -190,7 +193,7 @@ export default class RichTextEditor extends React.Component {
 
   render () {
     const { className, content, typeaheadOptions, onAddTag } = this.props
-    const { dropdown: { left, top } } = this.state
+    const { dropdown: { left, top }, loadedTinyMCE } = this.state
 
     const selectTypeahead = (choice, event) => {
       this.autocomplete(null)
@@ -199,10 +202,10 @@ export default class RichTextEditor extends React.Component {
     }
 
     return <div className={cx('rich-text-editor', className)} ref='container'>
-      <TinyMCE config={editorConfig} id={this._self()._editorId}
+      {loadedTinyMCE && <TinyMCE config={editorConfig} id={this._self()._editorId}
         onChange={this._handleChange}
         onSetContent={this._handleChange}
-        content={content}/>
+        content={content}/>}
 
       {!isEmpty(typeaheadOptions) &&
         <div className='dropdown active' style={{left, top}}>

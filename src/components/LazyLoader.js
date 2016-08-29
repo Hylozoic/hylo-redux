@@ -3,6 +3,7 @@ import { debounce } from 'lodash'
 import cx from 'classnames'
 const { func, node, string } = React.PropTypes
 
+const padding = 50
 var loaders
 
 const register = (loader, onShow) => {
@@ -18,7 +19,8 @@ const unregister = (loader) => {
 const checkOne = (loader, onShow) => {
   const height = document.documentElement.clientHeight
   const { top, bottom } = loader.getBoundingClientRect()
-  if ((top > 0 && top < height) || (bottom > 0 && bottom < height)) {
+  if ((top > -padding && top < height + padding) ||
+    (bottom > -padding && bottom < height + padding)) {
     onShow()
     unregister(loader)
   }
@@ -33,7 +35,7 @@ const check = debounce(() => {
       unregister(loader)
     }
   })
-}, 200)
+}, 100)
 
 export const init = () => {
   loaders = []

@@ -359,11 +359,12 @@ export class PostEditor extends React.Component {
           onChange={event => this.updateTitle(event)}/>
       </div>
 
-      {shouldSelectTag && <Dropdown className='hashtag-selector' toggleChildren={
-        <button ref='tagSelector' id='tag-selector' onKeyDown={this.tabToDetails}>
-          #{tag || 'all-topics'}&nbsp;
-          <span className='caret'></span>
-        </button>
+      {shouldSelectTag && <Dropdown className='hashtag-selector' keyControlled
+        toggleChildren={
+          <button ref='tagSelector' id='tag-selector' onKeyDown={this.tabToDetails}>
+            #{tag || 'all-topics'}&nbsp;
+            <span className='caret'></span>
+          </button>
       }>
         {selectableTags.map(t => <li key={t}>
           <a onClick={() => selectTag(t)}>#{t}</a>

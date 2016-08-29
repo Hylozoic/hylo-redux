@@ -1,5 +1,6 @@
 import React from 'react'
 import Icon from '../components/Icon'
+import Dropdown from '../components/Dropdown'
 
 const names = [
   'AddContacts',
@@ -62,9 +63,14 @@ const names = [
 export default class IconTest extends React.Component {
 
   render () {
+    const childs = ['Porridge', 'Oatmeal', 'Gruel']
+
     return <div id='icon-test'>
-      {names.map(name => <span key={name}><Icon name={name}/> {name}</span>)}
-      <p>{names.length} icons</p>
+      <Dropdown keyControlled toggleChildren={<span>Show Breakfasts</span>}>
+        {childs.map(c => <li className={c} key={c}>
+          <a onClick={() => console.log(c)}>{c}</a>
+        </li>)}
+      </Dropdown>
     </div>
   }
 }

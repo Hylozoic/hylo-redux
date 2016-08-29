@@ -152,6 +152,9 @@ export default class ProjectPostEditor extends React.Component {
                     <div className='title'>
                         How much do you need?
                     </div>
+                    <div className='hint'>
+                        Note: You will not be able to change this later
+                    </div>
                     <div>
                         USD $
                         <CurrencyInput value={postEdit.financialRequestAmount}

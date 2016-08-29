@@ -1,6 +1,6 @@
 require('../support')
 import React from 'react'
-import KeyControlledList from '../../../src/components/KeyControlledList'
+import { KeyControlledItemList } from '../../../src/components/KeyControlledList'
 import {
   renderIntoDocument,
   scryRenderedDOMComponentsWithTag,
@@ -8,7 +8,7 @@ import {
 } from 'react-addons-test-utils'
 import { times } from 'lodash'
 
-describe('KeyControlledList', () => {
+describe('KeyControlledItemList', () => {
   let component, items
 
   before(() => {
@@ -21,19 +21,19 @@ describe('KeyControlledList', () => {
   })
 
   it('defaults to having the first item selected', () => {
-    component = <KeyControlledList items={items}/>
+    component = <KeyControlledItemList items={items}/>
     let node = renderIntoDocument(component)
     expect(node.state.selectedIndex).to.equal(0)
   })
 
   it('starts with the specified item selected', () => {
-    component = <KeyControlledList items={items} selected={items[3]}/>
+    component = <KeyControlledItemList items={items} selected={items[3]}/>
     let node = renderIntoDocument(component)
     expect(node.state.selectedIndex).to.equal(3)
   })
 
   it('responds to arrow keys', () => {
-    component = <KeyControlledList items={items}/>
+    component = <KeyControlledItemList items={items}/>
     let node = renderIntoDocument(component)
     node.handleKeys({which: 40})
     expect(node.state.selectedIndex).to.equal(1)
@@ -45,7 +45,7 @@ describe('KeyControlledList', () => {
 
   it('fires a change event', () => {
     let onChange = spy(() => {})
-    component = <KeyControlledList items={items} onChange={onChange}/>
+    component = <KeyControlledItemList items={items} onChange={onChange}/>
     let node = renderIntoDocument(component)
     node.handleKeys({which: 13, preventDefault: () => {}})
     expect(onChange).to.have.been.called.with(items[0])

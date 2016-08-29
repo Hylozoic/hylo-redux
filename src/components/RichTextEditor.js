@@ -6,7 +6,7 @@ import cx from 'classnames'
 import uuid from 'react-tinymce/lib/helpers/uuid'
 import { assetUrl } from '../util/assets'
 import RichTextTagger from '../util/RichTextTagger'
-import KeyControlledList from '../components/KeyControlledList'
+import { KeyControlledItemList } from '../components/KeyControlledList'
 import { debounce, get, isEmpty, merge } from 'lodash'
 import { typeahead } from '../actions'
 const { array, bool, func, string } = React.PropTypes
@@ -206,7 +206,7 @@ export default class RichTextEditor extends React.Component {
 
       {!isEmpty(typeaheadOptions) &&
         <div className='dropdown active' style={{left, top}}>
-          <KeyControlledList className='dropdown-menu'
+          <KeyControlledItemList className='dropdown-menu'
             ref='list'
             items={typeaheadOptions}
             onChange={selectTypeahead}/>

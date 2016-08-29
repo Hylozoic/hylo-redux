@@ -4,7 +4,7 @@ import { find } from 'lodash/fp'
 import { getKeyCode, keyMap } from '../util/textInput'
 var { array, func, object } = React.PropTypes
 
-export default class KeyControlledList extends React.Component {
+export class KeyControlledItemList extends React.Component {
 
   static propTypes = {
     onChange: func.isRequired,
@@ -31,17 +31,17 @@ export default class KeyControlledList extends React.Component {
   // provide an API for configuring them
   render () {
     let { items, onChange, ...props } = this.props
-    return <GenericKeyControlledList ref='gkcl'
+    return <KeyControlledList ref='gkcl'
       onChange={this.onChangeExtractingItem} {...props}>
       {items.map((c, i) =>
         <li key={c.id || 'blank'}>
           <a onClick={event => this.change(c, event)}>{c.name}</a>
         </li>)}
-    </GenericKeyControlledList>
+    </KeyControlledList>
   }
 }
 
-export class GenericKeyControlledList extends React.Component {
+export class KeyControlledList extends React.Component {
 
   static propTypes = {
     onChange: func,

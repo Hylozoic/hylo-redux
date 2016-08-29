@@ -5,7 +5,7 @@ import { isEmpty } from 'lodash'
 import { VelocityTransitionGroup } from 'velocity-react'
 import { position } from '../util/scrolling'
 import { findChildLink, fireEvent } from '../util'
-import { GenericKeyControlledList } from './KeyControlledList'
+import { KeyControlledList } from './KeyControlledList'
 const { array, bool, func, object, string } = React.PropTypes
 
 const DROPDOWN_OPENED = 'dropdown-opened'
@@ -132,9 +132,9 @@ export default class Dropdown extends React.Component {
         {toggleChildren}
       </a>
       {keyControlled
-        ? <GenericKeyControlledList ref='list' {...ulProps} onChange={this.chooseChild}>
+        ? <KeyControlledList ref='list' {...ulProps} onChange={this.chooseChild}>
             {items}
-          </GenericKeyControlledList>
+          </KeyControlledList>
         : <ul {...ulProps}>
             {active && items}
           </ul>

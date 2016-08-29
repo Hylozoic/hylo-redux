@@ -69,6 +69,7 @@
     "react-datetime": "^2.1.0",
     "react-dom": "^15.0.2",
     "react-fetcher": "^0.3.0",
+    "react-loading-spinner": "^1.0.12",
     "react-masonry-component": "^4.0.0",
     "react-portal-tooltip": "github:hylozoic/react-portal-tooltip",
     "react-redux": "^4.4.5",

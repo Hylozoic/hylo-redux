@@ -2,8 +2,8 @@ import React from 'react'
 import { connect } from 'react-redux'
 import numeral from 'numeral'
 import { fetchProjectPledgeProgress } from '../actions'
-const { func, object } = React.PropTypes
 
+const { func, object } = React.PropTypes
 
 @connect()
 export default class PledgeProgress extends React.Component {
@@ -17,7 +17,10 @@ export default class PledgeProgress extends React.Component {
 
   constructor (props) {
     super(props)
-    this.state = { currencyPledgeAmount : "$0" }
+    this.state = {
+      currencyPledgeAmount : "$0",
+      initialLoading: true
+    }
   }
 
   updateProjectPledgeProgress (post, dispatch) {
@@ -29,8 +32,11 @@ export default class PledgeProgress extends React.Component {
            this.timeoutPointer = setTimeout(() => { this.updateProjectPledgeProgress (post, dispatch) } , 10 * 1000)
          }else{
            const pledgeAmount = res.payload.pledgeAmount
-           if(pledgeAmount){
-             this.setState({currencyPledgeAmount: numeral(pledgeAmount).format('$0,0.00')})
+           if(pledgeAmount !== undefined && pledgeAmount !== null){
+             this.setState(
+               {currencyPledgeAmount: numeral(pledgeAmount).format('$0,0.00'),
+                initialLoading: false
+               })
            }
            this.timeoutPointer = setTimeout(() => { this.updateProjectPledgeProgress (post, dispatch) } , 2 * 1000)
          }
@@ -57,12 +63,14 @@ export default class PledgeProgress extends React.Component {
     const currencyAmount = numeral(financialRequestAmount).format('$0,0.00')
 
     return <div className='supporters'>
-      <div className='top'>
-        <h2>{this.state.currencyPledgeAmount}</h2>
-        <span className='meta'>
-        pledged of {currencyAmount} goal
-      </span>
-      </div>
+      { !this.state.initialLoading &&
+        <div className='top'>
+          <h2>{this.state.currencyPledgeAmount}</h2>
+          <span className='meta'>
+          pledged of {currencyAmount} goal
+          </span>
+        </div>
+      }
     </div>
   }
 }

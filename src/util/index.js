@@ -30,12 +30,8 @@ export const findChildLink = element => {
   return false
 }
 
-export const fireEvent = (el, etype) => {
-  if (el.fireEvent) {
-    el.fireEvent('on' + etype)
-  } else {
-    var evObj = document.createEvent('Events')
-    evObj.initEvent(etype, true, false)
-    el.dispatchEvent(evObj)
-  }
+export const dispatchEvent = (el, etype) => {
+  var evObj = document.createEvent('Events')
+  evObj.initEvent(etype, true, false)
+  el.dispatchEvent(evObj)
 }

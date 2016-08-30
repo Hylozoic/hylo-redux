@@ -4,7 +4,7 @@ import cx from 'classnames'
 import { isEmpty } from 'lodash'
 import { VelocityTransitionGroup } from 'velocity-react'
 import { position } from '../util/scrolling'
-import { findChildLink, fireEvent } from '../util'
+import { findChildLink, dispatchEvent } from '../util'
 import { KeyControlledList } from './KeyControlledList'
 const { array, bool, func, object, string } = React.PropTypes
 
@@ -91,7 +91,7 @@ export default class Dropdown extends React.Component {
 
   chooseChild = choice => {
     const link = findChildLink(findDOMNode(this.refs[choice.ref]))
-    fireEvent(link, 'click')
+    dispatchEvent(link, 'click')
   }
 
   render () {

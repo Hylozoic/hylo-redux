@@ -7,9 +7,6 @@ if (isServer && environment === 'development') {
   require('dotenv').load({silent: true})
 }
 
-export const useAssetManifest = environment === 'production'
-export const assetHost = process.env.ASSET_HOST || ''
-export const assetPath = process.env.ASSET_PATH || ''
 export const filepickerKey = process.env.FILEPICKER_API_KEY
 export const logLevel = process.env.LOG_LEVEL
 export const upstreamHost = process.env.UPSTREAM_HOST
@@ -33,8 +30,8 @@ export const segment = {
 }
 
 const config = {
-  environment, useAssetManifest, assetHost, assetPath, filepickerKey, logLevel,
-  upstreamHost, host, slack, s3, google, facebook, segment
+  environment, filepickerKey, logLevel, upstreamHost, host, slack, s3, google,
+  facebook, segment
 }
 
 if (!upstreamHost || !parse(upstreamHost).protocol) {

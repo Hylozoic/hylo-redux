@@ -17,7 +17,6 @@ import source from 'vinyl-source-stream'
 import buffer from 'vinyl-buffer'
 import gutil from 'gulp-util'
 import sourcemaps from 'gulp-sourcemaps'
-import _ from 'lodash'
 import streamify from 'gulp-streamify'
 import uglify from 'gulp-uglify'
 import rev from 'gulp-rev'
@@ -26,12 +25,18 @@ const opts = {
   entries: ['./src/client']
 }
 
-export function watch () {
-  var b = watchify(browserify(_.assign({}, opts, watchify.args)))
+const setup = b => {
   b.transform('babelify')
   b.transform('envify')
+  b.transform('uglifyify')
+  return b
+}
+
+export function watch () {
+  var b = watchify(browserify(Object.assign({}, opts, watchify.args)))
   b.plugin('livereactload')
   b.on('log', gutil.log)
+  setup(b)
 
   var update = function () {
     return b.bundle()
@@ -49,9 +54,7 @@ export function watch () {
 }
 
 export function bundle () {
-  return browserify(opts)
-  .transform('babelify')
-  .transform('envify')
+  return setup(browserify(opts))
   .bundle()
   .on('error', gutil.log.bind(gutil, 'Browserify error'))
   .pipe(source('index.js'))

@@ -1,4 +1,4 @@
-import { setTransactionNameFromProps } from './newrelic' // this line must be first
+import { browserSnippet, setTransactionNameFromProps } from './newrelic' // this line must be first
 import React from 'react'
 import { renderToString, renderToStaticMarkup } from 'react-dom/server'
 import Html from '../containers/Html'
@@ -53,7 +53,8 @@ const renderComponent = (props, store) =>
 
 const createElement = state => markup =>
   React.createElement(Html, {
-    markup: markup,
+    markup,
+    initNewRelic: browserSnippet(),
     state: `window.INITIAL_STATE=${JSON.stringify(state).replace('</script>', '')}`,
     assetManifest: `window.ASSET_MANIFEST=${JSON.stringify(getManifest())}`,
     metaTags: state.metaTags

@@ -73,7 +73,7 @@ class ProjectPost extends React.Component {
   }
 
   convertWeiToDollars(wei) {
-    return (wei / Math.pow(10, 16))
+    return (wei / Math.pow(10, 18))
   }
 
 

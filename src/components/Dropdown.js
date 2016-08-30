@@ -6,7 +6,7 @@ import { VelocityTransitionGroup } from 'velocity-react'
 import { position } from '../util/scrolling'
 import { findChildLink, dispatchEvent } from '../util'
 import { KeyControlledList } from './KeyControlledList'
-const { array, bool, func, object, string } = React.PropTypes
+const { array, bool, func, object, string, number } = React.PropTypes
 
 const DROPDOWN_OPENED = 'dropdown-opened'
 
@@ -27,7 +27,12 @@ export default class Dropdown extends React.Component {
     triangle: bool,
     openOnHover: bool,
     rivalrous: string,
-    keyControlled: bool
+    keyControlled: bool,
+    tabIndex: number
+  }
+
+  static defaultProps = {
+    tabIndex: 99
   }
 
   static contextTypes = {
@@ -97,7 +102,7 @@ export default class Dropdown extends React.Component {
   render () {
     const {
       toggleChildren, children, alignRight, backdrop, triangle, openOnHover, id,
-      keyControlled
+      keyControlled, tabIndex
     } = this.props
     const { hoverOpened } = this.state
     const { isMobile } = this.context
@@ -112,12 +117,14 @@ export default class Dropdown extends React.Component {
     }
 
     // adding refs to the children so that we can get the node in chooseChild above
-    const childrenWithRefs = React.Children.map(children,
-      (element, idx) => {
-        return element && element.props
-          ? React.cloneElement(element, {ref: idx})
-          : element
-      })
+    const childrenWithRefs = keyControlled
+      ? React.Children.map(children,
+        (element, idx) => {
+          return element && element.props
+            ? React.cloneElement(element, {ref: idx})
+            : element
+        })
+      : children
 
     const items = triangle
       ? [<li className='triangle'
@@ -125,7 +132,7 @@ export default class Dropdown extends React.Component {
         .concat(childrenWithRefs)
       : childrenWithRefs
 
-    return <div id={id} className={className} ref='parent' tabIndex='99'
+    return <div id={id} className={className} ref='parent' tabIndex={tabIndex}
       onKeyDown={this.handleKeys}>
       <a className='dropdown-toggle' onClick={this.toggle}
         onMouseEnter={ev => openOnHover && this.toggle(ev, 'hover')}>

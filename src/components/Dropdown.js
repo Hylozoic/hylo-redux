@@ -3,7 +3,9 @@ import cx from 'classnames'
 import { isEmpty } from 'lodash'
 import { VelocityTransitionGroup } from 'velocity-react'
 import { position } from '../util/scrolling'
-const { array, bool, func, object, string } = React.PropTypes
+import { findChildLink, dispatchEvent } from '../util'
+import { KeyControlledList } from './KeyControlledList'
+const { array, bool, func, object, string, number } = React.PropTypes
 
 const DROPDOWN_OPENED = 'dropdown-opened'
 
@@ -23,7 +25,13 @@ export default class Dropdown extends React.Component {
     backdrop: bool,
     triangle: bool,
     openOnHover: bool,
-    rivalrous: string
+    rivalrous: string,
+    keyControlled: bool,
+    tabIndex: number
+  }
+
+  static defaultProps = {
+    tabIndex: 99
   }
 
   static contextTypes = {
@@ -36,6 +44,7 @@ export default class Dropdown extends React.Component {
     if (active) {
       this.setState({hoverOpened: false})
     } else {
+      this.refs.parent.focus()
       if (context === 'hover') {
         this.setState({hoverOpened: true})
       }
@@ -80,29 +89,52 @@ export default class Dropdown extends React.Component {
     }
   }
 
+  handleKeys = event => {
+    if (this.refs.list) this.refs.list.handleKeys(event)
+  }
+
+  chooseChild = (element, node) => {
+    const link = findChildLink(node)
+    dispatchEvent(link, 'click')
+  }
+
   render () {
     const {
-      toggleChildren, children, alignRight, backdrop, triangle, openOnHover, id
+      toggleChildren, children, alignRight, backdrop, triangle, openOnHover, id,
+      keyControlled, tabIndex
     } = this.props
     const { hoverOpened } = this.state
     const { isMobile } = this.context
     const active = this.state.active && !isEmpty(children)
     const className = cx('dropdown', this.props.className,
       {active, 'has-triangle': triangle})
+    const ulProps = {
+      className: cx('dropdown-menu', {'dropdown-menu-right': alignRight}),
+      style: mobileMenuStyle(isMobile && active, this.refs.parent),
+      onClick: () => this.toggle(),
+      onMouseLeave: () => hoverOpened && this.toggle()
+    }
 
-    return <div id={id} className={className} ref='parent'>
+    const items = triangle
+      ? [<li className='triangle'
+        style={{left: findTriangleLeftPos(isMobile, this.refs.parent)}}/>]
+        .concat(children)
+      : children
+
+    return <div id={id} className={className} ref='parent' tabIndex={tabIndex}
+      onKeyDown={this.handleKeys}>
       <a className='dropdown-toggle' onClick={this.toggle}
         onMouseEnter={ev => openOnHover && this.toggle(ev, 'hover')}>
         {toggleChildren}
       </a>
-      <ul className={cx('dropdown-menu', {'dropdown-menu-right': alignRight})}
-        style={mobileMenuStyle(isMobile && active, this.refs.parent)}
-        onClick={() => this.toggle()}
-        onMouseLeave={() => hoverOpened && this.toggle()}>
-        {active && triangle && <li className='triangle'
-          style={{left: findTriangleLeftPos(isMobile, this.refs.parent)}}/>}
-        {active && children}
-      </ul>
+      {keyControlled
+        ? <KeyControlledList ref='list' {...ulProps} onChange={this.chooseChild}>
+            {items}
+          </KeyControlledList>
+        : <ul {...ulProps}>
+            {active && items}
+          </ul>
+      }
       <VelocityTransitionGroup
         enter={{animation: 'fadeIn', duration: 100}}
         leave={{animation: 'fadeOut', duration: 100}}>

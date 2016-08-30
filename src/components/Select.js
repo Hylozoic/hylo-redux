@@ -1,5 +1,5 @@
 import React from 'react'
-import KeyControlledList from './KeyControlledList'
+import { KeyControlledItemList } from './KeyControlledList'
 import cx from 'classnames'
 const { array, bool, func, object, string } = React.PropTypes
 
@@ -55,7 +55,7 @@ export default class Select extends React.Component {
         onKeyDown={this.handleKeys}>
         {selected.name} <span className='caret'></span>
       </button>
-      {active && <KeyControlledList ref='list' items={choices}
+      {active && <KeyControlledItemList ref='list' items={choices}
         className={cx('dropdown-menu', {'dropdown-menu-right': alignRight})}
         onChange={this.change} selected={selected}/>}
     </div>

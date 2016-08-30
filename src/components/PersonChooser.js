@@ -2,7 +2,7 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { typeahead } from '../actions'
 import { isEmpty } from 'lodash'
-import KeyControlledList from './KeyControlledList'
+import { KeyControlledItemList } from './KeyControlledList'
 var {array, func, string} = React.PropTypes
 
 @connect((state, props) => ({ choices: state.typeaheadMatches[props.typeaheadId] }))
@@ -47,7 +47,7 @@ export default class PersonChooser extends React.Component {
         onKeyDown={this.handleKeys}/>
 
       {!isEmpty(choices) && <div className='dropdown active'>
-        <KeyControlledList className='dropdown-menu' ref='list' items={choices} onChange={this.select}/>
+        <KeyControlledItemList className='dropdown-menu' ref='list' items={choices} onChange={this.select}/>
       </div>}
     </div>
   }

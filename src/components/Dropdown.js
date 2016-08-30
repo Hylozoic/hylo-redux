@@ -1,5 +1,4 @@
 import React from 'react'
-import { findDOMNode } from 'react-dom'
 import cx from 'classnames'
 import { isEmpty } from 'lodash'
 import { VelocityTransitionGroup } from 'velocity-react'
@@ -94,8 +93,8 @@ export default class Dropdown extends React.Component {
     if (this.refs.list) this.refs.list.handleKeys(event)
   }
 
-  chooseChild = choice => {
-    const link = findChildLink(findDOMNode(this.refs[choice.ref]))
+  chooseChild = (element, node) => {
+    const link = findChildLink(node)
     dispatchEvent(link, 'click')
   }
 
@@ -116,21 +115,11 @@ export default class Dropdown extends React.Component {
       onMouseLeave: () => hoverOpened && this.toggle()
     }
 
-    // adding refs to the children so that we can get the node in chooseChild above
-    const childrenWithRefs = keyControlled
-      ? React.Children.map(children,
-        (element, idx) => {
-          return element && element.props
-            ? React.cloneElement(element, {ref: idx})
-            : element
-        })
-      : children
-
     const items = triangle
       ? [<li className='triangle'
         style={{left: findTriangleLeftPos(isMobile, this.refs.parent)}}/>]
-        .concat(childrenWithRefs)
-      : childrenWithRefs
+        .concat(children)
+      : children
 
     return <div id={id} className={className} ref='parent' tabIndex={tabIndex}
       onKeyDown={this.handleKeys}>

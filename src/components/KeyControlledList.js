@@ -1,4 +1,5 @@
 import React from 'react'
+import { findDOMNode } from 'react-dom'
 import { find, indexOf, isEmpty, omit } from 'lodash/fp'
 import { getKeyCode, keyMap } from '../util/textInput'
 var { array, func, object, bool, number } = React.PropTypes
@@ -34,7 +35,7 @@ export class KeyControlledList extends React.Component {
     if (isEmpty(this.props.children)) return
 
     var i = this.state.selectedIndex
-    var length = this.props.children.length
+    var length = React.Children.count(this.props.children)
 
     i += delta
     if (i < 0) i += length
@@ -59,16 +60,17 @@ export class KeyControlledList extends React.Component {
         // otherwise execution continues in the next case
       case keyMap.ENTER:
         if (!isEmpty(this.props.children)) {
-          var choice = this.props.children[this.state.selectedIndex]
-          this.change(choice, event)
+          const elementChoice = this.childrenWithRefs[this.state.selectedIndex]
+          const nodeChoice = findDOMNode(this.refs[elementChoice.ref])
+          this.change(elementChoice, nodeChoice, event)
         }
         return true
     }
   }
 
-  change = (choice, event) => {
+  change = (element, node, event) => {
     event.preventDefault()
-    this.props.onChange(choice, event)
+    this.props.onChange(element, node, event)
   }
 
   // FIXME use more standard props e.g. {label, value} instead of {id, name}, or
@@ -77,18 +79,18 @@ export class KeyControlledList extends React.Component {
     const { selectedIndex } = this.state
     const { children, onChange, tabChooses, ...props } = this.props
 
-    const childrenSelected = children.map((child, i) => {
-      if (selectedIndex !== i) return child
-      return {
-        ...child, props: {
-          ...child.props,
-          className: child.props.className + ' active'
-        }
-      }
-    })
+    this.childrenWithRefs = React.Children.map(children,
+      (element, i) => {
+        const className = selectedIndex === i
+          ? element.props.className + ' active'
+          : element.props.className
+        return element && element.props
+          ? React.cloneElement(element, {ref: i, className})
+          : element
+      })
 
     return <ul {...omit('selectedIndex', props)}>
-      {childrenSelected}
+      {this.childrenWithRefs}
     </ul>
   }
 }
@@ -112,8 +114,8 @@ export class KeyControlledItemList extends React.Component {
     this.props.onChange(choice, event)
   }
 
-  onChangeExtractingItem = (choice, event) => {
-    const item = find(i => i.id === choice.key, this.props.items)
+  onChangeExtractingItem = (element, node, event) => {
+    const item = find(i => i.id === element.key, this.props.items)
     this.change(item, event)
   }
 

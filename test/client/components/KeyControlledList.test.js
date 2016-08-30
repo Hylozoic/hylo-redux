@@ -45,7 +45,10 @@ describe('KeyControlledList', () => {
   })
 
   it('fires a change event on enter, and tab when tabChooses is true', () => {
-    let onChange = spy(() => {})
+    let chosenElement
+    let onChange = spy(el => {
+      chosenElement = el
+    })
     const children = items.map(i => <span key={i.id}>i.name</span>)
     component = <KeyControlledList onChange={onChange}>
       {children}
@@ -56,7 +59,8 @@ describe('KeyControlledList', () => {
     expect(onChange).to.not.have.been.called
 
     node.handleKeys({which: 13, preventDefault: () => {}})
-    expect(onChange).to.have.been.called.with(children[0])
+    expect(onChange).to.have.been.called
+    expect(chosenElement.ref).to.equal(0)
 
     component = <KeyControlledList onChange={onChange} tabChooses selectedIndex={2}>
       {children}
@@ -64,7 +68,8 @@ describe('KeyControlledList', () => {
 
     node = renderIntoDocument(component)
     node.handleKeys({which: 9, preventDefault: () => {}})
-    expect(onChange).to.have.been.called.with(children[2])
+    expect(onChange).to.have.been.called
+    expect(chosenElement.ref).to.equal(2)
     expect(onChange).to.have.been.called.exactly(2)
   })
 })

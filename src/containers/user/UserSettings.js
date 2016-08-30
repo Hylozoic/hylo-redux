@@ -28,6 +28,7 @@ import _ from 'lodash'
 
 @prefetch(({ dispatch, params: { id }, query }) => {
   dispatch(getUserBalance())
+  console.log('got user balance:')
   switch (query.expand) {
     case 'password':
       dispatch(toggleUserSettingsSection('account', true))
@@ -39,7 +40,6 @@ import _ from 'lodash'
     default:
       return dispatch(toggleUserSettingsSection(query.expand, true))
   }
-
 })
 @connect(({ people, userSettingsEditor, pending }) => ({
   pending: get(pending, `${UPLOAD_IMAGE}.subject`),

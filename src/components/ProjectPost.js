@@ -1,6 +1,7 @@
 import React from 'react'
 import CurrencyInput from 'react-currency-input'
 import { connect } from 'react-redux'
+import { prefetch } from 'react-fetcher'
 import { Header, CommentSection, presentDescription } from './Post'
 import decode from 'ent/decode'
 import { textLength, truncate } from '../util/text'
@@ -18,13 +19,12 @@ import PledgeProgress from './PledgeProgress'
 import uuid from 'uuid'
 import A from './A'
 import { ClickCatchingSpan } from './ClickCatcher'
-import { fetchPost, followPost, navigate, contributeProject, queryPostResult } from '../actions'
+import { fetchPost, followPost, navigate, contributeProject, queryPostResult, getUserBalance } from '../actions'
 import moment from 'moment'
-import numeral from 'numeral'
 import { validatePledge } from '../util/validator'
 import _ from 'lodash'
 import PromptBecomeEconomicAgent from './PromptBecomeEconomicAgent'
-const { array, bool, func, object, number } = React.PropTypes
+const { array, bool, func, object, number, string } = React.PropTypes
 
 const Deadline = ({ time }) => {
   const then = moment(time)
@@ -34,10 +34,13 @@ const Deadline = ({ time }) => {
   return <span className={classes.join(' ')} title={then.format('LLLL')}>{moment(time).toNow(true)} to go</span>
 }
 
-function getFinanciallyEnabled (post) {
+function getFinanciallyEnabled(post) {
   return !!post.financialRequestAmount
 }
 
+@prefetch(({ dispatch }) => {
+  dispatch(getUserBalance())
+})
 @connect((state) => ({
   currentUser: state.people.current
 }))
@@ -49,7 +52,8 @@ class ProjectPost extends React.Component {
     communities: array,
     dispatch: func,
     financiallyEnabled: bool,
-    currentUser: object
+    currentUser: object,
+    accountBalance: string
   }
 
   constructor (props) {
@@ -57,7 +61,7 @@ class ProjectPost extends React.Component {
   }
 
   render () {
-    const {community, post, communities, comments, currentUser } = this.props
+    const {community, post, communities, comments, currentUser, accountBalance } = this.props
     const financiallyEnabled = getFinanciallyEnabled(post)
     const { tag, media, location, user, children, name } = post
     const title = decode(name || '')
@@ -118,6 +122,7 @@ class ProjectPost extends React.Component {
                                       </div>}
               <CommentSection post={post} comments={comments} expanded/>
             </div>)
+
   }
 }
 
@@ -131,7 +136,8 @@ class Supporters extends React.Component {
     dispatch: func,
     financiallyEnabled: bool,
     pledgeAmount: number,
-    currentUser: object
+    currentUser: object,
+    accountBalance: string
   }
 
   static contextTypes = {
@@ -157,9 +163,10 @@ class Supporters extends React.Component {
     this.props.post.pledgeAmount = pledgeAmount
   }
 
-  makePledge = (pledgeAmount) => {
-    validatePledge(pledgeAmount).then(valid => {
-      if (!valid) return
+  makePledge = (pledgeAmount, accountBalance) => {
+   window.confirm('You have insufficient funds in your HitFin wallet. Please transfer more funds and try again.' + accountBalance)
+   validatePledge(pledgeAmount).then(valid => {
+     if (!valid) return
       // we use setTimeout here to avoid a race condition. the description field
       // (tinymce) doesn't fire its change event until it loses focus, and
       // there's an additional delay due to the use of setDelayed.
@@ -250,6 +257,7 @@ class Supporters extends React.Component {
               <PromptBecomeEconomicAgent />}
            </div>
   }
+
 }
 
 @connect((state, { id }) => ({

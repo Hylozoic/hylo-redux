@@ -393,6 +393,7 @@ const combinedReducers = combineReducers({
         if (payload) return {...state, hitfinError: payload}
         return {...state, hitfinError: null}
       case USER_BALANCE:
+        console.log('USER BALANCE ACTION CALLED')
         if (payload){
         return {...state, accountBalance: (payload.balance/1000000000000000000).toFixed(2).toString()}
         }

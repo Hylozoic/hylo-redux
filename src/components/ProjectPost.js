@@ -208,9 +208,9 @@ class Supporters extends React.Component {
         }
         else
         {
-          setTimeout(() => {
-                this.waitForPostResult(transactionId)
-              }, 1000)
+          // setTimeout(() => {
+          //       this.waitForPostResult(transactionId)
+          //     }, 1000)
         }
     })
   }

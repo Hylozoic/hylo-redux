@@ -38,7 +38,7 @@ export default class PledgeProgress extends React.Component {
                 initialLoading: false
                })
            }
-           this.timeoutPointer = setTimeout(() => { this.updateProjectPledgeProgress (post, dispatch) } , 2 * 1000)
+           //this.timeoutPointer = setTimeout(() => { this.updateProjectPledgeProgress (post, dispatch) } , 10 * 1000)
          }
        }
      }, (err) => {

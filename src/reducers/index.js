@@ -60,6 +60,7 @@ import {
   SHOW_ALL_TAGS,
   SHOW_EXPANDED_POST,
   SHOW_MODAL,
+  SHOW_INVITE_TAG,
   SHOW_SHARE_TAG,
   SHOW_TAG_POPOVER,
   SIGNUP,
@@ -467,6 +468,8 @@ const combinedReducers = combineReducers({
         return {show: 'tags'}
       case SHOW_SHARE_TAG:
         return {show: 'share-tag', params: action.payload}
+      case SHOW_INVITE_TAG:
+        return {show: 'invite-tag', params: action.payload}
       case SHOW_EXPANDED_POST:
         return {show: 'expanded-post', params: action.payload}
       case CLOSE_MODAL:

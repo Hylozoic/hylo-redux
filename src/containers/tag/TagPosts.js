@@ -3,7 +3,7 @@ import { connect } from 'react-redux'
 import { prefetch } from 'react-fetcher'
 import { fetch, ConnectedPostList } from '../ConnectedPostList'
 import { FETCH_TAG, fetchTag, navigate } from '../../actions'
-import { followTag, showShareTag } from '../../actions/tags'
+import { followTag, showShareTag, showInviteTag } from '../../actions/tags'
 import { compose } from 'redux'
 import { sortBy } from 'lodash'
 import { get } from 'lodash/fp'
@@ -73,6 +73,8 @@ class TagPosts extends React.Component {
         {!isMobile && followers &&
           <Followers followers={sortBy(followers, f => f.id !== owner.id)}
             followerCount={followerCount}/>}
+        {canInvite(currentUser, community) &&
+          <button className='invite' onClick={() => dispatch(showInviteTag(tagName, id))}>+</button>}
         <span className='buttons'>
           {id && <button id='follow-button'
             className={tag.followed ? 'unfollow' : 'follow'}

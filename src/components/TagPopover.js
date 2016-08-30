@@ -3,9 +3,9 @@ import { connect } from 'react-redux'
 import A from './A'
 import Avatar from './Avatar'
 import cx from 'classnames'
-import { isEmpty, get } from 'lodash'
+import { get } from 'lodash'
 import { tagUrlComponents } from '../routes'
-import { positionInViewport } from '../util/scrolling'
+import { position } from '../util/scrolling'
 import { nounCount } from '../util/text'
 import { showTagPopover, hideTagPopover, fetchTagSummary, navigate } from '../actions/index'
 import { followTag } from '../actions/tags'
@@ -14,18 +14,17 @@ const { string, object, func, array, number, bool } = React.PropTypes
 export const handleMouseOver = dispatch => event => {
   var node = event.target
   if (node.nodeName.toLowerCase() === 'a' && node.getAttribute('class') === 'hashtag') {
-    let { tagName, slug } = tagUrlComponents(node.getAttribute('href'))
-    dispatch(showTagPopover(tagName, slug, positionInViewport(node), node.offsetWidth))
+    const { tagName, slug } = tagUrlComponents(node.getAttribute('href'))
+    dispatch(showTagPopover(tagName, slug, node))
   }
 }
 
-@connect(({ tagPopover: { slug, tagName, position, anchorWidth }, tagsByCommunity }) => {
-  let tag = get(tagsByCommunity, [slug, tagName])
+@connect(({ tagsByCommunity }, { tagPopover: { slug, tagName, node } }) => {
+  const tag = get(tagsByCommunity, [slug, tagName])
   return {
     tagName,
     slug,
-    position,
-    anchorWidth,
+    node,
     followed: get(tag, 'followed'),
     description: get(tag, 'description'),
     postCount: get(tag, 'post_count'),
@@ -34,7 +33,6 @@ export const handleMouseOver = dispatch => event => {
   }
 })
 export default class TagPopover extends React.Component {
-
   static propTypes = {
     dispatch: func,
     tagName: string,
@@ -43,91 +41,88 @@ export default class TagPopover extends React.Component {
     postCount: number,
     followerCount: number,
     activeMembers: array,
-    position: object,
-    anchorWidth: number,
+    node: object,
     followed: bool
   }
 
-  hide () {
-    let { dispatch } = this.props
-    dispatch(hideTagPopover())
+  componentDidMount () {
+    const { tagName, slug, dispatch, node } = this.props
+    dispatch(fetchTagSummary(tagName, slug))
+    node.addEventListener('mouseleave', this.startHide)
   }
 
-  hideListener (event) {
-    let { popoverContainer, popoverMousePadding } = this.refs
-    if (!popoverContainer || !popoverMousePadding ||
-      popoverContainer.contains(event.target) ||
-      popoverMousePadding.contains(event.target)) return
-    this.hide()
+  startHide = () => {
+    this.shouldHide = true
+    setTimeout(() => this.shouldHide && this.hide(), 400)
   }
 
-  componentWillReceiveProps (nextProps) {
-    let { dispatch, slug, tagName } = this.props
+  cancelHide = () => {
+    if (this.shouldHide) this.shouldHide = false
+  }
 
-    // hidden
-    if (isEmpty(nextProps.tagName)) {
-      document.documentElement.removeEventListener('mouseover', this.listener)
-      return
-    }
+  hide = () => {
+    this.props.dispatch(hideTagPopover())
+    this.props.node.removeEventListener('mouseleave', this.startHide)
+  }
 
-    // loading
-    if ((nextProps.tagName !== tagName || nextProps.slug !== slug)) {
-      this.listener = event => this.hideListener(event)
-      document.documentElement.addEventListener('mouseover', this.listener)
-      if (!nextProps.description) {
-        dispatch(fetchTagSummary(nextProps.tagName, nextProps.slug))
-      }
+  calculateStyle () {
+    const { node } = this.props
+    const pos = position(node)
+    const rect = node.getBoundingClientRect()
+    const popoverHeight = 380
+    const popoverWidth = 280
+    const pageMargin = 20
+    const maxLeft = document.documentElement.clientWidth - popoverWidth - pageMargin
+    const centerOnLink = pos.x + rect.width / 2 - popoverWidth / 2
+    const left = Math.max(pageMargin, Math.min(centerOnLink, maxLeft))
+    const above = rect.top > popoverHeight + 70
+
+    return {
+      above,
+      outer: {left, top: pos.y + (above ? -30 : rect.height)},
+      inner: {[above ? 'bottom' : 'top']: 15}
     }
   }
 
   render () {
-    let { slug, tagName, description, postCount, followerCount,
-      activeMembers, position, anchorWidth, followed, dispatch } = this.props
-
-    if (isEmpty(tagName)) return null
+    const {
+      slug, tagName, description, postCount, followerCount, activeMembers,
+      followed, dispatch
+    } = this.props
 
     const toggleFollow = () => dispatch(followTag(slug, tagName))
-    const popoverHeight = 380
-    const popoverWidth = 290
-    let left = position.x - 25 + (anchorWidth / 2) - (popoverWidth / 2)
-    if (left < 0) {
-      left = 0
-    } else if (left > document.documentElement.clientWidth - (popoverWidth + 30)) {
-      left = document.documentElement.clientWidth - (popoverWidth + 30)
-    }
-    const above = position.y > popoverHeight + 70
-    let outerPosition = {left, top: position.y + 15 + window.pageYOffset}
-    let innerPosition = above ? {bottom: 5} : {}
+    const { above, outer, inner } = this.calculateStyle()
 
-    return <div className='popover-container' style={outerPosition}
-      ref='popoverContainer'>
-      <div className='popover-mouse-padding' ref='popoverMousePadding'
-        style={innerPosition}>
-      </div>
-      <div className={cx('popover', above ? 'above' : 'below')}
-        style={innerPosition}>
-        <div className='bottom-border'>
+    return <div className='popover-container' style={outer}
+      onMouseMove={this.cancelHide} onMouseLeave={this.hide}>
+      <div className={cx('popover', above ? 'above' : 'below')} style={inner}>
+        <div>
           <a className='tag-name'
             onClick={() => dispatch(navigate(`/c/${slug}/tag/${tagName}`))}>
             #{tagName}
           </a>
           <span className='description meta-text'>{description}</span>
         </div>
-        {activeMembers !== undefined
-          ? <div className='bottom-border meta-text'>Most active members in this topic...</div>
-          : <div className='bottom-border meta-text'>Loading...</div>}
-        {activeMembers !== undefined && activeMembers.map(person =>
-          <div className='bottom-border' key={person.id}>
-            <Avatar person={person}/>
-            <A to={`/u/${person.id}`} className='name'><strong>{person.name}</strong></A><br />
-            <span className='member-post-count meta-text'>
-              {nounCount(person.post_count, 'post')}
-            </span>
-          </div>)}
+        <div className='meta-text'>
+          {activeMembers ? 'Most active members in this topic' : 'Loading...'}
+        </div>
+        {activeMembers && activeMembers.map(person => <div key={person.id}>
+          <Avatar person={person}/>
+          <A to={`/u/${person.id}`} className='name'>
+            <strong>{person.name}</strong>
+          </A><br />
+          <span className='member-post-count meta-text'>
+            {nounCount(person.post_count, 'post')}
+          </span>
+        </div>)}
         <div className='footer'>
           <a onClick={toggleFollow}>{followed ? 'Unf' : 'F'}ollow Topic</a>
-          {followerCount && <span>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;{followerCount} following</span>}
-          {postCount && <span>&nbsp;&nbsp;&nbsp;{nounCount(postCount, 'post')}</span>}
+          {followerCount && <span>
+            &nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;{followerCount} following
+          </span>}
+          {postCount && <span>
+            &nbsp;&nbsp;&nbsp;{nounCount(postCount, 'post')}
+          </span>}
         </div>
       </div>
     </div>

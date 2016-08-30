@@ -768,7 +768,6 @@ export function updateComment (commentId, text, tagDescriptions) {
 }
 
 export function getUserBalance () {
-  console.log('CALLED GET USER BALANCE ACTION')
   return {
     type: USER_BALANCE,
     payload: { api:true, path: '/noo/finance/get-balance', method: 'GET'}

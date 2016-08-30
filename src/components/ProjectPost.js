@@ -38,9 +38,6 @@ function getFinanciallyEnabled(post) {
   return !!post.financialRequestAmount
 }
 
-@prefetch(({ dispatch }) => {
-  dispatch(getUserBalance())
-})
 @connect((state) => ({
   currentUser: state.people.current
 }))
@@ -52,16 +49,38 @@ class ProjectPost extends React.Component {
     communities: array,
     dispatch: func,
     financiallyEnabled: bool,
-    currentUser: object,
-    accountBalance: string
+    currentUser: object
   }
 
   constructor (props) {
     super(props)
+    this.state = {
+      accountBalance: null
+    }
+
   }
 
+  componentWillMount() {
+    this.getBalance()
+  }
+
+  getBalance () {
+    let { dispatch } = this.props
+    let that = this
+    Promise.resolve(dispatch(getUserBalance())).then(function(value) {
+      that.setState({accountBalance: value.payload.balance})
+    })
+  }
+
+  convertWeiToDollars(wei) {
+    return (wei / Math.pow(10, 16))
+  }
+
+
   render () {
-    const {community, post, communities, comments, currentUser, accountBalance } = this.props
+    const {community, post, communities, comments, currentUser } = this.props
+    let { accountBalance } = this.state
+    accountBalance = this.convertWeiToDollars(accountBalance)
     const financiallyEnabled = getFinanciallyEnabled(post)
     const { tag, media, location, user, children, name } = post
     const title = decode(name || '')
@@ -110,10 +129,11 @@ class ProjectPost extends React.Component {
                       </div>
                     </div>
                   </div>
-                  <div className='side-col'>
-                    {post.financialRequestAmount && post.syndicateIssueId && <PledgeProgress post={post} />}
-                    <Supporters post={post} financiallyEnabled={financiallyEnabled} currentUser={currentUser} />
-                  </div>
+                    <div className='side-col'>
+                      {post.financialRequestAmount && post.syndicateIssueId && <PledgeProgress post={post}/>}
+                      <Supporters post={post} financiallyEnabled={financiallyEnabled} currentUser={currentUser}
+                                  accountBalance={accountBalance.toString()}/>
+                    </div>
                 </div>
               </div>
               {requests.length > 0 && <div className='requests'>
@@ -164,8 +184,10 @@ class Supporters extends React.Component {
   }
 
   makePledge = (pledgeAmount, accountBalance) => {
-   window.confirm('You have insufficient funds in your HitFin wallet. Please transfer more funds and try again.' + accountBalance)
-   validatePledge(pledgeAmount).then(valid => {
+    if(parseFloat(accountBalance) < parseFloat(pledgeAmount)) {
+      return window.alert('You have insufficient funds in your HitFin wallet. Please transfer more funds and try again. You can do this in the Payment Details section of your Account Settings.')
+    }
+    validatePledge(pledgeAmount).then(valid => {
      if (!valid) return
       // we use setTimeout here to avoid a race condition. the description field
       // (tinymce) doesn't fire its change event until it loses focus, and
@@ -214,7 +236,7 @@ class Supporters extends React.Component {
   }
 
   render () {
-    const { post, simple, currentUser, financiallyEnabled, update } = this.props
+    const { post, simple, currentUser, financiallyEnabled, update, accountBalance } = this.props
     let { pledgeDialogueVisible, pledging } = this.state
     const { followers, end_time } = post
     const isFollowing = some(same('id', currentUser), followers)
@@ -251,7 +273,7 @@ class Supporters extends React.Component {
                                   onChange={maskedValue => this.updatePledge(maskedValue)}
                                   thousandSeparator=''/>
                               <button type='button' className='button cancel-pledge' onClick={this.setPledgeDialogueVisible} >Cancel</button>
-                              <button type='button' className='button submit-pledge' onClick={() => this.makePledge(this.props.post.pledgeAmount)}>Pledge</button>
+                              <button type='button' className='button submit-pledge' onClick={() => this.makePledge(this.props.post.pledgeAmount, accountBalance)}>Pledge</button>
                             </div>}
              {!simple && pledgeDialogueVisible && !this.currentUserIsEconomicAgent() &&
               <PromptBecomeEconomicAgent />}

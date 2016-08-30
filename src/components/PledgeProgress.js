@@ -23,13 +23,15 @@ export default class PledgeProgress extends React.Component {
     }
   }
 
-  updateProjectPledgeProgress (post, dispatch) {
+  updateProjectPledgeProgress (post, dispatch, errorCount) {
     dispatch(fetchProjectPledgeProgress(post.id))
      .then((res) => {
        if(res){
          if(res.error){
            console.error(res.payload.message)
-           this.timeoutPointer = setTimeout(() => { this.updateProjectPledgeProgress (post, dispatch) } , 10 * 1000)
+           if(errorCount < 30){
+             this.timeoutPointer = setTimeout(() => { this.updateProjectPledgeProgress (post, dispatch, errorCount++) } , 10 * 1000)
+           }
          }else{
            const pledgeAmount = res.payload.pledgeAmount
            if(pledgeAmount !== undefined && pledgeAmount !== null){
@@ -38,12 +40,14 @@ export default class PledgeProgress extends React.Component {
                 initialLoading: false
                })
            }
-           this.timeoutPointer = setTimeout(() => { this.updateProjectPledgeProgress (post, dispatch) } , 10 * 1000)
+           this.timeoutPointer = setTimeout(() => { this.updateProjectPledgeProgress (post, dispatch, 0) } , 10 * 1000)
          }
        }
      }, (err) => {
        console.error(err)
-       this.timeoutPointer = setTimeout(() => { this.updateProjectPledgeProgress (post, dispatch) } , 10 * 1000)
+       if(errorCount < 30){
+         this.timeoutPointer = setTimeout(() => { this.updateProjectPledgeProgress (post, dispatch, errorCount++) } , 10 * 1000)
+       }
      })
   }
 

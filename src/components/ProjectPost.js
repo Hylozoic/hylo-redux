@@ -200,7 +200,7 @@ class Supporters extends React.Component {
     })
   }
 
-  waitForPostResult = (transactionId) => {
+  waitForPostResult = (transactionId, count) => {
     const {dispatch} = this.context
     dispatch(queryPostResult(transactionId)).then( (res) => {
         if(res.payload && res.payload.status && res.payload.status == 'done'){
@@ -208,9 +208,15 @@ class Supporters extends React.Component {
         }
         else
         {
-          setTimeout(() => {
-                this.waitForPostResult(transactionId)
-              }, 1000)
+          if(count < 30){
+            count++
+            setTimeout(() => {
+                this.waitForPostResult(transactionId, count)
+              }, 500 * count)
+          }
+          else{
+            alert('Failed. Please try again in a few minutes')
+          }
         }
     })
   }
@@ -225,7 +231,7 @@ class Supporters extends React.Component {
         alert('Failed. Please try again in a few minutes')
       }
       else {
-        this.waitForPostResult(transactionId)
+        this.waitForPostResult(transactionId, 0)
       }
     })
   }

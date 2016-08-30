@@ -175,7 +175,7 @@ class Supporters extends React.Component {
   setPledgeDialogueVisible = () => {
     this.setState({pledgeDialogueVisible: !this.state.pledgeDialogueVisible})
     if (!this.state.pledgeDialogueVisible) {
-      this.props.post.pledgeAmount = ''
+      this.props.post.pledgeAmount = undefined
     }
   }
 

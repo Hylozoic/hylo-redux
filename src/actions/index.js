@@ -93,6 +93,7 @@ export const SET_PASSWORD = 'SET_PASSWORD'
 export const SET_SIGNUP_ERROR = 'SET_SIGNUP_ERROR'
 export const SHOW_ALL_TAGS = 'SHOW_ALL_TAGS'
 export const SHOW_EXPANDED_POST = 'SHOW_EXPANDED_POST'
+export const SHOW_MODAL = 'SHOW_MODAL'
 export const SHOW_SHARE_TAG = 'SHOW_SHARE_TAG'
 export const SHOW_TAG_POPOVER = 'SHOW_TAG_POPOVER'
 export const SIGNUP = 'SIGNUP'
@@ -657,8 +658,8 @@ export function editNewTagAndDescription (tag, description) {
   return {type: EDIT_NEW_TAG_AND_DESCRIPTION, payload: {tag, description}}
 }
 
-export function showTagPopover (tagName, slug, position, anchorWidth) {
-  return {type: SHOW_TAG_POPOVER, payload: {tagName, slug, position, anchorWidth}}
+export function showTagPopover (tagName, slug, node) {
+  return {type: SHOW_TAG_POPOVER, payload: {tagName, slug, node}}
 }
 
 export function hideTagPopover () {
@@ -741,4 +742,8 @@ export function addDataToStore (bucket, payload) {
     payload,
     meta: {bucket}
   }
+}
+
+export function showModal (name, payload) {
+  return {type: SHOW_MODAL, payload, meta: {name}}
 }

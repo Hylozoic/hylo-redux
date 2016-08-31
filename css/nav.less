@@ -47,6 +47,18 @@ nav {
     }
   }
 
+  .topic-notification {
+    display: inline-block;
+    width: 30px;
+    height: 30px;
+    line-height: 30px;
+    border-radius: 30px;
+    text-align: center;
+    font-weight: 200;
+    color: white;
+    background-color: @damian-green;
+  }
+
   .close {
     position: absolute;
     right: 30px;
@@ -101,6 +113,9 @@ nav {
       border-right: 0;
       padding-right: 0;
       .hamburger {
+        margin-right: 10px;
+      }
+      .topic-notification {
         margin-right: 10px;
       }
     });
@@ -401,29 +416,49 @@ nav {
 
   .dropdown-menu {
     margin-top: 6px;
+    padding-bottom: 0;
   }
 
-  .dropdown li {
-    width: 30vw;
-  }
+  .dropdown {
+    li {
+      width: 30vw;
 
-  .dropdown li.bottom {
-    a {
-      color: @damian-green;
-      .medium;
-      &:hover {
-        text-decoration: underline;
+      &.bottom {
+        a {
+          min-height: auto;
+          color: @damian-green;
+          border-bottom: 0;
+          text-align: center;
+          .medium;
+          &:hover {
+            text-decoration: underline;
+          }
+        }
+      }
+
+      &.loading {
+        line-height: normal;
+        text-align: center;
       }
     }
   }
+}
 
-  .dropdown li a {
+.notifications-list {
+  padding-left: 0;
+
+  li {
+    list-style-type: none;
+  }
+
+  li a {
     display: block;
     white-space: normal;
     padding: 12px 25px;
     color: @gray-text;
     border-bottom: 1px solid @post-border;
     position: relative;
+    min-height: @avatar-size-medium;
 
     &:hover {
       background-color: white;
@@ -453,6 +488,9 @@ nav {
       top: 12px + @avatar-size-default / 2;
     }
   }
+}
+
+.modal .notifications-list {
 }
 
 #community-menu {
@@ -618,6 +656,10 @@ nav {
       padding: 0 !important;
       .medium;
     }
+  }
+
+  .lazy-loader {
+    display: inline-block;
   }
 }
 

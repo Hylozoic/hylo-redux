@@ -21,7 +21,7 @@ import ProjectPostEditor from './ProjectPostEditor'
 import RichTextEditor from './RichTextEditor'
 import { NonLinkAvatar } from './Avatar'
 import AutosizingTextarea from './AutosizingTextarea'
-import Icon from './Icon'
+import Icon, { IconGoogleDrive } from './Icon'
 import LinkPreview from './LinkPreview'
 import Tooltip from './Tooltip'
 import { connect } from 'react-redux'
@@ -273,7 +273,7 @@ export class PostEditor extends React.Component {
   }
 
   tabToDetails = event => {
-    if (isKey(event, 'TAB')) {
+    if (isKey(event, 'TAB') && !event.shiftKey) {
       event.preventDefault()
       this.goToDetails()
     }
@@ -356,29 +356,15 @@ export class PostEditor extends React.Component {
         <AutosizingTextarea type='text' ref='title' className='title'
           value={name}
           placeholder={placeholderText(this.editorType())}
-          onKeyDown={this.tabToDetails}
           onChange={event => this.updateTitle(event)}/>
       </div>
 
-      <RichTextEditor className={cx('details', {empty: !description && !showDetails})}
-        ref='details'
-        name={post ? `post${id}` : id}
-        content={description}
-        onChange={ev => this.updateDescription(ev.target.value)}
-        onKeyUp={this.goBackToTitle}
-        onAddTag={this.handleAddTag}
-        onBlur={() => this.setState({showDetails: false})}/>
-      {!description && !showDetails &&
-        <div className='details-placeholder' onClick={this.goToDetails}>
-          More details
-        </div>}
-
-      {shouldSelectTag && <Dropdown className='hashtag-selector' toggleChildren={
-        <button ref='tagSelector' id='tag-selector'>
+      {shouldSelectTag && <Dropdown className='hashtag-selector' keyControlled
+        onChange={this.goToDetails}
+        toggleChildren={<button ref='tagSelector' id='tag-selector' onKeyDown={this.tabToDetails}>
           #{tag || 'all-topics'}&nbsp;
           <span className='caret'></span>
-        </button>
-      }>
+        </button>}>
         {selectableTags.map(t => <li key={t}>
           <a onClick={() => selectTag(t)}>#{t}</a>
         </li>)}
@@ -395,6 +381,19 @@ export class PostEditor extends React.Component {
         <p>Action Topics help you make good things happen in your community.</p>
       </Tooltip>}
 
+      <RichTextEditor className={cx('details', {empty: !description && !showDetails})}
+        ref='details'
+        name={post ? `post${id}` : id}
+        content={description}
+        onChange={ev => this.updateDescription(ev.target.value)}
+        onKeyUp={this.goBackToTitle}
+        onAddTag={this.handleAddTag}
+        onBlur={() => this.setState({showDetails: false})}/>
+      {!description && !showDetails &&
+        <div className='details-placeholder' onClick={this.goToDetails}>
+          More details
+        </div>}
+
       {linkPreview && <LinkPreview {...{linkPreview}} onClose={removeLinkPreview}/>}
 
       {Subeditor && <Subeditor ref='subeditor'
@@ -408,34 +407,57 @@ export class PostEditor extends React.Component {
       </div>
 
       <div className='buttons'>
-        <div className='right'>
-          <a className='cancel' onClick={() => this.cancel()}>
-            <Icon name='Fail'/>
-          </a>
-        </div>
 
-        <button className='save' ref='save' onClick={() => this.saveIfValid()}
-          disabled={saving}>
-          {post ? 'Save Changes' : 'Post'}
-        </button>
+        <VisibilityDropdown
+          isPublic={postEdit.public || false}
+          setPublic={isPublic => this.updateStore({public: isPublic})}/>
 
         <AttachmentsDropdown id={this.props.id}
           media={postEdit.media}
           path={`user/${currentUser.id}/seeds`}
           imagePending={imagePending}/>
 
-        <label className='visibility'>
-          <input type='checkbox' checked={postEdit.public || false}
-            onChange={() => this.updateStore({public: !postEdit.public})}/>
-          &nbsp;
-          Public
-        </label>
+        <div className='right'>
+          <a className='cancel' onClick={() => this.cancel()}>
+            <Icon name='Fail'/>
+          </a>
+        </div>
+
+        <button className='save right' ref='save' onClick={() => this.saveIfValid()}
+          disabled={saving}>
+          {post ? 'Save Changes' : 'Post'}
+        </button>
+
       </div>
       {(editingTagDescriptions || creatingTagAndDescription) && <TagDescriptionEditor
         saveParent={this.saveWithTagDescriptions}
         updatePostTag={this.updatePostTagAndDescription} />}
     </div>
   }
+}
+
+const VisibilityDropdown = ({ isPublic, setPublic }, { dispatch }) => {
+  const toggle = isPublic
+    ? <button><Icon name='World'/>Public <span className='caret'/></button>
+    : <button><Icon name='Users'/>Only Communities <span className='caret'/></button>
+
+  const communityOption = <li key='community'><a onClick={() => setPublic(false)}><div>
+    <span className='option-title'> <Icon name='Users'/>Only Communities</span>
+    <span className='description'>Allow communities and people who are tagged to see this post.</span>
+  </div></a></li>
+
+  const publicOption = <li key='public'><a onClick={() => setPublic(true)}><div>
+    <span className='option-title'><Icon name='World'/>Public</span>
+    <span className='description'>Allow anyone on the internet to see this post.</span>
+  </div></a></li>
+
+  const options = isPublic
+    ? [publicOption, communityOption]
+    : [communityOption, publicOption]
+
+  return <Dropdown toggleChildren={toggle} className='visibility'>
+    {options}
+  </Dropdown>
 }
 
 const AttachmentsDropdown = (props, { dispatch }) => {
@@ -454,7 +476,7 @@ const AttachmentsDropdown = (props, { dispatch }) => {
 
   return <Dropdown className='attachments' toggleChildren={
     <span>
-      <span className='icon-Camera'></span>
+      <button>+</button>
       {imagePending
         ? ' Uploading...'
         : length > 0 && ` (${length})`}
@@ -462,10 +484,25 @@ const AttachmentsDropdown = (props, { dispatch }) => {
   }>
     <li>
       <a onClick={attachImage}>
-        {image ? 'Change' : 'Attach'} Image
+        <span>
+          <Icon name='Cloud-Upload' />
+          {image ? 'Change' : 'Upload'} Image
+        </span>
+        <div className='description'>
+          Upload an image from your computer, a URL or social media.
+        </div>
       </a>
     </li>
-    <li><a onClick={attachDoc}>Attach File with Google Drive</a></li>
+    <li>
+      <a onClick={attachDoc}>
+        <span>
+          <IconGoogleDrive />Google Drive
+        </span>
+        <div className='description'>
+          Attach documents, images or videos from Google Drive.
+        </div>
+        </a>
+    </li>
     {(image || some(docs)) && <li role='separator' className='divider'></li>}
     {image && <li className='image'>
       <a className='remove' onClick={() => dispatch(removeImage('post', id))}>

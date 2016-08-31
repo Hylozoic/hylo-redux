@@ -70,7 +70,7 @@
 
   .hashtag-selector {
     margin-left: @post-content-left-margin;
-    margin-bottom: @p-bottom-margin;
+    margin-bottom: @p-bottom-margin + 10px;
     .meta-text;
     .dropdown {
       display: inline-block;
@@ -158,9 +158,6 @@
     padding-top: 15px;
     border-top: 1px solid @faint-gray-border;
     line-height: 40px;
-    > *, span {
-      vertical-align: middle;
-    }
 
     div {
       display: inline-block;
@@ -192,14 +189,22 @@
     }
   }
 
-  .icon-Camera {
-    font-size: 18px;
-    position: relative;
-    top: -2px;
-  }
-
   .attachments {
     margin-right: 10px;
+
+    button {
+      height: 25px;
+      width: 25px;
+      border-radius: 25px;
+      line-height: 1px;
+      padding: 0;
+      color: @gray-text;
+      &:focus {
+        color: white;
+        background-color: @damian-green;
+        border-color: @damian-green;
+      }
+    }
 
     a.dropdown-toggle:hover {
       text-decoration: none;
@@ -207,8 +212,25 @@
     }
 
     .dropdown-menu {
-      max-width: 300px;
+      width: 300px;
+
+      .icon {
+        margin-right: 5px;
+        position: relative;
+        left: -5px;
+      }
+
+      .description {
+        color: @faint-gray-text;
+        font-size: 13px;
+        overflow: auto;
+        display: block;
+        white-space: normal;
+        margin-left: 22px;
+        font-weight: 300;
+      }
     }
+
     .image {
       position: relative;
       img {
@@ -228,6 +250,12 @@
       overflow: hidden;
       white-space: nowrap;
       text-overflow: ellipsis;
+    }
+    ul {
+      line-height: none;
+      icon {
+        margin-right: 5px;
+      }
     }
   }
 
@@ -291,9 +319,46 @@
   }
 
   .visibility {
-    color: @placeholder-color;
-    .light;
-    font-size: 13px;
+
+    button {
+      height: 24px;
+      border-radius: 24px;
+      line-height: 22px;
+      vertical-align: middle;
+      text-align: center;
+      padding: 0 10px;
+      color: @gray-text;
+      border: 1px solid @faint-gray-border;
+      &:hover {
+        background-color: @faint-gray-border;
+        color: black;
+      }
+      .icon {
+        margin-right: 5px;
+      }
+    }
+
+    .dropdown-menu {
+      width: 300px;
+
+      .option-title {
+        .icon {
+          margin-right: 5px;
+          position: relative;
+          left: -5px;
+        }
+      }
+      .description {
+        color: @faint-gray-text;
+        font-size: 13px;
+        overflow: auto;
+        display: block;
+        white-space: normal;
+        margin-left: 21px;
+        font-weight: 300;
+      }
+    }
+
   }
 
   .link-preview-section {

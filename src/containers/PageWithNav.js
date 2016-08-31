@@ -23,7 +23,7 @@ const makeNavLinks = (currentUser, community) => {
     {url: url('people'), icon: 'Users', label: 'Members'},
     {url: network && `/n/${network.slug}`, icon: 'merkaba', label: 'Network'},
     {url: slug && url('about'), icon: 'Help', label: 'About'},
-    {url: canInvite(currentUser, community) && url('invite'), icon: 'Mail', label: 'Invite'},
+    {url: canInvite(currentUser, community) && '/create/invite', icon: 'Mail', label: 'Invite'},
     {url: canModerate(currentUser, community) && url('settings'), icon: 'Settings', label: 'Settings'}
   ])
 }
@@ -49,6 +49,7 @@ const PageWithNav = (props, context) => {
   const links = makeNavLinks(currentUser, community)
   const showNetworkNav = currentUser && !isMobile && networkCommunities &&
     networkCommunities.length > 1
+  const tagNotificationCount = filter(tag => tag.new_post_count > 0, tags).length
 
   return <div>
     <LeftNav opened={leftNavIsOpen}
@@ -65,7 +66,8 @@ const PageWithNav = (props, context) => {
       openLeftNav={openLeftNav}
       leftNavIsOpen={leftNavIsOpen}
       path={path}
-      opened={leftNavIsOpen}/>
+      opened={leftNavIsOpen}
+      notificationCount={tagNotificationCount}/>
 
     <VelocityComponent animation={moveWithMenu} easing={leftNavEasing}>
       <div id='main'>

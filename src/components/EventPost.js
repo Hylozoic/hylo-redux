@@ -6,6 +6,7 @@ import A from './A'
 import Avatar from './Avatar'
 import Select from './Select'
 import Icon from './Icon'
+import LazyLoader from './LazyLoader'
 import LinkedPersonSentence from './LinkedPersonSentence'
 import { ClickCatchingSpan } from './ClickCatcher'
 import { get, find, isEmpty, some, sortBy } from 'lodash'
@@ -32,12 +33,14 @@ export const EventPostCard = connect(
   const time = timeRangeBrief(start, end)
   const timeFull = timeRangeFull(start, end)
 
-  const description = presentDescription(post, community)
+  const description = presentDescription(post, community, {maxlength: 200})
   const url = `/p/${id}`
   const backgroundImage = `url(${imageUrl(post)})`
 
   return <div className='post event-summary'>
-    <A className='image' to={url} style={{backgroundImage}}/>
+    <LazyLoader className='image'>
+      <A to={url} style={{backgroundImage}}/>
+    </LazyLoader>
     <div className='meta'>
       <A className='user-name' to={`/u/${user.id}`}>{user.name}</A>
       <span className='time' title={timeFull}>{time}</span>

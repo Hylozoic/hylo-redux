@@ -18,7 +18,7 @@ import { communityUrl } from '../routes'
 import { getCommunity } from '../models/currentUser'
 const { func, object, string } = React.PropTypes
 import ModalOnlyPage from '../components/ModalOnlyPage'
-import ModalInput from '../components/ModalInput'
+import { ModalInput } from '../components/ModalRow'
 import Modal from '../components/Modal'
 
 // export the decorators below so that Signup can use them as well

@@ -20,6 +20,7 @@ import { handleMouseOver } from './TagPopover'
 import Comment from './Comment'
 import CommentForm from './CommentForm'
 import PeopleTyping from './PeopleTyping'
+import LazyLoader from './LazyLoader'
 import Icon from './Icon'
 import LinkedPersonSentence from './LinkedPersonSentence'
 import LinkPreview from './LinkPreview'
@@ -38,8 +39,8 @@ import decode from 'ent/decode'
 
 const spacer = <span>&nbsp; •&nbsp; </span>
 
-export const presentDescription = (post, community) =>
-  present(sanitize(post.description), {slug: get('slug', community)})
+export const presentDescription = (post, community, opts = {}) =>
+  present(sanitize(post.description), {slug: get('slug', community), ...opts})
 
 class Post extends React.Component {
   static propTypes = {
@@ -70,7 +71,9 @@ class Post extends React.Component {
       <a name={`post-${post.id}`}></a>
       <Header communities={communities}/>
       <p className='title post-section' dangerouslySetInnerHTML={{__html: title}}></p>
-      {image && <img src={image.url} className='post-section full-image'/>}
+      {image && <LazyLoader>
+        <img src={image.url} className='post-section full-image'/>
+      </LazyLoader>}
       <Details {...{expanded, onExpand}}/>
       {linkPreview && <LinkPreview {...{linkPreview}}/>}
       <div className='voting post-section'><VoteButton/><Voters/></div>

@@ -59,6 +59,7 @@ import {
   SET_SIGNUP_ERROR,
   SHOW_ALL_TAGS,
   SHOW_EXPANDED_POST,
+  SHOW_MODAL,
   SHOW_SHARE_TAG,
   SHOW_TAG_POPOVER,
   SIGNUP,
@@ -460,6 +461,8 @@ const combinedReducers = combineReducers({
 
   showModal: (state = {}, action) => {
     switch (action.type) {
+      case SHOW_MODAL:
+        return {show: action.meta.name, params: action.payload}
       case SHOW_ALL_TAGS:
         return {show: 'tags'}
       case SHOW_SHARE_TAG:

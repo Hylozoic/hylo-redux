@@ -31,7 +31,7 @@ io.sails.environment = config.environment
   }
 })
 @connect((state, { params }) => {
-  const { isMobile, leftNavIsOpen, notifierMessages, showModal } = state
+  const { isMobile, leftNavIsOpen, notifierMessages, showModal, tagPopover } = state
   const community = getCurrentCommunity(state)
   const network = getCurrentNetwork(state)
   return {
@@ -41,6 +41,7 @@ io.sails.environment = config.environment
     showModal,
     leftNavIsOpen,
     notifierMessages,
+    tagPopover,
     currentUser: state.people.current
   }
 }, null, null, {withRef: true})
@@ -55,7 +56,8 @@ export default class App extends React.Component {
     dispatch: func,
     isMobile: bool,
     showModal: object,
-    location: object
+    location: object,
+    tagPopover: object
   }
 
   static childContextTypes = {
@@ -91,7 +93,7 @@ export default class App extends React.Component {
   render () {
     const {
       children, community, dispatch, leftNavIsOpen, notifierMessages, isMobile,
-      showModal
+      showModal, tagPopover
     } = this.props
 
     return <div className={cx({leftNavIsOpen, isMobile, showModal: !isEmpty(showModal)})}>
@@ -101,7 +103,7 @@ export default class App extends React.Component {
         remove={id => dispatch(removeNotification(id))}/>
       <LiveStatusPoller community={community}/>
       <PageTitleController/>
-      <TagPopover/>
+      {!isEmpty(tagPopover) && <TagPopover {...{tagPopover}}/>}
       <ModalWrapper show={get('show', showModal)} params={get('params', showModal)}/>
     </div>
   }

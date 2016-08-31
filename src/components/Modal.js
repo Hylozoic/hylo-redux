@@ -6,6 +6,7 @@ import { closeModal } from '../actions'
 import BrowseTopicsModal from '../containers/BrowseTopicsModal'
 import ShareTopicModal from '../containers/ShareTopicModal'
 import ExpandedPostModal from '../containers/ExpandedPostModal'
+import { NotificationsModal } from '../containers/Notifications'
 import cx from 'classnames'
 import { get } from 'lodash'
 const { array, bool, func, object, string, oneOfType } = React.PropTypes
@@ -53,23 +54,27 @@ export class ModalWrapper extends React.Component {
     if (!show) return null
 
     let modal, clickToClose
+    const close = () => dispatch(closeModal())
     switch (show) {
       case 'tags':
-        modal = <BrowseTopicsModal onCancel={() => dispatch(closeModal())}/>
+        modal = <BrowseTopicsModal onCancel={close}/>
         clickToClose = true
         break
       case 'share-tag':
         modal = <ShareTopicModal tagName={params.tagName} slug={params.slug}
-          onCancel={() => dispatch(closeModal())}/>
+          onCancel={close}/>
         clickToClose = true
         break
       case 'expanded-post':
         modal = <ExpandedPostModal id={params.id} commentId={params.commentId}/>
         clickToClose = true
         break
+      case 'notifications':
+        modal = <NotificationsModal onCancel={close}/>
+        clickToClose = true
     }
 
-    return <BareModalWrapper onClick={() => clickToClose && dispatch(closeModal())}>
+    return <BareModalWrapper onClick={() => clickToClose && close()}>
       {modal}
     </BareModalWrapper>
   }
@@ -114,7 +119,7 @@ Modal.propTypes = {
   onCancel: func,
   subtitle: string,
   standalone: bool,
-  title: string
+  title: oneOfType([string, object])
 }
 Modal.contextTypes = {isMobile: bool}
 

@@ -1,19 +1,21 @@
-// appHandler loads New Relic so it should be imported first
-import appHandler from './appHandler'
-import { upstreamHost, useAssetManifest, assetHost, assetPath } from '../config'
+import appHandler from './appHandler' // this line must be first
+import { upstreamHost } from '../config'
 import { magenta, red } from 'chalk'
 import { info } from '../util/logging'
-import { setManifest } from '../util/assets'
+import { qualifiedUrl, setManifest } from '../util/assets'
 import { parse } from 'url'
 import { handleStaticPages } from './proxy'
 import express from 'express'
 import request from 'request'
+import { readFileSync } from 'fs'
+import compression from 'compression'
 
 const port = process.env.PORT || 9000
 const upstreamHostname = parse(upstreamHost).hostname
 const fixHeaders = headers => ({...headers, host: upstreamHostname})
 
 const server = express()
+server.use(compression())
 server.use(express.static('public'))
 handleStaticPages(server)
 
@@ -28,6 +30,10 @@ server.post('/logout', function (req, res) {
   let url = `${upstreamHost}/noo/session`
   req.pipe(request.del(url, {headers})).pipe(res)
 })
+
+const notFound = (req, res) => res.status(404).end()
+server.get('/favicon.ico', notFound)
+server.get('/robots.txt', notFound)
 
 // api proxy
 server.use((req, res, next) => {
@@ -48,23 +54,26 @@ server.use((req, res, next) => {
 
 server.use(appHandler)
 
-const start = () => {
-  server.listen(port, function (err) {
-    if (err) throw err
-    info('listening on port ' + port)
-  })
-}
+const setupAssetManifest = callback => {
+  if (!process.env.USE_ASSET_MANIFEST) return callback()
 
-if (useAssetManifest) {
-  let url = `${assetHost}/${assetPath}/manifest-${process.env.SOURCE_VERSION}.json`
-  info(`using manifest: ${url}`)
+  if (process.env.NODE_ENV !== 'production') {
+    info('using local asset manifest: dist/manifest.json')
+    setManifest(JSON.parse(readFileSync(__dirname + '/../../dist/manifest.json')))
+    return callback()
+  }
+
+  const url = qualifiedUrl(`manifest-${process.env.SOURCE_VERSION}.json`)
+  info(`using asset manifest: ${url}`)
   request.get(url, {json: true}, (err, res) => {
     if (err) throw err
     if (res.statusCode !== 200) throw new Error(`${url} => ${res.statusCode}`)
-
     setManifest(res.body)
-    start()
+    callback()
   })
-} else {
-  start()
 }
+
+setupAssetManifest(() => server.listen(port, err => {
+  if (err) throw err
+  info('listening on port ' + port)
+}))

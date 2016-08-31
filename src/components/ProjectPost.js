@@ -244,6 +244,7 @@ class Supporters extends React.Component {
   render () {
     const { post, simple, currentUser, financiallyEnabled, update, accountBalance } = this.props
     let { pledgeDialogueVisible, pledging } = this.state
+    const { dispatch } = this.context
     const { followers, end_time } = post
     const isFollowing = some(same('id', currentUser), followers)
     const follow = () => dispatch(followPost(post.id, currentUser))

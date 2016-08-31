@@ -27,7 +27,8 @@ export default class Dropdown extends React.Component {
     openOnHover: bool,
     rivalrous: string,
     keyControlled: bool,
-    tabIndex: number
+    tabIndex: number,
+    onChange: func
   }
 
   static defaultProps = {
@@ -96,6 +97,7 @@ export default class Dropdown extends React.Component {
   chooseChild = (element, node) => {
     const link = findChildLink(node)
     dispatchEvent(link, 'click')
+    if (this.props.onChange) this.props.onChange(link)
   }
 
   render () {
@@ -121,7 +123,7 @@ export default class Dropdown extends React.Component {
         .concat(children)
       : children
 
-    return <div id={id} className={className} ref='parent' tabIndex={tabIndex}
+    return <div {...{id, className, tabIndex}} ref='parent'
       onKeyDown={this.handleKeys}>
       <a className='dropdown-toggle' onClick={this.toggle}
         onMouseEnter={ev => openOnHover && this.toggle(ev, 'hover')}>

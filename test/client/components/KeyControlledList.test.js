@@ -87,7 +87,7 @@ describe('KeyControlledItemList', () => {
   })
 
   it('starts with the specified item selected', () => {
-    component = <KeyControlledItemList items={items} selected={items[3]}/>
+    component = <KeyControlledItemList items={items} selected={items[3]} onChange={() => {}}/>
     let node = renderIntoDocument(component)
     expect(node.refs.kcl.state.selectedIndex).to.equal(3)
   })

@@ -10,7 +10,6 @@ import rev from 'gulp-rev'
 import rework from 'gulp-rework'
 import reworkUrl from 'rework-plugin-url'
 import { readFileSync } from 'fs'
-import { assetUrl, setManifest } from '../src/util/assets'
 
 export function lessDev () {
   var task = gulp.src('css/index.less')
@@ -34,16 +33,19 @@ export function lessDev () {
 }
 
 export function lessDist () {
-  const manifest = JSON.parse(readFileSync('./dist/manifest.json').toString())
-  setManifest(manifest)
+  let manifest = JSON.parse(readFileSync('./dist/manifest.json').toString())
 
   return gulp.src('css/index.less')
   .pipe(sourcemaps.init())
   .pipe(less())
   .pipe(rework(reworkUrl(path => {
-    const url = assetUrl(path)
-    if (url !== path) console.log(`${path} => ${url}`)
-    return url
+    let newPath = manifest[path.replace(/^\//, '')]
+    if (newPath) {
+      let url = `${process.env.ASSET_HOST}/${process.env.ASSET_PATH}/${newPath}`
+      console.log(`${path} => ${url}`)
+      return url
+    }
+    return path
   })))
   .pipe(minify())
   .pipe(rename('index.css'))

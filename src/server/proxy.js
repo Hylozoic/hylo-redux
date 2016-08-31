@@ -45,7 +45,7 @@ const handlePage = (req, res) => {
 
   var u = url.parse(req.url)
   u.pathname = transformPathname(u.pathname)
-  var newUrl = process.env.PROXY_HOST.replace(/\/$/, '') + url.format(u)
+  var newUrl = process.env.ASSET_HOST.replace(/\/$/, '') + url.format(u)
 
   // use path without query params as cache key
   const cacheKey = u.pathname

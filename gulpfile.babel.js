@@ -11,7 +11,6 @@ import loadHerokuEnv from './tasks/loadHerokuEnv'
 import rev from 'gulp-rev'
 import { exec } from 'shelljs'
 import runSequence from 'run-sequence'
-const seq = (...args) => done => runSequence(...args, done)
 
 // make gulp respond to Ctrl-C
 process.once('SIGINT', () => process.exit(0))
@@ -70,7 +69,6 @@ gulp.task('copy-dist-images', function () {
   .pipe(gulp.dest('dist'))
 })
 
-gulp.task('dotenv', () => require('dotenv').load())
 gulp.task('load-heroku-env', loadHerokuEnv)
 
 // build-dist-css depends upon copy-dist-images because it needs to read
@@ -80,7 +78,22 @@ gulp.task('build-dist-js', bundle)
 gulp.task('upload', upload)
 gulp.task('update-heroku', updateHeroku)
 
-gulp.task('build', seq('clean-dist', 'build-dist-css', 'build-dist-js'))
-gulp.task('build-prod', seq('load-heroku-env', 'build'))
-gulp.task('build-dev', seq('dotenv', 'build'))
-gulp.task('deploy', seq('build-prod', 'upload', 'update-heroku'))
+gulp.task('build', function (done) {
+  runSequence(
+    'clean-dist',
+    'load-heroku-env',
+    ['build-dist-css', 'build-dist-js'],
+    done
+  )
+})
+
+gulp.task('deploy', function (done) {
+  runSequence(
+    'clean-dist',
+    'load-heroku-env',
+    ['build-dist-css', 'build-dist-js'],
+    'upload',
+    'update-heroku',
+    done
+  )
+})

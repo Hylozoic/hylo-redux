@@ -1,5 +1,5 @@
 import React from 'react'
-import Icon, { IconGoogleDrive } from '../components/Icon'
+import Icon from '../components/Icon'
 
 const names = [
   'AddContacts',
@@ -56,8 +56,7 @@ const names = [
   'Chevron-Up2',
   'Chevron-Down2',
   'Chevron-Left2',
-  'Chevron-Right2',
-  'World'
+  'Chevron-Right2'
 ]
 
 export default class IconTest extends React.Component {
@@ -65,7 +64,6 @@ export default class IconTest extends React.Component {
   render () {
     return <div id='icon-test'>
       {names.map(name => <span key={name}><Icon name={name}/> {name}</span>)}
-      <span><IconGoogleDrive/> Google Drive</span>
       <p>{names.length} icons</p>
     </div>
   }

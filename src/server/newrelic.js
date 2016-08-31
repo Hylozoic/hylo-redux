@@ -8,8 +8,3 @@ export const setTransactionNameFromProps = (req, props) => {
   const txPath = compact(map('path', props.routes)).join('/')
   newrelic.setTransactionName(txPath)
 }
-
-export const browserSnippet = () =>
-  newrelic
-    ? newrelic.getBrowserTimingHeader().replace(/<\/?script[^>]*>/g, '')
-    : null

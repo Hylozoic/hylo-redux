@@ -26,16 +26,13 @@ const animations = {
   }
 }
 
-export const MenuButton = ({ onClick, label, showClose, notificationCount }) =>
+export const MenuButton = ({ onClick, label, showClose }) =>
   <a className='menu-button' onClick={onClick}>
-    {!showClose &&
-      (notificationCount && notificationCount > 0
-        ? <div className='topic-notification'>{notificationCount}</div>
-        : <div className='hamburger'>
-            <div className='bar'></div>
-            <div className='bar'></div>
-            <div className='bar'></div>
-          </div>)}
+    {!showClose && <div className='hamburger'>
+      <div className='bar'></div>
+      <div className='bar'></div>
+      <div className='bar'></div>
+    </div>}
     {label && <span>{label}</span>}
     {showClose && <span className='close'>&times;</span>}
   </a>

@@ -11,7 +11,6 @@ import setupSegment from './segment'
 import trackClickthrough from './clickthrough'
 import updateLocation from './updateLocation'
 import polyfills from './polyfills'
-import { init as initLazyLoader } from '../components/LazyLoader'
 
 const { history, store } = configureStore(window.INITIAL_STATE, {history: browserHistory})
 const routes = makeRoutes(store)
@@ -20,7 +19,6 @@ setupSegment()
 fbAsyncInit()
 trackClickthrough()
 polyfills()
-initLazyLoader()
 history.listen(updateLocation({store, routes, history}))
 
 const component = (

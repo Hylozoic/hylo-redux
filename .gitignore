@@ -2,7 +2,6 @@ coverage/
 dist/
 node_modules/
 src-es5/
-public/dist
 public/index.js
 public/index.js.map
 public/index.css

@@ -24,7 +24,7 @@ const { array, bool, func, object } = React.PropTypes
   }
 })
 @connect((state, { params }) => {
-  const { isMobile, leftNavIsOpen, notifierMessages, showModal, tagPopover } = state
+  const { isMobile, leftNavIsOpen, notifierMessages, showModal } = state
   const community = getCurrentCommunity(state)
   const network = getCurrentNetwork(state)
   return {
@@ -34,7 +34,6 @@ const { array, bool, func, object } = React.PropTypes
     showModal,
     leftNavIsOpen,
     notifierMessages,
-    tagPopover,
     currentUser: state.people.current
   }
 }, null, null, {withRef: true})
@@ -49,8 +48,7 @@ export default class App extends React.Component {
     dispatch: func,
     isMobile: bool,
     showModal: object,
-    location: object,
-    tagPopover: object
+    location: object
   }
 
   static childContextTypes = {
@@ -78,7 +76,7 @@ export default class App extends React.Component {
   render () {
     const {
       children, community, dispatch, leftNavIsOpen, notifierMessages, isMobile,
-      showModal, tagPopover
+      showModal
     } = this.props
 
     return <div className={cx({leftNavIsOpen, isMobile, showModal: !isEmpty(showModal)})}>
@@ -88,7 +86,7 @@ export default class App extends React.Component {
         remove={id => dispatch(removeNotification(id))}/>
       <LiveStatusPoller community={community}/>
       <PageTitleController/>
-      {!isEmpty(tagPopover) && <TagPopover {...{tagPopover}}/>}
+      <TagPopover/>
       <ModalWrapper show={get('show', showModal)} params={get('params', showModal)}/>
     </div>
   }

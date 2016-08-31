@@ -64,7 +64,8 @@ class TagPosts extends React.Component {
 
     const toggleFollow = () => dispatch(followTag(id, tagName))
 
-    return <div className='tag-posts'>
+    return <div>
+      {currentUser && <PostEditor community={community} tag={tagName}/>}
       <div className='list-controls tag-header'>
         <span className='title'>
           <span className='tag-name'>#{tagName}</span>
@@ -91,7 +92,6 @@ class TagPosts extends React.Component {
             <button className='share' onClick={() => dispatch(showShareTag(tagName, id))}><Icon name='Box-Out'/></button>}
         </span>
       </div>
-      {currentUser && <PostEditor community={community} tag={tagName}/>}
       <ConnectedPostList {...{subject, id: id || 'all', query: {...query, tag: tagName}}}/>
     </div>
   }

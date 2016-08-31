@@ -5,7 +5,6 @@ import { closeModal } from '../actions'
 // circular import; code smell; refactor?
 import BrowseTopicsModal from '../containers/BrowseTopicsModal'
 import ShareTopicModal from '../containers/ShareTopicModal'
-import InviteTopicModal from '../containers/InviteTopicModal'
 import ExpandedPostModal from '../containers/ExpandedPostModal'
 import { NotificationsModal } from '../containers/Notifications'
 import cx from 'classnames'
@@ -63,11 +62,6 @@ export class ModalWrapper extends React.Component {
         break
       case 'share-tag':
         modal = <ShareTopicModal tagName={params.tagName} slug={params.slug}
-          onCancel={close}/>
-        clickToClose = true
-        break
-      case 'invite-tag':
-        modal = <InviteTopicModal tagName={params.tagName} slug={params.slug}
           onCancel={close}/>
         clickToClose = true
         break

@@ -5,14 +5,13 @@ import {
   closeModal, fetchCommunitySettings, updateTagInvitationEditor, sendCommunityTagInvitation,
   SEND_COMMUNITY_TAG_INVITATION
 } from '../actions'
-import A from '../components/A'
 import { Modal } from '../components/Modal'
-import { ModalInput } from '../components/ModalRow'
+import ModalRow from '../components/ModalRow'
 import { communityTagJoinUrl } from '../routes'
 import { parseEmailString } from '../util/text'
 import { get, isEmpty, some } from 'lodash'
 import cx from 'classnames'
-const { func, string, object, bool } = React.PropTypes
+const { func, string, object, bool, array } = React.PropTypes
 
 @connect(({ communities, tagInvitationEditor, pending }, { slug }) => ({
   community: communities[slug],
@@ -31,6 +30,13 @@ export default class ShareTopicModal extends React.Component {
     pending: bool
   }
 
+  constructor (props) {
+    super(props)
+    this.state = {
+      copied: false
+    }
+  }
+
   componentDidMount () {
     let { dispatch, slug, community } = this.props
     if (get(community, 'beta_access_code')) return
@@ -40,6 +46,9 @@ export default class ShareTopicModal extends React.Component {
   render () {
     const { onCancel, tagName, community, dispatch, pending,
       tagInvitationEditor: { recipients, error, success } } = this.props
+
+    const { copied } = this.state
+
     const joinUrl = get(community, 'beta_access_code')
       ? communityTagJoinUrl(community, tagName)
       : null
@@ -61,17 +70,25 @@ export default class ShareTopicModal extends React.Component {
       dispatch(sendCommunityTagInvitation(community.id, tagName, {emails}))
     }
 
-    return <Modal title='Invite new members' subtitle={`Invite people to join ${community.name} and follow #${tagName}`} id='share-topic' onCancel={onCancel}>
+    const copyLink = joinUrl
+      ? () => {
+        console.log(joinUrl)
+        this.setState({copied: true})
+      }
+      : false
+
+    return <Modal title={`Invite people to join ${tagName}`} id='invite-topic'
+      onCancel={onCancel}>
       <div className='join-url'>
-        <label>People with this link can join</label>
-        {joinUrl ? <A to={joinUrl}>{joinUrl}</A> : <span>Loading...</span>}
+        Anyone with this link can join.
+        {copyLink
+          ? <span>
+              <a onClick={copyLink}> Copy Link</a>
+              {copied && <span className='copied'> (copied)</span>}
+            </span>
+          : <span> Loading...</span>}
       </div>
-      <ModalInput
-        className='invite'
-        label='Invite people via email'
-        placeholder='Enter email addresses, separated by commas'
-        value={recipients}
-        onChange={update('recipients')}/>
+      <HybridInviteInput recipients={recipients} update={update}/>
       {error && <div className='alert alert-danger'>{error}</div>}
       {success && <div className='alert alert-success'>{success}</div>}
       <div className='footer'>
@@ -81,5 +98,28 @@ export default class ShareTopicModal extends React.Component {
         </button>
       </div>
     </Modal>
+  }
+}
+
+class HybridInviteInput extends React.Component {
+
+  static propTypes = {
+    recipients: array,
+    update: func
+  }
+
+  render () {
+    const { recipients, update } = this.props
+
+    const onFocus = () => this.refs.row.focus()
+    const onBlur = () => this.refs.row.blur()
+    return <ModalRow ref='row' field={this.refs.input}>
+      <input type='textarea'
+        ref='input'
+        onFocus={onFocus}
+        onBlur={onBlur}
+        value={recipients}
+        onChange={update('recipients')}/>
+    </ModalRow>
   }
 }

@@ -5,7 +5,6 @@ import {
   FOLLOW_TAG,
   REMOVE_TAG,
   SHOW_ALL_TAGS,
-  SHOW_INVITE_TAG,
   SHOW_SHARE_TAG
 } from './index'
 
@@ -54,10 +53,6 @@ export function showAllTags (slug) {
 
 export function showShareTag (tagName, slug) {
   return {type: SHOW_SHARE_TAG, payload: {tagName, slug}}
-}
-
-export function showInviteTag (tagName, slug) {
-  return {type: SHOW_INVITE_TAG, payload: {tagName, slug}}
 }
 
 export function fetchLeftNavTags (id, refresh) {

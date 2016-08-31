@@ -33,6 +33,10 @@ export default class CommentForm extends React.Component {
     close: func
   }
 
+  static contextTypes = {
+    isMobile: bool
+  }
+
   constructor (props) {
     super(props)
     this.state = {}
@@ -64,8 +68,18 @@ export default class CommentForm extends React.Component {
     this.submit()
   }
 
+  componentDidMount () {
+    const modifierKey = window.navigator.platform.startsWith('Mac')
+      ? 'Cmd' : 'Ctrl'
+    this.setState({modifierKey})
+  }
+
   render () {
-    let { currentUser, editingTagDescriptions, dispatch, postId, commentId, text, newComment, close } = this.props
+    const {
+      currentUser, editingTagDescriptions, dispatch, postId, commentId, text,
+      newComment, close
+    } = this.props
+    const { isMobile } = this.context
     const editing = text !== undefined
     const storeId = newComment ? postId : commentId
     const updateStore = text => dispatch(updateCommentEditor(storeId, text, newComment))
@@ -81,7 +95,7 @@ export default class CommentForm extends React.Component {
       }, e)
     }
 
-    const { enabled } = this.state
+    const { enabled, modifierKey } = this.state
 
     return <form onSubmit={this.submit} className='comment-form'>
       <Avatar person={currentUser}/>
@@ -97,7 +111,9 @@ export default class CommentForm extends React.Component {
             <input type='submit' value='Post' ref='button'
               className={cx({enabled})}/>
             {close && <button onClick={close}>Cancel</button>}
-            <span className='meta help-text'>or press 'CTRL + Enter' or 'CMD + Enter' to post.</span>
+            {!isMobile && modifierKey && <span className='meta help-text'>
+              or press {modifierKey}-Enter
+            </span>}
           </div>
         : <div className='content placeholder' onClick={edit}>
             {placeholder}

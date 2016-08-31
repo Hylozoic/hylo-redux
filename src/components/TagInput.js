@@ -1,6 +1,6 @@
 import React from 'react'
 import { debounce, isEmpty } from 'lodash'
-import KeyControlledList from './KeyControlledList'
+import { KeyControlledItemList } from './KeyControlledList'
 import { getKeyCode, keyMap } from '../util/textInput'
 import { NonLinkAvatar } from './Avatar'
 import cx from 'classnames'
@@ -85,7 +85,7 @@ export default class TagInput extends React.Component {
         onKeyDown={this.handleKeys}/>
 
       {!isEmpty(choices) && <div className='dropdown'>
-        <KeyControlledList className='dropdown-menu' ref='list' items={choices} onChange={this.select}/>
+        <KeyControlledItemList className='dropdown-menu' ref='list' items={choices} onChange={this.select}/>
       </div>}
     </div>
   }

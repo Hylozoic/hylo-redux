@@ -90,7 +90,7 @@ export default class Dropdown extends React.Component {
   }
 
   handleKeys = event => {
-    if (this.refs.list) this.refs.list.handleKeys(event)
+    if (this.state.active && this.refs.list) this.refs.list.handleKeys(event)
   }
 
   chooseChild = (element, node) => {

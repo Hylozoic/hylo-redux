@@ -10,6 +10,7 @@ import ModalRow from '../components/ModalRow'
 import { communityTagJoinUrl } from '../routes'
 import { parseEmailString } from '../util/text'
 import { get, isEmpty, some } from 'lodash'
+import { typeahead } from '../actions'
 import cx from 'classnames'
 const { func, string, object, bool, array } = React.PropTypes
 
@@ -45,7 +46,7 @@ export default class ShareTopicModal extends React.Component {
 
   render () {
     const { onCancel, tagName, community, dispatch, pending,
-      tagInvitationEditor: { recipients, error, success } } = this.props
+      tagInvitationEditor: { recipients, recipient, error, success } } = this.props
 
     const { copied } = this.state
 
@@ -57,6 +58,14 @@ export default class ShareTopicModal extends React.Component {
 
     const update = (field) => event =>
       dispatch(updateTagInvitationEditor(field, event.target.value))
+
+    const updateRecipient = text => {
+      update
+    }
+
+    const removeRecipient = text => {
+
+    }
 
     const submit = () => {
       setError(null)
@@ -88,7 +97,11 @@ export default class ShareTopicModal extends React.Component {
             </span>
           : <span> Loading...</span>}
       </div>
-      <HybridInviteInput recipients={recipients} update={update}/>
+      <HybridInviteInput recipients={recipients} recipient={recipient}
+        communityId={community.id}
+        typeaheadId='invite'
+        remove={removeRecipient}
+        updateRecipients={updateRecipient}/>
       {error && <div className='alert alert-danger'>{error}</div>}
       {success && <div className='alert alert-success'>{success}</div>}
       <div className='footer'>
@@ -101,25 +114,69 @@ export default class ShareTopicModal extends React.Component {
   }
 }
 
+@connect((state, props) => ({ choices: state.typeaheadMatches[props.typeaheadId] }))
 class HybridInviteInput extends React.Component {
 
   static propTypes = {
+    communityId: string,
+    dispatch: func,
     recipients: array,
-    update: func
+    recipient: string,
+    onSelect: func,
+    remove: func,
+    choices: array,
+    typeaheadId: string
+  }
+
+  constructor (props) {
+    super(props)
+    this.state = {choices: []}
+  }
+
+  handleInput = event => {
+    var value = event.target.value
+    let { dispatch, typeaheadId, communityId } = this.props
+    dispatch(typeahead(value, typeaheadId, {communityId, type: 'people'}))
+    this.setState({choices: this.props.choices})
+  }
+
+  handleKeys = event => {
+    if (this.refs.list) this.refs.list.handleKeys(event)
+  }
+
+  select = choice => {
+    let { onSelect } = this.props
+    onSelect(choice)
+    this.refs.input.value = ''
+    this.handleInput({target: {value: ''}})
   }
 
   render () {
-    const { recipients, update } = this.props
+    const { recipients, recipient, remove, choices } = this.props
+
+    const Recipient = ({ recipient }) => {
+      if (recipient.id) {
+        return <span>{recipient.name}<a onClick={remove(recipient.id)}> X</a></span>
+      } else {
+        return <span>{recipient}<a onClick={remove(recipient)}> X</a></span>
+      }
+    }
 
     const onFocus = () => this.refs.row.focus()
     const onBlur = () => this.refs.row.blur()
     return <ModalRow ref='row' field={this.refs.input}>
+      {recipients.map(r => <Recipient recipient={r}/>)}
       <input type='textarea'
         ref='input'
         onFocus={onFocus}
         onBlur={onBlur}
-        value={recipients}
-        onChange={update('recipients')}/>
+        value={recipient}
+        onChange={this.handleInput}
+        onKeyDOwn={this.handleKeys}
+        />
+      {!isEmpty(choices) && <div className='dropdown active'>
+        <KeyControlledList className='dropdown-menu' ref='list' items={choices} onChange={this.select}/>
+      </div>}
     </ModalRow>
   }
 }

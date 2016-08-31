@@ -55,9 +55,10 @@ export class KeyControlledList extends React.Component {
         event.preventDefault()
         this.changeSelection(1)
         return true
-      case keyMap.TAB:
+      case keyMap.TAB: // eslint-disable-line no-fallthrough
         if (!this.props.tabChooses) return true
         // otherwise execution continues in the next case
+      case keyMap.SPACE:
       case keyMap.ENTER:
         if (!isEmpty(this.props.children)) {
           const elementChoice = this.childrenWithRefs[this.state.selectedIndex]
@@ -77,7 +78,7 @@ export class KeyControlledList extends React.Component {
   // provide an API for configuring them
   render () {
     const { selectedIndex } = this.state
-    const { children, onChange, tabChooses, ...props } = this.props
+    const { children, ...props } = this.props
 
     this.childrenWithRefs = React.Children.map(children,
       (element, i) => {
@@ -89,7 +90,7 @@ export class KeyControlledList extends React.Component {
           : element
       })
 
-    return <ul {...omit('selectedIndex', props)}>
+    return <ul {...omit(['onChange', 'tabChooses', 'selectedIndex'], props)}>
       {this.childrenWithRefs}
     </ul>
   }
@@ -122,10 +123,10 @@ export class KeyControlledItemList extends React.Component {
   // FIXME use more standard props e.g. {label, value} instead of {id, name}, or
   // provide an API for configuring them
   render () {
-    const { items, selected, onChange, ...props } = this.props
+    const { items, selected, ...props } = this.props
     const selectedIndex = indexOf(selected, items)
     return <KeyControlledList ref='kcl' tabChooses selectedIndex={selectedIndex}
-      onChange={this.onChangeExtractingItem} {...props}>
+      onChange={this.onChangeExtractingItem} {...omit('onChange', props)}>
       {items.map((c, i) =>
         <li key={c.id || 'blank'}>
           <a onClick={event => this.change(c, event)}>{c.name}</a>

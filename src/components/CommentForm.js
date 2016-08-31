@@ -120,7 +120,7 @@ export default class CommentForm extends React.Component {
               content={text}
               onBlur={() => updateStore(this.refs.editor.getContent())}
               onChange={setText}
-              onKeyUp={keyUp}/>
+              onKeyUp={keyUp}
               onKeyDown={keyDown}/>
             <input type='submit' value='Post' ref='button'
               className={cx({enabled})}/>

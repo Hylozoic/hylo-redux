@@ -274,14 +274,14 @@ export class CommentSection extends React.Component {
   }
 
   componentDidMount () {
-    const { post: { id }, expanded, comments } = this.props
+    const { post: { id }, expanded } = this.props
     const { dispatch } = this.context
     if (expanded) {
       this.context.socket.post(`${config.upstreamHost}/noo/post/${id}/subscribe`)
-      this.context.socket.on('commentAdded', function (comment){
+      this.context.socket.on('commentAdded', function (comment) {
         dispatch(appendComment(id, comment))
       })
-      //this.context.socket.on('userTyping', this.userTyping.bind(this))
+      this.context.socket.on('userTyping', this.userTyping.bind(this))
     }
   }
 
@@ -290,7 +290,7 @@ export class CommentSection extends React.Component {
     if (expanded) {
       this.context.socket.post(`${config.upstreamHost}/noo/post/${id}/unsubscribe`)
       this.context.socket.off('commentAdded')
-      //this.context.socket.off('userTyping')
+      this.context.socket.off('userTyping')
     }
   }
 
@@ -304,14 +304,14 @@ export class CommentSection extends React.Component {
     this.setState(newState)
   }
 
-  startedTyping () {
+  startedTyping = () => {
     const { post: { id } } = this.props
-    //this.context.socket.post(`${config.upstreamHost}/noo/post/${id}/typing`, { isTyping: true })
+    this.context.socket.post(`${config.upstreamHost}/noo/post/${id}/typing`, { isTyping: true })
   }
 
-  stoppedTyping () {
+  stoppedTyping = () => {
     const { post: { id } } = this.props
-    //this.context.socket.post(`${config.upstreamHost}/noo/post/${id}/typing`, { isTyping: false })
+    this.context.socket.post(`${config.upstreamHost}/noo/post/${id}/typing`, { isTyping: false })
   }
 
   render () {
@@ -336,7 +336,10 @@ export class CommentSection extends React.Component {
         expanded={expanded}
         key={c.id}/>)}
       {peopleTyping.length > 0 && <PeopleTyping names={peopleTyping} showNames={false}/>}
-      {currentUser && <CommentForm startedTyping={this.startedTyping.bind(this)} stoppedTyping={this.stoppedTyping.bind(this)} postId={post.id} {...{placeholder}}/>}
+      {currentUser && <CommentForm startedTyping={this.startedTyping}
+        stoppedTyping={this.stoppedTyping}
+        postId={post.id}
+        {...{placeholder}}/>}
     </div>
   }
 }

@@ -40,6 +40,7 @@
     "cheerio": "^0.20.0",
     "classnames": "^2.2.0",
     "compression": "^1.6.2",
+    "copy-to-clipboard": "^3.0.5",
     "csv-parser": "^1.9.3",
     "dotenv": "^2.0.0",
     "ent": "^2.2.0",

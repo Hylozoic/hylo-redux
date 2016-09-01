@@ -15,6 +15,8 @@ import { get, isEmpty, some } from 'lodash'
 import { filter, includes, map, flow } from 'lodash/fp'
 import { typeahead } from '../actions'
 import cx from 'classnames'
+import copy from 'copy-to-clipboard'
+
 const { func, string, object, bool, array } = React.PropTypes
 
 @connect(({ communities, tagInvitationEditor, pending }, { slug }) => ({
@@ -97,8 +99,9 @@ export default class ShareTopicModal extends React.Component {
 
     const copyLink = joinUrl
       ? () => {
-        console.log(joinUrl)
-        this.setState({copied: true})
+        if (copy(joinUrl)) {
+          this.setState({copied: true})
+        }
       }
       : false
 

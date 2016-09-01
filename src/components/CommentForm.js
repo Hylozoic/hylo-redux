@@ -1,5 +1,5 @@
 import React from 'react'
-import { get } from 'lodash'
+import { get, debounce, throttle } from 'lodash'
 import { connect } from 'react-redux'
 import Avatar from './Avatar'
 import RichTextEditor from './RichTextEditor'
@@ -10,6 +10,8 @@ import { onCmdOrCtrlEnter } from '../util/textInput'
 import TagDescriptionEditor from './TagDescriptionEditor'
 import cx from 'classnames'
 var { array, bool, func, object, string } = React.PropTypes
+const MAX_TYPING_INTERVAL = 3000
+const STOPPED_TYPING_WAITTIME = 2000
 
 @connect((state, { postId, commentId }) => {
   return ({
@@ -23,6 +25,8 @@ export default class CommentForm extends React.Component {
   static propTypes = {
     currentUser: object,
     dispatch: func,
+    startedTyping: func,
+    stoppedTyping: func,
     postId: string,
     commentId: string,
     mentionOptions: array,
@@ -31,6 +35,11 @@ export default class CommentForm extends React.Component {
     text: string,
     newComment: bool,
     close: func
+  }
+
+  static defaultProps = {
+    startedTyping: function () {},
+    stoppedTyping: function () {}
   }
 
   static contextTypes = {
@@ -77,7 +86,7 @@ export default class CommentForm extends React.Component {
   render () {
     const {
       currentUser, editingTagDescriptions, dispatch, postId, commentId, text,
-      newComment, close
+      newComment, close, startedTyping, stoppedTyping
     } = this.props
     const { isMobile } = this.context
     const editing = text !== undefined
@@ -87,8 +96,12 @@ export default class CommentForm extends React.Component {
 
     const setText = event => updateStore(event.target.value)
     const placeholder = this.props.placeholder || 'Add a comment...'
+
+    const keyUp = debounce(stoppedTyping, STOPPED_TYPING_WAITTIME)
+    const startThrottled = throttle(startedTyping, MAX_TYPING_INTERVAL, { trailing: false })
     const keyDown = e => {
       this.setState({enabled: this.refs.editor.getContent().length > 0})
+      startThrottled()
       onCmdOrCtrlEnter(e => {
         e.preventDefault()
         this.submit()
@@ -107,6 +120,7 @@ export default class CommentForm extends React.Component {
               content={text}
               onBlur={() => updateStore(this.refs.editor.getContent())}
               onChange={setText}
+              onKeyUp={keyUp}
               onKeyDown={keyDown}/>
             <input type='submit' value='Post' ref='button'
               className={cx({enabled})}/>

@@ -7,6 +7,7 @@ import {
 } from '../actions'
 import { Modal } from '../components/Modal'
 import ModalRow from '../components/ModalRow'
+import Avatar from '../components/Avatar'
 import { KeyControlledItemList } from '../components/KeyControlledList'
 import { communityTagJoinUrl } from '../routes'
 import { getKeyCode, keyMap } from '../util/textInput'
@@ -105,13 +106,14 @@ export default class ShareTopicModal extends React.Component {
       Invite people to join <span className='hashtag'>#{tagName}</span>
     </span>
 
-    return <Modal title={title} id='invite-topic'
+    return <Modal title={title} id='share-topic-modal'
       onCancel={onCancel}>
       <div className='join-url'>
         Anyone with this link can join.
         {copyLink
           ? <span>
-              <a onClick={copyLink}> Copy Link</a>
+              &nbsp;
+              <a onClick={copyLink}>Copy Link</a>
               {copied && <span className='copied'> (copied)</span>}
             </span>
           : <span> Loading...</span>}
@@ -190,18 +192,29 @@ class HybridInviteInput extends React.Component {
 
     const Recipient = ({ recipient }) => {
       if (recipient.id) {
-        return <span>{recipient.name}<a onClick={() => removeRecipient(recipient.id)}> X</a></span>
+        return <span className='recipient'>
+          <Avatar person={recipient}/>
+          {recipient.name} <a onClick={() => removeRecipient(recipient)}>X</a>
+        </span>
       } else {
-        return <span>{recipient}<a onClick={() => removeRecipient(recipient)}> X</a></span>
+        return <span className='recipient'>{recipient} <a onClick={() => removeRecipient(recipient)}>X</a></span>
       }
     }
 
+    const placeholder = isEmpty(recipients)
+      ? 'Enter name or email to invite, use commas to separate.'
+      : ''
+
     const onFocus = () => this.refs.row.focus()
     const onBlur = () => this.refs.row.blur()
-    return <ModalRow ref='row' field={this.refs.input}>
-      {recipients.map(r => <Recipient recipient={r} key={r.id || r}/>)}
-      <input type='textarea'
+    return <ModalRow className='recipient-input' ref='row' field={this.refs.input}>
+      <span className='recipients'>
+        {recipients.map(r => <Recipient recipient={r} key={r.id || r}/>)}
+      </span>
+      <input type='text'
+        className={cx({full: isEmpty(recipients)})}
         ref='input'
+        placeholder={placeholder}
         onFocus={onFocus}
         onBlur={onBlur}
         value={recipient}

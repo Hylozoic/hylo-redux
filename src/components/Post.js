@@ -34,7 +34,7 @@ import { getComments, getCommunities, isPinned } from '../models/post'
 import { getCurrentCommunity } from '../models/community'
 import { canEditPost, canModerate } from '../models/currentUser'
 import { isMobile } from '../client/util'
-import config from '../config'
+import { upstreamHost } from '../config'
 import decode from 'ent/decode'
 
 const spacer = <span>&nbsp; •&nbsp; </span>
@@ -275,26 +275,25 @@ export class CommentSection extends React.Component {
 
   componentDidMount () {
     const { post: { id }, expanded } = this.props
-    const { dispatch } = this.context
+    const { dispatch, socket } = this.context
     if (expanded) {
-      this.context.socket.post(`${config.upstreamHost}/noo/post/${id}/subscribe`)
-      this.context.socket.on('commentAdded', function (comment) {
-        dispatch(appendComment(id, comment))
-      })
-      this.context.socket.on('userTyping', this.userTyping.bind(this))
+      socket.post(`${upstreamHost}/noo/post/${id}/subscribe`)
+      socket.on('commentAdded', c => dispatch(appendComment(id, c)))
+      socket.on('userTyping', this.userTyping)
     }
   }
 
   componentWillUnmount () {
     const { post: { id }, expanded } = this.props
+    const { socket } = this.context
     if (expanded) {
-      this.context.socket.post(`${config.upstreamHost}/noo/post/${id}/unsubscribe`)
-      this.context.socket.off('commentAdded')
-      this.context.socket.off('userTyping')
+      socket.post(`${upstreamHost}/noo/post/${id}/unsubscribe`)
+      socket.off('commentAdded')
+      socket.off('userTyping')
     }
   }
 
-  userTyping (data) {
+  userTyping = data => {
     let newState = this.state
     if (data.isTyping) {
       newState.peopleTyping[data.userId] = data.userName
@@ -306,12 +305,12 @@ export class CommentSection extends React.Component {
 
   startedTyping = () => {
     const { post: { id } } = this.props
-    this.context.socket.post(`${config.upstreamHost}/noo/post/${id}/typing`, { isTyping: true })
+    this.context.socket.post(`${upstreamHost}/noo/post/${id}/typing`, {isTyping: true})
   }
 
   stoppedTyping = () => {
     const { post: { id } } = this.props
-    this.context.socket.post(`${config.upstreamHost}/noo/post/${id}/typing`, { isTyping: false })
+    this.context.socket.post(`${upstreamHost}/noo/post/${id}/typing`, {isTyping: false})
   }
 
   render () {

@@ -10,8 +10,14 @@ import { onCmdOrCtrlEnter } from '../util/textInput'
 import TagDescriptionEditor from './TagDescriptionEditor'
 import cx from 'classnames'
 var { array, bool, func, object, string } = React.PropTypes
-const MAX_TYPING_INTERVAL = 3000
-const STOPPED_TYPING_WAITTIME = 2000
+
+// The interval between repeated typing notifications to the web socket. We send
+// repeated notifications to make sure that a user gets notified even if they
+// load a comment thread after someone else has already started typing.
+const STARTED_TYPING_INTERVAL = 5000
+
+// The time to wait for inactivity before announcing that typing has stopped.
+const STOPPED_TYPING_WAIT_TIME = 8000
 
 @connect((state, { postId, commentId }) => {
   return ({
@@ -97,11 +103,12 @@ export default class CommentForm extends React.Component {
     const setText = event => updateStore(event.target.value)
     const placeholder = this.props.placeholder || 'Add a comment...'
 
-    const keyUp = debounce(stoppedTyping, STOPPED_TYPING_WAITTIME)
-    const startThrottled = throttle(startedTyping, MAX_TYPING_INTERVAL, { trailing: false })
-    const keyDown = e => {
+    const stopTyping = debounce(stoppedTyping, STOPPED_TYPING_WAIT_TIME)
+    const startTyping = throttle(startedTyping, STARTED_TYPING_INTERVAL, {trailing: false})
+
+    const handleKeyDown = e => {
       this.setState({enabled: this.refs.editor.getContent().length > 0})
-      startThrottled()
+      startTyping()
       onCmdOrCtrlEnter(e => {
         stoppedTyping()
         e.preventDefault()
@@ -121,8 +128,8 @@ export default class CommentForm extends React.Component {
               content={text}
               onBlur={() => updateStore(this.refs.editor.getContent())}
               onChange={setText}
-              onKeyUp={keyUp}
-              onKeyDown={keyDown}/>
+              onKeyUp={stopTyping}
+              onKeyDown={handleKeyDown}/>
             <input type='submit' value='Post' ref='button'
               className={cx({enabled})}/>
             {close && <button onClick={close}>Cancel</button>}

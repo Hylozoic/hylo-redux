@@ -7,9 +7,11 @@ import {
 } from '../actions'
 import { Modal } from '../components/Modal'
 import ModalRow from '../components/ModalRow'
+import { KeyControlledItemList } from '../components/KeyControlledList'
 import { communityTagJoinUrl } from '../routes'
-import { parseEmailString } from '../util/text'
+import { getKeyCode, keyMap } from '../util/textInput'
 import { get, isEmpty, some } from 'lodash'
+import { filter, includes, map, flow } from 'lodash/fp'
 import { typeahead } from '../actions'
 import cx from 'classnames'
 const { func, string, object, bool, array } = React.PropTypes
@@ -56,27 +58,40 @@ export default class ShareTopicModal extends React.Component {
 
     const setError = text => dispatch(updateTagInvitationEditor('error', text))
 
-    const update = (field) => event =>
-      dispatch(updateTagInvitationEditor(field, event.target.value))
+    const update = (field) => value =>
+      dispatch(updateTagInvitationEditor(field, value))
 
-    const updateRecipient = text => {
-      update
-    }
+    const addRecipient = recipient =>
+      update('recipients')(recipients.concat(recipient))
 
-    const removeRecipient = text => {
+    const updateRecipient = text =>
+      update('recipient')(text)
 
+    const removeRecipient = recipient => {
+      const test = recipient.id
+        ? r => r.id !== recipient.id
+        : r => r !== recipient
+      update('recipients')(filter(test, recipients))
     }
 
     const submit = () => {
       setError(null)
 
-      let emails = parseEmailString(recipients)
-      if (isEmpty(emails)) return setError('Enter at least one email address.')
+      if (isEmpty(recipients)) return setError('Enter at least one email address or user.')
+
+      const users = flow(
+        filter(r => r.id),
+        map('id'))(recipients)
+
+      const emails = filter(r => !r.id, recipients)
 
       let badEmails = emails.filter(email => !validator.isEmail(email))
       if (some(badEmails)) return setError(`These emails are invalid: ${badEmails.join(', ')}`)
 
-      dispatch(sendCommunityTagInvitation(community.id, tagName, {emails}))
+      dispatch(sendCommunityTagInvitation(community.id, tagName, {
+        users,
+        emails: emails.join(',')
+      }))
     }
 
     const copyLink = joinUrl
@@ -86,7 +101,11 @@ export default class ShareTopicModal extends React.Component {
       }
       : false
 
-    return <Modal title={`Invite people to join ${tagName}`} id='invite-topic'
+    const title = <span>
+      Invite people to join <span className='hashtag'>#{tagName}</span>
+    </span>
+
+    return <Modal title={title} id='invite-topic'
       onCancel={onCancel}>
       <div className='join-url'>
         Anyone with this link can join.
@@ -100,12 +119,14 @@ export default class ShareTopicModal extends React.Component {
       <HybridInviteInput recipients={recipients} recipient={recipient}
         communityId={community.id}
         typeaheadId='invite'
-        remove={removeRecipient}
-        updateRecipients={updateRecipient}/>
+        removeRecipient={removeRecipient}
+        addRecipient={addRecipient}
+        updateRecipient={updateRecipient}
+        />
       {error && <div className='alert alert-danger'>{error}</div>}
       {success && <div className='alert alert-success'>{success}</div>}
       <div className='footer'>
-        <button onClick={() => dispatch(closeModal())}>Done</button>
+        <button onClick={() => dispatch(closeModal())}>Cancel</button>
         <button onClick={submit} className={cx({ok: !pending})}>
           {pending ? 'Sending...' : 'Invite'}
         </button>
@@ -122,60 +143,73 @@ class HybridInviteInput extends React.Component {
     dispatch: func,
     recipients: array,
     recipient: string,
-    onSelect: func,
-    remove: func,
+    addRecipient: func,
+    removeRecipient: func,
+    updateRecipient: func,
     choices: array,
     typeaheadId: string
   }
 
-  constructor (props) {
-    super(props)
-    this.state = {choices: []}
-  }
-
   handleInput = event => {
     var value = event.target.value
-    let { dispatch, typeaheadId, communityId } = this.props
+    const {
+      dispatch, typeaheadId, communityId, addRecipient
+    } = this.props
     dispatch(typeahead(value, typeaheadId, {communityId, type: 'people'}))
-    this.setState({choices: this.props.choices})
+    if (value.match(/,\s*$/)) {
+      const email = value.trim().replace(/,$/, '')
+      addRecipient(value.trim().replace(/,$/, ''))
+      const newValue = value.trim().replace(/,$/, '').replace(email, '')
+      this.refs.input.value = newValue
+      this.handleInput({target: {value: newValue}})
+    }
   }
 
   handleKeys = event => {
-    if (this.refs.list) this.refs.list.handleKeys(event)
+    if (this.refs.list) {
+      this.refs.list.handleKeys(event)
+    } else {
+      const code = getKeyCode(event)
+      if (code === keyMap.ENTER || code === keyMap.TAB) {
+        this.handleInput({target: {value: this.refs.input.value + ','}})
+      }
+    }
   }
 
   select = choice => {
-    let { onSelect } = this.props
-    onSelect(choice)
+    let { addRecipient } = this.props
+    addRecipient(choice)
     this.refs.input.value = ''
     this.handleInput({target: {value: ''}})
   }
 
   render () {
-    const { recipients, recipient, remove, choices } = this.props
+    const { recipients, recipient, removeRecipient, choices } = this.props
+
+    const newChoices = filter(c => !includes(c.id, map('id', recipients)), choices)
 
     const Recipient = ({ recipient }) => {
       if (recipient.id) {
-        return <span>{recipient.name}<a onClick={remove(recipient.id)}> X</a></span>
+        return <span>{recipient.name}<a onClick={() => removeRecipient(recipient.id)}> X</a></span>
       } else {
-        return <span>{recipient}<a onClick={remove(recipient)}> X</a></span>
+        return <span>{recipient}<a onClick={() => removeRecipient(recipient)}> X</a></span>
       }
     }
 
     const onFocus = () => this.refs.row.focus()
     const onBlur = () => this.refs.row.blur()
     return <ModalRow ref='row' field={this.refs.input}>
-      {recipients.map(r => <Recipient recipient={r}/>)}
+      {recipients.map(r => <Recipient recipient={r} key={r.id || r}/>)}
       <input type='textarea'
         ref='input'
         onFocus={onFocus}
         onBlur={onBlur}
         value={recipient}
         onChange={this.handleInput}
-        onKeyDOwn={this.handleKeys}
+        onKeyDown={this.handleKeys}
         />
-      {!isEmpty(choices) && <div className='dropdown active'>
-        <KeyControlledList className='dropdown-menu' ref='list' items={choices} onChange={this.select}/>
+      {!isEmpty(newChoices) && <div className='dropdown active'>
+        <KeyControlledItemList className='dropdown-menu' ref='list' items={newChoices} onChange={this.select}/>
       </div>}
     </ModalRow>
   }

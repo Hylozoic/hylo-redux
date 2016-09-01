@@ -3,12 +3,11 @@ import { connect } from 'react-redux'
 import { prefetch } from 'react-fetcher'
 import { fetch, ConnectedPostList } from '../ConnectedPostList'
 import { FETCH_TAG, fetchTag, navigate } from '../../actions'
-import { followTag, showShareTag, showInviteTag } from '../../actions/tags'
+import { followTag, showShareTag } from '../../actions/tags'
 import { compose } from 'redux'
 import { sortBy } from 'lodash'
 import { get } from 'lodash/fp'
 import PostEditor from '../../components/PostEditor'
-import Icon from '../../components/Icon'
 import Avatar from '../../components/Avatar'
 import Dropdown from '../../components/Dropdown'
 import PersonDropdownItem from '../../components/PersonDropdownItem'
@@ -74,7 +73,7 @@ class TagPosts extends React.Component {
           <Followers followers={sortBy(followers, f => f.id !== owner.id)}
             followerCount={followerCount}/>}
         {canInvite(currentUser, community) &&
-          <button className='invite' onClick={() => dispatch(showInviteTag(tagName, id))}>+</button>}
+          <button className='invite' onClick={() => dispatch(showShareTag(tagName, id))}>+</button>}
         <span className='buttons'>
           {id && <button id='follow-button'
             className={tag.followed ? 'unfollow' : 'follow'}
@@ -89,8 +88,6 @@ class TagPosts extends React.Component {
             title='Follow Topics'>
             <p>Follow topics you’re interested in to receive an in-app notification when there is a new Conversation in that topic.</p>
           </Tooltip>}
-          {canInvite(currentUser, community) &&
-            <button className='share' onClick={() => dispatch(showShareTag(tagName, id))}><Icon name='Box-Out'/></button>}
         </span>
       </div>
       {currentUser && <PostEditor community={community} tag={tagName}/>}

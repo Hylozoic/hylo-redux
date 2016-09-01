@@ -1,4 +1,5 @@
 import appHandler from './appHandler' // this line must be first
+import redirectToApp from './redirectToApp'
 import { upstreamHost } from '../config'
 import { magenta, red } from 'chalk'
 import { info } from '../util/logging'
@@ -9,14 +10,17 @@ import express from 'express'
 import request from 'request'
 import { readFileSync } from 'fs'
 import compression from 'compression'
+import cookieParser from 'cookie-parser'
 
 const port = process.env.PORT || 9000
 const upstreamHostname = parse(upstreamHost).hostname
 const fixHeaders = headers => ({...headers, host: upstreamHostname})
 
 const server = express()
+server.use(cookieParser())
 server.use(compression())
 server.use(express.static('public'))
+server.use(redirectToApp)
 handleStaticPages(server)
 
 server.post('/login', function (req, res) {

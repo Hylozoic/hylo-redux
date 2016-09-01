@@ -263,7 +263,7 @@ export class CommentSection extends React.Component {
     currentUser: object,
     isProjectRequest: bool,
     dispatch: func,
-    socket: object
+    getSocket: func
   }
 
   constructor (props) {
@@ -275,21 +275,21 @@ export class CommentSection extends React.Component {
 
   componentDidMount () {
     const { post: { id }, expanded } = this.props
-    const { dispatch, socket } = this.context
+    const { dispatch, getSocket } = this.context
     if (expanded) {
-      socket.post(`${upstreamHost}/noo/post/${id}/subscribe`)
-      socket.on('commentAdded', c => dispatch(appendComment(id, c)))
-      socket.on('userTyping', this.userTyping)
+      this.socket = getSocket()
+      this.socket.post(`${upstreamHost}/noo/post/${id}/subscribe`)
+      this.socket.on('commentAdded', c => dispatch(appendComment(id, c)))
+      this.socket.on('userTyping', this.userTyping)
     }
   }
 
   componentWillUnmount () {
     const { post: { id }, expanded } = this.props
-    const { socket } = this.context
     if (expanded) {
-      socket.post(`${upstreamHost}/noo/post/${id}/unsubscribe`)
-      socket.off('commentAdded')
-      socket.off('userTyping')
+      this.socket.post(`${upstreamHost}/noo/post/${id}/unsubscribe`)
+      this.socket.off('commentAdded')
+      this.socket.off('userTyping')
     }
   }
 
@@ -305,12 +305,12 @@ export class CommentSection extends React.Component {
 
   startedTyping = () => {
     const { post: { id } } = this.props
-    this.context.socket.post(`${upstreamHost}/noo/post/${id}/typing`, {isTyping: true})
+    this.socket.post(`${upstreamHost}/noo/post/${id}/typing`, {isTyping: true})
   }
 
   stoppedTyping = () => {
     const { post: { id } } = this.props
-    this.context.socket.post(`${upstreamHost}/noo/post/${id}/typing`, {isTyping: false})
+    this.socket.post(`${upstreamHost}/noo/post/${id}/typing`, {isTyping: false})
   }
 
   render () {

@@ -4,7 +4,7 @@ import { prefetch } from 'react-fetcher'
 import { connect } from 'react-redux'
 import socketIOClient from 'socket.io-client'
 import sailsIOClient from 'sails.io.js'
-import { debounce, isEmpty, pick } from 'lodash'
+import { debounce, isEmpty } from 'lodash'
 import { get } from 'lodash/fp'
 import Notifier from '../components/Notifier'
 import LiveStatusPoller from '../components/LiveStatusPoller'
@@ -18,10 +18,6 @@ import { getCurrentCommunity } from '../models/community'
 import { getCurrentNetwork } from '../models/network'
 const { array, bool, func, object } = React.PropTypes
 import config from './../config'
-
-let io = sailsIOClient(socketIOClient)
-io.sails.url = config.upstreamHost
-io.sails.environment = config.environment
 
 @prefetch(({ store, dispatch }) => {
   const { isMobile, people } = store.getState()
@@ -65,18 +61,27 @@ export default class App extends React.Component {
     currentUser: object,
     isMobile: bool,
     location: object,
-    socket: object
+    getSocket: func
+  }
+
+  constructor (props) {
+    super(props)
+    this.state = {}
   }
 
   getChildContext () {
     const { dispatch, currentUser, isMobile, location } = this.props
-    return {
-      dispatch,
-      currentUser,
-      isMobile,
-      location,
-      socket: io.socket
+    return {dispatch, currentUser, isMobile, location, getSocket: this.getSocket}
+  }
+
+  getSocket = () => {
+    if (!this.socket) {
+      const io = sailsIOClient(socketIOClient)
+      io.sails.url = config.upstreamHost
+      io.sails.environment = config.environment
+      this.socket = io.socket
     }
+    return this.socket
   }
 
   componentDidMount () {

@@ -73,6 +73,14 @@ export default class UserSettings extends React.Component {
       }})
     }
     dispatch(getUserBalance())
+
+    this.getUserBalanceInterval = setInterval(function(){
+        dispatch(getUserBalance())
+      }, 10000)
+  }
+
+  componentWillUnmount () {
+    clearInterval(this.getUserBalanceInterval)
   }
 
   validate () {

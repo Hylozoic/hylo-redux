@@ -103,6 +103,7 @@ export default class CommentForm extends React.Component {
       this.setState({enabled: this.refs.editor.getContent().length > 0})
       startThrottled()
       onCmdOrCtrlEnter(e => {
+        stoppedTyping()
         e.preventDefault()
         this.submit()
       }, e)

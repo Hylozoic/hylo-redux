@@ -2,8 +2,6 @@ import React from 'react'
 import cx from 'classnames'
 import { prefetch } from 'react-fetcher'
 import { connect } from 'react-redux'
-import socketIOClient from 'socket.io-client'
-import sailsIOClient from 'sails.io.js'
 import { debounce, isEmpty } from 'lodash'
 import { get } from 'lodash/fp'
 import Notifier from '../components/Notifier'
@@ -75,13 +73,10 @@ export default class App extends React.Component {
   }
 
   getSocket = () => {
-    if (!this.socket) {
-      const io = sailsIOClient(socketIOClient)
-      io.sails.url = config.upstreamHost
-      io.sails.environment = config.environment
-      this.socket = io.socket
-    }
-    return this.socket
+    // the socket is set up this way so that the sails.io.js library is only
+    // added to the client bundle. otherwise it causes the client-side tests to
+    // break
+    return window.getSocket()
   }
 
   componentDidMount () {

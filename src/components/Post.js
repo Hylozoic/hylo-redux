@@ -277,6 +277,7 @@ export class CommentSection extends React.Component {
     const { post: { id }, expanded } = this.props
     const { dispatch, getSocket } = this.context
     if (expanded) {
+      if (!getSocket) return
       this.socket = getSocket()
       this.socket.post(`${upstreamHost}/noo/post/${id}/subscribe`)
       this.socket.on('commentAdded', c => dispatch(appendComment(id, c)))
@@ -286,7 +287,7 @@ export class CommentSection extends React.Component {
 
   componentWillUnmount () {
     const { post: { id }, expanded } = this.props
-    if (expanded) {
+    if (expanded && this.socket) {
       this.socket.post(`${upstreamHost}/noo/post/${id}/unsubscribe`)
       this.socket.off('commentAdded')
       this.socket.off('userTyping')

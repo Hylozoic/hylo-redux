@@ -64,8 +64,12 @@ export default class ShareTopicModal extends React.Component {
     const update = (field) => value =>
       dispatch(updateTagInvitationEditor(field, value))
 
-    const addRecipient = recipient =>
+    const addRecipient = recipient => {
+      console.log('adding rec', recipient)
+      console.log('recips', recipients)
+      console.log('result', recipients.concat(recipient))
       update('recipients')(recipients.concat(recipient))
+    }
 
     const updateRecipient = text =>
       update('recipient')(text)
@@ -161,12 +165,12 @@ class HybridInviteInput extends React.Component {
       dispatch, typeaheadId, communityId, addRecipient
     } = this.props
     dispatch(typeahead(value, typeaheadId, {communityId, type: 'people'}))
-    if (value.match(/,\s*$/)) {
-      const email = value.trim().replace(/,$/, '')
-      addRecipient(value.trim().replace(/,$/, ''))
-      const newValue = value.trim().replace(/,$/, '').replace(email, '')
-      this.refs.input.value = newValue
-      this.handleInput({target: {value: newValue}})
+    if (value.match(/,/)) {
+      addRecipient(flow(
+        map(e => e.trim()),
+        filter(e => !isEmpty(e))
+      )(value.split(',')))
+      this.refs.input.value = ''
     }
   }
 
@@ -197,10 +201,14 @@ class HybridInviteInput extends React.Component {
       if (recipient.id) {
         return <span className='recipient'>
           <Avatar person={recipient}/>
-          {recipient.name} <a onClick={() => removeRecipient(recipient)}>X</a>
+          {recipient.name} <a className='remove'
+            onClick={() => removeRecipient(recipient)}>&times;</a>
         </span>
       } else {
-        return <span className='recipient'>{recipient} <a onClick={() => removeRecipient(recipient)}>X</a></span>
+        return <span className='recipient'>
+          {recipient} <a className='remove'
+            onClick={() => removeRecipient(recipient)}>&times;</a>
+        </span>
       }
     }
 

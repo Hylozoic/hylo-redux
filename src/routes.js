@@ -188,6 +188,9 @@ export const commentUrl = comment =>
 export const postUrl = (postId, commentId) =>
   `/p/${postId}` + (commentId ? `#comment-${commentId}` : '')
 
+export const userUrl = (user) =>
+  `/u/${user.id}`
+
 export const tagUrl = (name, slug) => {
   var result = ''
   if (slug) result += `/c/${slug}`

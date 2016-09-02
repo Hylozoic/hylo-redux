@@ -882,25 +882,37 @@ ul.tags {
     padding-left: 0;
   }
   li {
-    padding: 10px 25px;
-    min-height: 81px;
-    border-bottom: 1px solid @post-border;
+    padding: 16px 25px;
+    min-height: 98px;
+    border-bottom: 1px solid @faint-gray-border;
     list-style-type: none;
     .clearfix;
 
     .name {
       display: block;
       .medium;
+      font-size: 16px;
+      color: black;
     }
 
     .description {
       margin-bottom: 0;
+      margin-left: 13px;
+      color: @dark-gray-bg;
+    }
+
+    .meta {
+      margin-left: 13px;
     }
 
     .followers {
       display: inline-block;
       margin-top: 20px;
       margin-left: 25px;
+      .count {
+        color: @dark-gray-bg;
+        font-weight: 300;
+      }
     }
 
     .icon-Users {
@@ -919,7 +931,12 @@ ul.tags {
       &.follow {
         color: @damian-green;
         border-color: @damian-green;
-        padding: 0 20px 0 16px;
+        padding: 0 32px 0 16px;
+        margin-left: 10px;
+        &:hover {
+          background-color: #0abf97;
+          color: white;
+        }
         span {
           font-size: 24px;
           vertical-align: middle;

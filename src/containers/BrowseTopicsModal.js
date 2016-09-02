@@ -13,7 +13,7 @@ import { find } from 'lodash/fp'
 import { same } from '../models'
 import { newestMembership } from '../models/currentUser'
 import { humanDate } from '../util/text'
-import { tagUrl } from '../routes'
+import { tagUrl, userUrl } from '../routes'
 const { array, bool, func, number, object, string } = React.PropTypes
 
 const subject = 'community'
@@ -95,12 +95,12 @@ const TagRow = ({ tag, community, followed }, { isMobile, dispatch }) => {
 
   return <li key={id}>
     {!isMobile && <TagRowControls {...{follower_count, slug, followed, name}}/>}
-    <A className='name' to={tagUrl(name, slug)} onClick={close}>#{name}</A>
+    <A className='name' to={tagUrl(name, slug)} onClick={close}># {name}</A>
     {(description || post_type) && <p className='description'>
       {description || post_type}
     </p>}
     {!isEmpty(owner) && <span className='meta'>
-      created by {owner.name} {humanDate(created_at)}
+      created by <A to={userUrl(owner)}>{owner.name}</A> {humanDate(created_at)}
     </span>}
     {isMobile && <TagRowControls {...{follower_count, slug, followed, name}}/>}
   </li>
@@ -112,7 +112,7 @@ const TagRowControls = ({ followed, follower_count, slug, name }, { dispatch }) 
   return <div className='right'>
     <span className='followers'>
       <Icon name='Users'/>
-      {follower_count}
+      <span className='count'>{follower_count}</span>
     </span>
     {followed
       ? <a className='unfollow button' onClick={follow}>

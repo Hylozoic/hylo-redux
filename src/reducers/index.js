@@ -459,7 +459,7 @@ const combinedReducers = combineReducers({
     return state
   },
 
-  showModal: (state = {show: 'tags'}, action) => {
+  showModal: (state = {}, action) => {
     switch (action.type) {
       case SHOW_MODAL:
         return {show: action.meta.name, params: action.payload}

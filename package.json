@@ -106,6 +106,7 @@
     "gulp-uglify": "^2.0.0",
     "heroku-client": "^2.4.0",
     "isparta": "^4.0.0",
+    "istanbul": "0.4.4",
     "istanbul-combine": "^0.3.0",
     "jsdom": "^9.4.2",
     "livereactload": "^2.1.0",

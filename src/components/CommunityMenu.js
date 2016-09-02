@@ -6,6 +6,7 @@ import { filter, flow, get, map, sortBy } from 'lodash/fp'
 import { same } from '../models'
 import { IndexA, A } from './A'
 import Dropdown from './Dropdown'
+import LazyLoader from './LazyLoader'
 import { assetUrl } from '../util/assets'
 const { object, func, bool } = React.PropTypes
 
@@ -59,7 +60,10 @@ const CommunityMenu = ({ network, community }, { isMobile, dispatch, currentUser
           </li>
           {menuItems.slice(1).map(community => <li key={community.id}>
             <A to={url(community)} title={community.name}>
-              <img src={community.avatar_url}/> {community.name}
+              <LazyLoader>
+                <img src={community.avatar_url}/>
+              </LazyLoader>
+              {community.name}
             </A>
           </li>)}
         </ul>

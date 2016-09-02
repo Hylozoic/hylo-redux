@@ -99,9 +99,9 @@ export default class Dropdown extends React.Component {
         style={mobileMenuStyle(isMobile && active, this.refs.parent)}
         onClick={() => this.toggle()}
         onMouseLeave={() => hoverOpened && this.toggle()}>
-        {triangle && <li className='triangle'
+        {active && triangle && <li className='triangle'
           style={{left: findTriangleLeftPos(isMobile, this.refs.parent)}}/>}
-        {children}
+        {active && children}
       </ul>
       <VelocityTransitionGroup
         enter={{animation: 'fadeIn', duration: 100}}

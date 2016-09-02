@@ -13,6 +13,7 @@ import { getCurrentCommunity } from '../models/community'
 import Icon from './Icon'
 import Post from './Post'
 import Video from './Video'
+import LazyLoader from './LazyLoader'
 import Avatar from './Avatar'
 import LinkedPersonSentence from './LinkedPersonSentence'
 import PledgeProgress from './PledgeProgress'
@@ -57,7 +58,6 @@ class ProjectPost extends React.Component {
     this.state = {
       accountBalance: null
     }
-
   }
 
   componentWillMount() {
@@ -379,23 +379,31 @@ export const ProjectPostCard = connect(
   }
 
   return <div className='post project-summary'>
-           <A className='image' to={url} style={{backgroundImage}} />
-           <div className='meta'>
-             {end_time && <span><Deadline time={end_time}/> {spacer}</span>}
-             {tag && <span className='hashtag-segment'><A className='hashtag' to={url}> #{tag} </A> {spacer}</span>}
-             <A to={`/u/${user.id}`}>
-               {user.name}
-             </A>
-           </div>
-           <A className='title' to={url}>
-             {name}
-           </A>
-           {!isMobile && description && <div className='details-row'>
-                                          <ClickCatchingSpan className='details' dangerouslySetInnerHTML={{__html: description}} />
-                                          {truncated && <span><A to={`/p/${id}`} className='show-more'> Show more </A></span>}
-                                        </div>}
-           <Supporters post={post} simple/>
-           <div className='comments-section-spacer' />
-           <CommentSection post={post} comments={comments} onExpand={() => dispatch(navigate(url))} />
-         </div>
+    <LazyLoader className='image'>
+      <A to={url} style={{backgroundImage}}/>
+    </LazyLoader>
+    <div className='meta'>
+      {end_time && <span>
+        <Deadline time={end_time}/>
+        {spacer}
+      </span>}
+      {tag && <span className='hashtag-segment'>
+        <A className='hashtag' to={url}>#{tag}</A>
+        {spacer}
+      </span>}
+      <A to={`/u/${user.id}`}>{user.name}</A>
+    </div>
+    <A className='title' to={url}>{name}</A>
+    {!isMobile && description && <div className='details-row'>
+      <ClickCatchingSpan className='details'
+        dangerouslySetInnerHTML={{__html: description}}/>
+      {truncated && <span>
+        <A to={`/p/${id}`} className='show-more'>Show&nbsp;more</A>
+      </span>}
+    </div>}
+    <Supporters post={post} simple/>
+    <div className='comments-section-spacer'/>
+    <CommentSection post={post} comments={comments}
+      onExpand={() => dispatch(navigate(url))}/>
+  </div>
 })

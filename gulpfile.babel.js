@@ -52,7 +52,7 @@ gulp.task('watch', function () {
   gulp.watch('css/**/*.less', ['build-dev-css'])
 })
 
-gulp.task('default', ['watch-js', 'serve', 'watch'])
+gulp.task('default', ['build-dev-css', 'watch-js', 'serve', 'watch'])
 
 // ---------------------------------------------------------------------
 // deployment tasks

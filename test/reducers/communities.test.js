@@ -122,7 +122,7 @@ describe('communities', () => {
           slug: 'c1',
           params: {
             name: 'New Name',
-            settings: {all_can_invite: true}
+            settings: {all_can_invite: true, enable_finance:true}
           }
         }
       }
@@ -131,7 +131,7 @@ describe('communities', () => {
         c1: {
           slug: 'c1',
           intention: 'Intention.',
-          settings: {sends_email_prompts: true}
+          settings: {sends_email_prompts: true, enable_finance:false}
         }
       }
 
@@ -140,7 +140,7 @@ describe('communities', () => {
           slug: 'c1',
           name: 'New Name',
           intention: 'Intention.',
-          settings: {sends_email_prompts: true, all_can_invite: true}
+          settings: {sends_email_prompts: true, all_can_invite: true, enable_finance:true}
         }
       }
 

@@ -20,14 +20,21 @@ const state = {
       expanded: true,
       name: 'hello!',
       description: 'and welcome',
-      communities: ['f']
-    }
+      communities: ['f'],
+      financialRequestAmount: '10.00',
+      financialRequestsEnabled: false,
+      end_time: new Date("2016-10-12T14:00:00.000Z")
+    },
   },
   typeaheadMatches: {},
+  currentCommunityId: 'f',
   communities: {
     f: {
       id: 'f',
-      name: 'Foo Community'
+      name: 'Foo Community',
+      settings: {
+        enable_finance: false
+      }
     }
   }
 }
@@ -94,6 +101,81 @@ describe('PostEditor', () => {
     })
   })
 
+  describe('with no financial contribution amount', () => {
+    beforeEach(() => {
+      const newState = cloneDeep(state)
+      set(newState, 'postEdits.foo.financialRequestAmount', '0.00')
+      set(newState, 'postEdits.foo.financialRequestsEnabled', true)
+
+      render(newState, post)
+    })
+
+    it('fails validation', () => {
+      click(node.refs.save)
+      expect(window.alert).to.have.been.called.with('Enter an amount for financial contributions.')
+    })
+  })
+
+  describe('with a financial contribution amount over the $100,000 threshold', () => {
+    beforeEach(() => {
+      const newState = cloneDeep(state)
+      set(newState, 'postEdits.foo.financialRequestAmount', '1000000.00')
+      set(newState, 'postEdits.foo.financialRequestsEnabled', true)
+
+      render(newState, post)
+    })
+
+    it('fails validation', () => {
+      click(node.refs.save)
+      expect(window.alert).to.have.been.called.with('Please enter an amount less than $100000.')
+    })
+  })
+
+  describe('with null financial contribution amount', () => {
+    beforeEach(() => {
+      const newState = cloneDeep(state)
+      set(newState, 'postEdits.foo.financialRequestAmount', null)
+      set(newState, 'postEdits.foo.financialRequestsEnabled', true)
+
+      render(newState, post)
+    })
+
+    it('fails validation', () => {
+      click(node.refs.save)
+      expect(window.alert).to.have.been.called.with('Enter an amount for financial contributions.')
+    })
+  })
+
+  describe('with no deadline', () => {
+    beforeEach(() => {
+      const newState = cloneDeep(state)
+      set(newState, 'postEdits.foo.financialRequestsEnabled', true)
+      set(newState, 'postEdits.foo.end_time', '')
+
+      render(newState, post)
+    })
+
+    it('fails validation', () => {
+      click(node.refs.save)
+      expect(window.alert).to.have.been.called.with('Enter a project deadline.')
+    })
+  })
+
+  describe('with a deadline that has already passed', () => {
+    beforeEach(() => {
+      const newState = cloneDeep(state)
+      set(newState, 'postEdits.foo.financialRequestsEnabled', true)
+      set(newState, 'postEdits.foo.end_time', new Date('2015-10-12T14:00:00.000Z'))
+
+      render(newState, post)
+    })
+
+    it('fails validation', () => {
+      click(node.refs.save)
+      expect(window.alert).to.have.been.called.with('Deadline must have not yet passed.')
+    })
+  })
+
   describe('with no community selected', () => {
     beforeEach(() => {
       render(set(cloneDeep(state), 'postEdits.foo.communities', []), post)
@@ -114,10 +196,13 @@ describe('PostEditor', () => {
   })
 
   describe('with a project post', () => {
+
     beforeEach(() => {
       const newState = cloneDeep(state)
       set(newState, 'postEdits.foo.type', 'project')
       set(newState, 'postEdits.foo.tag', 'foo')
+
+      window.confirm = spy(() => true)
 
       render(newState, post, store => {
         store.transformAction(FETCH_TAG, action => {
@@ -127,6 +212,10 @@ describe('PostEditor', () => {
           })
         })
       })
+    })
+
+    afterEach(() => {
+      window.confirm = window._originalConfirm
     })
 
     it('validates the tag', () => {

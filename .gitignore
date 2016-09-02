@@ -10,3 +10,5 @@ public/index.css
 .env.test
 .env.deploy
 npm-debug.log
+hylo-redux.iml
+.idea

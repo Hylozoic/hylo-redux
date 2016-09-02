@@ -11,7 +11,7 @@ import shallowCompare from 'react-addons-shallow-compare'
 import cx from 'classnames'
 import autoproxy from 'autoproxy'
 import {
-  debounce, difference, compact, filter, find, get, includes, isEmpty, some,
+  debounce, difference, compact, cloneDeep, filter, find, get, includes, isEmpty, some,
   startsWith, keys, uniq
 } from 'lodash'
 import CommunityTagInput from './CommunityTagInput'
@@ -40,6 +40,7 @@ import { createTagInPostEditor } from '../actions'
 import { ADDED_POST, EDITED_POST, trackEvent } from '../util/analytics'
 import { getCurrentCommunity } from '../models/community'
 import TagDescriptionEditor from './TagDescriptionEditor'
+import { validateForm } from '../util/validator'
 const { array, bool, func, object, string } = React.PropTypes
 
 const specialTags = ['request', 'offer', 'intention']
@@ -108,7 +109,8 @@ export class PostEditor extends React.Component {
 
   updateStore = (data) => {
     let { id, dispatch } = this.props
-    dispatch(updatePostEditor(data, id))
+    var newObj = cloneDeep(data)
+    dispatch(updatePostEditor(newObj, id))
   }
 
   _self () {
@@ -126,36 +128,25 @@ export class PostEditor extends React.Component {
   setDelayed = debounce((key, value) => this.updateStore({[key]: value}), 50)
 
   addCommunity = community => {
-    let { communities } = this.props.postEdit
+    let { communities, financialRequestsEnabled } = this.props.postEdit
+    if (financialRequestsEnabled) {
+      if (communities.length > 0) {
+        window.alert('Financial projects can only be posted in one community.')
+        return
+      }
+
+      if (!community.financial_requests_enabled) {
+        window.alert('Financial projects can only be posted in financial contributions enabled community')
+        return
+      }
+    }
+
     this.updateStore({communities: (communities || []).concat(community.id)})
   }
 
   removeCommunity = community => {
     let { communities } = this.props.postEdit
     this.updateStore({communities: filter(communities, cid => cid !== community.id)})
-  }
-
-  validate () {
-    let { postEdit } = this.props
-    const { title, subeditor } = this.refs
-
-    if (!postEdit.name) {
-      window.alert('The title of a post cannot be blank.')
-      title.focus()
-      return Promise.resolve(false)
-    }
-
-    if (isEmpty(postEdit.communities)) {
-      window.alert('Please pick at least one community.')
-      return Promise.resolve(false)
-    }
-
-    if (subeditor) {
-      const subvalidate = subeditor.validate || subeditor.getWrappedInstance().validate
-      return Promise.resolve(subvalidate())
-    }
-
-    return Promise.resolve(true)
   }
 
   saveIfValid () {
@@ -165,7 +156,7 @@ export class PostEditor extends React.Component {
     const { tagSelector, title } = self.refs
     tagSelector ? tagSelector.focus() : title.focus()
 
-    self.validate().then(valid => {
+    validateForm(self).then(valid => {
       if (!valid) return
       // we use setTimeout here to avoid a race condition. the description field
       // (tinymce) doesn't fire its change event until it loses focus, and

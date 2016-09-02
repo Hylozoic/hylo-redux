@@ -10,7 +10,9 @@ import {
   notify,
   toggleUserSettingsSection,
   updateMembershipSettings,
-  updateUserSettings
+  updateUserSettings,
+  setHitfinError,
+  getUserBalance
  } from '../../actions'
 import { uploadImage } from '../../actions/uploadImage'
 import A from '../../components/A'
@@ -18,12 +20,15 @@ import { formatDate } from '../../util/text'
 import { debounce, get, sortBy, throttle, set } from 'lodash'
 import ListItemTagInput from '../../components/ListItemTagInput'
 import { avatarUploadSettings, bannerUploadSettings } from '../../models/person'
-import { openPopup, setupPopupCallback, PROFILE_CONTEXT } from '../../util/auth'
+import { openPopup, setupPopupCallback, disconnect, PROFILE_CONTEXT } from '../../util/auth'
 import { EDITED_USER_SETTINGS, trackEvent } from '../../util/analytics'
 import { preventSpaces } from '../../util/textInput'
 import Icon from '../../components/Icon'
+import _ from 'lodash'
 
 @prefetch(({ dispatch, params: { id }, query }) => {
+  dispatch(getUserBalance())
+  console.log('got user balance:')
   switch (query.expand) {
     case 'password':
       dispatch(toggleUserSettingsSection('account', true))
@@ -53,17 +58,29 @@ export default class UserSettings extends React.Component {
     dispatch: func,
     location: object,
     expand: object,
-    pending: string
+    pending: string,
+    hitfinError: string,
+    accountBalance: string
   }
 
   componentDidMount () {
-    setupPopupCallback('settings', this.props.dispatch)
+    let { dispatch } = this.props
+    setupPopupCallback('settings', this.props.dispatch, setHitfinError)
     if (this.props.expand.password) {
       this.setState({editing: {
         ...this.state.editing,
         password: true
       }})
     }
+    dispatch(getUserBalance())
+
+    this.getUserBalanceInterval = setInterval(function(){
+        dispatch(getUserBalance())
+      }, 10000)
+  }
+
+  componentWillUnmount () {
+    clearInterval(this.getUserBalanceInterval)
   }
 
   validate () {
@@ -149,6 +166,17 @@ export default class UserSettings extends React.Component {
     this.update(path, !get(currentUser, path))
   }
 
+  unlinkHitfin = () => {
+    let { dispatch } = this.props
+    if (!window.confirm(`Are you sure you want to disconnect your HitFin account?`)) return
+    disconnect('hit-fin', dispatch, setHitfinError)
+  }
+
+
+  manageHitfinAccount = () => {
+    window.open('https://sandbox.hitfin.com/app/wallet')
+  }
+
   updateMembership = (membership, path, value) => {
     const { dispatch } = this.props
     const params = set({}, path, value)
@@ -192,13 +220,20 @@ export default class UserSettings extends React.Component {
   }
 
   render () {
-    let { currentUser, expand, pending, dispatch } = this.props
+    let { currentUser, expand, pending, dispatch, hitfinError, accountBalance } = this.props
     let memberships = sortBy(currentUser.memberships, m => m.community.name)
     let { editing, edited, errors } = this.state
     let { avatar_url, banner_url } = currentUser
     let {
       bio, location, url, facebook_url, twitter_name, linkedin_url
     } = {...currentUser, ...editing}
+    var renderHitFinButton
+    var hitfinLink = _.find(currentUser.linkedAccounts, (acc) => acc.provider_key === 'hit-fin')
+    if (!hitfinLink) {
+      renderHitFinButton = <a className='button hit-fin-logo' onClick={() => openPopup('hit-fin', PROFILE_CONTEXT)}> Connect HitFin Account </a>
+    } else {
+      renderHitFinButton = <a className='button hit-fin-logo' onClick={() => this.unlinkHitfin()}> Disconnect </a>
+    }
 
     return <div id='user-settings' className='form-sections simple-page'>
       <SectionLabel name='profile' label='Profile' {...{dispatch, expand}}/>
@@ -382,6 +417,33 @@ export default class UserSettings extends React.Component {
       {expand.payment && <Section className='payment'>
         <Item>
           <div className='full-column'>
+            <label>Enable Financial Features</label>
+            <p>Enabling this functionality allows you to create projects
+              with financial contributions and pledge funds to other
+              financially enabled projects using your HitFin wallet.</p>
+          </div>
+          <div className='full-column'>
+            {hitfinError && <div className='alert alert-danger'>{hitfinError}</div>}
+          </div>
+          {hitfinLink &&
+          <div className='full-column'>
+            {accountBalance && <label>Your Current HitFin Balance ${accountBalance}  sUSD</label>}
+            {!accountBalance && <label>HitFin Balance Loading...</label>}
+          </div>
+           }
+          <div>
+            <div className='half-column'>
+              {renderHitFinButton}
+            </div>
+            {hitfinLink && <div className='half-column right-align'>
+                <a className='button hit-fin-logo' onClick={ () => this.manageHitfinAccount() }> Manage Account </a>
+              </div>
+            }
+          </div>
+        </Item>
+        <Item>
+          <div className='full-column'>
+            <label>Membership Fees</label>
             <p>You do not belong to any communities that require a membership fee.</p>
           </div>
         </Item>

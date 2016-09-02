@@ -1,6 +1,6 @@
 import React from 'react'
 import { connect } from 'react-redux'
-import { fetchLiveStatus } from '../actions'
+import { fetchLiveStatus, getUserBalance } from '../actions'
 import { get } from 'lodash'
 const { func, object } = React.PropTypes
 
@@ -9,10 +9,11 @@ export default class LiveStatusPoller extends React.Component {
 
   static propTypes = {
     dispatch: func,
-    community: object
+    community: object,
+    balance: object
   }
 
-  setPollInterval (community) {
+  setPollInterval (community, balance) {
     let { dispatch } = this.props
 
     if (this.pollInterval) {
@@ -22,17 +23,19 @@ export default class LiveStatusPoller extends React.Component {
     this.pollInterval = setInterval(() =>
       dispatch(fetchLiveStatus(get(community, 'id'), get(community, 'slug'))),
       60 * 1000)
+
   }
 
   componentDidMount () {
-    let { dispatch, community } = this.props
-    setTimeout(() => dispatch(fetchLiveStatus(get(community, 'id'), get(community, 'slug'))), 10 * 1000)
-    this.setPollInterval(community)
+    let { dispatch, community, balance } = this.props
+    setTimeout(() => dispatch(fetchLiveStatus(get(community, 'id'), get(community, 'slug')))//.then( () => {dispatch(refreshHitfinToken())})
+    , 10 * 1000)
+    this.setPollInterval(community, balance)
   }
 
   componentWillReceiveProps (nextProps) {
     if (get(nextProps, 'community.id') !== get(this.props, 'community.id')) {
-      this.setPollInterval(nextProps.community)
+      this.setPollInterval(nextProps.community, nextProps.balance)
     }
   }
 

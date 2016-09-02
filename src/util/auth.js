@@ -1,4 +1,4 @@
-import { fetchCurrentUser } from '../actions'
+import { fetchCurrentUser, disconnect_hitfin, getUserBalance } from '../actions'
 import { get } from 'lodash'
 import { goToNext } from '../containers/Login'
 import qs from 'querystring'
@@ -8,9 +8,17 @@ export const PROFILE_CONTEXT = 'profile'
 
 let popup
 
+export function disconnect (service, dispatch, errorAction) {
+  dispatch(disconnect_hitfin(true, dispatch)).then(({ error }) => {
+    if(error) dispatch(errorAction('Error disconnecting HitFin account'))
+    else {
+      dispatch(errorAction(null));
+    }
+  })
+}
+
 export function openPopup (service, authContext) {
   var width, height
-
   if (service === 'google') {
     width = 420
     height = 480
@@ -18,6 +26,9 @@ export function openPopup (service, authContext) {
     width = 560
     height = 520
   } else if (service === 'linkedin') {
+    width = 400
+    height = 584
+  } else if (service === 'hit-fin') {
     width = 400
     height = 584
   }
@@ -31,6 +42,7 @@ export function openPopup (service, authContext) {
     authContext
   }
 
+console.log(`/noo/login/${service}?${qs.stringify(params)}`)
   popup = window.open(
     `/noo/login/${service}?${qs.stringify(params)}`,
     `${service}Auth`,
@@ -59,7 +71,13 @@ export function setupPopupCallback (name, dispatch, errorAction) {
         }
         break
       case PROFILE_CONTEXT:
-        dispatch(fetchCurrentUser(true))
+        if (error) {
+          dispatch(errorAction("Unable to authenticate with hitfin"))
+        }
+        else{
+          dispatch(errorAction(null));
+          dispatch(fetchCurrentUser(true)).then( () => { dispatch(getUserBalance())})
+        }
     }
 
     popup.close()

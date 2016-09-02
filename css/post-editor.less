@@ -396,7 +396,7 @@
   margin-top: 25px;
   padding-top: @p-bottom-margin;
 
-  h3, .add-request {
+  > * {
     .post-left-padding(@mobile-side-margin);
   }
 
@@ -412,8 +412,7 @@
     padding-bottom: 25px;
     margin-bottom: 25px;
 
-    > div {
-      .post-left-margin(@mobile-side-margin);
+    > .request {
       .post-right-margin;
       border-bottom: 1px solid @faint-gray-border;
       margin-bottom: 25px;
@@ -426,6 +425,12 @@
       }
     }
   }
+
+  .financial-request {
+    padding: 0 0 0 15px;
+    color: @gray-text;
+  }
+
 }
 
 #tag-description-editor {

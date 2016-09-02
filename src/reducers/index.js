@@ -74,7 +74,9 @@ import {
   VALIDATE_COMMUNITY_ATTRIBUTE,
   VALIDATE_COMMUNITY_ATTRIBUTE_PENDING,
   VALIDATE_NETWORK_ATTRIBUTE,
-  VALIDATE_NETWORK_ATTRIBUTE_PENDING
+  VALIDATE_NETWORK_ATTRIBUTE_PENDING,
+  SET_HITFIN_ERROR,
+  USER_BALANCE
 } from '../actions'
 
 const combinedReducers = combineReducers({
@@ -381,13 +383,21 @@ const combinedReducers = combineReducers({
   userSettingsEditor: (state = {}, action) => {
     let { type, payload, error, meta } = action
     if (error) return state
-
     switch (type) {
       case TOGGLE_USER_SETTINGS_SECTION:
         return {
           ...state,
           expand: {...state.expand, [payload]: meta.forceOpen || !get(state.expand, payload)}
         }
+      case SET_HITFIN_ERROR:
+        if (payload) return {...state, hitfinError: payload}
+        return {...state, hitfinError: null}
+      case USER_BALANCE:
+        console.log('USER BALANCE ACTION CALLED')
+        if (payload){
+        return {...state, accountBalance: (payload.balance/1000000000000000000).toFixed(2).toString()}
+        }
+        return {...state, accountBalance: null}
     }
     return state
   },

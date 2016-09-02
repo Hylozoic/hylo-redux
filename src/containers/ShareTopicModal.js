@@ -12,7 +12,7 @@ import { KeyControlledItemList } from '../components/KeyControlledList'
 import { communityTagJoinUrl } from '../routes'
 import { getKeyCode, keyMap } from '../util/textInput'
 import { get, isEmpty, some } from 'lodash'
-import { filter, includes, map, flow } from 'lodash/fp'
+import { filter, includes, map, flow, omitBy, curry } from 'lodash/fp'
 import { typeahead } from '../actions'
 import cx from 'classnames'
 import copy from 'copy-to-clipboard'
@@ -61,21 +61,21 @@ export default class ShareTopicModal extends React.Component {
 
     const setError = text => dispatch(updateTagInvitationEditor('error', text))
 
-    const update = (field) => value =>
-      dispatch(updateTagInvitationEditor(field, value))
+    const update = curry((field, value) =>
+      dispatch(updateTagInvitationEditor(field, value)))
 
     const addRecipient = recipient => {
-      update('recipients')(recipients.concat(recipient))
+      update('recipients', recipients.concat(recipient))
     }
 
     const updateRecipient = text =>
-      update('recipient')(text)
+      update('recipient', text)
 
     const removeRecipient = recipient => {
       const test = recipient.id
         ? r => r.id !== recipient.id
         : r => r !== recipient
-      update('recipients')(filter(test, recipients))
+      update('recipients', filter(test, recipients))
     }
 
     const submit = () => {
@@ -84,10 +84,10 @@ export default class ShareTopicModal extends React.Component {
       if (isEmpty(recipients)) return setError('Enter at least one email address or user.')
 
       const users = flow(
-        filter(r => r.id),
+        filter('id'),
         map('id'))(recipients)
 
-      const emails = filter(r => !r.id, recipients)
+      const emails = omitBy('id', recipients)
 
       let badEmails = emails.filter(email => !validator.isEmail(email))
       if (some(badEmails)) return setError(`These emails are invalid: ${badEmails.join(', ')}`)
@@ -99,11 +99,7 @@ export default class ShareTopicModal extends React.Component {
     }
 
     const copyLink = joinUrl
-      ? () => {
-        if (copy(joinUrl)) {
-          this.setState({copied: true})
-        }
-      }
+      ? () => copy(joinUrl) && this.setState({copied: true})
       : false
 
     const title = <span>

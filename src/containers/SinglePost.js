@@ -21,7 +21,7 @@ import ProjectPost from '../components/ProjectPost'
 import { getCurrentCommunity } from '../models/community'
 import { getComments, getCommunities, getPost } from '../models/post'
 import { fetch, ConnectedPostList } from './ConnectedPostList'
-const { array, bool, object, string } = React.PropTypes
+const { array, bool, object, string, func } = React.PropTypes
 
 const subject = 'community'
 
@@ -50,6 +50,7 @@ export default class SinglePost extends React.Component {
     community: object,
     editing: bool,
     error: string,
+    dispatch: func,
     location: object
   }
 

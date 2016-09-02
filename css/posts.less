@@ -340,6 +340,17 @@ ul.posts {
         border: none;
       }
     }
+
+    .typing {
+      color: @faint-gray-text;
+      > div {
+        display: inline-block;
+      }
+
+      .chillipsis {
+        margin-right: 15px;
+      }
+    }
   }
 
   .attachment {
@@ -382,7 +393,7 @@ ul.posts {
           margin-bottom: 0px;
         }
 
-        .comment, .comment-form {
+        .comment, .comment-form, .typing {
           padding-left: @post-content-left-margin + @extra-margin;
         }
       }
@@ -1061,8 +1072,6 @@ ul.posts {
   &:hover .icon-More {
     display: inline;
   }
-
-
 }
 
 .isMobile .comment .icon-More {

@@ -41,6 +41,7 @@
     "classnames": "^2.2.0",
     "compression": "^1.6.2",
     "cookie-parser": "^1.4.3",
+    "copy-to-clipboard": "^3.0.5",
     "csv-parser": "^1.9.3",
     "dotenv": "^2.0.0",
     "ent": "^2.2.0",

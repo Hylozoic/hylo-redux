@@ -60,20 +60,6 @@ export default class CommunitySettings extends React.Component {
   setField = (name, required) => event =>
     this.setEditState(name, event.target.value, required && !event.target.value)
 
-  setBetaAccessCode = event => {
-    let { dispatch, community } = this.props
-    let code = event.target.value
-
-    if (code && code !== community.beta_access_code) {
-      dispatch(validateCommunityAttribute('beta_access_code', code, 'unique'))
-    } else {
-      dispatch(resetCommunityValidation('beta_access_code'))
-    }
-
-    let errors = !code ? {empty: true} : {}
-    return this.setEditState('beta_access_code', code, errors)
-  }
-
   setSlug = event => {
     let { dispatch, community } = this.props
     let slug = event.target.value
@@ -106,19 +92,6 @@ export default class CommunitySettings extends React.Component {
       if (errors.slug.empty) {
         window.alert('Please fill in a slug.')
         this.refs.slug.focus()
-        return
-      }
-    }
-
-    if (errors.beta_access_code) {
-      if (errors.beta_access_code.not_unique) {
-        window.alert('This code cannot be used; please choose another.')
-        this.refs.beta_access_code.focus()
-        return
-      }
-      if (errors.beta_access_code.empty) {
-        window.alert('Please fill in a code.')
-        this.refs.beta_access_code.focus()
         return
       }
     }
@@ -237,7 +210,7 @@ export default class CommunitySettings extends React.Component {
     let { avatar_url, banner_url } = community
     let { editing, edited, errors, expand } = this.state
     let labelProps = {expand, toggle: this.toggleSection}
-    let joinUrl, codeNotUnique, slugNotUnique, addSlackUrl
+    let joinUrl, slugNotUnique, addSlackUrl
     let { is_admin } = this.props.currentUser
     let slackerror = this.props.location.query.slackerror
 
@@ -247,8 +220,6 @@ export default class CommunitySettings extends React.Component {
 
     if (expand.access) {
       joinUrl = communityJoinUrl(community)
-
-      codeNotUnique = get(this.props.validation, 'beta_access_code.unique') === false
     }
 
     if (expand.slack) {
@@ -436,19 +407,6 @@ export default class CommunitySettings extends React.Component {
             <p><a href={joinUrl}>{joinUrl}</a></p>
             <p className='summary'>You can copy this link for pasting in emails or embedding on your webpage to pre-populate the invite code for new members to easily join.</p>
           </div>
-          {editing.beta_access_code
-            ? <div className='half-column edit'>
-                <form>
-                  <input name='beta_access_code' ref='beta_access_code' type='text' className='form-control' value={edited.beta_access_code} onChange={this.setBetaAccessCode} />
-                </form>
-                {!!get(errors, 'beta_access_code.empty') && <p className='help error'>Please fill in a code.</p>}
-                {codeNotUnique && <p className='help error'>This code cannot be used; please choose another.</p>}
-                <button type='button' onClick={() => this.cancelEdit('beta_access_code')}>Cancel</button>
-                <button type='button' onClick={() => this.save('beta_access_code')}>Save</button>
-              </div>
-            : <div className='half-column right-align'>
-                <button type='button' onClick={() => this.edit('beta_access_code')}>Change</button>
-              </div>}
         </div>
       </div>}
 

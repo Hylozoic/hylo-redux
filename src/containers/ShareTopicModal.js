@@ -65,9 +65,6 @@ export default class ShareTopicModal extends React.Component {
       dispatch(updateTagInvitationEditor(field, value))
 
     const addRecipient = recipient => {
-      console.log('adding rec', recipient)
-      console.log('recips', recipients)
-      console.log('result', recipients.concat(recipient))
       update('recipients')(recipients.concat(recipient))
     }
 
@@ -120,7 +117,7 @@ export default class ShareTopicModal extends React.Component {
         {copyLink
           ? <span>
               &nbsp;
-              <a onClick={copyLink}>Copy Link</a>
+              <a className='copy-link' onClick={copyLink}>Copy Link</a>
               {copied && <span className='copied'> (copied)</span>}
             </span>
           : <span> Loading...</span>}

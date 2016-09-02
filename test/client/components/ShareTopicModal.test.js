@@ -11,7 +11,7 @@ describe('ShareTopicModal', () => {
   const beta_access_code = 'foocode'
   const slug = 'foomunity'
   const tagName = 'bartag'
-  const currentCommunityId = 1
+  const currentCommunityId = '1'
 
   const setup = () => {
     const component = createElement(App, {location: {}}, {store})
@@ -21,7 +21,9 @@ describe('ShareTopicModal', () => {
   beforeEach(() => {
     store = mocks.redux.store({
       pending: {},
-      tagInvitationEditor: {},
+      tagInvitationEditor: {
+        recipients: []
+      },
       tagPopover: {},
       typeaheadMatches: {},
       notifierMessages: [],
@@ -37,10 +39,10 @@ describe('ShareTopicModal', () => {
     })
   })
 
-  it.skip('is rendered with correct join link', () => {
+  it('is rendered with correct join link', () => {
     let appNode = setup()
-    let joinUrlDiv = findRenderedDOMComponentWithClass(appNode, 'join-url')
-    let expected = `<label>People with this link can join</label><a>${window.location.origin}/c/foomunity/join/${beta_access_code}/tag/${tagName}</a>`
+    let joinUrlDiv = findRenderedDOMComponentWithClass(appNode, 'copy-link')
+    let expected = 'Copy Link'
     expect(joinUrlDiv.innerHTML).to.equal(expected)
   })
 })

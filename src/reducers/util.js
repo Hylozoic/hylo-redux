@@ -25,6 +25,14 @@ export const hashBy = (arr, iteratee) => {
   return transform(arr, fn, {})
 }
 
+export function checkForMedia(payload, state, id) {
+    if (payload.video) {
+        return updateMedia(state[id], 'video', payload.video)
+    } else if(state[id] && state[id].media && payload.video !== "") {
+        return state[id].media
+    } else return undefined
+}
+
 // for modifying a post or other object with a list of media; set an item of
 // specified type if url is set, and remove it otherwise. assumes that there is
 // can be only one item of specified type, so it should be used with images and
@@ -32,7 +40,39 @@ export const hashBy = (arr, iteratee) => {
 export function updateMedia (obj, type, url) {
   let media = filter(obj && obj.media, m => m.type !== type)
   if (url) media = media.concat({type, url})
-  return {...obj, media}
+  if(media["0"].type === 'video') {
+      return media
+  } else {
+     return {...obj, media}
+  }
+}
+
+export function checkNewFormForFinancialRequestsEnabled(payload, state) {
+    if(state["new-project"] === undefined || state["new-project"] === null) {
+        return false
+    } else if(payload.financialRequestsEnabled === undefined && payload.financialRequestAmount === undefined) {
+        return state["new-project"].financialRequestsEnabled
+    } else if(payload.financialRequestsEnabled) {
+        return !state["new-project"].financialRequestsEnabled
+    } else if(payload.financialRequestAmount) {
+        return true
+    } else return false
+}
+
+export function checkEditFormForFinancialRequestsEnabled (state, id) {
+    return state[id] && state[id].financialRequestAmount
+}
+
+export function checkForFinancialRequestAmount(state, payload, id) {
+    if(state.financialRequestAmount) {
+        return state.financialRequestAmount
+    } else if(payload[id] && payload[id].financialRequestsEnabled === false) {
+        return undefined
+    } else if(payload[id] && payload[id].financialRequestAmount) {
+        return payload[id].financialRequestAmount
+    } else if(state[id] && state[id].financialRequestAmount) {
+        return state[id].financialRequestAmount
+    } else return undefined
 }
 
 // update state with a set of items. items that already exist in the state get

@@ -96,6 +96,8 @@ describe('postEdits', () => {
       const state = {
         x: {
           description: 'lol',
+          financialRequestAmount: undefined,
+          financialRequestsEnabled: false,
           type: 'event'
         }
       }
@@ -104,6 +106,9 @@ describe('postEdits', () => {
         x: {
           name: 'Foo and some! split-words as well',
           description: 'lol',
+          media: undefined,
+          financialRequestAmount: undefined,
+          financialRequestsEnabled: undefined,
           tag: 'FooAndSomeSplit',
           type: 'event'
         }
@@ -115,14 +120,19 @@ describe('postEdits', () => {
     it('does not suggest a tag for non-event posts', () => {
       const state = {
         x: {
-          description: 'lol'
+          description: 'lol',
+          financialRequestAmount: undefined,
+          financialRequestsEnabled: false
         }
       }
 
       const expected = {
         x: {
           name: 'Foo and some! split-words as well',
-          description: 'lol'
+          description: 'lol',
+          media: undefined,
+          financialRequestAmount: undefined,
+          financialRequestsEnabled: undefined
         }
       }
 
@@ -134,6 +144,8 @@ describe('postEdits', () => {
         x: {
           id: 'x',
           description: 'lol',
+          financialRequestAmount: undefined,
+          financialRequestsEnabled: false,
           type: 'event'
         }
       }
@@ -141,6 +153,9 @@ describe('postEdits', () => {
       const expected = {
         x: {
           id: 'x',
+          media: undefined,
+          financialRequestAmount: undefined,
+          financialRequestsEnabled: undefined,
           name: 'Foo and some! split-words as well',
           description: 'lol',
           type: 'event'
@@ -154,6 +169,8 @@ describe('postEdits', () => {
       const state = {
         x: {
           description: 'lol',
+          financialRequestAmount: undefined,
+          financialRequestsEnabled: false,
           type: 'event',
           tagEdited: true
         }
@@ -163,6 +180,9 @@ describe('postEdits', () => {
         x: {
           name: 'Foo and some! split-words as well',
           description: 'lol',
+          media: undefined,
+          financialRequestAmount: undefined,
+          financialRequestsEnabled: undefined,
           tagEdited: true,
           type: 'event'
         }

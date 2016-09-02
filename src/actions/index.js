@@ -43,6 +43,8 @@ export const FETCH_ONBOARDING = 'FETCH_ONBOARDING'
 export const FETCH_PEOPLE = 'FETCH_PEOPLE'
 export const FETCH_PERSON = 'FETCH_PERSON'
 export const FETCH_POST = 'FETCH_POST'
+export const FETCH_PROJECT_PLEDGE_PROGRESS = 'FETCH_PROJECT_PLEDGE_PROGRESS'
+export const CONTRIBUTE_PROJECT = 'CONTRIBUTE_PROJECT'
 export const FETCH_POSTS = 'FETCH_POSTS'
 export const FETCH_RAW_ADMIN_METRICS = 'FETCH_RAW_ADMIN_METRICS'
 export const FETCH_TAG = 'FETCH_TAG'
@@ -66,6 +68,7 @@ export const NAVIGATE = 'NAVIGATE'
 export const NOTIFY = 'NOTIFY'
 export const PIN_POST = 'PIN_POST'
 export const PIN_POST_PENDING = 'PIN_POST' + _PENDING
+export const QUERY_POST_RESULT = "QUERY_POST_RESULT"
 export const REGISTER_TOOLTIP = 'REGISTER_TOOLTIP'
 export const REMOVE_COMMENT = 'REMOVE_COMMENT'
 export const REMOVE_COMMUNITY_MEMBER = 'REMOVE_COMMUNITY_MEMBER'
@@ -131,6 +134,10 @@ export const VALIDATE_NETWORK_ATTRIBUTE = 'VALIDATE_NETWORK_ATTRIBUTE'
 export const VALIDATE_NETWORK_ATTRIBUTE_PENDING = VALIDATE_NETWORK_ATTRIBUTE + _PENDING
 export const VOTE_ON_POST = 'VOTE_ON_POST'
 export const VOTE_ON_POST_PENDING = VOTE_ON_POST + _PENDING
+export const DISCONNECT_HITFIN = 'DISCONNECT_HITFIN'
+export const SET_HITFIN_ERROR = 'SET_HITFIN_ERROR'
+export const USER_BALANCE = 'USER_BALANCE'
+
 
 // this is a client-only action
 export function login (email, password) {
@@ -161,6 +168,10 @@ export function signup (name, email, password) {
 
 export function setSignupError (message) {
   return {type: SET_SIGNUP_ERROR, payload: message}
+}
+
+export function setHitfinError (message) {
+  return {type: SET_HITFIN_ERROR, payload: message}
 }
 
 export function setPassword (email) {
@@ -217,6 +228,27 @@ export function fetchCommunityModerators (id) {
 
 export function navigate (path) {
   return push(path)
+}
+
+export function fetchProjectPledgeProgress(postId){
+  return {
+    type: FETCH_PROJECT_PLEDGE_PROGRESS,
+    payload: {api: true, path: `/noo/post/${postId}/pledge-progress`}
+  }
+}
+
+export function contributeProject(postId, params){
+  return {
+    type: CONTRIBUTE_PROJECT,
+    payload: {api: true, path: `/noo/post/${postId}/contribute`, params, method: 'POST'}
+  }
+}
+
+export function queryPostResult(transactionId){
+  return {
+    type: QUERY_POST_RESULT,
+    payload: {api: true, path: `/noo/post/transaction/${transactionId}` }
+  }
 }
 
 export function fetchComments (postId, opts = {}) {
@@ -297,7 +329,7 @@ export function fetchPost (id) {
 export function startPostEdit (post) {
   let fields = [
     'id', 'name', 'type', 'description', 'location', 'communities', 'public',
-    'media', 'start_time', 'end_time', 'tag', 'children', 'linkPreview'
+    'media', 'start_time', 'end_time', 'tag', 'children', 'linkPreview', 'financialRequestAmount'
   ]
   let payload = cloneDeep(pick(post, fields))
   return {type: START_POST_EDIT, payload}
@@ -715,6 +747,18 @@ export function fetchCommunitiesForNetworkNav (networkId) {
   }
 }
 
+export function disconnect_hitfin (refresh, dispatch) {
+  return {
+    type: DISCONNECT_HITFIN,
+    payload: {api: true, path: `/noo/unlink/hit-fin`, method: 'DELETE'},
+    meta: {
+      then: (resp) => {
+          dispatch(fetchCurrentUser(true))
+      }
+    }
+  }
+}
+
 export function showExpandedPost (id, commentId) {
   return {type: SHOW_EXPANDED_POST, payload: {id, commentId}}
 }
@@ -727,6 +771,13 @@ export function updateComment (commentId, text, tagDescriptions) {
     meta: {id: commentId, text, optimistic: true}
   }
 }
+
+export function getUserBalance () {
+  return {
+    type: USER_BALANCE,
+    payload: { api:true, path: '/noo/finance/get-balance', method: 'GET'}
+    }
+  }
 
 export function registerTooltip (id, index) {
   return {type: REGISTER_TOOLTIP, payload: {id, index}}

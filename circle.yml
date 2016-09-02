@@ -4,10 +4,18 @@ machine:
 deployment:
   production:
     branch: master
+    owner: Hylozoic
     commands:
       - npm run deploy
       - "[[ ! -s \"$(git rev-parse --git-dir)/shallow\" ]] || git fetch --unshallow"
       - git push git@heroku.com:hylo-react.git $CIRCLE_SHA1:refs/heads/master
+  hitfinintegration:
+    branch: hitfin-integration
+    owner: jessieweiyi
+    commands:
+      - npm run deploy
+      - "[[ ! -s \"$(git rev-parse --git-dir)/shallow\" ]] || git fetch --unshallow"
+      - git push git@heroku.com:hylo-redux-hitfin.git $CIRCLE_SHA1:refs/heads/master
 general:
   artifacts:
     - "coverage"

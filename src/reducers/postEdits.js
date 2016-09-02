@@ -15,7 +15,11 @@ import {
   UPLOAD_DOC,
   UPLOAD_IMAGE
 } from '../actions'
-import { updateMedia } from './util'
+import { updateMedia,
+    checkNewFormForFinancialRequestsEnabled,
+    checkEditFormForFinancialRequestsEnabled,
+    checkForFinancialRequestAmount,
+    checkForMedia} from './util'
 import { prepareHashtagsForEditing } from '../util/linkify'
 import { invalidCharacterRegex } from '../models/hashtag'
 
@@ -62,15 +66,25 @@ export default function (state = {}, action) {
   const { subject, id } = meta || {}
   switch (type) {
     case UPDATE_POST_EDITOR:
-      if (payload.video) {
-        return {
-          ...state,
-          [id]: updateMedia(state[id], 'video', payload.video)
-        }
+
+      let media = checkForMedia(payload, state, id)
+      let financialRequestsEnabled
+
+      if(id === "new-project"){
+        financialRequestsEnabled = checkNewFormForFinancialRequestsEnabled(payload, state)
+      } else {
+        financialRequestsEnabled = checkEditFormForFinancialRequestsEnabled(state, id)
       }
+      const financialRequestAmount = checkForFinancialRequestAmount(payload, state, id)
+
       return {
         ...state,
-        [id]: {...state[id], ...withSuggestedTag(payload, state, id)}
+        [id]: {...state[id],
+          ...withSuggestedTag(payload, state, id),
+          financialRequestsEnabled,
+          financialRequestAmount,
+          media
+        }
       }
     case CREATE_POST:
     case UPDATE_POST:

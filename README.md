@@ -24,6 +24,7 @@ LIVERELOAD=true
 PORT=9000
 UPSTREAM_HOST=http://localhost:3001
 LOG_LEVEL=debug
+HITFIN_API_URL=https://sandbox.hitfin.com
 ```
 
 Create a file named `.env.test` with the same contents, except with `LOG_LEVEL` changed to `warn`, to reduce noise when running tests.
@@ -31,6 +32,10 @@ Create a file named `.env.test` with the same contents, except with `LOG_LEVEL` 
 Then it's just the usual: `npm install`, `npm start`, `npm test`.
 
 It depends on a running instance of [hylo-node](https://github.com/Hylozoic/hylo-node), the location of which is set with `UPSTREAM_HOST`.
+
+## Running the app
+
+Run the command `npm start`
 
 ## Deployment
 

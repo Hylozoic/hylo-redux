@@ -31,6 +31,7 @@ window.analytics = {
 // original behavior using these
 window._originalAlert = window.alert
 window._originalConfirm = window.confirm
+window._originalOpen = window.confirm
 
 // for masonry-layout
 global.Element = function () {}

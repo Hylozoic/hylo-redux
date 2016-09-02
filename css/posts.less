@@ -794,6 +794,13 @@ ul.posts {
     }
   }
 
+  .row {
+    .non-mobile({
+      display: flex;
+      flex-direction: row;
+    })
+  }
+
   .main-col {
     .make-sm-column(8);
     .non-mobile({
@@ -802,12 +809,26 @@ ul.posts {
     padding: 12px 0 @post-padding 3px;
   }
 
+  .side-col {
+    .make-sm-column(4);
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  .side-col > div{
+    width: 100%;
+  }
+
   .mobile({
     .row {
       margin: 0;
     }
 
     .main-col {
+      padding-left: 0;
+    }
+
+    .side-col {
       padding-left: 0;
     }
   });
@@ -823,8 +844,30 @@ ul.posts {
     .blurb {
       margin-bottom: @p-bottom-margin;
     }
+
     .avatar-list {
-      margin-bottom: @p-bottom-margin;
+        margin-bottom: @p-bottom-margin;
+    }
+
+    div.pledge {
+      margin: 5px;
+      color: #888;
+
+      input.pledge-amount {
+        color: black;
+        width: 70%;
+      }
+    }
+
+    div.prompt-become-economic-agent{
+      background-color: #ecebeb;
+      margin-top:5px;
+      border:1px solid #ddd;
+      padding: 5px;
+      .account-settings-link {
+        font-weight: bold;
+        text-decoration: underline;
+      }
     }
   }
 
@@ -871,6 +914,18 @@ ul.posts {
     &.support {
       color: @damian-green;
     }
+  }
+
+  .button.pledge{
+    margin-top: 3px;
+  }
+
+  div.pledge .button{
+    margin-top: 3px;
+  }
+
+  div.pledge .submit-pledge{
+    margin-left: 3px;
   }
 
   .requests {
@@ -1085,4 +1140,43 @@ ul.posts {
 .show-more {
   color: black !important;
   .medium;
+}
+
+.pledge-spinner{
+  margin-top: 10px;
+  margin-left: 5px;
+  width: 20px;
+  height: 20px
+}
+
+.default-spinner {
+  border-radius: 100%;
+  display: block;
+  position: relative;
+  top: 0px;
+  background-color: transparent;
+  border: 5px solid transparent;
+  border-color: #eee #eee #444 #444;
+  -webkit-animation: rotateLoading 1s linear 0s infinite normal;
+  -webkit-transform-origin: 50% 50%;
+  -moz-animation: rotateLoading 1.5s linear 0s infinite normal;
+  -moz-transform-origin: 50% 50%;
+  animation: rotateLoading 1.5s linear 0s infinite normal;
+  transform-origin: 50% 50%;
+  transition: all 0.1s ease-in;
+}
+
+@keyframes rotateLoading {
+  0%  { transform: rotate(0deg); -webkit-transform: rotate(0deg); }
+  100% { transform: rotate(360deg); -webkit-transform: rotate(360deg); }
+}
+
+@-webkit-keyframes rotateLoading {
+  0%  { -webkit-transform: rotate(0deg); }
+  100% { -webkit-transform: rotate(360deg); }
+}
+
+@-moz-keyframes rotateLoading {
+  0%  { -moz-transform: rotate(0deg); }
+  100% { -moz-transform: rotate(360deg); }
 }

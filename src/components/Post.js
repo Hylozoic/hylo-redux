@@ -1,6 +1,6 @@
 import React from 'react'
 import {
-  difference, filter, first, includes, isEmpty, map, some, sortBy
+  difference, filter, first, includes, isEmpty, map, some, sortBy, values
 } from 'lodash'
 import { find, get } from 'lodash/fp'
 const { array, bool, func, object, string } = React.PropTypes
@@ -19,6 +19,7 @@ import { ClickCatchingSpan } from './ClickCatcher'
 import { handleMouseOver } from './TagPopover'
 import Comment from './Comment'
 import CommentForm from './CommentForm'
+import PeopleTyping from './PeopleTyping'
 import LazyLoader from './LazyLoader'
 import Icon from './Icon'
 import LinkedPersonSentence from './LinkedPersonSentence'
@@ -26,13 +27,14 @@ import LinkPreview from './LinkPreview'
 import { connect } from 'react-redux'
 import { compose } from 'redux'
 import {
-  followPost, navigate, removePost, startPostEdit, voteOnPost, pinPost
+  appendComment, followPost, navigate, removePost, startPostEdit, voteOnPost, pinPost
 } from '../actions'
 import { same } from '../models'
 import { getComments, getCommunities, isPinned } from '../models/post'
 import { getCurrentCommunity } from '../models/community'
 import { canEditPost, canModerate } from '../models/currentUser'
 import { isMobile } from '../client/util'
+import { upstreamHost } from '../config'
 import decode from 'ent/decode'
 
 const spacer = <span>&nbsp; •&nbsp; </span>
@@ -259,7 +261,57 @@ export class CommentSection extends React.Component {
   static contextTypes = {
     community: object,
     currentUser: object,
-    isProjectRequest: bool
+    isProjectRequest: bool,
+    dispatch: func,
+    getSocket: func
+  }
+
+  constructor (props) {
+    super(props)
+    this.state = {
+      peopleTyping: {}
+    }
+  }
+
+  componentDidMount () {
+    const { post: { id }, expanded } = this.props
+    const { dispatch, getSocket } = this.context
+    if (expanded) {
+      if (!getSocket) return
+      this.socket = getSocket()
+      this.socket.post(`${upstreamHost}/noo/post/${id}/subscribe`)
+      this.socket.on('commentAdded', c => dispatch(appendComment(id, c)))
+      this.socket.on('userTyping', this.userTyping)
+    }
+  }
+
+  componentWillUnmount () {
+    const { post: { id }, expanded } = this.props
+    if (expanded && this.socket) {
+      this.socket.post(`${upstreamHost}/noo/post/${id}/unsubscribe`)
+      this.socket.off('commentAdded')
+      this.socket.off('userTyping')
+    }
+  }
+
+  userTyping = data => {
+    let newState = this.state
+    if (data.isTyping) {
+      newState.peopleTyping[data.userId] = data.userName
+    } else {
+      delete newState.peopleTyping[data.userId]
+    }
+    this.setState(newState)
+  }
+
+  startedTyping = () => {
+    const { post: { id } } = this.props
+    this.socket.post(`${upstreamHost}/noo/post/${id}/typing`, {isTyping: true})
+  }
+
+  stoppedTyping = () => {
+    const { post: { id } } = this.props
+    this.socket.post(`${upstreamHost}/noo/post/${id}/typing`, {isTyping: false})
   }
 
   render () {
@@ -267,6 +319,7 @@ export class CommentSection extends React.Component {
     const truncate = !expanded
     const { currentUser, community, isProjectRequest } = this.context
     const placeholder = isProjectRequest ? 'How can you help?' : null
+    const peopleTyping = values(this.state.peopleTyping)
 
     if (!comments) comments = []
     comments = sortBy(comments, c => c.created_at)
@@ -282,7 +335,11 @@ export class CommentSection extends React.Component {
         community={community}
         expanded={expanded}
         key={c.id}/>)}
-      {currentUser && <CommentForm postId={post.id} {...{placeholder}}/>}
+      {peopleTyping.length > 0 && <PeopleTyping names={peopleTyping} showNames={false}/>}
+      {currentUser && <CommentForm startedTyping={this.startedTyping}
+        stoppedTyping={this.stoppedTyping}
+        postId={post.id}
+        {...{placeholder}}/>}
     </div>
   }
 }

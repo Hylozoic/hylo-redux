@@ -1,4 +1,5 @@
 import truncate from 'trunc-html'
+import { filter } from 'lodash/fp'
 
 export const ogMetaTags = (title, description, image) => {
   var metaTags = {
@@ -16,3 +17,21 @@ export const ogMetaTags = (title, description, image) => {
 }
 
 export const isInCommunity = ({ pathname }) => pathname.startsWith('/c/')
+
+export const findChildLink = element => {
+  if (element.nodeName === 'A') return element
+  if (element.hasChildNodes()) {
+    const mappedNodes = []
+    for (var i = 0; i < element.childNodes.length; i++) {
+      mappedNodes.push(findChildLink(element.childNodes[i]))
+    }
+    return filter(id => id, mappedNodes)[0]
+  }
+  return false
+}
+
+export const dispatchEvent = (el, etype) => {
+  var evObj = document.createEvent('Events')
+  evObj.initEvent(etype, true, false)
+  el.dispatchEvent(evObj)
+}

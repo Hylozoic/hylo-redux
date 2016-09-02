@@ -5,13 +5,15 @@ import { fetchPosts, checkFreshness } from '../actions/fetchPosts'
 import { debug } from '../util/logging'
 import { clearCache } from '../actions'
 import { connectedListProps, fetchWithCache, createCacheId } from '../util/caching'
-import { isEqual, pick, differenceBy } from 'lodash'
+import { isEqual, pick, differenceBy, union } from 'lodash'
+import { get } from 'lodash/fp'
 const { array, bool, func, number, object, string } = React.PropTypes
 
 export const fetch = fetchWithCache(fetchPosts)
 
 @connect((state, props) => ({
-  ...connectedListProps(state, props, 'posts')
+  ...connectedListProps(state, props, 'posts'),
+  expandedPostId: get('params.id', state.showModal)
 }), null, null, {withRef: true})
 export class ConnectedPostList extends React.Component {
   static propTypes = {
@@ -25,7 +27,8 @@ export class ConnectedPostList extends React.Component {
     query: object,
     omit: string, // omit posts with this id from the query
     hide: array, // just hide posts with this id from the results
-    hideMobileSearch: bool
+    hideMobileSearch: bool,
+    expandedPostId: string
   }
 
   loadMore = () => {
@@ -72,8 +75,11 @@ export class ConnectedPostList extends React.Component {
 
   render () {
     const {
-      dispatch, freshCount, posts, total, pending, subject, id, query, hide, hideMobileSearch
+      dispatch, freshCount, posts, total, pending, subject, id, query,
+      hideMobileSearch, expandedPostId
     } = this.props
+
+    const hide = union(this.props.hide, [expandedPostId])
 
     let refreshPostList
     if (freshCount !== 0) {

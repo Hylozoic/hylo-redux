@@ -27,12 +27,12 @@ export function cacheMiddleware (store) {
     if (array) {
       if (hit && hit.length > offset) {
         debug(`cache hit: ${bucket}[${id}][${offset}] + ${limit}`)
-        return Promise.resolve({...action, cacheHit: true})
+        return Promise.resolve({...action, payload: hit, cacheHit: true})
       }
     } else {
       if (hit && !requiredProp || has(hit, requiredProp)) {
         debug(`cache hit: ${bucket}[${id}]`)
-        return Promise.resolve({...action, cacheHit: true})
+        return Promise.resolve({...action, payload: hit, cacheHit: true})
       }
     }
 

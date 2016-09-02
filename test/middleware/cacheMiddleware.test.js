@@ -29,7 +29,7 @@ describe('cacheMiddleware', () => {
     state.foo = {bar: 'bar'}
     return middleware(next)(action)
     .then(val => {
-      expect(val).to.deep.equal({...action, cacheHit: true})
+      expect(val).to.deep.equal({...action, payload: 'bar', cacheHit: true})
       expect(next).not.to.have.been.called()
     })
   })
@@ -61,7 +61,7 @@ describe('cacheMiddleware', () => {
       let action = {type: 'FOO', meta: {cache: {bucket: 'foo', match}}}
       return middleware(next)(action)
       .then(val => {
-        expect(val).to.deep.equal({...action, cacheHit: true})
+        expect(val).to.deep.equal({...action, payload: state.foo.c, cacheHit: true})
         expect(next).not.to.have.been.called()
       })
     })
@@ -88,7 +88,7 @@ describe('cacheMiddleware', () => {
       state.foo = {bar: [1, 2, 3, 4, 5, 6]}
       return middleware(next)(action)
       .then(val => {
-        expect(val).to.deep.equal({...action, cacheHit: true})
+        expect(val).to.deep.equal({...action, payload: state.foo.bar, cacheHit: true})
         expect(next).not.to.have.been.called()
       })
     })

@@ -3,7 +3,6 @@ import { connect } from 'react-redux'
 import { prefetch } from 'react-fetcher'
 const { object, bool, func } = React.PropTypes
 import { toPairs, get, some, isEmpty, filter } from 'lodash/fp'
-import { includes } from 'lodash'
 import validator from 'validator'
 import ModalOnlyPage from '../components/ModalOnlyPage'
 import { ModalInput, ModalSelect } from '../components/ModalRow'
@@ -73,7 +72,6 @@ export class CreateCommunityContainer extends React.Component {
   if (!errors) errors = {}
   errors.nameUsed = get('name.unique', communityValidation) === false
   errors.slugUsed = get('slug.unique', communityValidation) === false
-  errors.codeUsed = get('beta_access_code.unique', communityValidation) === false
 
   if (!community) community = {}
   if (!community.avatar_url) community.avatar_url = defaultAvatar
@@ -148,17 +146,6 @@ export class CreateCommunity extends React.Component {
           return this.checkUnique('slug', value)
         }
         break
-      case 'beta_access_code':
-        this.setError({codeBlank: !value})
-
-        if (!value) {
-          this.resetValidation('beta_access_code')
-        } else if (includes(value, '/')) {
-          this.setError({codeInvalid: true})
-        } else {
-          return this.checkUnique('beta_access_code', value)
-        }
-        break
     }
   }
 
@@ -178,7 +165,7 @@ export class CreateCommunity extends React.Component {
   validateAll () {
     let { community } = this.props
     return Promise.all(
-      ['name', 'description', 'slug', 'beta_access_code', 'category']
+      ['name', 'description', 'slug', 'category']
       .map(key => this.validate(key, community[key]))
     )
   }
@@ -228,13 +215,6 @@ export class CreateCommunity extends React.Component {
           errors={
             <div className='errors'>
               {errors.descriptionBlank && <p className='help error'>Please fill in this field.</p>}
-            </div>}/>
-        <ModalInput label='Invitation Code' ref='beta_access_code' onChange={this.set('beta_access_code')}
-          errors={
-            <div className='errors'>
-              {errors.codeInvalid && <p className='help error'>The code may not contain the slash ("/") character.</p>}
-              {errors.codeBlank && <p className='help error'>Please fill in a code.</p>}
-              {errors.codeUsed && <p className='help error'>This code cannot be used; please choose another.</p>}
             </div>}/>
         <div className='toggle-section'>
           <a onClick={() => this.setState({expanded: !expanded})}>

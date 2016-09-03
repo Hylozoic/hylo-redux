@@ -1,11 +1,10 @@
 #!/bin/bash
+ISTANBUL=./node_modules/.bin/istanbul
+MOCHA="./node_modules/.bin/_mocha -- --compilers js:babel-register -R dot"
 
-echo "Running server tests..." && \
-./node_modules/.bin/babel-node ./node_modules/.bin/isparta cover --dir coverage/server ./node_modules/.bin/_mocha && \
-
-echo -e "\nRunning client tests..." && \
-./node_modules/.bin/babel-node ./node_modules/.bin/isparta cover --dir coverage/client ./node_modules/.bin/_mocha -- test/client/index.js && \
-
-./node_modules/.bin/istanbul-combine -d coverage -r lcov -r html coverage/server/coverage.json coverage/client/coverage.json
+$ISTANBUL cover --print none --dir coverage/server $MOCHA && \
+$ISTANBUL cover --print none --dir coverage/client $MOCHA test/client/index.js && \
+$ISTANBUL report && \
+node ./tasks/printCoverage.js
 
 exit $?

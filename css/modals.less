@@ -397,3 +397,57 @@
     }
   }
 }
+
+#share-topic-modal {
+  .join-url {
+    padding: 10px 25px;
+    a {
+      color: @damian-green;
+    }
+    .copied {
+      color: @damian-red;
+    }
+  }
+
+
+  .recipient-input {
+    padding: 22px 25px 22px 25px;
+    background-color: white;
+    .recipients {
+      line-height: 40px;
+      .recipient {
+        padding: 15px 5px;
+        margin-right: 5px;
+        .avatar {
+          .round-image-div(@avatar-size-small);
+          display: inline-block;
+          vertical-align: middle;
+          margin-right: 5px;
+          position: relative;
+          top: -2px;
+        }
+        border-radius: 30px;
+        height: 30px;
+        line-height: 30px;
+        vertical-align: middle;
+        background-color: @faint-gray-border;
+        .remove {
+          font-weight: 700;
+          color: @gray-text;
+          text-decoration: none;
+          position: relative;
+          top: 1px;
+          &:hover {
+            color: @off-black;
+          }
+        }
+      }
+    }
+    input {
+      width: auto;
+      &.full {
+        width: 100%;
+      }
+    }
+  }
+}

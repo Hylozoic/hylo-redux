@@ -543,7 +543,6 @@ export function updateTagInvitationEditor (field, value) {
 }
 
 export function sendCommunityTagInvitation (communityId, tagName, params) {
-  params.emails = params.emails.join(',')
   return {
     type: SEND_COMMUNITY_TAG_INVITATION,
     payload: {api: true, path: `/noo/community/${communityId}/invite/tag/${tagName}`, params, method: 'POST'}

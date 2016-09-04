@@ -1,6 +1,6 @@
 import React from 'react'
 import { findDOMNode } from 'react-dom'
-import { find, indexOf, isEmpty, omit } from 'lodash/fp'
+import { indexOf, isEmpty, omit } from 'lodash/fp'
 import { getKeyCode, keyMap } from '../util/textInput'
 var { array, func, object, bool, number } = React.PropTypes
 
@@ -116,7 +116,7 @@ export class KeyControlledItemList extends React.Component {
   }
 
   onChangeExtractingItem = (element, node, event) => {
-    const item = find(i => i.id === element.key, this.props.items)
+    const item = this.props.items[element.ref]
     this.change(item, event)
   }
 

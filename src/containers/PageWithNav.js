@@ -20,8 +20,8 @@ const makeNavLinks = (currentUser, community) => {
   return filter('url', [
     {url: rootUrl, icon: 'Comment-Alt', label: 'Conversations', index: true},
     {url: url('tag/request'), icon: 'Comment-Alt', label: 'Requests'},
-    get('events.enabled', community.settings) && {url: url('events'), icon: 'Calendar', label: 'Events'},
-    get('projects.enabled', community.settings) && {url: url('projects'), icon: 'ProjectorScreen', label: 'Projects'},
+    get('settings.events.enabled', community) && {url: url('events'), icon: 'Calendar', label: 'Events'},
+    get('settings.projects.enabled', community) && {url: url('projects'), icon: 'ProjectorScreen', label: 'Projects'},
     {url: url('people'), icon: 'Users', label: 'Members'},
     {url: network && `/n/${network.slug}`, icon: 'merkaba', label: 'Network'},
     {url: slug && url('about'), icon: 'Help', label: 'About'},

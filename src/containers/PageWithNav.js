@@ -18,6 +18,7 @@ const makeNavLinks = (currentUser, community) => {
   const rootUrl = slug ? `/c/${slug}` : '/app'
   return filter('url', [
     {url: rootUrl, icon: 'Comment-Alt', label: 'Conversations', index: true},
+    {url: url('tag/request'), icon: 'Comment-Alt', label: 'Requests'},
     {url: url('events'), icon: 'Calendar', label: 'Events'},
     {url: url('projects'), icon: 'ProjectorScreen', label: 'Projects'},
     {url: url('people'), icon: 'Users', label: 'Members'},

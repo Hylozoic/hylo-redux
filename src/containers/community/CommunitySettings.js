@@ -3,7 +3,8 @@ import { connect } from 'react-redux'
 import { prefetch } from 'react-fetcher'
 import cx from 'classnames'
 const { object, func } = React.PropTypes
-import { find, get, isEmpty, reduce, set } from 'lodash'
+import { find, isEmpty, reduce, set } from 'lodash'
+import { get } from 'lodash/fp'
 import { markdown, sanitize } from 'hylo-utils/text'
 import {
   updateCommunitySettings,
@@ -34,7 +35,7 @@ import { makeUrl } from '../../util/navigation'
 @connect((state, { params }) => ({
   community: state.communities[params.id],
   validation: state.communityValidation,
-  currentUser: get(state, 'people.current')
+  currentUser: get('people.current', state)
 }))
 export default class CommunitySettings extends React.Component {
 
@@ -157,7 +158,7 @@ export default class CommunitySettings extends React.Component {
   }
 
   toggle (path) {
-    this.update(path, !get(this.props.community, path))
+    this.update(path, !get(path, this.props.community))
   }
 
   toggleSection = (section, open) => {
@@ -215,7 +216,7 @@ export default class CommunitySettings extends React.Component {
     let slackerror = this.props.location.query.slackerror
 
     if (expand.appearance) {
-      slugNotUnique = get(this.props.validation, 'slug.unique') === false
+      slugNotUnique = get('slug.unique', this.props.validation) === false
     }
 
     if (expand.access) {
@@ -268,7 +269,7 @@ export default class CommunitySettings extends React.Component {
                     </div>
                 </form>
                 <p className='meta'>Warning: any links that refer to the old slug will no longer work.</p>
-                {!!get(errors, 'slug.empty') && <p className='help error'>Please fill in a slug.</p>}
+                {!!get('slug.empty', errors) && <p className='help error'>Please fill in a slug.</p>}
                 {slugNotUnique && <p className='help error'>This code cannot be used; please choose another.</p>}
                 <div className='buttons'>
                   <button type='button' onClick={() => this.cancelEdit('slug')}>Cancel</button>
@@ -464,6 +465,30 @@ export default class CommunitySettings extends React.Component {
               <p>This community is connected to the <span className='slack_team'>{community.slack_team}</span> team on Slack.</p>
               <button type='button' onClick={() => this.removeSlackhook()}>Remove</button>
             </div>}
+          </div>
+        </div>
+        <div className='section-item'>
+          <div className='half-column'>
+            <label>Enable Events</label>
+            <p className='summary'>
+              Allow your members to create events (beta).
+            </p>
+          </div>
+          <div className='half-column right-align'>
+            <input type='checkbox' checked={!!get('events.enabled', community.settings)}
+              onChange={() => this.toggle('settings.events.enabled')}/>
+          </div>
+        </div>
+        <div className='section-item'>
+          <div className='half-column'>
+            <label>Enable Projects</label>
+            <p className='summary'>
+              Allow your members to create projects (beta).
+            </p>
+          </div>
+          <div className='half-column right-align'>
+            <input type='checkbox' checked={!!get('projects.enabled', community.settings)}
+              onChange={() => this.toggle('settings.projects.enabled')}/>
           </div>
         </div>
         <div className='section-item'>

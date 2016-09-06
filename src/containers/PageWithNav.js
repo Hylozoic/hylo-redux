@@ -16,16 +16,17 @@ const makeNavLinks = (currentUser, community) => {
   const { slug, network } = community || {}
   const url = slug ? suffix => `/c/${slug}/${suffix}` : suffix => '/' + suffix
   const rootUrl = slug ? `/c/${slug}` : '/app'
+
   return filter('url', [
     {url: rootUrl, icon: 'Comment-Alt', label: 'Conversations', index: true},
     {url: url('tag/request'), icon: 'Comment-Alt', label: 'Requests'},
-    {url: url('events'), icon: 'Calendar', label: 'Events'},
-    {url: url('projects'), icon: 'ProjectorScreen', label: 'Projects'},
+    get('events.enabled', community.settings) && {url: url('events'), icon: 'Calendar', label: 'Events'},
+    get('projects.enabled', community.settings) && {url: url('projects'), icon: 'ProjectorScreen', label: 'Projects'},
     {url: url('people'), icon: 'Users', label: 'Members'},
     {url: network && `/n/${network.slug}`, icon: 'merkaba', label: 'Network'},
     {url: slug && url('about'), icon: 'Help', label: 'About'},
-    {url: canInvite(currentUser, community) && '/create/invite', icon: 'Mail', label: 'Invite'},
-    {url: canModerate(currentUser, community) && url('settings'), icon: 'Settings', label: 'Settings'}
+    canInvite(currentUser, community) && {url: '/create/invite', icon: 'Mail', label: 'Invite'},
+    canModerate(currentUser, community) && {url: url('settings'), icon: 'Settings', label: 'Settings'}
   ])
 }
 

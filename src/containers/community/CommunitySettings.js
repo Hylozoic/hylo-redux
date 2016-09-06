@@ -442,23 +442,11 @@ export default class CommunitySettings extends React.Component {
         </div>
       </div>}
 
-      <SectionLabel name='email' {...labelProps}>Email</SectionLabel>
-      {expand.email && <div className='section email'>
-        <div className='section-item'>
-          <div className='half-column'>
-            <label>Send a weekly email inviting members to post?</label>
-            <p className='summary'>If this is checked, each week members will receive an email that they can reply to with their offers, requests and intentions.</p>
-          </div>
-          <div className='half-column right-align'>
-            <input type='checkbox' checked={community.settings.sends_email_prompts} onChange={() => this.toggle('settings.sends_email_prompts')}/>
-          </div>
-        </div>
-      </div>}
-
-      <SectionLabel name='slack' {...labelProps}>Send Updates to Slack</SectionLabel>
-      {expand.slack && <div className='section slack'>
+      <SectionLabel name='advanced' {...labelProps}>Advanced</SectionLabel>
+      {expand.advanced && <div className='section advanced'>
         <div className='section-item'>
           <div className='full-column'>
+            <label>Slack integration</label>
             {slackerror && <div className='alert alert-danger'>
               There was an error connecting this community to your Slack team.
             </div>}
@@ -467,7 +455,9 @@ export default class CommunitySettings extends React.Component {
                 Connect this community to a <a href='https://slack.com' target='_blank'>Slack</a> team and Hylo will notify a channel when there are new posts.
               </p>
               <a href={`https://slack.com/oauth/authorize?scope=incoming-webhook&client_id=${slackClientId}&redirect_uri=${addSlackUrl}`}>
-                <img alt='Add to Slack' height='40' width='139' src='https://platform.slack-edge.com/img/add_to_slack.png' srcSet='https://platform.slack-edge.com/img/add_to_slack.png 1x, https://platform.slack-edge.com/img/add_to_slack@2x.png 2x'/>
+                <img alt='Add to Slack' height='40' width='139'
+                  src='https://platform.slack-edge.com/img/add_to_slack.png'
+                  srcSet='https://platform.slack-edge.com/img/add_to_slack.png 1x, https://platform.slack-edge.com/img/add_to_slack@2x.png 2x'/>
               </a>
             </div>}
             {community.slack_hook_url && <div>
@@ -476,21 +466,20 @@ export default class CommunitySettings extends React.Component {
             </div>}
           </div>
         </div>
-      </div>}
-
-      <SectionLabel name='delete' {...labelProps}>Delete</SectionLabel>
-      {expand.delete && <div className='section delete'>
         <div className='section-item'>
           <div className='half-column'>
             <label>Delete this community</label>
-            <p className='summary'>This will delete the community, preventing users from joining, browsing or posting in this community. Existing posts will still be viewable on the "All Posts" page.</p>
+            <p className='summary'>
+              This will delete the community, preventing users from joining,
+              browsing or posting in this community. Existing posts will still
+              be viewable on the "All Posts" page.
+            </p>
           </div>
           <div className='half-column right-align'>
             <button type='button' onClick={this.delete}>Delete</button>
           </div>
         </div>
       </div>}
-
     </div>
   }
 }

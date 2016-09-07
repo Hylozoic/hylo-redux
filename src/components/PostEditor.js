@@ -204,6 +204,8 @@ export class PostEditor extends React.Component {
 
   updatePostTagAndDescription = tagDescriptions => {
     let tag = keys(tagDescriptions)[0]
+    console.log('updatePostTagAndDescription', tag)
+    console.log('descriptions', tagDescriptions)
     this.updateStore({tag, tagDescriptions})
   }
 

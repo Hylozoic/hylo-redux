@@ -1,6 +1,6 @@
 import React from 'react'
 import {
-  difference, filter, first, includes, isEmpty, map, some, sortBy, values
+  difference, first, includes, isEmpty, map, some, sortBy, values
 } from 'lodash'
 import { find, get } from 'lodash/fp'
 const { array, bool, func, object, string } = React.PropTypes
@@ -15,6 +15,7 @@ import { tagUrl } from '../routes'
 import A from './A'
 import Avatar from './Avatar'
 import Dropdown from './Dropdown'
+import Attachments from './Attachments'
 import { ClickCatchingSpan } from './ClickCatcher'
 import { handleMouseOver } from './TagPopover'
 import Comment from './Comment'
@@ -189,20 +190,6 @@ export const Details = ({ expanded, onExpand }, { post, community, dispatch }) =
   </div>
 }
 Details.contextTypes = {post: object, community: object, dispatch: func}
-
-const Attachments = (props, { post }) => {
-  const attachments = filter(post.media, m => m.type === 'gdoc')
-  if (isEmpty(attachments)) return <span/>
-
-  return <div className='post-section'>
-    {attachments.map((file, i) =>
-      <a key={i} className='attachment' href={file.url} target='_blank' title={file.name}>
-        <img src={file.thumbnail_url}/>
-        {truncate(file.name, 40).text}
-      </a>)}
-  </div>
-}
-Attachments.contextTypes = {post: object}
 
 const WelcomePostHeader = ({ communities }, { post }) => {
   let person = post.relatedUsers[0]

@@ -5,6 +5,7 @@ const { object, bool, func } = React.PropTypes
 import { toPairs, get, some, isEmpty, filter } from 'lodash/fp'
 import validator from 'validator'
 import ModalOnlyPage from '../components/ModalOnlyPage'
+import AccessErrorMessage from '../components/AccessErrorMessage'
 import { ModalInput, ModalSelect } from '../components/ModalRow'
 import Modal from '../components/Modal'
 import A from '../components/A'
@@ -40,28 +41,14 @@ import { defaultSubject, defaultMessage } from './community/CommunityInvitations
 
 const merkabaUrl = 'https://www.hylo.com/img/hylo-merkaba-300x300.png'
 
-@connect((state, { params: { id } }) => ({
-  community: id ? state.communities[id] : getCurrentCommunity(state)
-}))
-export class CreateCommunityContainer extends React.Component {
-  static propTypes = {
-    community: object,
-    children: object
-  }
+const Topper = ({ community }) => {
+  const { name, avatar_url } = community || {}
+  const logoUrl = avatar_url || merkabaUrl
 
-  render () {
-    const { children, community } = this.props
-    const { name, avatar_url } = community || {}
-    const logoUrl = avatar_url || merkabaUrl
-
-    return <ModalOnlyPage className='create-community'>
-      <div className='modal-topper'>
-        <div className='medium-avatar' style={{backgroundImage: `url(${logoUrl})`}}/>
-        <h2>{name || 'Your Community'}</h2>
-      </div>
-      {children}
-    </ModalOnlyPage>
-  }
+  return <div className='modal-topper'>
+    <div className='medium-avatar' style={{backgroundImage: `url(${logoUrl})`}}/>
+    <h2>{name || 'Your New Community'}</h2>
+  </div>
 }
 
 @connect(({ communityEditor, communityValidation, pending, people }) => {
@@ -197,10 +184,12 @@ export class CreateCommunity extends React.Component {
 
     const { expanded } = this.state
 
-    return <Modal title='Create your community.'
-      className='create-community-one'
-      subtitle="Let's get started unlocking the creative potential of your community with Hylo."
-      standalone>
+    return <ModalOnlyPage className='create-community'>
+      <Topper community={community}/>
+      <Modal title='Create your community.'
+        className='create-community-one'
+        subtitle="Let's get started unlocking the creative potential of your community with Hylo."
+        standalone>
         <ModalInput label='Name' ref='name' onChange={this.set('name')}
           errors={<div className='errors'>
             {errors.nameBlank && <p className='help error'>Please fill in this field.</p>}
@@ -239,7 +228,11 @@ export class CreateCommunity extends React.Component {
         <div className='footer'>
           <a className='button' ref='submit' onClick={this.submit}>Create</a>
         </div>
-    </Modal>
+      </Modal>
+      <div className='after-modal'>
+        <A to='/c/join'>Trying to join a community?</A>
+      </div>
+  </ModalOnlyPage>
   }
 }
 
@@ -298,9 +291,7 @@ export class CreateCommunityInvite extends React.Component {
     const { community, currentUser, dispatch, invitationEditor } = this.props
 
     if (!canInvite(currentUser, community)) {
-      return <div>
-        You don&#39;t have permission to view this page.
-      </div>
+      return <AccessErrorMessage error={{status: 403}}/>
     }
 
     let { subject, message, recipients, moderator, error } = invitationEditor
@@ -334,49 +325,52 @@ export class CreateCommunityInvite extends React.Component {
       })
     }
 
-    return <Modal title='Invite people to join you.'
+    return <ModalOnlyPage className='create-community'>
+      <Topper community={community}/>
+      <Modal title='Invite people to join you.'
       className='create-community-two'
       standalone>
-      <div className='modal-input csv-upload'>
-        <label className='normal-label'>Import CSV File</label>
-        <div className='help-text'>The file should have a header row named "email" for the email column. Or it can be a file in which each line is a single email address.</div>
-        <label className='custom-file-upload'>
-          <input type='file' onChange={() => this.processCSV()} ref='fileInput'/>
-          Browse
-        </label>
-      </div>
-      <ModalInput
-        className='emails'
-        label='Enter Emails'
-        ref='emails'
-        type='textarea'
-        value={recipients}
-        onChange={update('recipients')}
-        placeholder='Enter email addresses, separated by commas or line breaks'/>
-        <div className='toggle-section'>
-          <a onClick={() => this.setState({expanded: !expanded})}>
-            Customize Message
-            <Icon name={expanded ? 'Chevron-Up2' : 'Chevron-Down2'} />
-          </a>
+        <div className='modal-input csv-upload'>
+          <label className='normal-label'>Import CSV File</label>
+          <div className='help-text'>The file should have a header row named "email" for the email column. Or it can be a file in which each line is a single email address.</div>
+          <label className='custom-file-upload'>
+            <input type='file' onChange={() => this.processCSV()} ref='fileInput'/>
+            Browse
+          </label>
         </div>
+        <ModalInput
+          className='emails'
+          label='Enter Emails'
+          ref='emails'
+          type='textarea'
+          value={recipients}
+          onChange={update('recipients')}
+          placeholder='Enter email addresses, separated by commas or line breaks'/>
+          <div className='toggle-section'>
+            <a onClick={() => this.setState({expanded: !expanded})}>
+              Customize Message
+              <Icon name={expanded ? 'Chevron-Up2' : 'Chevron-Down2'} />
+            </a>
+          </div>
 
-      {expanded && <ModalInput
-        label='Subject'
-        ref='subject'
-        value={subject}
-        onChange={update('subject')}/>}
-      {expanded && <ModalInput
-        label='Message'
-        ref='message'
-        type='textarea'
-        value={message}
-        onChange={update('message')}/>}
-      {error && <div className='alert alert-danger'>{error}</div>}
-      <div className='footer'>
-        <a className='button' onClick={submit}>Invite</a>
-        <A to={`/c/${community.slug}`} className='skip'>Skip</A>
-      </div>
-    </Modal>
+        {expanded && <ModalInput
+          label='Subject'
+          ref='subject'
+          value={subject}
+          onChange={update('subject')}/>}
+        {expanded && <ModalInput
+          label='Message'
+          ref='message'
+          type='textarea'
+          value={message}
+          onChange={update('message')}/>}
+        {error && <div className='alert alert-danger'>{error}</div>}
+        <div className='footer'>
+          <a className='button' onClick={submit}>Invite</a>
+          <A to={`/c/${community.slug}`} className='skip'>Skip</A>
+        </div>
+      </Modal>
+    </ModalOnlyPage>
   }
 }
 
@@ -398,18 +392,21 @@ export class CreateCommunityThree extends React.Component {
 
     const percent = (filter(ci => ci.done, checkList).length / checkList.length) * 100
 
-    return <Modal title='Getting Started.'
-      className='create-community-three'
-      standalone>
-      <PercentBar percent={percent}/>
-      <div className='subtitle'>
-        To create a successful community with Hylo, we suggest completing the following:
-      </div>
-      {checkList.map(({ title, link, done, id }) =>
-        <CheckItem title={title} link={link} done={done} key={id} />)}
-      <button onClick={() => dispatch(navigate(`/c/${community.slug}`))}>Done</button>
-      <A to='/create/three' className='skip'>Do this later</A>
-    </Modal>
+    return <ModalOnlyPage className='create-community'>
+      <Topper community={community}/>
+      <Modal title='Getting Started.'
+        className='create-community-three'
+        standalone>
+        <PercentBar percent={percent}/>
+        <div className='subtitle'>
+          To create a successful community with Hylo, we suggest completing the following:
+        </div>
+        {checkList.map(({ title, link, done, id }) =>
+          <CheckItem title={title} link={link} done={done} key={id} />)}
+        <button onClick={() => dispatch(navigate(`/c/${community.slug}`))}>Done</button>
+        <A to='/create/three' className='skip'>Do this later</A>
+      </Modal>
+    </ModalOnlyPage>
   }
 }
 

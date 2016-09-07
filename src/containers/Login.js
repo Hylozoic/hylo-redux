@@ -1,6 +1,6 @@
 import React from 'react'
 import { defer, prefetch } from 'react-fetcher'
-import { get, pick, uniq } from 'lodash'
+import { get, isEmpty, pick, uniq } from 'lodash'
 import { makeUrl } from '../util/navigation'
 import { connect } from 'react-redux'
 import {
@@ -75,6 +75,8 @@ export const goToNext = (currentUser, query) => {
 
     if (community) {
       next = communityUrl(community)
+    } else if (isEmpty(currentUser.memberships)) {
+      next = '/create'
     } else {
       next = `/u/${currentUser.id}`
     }

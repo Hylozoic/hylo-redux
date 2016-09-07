@@ -181,7 +181,7 @@ describe('tagDescriptionEdits', () => {
     const action = {type: START_POST_EDIT}
 
     it('clears the state', () => {
-      const state = {'atagname': 'the description'}
+      const state = {'atagname': {description: 'the description', def: false}}
       expect(tagDescriptionEdits(state, action)).to.deep.equal({})
     })
   })
@@ -200,8 +200,8 @@ describe('tagDescriptionEdits', () => {
     it('sets those tags for editing', () => {
       const state = {}
       const expectedState = {
-        [tag1]: '',
-        [tag2]: ''
+        [tag1]: {description: '', def: false},
+        [tag2]: {description: '', def: false}
       }
       expect(tagDescriptionEdits(state, action)).to.deep.equal(expectedState)
     })
@@ -212,17 +212,18 @@ describe('tagDescriptionEdits', () => {
       type: EDIT_TAG_DESCRIPTION,
       payload: {
         tag: tag1,
-        description: 'new description'
+        description: 'new description',
+        def: true
       }
     }
 
     it('updates the correct tag', () => {
       const state = {
-        [tag1]: 'first description',
-        [tag2]: 'second description'
+        [tag1]: {description: 'first description', def: false},
+        [tag2]: {description: 'second description', def: true}
       }
       const expectedState = {
-        [tag1]: action.payload.description,
+        [tag1]: {description: action.payload.description, def: action.payload.def},
         [tag2]: state[tag2]
       }
       expect(tagDescriptionEdits(state, action)).to.deep.equal(expectedState)
@@ -234,16 +235,20 @@ describe('tagDescriptionEdits', () => {
       type: EDIT_NEW_TAG_AND_DESCRIPTION,
       payload: {
         tag: 'newtag',
-        description: 'new description'
+        description: 'new description',
+        def: true
       }
     }
 
     it('sets those tags for editing', () => {
       const state = {
-        [tag1]: 'description'
+        [tag1]: {description: 'description', def: false}
       }
       const expectedState = {
-        [action.payload.tag]: action.payload.description
+        [action.payload.tag]: {
+          description: action.payload.description,
+          def: action.payload.def
+        }
       }
       expect(tagDescriptionEdits(state, action)).to.deep.equal(expectedState)
     })

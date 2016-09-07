@@ -131,7 +131,7 @@ describe('communities', () => {
         c1: {
           slug: 'c1',
           intention: 'Intention.',
-          settings: {sends_email_prompts: true}
+          settings: {post_prompt_day: 0}
         }
       }
 
@@ -140,7 +140,7 @@ describe('communities', () => {
           slug: 'c1',
           name: 'New Name',
           intention: 'Intention.',
-          settings: {sends_email_prompts: true, all_can_invite: true}
+          settings: {post_prompt_day: 0, all_can_invite: true}
         }
       }
 

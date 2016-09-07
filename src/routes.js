@@ -86,9 +86,10 @@ export default function makeRoutes (store) {
     <Route path='signup' component={Signup}/>
     <Route path='login' component={Login}/>
 
-    <Route path='create' component={CreateCommunityContainer}>
-      <IndexRoute component={CreateCommunity}/>
+    <Route component={CreateCommunityContainer} onEnter={requireLogin}>
+      <Route path='create' component={CreateCommunity}/>
       <Route path='invite' component={CreateCommunityInvite}/>
+      <Route path='c/:id/invite' component={CreateCommunityInvite}/>
     </Route>
 
     <Route path='set-password' component={SetPassword}/>

@@ -40,7 +40,9 @@ import { defaultSubject, defaultMessage } from './community/CommunityInvitations
 
 const merkabaUrl = 'https://www.hylo.com/img/hylo-merkaba-300x300.png'
 
-@connect(state => ({community: getCurrentCommunity(state)}))
+@connect((state, { params: { id } }) => ({
+  community: id ? state.communities[id] : getCurrentCommunity(state)
+}))
 export class CreateCommunityContainer extends React.Component {
   static propTypes = {
     community: object,
@@ -184,7 +186,7 @@ export class CreateCommunity extends React.Component {
         } else {
           trackEvent(ADDED_COMMUNITY, {community})
           saveCurrentCommunityId(dispatch, payload.community_id, currentUser.id)
-          dispatch(navigate(`/create/invite`))
+          dispatch(navigate(`/invite`))
         }
       })
     })
@@ -197,7 +199,7 @@ export class CreateCommunity extends React.Component {
 
     return <Modal title='Create your community.'
       className='create-community-one'
-      subtitle="Let's get started unlocking the creative potential of your community with Hylo"
+      subtitle="Let's get started unlocking the creative potential of your community with Hylo."
       standalone>
         <ModalInput label='Name' ref='name' onChange={this.set('name')}
           errors={<div className='errors'>
@@ -241,8 +243,8 @@ export class CreateCommunity extends React.Component {
   }
 }
 
-@connect(state => ({
-  community: getCurrentCommunity(state),
+@connect((state, { params: { id } }) => ({
+  community: id ? state.communities[id] : getCurrentCommunity(state),
   currentUser: get('people.current', state),
   invitationEditor: get('invitationEditor', state)
 }))
@@ -332,7 +334,7 @@ export class CreateCommunityInvite extends React.Component {
       })
     }
 
-    return <Modal title={`Invite members to ${community.name}.`}
+    return <Modal title='Invite people to join you.'
       className='create-community-two'
       standalone>
       <div className='modal-input csv-upload'>

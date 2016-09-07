@@ -112,7 +112,7 @@ export default class People extends React.Component {
       </div>
       <div className='member-controls'>
         {total} member{total === 1 ? '' : 's'}
-        {canInvite(currentUser, community) && <A to={`/create/invite`}>
+        {canInvite(currentUser, community) && <A to={`/invite`}>
           Invite members
         </A>}
       </div>

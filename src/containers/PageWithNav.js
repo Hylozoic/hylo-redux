@@ -25,7 +25,7 @@ const makeNavLinks = (currentUser, community) => {
     {url: url('people'), icon: 'Users', label: 'Members'},
     {url: network && `/n/${network.slug}`, icon: 'merkaba', label: 'Network'},
     {url: slug && url('about'), icon: 'Help', label: 'About'},
-    canInvite(currentUser, community) && {url: '/create/invite', icon: 'Mail', label: 'Invite'},
+    canInvite(currentUser, community) && {url: url('invite'), icon: 'Mail', label: 'Invite'},
     canModerate(currentUser, community) && {url: url('settings'), icon: 'Settings', label: 'Settings'}
   ])
 }

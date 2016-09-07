@@ -57,8 +57,6 @@ export default class StandalonePostEditor extends React.Component {
     const { editor } = this.refs
     if (!postEdit) return <div className='loading'>Loading...</div>
 
-    console.log('saving', saving)
-
     const goBack = () => {
       if (window.history && window.history.length > 2) {
         browserHistory.goBack()

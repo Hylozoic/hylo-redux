@@ -1,7 +1,6 @@
 require('../support')
 import { mocks, helpers } from '../../support'
 import Login from '../../../src/containers/Login.js'
-import { FETCH_COMMUNITY } from '../../../src/actions'
 import { renderIntoDocument } from 'react-addons-test-utils'
 const { createElement } = helpers
 import { HOST } from '../../../src/util/api'
@@ -29,10 +28,19 @@ describe('Login', () => {
     })
 
     it("redirects to the person's profile by default", () => {
-      setup({id: 42}, {location: {query: {}}})
+      setup({id: 42, memberships: {id: 1}}, {location: {query: {}}})
       return node.submit(mocks.event())
       .then(() => {
         expect(redirectUrl(store)).to.equal('/u/42')
+        expect(window.analytics.alias).to.have.been.called()
+      })
+    })
+
+    it('redirects to the community creation form if the user has no communities', () => {
+      setup({id: 42}, {location: {query: {}}})
+      return node.submit(mocks.event())
+      .then(() => {
+        expect(redirectUrl(store)).to.equal('/create')
         expect(window.analytics.alias).to.have.been.called()
       })
     })

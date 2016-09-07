@@ -101,11 +101,12 @@ export const Header = ({ communities }, { post, community, currentUser, dispatch
   const person = tag === 'welcome' ? post.relatedUsers[0] : post.user
   const createdAt = new Date(post.created_at)
   const canEdit = canEditPost(currentUser, post)
+  const showCheckbox = post.tag === 'request' && (canEdit || fulfilled_at)
 
   return <div className='header'>
     <Menu/>
     <Avatar person={person}/>
-    {(canEdit || fulfilled_at) && <input type='checkbox'
+    {showCheckbox && <input type='checkbox'
       className='completion-toggle'
       checked={!!post.fulfilled_at}
       onChange={() => canEdit && dispatch(completePost(post.id))}

@@ -49,13 +49,13 @@ export class CreateCommunityContainer extends React.Component {
 
   render () {
     const { children, community } = this.props
-
-    const logoUrl = community ? community.avatar_url : merkabaUrl
+    const { name, avatar_url } = community || {}
+    const logoUrl = avatar_url || merkabaUrl
 
     return <ModalOnlyPage className='create-community'>
       <div className='modal-topper'>
         <div className='medium-avatar' style={{backgroundImage: `url(${logoUrl})`}}/>
-        <h2>Create Community</h2>
+        <h2>{name || 'Your Community'}</h2>
       </div>
       {children}
     </ModalOnlyPage>

@@ -100,9 +100,13 @@ export class PostEditor extends React.Component {
 
   componentDidMount () {
     // initialize the communities list when opening the editor in a community
-    const { community, postEdit: { communities }, tag } = this.props
+    const { community, postEdit: { communities, id }, tag } = this.props
     if (community && isEmpty(communities)) this.addCommunity(community)
-    if (tag) this.updateStore({tag})
+    if (tag) {
+      this.updateStore({tag})
+    } else if (!id) {
+      this.updateStore({tag: 'request'})
+    }
     this.refs.title.focus()
   }
 

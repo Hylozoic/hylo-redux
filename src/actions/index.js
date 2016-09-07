@@ -1,8 +1,7 @@
 import invariant from 'invariant'
-import qs from 'querystring'
 import { push } from 'react-router-redux'
 import { cleanAndStringify } from '../util/caching'
-import { cloneDeep, pick } from 'lodash'
+import { pick } from 'lodash'
 
 export const _PENDING = '_PENDING'
 export const ADD_COMMUNITY_MODERATOR = 'ADD_COMMUNITY_MODERATOR'
@@ -17,6 +16,8 @@ export const CHANGE_EVENT_RESPONSE_PENDING = CHANGE_EVENT_RESPONSE + _PENDING
 export const CHECK_FRESHNESS_POSTS = 'CHECK_FRESHNESS_POSTS'
 export const CLEAR_CACHE = 'CLEAR_CACHE'
 export const CLOSE_MODAL = 'CLOSE_MODAL'
+export const COMPLETE_POST = 'COMPLETE_POST'
+export const COMPLETE_POST_PENDING = COMPLETE_POST + _PENDING
 export const CREATE_COMMENT = 'CREATE_COMMENT'
 export const CREATE_COMMUNITY = 'CREATE_COMMUNITY'
 export const CREATE_POST = 'CREATE_POST'
@@ -260,81 +261,10 @@ export function typeahead (text, id, params) {
   }
 }
 
-export function updatePostEditor (payload, id) {
-  return {
-    type: UPDATE_POST_EDITOR,
-    payload,
-    meta: {id}
-  }
-}
-
-// id refers to the id of the editing context, e.g. 'new-event'
-export function createPost (id, params) {
-  return {
-    type: CREATE_POST,
-    payload: {api: true, params, path: '/noo/post', method: 'POST'},
-    meta: {id}
-  }
-}
-
 export function clearCache (bucket, id) {
   return {
     type: CLEAR_CACHE,
     payload: {bucket, id}
-  }
-}
-
-export function fetchPost (id) {
-  let querystring = cleanAndStringify({comments: 1, votes: 1, children: 1})
-
-  return {
-    type: FETCH_POST,
-    payload: {api: true, path: `/noo/post/${id}?${querystring}`},
-    meta: {cache: {id, bucket: 'posts', requiredProp: 'children'}}
-  }
-}
-
-export function startPostEdit (post) {
-  let fields = [
-    'id', 'name', 'type', 'description', 'location', 'communities', 'public',
-    'media', 'start_time', 'end_time', 'tag', 'children', 'linkPreview'
-  ]
-  let payload = cloneDeep(pick(post, fields))
-  return {type: START_POST_EDIT, payload}
-}
-
-export function cancelPostEdit (id) {
-  return {type: CANCEL_POST_EDIT, meta: {id}}
-}
-
-export function updatePost (id, params) {
-  return {
-    type: UPDATE_POST,
-    payload: {api: true, params, path: `/noo/post/${id}`, method: 'POST'},
-    meta: {id, params}
-  }
-}
-
-export function removeImage (subject, id) {
-  return {
-    type: REMOVE_IMAGE,
-    meta: {subject, id}
-  }
-}
-
-export function removeDoc (payload, id) {
-  return {
-    type: REMOVE_DOC,
-    payload,
-    meta: {id}
-  }
-}
-
-export function changeEventResponse (id, response, user) {
-  return {
-    type: CHANGE_EVENT_RESPONSE,
-    payload: {api: true, params: {response}, path: `/noo/post/${id}/rsvp`, method: 'POST'},
-    meta: {id, response, user}
   }
 }
 
@@ -549,14 +479,6 @@ export function sendCommunityTagInvitation (communityId, tagName, params) {
   }
 }
 
-export function voteOnPost (post, currentUser) {
-  return {
-    type: VOTE_ON_POST,
-    payload: {api: true, path: `/noo/post/${post.id}/vote`, method: 'POST'},
-    meta: {id: post.id, optimistic: true, currentUser: pick(currentUser, 'id', 'name', 'avatar_url')}
-  }
-}
-
 export function notify (text, opts) {
   return {
     type: NOTIFY,
@@ -574,14 +496,6 @@ export function removeNotification (id) {
   return {
     type: REMOVE_NOTIFICATION,
     payload: id
-  }
-}
-
-export function removePost (id) {
-  return {
-    type: REMOVE_POST,
-    payload: {api: true, path: `/noo/post/${id}`, method: 'DELETE'},
-    meta: {id}
   }
 }
 
@@ -603,14 +517,6 @@ export function fetchLiveStatus (communityId, slug) {
     type: FETCH_LIVE_STATUS,
     payload: {api: true, path},
     meta: {slug}
-  }
-}
-
-export function followPost (id, person) {
-  return {
-    type: FOLLOW_POST,
-    payload: {api: true, path: `/noo/post/${id}/follow`, method: 'POST'},
-    meta: {id, person: pick(person, 'id', 'name', 'avatar_url')}
   }
 }
 
@@ -687,22 +593,6 @@ export function updateCommentEditor (id, text, newComment) {
   return {
     type: UPDATE_COMMENT_EDITOR,
     payload: {id, text, bucket: newComment ? 'new' : 'edit'}
-  }
-}
-
-export function pinPost (slug, id) {
-  return {
-    type: PIN_POST,
-    payload: {api: true, path: `/noo/community/${slug}/post/${id}/pin`, method: 'POST'},
-    meta: {slug, id}
-  }
-}
-
-export function fetchLinkPreview (url) {
-  const q = qs.stringify({url})
-  return {
-    type: FETCH_LINK_PREVIEW,
-    payload: {api: true, path: `/noo/link-preview?${q}`}
   }
 }
 

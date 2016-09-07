@@ -28,7 +28,7 @@ import { connect } from 'react-redux'
 import {
   createPost, cancelPostEdit, fetchLinkPreview, removeImage, removeDoc,
   updatePost, updatePostEditor
-} from '../actions'
+} from '../actions/posts'
 import { uploadImage } from '../actions/uploadImage'
 import { uploadDoc } from '../actions/uploadDoc'
 import { attachmentParams } from '../util/shims'

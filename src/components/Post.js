@@ -26,9 +26,10 @@ import LinkedPersonSentence from './LinkedPersonSentence'
 import LinkPreview from './LinkPreview'
 import { connect } from 'react-redux'
 import { compose } from 'redux'
+import { appendComment, navigate } from '../actions'
 import {
-  appendComment, followPost, navigate, removePost, startPostEdit, voteOnPost, pinPost
-} from '../actions'
+  completePost, followPost, removePost, startPostEdit, voteOnPost, pinPost
+} from '../actions/posts'
 import { same } from '../models'
 import { getComments, getCommunities, isPinned } from '../models/post'
 import { getCurrentCommunity } from '../models/community'
@@ -95,14 +96,20 @@ export default compose(
 
 export const UndecoratedPost = Post // for testing
 
-export const Header = ({ communities }, { post, community }) => {
-  const { tag } = post
+export const Header = ({ communities }, { post, community, currentUser, dispatch }) => {
+  const { tag, fulfilled_at } = post
   const person = tag === 'welcome' ? post.relatedUsers[0] : post.user
   const createdAt = new Date(post.created_at)
+  const canEdit = canEditPost(currentUser, post)
 
   return <div className='header'>
     <Menu/>
     <Avatar person={person}/>
+    {(canEdit || fulfilled_at) && <input type='checkbox'
+      className='completion-toggle'
+      checked={!!post.fulfilled_at}
+      onChange={() => canEdit && dispatch(completePost(post.id))}
+      readOnly={!canEdit}/>}
     {tag === 'welcome'
       ? <WelcomePostHeader communities={communities}/>
       : <div>
@@ -117,7 +124,7 @@ export const Header = ({ communities }, { post, community }) => {
         </div>}
   </div>
 }
-Header.contextTypes = {post: object, community: object}
+Header.contextTypes = {post: object, community: object, currentUser: object, dispatch: func}
 
 const Communities = ({ communities }, { community }) => {
   if (community) communities = sortBy(communities, c => c.id !== community.id)

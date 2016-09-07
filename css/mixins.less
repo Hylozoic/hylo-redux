@@ -140,21 +140,36 @@
   .light;
 }
 
-.round-checkbox() {
+.round-checkbox(@padding: 15px, @font-size: 14px,
+  @placeholder-color: transparent,
+  @hover-color: @faint-gray-text,
+  @checked-color: @damian-green) {
   .round-input;
-  padding: 15px;
+  padding: @padding;
+  &:focus {
+    outline: none;
+  }
 
-  &:checked {
+  &:hover:not([readonly]) {
+    cursor: pointer;
+  }
 
-    &:after {
-      font-family: @icon-font-family;
-      content: '\e62e';
-      font-size: 14px;
-      position: absolute;
-      top: 8px;
-      left: 7px;
-      color: @off-black;
-    }
+  &:after {
+    font-size: @font-size;
+    position: absolute;
+    top: @padding / 2 + 1;
+    left: @padding / 2 - 2;
+    font-family: @icon-font-family;
+    content: '\e62e';
+    color: @placeholder-color;
+  }
+
+  &:hover:after {
+    color: @hover-color;
+  }
+
+  &:checked:after {
+    color: @checked-color;
   }
 }
 

@@ -4,10 +4,8 @@ import { prefetch } from 'react-fetcher'
 import { connect } from 'react-redux'
 import { get, includes } from 'lodash'
 import { pick } from 'lodash/fp'
-import {
-  FETCH_POST, fetchComments, fetchPost, navigate,
-  setMetaTags
-} from '../actions'
+import { FETCH_POST, fetchComments, navigate, setMetaTags } from '../actions'
+import { fetchPost } from '../actions/posts'
 import { saveCurrentCommunityId } from '../actions/util'
 import { ogMetaTags } from '../util'
 import A from '../components/A'

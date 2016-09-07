@@ -1,5 +1,6 @@
 import {
   CHANGE_EVENT_RESPONSE_PENDING,
+  COMPLETE_POST_PENDING,
   CREATE_COMMENT,
   CREATE_POST,
   FETCH_POST,
@@ -118,16 +119,24 @@ export default function (state = {}, action) {
     case PIN_POST_PENDING:
       post = state[id]
       const membership = get(['memberships', meta.slug], post)
-      return {...state, [id]: {
-        ...post,
-        memberships: {
-          ...post.memberships,
-          [meta.slug]: {
-            ...membership,
-            pinned: !get('pinned', membership)
+      return {
+        ...state,
+        [id]: {
+          ...post,
+          memberships: {
+            ...post.memberships,
+            [meta.slug]: {...membership, pinned: !get('pinned', membership)}
           }
         }
-      }}
+      }
+    case COMPLETE_POST_PENDING:
+      return {
+        ...state,
+        [id]: {
+          ...post,
+          fulfilled_at: post.fulfilled_at ? null : new Date(0)
+        }
+      }
   }
   return state
 }

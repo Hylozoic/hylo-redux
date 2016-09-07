@@ -80,7 +80,7 @@ export default class TagInput extends React.Component {
         </li>)}
       </ul>
 
-      <input ref='input' type='text' placeholder={placeholder}
+      <input ref='input' type='text' placeholder={placeholder} spellCheck={false}
         onChange={event => this.handleChange(event.target.value)}
         onKeyDown={this.handleKeys}/>
 

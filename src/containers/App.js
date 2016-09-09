@@ -15,7 +15,6 @@ import { setMobileDevice } from '../actions'
 import { getCurrentCommunity } from '../models/community'
 import { getCurrentNetwork } from '../models/network'
 const { array, bool, func, object } = React.PropTypes
-import config from './../config'
 
 @prefetch(({ store, dispatch }) => {
   const { isMobile, people } = store.getState()

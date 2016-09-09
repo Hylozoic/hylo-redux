@@ -17,7 +17,7 @@ const mainColumnWidth = 688 // defined in CSS
 const modalStyle = isMobile => {
   if (typeof window === 'undefined') return {}
   return {
-    left: isMobile ? 0
+    marginLeft: isMobile ? 0
       : position(document.getElementById('cover-image-page-content')).x,
     width: Math.min(mainColumnWidth,
       get(document.getElementById('main'), 'offsetWidth') || mainColumnWidth)

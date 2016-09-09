@@ -1,3 +1,7 @@
+// we have a scrolling pane inside a fixed container here, rather than a single
+// scrolling absolutely-positioned div, so that the modal can scroll
+// independently of the content on the main page, while preserving the scroll
+// position of the main page
 #top-level-modal-wrapper {
   z-index: 50;
   position: fixed;
@@ -7,11 +11,13 @@
   left: 0;
   overflow-y: scroll;
 
-  .scrolling-pane {
+  .scrolling-backdrop {
     position: absolute;
     top: 0;
     width: 100vw;
     z-index: 3;
+    min-height: 100vh;
+    background-color: rgba(0, 0, 0, 0.55);
   }
 
   .modal {

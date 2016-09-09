@@ -1,6 +1,6 @@
 import { join } from 'path'
 import qs from 'querystring'
-import { isiOSApp, isAndroidApp, calliOSBridge } from './util'
+import { loadScript, isiOSApp, isAndroidApp, calliOSBridge } from './util'
 import { s3, filepickerKey } from '../config'
 
 // order matters, except for CONVERT, which toggles the crop UI
@@ -35,15 +35,6 @@ const makeFilename = function (blob) {
       break
   }
   return timestamp + extension
-}
-
-const loadScript = function (callback) {
-  if (window.filepicker) return callback()
-
-  let tag = document.createElement('script')
-  tag.setAttribute('src', '//api.filepicker.io/v2/filepicker.js')
-  tag.onload = callback
-  document.body.appendChild(tag)
 }
 
 /*
@@ -104,5 +95,7 @@ const uploadCore = function (opts) {
 }
 
 export const upload = function (opts) {
-  loadScript(() => uploadCore(opts))
+  Promise.resolve(
+    window.filepicker || loadScript('//api.filepicker.io/v2/filepicker.js')
+  ).then(() => uploadCore(opts))
 }

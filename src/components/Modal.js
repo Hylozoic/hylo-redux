@@ -27,7 +27,9 @@ const modalStyle = isMobile => {
 export const BareModalWrapper = ({ children, onClick }) => {
   return <div id={modalWrapperCSSId}>
     <div className='backdrop' onClick={onClick}/>
-    {children}
+    <div className='scrolling-pane'>
+      {children}
+    </div>
   </div>
 }
 

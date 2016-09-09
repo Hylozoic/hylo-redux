@@ -7,9 +7,14 @@
   left: 0;
   overflow-y: scroll;
 
-  .modal {
+  .scrolling-pane {
     position: absolute;
     top: 0;
+    width: 100vw;
+    z-index: 3;
+  }
+
+  .modal {
     max-width: @main-column-width;
     margin: 10vh auto;
   }

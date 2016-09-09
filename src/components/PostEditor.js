@@ -32,9 +32,8 @@ import {
 import { uploadImage } from '../actions/uploadImage'
 import { uploadDoc } from '../actions/uploadDoc'
 import { attachmentParams } from '../util/shims'
-import { prepend } from '../util/tinymce'
 import { findUrls } from '../util/linkify'
-import { isKey } from '../util/textInput'
+import { isKey, onEnter } from '../util/textInput'
 import { CREATE_POST, FETCH_LINK_PREVIEW, UPDATE_POST, UPLOAD_IMAGE } from '../actions'
 import { createTagInPostEditor } from '../actions'
 import { ADDED_POST, EDITED_POST, trackEvent } from '../util/analytics'
@@ -215,60 +214,12 @@ export class PostEditor extends React.Component {
   // automatically truncating it to a specified length and prepending the
   // removed portion to the details field.
   updateTitle (event) {
-    if (this.state.pendingTitleReshuffle) return
-
-    const maxlength = 80
     const { value } = event.target
-    const { length } = value
-    if (length > maxlength || value.indexOf('\n') !== -1) {
-      const { title, details } = this.refs
-      const editor = details.getEditor()
-
-      let splitIndex = length > maxlength
-        ? value.lastIndexOf(' ', maxlength - 1)
-        : value.indexOf('\n')
-
-      const name = value.slice(0, splitIndex + 1).replace(/\n$/, '')
-      const excess = value.slice(splitIndex + 1)
-
-      this.setState({name, showDetails: true})
-      this.updateStore({name})
-
-      const pos = title.textarea.selectionStart
-      if (pos <= name.length) {
-        prepend(excess, editor)
-
-        // when the above setState call lands, the cursor ends up jumping to the
-        // end of the text field. we can move it back, but not until the
-        // setState call is finished, so we use setTimeout.
-        //
-        // this introduces a small but significant gap of time, during which, if
-        // someone is typing in the middle of the title field while the title
-        // gets truncated, some of the characters they type could end up at the
-        // end of the field.
-        //
-        // we "pause" the editing of the field with `pendingTitleReshuffle` to
-        // avoid this. this is not great, because if your computer is slow
-        // enough and you're a fast enough typer, characters will simply
-        // disappear -- but to my mind, this is marginally better than having
-        // them show up in the wrong place.
-        this.setState({pendingTitleReshuffle: true})
-        setTimeout(() => {
-          this.setState({pendingTitleReshuffle: false})
-          title.setCursorLocation(pos)
-        })
-      } else {
-        if (excess) prepend(excess, editor)
-        editor.focus()
-      }
-      setTimeout(() => title.resize())
-    } else {
-      this.setState({name: value})
-      if (!this.delayedUpdate) {
-        this.delayedUpdate = debounce(this.updateStore, 300)
-      }
-      this.delayedUpdate({name: value})
+    this.setState({name: value})
+    if (!this.delayedUpdate) {
+      this.delayedUpdate = debounce(this.updateStore, 300)
     }
+    this.delayedUpdate({name: value})
   }
 
   goToDetails = () => {
@@ -280,16 +231,6 @@ export class PostEditor extends React.Component {
     if (isKey(event, 'TAB') && !event.shiftKey) {
       event.preventDefault()
       this.goToDetails()
-    }
-  }
-
-  goBackToTitle = ({ which }) => {
-    if (which === 8 || which === 46) {
-      const value = this.refs.details.getContent()
-      if (!value) {
-        this.setState({showDetails: false})
-        this.refs.title.focus()
-      }
     }
   }
 
@@ -359,7 +300,9 @@ export class PostEditor extends React.Component {
       <div className='title-wrapper'>
         <AutosizingTextarea type='text' ref='title' className='title'
           value={name}
+          maxLength={120}
           placeholder={placeholderText(this.editorType())}
+          onKeyDown={onEnter(this.goToDetails)}
           onChange={event => this.updateTitle(event)}/>
       </div>
 
@@ -390,7 +333,6 @@ export class PostEditor extends React.Component {
         name={post ? `post${id}` : id}
         content={description}
         onChange={ev => this.updateDescription(ev.target.value)}
-        onKeyUp={this.goBackToTitle}
         onAddTag={this.handleAddTag}
         onBlur={() => this.setState({showDetails: false})}/>
       {!description && !showDetails &&

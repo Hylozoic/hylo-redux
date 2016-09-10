@@ -12,7 +12,7 @@ import trackClickthrough from './clickthrough'
 import updateLocation from './updateLocation'
 import polyfills from './polyfills'
 import { init as initLazyLoader } from '../components/LazyLoader'
-import getSocket from './getSocket'
+import { getSocket } from './websockets'
 
 const { history, store } = configureStore(window.INITIAL_STATE, {history: browserHistory})
 const routes = makeRoutes(store)

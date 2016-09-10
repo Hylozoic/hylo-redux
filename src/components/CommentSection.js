@@ -2,14 +2,11 @@ import React from 'react'
 import { isEmpty, sortBy, values } from 'lodash'
 const { array, bool, func, object } = React.PropTypes
 import cx from 'classnames'
-import { environment, host, upstreamHost } from '../config'
 import CommentForm from './CommentForm'
 import PeopleTyping from './PeopleTyping'
 import Comment from './Comment'
 import { appendComment } from '../actions'
-
-const socketHost = environment === 'production' ? host : upstreamHost
-const socketUrl = path => `${socketHost}${path}`
+import { socketUrl } from '../client/websockets'
 
 export default class CommentSection extends React.Component {
   static propTypes = {

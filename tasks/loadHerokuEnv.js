@@ -12,6 +12,7 @@ const keys = [
   'FILEPICKER_API_KEY',
   'GOOGLE_BROWSER_KEY',
   'GOOGLE_CLIENT_ID',
+  'HOST',
   'LOG_LEVEL',
   'NODE_ENV',
   'SEGMENT_KEY',

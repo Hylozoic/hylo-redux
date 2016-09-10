@@ -2,11 +2,14 @@ import React from 'react'
 import { isEmpty, sortBy, values } from 'lodash'
 const { array, bool, func, object } = React.PropTypes
 import cx from 'classnames'
-import { upstreamHost } from '../config'
+import { environment, host, upstreamHost } from '../config'
 import CommentForm from './CommentForm'
 import PeopleTyping from './PeopleTyping'
 import Comment from './Comment'
 import { appendComment } from '../actions'
+
+const socketHost = environment === 'production' ? host : upstreamHost
+const socketUrl = path => `${socketHost}${path}`
 
 export default class CommentSection extends React.Component {
   static propTypes = {
@@ -37,7 +40,7 @@ export default class CommentSection extends React.Component {
     if (expanded) {
       if (!getSocket) return
       this.socket = getSocket()
-      this.socket.post(`${upstreamHost}/noo/post/${id}/subscribe`)
+      this.socket.post(socketUrl(`/noo/post/${id}/subscribe`))
       this.socket.on('commentAdded', c => dispatch(appendComment(id, c)))
       this.socket.on('userTyping', this.userTyping)
     }
@@ -46,7 +49,7 @@ export default class CommentSection extends React.Component {
   componentWillUnmount () {
     const { post: { id }, expanded } = this.props
     if (expanded && this.socket) {
-      this.socket.post(`${upstreamHost}/noo/post/${id}/unsubscribe`)
+      this.socket.post(socketUrl(`/noo/post/${id}/unsubscribe`))
       this.socket.off('commentAdded')
       this.socket.off('userTyping')
     }
@@ -64,12 +67,12 @@ export default class CommentSection extends React.Component {
 
   startedTyping = () => {
     const { post: { id } } = this.props
-    this.socket.post(`${upstreamHost}/noo/post/${id}/typing`, {isTyping: true})
+    this.socket.post(socketUrl(`/noo/post/${id}/typing`), {isTyping: true})
   }
 
   stoppedTyping = () => {
     const { post: { id } } = this.props
-    this.socket.post(`${upstreamHost}/noo/post/${id}/typing`, {isTyping: false})
+    this.socket.post(socketUrl(`/noo/post/${id}/typing`), {isTyping: false})
   }
 
   render () {

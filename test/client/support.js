@@ -4,6 +4,7 @@ import jsdom from 'jsdom'
 dotenv.load({path: './.env.test', silent: true})
 global.document = jsdom.jsdom('<!doctype html><html><body></body></html>')
 global.window = document.defaultView
+window.isMock = true
 
 jsdom.changeURL(window, process.env.UPSTREAM_HOST)
 

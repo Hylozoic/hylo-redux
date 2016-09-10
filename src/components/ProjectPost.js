@@ -1,6 +1,7 @@
 import React from 'react'
 import { connect } from 'react-redux'
-import { Header, CommentSection, presentDescription } from './Post'
+import { Header, presentDescription } from './Post'
+import CommentSection from './CommentSection'
 import decode from 'ent/decode'
 import { textLength, truncate } from '../util/text'
 import { isEmpty } from 'lodash'

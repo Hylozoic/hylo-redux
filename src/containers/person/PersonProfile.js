@@ -18,6 +18,7 @@ import CoverImagePage from '../../components/CoverImagePage'
 import Icon from '../../components/Icon'
 import Comment from '../../components/Comment'
 import { parse } from 'url'
+import { NonLinkAvatar } from '../../components/Avatar'
 import moment from 'moment'
 import { getPost } from '../../models/post'
 import { getCurrentCommunity } from '../../models/community'
@@ -105,8 +106,7 @@ const PersonProfile = compose(
 
   return <CoverImagePage id='person' image={banner_url || defaultBanner}>
     <div className='opener'>
-      <div className='avatar'
-        style={{backgroundImage: `url(${person.avatar_url})`}}/>
+      <NonLinkAvatar person={person}/>
       <h2>
         {person.name}
         <div className='social-media'>

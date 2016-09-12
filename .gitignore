@@ -10,3 +10,4 @@ public/index.css
 .env.test
 .env.deploy
 npm-debug.log
+.DS_Store

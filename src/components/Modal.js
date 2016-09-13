@@ -24,12 +24,22 @@ const modalStyle = isMobile => {
   }
 }
 
-export const BareModalWrapper = ({ children, onClick }) => {
-  return <div id={modalWrapperCSSId}>
-    <div className='scrolling-backdrop' onClick={onClick}>
-      {children}
+export class BareModalWrapper extends React.Component {
+  static propTypes = {children: object, onClick: func}
+
+  render () {
+    const { children } = this.props
+    const onClick = event => {
+      if (event.target !== this.refs.backdrop) return
+      return this.props.onClick(event)
+    }
+
+    return <div id={modalWrapperCSSId}>
+      <div className='scrolling-backdrop' ref='backdrop' onClick={onClick}>
+        {children}
+      </div>
     </div>
-  </div>
+  }
 }
 
 export class ModalWrapper extends React.Component {

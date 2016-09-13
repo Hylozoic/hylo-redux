@@ -62,11 +62,13 @@ export default class CommentSection extends React.Component {
 
   startedTyping = () => {
     const { post: { id } } = this.props
+    if (!this.socket) this.socket = getSocket()
     this.socket.post(socketUrl(`/noo/post/${id}/typing`), {isTyping: true})
   }
 
   stoppedTyping = () => {
     const { post: { id } } = this.props
+    if (!this.socket) this.socket = getSocket()
     this.socket.post(socketUrl(`/noo/post/${id}/typing`), {isTyping: false})
   }
 

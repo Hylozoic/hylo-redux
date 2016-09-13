@@ -17,6 +17,7 @@ const keys = [
   'NODE_ENV',
   'SEGMENT_KEY',
   'SLACK_APP_CLIENT_ID',
+  'SOCKET_HOST',
   'UPSTREAM_HOST'
 ]
 

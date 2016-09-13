@@ -1,11 +1,10 @@
-import { environment, host, upstreamHost } from '../config'
+import { environment, socketHost } from '../config'
 if (typeof window !== 'undefined' && !window.isMock) {
   var socketIOClient = require('socket.io-client')
   var sailsIOClient = require('sails.io.js')
 }
 
-const socketHost = environment === 'production' ? host : upstreamHost
-export const socketUrl = path => `${socketHost}${path}`
+export const socketUrl = path => `${socketHost}/${path.replace(/^\//, '')}`
 
 let socket // client-side singleton
 

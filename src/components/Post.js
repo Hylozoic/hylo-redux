@@ -134,7 +134,7 @@ const Communities = ({ communities }, { community }) => {
     {length > 1 && <span> + </span>}
     {length > 1 && <Dropdown className='post-communities-dropdown'
       toggleChildren={<span>{length - 1} other{length > 2 ? 's' : ''}</span>}>
-      {communities.map(c => <li key={c.id}>{communityLink(c)}</li>)}
+      {communities.slice(1).map(c => <li key={c.id}>{communityLink(c)}</li>)}
     </Dropdown>}
   </span>
 }

@@ -92,7 +92,7 @@ export default compose(
 
 export const UndecoratedPost = Post // for testing
 
-export const Header = ({ communities }, { post, community, currentUser, dispatch }) => {
+export const Header = ({ communities }, { post, currentUser, dispatch }) => {
   const { tag, fulfilled_at } = post
   const person = tag === 'welcome' ? post.relatedUsers[0] : post.user
   const createdAt = new Date(post.created_at)
@@ -121,7 +121,7 @@ export const Header = ({ communities }, { post, community, currentUser, dispatch
         </div>}
   </div>
 }
-Header.contextTypes = {post: object, community: object, currentUser: object, dispatch: func}
+Header.contextTypes = {post: object, currentUser: object, dispatch: func}
 
 const Communities = ({ communities }, { community }) => {
   if (community) communities = sortBy(communities, c => c.id !== community.id)
@@ -159,6 +159,7 @@ HashtagLink.contextTypes = {dispatch: func}
 
 export const Details = ({ expanded, onExpand }, { post, community, dispatch }) => {
   const { tag } = post
+  if (!community) community = post.communities[0]
   const slug = get('slug', community)
   let description = presentDescription(post, community)
   let extractedTags = []

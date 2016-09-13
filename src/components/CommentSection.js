@@ -6,7 +6,7 @@ import CommentForm from './CommentForm'
 import PeopleTyping from './PeopleTyping'
 import Comment from './Comment'
 import { appendComment } from '../actions'
-import { socketUrl } from '../client/websockets'
+import { getSocket, socketUrl } from '../client/websockets'
 
 export default class CommentSection extends React.Component {
   static propTypes = {
@@ -20,8 +20,7 @@ export default class CommentSection extends React.Component {
     community: object,
     currentUser: object,
     isProjectRequest: bool,
-    dispatch: func,
-    getSocket: func
+    dispatch: func
   }
 
   constructor (props) {
@@ -33,9 +32,8 @@ export default class CommentSection extends React.Component {
 
   componentDidMount () {
     const { post: { id }, expanded } = this.props
-    const { dispatch, getSocket } = this.context
+    const { dispatch } = this.context
     if (expanded) {
-      if (!getSocket) return
       this.socket = getSocket()
       this.socket.post(socketUrl(`/noo/post/${id}/subscribe`))
       this.socket.on('commentAdded', c => dispatch(appendComment(id, c)))

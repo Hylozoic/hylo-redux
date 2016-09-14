@@ -19,10 +19,11 @@ import { same } from '../models'
 
 const normalize = (post) => omitBy(isNull, {
   ...post,
-  children: post.children ? map(post.children, c => c.id) : null,
-  communities: map(post.communities, c => c.id),
+  children: post.children ? map(post.children, c => c.id) : null, // FIXME should be child_ids
   numComments: post.num_comments || post.numComments,
-  num_comments: null
+  num_comments: null,
+  communities: null,
+  people: null
 })
 
 const normalizeUpdate = (post, params, payload) => {

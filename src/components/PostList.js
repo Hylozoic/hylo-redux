@@ -13,7 +13,7 @@ import { makeUrl } from '../util/navigation'
 import { navigate, showExpandedPost } from '../actions'
 import SearchInput from './SearchInput'
 import Icon from './Icon'
-const { array, bool, func, string, number } = React.PropTypes
+const { array, bool, func, number } = React.PropTypes
 
 @connect((state, { posts }) => ({
   editingPostIds: state.isMobile ? [] : getEditingPostIds(posts, state)
@@ -33,7 +33,6 @@ class PostList extends React.Component {
   }
 
   static contextTypes = {
-    postDisplayMode: string,
     isMobile: bool
   }
 

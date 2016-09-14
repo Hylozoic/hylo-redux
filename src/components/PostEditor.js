@@ -14,6 +14,7 @@ import {
   debounce, difference, compact, filter, find, get, includes, isEmpty, some,
   startsWith, keys, uniq
 } from 'lodash'
+import { map } from 'lodash/fp'
 import CommunityTagInput from './CommunityTagInput'
 import Dropdown from './Dropdown'
 import EventPostEditor from './EventPostEditor'
@@ -37,7 +38,7 @@ import { isKey, onEnter } from '../util/textInput'
 import { CREATE_POST, FETCH_LINK_PREVIEW, UPDATE_POST, UPLOAD_IMAGE } from '../actions'
 import { createTagInPostEditor } from '../actions'
 import { ADDED_POST, EDITED_POST, trackEvent } from '../util/analytics'
-import { getCurrentCommunity } from '../models/community'
+import { getCommunity, getCurrentCommunity } from '../models/community'
 import TagDescriptionEditor from './TagDescriptionEditor'
 const { array, bool, func, object, string } = React.PropTypes
 
@@ -53,8 +54,7 @@ export const newPostId = 'new-post'
   // this object tracks the edits that are currently being made
   const postEdit = state.postEdits[id] || {}
   const { editingTagDescriptions, creatingTagAndDescription, pending } = state
-  const postCommunities = (postEdit.communities || []).map(id =>
-    find(state.communities, c => c.id === id))
+  const postCommunities = map(id => getCommunity(id, state), postEdit.community_ids)
 
   return {
     id,
@@ -128,14 +128,14 @@ export class PostEditor extends React.Component {
 
   setDelayed = debounce((key, value) => this.updateStore({[key]: value}), 50)
 
-  addCommunity = community => {
-    let { communities } = this.props.postEdit
-    this.updateStore({communities: (communities || []).concat(community.id)})
+  addCommunity = ({ id }) => {
+    const { community_ids } = this.props.postEdit
+    this.updateStore({community_ids: (community_ids || []).concat(id)})
   }
 
-  removeCommunity = community => {
-    let { communities } = this.props.postEdit
-    this.updateStore({communities: filter(communities, cid => cid !== community.id)})
+  removeCommunity = ({ id }) => {
+    const { community_ids } = this.props.postEdit
+    this.updateStore({community_ids: filter(community_ids, cid => cid !== id)})
   }
 
   validate () {
@@ -148,7 +148,7 @@ export class PostEditor extends React.Component {
       return Promise.resolve(false)
     }
 
-    if (isEmpty(postEdit.communities)) {
+    if (isEmpty(postEdit.community_ids)) {
       window.alert('Please pick at least one community.')
       return Promise.resolve(false)
     }
@@ -283,7 +283,7 @@ export class PostEditor extends React.Component {
       editingTagDescriptions, creatingTagAndDescription
     } = this.props
     const { currentUser } = this.context
-    const { description, communities, tag, linkPreview } = postEdit
+    const { description, community_ids, tag, linkPreview } = postEdit
     const selectableTags = uniq(compact([this.props.tag, tag].concat(specialTags)))
     const { name, showDetails } = this.state
     const editorType = this.editorType()
@@ -347,7 +347,7 @@ export class PostEditor extends React.Component {
 
       <div className='communities'>
         <span>in&nbsp;</span>
-        <CommunitySelector communities={communities || []}
+        <CommunitySelector ids={community_ids}
           onSelect={this.addCommunity}
           onRemove={this.removeCommunity}/>
       </div>
@@ -476,7 +476,7 @@ class CommunitySelector extends React.Component {
   }
 
   static propTypes = {
-    communities: array.isRequired,
+    ids: array,
     onSelect: func.isRequired,
     onRemove: func.isRequired
   }
@@ -487,18 +487,18 @@ class CommunitySelector extends React.Component {
 
   render () {
     const { term } = this.state
-    const { communities, onSelect, onRemove } = this.props
+    const { ids, onSelect, onRemove } = this.props
     const { currentUser: { memberships } } = this.context
 
     const match = c =>
       startsWith(c.name.toLowerCase(), term.toLowerCase()) &&
-      !includes(communities, c.id)
+      !includes(ids, c.id)
 
     const choices = term
       ? filter(memberships.map(m => m.community), match)
       : []
 
-    return <CommunityTagInput ids={communities}
+    return <CommunityTagInput ids={ids}
       handleInput={term => this.setState({term})}
       choices={choices}
       onSelect={onSelect}

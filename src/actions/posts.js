@@ -1,4 +1,5 @@
 import { cloneDeep, pick } from 'lodash'
+import { get } from 'lodash/fp'
 import qs from 'querystring'
 import { cleanAndStringify } from '../util/caching'
 import {
@@ -34,13 +35,19 @@ export function fetchPost (id) {
   return {
     type: FETCH_POST,
     payload: {api: true, path: `/noo/post/${id}?${querystring}`},
-    meta: {cache: {id, bucket: 'posts', requiredProp: 'children'}}
+    meta: {
+      cache: {id, bucket: 'posts', requiredProp: 'children'},
+      addDataToStore: {
+        communities: get('communities'),
+        people: get('people')
+      }
+    }
   }
 }
 
 export function startPostEdit (post) {
   let fields = [
-    'id', 'name', 'type', 'description', 'location', 'communities', 'public',
+    'id', 'name', 'type', 'description', 'location', 'community_ids', 'public',
     'media', 'start_time', 'end_time', 'tag', 'children', 'linkPreview'
   ]
   let payload = cloneDeep(pick(post, fields))

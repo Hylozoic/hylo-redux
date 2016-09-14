@@ -2,6 +2,8 @@ import { assetUrl } from '../util/assets'
 import { compact, intersection, isNull, keys } from 'lodash'
 import { curry, find, get, map, omitBy } from 'lodash/fp'
 import { same } from './index'
+import { getPerson } from './person'
+import { getCommunity } from './community'
 
 const fallbackImageUrl = () => assetUrl('/img/axolotl.jpg')
 
@@ -16,7 +18,9 @@ export const imageUrl = (post, fallback = true) =>
 export const getCommunities = (post, state) =>
   !post ? []
     : get('0.id', post.communities) ? post.communities
-    : compact(map(id => find(same('id', {id}), state.communities), post.communities))
+    : compact(map(
+        id => find(same('id', {id}), state.communities),
+        post.communities || post.community_ids))
 
 export const getComments = (post, state) => {
   if (!post) return []
@@ -31,3 +35,10 @@ export const getPost = (id, state) => id ? get(id, state.posts) : null
 
 export const isPinned = (post, community) =>
  community ? get(['memberships', community.slug, 'pinned'], post) : null
+
+export const denormalizedPost = (post, state) => ({
+  ...post,
+  user: getPerson(post.user_id, state),
+  followers: map(id => getPerson(id, state), post.follower_ids),
+  communities: map(id => getCommunity(id, state), post.community_ids)
+})

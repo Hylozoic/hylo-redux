@@ -19,12 +19,13 @@ describe('ConnectedPostList', () => {
           id: 'x',
           name: 'Mr. X',
           avatar_url: '/img/mrx.png'
-        }
+        },
+        '1': {id: 1, name: 'jo', avatar_url: ''}
       },
       posts: {1: {
         id: 1, name: 'post', description: 'ra', type: 'offer',
-        user: {id: 1, name: 'jo', avatar_url: ''},
-        communities: [community]
+        user_id: '1',
+        community_ids: [community.id]
       }},
       totalPostsByQuery: {'subject=community&id=foo': 1},
       postsByQuery: {'subject=community&id=foo': [1]},

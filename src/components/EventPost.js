@@ -12,7 +12,7 @@ import LinkedPersonSentence from './LinkedPersonSentence'
 import { ClickCatchingSpan } from './ClickCatcher'
 import { get, find, isEmpty, some, sortBy } from 'lodash'
 import { same } from '../models'
-import { getComments, imageUrl } from '../models/post'
+import { denormalizedPost, getComments, imageUrl } from '../models/post'
 import { getCurrentCommunity } from '../models/community'
 import { Header, presentDescription } from './Post'
 import CommentSection from './CommentSection'
@@ -26,7 +26,8 @@ export const EventPostCard = connect(
   (state, { post }) => ({
     comments: getComments(post, state),
     community: getCurrentCommunity(state),
-    isMobile: state.isMobile
+    isMobile: state.isMobile,
+    post: denormalizedPost(post, state)
   })
 )(({ post, comments, community, isMobile, dispatch }) => {
   const { start_time, end_time, user, id, name } = post

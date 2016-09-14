@@ -1,11 +1,12 @@
 import React from 'react'
 import { connect } from 'react-redux'
-import { find } from 'lodash'
+import { map } from 'lodash/fp'
 import TagInput from './TagInput'
+import { getCommunity } from '../models/community'
 var { array } = React.PropTypes
 
-@connect(({ communities }, { ids }) => ({
-  communities: (ids || []).map(id => find(communities, c => c.id === id))
+@connect((state, { ids }) => ({
+  communities: map(id => getCommunity(id, state), ids)
 }))
 export default class CommunityTagInput extends React.Component {
   static propTypes = {

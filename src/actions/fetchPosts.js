@@ -1,5 +1,6 @@
 import { cleanAndStringify, createCacheId } from '../util/caching'
 import { FETCH_POSTS, CHECK_FRESHNESS_POSTS } from './index'
+import { get } from 'lodash/fp'
 
 export function fetchPosts (opts) {
   // communityId is only used when fetching a tag
@@ -41,7 +42,11 @@ export function fetchPosts (opts) {
     type: FETCH_POSTS,
     payload: {api: true, path},
     meta: {
-      cache: {id: cacheId, bucket: 'postsByQuery', limit, offset, array: true}
+      cache: {id: cacheId, bucket: 'postsByQuery', limit, offset, array: true},
+      addDataToStore: {
+        people: get('people'),
+        communities: get('communities')
+      }
     }
   }
 }

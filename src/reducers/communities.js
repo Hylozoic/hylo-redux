@@ -2,15 +2,14 @@ import { map, uniqBy } from 'lodash/fp'
 import { compact, flatten, filter, merge, union, omit } from 'lodash'
 import { debug } from '../util/logging'
 import {
+  ADD_DATA_TO_STORE,
   CREATE_COMMUNITY,
-  FETCH_POSTS,
   FETCH_COMMUNITY,
   FETCH_COMMUNITY_FOR_INVITATION,
   FETCH_COMMUNITY_SETTINGS,
   FETCH_COMMUNITY_MODERATORS,
   FETCH_COMMUNITIES,
   FETCH_PERSON,
-  FETCH_POST,
   FETCH_CURRENT_USER,
   UPDATE_COMMUNITY_SETTINGS_PENDING,
   ADD_COMMUNITY_MODERATOR_PENDING,
@@ -30,6 +29,9 @@ export default function (state = {}, action) {
   let moderators
 
   switch (type) {
+    case ADD_DATA_TO_STORE:
+      if (meta.bucket === 'communities') return mergeList(state, payload, 'slug')
+      break
     case FETCH_COMMUNITY:
     case FETCH_COMMUNITY_SETTINGS:
       let slug = payload.slug || meta.cache.id
@@ -48,10 +50,6 @@ export default function (state = {}, action) {
     case FETCH_COMMUNITY_MODERATORS:
       community = {...state[meta.cache.id], moderators: payload}
       return {...state, [meta.cache.id]: community}
-    case FETCH_POSTS:
-      return mergeList(state, getPostCommunities(payload.posts), 'slug')
-    case FETCH_POST:
-      return mergeList(state, payload.communities, 'slug')
     case FETCH_PERSON:
       const newPosts = compact([payload.recent_request, payload.recent_offer])
       return mergeList(state, getPostCommunities(newPosts), 'slug')

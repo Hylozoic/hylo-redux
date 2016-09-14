@@ -4,31 +4,11 @@ import { FETCH_POSTS, FOLLOW_POST, UPDATE_POST } from '../../src/actions'
 
 describe('posts', () => {
   describe('on FETCH_POSTS', () => {
-    it('normalizes community data', () => {
-      let action = {
-        type: FETCH_POSTS,
-        payload: {
-          posts: [{id: 'a', name: 'hi', communities: [{id: 'c1'}, {id: 'c2'}]}]
-        },
-        meta: {
-          cache: {id: 'foo'}
-        }
-      }
-
-      let state = {}
-
-      let expectedState = {
-        a: {id: 'a', name: 'hi', communities: ['c1', 'c2']}
-      }
-
-      expect(posts(state, action)).to.deep.equal(expectedState)
-    })
-
     it('merges with existing post data', () => {
       let action = {
         type: FETCH_POSTS,
         payload: {
-          posts: [{id: 'a', name: 'hi', communities: []}]
+          posts: [{id: 'a', name: 'hi'}]
         },
         meta: {
           cache: {id: 'foo'}
@@ -40,7 +20,7 @@ describe('posts', () => {
       }
 
       let expectedState = {
-        a: {id: 'a', name: 'hi', description: 'hello', communities: []}
+        a: {id: 'a', name: 'hi', description: 'hello'}
       }
 
       expect(posts(state, action)).to.deep.equal(expectedState)
@@ -50,7 +30,7 @@ describe('posts', () => {
       let action = {
         type: FETCH_POSTS,
         payload: {
-          posts: [{id: 'a', name: 'hi', communities: [], memberships: {c3: {pinned: true}}}]
+          posts: [{id: 'a', name: 'hi', memberships: {c3: {pinned: true}}}]
         },
         meta: {
           cache: {id: 'foo'},
@@ -63,8 +43,12 @@ describe('posts', () => {
       }
 
       let expectedState = {
-        a: {id: 'a', name: 'hi', description: 'hello', communities: [],
-          memberships: {c1: {pinned: true}, c2: {pinned: false}, c3: {pinned: true}}}
+        a: {
+          id: 'a', name: 'hi', description: 'hello',
+          memberships: {
+            c1: {pinned: true}, c2: {pinned: false}, c3: {pinned: true}
+          }
+        }
       }
 
       expect(posts(state, action)).to.deep.equal(expectedState)

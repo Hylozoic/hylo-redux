@@ -6,6 +6,9 @@ import cheerio from 'cheerio'
 const { createElement } = helpers
 const { user } = mocks.models
 
+const user1 = user()
+const user2 = user()
+
 const store = mocks.redux.store({
   communities: {
     foo: {
@@ -16,6 +19,10 @@ const store = mocks.redux.store({
       id: 2,
       name: 'bar'
     }
+  },
+  people: {
+    [user1.id]: user1,
+    [user2.id]: user2
   }
 })
 
@@ -25,8 +32,8 @@ const posts = [
     type: 'project',
     name: 'i am a project',
     followers: times(3, () => user()),
-    user: user(),
-    communities: [1]
+    user_id: user1.id,
+    community_ids: [1]
   },
   {
     id: 2,
@@ -34,16 +41,16 @@ const posts = [
     name: 'come to my show',
     followers: times(8, () => user()),
     responders: times(7, () => user({response: sample(['yes', 'no'])})),
-    user: user(),
-    communities: [2]
+    user_id: user2.id,
+    community_ids: [2]
   },
   {
     id: 3,
     name: 'i am just a normal post',
     description: 'minding my own business',
     followers: [],
-    user: user(),
-    communities: [2]
+    user_id: user1.id,
+    community_ids: [2]
   }
 ]
 

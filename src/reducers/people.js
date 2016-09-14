@@ -2,6 +2,7 @@ import { filter, get, mergeWith, pick, find, indexOf, map } from 'lodash'
 import { isNull, omitBy } from 'lodash/fp'
 import { debug } from '../util/logging'
 import {
+  ADD_DATA_TO_STORE,
   CREATE_COMMUNITY,
   FETCH_ACTIVITY,
   FETCH_CURRENT_USER,
@@ -131,6 +132,11 @@ export default function (state = {}, action) {
   if (!payload) return state
 
   switch (type) {
+    case ADD_DATA_TO_STORE:
+      if (meta.bucket === 'people') {
+        return mergeList(state, payload.map(normalize), 'id')
+      }
+      break
     case FETCH_PERSON:
       debug('caching person:', payload.id)
       return {

@@ -16,12 +16,8 @@ let post = {
   tag: 'offer',
   created_at: new Date(),
   updated_at: new Date(),
-  user: {
-    id: 'x',
-    name: 'Mr. X',
-    avatar_url: '/img/mrx.png'
-  },
-  communities: ['1']
+  user_id: 'x',
+  communitiy_ids: ['1']
 }
 
 let state = {
@@ -33,6 +29,11 @@ let state = {
   },
   people: {
     current: {
+      id: 'x',
+      name: 'Mr. X',
+      avatar_url: '/img/mrx.png'
+    },
+    x: {
       id: 'x',
       name: 'Mr. X',
       avatar_url: '/img/mrx.png'
@@ -48,12 +49,8 @@ let post2 = {
   tag: 'offer',
   created_at: new Date(),
   updated_at: new Date(),
-  user: {
-    id: 'x',
-    name: 'Mr. X',
-    avatar_url: '/img/mrx.png'
-  },
-  communities: ['1', '2', '3', '4']
+  user_id: 'x',
+  community_ids: ['1', '2', '3', '4']
 }
 
 describe('Post', () => {
@@ -78,7 +75,7 @@ describe('Post', () => {
     let component = helpers.createElement(Post, props, context)
     let node = renderIntoDocument(component)
     let communities = findRenderedDOMComponentWithClass(node, 'communities')
-    let expected = '&nbsp;in <a>Foomunity</a><div class="dropdown post-communities-dropdown" tabindex="99"><a class="dropdown-toggle"><span> + 3 others</span></a><ul class="dropdown-menu"></ul><span></span></div>'
+    let expected = '&nbsp;in <a>Foomunity</a><span> + </span><div class="dropdown post-communities-dropdown" tabindex="99"><a class="dropdown-toggle"><span>3 others</span></a><ul class="dropdown-menu"></ul><span></span></div>'
     expect(stripComments(communities.innerHTML)).to.equal(expected)
   })
 })

@@ -27,7 +27,7 @@ import {
   completePost, followPost, removePost, startPostEdit, voteOnPost, pinPost
 } from '../actions/posts'
 import { same } from '../models'
-import { getComments, getCommunities, isPinned } from '../models/post'
+import { denormalizedPost, getComments, isPinned } from '../models/post'
 import { getCurrentCommunity } from '../models/community'
 import { canEditPost, canModerate } from '../models/currentUser'
 import { isMobile } from '../client/util'
@@ -42,7 +42,6 @@ export const presentDescription = (post, community, opts = {}) =>
 class Post extends React.Component {
   static propTypes = {
     post: object,
-    communities: array,
     community: object,
     comments: array,
     dispatch: func,
@@ -58,8 +57,8 @@ class Post extends React.Component {
   }
 
   render () {
-    const { post, communities, comments, expanded, onExpand, community } = this.props
-    const { tag, media, linkPreview } = post
+    const { post, comments, expanded, onExpand, community } = this.props
+    const { communities, tag, media, linkPreview } = post
     const image = find(m => m.type === 'image', media)
     const classes = cx('post', tag, {image, expanded})
     const title = linkifyHashtags(decode(sanitize(post.name || '')), get('slug', community))
@@ -84,8 +83,8 @@ export default compose(
   connect((state, { post }) => {
     return {
       comments: getComments(post, state),
-      communities: getCommunities(post, state),
-      community: getCurrentCommunity(state)
+      community: getCurrentCommunity(state),
+      post: denormalizedPost(post, state)
     }
   })
 )(Post)

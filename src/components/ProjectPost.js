@@ -7,7 +7,7 @@ import { textLength, truncate } from '../util/text'
 import { isEmpty } from 'lodash'
 import { find, some } from 'lodash/fp'
 import { same } from '../models'
-import { getComments, getPost, imageUrl } from '../models/post'
+import { denormalizedPost, getComments, getPost, imageUrl } from '../models/post'
 import { getCurrentCommunity } from '../models/community'
 import Icon from './Icon'
 import Post from './Post'
@@ -194,7 +194,8 @@ export const ProjectPostCard = connect(
   (state, { post }) => ({
     comments: getComments(post, state),
     community: getCurrentCommunity(state),
-    isMobile: state.isMobile
+    isMobile: state.isMobile,
+    post: denormalizedPost(post, state)
   })
 )(({ post, community, comments, dispatch, isMobile }) => {
   const { name, user, tag, end_time, id } = post

@@ -348,6 +348,7 @@ ul.posts {
 
     .typing {
       color: @faint-gray-text;
+      padding-top: 10px;
       > div {
         display: inline-block;
       }
@@ -355,6 +356,10 @@ ul.posts {
       .chillipsis {
         margin-right: 15px;
       }
+
+      .mobile({
+        padding-left: @mobile-side-margin;
+      });
     }
   }
 

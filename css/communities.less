@@ -1,0 +1,156 @@
+.create-community {
+  padding-top: 50px;
+  padding-bottom: 50px;
+  .mobile({
+    padding-top: 25px;
+    padding-bottom: 25px;
+  });
+
+  textarea {
+    width: 100%;
+    border: none;
+    resize: none;
+    background-color: @faint-gray-bg;
+  }
+
+  .active {
+    textarea {
+      background-color: white;
+    }
+  }
+
+  a.button {
+    .green-button;
+  }
+
+  .toggle-section {
+    padding: 15px 0px 15px 30px;
+    a {
+      color: @damian-green;
+      &:hover {
+        text-decoration: none;
+      }
+    }
+    font-size: 12px;
+    .icon {
+      margin-left: 5px;
+      font-size: 13px;
+      position: relative;
+      top: 2px;
+    }
+  }
+}
+
+#new-community-form {
+  .small-logo {
+    .image-div(40px);
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: 10px;
+  }
+
+  .button.upload {
+    .round-button;
+    padding: 0 20px;
+    background-color: white;
+    border-color: @damian-green;
+    color: @damian-green;
+  }
+}
+
+#community-invite-prompt {
+  input[type="file"] {
+    display: none
+  }
+
+  .csv-upload {
+    .help-text {
+      .meta;
+      width: 80%;
+    }
+
+    label.custom-file-upload {
+      .round-button;
+      line-height: 40px;
+      display: inline;
+      position: relative;
+      cursor: pointer;
+      float: right;
+      padding: 0 20px;
+      background-color: white;
+      border: 1px solid @post-border;
+      color: @damian-green;
+      margin-left: 10px;
+    }
+  }
+
+  .emails {
+    textarea {
+      height: 100px;
+    }
+  }
+
+  .skip {
+    margin-left: 10px;
+    font-size: 12px;
+    color: @gray-text;
+  }
+}
+
+#community-invitations {
+  margin-top: 25px;
+
+  table {
+    width: 100%;
+  }
+
+  th, td {
+    padding: 6px 10px;
+
+    &:first-child {
+      padding-left: @modal-row-side-padding;
+    }
+
+    &:last-child {
+      text-align: right;
+      padding-right: @modal-row-side-padding;
+    }
+  }
+
+  td.unused {
+    color: transparent;
+  }
+
+  tr.even td {
+    background-color: @faint-gray-bg;
+  }
+
+  .avatar {
+    vertical-align: middle;
+    display: inline-block;
+    margin-right: 10px;
+  }
+
+  .summary {
+    margin-top: 25px;
+    border-top: 1px solid @post-border;
+    text-align: right;
+    padding: @modal-row-side-padding;
+  }
+
+  .mobile({
+    thead {
+      display: none;
+    }
+    td {
+      display: block;
+      padding-left: @modal-row-side-padding;
+      &.unused {
+        color: black;
+      }
+      &:last-child {
+        text-align: left;
+      }
+    }
+  });
+}

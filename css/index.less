@@ -1,5 +1,6 @@
 // @import '../node_modules/bootstrap/less/bootstrap';
 @import 'bootstrap-lite';
+@import 'communities';
 @import 'dropdown';
 @import 'forms';
 @import 'globals';
@@ -619,36 +620,6 @@ ul.tags {
         margin-right: 10px;
       }
     });
-  }
-}
-
-.sent-invitations {
-  padding: 10px 0 0 !important;
-
-  .mobile({
-    overflow-y: scroll;
-  });
-
-  table {
-    width: 100%;
-  }
-  th, td {
-    padding: 6px 15px;
-  }
-  tr.even td {
-    background-color: @faint-gray-bg;
-  }
-  .avatar {
-    display: inline-block;
-    vertical-align: middle;
-    margin-right: 10px;
-  }
-  .unused {
-    height: @avatar-size-default;
-  }
-
-  .footer {
-    margin-top: 15px;
   }
 }
 

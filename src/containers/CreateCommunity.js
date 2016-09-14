@@ -1,7 +1,7 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { prefetch } from 'react-fetcher'
-const { object, bool, func } = React.PropTypes
+const { array, bool, func, object } = React.PropTypes
 import { toPairs, get, some, isEmpty, filter } from 'lodash/fp'
 import validator from 'validator'
 import ModalOnlyPage from '../components/ModalOnlyPage'
@@ -16,13 +16,14 @@ import {
   CREATE_COMMUNITY,
   UPLOAD_IMAGE,
   createCommunity,
+  fetchCommunity,
+  fetchInvitations,
   navigate,
   resetCommunityValidation,
-  updateCommunityEditor,
-  validateCommunityAttribute,
-  updateInvitationEditor,
   sendCommunityInvitation,
-  fetchCommunity
+  updateCommunityEditor,
+  updateInvitationEditor,
+  validateCommunityAttribute
 } from '../actions'
 import {
   avatarUploadSettings,
@@ -37,7 +38,8 @@ import { scrollToBottom } from '../util/scrolling'
 import { parseEmailString, emailsFromCSVFile } from '../util/text'
 import { ADDED_COMMUNITY, INVITED_COMMUNITY_MEMBERS, trackEvent } from '../util/analytics'
 import { saveCurrentCommunityId } from '../actions/util'
-import { defaultSubject, defaultMessage } from './community/CommunityInvitations'
+import { defaultInvitationSubject, defaultInvitationMessage } from '../models/community'
+import InvitationList from './community/InvitationList'
 
 const merkabaUrl = 'https://www.hylo.com/img/hylo-merkaba-300x300.png'
 
@@ -187,7 +189,7 @@ export class CreateCommunity extends React.Component {
     return <ModalOnlyPage className='create-community'>
       <Topper community={community}/>
       <Modal title='Create your community.'
-        className='create-community-one'
+        id='new-community-form'
         subtitle="Let's get started unlocking the creative potential of your community with Hylo."
         standalone>
         <ModalInput label='Name' ref='name' onChange={this.set('name')}
@@ -236,18 +238,21 @@ export class CreateCommunity extends React.Component {
   }
 }
 
+@prefetch(({ params: { id }, dispatch }) =>
+  id && dispatch(fetchInvitations(id)))
 @connect((state, { params: { id } }) => ({
   community: id ? state.communities[id] : getCurrentCommunity(state),
   currentUser: get('people.current', state),
-  invitationEditor: get('invitationEditor', state)
+  invitationEditor: get('invitationEditor', state),
+  invitations: id ? state.invitations[id] : null
 }))
 export class CreateCommunityInvite extends React.Component {
-
   static propTypes = {
     community: object,
     currentUser: object,
     invitationEditor: object,
-    dispatch: func
+    dispatch: func,
+    invitations: array
   }
 
   constructor (props) {
@@ -279,16 +284,18 @@ export class CreateCommunityInvite extends React.Component {
     const { subject, message } = invitationEditor
 
     if (subject === undefined) {
-      dispatch(updateInvitationEditor('subject', defaultSubject(community.name)))
+      dispatch(updateInvitationEditor('subject', defaultInvitationSubject(community.name)))
     }
     if (message === undefined) {
-      dispatch(updateInvitationEditor('message', defaultMessage(community.name)))
+      dispatch(updateInvitationEditor('message', defaultInvitationMessage(community.name)))
     }
   }
 
   render () {
     const { expanded } = this.state
-    const { community, currentUser, dispatch, invitationEditor } = this.props
+    const {
+      community, currentUser, dispatch, invitationEditor, invitations
+    } = this.props
 
     if (!canInvite(currentUser, community)) {
       return <AccessErrorMessage error={{status: 403}}/>
@@ -328,15 +335,15 @@ export class CreateCommunityInvite extends React.Component {
     return <ModalOnlyPage className='create-community'>
       <Topper community={community}/>
       <Modal title='Invite people to join you.'
-      className='create-community-two'
+      id='community-invite-prompt'
       standalone>
         <div className='modal-input csv-upload'>
-          <label className='normal-label'>Import CSV File</label>
-          <div className='help-text'>The file should have a header row named "email" for the email column. Or it can be a file in which each line is a single email address.</div>
           <label className='custom-file-upload'>
             <input type='file' onChange={() => this.processCSV()} ref='fileInput'/>
             Browse
           </label>
+          <label className='normal-label'>Import CSV File</label>
+          <p className='help-text'>The file should have a header row named "email" for the email column. Or it can be a file in which each line is a single email address.</p>
         </div>
         <ModalInput
           className='emails'
@@ -370,6 +377,10 @@ export class CreateCommunityInvite extends React.Component {
           <A to={`/c/${community.slug}`} className='skip'>Skip</A>
         </div>
       </Modal>
+
+      {invitations && <Modal title='Sent invitations' standalone id='community-invitations'>
+        <InvitationList id={community.slug}/>
+      </Modal>}
     </ModalOnlyPage>
   }
 }

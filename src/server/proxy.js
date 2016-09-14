@@ -4,6 +4,7 @@ const request = require('request')
 const streamifier = require('streamifier')
 const url = require('url')
 const cache = LRU(50)
+import { setTransactionName } from './newrelic'
 
 const staticPages = [
   '',
@@ -44,21 +45,23 @@ const handlePage = (req, res) => {
   }
 
   var u = url.parse(req.url)
-  u.pathname = transformPathname(u.pathname)
+  const origPathname = u.pathname
+  setTransactionName(origPathname)
+  u.pathname = transformPathname(origPathname)
   var newUrl = process.env.PROXY_HOST.replace(/\/$/, '') + url.format(u)
 
   // use path without query params as cache key
   const cacheKey = u.pathname
   const cachedValue = (cacheKey ? cache.get(cacheKey) : null)
 
+  console.log(`${origPathname} -> ${newUrl} ${cachedValue ? '☺' : '↑'}`)
+
   if (cachedValue) {
-    console.log(` ☺ ${newUrl}`)
     var mimeType = mime.lookup(u.pathname)
 
     res.set('Content-Type', mimeType)
     streamifier.createReadStream(cachedValue).pipe(res)
   } else {
-    console.log(` ↑ ${newUrl}`)
     var chunks = []
 
     request.get(newUrl)

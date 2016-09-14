@@ -3,6 +3,7 @@ import { get, debounce, throttle } from 'lodash'
 import { connect } from 'react-redux'
 import Avatar from './Avatar'
 import RichTextEditor from './RichTextEditor'
+import { CREATE_COMMENT } from '../actions'
 import { createComment, updateCommentEditor, updateComment } from '../actions/comments'
 import { ADDED_COMMENT, trackEvent } from '../util/analytics'
 import { textLength } from '../util/text'
@@ -24,7 +25,8 @@ const STOPPED_TYPING_WAIT_TIME = 8000
     currentUser: get(state, 'people.current'),
     editingTagDescriptions: state.editingTagDescriptions,
     text: postId ? state.commentEdits.new[postId] : state.commentEdits.edit[commentId],
-    newComment: !commentId
+    newComment: !commentId,
+    pending: state.pending[CREATE_COMMENT]
   })
 })
 export default class CommentForm extends React.Component {
@@ -40,7 +42,8 @@ export default class CommentForm extends React.Component {
     editingTagDescriptions: bool,
     text: string,
     newComment: bool,
-    close: func
+    close: func,
+    pending: bool
   }
 
   static defaultProps = {
@@ -58,9 +61,9 @@ export default class CommentForm extends React.Component {
   }
 
   submit = event => {
-    const { dispatch, postId, commentId, newComment, close } = this.props
+    const { dispatch, postId, commentId, newComment, close, pending } = this.props
     if (event) event.preventDefault()
-    if (!this.state.enabled) return
+    if (!this.state.enabled || pending) return
     const text = this.refs.editor.getContent().replace(/<p>&nbsp;<\/p>$/m, '')
     if (!text || textLength(text) < 2) return false
 
@@ -92,7 +95,7 @@ export default class CommentForm extends React.Component {
   render () {
     const {
       currentUser, editingTagDescriptions, dispatch, postId, commentId, text,
-      newComment, close, startedTyping, stoppedTyping
+      newComment, close, startedTyping, stoppedTyping, pending
     } = this.props
     const { isMobile } = this.context
     const editing = text !== undefined
@@ -131,7 +134,7 @@ export default class CommentForm extends React.Component {
               onKeyUp={stopTyping}
               onKeyDown={handleKeyDown}/>
             <input type='submit' value='Post' ref='button'
-              className={cx({enabled})}/>
+              className={cx({enabled: enabled && !pending})}/>
             {close && <button onClick={close}>Cancel</button>}
             {!isMobile && modifierKey && <span className='meta help-text'>
               or press {modifierKey}-Enter

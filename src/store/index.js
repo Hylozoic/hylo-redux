@@ -6,7 +6,7 @@ import createLogger from 'redux-logger'
 import { compact, flatten } from 'lodash'
 import {
   serverLogger, apiMiddleware, cacheMiddleware, pendingPromiseMiddleware,
-  optimisticMiddleware
+  optimisticMiddleware, addDataToStoreMiddleware
 } from '../middleware'
 import { syncHistoryWithStore } from 'react-router-redux'
 import createHistory from 'history/lib/createMemoryHistory'
@@ -23,6 +23,7 @@ export function configureStore (initialState, opts = {}) {
     isServer && serverLogger,
     cacheMiddleware,
     apiMiddleware(opts.request),
+    addDataToStoreMiddleware,
     optimisticMiddleware,
     pendingPromiseMiddleware,
     promiseMiddleware,

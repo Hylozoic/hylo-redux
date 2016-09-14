@@ -1,5 +1,6 @@
 import React from 'react'
 import LazyLoader from './LazyLoader'
+import { truncate } from '../util/text'
 
 const LinkPreview = ({ linkPreview, onClose }) => {
   const { title, description, image_url, url, image_width } = linkPreview
@@ -16,7 +17,7 @@ const LinkPreview = ({ linkPreview, onClose }) => {
         <img src={image_url} className={imageClassName}/>
       </LazyLoader>}
       <span className='link-preview-title'>{title}</span>
-      {description && <span className='link-preview-description'>{description}</span>}
+      {description && <span className='link-preview-description'>{truncate(description, 300)}</span>}
     </a>
   </div>
 }

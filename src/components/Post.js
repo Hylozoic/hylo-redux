@@ -157,15 +157,16 @@ const HashtagLink = ({ tag, slug }, { dispatch }) => {
 HashtagLink.contextTypes = {dispatch: func}
 
 export const Details = ({ expanded, onExpand }, { post, community, dispatch }) => {
+  const truncatedSize = 300
   const { tag } = post
   if (!community) community = post.communities[0]
   const slug = get('slug', community)
   let description = presentDescription(post, community)
   let extractedTags = []
-  const truncated = !expanded && textLength(description) > 200
+  const truncated = !expanded && textLength(description) > truncatedSize
   if (truncated) {
     const orig = description
-    description = truncate(description, 200)
+    description = truncate(description, truncatedSize)
     extractedTags = extractTags(description, orig)
   }
   if (description) description = appendInP(description, '&nbsp;')

@@ -97,11 +97,11 @@ export function changeEventResponse (id, response, user) {
   }
 }
 
-export function voteOnPost (post, currentUser) {
+export function voteOnPost (post, person) {
   return {
     type: VOTE_ON_POST,
     payload: {api: true, path: `/noo/post/${post.id}/vote`, method: 'POST'},
-    meta: {id: post.id, optimistic: true, currentUser: pick(currentUser, 'id', 'name', 'avatar_url')}
+    meta: {id: post.id, personId: person.id, optimistic: true}
   }
 }
 
@@ -109,7 +109,7 @@ export function followPost (id, person) {
   return {
     type: FOLLOW_POST,
     payload: {api: true, path: `/noo/post/${id}/follow`, method: 'POST'},
-    meta: {id, person: pick(person, 'id', 'name', 'avatar_url')}
+    meta: {id, personId: person.id, optimistic: true}
   }
 }
 

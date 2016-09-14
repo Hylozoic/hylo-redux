@@ -40,5 +40,6 @@ export const denormalizedPost = (post, state) => ({
   ...post,
   user: getPerson(post.user_id, state),
   followers: map(id => getPerson(id, state), post.follower_ids),
+  voters: map(id => getPerson(id, state), post.voter_ids),
   communities: map(id => getCommunity(id, state), post.community_ids)
 })

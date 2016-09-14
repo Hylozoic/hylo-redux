@@ -6,13 +6,13 @@ import {
   FETCH_POST,
   FETCH_POSTS,
   FETCH_PERSON,
-  FOLLOW_POST,
+  FOLLOW_POST_PENDING,
   PIN_POST_PENDING,
   REMOVE_POST,
   UPDATE_POST,
   VOTE_ON_POST_PENDING
 } from '../actions'
-import { compact, omit, find, some, without, includes, map, filter } from 'lodash'
+import { compact, omit, find, some, without, map } from 'lodash'
 import { get, isNull, omitBy } from 'lodash/fp'
 import { mergeList } from './util'
 
@@ -53,13 +53,14 @@ const changeEventResponse = (post, response, user) => {
   return {...post, ...{ responders }}
 }
 
-const addOrRemoveFollower = (state, id, person) => {
+const addOrRemovePersonId = (state, id, personId, attr) => {
   const post = state[id]
-  const matches = some(post.follower_ids, id => id === person.id)
-  const follower_ids = matches
-    ? without(post.follower_ids, person.id)
-    : (post.follower_ids || []).concat(person.id)
-  return {...state, [id]: {...post, follower_ids}
+  const newIds = some(post[attr], id => id === personId)
+    ? without(post[attr], personId)
+    : (post[attr] || []).concat(personId)
+  return {
+    ...state,
+    [id]: {...post, [attr]: newIds}
   }
 }
 
@@ -67,7 +68,7 @@ export default function (state = {}, action) {
   const { error, type, payload, meta } = action
   if (error) return state
 
-  let { id } = meta || {}
+  let { id, personId } = meta || {}
   let post = state[id]
 
   switch (type) {
@@ -83,22 +84,13 @@ export default function (state = {}, action) {
       var { response, user } = meta
       return {...state, [id]: changeEventResponse(post, response, user)}
     case VOTE_ON_POST_PENDING:
-      let { currentUser } = meta
-      let newPost
-      let myVote = includes(map(post.voters, 'id'), currentUser.id)
-
-      if (myVote) {
-        newPost = {...post, voters: filter(post.voters, v => v.id !== currentUser.id)}
-      } else {
-        newPost = {...post, voters: post.voters.concat(currentUser)}
-      }
-      return {...state, [id]: newPost}
+      return addOrRemovePersonId(state, id, personId, 'voter_ids')
     case REMOVE_POST:
       return {...state, [id]: null}
-    case FOLLOW_POST:
-      return addOrRemoveFollower(state, id, meta.person)
+    case FOLLOW_POST_PENDING:
+      return addOrRemovePersonId(state, id, personId, 'follower_ids')
     case CREATE_COMMENT:
-      const withFollower = addOrRemoveFollower(state, id, payload.user)
+      const withFollower = addOrRemovePersonId(state, id, payload.user.id, 'follower_ids')
       return {
         ...withFollower,
         [id]: {

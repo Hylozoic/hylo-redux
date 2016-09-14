@@ -14,8 +14,7 @@ import {
 } from '../actions'
 import { compact, omit, find, some, without, includes, map, filter } from 'lodash'
 import { get, isNull, omitBy } from 'lodash/fp'
-import { cloneSet, mergeList } from './util'
-import { same } from '../models'
+import { mergeList } from './util'
 
 const normalize = (post) => omitBy(isNull, {
   ...post,
@@ -55,20 +54,13 @@ const changeEventResponse = (post, response, user) => {
 }
 
 const addOrRemoveFollower = (state, id, person) => {
-  let post = state[id]
-  let follower = find(post.followers, same('id', person))
-  let newFollowers = follower
-    ? without(post.followers, follower)
-    : (post.followers || []).concat(person)
-  return cloneSet(state, `${id}.followers`, newFollowers)
-}
-
-const addFollower = (state, id, person) => {
-  let post = state[id]
-  let follower = find(post.followers, same('id', person))
-  return follower
-    ? state
-    : cloneSet(state, `${id}.followers`, (post.followers || []).concat(person))
+  const post = state[id]
+  const matches = some(post.follower_ids, id => id === person.id)
+  const follower_ids = matches
+    ? without(post.follower_ids, person.id)
+    : (post.follower_ids || []).concat(person.id)
+  return {...state, [id]: {...post, follower_ids}
+  }
 }
 
 export default function (state = {}, action) {
@@ -106,7 +98,7 @@ export default function (state = {}, action) {
     case FOLLOW_POST:
       return addOrRemoveFollower(state, id, meta.person)
     case CREATE_COMMENT:
-      const withFollower = addFollower(state, id, payload.user)
+      const withFollower = addOrRemoveFollower(state, id, payload.user)
       return {
         ...withFollower,
         [id]: {

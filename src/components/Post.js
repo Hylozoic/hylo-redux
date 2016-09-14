@@ -210,7 +210,7 @@ WelcomePostHeader.contextTypes = {post: object}
 
 export const Menu = (props, { dispatch, post, currentUser, community }) => {
   const canEdit = canEditPost(currentUser, post)
-  const following = some(post.followers, same('id', currentUser))
+  const following = some(post.follower_ids, id => id === currentUser.id)
   const pinned = isPinned(post, community)
   const edit = () => isMobile()
     ? dispatch(navigate(`/p/${post.id}/edit`))

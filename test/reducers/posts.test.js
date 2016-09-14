@@ -226,11 +226,11 @@ describe('posts', () => {
         meta: {id: 'a', person}
       }
       let state = {
-        a: {name: 'post!', followers: [person, cat]}
+        a: {name: 'post!', follower_ids: [person.id, cat.id]}
       }
 
       let newState = posts(state, action)
-      expect(newState.a.followers).to.deep.equal([cat])
+      expect(newState.a.followers).to.deep.equal([cat.id])
     })
 
     it('adds the current user as follower', () => {
@@ -239,11 +239,11 @@ describe('posts', () => {
         meta: {id: 'a', person}
       }
       let state = {
-        a: {name: 'post!', followers: [cat]}
+        a: {name: 'post!', follower_ids: [cat.id]}
       }
 
       let newState = posts(state, action)
-      expect(newState.a.followers).to.deep.equal([cat, person])
+      expect(newState.a.followers).to.deep.equal([cat.id, person.id])
     })
   })
 })

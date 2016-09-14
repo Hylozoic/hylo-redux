@@ -3,11 +3,10 @@ import Avatar from './Avatar'
 import A from './A'
 import { some } from 'lodash'
 import { get } from 'lodash/fp'
-import { same } from '../models'
 import { humanDate, prependInP, present, textLength } from '../util/text'
 import { sanitize } from 'hylo-utils/text'
 import { commentUrl } from '../routes'
-import { removeComment, thank, updateCommentEditor } from '../actions'
+import { removeComment, thank, updateCommentEditor } from '../actions/comments'
 import truncateHtml from 'trunc-html'
 import { ClickCatchingSpan } from './ClickCatcher'
 import CommentForm from './CommentForm'
@@ -42,8 +41,8 @@ class Comment extends React.Component {
     const { editing } = this.state
 
     const person = comment.user
-    const { thanks } = comment
-    const isThanked = comment.isThanked || some(thanks, same('id', currentUser))
+    const { thank_ids } = comment
+    const isThanked = some(thank_ids, id => id === get('id', currentUser))
     let text = present(sanitize(comment.text), {slug: get('slug', community)})
     const truncated = truncate && textLength(text) > truncatedLength
     if (truncated) text = truncateHtml(text, truncatedLength).html

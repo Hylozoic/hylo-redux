@@ -3,7 +3,7 @@ import { compose } from 'redux'
 import { connect } from 'react-redux'
 import { defer, prefetch } from 'react-fetcher'
 import {
-  markActivityRead, markAllActivitiesRead, navigate, showModal, thank
+  markActivityRead, markAllActivitiesRead, navigate, showModal
 } from '../actions'
 import { fetchActivity } from '../actions/activity'
 import { get, map } from 'lodash/fp'
@@ -78,9 +78,8 @@ export default Notifications
 
 const Activity = ({ activity, currentUser, dispatch }) => {
   const {
-    actor, action, post, comment, comment_id, unread, created_at, meta: { reasons }
+    actor, action, post, comment, unread, created_at, meta: { reasons }
   } = activity
-  let { isThanked } = comment || {}
   const spacer = <span>&nbsp;&nbsp;•&nbsp;&nbsp;</span>
 
   let text = bodyText(action, comment, post)
@@ -88,10 +87,6 @@ const Activity = ({ activity, currentUser, dispatch }) => {
   let postName = post.tag === 'welcome'
     ? `${post.relatedUsers[0].name}'s' welcoming post`
     : truncate(decode(post.name), 140).html
-
-  let thankLinkText = isThanked
-    ? `You thanked ${actor.name.split(' ')[0]}`
-    : 'Say thanks'
 
   let visit = () => {
     if (unread) dispatch(markActivityRead(activity.id))
@@ -112,10 +107,6 @@ const Activity = ({ activity, currentUser, dispatch }) => {
       <div className='controls meta'>
         {humanDate(created_at)}
         {comment && <span>
-          {spacer}
-          <a onClick={() => dispatch(thank(comment_id, currentUser))}>
-            {thankLinkText}
-          </a>
           {spacer}
           <a onClick={visit}>Reply</a>
         </span>}

@@ -25,7 +25,10 @@ export const getCommunities = (post, state) =>
 export const getComments = (post, state) => {
   if (!post) return []
   const { comments, commentsByPost } = state
-  return compact(map(id => comments[id], get(post.id, commentsByPost)))
+  return compact(map(id => ({
+    ...comments[id],
+    user: getPerson(get('user_id', comments[id]), state)
+  }), get(post.id, commentsByPost)))
 }
 
 export const getEditingPostIds = (posts, state) =>

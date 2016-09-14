@@ -5,7 +5,7 @@ import cx from 'classnames'
 import CommentForm from './CommentForm'
 import PeopleTyping from './PeopleTyping'
 import Comment from './Comment'
-import { appendComment } from '../actions'
+import { appendComment } from '../actions/comments'
 import { getSocket, socketUrl } from '../client/websockets'
 
 export default class CommentSection extends React.Component {

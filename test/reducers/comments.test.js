@@ -15,10 +15,12 @@ describe('comments', () => {
     it('appends comments to state', () => {
       let action = {
         type: FETCH_COMMENTS,
-        payload: [
-          {id: '2', text: 'bar'},
-          {id: '3', text: 'baz'}
-        ]
+        payload: {
+          comments: [
+            {id: '2', text: 'bar'},
+            {id: '3', text: 'baz'}
+          ]
+        }
       }
 
       let state = {
@@ -102,17 +104,17 @@ describe('comments', () => {
 
       let action = {
         type: THANK_PENDING,
-        meta: {commentId: '1', person}
+        meta: {id: '1', personId: person.id}
       }
 
       let state = {
-        '1': {id: '1', text: 'foo', thanks: []},
-        '2': {id: '2', text: 'bar', thanks: []}
+        '1': {id: '1', text: 'foo', thank_ids: []},
+        '2': {id: '2', text: 'bar', thank_ids: []}
       }
 
       let expectedState = {
-        '1': {id: '1', text: 'foo', isThanked: true, thanks: [person]},
-        '2': {id: '2', text: 'bar', thanks: []}
+        '1': {id: '1', text: 'foo', thank_ids: [person.id]},
+        '2': {id: '2', text: 'bar', thank_ids: []}
       }
 
       expect(comments(state, action)).to.deep.equal(expectedState)
@@ -121,17 +123,17 @@ describe('comments', () => {
     it('removes a thanks', () => {
       let action = {
         type: THANK_PENDING,
-        meta: {commentId: '1', person: {id: '10'}}
+        meta: {id: '1', personId: '10'}
       }
 
       let state = {
-        '1': {id: '1', text: 'foo', isThanked: true, thanks: [{id: '10'}, {id: '20'}]},
-        '2': {id: '2', text: 'bar', thanks: []}
+        '1': {id: '1', text: 'foo', thank_ids: ['10', '20']},
+        '2': {id: '2', text: 'bar', thank_ids: []}
       }
 
       let expectedState = {
-        '1': {id: '1', text: 'foo', isThanked: false, thanks: [{id: '20'}]},
-        '2': {id: '2', text: 'bar', thanks: []}
+        '1': {id: '1', text: 'foo', thank_ids: ['20']},
+        '2': {id: '2', text: 'bar', thank_ids: []}
       }
 
       expect(comments(state, action)).to.deep.equal(expectedState)

@@ -14,7 +14,7 @@ import {
 } from '../actions'
 import { compact, omit, find, some, without, map } from 'lodash'
 import { get, isNull, omitBy } from 'lodash/fp'
-import { mergeList } from './util'
+import { addOrRemovePersonId, mergeList } from './util'
 
 const normalize = (post) => omitBy(isNull, {
   ...post,
@@ -51,17 +51,6 @@ const changeEventResponse = (post, response, user) => {
     responders.push({id: user.id, name: user.name, avatar_url: user.avatar_url, response: response})
   }
   return {...post, ...{ responders }}
-}
-
-const addOrRemovePersonId = (state, id, personId, attr) => {
-  const post = state[id]
-  const newIds = some(post[attr], id => id === personId)
-    ? without(post[attr], personId)
-    : (post[attr] || []).concat(personId)
-  return {
-    ...state,
-    [id]: {...post, [attr]: newIds}
-  }
 }
 
 export default function (state = {}, action) {

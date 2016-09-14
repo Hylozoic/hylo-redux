@@ -221,35 +221,6 @@ export function navigate (path) {
   return push(path)
 }
 
-export function fetchComments (postId, opts = {}) {
-  // these are ignored since the comment API doesn't do pagination yet
-  let limit = opts.limit || 1000
-  let offset = opts.offset || 0
-
-  return {
-    type: FETCH_COMMENTS,
-    payload: {api: true, path: `/noo/post/${postId}/comments`},
-    meta: {
-      id: postId,
-      subject: 'post',
-      cache: {id: postId, bucket: 'commentsByPost', limit, offset, array: true}
-    }
-  }
-}
-
-export function appendComment (postId, comment) {
-  return {type: APPEND_COMMENT, payload: comment, meta: {id: postId}}
-}
-
-export function createComment (postId, text, tagDescriptions) {
-  const params = {text, tagDescriptions}
-  return {
-    type: CREATE_COMMENT,
-    payload: {api: true, path: `/noo/post/${postId}/comment`, params, method: 'POST'},
-    meta: {id: postId}
-  }
-}
-
 export function typeahead (text, id, params) {
   if (!text) return {type: CANCEL_TYPEAHEAD, meta: {id}}
 
@@ -405,14 +376,6 @@ export function markAllActivitiesRead (communityId, activityIds) {
   }
 }
 
-export function thank (commentId, currentUser) {
-  return {
-    type: THANK,
-    payload: {api: true, params: {unread: false}, path: `/noo/comment/${commentId}/thank`, method: 'POST'},
-    meta: {commentId, person: pick(currentUser, 'id', 'name', 'avatar_url')}
-  }
-}
-
 export function setMetaTags (metaTags) {
   return {
     type: SET_META_TAGS,
@@ -544,14 +507,6 @@ export function setMobileDevice (enabled = true) {
   return {type: SET_MOBILE_DEVICE, payload: enabled}
 }
 
-export function removeComment (id) {
-  return {
-    type: REMOVE_COMMENT,
-    payload: {api: true, path: `/noo/comment/${id}`, method: 'DELETE'},
-    meta: {id}
-  }
-}
-
 export function cancelTagDescriptionEdit () {
   return {type: CANCEL_TAG_DESCRIPTION_EDIT}
 }
@@ -590,13 +545,6 @@ export function createTagInPostEditor () {
   }
 }
 
-export function updateCommentEditor (id, text, newComment) {
-  return {
-    type: UPDATE_COMMENT_EDITOR,
-    payload: {id, text, bucket: newComment ? 'new' : 'edit'}
-  }
-}
-
 export function fetchCommunitiesForNetworkNav (networkId) {
   return {
     type: FETCH_COMMUNITIES_FOR_NETWORK_NAV,
@@ -607,15 +555,6 @@ export function fetchCommunitiesForNetworkNav (networkId) {
 
 export function showExpandedPost (id, commentId) {
   return {type: SHOW_EXPANDED_POST, payload: {id, commentId}}
-}
-
-export function updateComment (commentId, text, tagDescriptions) {
-  const params = {text, tagDescriptions}
-  return {
-    type: UPDATE_COMMENT,
-    payload: {api: true, path: `/noo/comment/${commentId}`, params, method: 'POST'},
-    meta: {id: commentId, text, optimistic: true}
-  }
 }
 
 export function registerTooltip (id, index) {

@@ -29,7 +29,16 @@ export function fetchComments (postId, opts = {}) {
 }
 
 export function appendComment (postId, comment) {
-  return {type: APPEND_COMMENT, payload: comment, meta: {id: postId}}
+  return {
+    type: APPEND_COMMENT,
+    payload: comment,
+    meta: {
+      id: postId,
+      addDataToStore: {
+        people: get('people')
+      }
+    }
+  }
 }
 
 export function createComment (postId, text, tagDescriptions) {

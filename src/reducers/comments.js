@@ -1,4 +1,5 @@
 import { addOrRemovePersonId, hashBy, mergeList } from './util'
+import { omit } from 'lodash/fp'
 import {
   ADD_DATA_TO_STORE,
   APPEND_COMMENT,
@@ -35,9 +36,8 @@ export default function (state = {}, action) {
       if (meta.bucket === 'comments') return mergeList(state, payload, 'id')
       break
     case APPEND_COMMENT:
-      return {...state, [payload.id]: payload}
     case CREATE_COMMENT:
-      return {...state, [payload.id]: payload}
+      return {...state, [payload.id]: omit('people', payload)}
     case FETCH_POSTS:
       comments = payload.posts.reduce((acc, post) => acc.concat(post.comments || []), [])
       return {...state, ...hashBy(comments, 'id')}

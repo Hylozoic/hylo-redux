@@ -1,4 +1,5 @@
 import { includes, mapValues, startCase, uniq } from 'lodash'
+import { get } from 'lodash/fp'
 import {
   CANCEL_POST_EDIT,
   CANCEL_TAG_DESCRIPTION_EDIT,
@@ -104,7 +105,7 @@ export const editingTagDescriptions = (state = false, action) => {
   if (type === CANCEL_TAG_DESCRIPTION_EDIT) {
     return false
   } else if (includes([CREATE_POST, UPDATE_POST, CREATE_COMMENT], type) && error) {
-    const response = JSON.parse(payload.response.body)
+    const response = JSON.parse(get('response.body', payload) || '{}')
     return !!response.tagsMissingDescriptions
   }
 

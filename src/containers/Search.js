@@ -4,7 +4,7 @@ import { connect } from 'react-redux'
 import { connectedListProps, fetchWithCache, refetch } from '../util/caching'
 import { makeUrl } from '../util/navigation'
 import { navigate, search } from '../actions'
-import { debounce, get, isEmpty, pick } from 'lodash'
+import { debounce, get, isEmpty } from 'lodash'
 import Select from '../components/Select'
 import Comment from '../components/Comment'
 import Avatar from '../components/Avatar'
@@ -14,6 +14,7 @@ import ScrollListener from '../components/ScrollListener'
 import CoverImagePage from '../components/CoverImagePage'
 import { commentUrl } from '../routes'
 import decode from 'ent/decode'
+import { denormalizedComment } from '../models/comment'
 const { array, bool, func, number, object } = React.PropTypes
 
 const types = [
@@ -28,8 +29,7 @@ const fetch = fetchWithCache(search)
 
 @prefetch(({ dispatch, query }) => query.q && dispatch(fetch(subject, null, query)))
 @connect((state, { location: { query } }) => ({
-  ...connectedListProps(state, {subject, query}, 'searchResults'),
-  currentUser: state.people.current
+  ...connectedListProps(state, {subject, query}, 'searchResults')
 }))
 export default class Search extends React.Component {
   static propTypes = {
@@ -40,18 +40,9 @@ export default class Search extends React.Component {
     pending: bool
   }
 
-  static childContextTypes = {
-    dispatch: func,
-    currentUser: object
-  }
-
   constructor (props) {
     super(props)
     this.state = {textInput: get(props, 'location.query.q')}
-  }
-
-  getChildContext () {
-    return pick(this.props, 'currentUser', 'dispatch')
   }
 
   componentWillReceiveProps (nextProps) {
@@ -145,7 +136,9 @@ const PersonResult = ({ person, onTagClick }) => {
   </div>
 }
 
-const CommentResult = ({ comment }, { dispatch }) => {
+const CommentResult = connect((state, { comment }) => ({
+  comment: denormalizedComment(comment, state)
+}))(({ comment, dispatch }) => {
   const { post } = comment
   const welcomedPerson = get(post, 'relatedUsers.0')
   const url = commentUrl(comment)
@@ -162,5 +155,4 @@ const CommentResult = ({ comment }, { dispatch }) => {
     </strong>
     <Comment comment={comment} truncate expand={visit}/>
   </div>
-}
-CommentResult.contextTypes = {dispatch: func}
+})

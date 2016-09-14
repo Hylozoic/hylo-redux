@@ -34,7 +34,7 @@ const showTaggedPosts = post =>
 @connect((state, { params: { id } }) => {
   const post = getPost(id, state)
   return {
-    post: denormalizedPost(post, state),
+    post: post ? denormalizedPost(post, state) : null, 
     community: getCurrentCommunity(state),
     comments: getComments(post, state),
     editing: !!state.postEdits[id],

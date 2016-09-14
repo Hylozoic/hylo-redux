@@ -475,7 +475,13 @@ export function search (opts) {
   return {
     type: SEARCH,
     payload: {api: true, path: `/noo/search/fulltext?${querystring}`},
-    meta: {cache}
+    meta: {
+      cache,
+      addDataToStore: {
+        communities: get('communities'),
+        people: get('people')
+      }
+    }
   }
 }
 
@@ -569,11 +575,11 @@ export function unregisterTooltip (id) {
   return {type: UNREGISTER_TOOLTIP, payload: {id}}
 }
 
-export function addDataToStore (bucket, payload) {
+export function addDataToStore (bucket, payload, fromType) {
   return {
     type: ADD_DATA_TO_STORE,
     payload,
-    meta: {bucket}
+    meta: {bucket, fromType}
   }
 }
 

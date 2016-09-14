@@ -5,7 +5,7 @@ import { magenta, red } from 'chalk'
 import { info } from '../util/logging'
 import { qualifiedUrl, setManifest } from '../util/assets'
 import { parse } from 'url'
-import { handleStaticPages } from './proxy'
+import { handleStaticPages, preloadCache } from './proxy'
 import express from 'express'
 import request from 'request'
 import { readFileSync } from 'fs'
@@ -81,3 +81,7 @@ setupAssetManifest(() => server.listen(port, err => {
   if (err) throw err
   info('listening on port ' + port)
 }))
+
+if (process.env.PRELOAD_PROXY_CACHE) {
+  preloadCache()
+}

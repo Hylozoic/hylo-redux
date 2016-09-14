@@ -42,20 +42,11 @@ export function cacheMiddleware (store) {
 
 export const addDataToStoreMiddleware = store => next => action => {
   const { type, payload, meta } = action
-  if (type.endsWith(_PENDING)) return next(action)
+  if (type.endsWith(_PENDING) || isPromise(payload)) return next(action)
 
   if (meta && meta.addDataToStore) {
-    if (isPromise(payload)) {
-      const promise = payload.then(data => {
-        forEach(meta.addDataToStore, (fn, bucket) =>
-          store.dispatch(addDataToStore(bucket, fn(data))))
-        return data
-      })
-      return next({...action, payload: promise})
-    }
-
     forEach(meta.addDataToStore, (fn, bucket) =>
-      store.dispatch(addDataToStore(bucket, fn(payload))))
+      store.dispatch(addDataToStore(bucket, fn(payload), type)))
   }
 
   return next(action)

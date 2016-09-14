@@ -1,7 +1,7 @@
 import invariant from 'invariant'
 import { push } from 'react-router-redux'
 import { cleanAndStringify } from '../util/caching'
-import { pick } from 'lodash'
+import { get } from 'lodash/fp'
 
 export const _PENDING = '_PENDING'
 export const ADD_COMMUNITY_MODERATOR = 'ADD_COMMUNITY_MODERATOR'
@@ -177,7 +177,11 @@ export function fetchPerson (id) {
     type: FETCH_PERSON,
     payload: {api: true, path: `/noo/user/${id}`},
     meta: {
-      cache: {bucket: 'people', id, requiredProp: 'grouped_post_count'}
+      cache: {bucket: 'people', id, requiredProp: 'grouped_post_count'},
+      addDataToStore: {
+        people: get('people'),
+        communities: get('communities')
+      }
     }
   }
 }

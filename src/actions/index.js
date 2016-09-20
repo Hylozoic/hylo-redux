@@ -413,8 +413,17 @@ export function useInvitation (token) {
 export function fetchInvitations (communityId, offset = 0, reset) {
   return {
     type: FETCH_INVITATIONS,
-    payload: {api: true, path: `/noo/community/${communityId}/invitations?offset=${offset}`},
-    meta: {communityId, reset}
+    payload: {
+      api: true,
+      path: `/noo/community/${communityId}/invitations?offset=${offset}`
+    },
+    meta: {
+      communityId,
+      reset,
+      cache: {
+        bucket: 'invitations', id: communityId, array: true, offset, limit: 20
+      }
+    }
   }
 }
 

@@ -75,9 +75,10 @@ export default class CommentSection extends React.Component {
   render () {
     let { post, comments, onExpand, expanded } = this.props
     const truncate = !expanded
-    const { currentUser, community, isProjectRequest } = this.context
+    const { currentUser, isProjectRequest } = this.context
     const placeholder = isProjectRequest ? 'How can you help?' : null
     const peopleTyping = values(this.state.peopleTyping)
+    const community = this.context.community || post.communities[0]
 
     if (!comments) comments = []
     comments = sortBy(comments, c => c.created_at)

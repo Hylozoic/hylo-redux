@@ -130,10 +130,10 @@ export default class TagPopover extends React.Component {
         </div>)}
         <div className='footer'>
           <a onClick={toggleFollow}>{followed ? 'Unf' : 'F'}ollow Topic</a>
-          {followerCount && <span>
+          {followerCount > 0 && <span>
             &nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;{followerCount} following
           </span>}
-          {postCount && <span>
+          {postCount > 0 && <span>
             &nbsp;&nbsp;&nbsp;{nounCount(postCount, 'post')}
           </span>}
         </div>

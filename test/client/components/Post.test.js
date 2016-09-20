@@ -17,7 +17,8 @@ let post = {
   created_at: new Date(),
   updated_at: new Date(),
   user_id: 'x',
-  communitiy_ids: ['1']
+  community_ids: ['1'],
+  follower_ids: ['x', 'y']
 }
 
 let state = {
@@ -57,6 +58,26 @@ describe('Post', () => {
   it('renders expanded', () => {
     const props = {post, expanded: true}
     const store = mocks.redux.store(state)
+    const context = {store, dispatch: store.dispatch}
+    let component = helpers.createElement(Post, props, context)
+    let node = renderIntoDocument(component)
+    findRenderedDOMComponentWithClass(node, 'post')
+    let details = findRenderedDOMComponentWithClass(node, 'details')
+    let expected = new RegExp(`<span[^>]*><p>${post.description}&nbsp;<\/p><\/span><a class="hashtag" [^>]*>#offer<\/a>`)
+    expect(details.innerHTML).to.match(expected)
+    let title = findRenderedDOMComponentWithClass(node, 'title')
+    expect(title.innerHTML).to.equal('i have "something" for you!')
+  })
+
+  it('renders for a logged-out visitor', () => {
+    const props = {post, expanded: true}
+    const store = mocks.redux.store({
+      ...state,
+      people: {
+        ...state.people,
+        current: null
+      }
+    })
     const context = {store, dispatch: store.dispatch}
     let component = helpers.createElement(Post, props, context)
     let node = renderIntoDocument(component)

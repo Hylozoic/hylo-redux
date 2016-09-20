@@ -19,7 +19,7 @@ export const editorUrl = (slug, type) => {
 @prefetch(({ store, routes, dispatch, params: { id } }) =>
   (routes.slice(-1)[0].community
     ? dispatch(fetchCommunity(id))
-    : dispatch(fetchPost(id))
+    : id && dispatch(fetchPost(id))
       .then(() => {
         const post = getPost(id, store.getState())
         return dispatch(startPostEdit(post))
@@ -36,8 +36,8 @@ export const editorUrl = (slug, type) => {
     const post = getPost(id, state)
     return {
       post,
-      postEdit: state.postEdits[id],
-      communities: getCommunities(post, state),
+      postEdit: state.postEdits[id || newPostId],
+      communities: post ? getCommunities(post, state) : null,
       saving
     }
   }
@@ -49,13 +49,17 @@ export default class StandalonePostEditor extends React.Component {
     dispatch: func,
     community: object,
     route: object,
-    saving: bool
+    saving: bool,
+    params: object
   }
 
   render () {
-    const { post, postEdit, dispatch, community, route: { type }, saving } = this.props
+    const {
+      post, postEdit, dispatch, community, route: { type }, saving,
+      params: { id }
+    } = this.props
     const { editor } = this.refs
-    if (!postEdit) return <div className='loading'>Loading...</div>
+    if (!postEdit && id) return <div className='loading'>Loading...</div>
 
     const goBack = () => {
       if (window.history && window.history.length > 2) {

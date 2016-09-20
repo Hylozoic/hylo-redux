@@ -96,6 +96,8 @@ export default function makeRoutes (store) {
     <Route path='c/:id/new' component={StandalonePostEditor} community onEnter={requireLogin}/>
     <Route path='c/:id/events/new' component={StandalonePostEditor} community type='event' onEnter={requireLogin}/>
     <Route path='c/:id/projects/new' component={StandalonePostEditor} community type='project' onEnter={requireLogin}/>
+    <Route path='p/new' component={StandalonePostEditor} onEnter={requireLogin}/>
+    <Route path='p/:id/edit' component={StandalonePostEditor} onEnter={requireLogin}/>
 
     <Route component={PageWithNav}>
       <Route path='settings' component={UserSettings} onEnter={requireLogin}/>
@@ -136,9 +138,7 @@ export default function makeRoutes (store) {
         <Route path='tag/:tagName' component={TagPosts} onEnter={requireLogin} />
       </Route>
 
-      <Route path='p/new' component={StandalonePostEditor} onEnter={requireLogin}/>
       <Route path='p/:id' component={SinglePost}/>
-      <Route path='p/:id/edit' component={StandalonePostEditor} onEnter={requireLogin}/>
       <Route path='n/new' component={NetworkEditor} onEnter={requireLogin}/>
       <Route path='n/:id' component={NetworkProfile} onEnter={requireLogin}>
         <IndexRoute component={NetworkPosts}/>

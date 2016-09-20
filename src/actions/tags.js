@@ -5,7 +5,8 @@ import {
   FOLLOW_TAG,
   REMOVE_TAG,
   SHOW_ALL_TAGS,
-  SHOW_SHARE_TAG
+  SHOW_SHARE_TAG,
+  UPDATE_COMMUNITY_TAG
 } from './index'
 
 export function followTag (id, tagName) {
@@ -60,5 +61,18 @@ export function fetchLeftNavTags (id, refresh) {
     type: FETCH_LEFT_NAV_TAGS,
     payload: {api: true, path: `/noo/community/${id}/tags/followed`},
     meta: {id, cache: {id, bucket: 'tagsByCommunity', refresh}}
+  }
+}
+
+export function updateCommunityTag (tag, community, params) {
+  const { id, name } = tag
+  const { slug } = community
+  return {
+    type: UPDATE_COMMUNITY_TAG,
+    payload: {api: true, path: `/noo/community/${slug}/tag/${id}`, params, method: 'POST'},
+    meta: {
+      name, params, optimistic: true,
+      slug, communityId: community.id
+    }
   }
 }

@@ -1,6 +1,6 @@
 import React from 'react'
 import { difference, first, includes, map, some, sortBy } from 'lodash'
-import { find, get } from 'lodash/fp'
+import { find, filter, get } from 'lodash/fp'
 const { array, bool, func, object, string } = React.PropTypes
 import cx from 'classnames'
 import cheerio from 'cheerio'
@@ -143,8 +143,8 @@ const getTags = text =>
   cheerio.load(text)('.hashtag').toArray().map(tag =>
     tag.children[0].data.replace(/^#/, ''))
 
-const extractTags = (shortDesc, fullDesc) => {
-  const tags = getTags(fullDesc)
+const extractTags = (shortDesc, fullDesc, omitTag) => {
+  const tags = filter(t => t !== omitTag, getTags(fullDesc))
   return tags.length === 0 ? [] : difference(tags, getTags(shortDesc))
 }
 
@@ -167,7 +167,7 @@ export const Details = ({ expanded, onExpand }, { post, community, dispatch }) =
   if (truncated) {
     const orig = description
     description = truncate(description, truncatedSize)
-    extractedTags = extractTags(description, orig)
+    extractedTags = extractTags(description, orig, tag)
   }
   if (description) description = appendInP(description, '&nbsp;')
 

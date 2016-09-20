@@ -42,8 +42,6 @@ import { getCurrentCommunity } from '../models/community'
 import TagDescriptionEditor from './TagDescriptionEditor'
 const { array, bool, func, object, string } = React.PropTypes
 
-const specialTags = ['request', 'offer', 'intention']
-
 export const newPostId = 'new-post'
 
 @autoproxy(connect((state, { community, post, project, type, tag }) => {
@@ -56,6 +54,7 @@ export const newPostId = 'new-post'
   const { editingTagDescriptions, creatingTagAndDescription, pending } = state
   const postCommunities = (postEdit.communities || []).map(id =>
     find(state.communities, c => c.id === id))
+  const currentCommunity = getCurrentCommunity(state)
 
   return {
     id,
@@ -64,10 +63,11 @@ export const newPostId = 'new-post'
     saving: pending[CREATE_POST] || pending[UPDATE_POST],
     imagePending: pending[UPLOAD_IMAGE],
     linkPreviewPending: pending[FETCH_LINK_PREVIEW],
-    currentCommunitySlug: get(getCurrentCommunity(state), 'slug'),
+    currentCommunitySlug: get(currentCommunity, 'slug'),
     editingTagDescriptions,
     creatingTagAndDescription,
-    postCommunities
+    postCommunities,
+    defaultTags: get(currentCommunity, 'defaultTags')
   }
 }, null, null, {withRef: true}))
 export class PostEditor extends React.Component {
@@ -86,7 +86,8 @@ export class PostEditor extends React.Component {
     currentCommunitySlug: string,
     editingTagDescriptions: bool,
     creatingTagAndDescription: bool,
-    postCommunities: array
+    postCommunities: array,
+    defaultTags: array
   }
 
   static contextTypes = {
@@ -204,8 +205,6 @@ export class PostEditor extends React.Component {
 
   updatePostTagAndDescription = tagDescriptions => {
     let tag = keys(tagDescriptions)[0]
-    console.log('updatePostTagAndDescription', tag)
-    console.log('descriptions', tagDescriptions)
     this.updateStore({tag, tagDescriptions})
   }
 
@@ -294,7 +293,7 @@ export class PostEditor extends React.Component {
   handleAddTag = tag => {
     if (this.editorType()) return
     tag = tag.replace(/^#/, '')
-    if (includes(specialTags, tag)) {
+    if (includes(this.props.defaultTags, tag)) {
       this.updateStore({tag})
     }
   }
@@ -337,11 +336,11 @@ export class PostEditor extends React.Component {
   render () {
     const {
       post, postEdit, dispatch, imagePending, saving, id,
-      editingTagDescriptions, creatingTagAndDescription
+      editingTagDescriptions, creatingTagAndDescription, defaultTags
     } = this.props
     const { currentUser } = this.context
     const { description, communities, tag, linkPreview } = postEdit
-    const selectableTags = uniq(compact([this.props.tag, tag].concat(specialTags)))
+    const selectableTags = uniq(compact([this.props.tag, tag].concat(defaultTags)))
     const { name, showDetails } = this.state
     const editorType = this.editorType()
     const shouldSelectTag = !includes(['event', 'project'], editorType)

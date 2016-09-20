@@ -41,12 +41,14 @@ export function cacheMiddleware (store) {
 }
 
 export const addDataToStoreMiddleware = store => next => action => {
-  const { type, payload, meta } = action
+  const { type, payload, error, meta } = action
   if (type.endsWith(_PENDING) || isPromise(payload)) return next(action)
 
-  if (meta && meta.addDataToStore) {
-    forEach(meta.addDataToStore, (fn, bucket) =>
-      store.dispatch(addDataToStore(bucket, fn(payload), type)))
+  if (!error && meta && meta.addDataToStore) {
+    forEach(meta.addDataToStore, (fn, bucket) => {
+      const data = fn(payload)
+      if (data) store.dispatch(addDataToStore(bucket, data, type))
+    })
   }
 
   return next(action)

@@ -201,7 +201,7 @@ export function fetchCommunity (id) {
   return {
     type: FETCH_COMMUNITY,
     payload: {api: true, path: `/noo/community/${id}`},
-    meta: {cache: {bucket: 'communities', id, requiredProp: 'settings'}}
+    meta: {cache: {bucket: 'communities', id, requiredProp: 'description'}}
   }
 }
 

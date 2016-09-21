@@ -378,9 +378,10 @@ export class CreateCommunityInvite extends React.Component {
         </div>
       </Modal>
 
-      {invitations && <Modal title='Sent invitations' standalone id='community-invitations'>
-        <InvitationList id={community.slug}/>
-      </Modal>}
+      {!isEmpty(invitations) &&
+        <Modal title='Sent invitations' standalone id='community-invitations'>
+          <InvitationList id={community.slug}/>
+        </Modal>}
     </ModalOnlyPage>
   }
 }

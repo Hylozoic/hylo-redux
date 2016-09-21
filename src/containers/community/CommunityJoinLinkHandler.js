@@ -2,7 +2,8 @@ import React from 'react'
 import { prefetch } from 'react-fetcher'
 import { connect } from 'react-redux'
 import { get } from 'lodash'
-import { JOIN_COMMUNITY_WITH_CODE, joinCommunityWithCode } from '../../actions'
+import { JOIN_COMMUNITY_WITH_CODE } from '../../actions'
+import { joinCommunityWithCode } from '../../actions/communities'
 import { navigateAfterJoin } from '../../util/navigation'
 const { func, object, string } = React.PropTypes
 

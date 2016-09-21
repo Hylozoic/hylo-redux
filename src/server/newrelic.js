@@ -9,6 +9,12 @@ export const setTransactionNameFromProps = (req, props) => {
   newrelic.setTransactionName(txPath)
 }
 
+export const setTransactionName = path => {
+  if (!newrelic) return
+  if (path !== '/') path = path.replace(/^\//, '')
+  newrelic.setTransactionName(path)
+}
+
 export const browserSnippet = () =>
   newrelic
     ? newrelic.getBrowserTimingHeader().replace(/<\/?script[^>]*>/g, '')

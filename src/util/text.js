@@ -5,6 +5,7 @@ import moment from 'moment-timezone'
 import { compact } from 'lodash'
 import csv from 'csv-parser'
 import { Readable } from 'stream'
+import { parse } from 'url'
 
 export const truncate = (text, length) =>
   truncHtml(text, length, {
@@ -161,4 +162,9 @@ export const emailsFromCSVString = csvString => {
       }
     })
   })
+}
+
+export const normalizeUrl = url => {
+  if (!url) return null
+  return parse(url.startsWith('http') ? url : 'http://' + url)
 }

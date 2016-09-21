@@ -20,7 +20,7 @@ const state = {
       expanded: true,
       name: 'hello!',
       description: 'and welcome',
-      communities: ['f']
+      community_ids: ['f']
     }
   },
   typeaheadMatches: {},
@@ -96,7 +96,7 @@ describe('PostEditor', () => {
 
   describe('with no community selected', () => {
     beforeEach(() => {
-      render(set(cloneDeep(state), 'postEdits.foo.communities', []), post)
+      render(set(cloneDeep(state), 'postEdits.foo.community_ids', []), post)
     })
 
     it('fails validation', () => {

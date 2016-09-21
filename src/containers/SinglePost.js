@@ -4,10 +4,9 @@ import { prefetch } from 'react-fetcher'
 import { connect } from 'react-redux'
 import { get, includes } from 'lodash'
 import { pick } from 'lodash/fp'
-import {
-  FETCH_POST, fetchComments, fetchPost, navigate,
-  setMetaTags
-} from '../actions'
+import { FETCH_POST, navigate, setMetaTags } from '../actions'
+import { fetchComments } from '../actions/comments'
+import { fetchPost } from '../actions/posts'
 import { saveCurrentCommunityId } from '../actions/util'
 import { ogMetaTags } from '../util'
 import A from '../components/A'
@@ -19,7 +18,7 @@ import CoverImagePage from '../components/CoverImagePage'
 import EventPost from '../components/EventPost'
 import ProjectPost from '../components/ProjectPost'
 import { getCurrentCommunity } from '../models/community'
-import { getComments, getCommunities, getPost } from '../models/post'
+import { denormalizedPost, getComments, getPost } from '../models/post'
 import { fetch, ConnectedPostList } from './ConnectedPostList'
 const { array, bool, object, string, func } = React.PropTypes
 
@@ -35,11 +34,9 @@ const showTaggedPosts = post =>
 @connect((state, { params: { id } }) => {
   const post = getPost(id, state)
   return {
-    post,
+    post: post ? denormalizedPost(post, state) : null,
     community: getCurrentCommunity(state),
-    communities: getCommunities(post, state),
     comments: getComments(post, state),
-    currentUser: state.people.current,
     editing: !!state.postEdits[id],
     error: findError(state.errors, FETCH_POST, 'posts', id)
   }
@@ -56,7 +53,6 @@ export default class SinglePost extends React.Component {
 
   static childContextTypes = {
     community: object,
-    communities: array,
     post: object,
     comments: array
   }
@@ -67,7 +63,7 @@ export default class SinglePost extends React.Component {
   }
 
   getChildContext () {
-    return pick(['community', 'post', 'comments', 'communities'], this.props)
+    return pick(['community', 'post', 'comments'], this.props)
   }
 
   render () {

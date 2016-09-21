@@ -11,11 +11,24 @@ import { showTagPopover, hideTagPopover, fetchTagSummary, navigate } from '../ac
 import { followTag } from '../actions/tags'
 const { string, object, func, array, number, bool } = React.PropTypes
 
+let canceledPopover
+
 export const handleMouseOver = dispatch => event => {
   var node = event.target
+
   if (node.nodeName.toLowerCase() === 'a' && node.getAttribute('class') === 'hashtag') {
+    canceledPopover = false
+
+    const cancel = () => {
+      canceledPopover = true
+      node.removeEventListener('mouseleave', cancel)
+    }
+    node.addEventListener('mouseleave', cancel)
+
     const { tagName, slug } = tagUrlComponents(node.getAttribute('href'))
-    dispatch(showTagPopover(tagName, slug, node))
+    setTimeout(() => {
+      if (!canceledPopover) dispatch(showTagPopover(tagName, slug, node))
+    }, 500)
   }
 }
 
@@ -117,10 +130,10 @@ export default class TagPopover extends React.Component {
         </div>)}
         <div className='footer'>
           <a onClick={toggleFollow}>{followed ? 'Unf' : 'F'}ollow Topic</a>
-          {followerCount && <span>
+          {followerCount > 0 && <span>
             &nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;{followerCount} following
           </span>}
-          {postCount && <span>
+          {postCount > 0 && <span>
             &nbsp;&nbsp;&nbsp;{nounCount(postCount, 'post')}
           </span>}
         </div>

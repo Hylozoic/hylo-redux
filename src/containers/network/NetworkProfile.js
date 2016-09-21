@@ -4,7 +4,8 @@ import { connect } from 'react-redux'
 import { prefetch } from 'react-fetcher'
 import { fetchNetwork } from '../../actions/network'
 import { get } from 'lodash/fp'
-import { setCurrentNetworkId, fetchCommunitiesForNetworkNav } from '../../actions'
+import { setCurrentNetworkId } from '../../actions'
+import { fetchCommunitiesForNetworkNav } from '../../actions/communities'
 const { func, object } = React.PropTypes
 
 @prefetch(({ store, dispatch, params: { id } }) =>

@@ -1,12 +1,13 @@
 import React from 'react'
 import { connect } from 'react-redux'
-import { Header, CommentSection, presentDescription } from './Post'
+import { Header, presentDescription } from './Post'
+import CommentSection from './CommentSection'
 import decode from 'ent/decode'
 import { textLength, truncate } from '../util/text'
 import { isEmpty } from 'lodash'
 import { find, some } from 'lodash/fp'
 import { same } from '../models'
-import { getComments, getPost, imageUrl } from '../models/post'
+import { denormalizedPost, getComments, getPost, imageUrl } from '../models/post'
 import { getCurrentCommunity } from '../models/community'
 import Icon from './Icon'
 import Post from './Post'
@@ -16,7 +17,8 @@ import Avatar from './Avatar'
 import LinkedPersonSentence from './LinkedPersonSentence'
 import A from './A'
 import { ClickCatchingSpan } from './ClickCatcher'
-import { fetchPost, followPost, navigate } from '../actions'
+import { navigate } from '../actions'
+import { fetchPost, followPost } from '../actions/posts'
 import moment from 'moment'
 const { array, bool, func, object } = React.PropTypes
 
@@ -192,7 +194,8 @@ export const ProjectPostCard = connect(
   (state, { post }) => ({
     comments: getComments(post, state),
     community: getCurrentCommunity(state),
-    isMobile: state.isMobile
+    isMobile: state.isMobile,
+    post: denormalizedPost(post, state)
   })
 )(({ post, community, comments, dispatch, isMobile }) => {
   const { name, user, tag, end_time, id } = post

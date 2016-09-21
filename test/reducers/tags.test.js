@@ -152,7 +152,8 @@ describe('tagsByCommunity', () => {
         foo: {name: 'foo', otherStuff: {foo: 'bar'}, followed: true}
       },
       wow: {
-        foo: {id: 7, name: 'foo'},
+        foo: {id: 7, name: 'foo', followed: true},
+        bar: {id: 8, name: 'bar', followed: true},
         bip: {name: 'bip'}
       },
       zoop: {
@@ -167,7 +168,8 @@ describe('tagsByCommunity', () => {
       },
       wow: {
         foo: {id: 7, name: 'foo', otherStuff: {yep: 'that'}, followed: true},
-        zap: {name: 'zap', new_post_count: 11, followed: true}
+        zap: {name: 'zap', new_post_count: 11, followed: true},
+        bip: {name: 'bip'} // this one isn't removed because it's not followed
       },
       zoop: {
         bop: {name: 'bop'}

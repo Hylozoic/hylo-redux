@@ -1,8 +1,6 @@
-import invariant from 'invariant'
-import qs from 'querystring'
 import { push } from 'react-router-redux'
 import { cleanAndStringify } from '../util/caching'
-import { cloneDeep, pick } from 'lodash'
+import { get } from 'lodash/fp'
 
 export const _PENDING = '_PENDING'
 export const ADD_COMMUNITY_MODERATOR = 'ADD_COMMUNITY_MODERATOR'
@@ -17,6 +15,8 @@ export const CHANGE_EVENT_RESPONSE_PENDING = CHANGE_EVENT_RESPONSE + _PENDING
 export const CHECK_FRESHNESS_POSTS = 'CHECK_FRESHNESS_POSTS'
 export const CLEAR_CACHE = 'CLEAR_CACHE'
 export const CLOSE_MODAL = 'CLOSE_MODAL'
+export const COMPLETE_POST = 'COMPLETE_POST'
+export const COMPLETE_POST_PENDING = COMPLETE_POST + _PENDING
 export const CREATE_COMMENT = 'CREATE_COMMENT'
 export const CREATE_COMMUNITY = 'CREATE_COMMUNITY'
 export const CREATE_POST = 'CREATE_POST'
@@ -50,6 +50,7 @@ export const FETCH_TAGS = 'FETCH_TAGS'
 export const FETCH_TAG_SUMMARY = 'FETCH_TAG_SUMMARY'
 export const FETCH_THANKS = 'FETCH_THANKS'
 export const FOLLOW_POST = 'FOLLOW_POST'
+export const FOLLOW_POST_PENDING = FOLLOW_POST + _PENDING
 export const FOLLOW_TAG = 'FOLLOW_TAG'
 export const FOLLOW_TAG_PENDING = FOLLOW_TAG + _PENDING
 export const HIDE_TAG_POPOVER = 'HIDE_TAG_POPOVER'
@@ -177,7 +178,11 @@ export function fetchPerson (id) {
     type: FETCH_PERSON,
     payload: {api: true, path: `/noo/user/${id}`},
     meta: {
-      cache: {bucket: 'people', id, requiredProp: 'grouped_post_count'}
+      cache: {bucket: 'people', id, requiredProp: 'grouped_post_count'},
+      addDataToStore: {
+        people: get('people'),
+        communities: get('communities')
+      }
     }
   }
 }
@@ -193,61 +198,8 @@ export function fetchCurrentUser (refresh) {
   }
 }
 
-export function fetchCommunity (id) {
-  return {
-    type: FETCH_COMMUNITY,
-    payload: {api: true, path: `/noo/community/${id}`},
-    meta: {cache: {bucket: 'communities', id, requiredProp: 'settings'}}
-  }
-}
-
-export function fetchCommunitySettings (id) {
-  return {
-    type: FETCH_COMMUNITY_SETTINGS,
-    payload: {api: true, path: `/noo/community/${id}/settings`},
-    meta: {cache: {bucket: 'communities', id, requiredProp: 'beta_access_code'}}
-  }
-}
-
-export function fetchCommunityModerators (id) {
-  return {
-    type: FETCH_COMMUNITY_MODERATORS,
-    payload: {api: true, path: `/noo/community/${id}/moderators`},
-    meta: {cache: {bucket: 'communities', id, requiredProp: 'moderators'}}
-  }
-}
-
 export function navigate (path) {
   return push(path)
-}
-
-export function fetchComments (postId, opts = {}) {
-  // these are ignored since the comment API doesn't do pagination yet
-  let limit = opts.limit || 1000
-  let offset = opts.offset || 0
-
-  return {
-    type: FETCH_COMMENTS,
-    payload: {api: true, path: `/noo/post/${postId}/comments`},
-    meta: {
-      id: postId,
-      subject: 'post',
-      cache: {id: postId, bucket: 'commentsByPost', limit, offset, array: true}
-    }
-  }
-}
-
-export function appendComment (postId, comment) {
-  return {type: APPEND_COMMENT, payload: comment, meta: {id: postId}}
-}
-
-export function createComment (postId, text, tagDescriptions) {
-  const params = {text, tagDescriptions}
-  return {
-    type: CREATE_COMMENT,
-    payload: {api: true, path: `/noo/post/${postId}/comment`, params, method: 'POST'},
-    meta: {id: postId}
-  }
 }
 
 export function typeahead (text, id, params) {
@@ -262,81 +214,10 @@ export function typeahead (text, id, params) {
   }
 }
 
-export function updatePostEditor (payload, id) {
-  return {
-    type: UPDATE_POST_EDITOR,
-    payload,
-    meta: {id}
-  }
-}
-
-// id refers to the id of the editing context, e.g. 'new-event'
-export function createPost (id, params) {
-  return {
-    type: CREATE_POST,
-    payload: {api: true, params, path: '/noo/post', method: 'POST'},
-    meta: {id}
-  }
-}
-
 export function clearCache (bucket, id) {
   return {
     type: CLEAR_CACHE,
     payload: {bucket, id}
-  }
-}
-
-export function fetchPost (id) {
-  let querystring = cleanAndStringify({comments: 1, votes: 1, children: 1})
-
-  return {
-    type: FETCH_POST,
-    payload: {api: true, path: `/noo/post/${id}?${querystring}`},
-    meta: {cache: {id, bucket: 'posts', requiredProp: 'children'}}
-  }
-}
-
-export function startPostEdit (post) {
-  let fields = [
-    'id', 'name', 'type', 'description', 'location', 'communities', 'public',
-    'media', 'start_time', 'end_time', 'tag', 'children', 'linkPreview'
-  ]
-  let payload = cloneDeep(pick(post, fields))
-  return {type: START_POST_EDIT, payload}
-}
-
-export function cancelPostEdit (id) {
-  return {type: CANCEL_POST_EDIT, meta: {id}}
-}
-
-export function updatePost (id, params) {
-  return {
-    type: UPDATE_POST,
-    payload: {api: true, params, path: `/noo/post/${id}`, method: 'POST'},
-    meta: {id, params}
-  }
-}
-
-export function removeImage (subject, id) {
-  return {
-    type: REMOVE_IMAGE,
-    meta: {subject, id}
-  }
-}
-
-export function removeDoc (payload, id) {
-  return {
-    type: REMOVE_DOC,
-    payload,
-    meta: {id}
-  }
-}
-
-export function changeEventResponse (id, response, user) {
-  return {
-    type: CHANGE_EVENT_RESPONSE,
-    payload: {api: true, params: {response}, path: `/noo/post/${id}/rsvp`, method: 'POST'},
-    meta: {id, response, user}
   }
 }
 
@@ -352,90 +233,11 @@ export function updateUserSettings (id, params) {
   }
 }
 
-export function leaveCommunity (communityId) {
-  return {
-    type: LEAVE_COMMUNITY,
-    payload: {api: true, path: `/noo/membership/${communityId}`, method: 'DELETE'},
-    meta: {communityId, optimistic: true}
-  }
-}
-
-export function updateCommunitySettings (id, params) {
-  invariant(params.slug, 'must include slug in params')
-  if (params.leader) params.leader_id = params.leader.id
-  return {
-    type: UPDATE_COMMUNITY_SETTINGS,
-    payload: {api: true, params, path: `/noo/community/${id}`, method: 'POST'},
-    meta: {slug: params.slug, params, optimistic: true}
-  }
-}
-
 export function updateMembershipSettings (communityId, params) {
   return {
     type: UPDATE_MEMBERSHIP_SETTINGS,
     payload: {api: true, params, path: `/noo/membership/${communityId}`, method: 'POST'},
     meta: {communityId, params, optimistic: true}
-  }
-}
-
-export function addCommunityModerator (community, moderator) {
-  return {
-    type: ADD_COMMUNITY_MODERATOR,
-    payload: {api: true, params: {userId: moderator.id}, path: `/noo/community/${community.id}/moderators`, method: 'POST'},
-    meta: {slug: community.slug, moderator, optimistic: true}
-  }
-}
-
-export function removeCommunityModerator (community, moderatorId) {
-  return {
-    type: REMOVE_COMMUNITY_MODERATOR,
-    payload: {api: true, path: `/noo/community/${community.id}/moderator/${moderatorId}`, method: 'DELETE'},
-    meta: {slug: community.slug, moderatorId, optimistic: true}
-  }
-}
-
-export function removeCommunityMember (community, userId, cacheId) {
-  return {
-    type: REMOVE_COMMUNITY_MEMBER,
-    payload: {api: true, path: `/noo/community/${community.id}/member/${userId}`, method: 'DELETE'},
-    meta: {optimistic: true, slug: community.slug, userId, cacheId}
-  }
-}
-
-export function validateCommunityAttribute (key, value, constraint) {
-  return {
-    type: VALIDATE_COMMUNITY_ATTRIBUTE,
-    payload: {api: true, params: {column: key, value, constraint}, path: '/noo/community/validate', method: 'POST'},
-    meta: {key}
-  }
-}
-
-export function resetCommunityValidation (key) {
-  return {
-    type: RESET_COMMUNITY_VALIDATION,
-    meta: {key}
-  }
-}
-
-export function updateCommunityEditor (subtree, changes) {
-  return {
-    type: UPDATE_COMMUNITY_EDITOR,
-    payload: changes,
-    meta: {subtree}
-  }
-}
-
-export function createCommunity (params) {
-  return {
-    type: CREATE_COMMUNITY,
-    payload: {api: true, params, path: '/noo/community', method: 'POST'}
-  }
-}
-
-export function joinCommunityWithCode (code, tagName) {
-  return {
-    type: JOIN_COMMUNITY_WITH_CODE,
-    payload: {api: true, params: {code, tagName}, path: '/noo/community/code', method: 'POST'}
   }
 }
 
@@ -476,14 +278,6 @@ export function markAllActivitiesRead (communityId, activityIds) {
   }
 }
 
-export function thank (commentId, currentUser) {
-  return {
-    type: THANK,
-    payload: {api: true, params: {unread: false}, path: `/noo/comment/${commentId}/thank`, method: 'POST'},
-    meta: {commentId, person: pick(currentUser, 'id', 'name', 'avatar_url')}
-  }
-}
-
 export function setMetaTags (metaTags) {
   return {
     type: SET_META_TAGS,
@@ -498,14 +292,6 @@ export function resetError (type) {
   }
 }
 
-export function fetchCommunityForInvitation (token) {
-  return {
-    type: FETCH_COMMUNITY_FOR_INVITATION,
-    payload: {api: true, path: `/noo/invitation/${token}`},
-    meta: {token}
-  }
-}
-
 export function useInvitation (token) {
   return {
     type: USE_INVITATION,
@@ -517,8 +303,17 @@ export function useInvitation (token) {
 export function fetchInvitations (communityId, offset = 0, reset) {
   return {
     type: FETCH_INVITATIONS,
-    payload: {api: true, path: `/noo/community/${communityId}/invitations?offset=${offset}`},
-    meta: {communityId, reset}
+    payload: {
+      api: true,
+      path: `/noo/community/${communityId}/invitations?offset=${offset}`
+    },
+    meta: {
+      communityId,
+      reset,
+      cache: {
+        bucket: 'invitations', id: communityId, array: true, offset, limit: 20
+      }
+    }
   }
 }
 
@@ -551,14 +346,6 @@ export function sendCommunityTagInvitation (communityId, tagName, params) {
   }
 }
 
-export function voteOnPost (post, currentUser) {
-  return {
-    type: VOTE_ON_POST,
-    payload: {api: true, path: `/noo/post/${post.id}/vote`, method: 'POST'},
-    meta: {id: post.id, optimistic: true, currentUser: pick(currentUser, 'id', 'name', 'avatar_url')}
-  }
-}
-
 export function notify (text, opts) {
   return {
     type: NOTIFY,
@@ -579,14 +366,6 @@ export function removeNotification (id) {
   }
 }
 
-export function removePost (id) {
-  return {
-    type: REMOVE_POST,
-    payload: {api: true, path: `/noo/post/${id}`, method: 'DELETE'},
-    meta: {id}
-  }
-}
-
 export function search (opts) {
   let { limit, offset, type, q, cacheId } = opts
   if (!offset) offset = 0
@@ -595,7 +374,13 @@ export function search (opts) {
   return {
     type: SEARCH,
     payload: {api: true, path: `/noo/search/fulltext?${querystring}`},
-    meta: {cache}
+    meta: {
+      cache,
+      addDataToStore: {
+        communities: get('communities'),
+        people: get('people')
+      }
+    }
   }
 }
 
@@ -605,14 +390,6 @@ export function fetchLiveStatus (communityId, slug) {
     type: FETCH_LIVE_STATUS,
     payload: {api: true, path},
     meta: {slug}
-  }
-}
-
-export function followPost (id, person) {
-  return {
-    type: FOLLOW_POST,
-    payload: {api: true, path: `/noo/post/${id}/follow`, method: 'POST'},
-    meta: {id, person: pick(person, 'id', 'name', 'avatar_url')}
   }
 }
 
@@ -637,14 +414,6 @@ export function fetchTag (tagName, communityId) {
 
 export function setMobileDevice (enabled = true) {
   return {type: SET_MOBILE_DEVICE, payload: enabled}
-}
-
-export function removeComment (id) {
-  return {
-    type: REMOVE_COMMENT,
-    payload: {api: true, path: `/noo/comment/${id}`, method: 'DELETE'},
-    meta: {id}
-  }
 }
 
 export function cancelTagDescriptionEdit () {
@@ -685,48 +454,8 @@ export function createTagInPostEditor () {
   }
 }
 
-export function updateCommentEditor (id, text, newComment) {
-  return {
-    type: UPDATE_COMMENT_EDITOR,
-    payload: {id, text, bucket: newComment ? 'new' : 'edit'}
-  }
-}
-
-export function pinPost (slug, id) {
-  return {
-    type: PIN_POST,
-    payload: {api: true, path: `/noo/community/${slug}/post/${id}/pin`, method: 'POST'},
-    meta: {slug, id}
-  }
-}
-
-export function fetchLinkPreview (url) {
-  const q = qs.stringify({url})
-  return {
-    type: FETCH_LINK_PREVIEW,
-    payload: {api: true, path: `/noo/link-preview?${q}`}
-  }
-}
-
-export function fetchCommunitiesForNetworkNav (networkId) {
-  return {
-    type: FETCH_COMMUNITIES_FOR_NETWORK_NAV,
-    payload: {api: true, path: `/noo/network/${networkId}/communitiesForNav`},
-    meta: {networkId}
-  }
-}
-
 export function showExpandedPost (id, commentId) {
   return {type: SHOW_EXPANDED_POST, payload: {id, commentId}}
-}
-
-export function updateComment (commentId, text, tagDescriptions) {
-  const params = {text, tagDescriptions}
-  return {
-    type: UPDATE_COMMENT,
-    payload: {api: true, path: `/noo/comment/${commentId}`, params, method: 'POST'},
-    meta: {id: commentId, text, optimistic: true}
-  }
 }
 
 export function registerTooltip (id, index) {
@@ -737,11 +466,11 @@ export function unregisterTooltip (id) {
   return {type: UNREGISTER_TOOLTIP, payload: {id}}
 }
 
-export function addDataToStore (bucket, payload) {
+export function addDataToStore (bucket, payload, fromType) {
   return {
     type: ADD_DATA_TO_STORE,
     payload,
-    meta: {bucket}
+    meta: {bucket, fromType}
   }
 }
 

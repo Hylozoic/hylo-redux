@@ -3,13 +3,10 @@ import { connect } from 'react-redux'
 const { func, bool, string } = React.PropTypes
 import { debounce, get, isEmpty } from 'lodash'
 import { navigateAfterJoin } from '../../util/navigation'
+import { JOIN_COMMUNITY_WITH_CODE, resetError } from '../../actions'
 import {
-  JOIN_COMMUNITY_WITH_CODE,
-  resetError,
-  joinCommunityWithCode,
-  resetCommunityValidation,
-  validateCommunityAttribute }
-from '../../actions'
+  joinCommunityWithCode, resetCommunityValidation, validateCommunityAttribute
+} from '../../actions/communities'
 import cx from 'classnames'
 
 @connect(({communityValidation, errors}) => {

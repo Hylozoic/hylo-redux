@@ -1,3 +1,7 @@
+// we have a scrolling pane inside a fixed container here, rather than a single
+// scrolling absolutely-positioned div, so that the modal can scroll
+// independently of the content on the main page, while preserving the scroll
+// position of the main page
 #top-level-modal-wrapper {
   z-index: 50;
   position: fixed;
@@ -7,9 +11,16 @@
   left: 0;
   overflow-y: scroll;
 
-  .modal {
+  .scrolling-backdrop {
     position: absolute;
     top: 0;
+    width: 100vw;
+    z-index: 3;
+    min-height: 100vh;
+    background-color: rgba(0, 0, 0, 0.55);
+  }
+
+  .modal {
     max-width: @main-column-width;
     margin: 10vh auto;
   }
@@ -36,6 +47,10 @@
 .modal-input-row() {
   .modal-row;
   border-bottom: 1px solid transparent;
+
+  textarea {
+    padding: 0;
+  }
 
   &, label {
     cursor: text;
@@ -209,24 +224,24 @@
   margin-bottom: 25vh !important;
 }
 
+.modal-only-page-top-level-content {
+  .non-mobile({
+    margin: 0 auto;
+    width: @main-column-width;
+  });
+}
+
 .modal-only-page {
   background-color: @damian-green;
   min-height: 100vh;
 
   .modal {
     box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.04);
-
-    .non-mobile({
-      margin: 0 auto;
-      width: @main-column-width;
-    });
+    .modal-only-page-top-level-content;
   }
 
   .modal-topper {
-    .non-mobile({
-      margin: 0 auto;
-      width: @main-column-width;
-    });
+    .modal-only-page-top-level-content;
 
     padding: 0 25px 25px;
     color: white;
@@ -249,109 +264,15 @@
       .regular;
     }
   }
-}
 
-.create-community {
-  padding-top: 50px;
-  padding-bottom: 50px;
-  .mobile({
-    padding-top: 25px;
-    padding-bottom: 25px;
-  });
-
-  textarea {
-    width: 100%;
-    border: none;
-    resize: none;
-    background-color: @faint-gray-bg;
-  }
-
-  .active {
-    textarea {
-      background-color: white;
+  .after-modal {
+    .modal-only-page-top-level-content;
+    margin-top: 20px !important;
+    text-align: right;
+    &, a {
+      color: white;
     }
   }
-
-  a.button {
-    .green-button;
-  }
-
-  .toggle-section {
-    padding: 15px 0px 15px 30px;
-    a {
-      color: @damian-green;
-      &:hover {
-        text-decoration: none;
-      }
-    }
-    font-size: 12px;
-    .icon {
-      margin-left: 5px;
-      font-size: 13px;
-      position: relative;
-      top: 2px;
-    }
-  }
-}
-
-.create-community-one {
-  .small-logo {
-    .image-div(40px);
-    display: inline-block;
-    vertical-align: middle;
-    margin-right: 10px;
-  }
-
-  .button.upload {
-    .round-button;
-    padding: 0 20px;
-    background-color: white;
-    border-color: @damian-green;
-    color: @damian-green;
-  }
-}
-
-.create-community-two {
-  input[type="file"] {
-    display: none
-  }
-
-  .csv-upload {
-    .help-text {
-      .meta;
-      display: inline-block;
-      width: 80%;
-    }
-
-    label.custom-file-upload {
-      .round-button;
-      line-height: 40px;
-      display: inline;
-      position: relative;
-      top: -20px;
-      cursor: pointer;
-      float: right;
-      padding: 0 20px;
-      background-color: white;
-      border: 1px solid @post-border;
-      color: @damian-green;
-    }
-  }
-
-  .emails {
-    textarea {
-      height: 100px;
-    }
-  }
-
-  .skip {
-    margin-left: 10px;
-    font-size: 12px;
-    color: @gray-text;
-  }
-}
-
-.create-community-three {
 }
 
 #skills-prompt {

@@ -10,6 +10,7 @@ if (isServer && environment === 'development') {
 export const filepickerKey = process.env.FILEPICKER_API_KEY
 export const logLevel = process.env.LOG_LEVEL
 export const upstreamHost = process.env.UPSTREAM_HOST
+export const socketHost = process.env.SOCKET_HOST
 export const host = process.env.HOST
 export const slack = {
   clientId: process.env.SLACK_APP_CLIENT_ID

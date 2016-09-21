@@ -50,8 +50,9 @@ export const tagsByCommunity = (state = {}, action) => {
   const mergeLeftNavTags = (state, payload) => {
     return toPairs(payload).reduce((m, [ slug, tags ]) => {
       const newTags = tags.map(f => ({...f, followed: true}))
-      const isInNewTags = (v, k) => some(t => t.name === k, newTags)
-      const existingTags = pickBy(isInNewTags, m[slug] || {})
+      const isInNewTagsOrNotFollowed = (v, k) =>
+        some(t => t.name === k, newTags) || !v.followed
+      const existingTags = pickBy(isInNewTagsOrNotFollowed, m[slug] || {})
       const mergedTags = mergeList(existingTags, newTags, 'name')
       return {...m, [slug]: mergedTags}
     }, state)

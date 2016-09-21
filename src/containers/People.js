@@ -2,7 +2,8 @@ import React from 'react'
 import { prefetch } from 'react-fetcher'
 import { connect } from 'react-redux'
 import { debounce, includes } from 'lodash'
-import { FETCH_PEOPLE, removeCommunityMember } from '../actions'
+import { FETCH_PEOPLE } from '../actions'
+import { removeCommunityMember } from '../actions/communities'
 import { fetchPeople } from '../actions/fetchPeople'
 import { createCacheId, connectedListProps, fetchWithCache, refetch } from '../util/caching'
 import Icon from '../components/Icon'
@@ -112,7 +113,7 @@ export default class People extends React.Component {
       </div>
       <div className='member-controls'>
         {total} member{total === 1 ? '' : 's'}
-        {canInvite(currentUser, community) && <A to={`/create/invite`}>
+        {canInvite(currentUser, community) && <A to={`/invite`}>
           Invite members
         </A>}
       </div>

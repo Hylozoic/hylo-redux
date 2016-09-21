@@ -117,11 +117,14 @@ export default class Dropdown extends React.Component {
       onMouseLeave: () => hoverOpened && this.toggle()
     }
 
-    const items = triangle
-      ? [<li className='triangle'
-        style={{left: findTriangleLeftPos(isMobile, this.refs.parent)}}/>]
-        .concat(children)
-      : children
+    let items
+    if (triangle) {
+      const triangleLi = <li className='triangle' key='triangle'
+        style={{left: findTriangleLeftPos(isMobile, this.refs.parent)}}/>
+      items = [triangleLi].concat(children)
+    } else {
+      items = children
+    }
 
     return <div {...{id, className, tabIndex}} ref='parent'
       onKeyDown={this.handleKeys}>

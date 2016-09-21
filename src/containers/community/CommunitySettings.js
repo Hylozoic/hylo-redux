@@ -3,20 +3,21 @@ import { connect } from 'react-redux'
 import { prefetch } from 'react-fetcher'
 import cx from 'classnames'
 const { object, func } = React.PropTypes
-import { find, get, isEmpty, reduce, set } from 'lodash'
+import { find, isEmpty, reduce, set } from 'lodash'
+import { get } from 'lodash/fp'
 import { markdown, sanitize } from 'hylo-utils/text'
+import { navigate } from '../../actions'
 import {
-  updateCommunitySettings,
+  addCommunityModerator,
   fetchCommunitySettings,
   fetchCommunityModerators,
-  addCommunityModerator,
   removeCommunityModerator,
   resetCommunityValidation,
-  validateCommunityAttribute,
-  navigate
-} from '../../actions'
+  updateCommunitySettings,
+  validateCommunityAttribute
+} from '../../actions/communities'
 import config from '../../config'
-const { upstreamHost } = config
+const { host } = config
 const slackClientId = config.slack.clientId
 import { avatarUploadSettings, bannerUploadSettings } from '../../models/community'
 import A from '../../components/A'
@@ -34,7 +35,7 @@ import { makeUrl } from '../../util/navigation'
 @connect((state, { params }) => ({
   community: state.communities[params.id],
   validation: state.communityValidation,
-  currentUser: get(state, 'people.current')
+  currentUser: get('people.current', state)
 }))
 export default class CommunitySettings extends React.Component {
 
@@ -157,7 +158,7 @@ export default class CommunitySettings extends React.Component {
   }
 
   toggle (path) {
-    this.update(path, !get(this.props.community, path))
+    this.update(path, !get(path, this.props.community))
   }
 
   toggleSection = (section, open) => {
@@ -206,25 +207,15 @@ export default class CommunitySettings extends React.Component {
   }
 
   render () {
-    let { community } = this.props
-    let { avatar_url, banner_url } = community
-    let { editing, edited, errors, expand } = this.state
-    let labelProps = {expand, toggle: this.toggleSection}
-    let joinUrl, slugNotUnique, addSlackUrl
-    let { is_admin } = this.props.currentUser
-    let slackerror = this.props.location.query.slackerror
-
-    if (expand.appearance) {
-      slugNotUnique = get(this.props.validation, 'slug.unique') === false
-    }
-
-    if (expand.access) {
-      joinUrl = communityJoinUrl(community)
-    }
-
-    if (expand.slack) {
-      addSlackUrl = upstreamHost + '/noo/community/' + community.id + '/settings/slack'
-    }
+    const { community } = this.props
+    const { avatar_url, banner_url } = community
+    const { editing, edited, errors, expand } = this.state
+    const labelProps = {expand, toggle: this.toggleSection}
+    const { is_admin } = this.props.currentUser
+    const slackerror = this.props.location.query.slackerror
+    const slugNotUnique = get('slug.unique', this.props.validation) === false
+    const joinUrl = communityJoinUrl(community)
+    const addSlackUrl = `${host}/noo/community/${community.id}/settings/slack`
 
     return <div className='form-sections' id='community-settings'>
       <SectionLabel name='appearance' {...labelProps}>Appearance</SectionLabel>
@@ -268,7 +259,7 @@ export default class CommunitySettings extends React.Component {
                     </div>
                 </form>
                 <p className='meta'>Warning: any links that refer to the old slug will no longer work.</p>
-                {!!get(errors, 'slug.empty') && <p className='help error'>Please fill in a slug.</p>}
+                {!!get('slug.empty', errors) && <p className='help error'>Please fill in a slug.</p>}
                 {slugNotUnique && <p className='help error'>This code cannot be used; please choose another.</p>}
                 <div className='buttons'>
                   <button type='button' onClick={() => this.cancelEdit('slug')}>Cancel</button>
@@ -442,23 +433,11 @@ export default class CommunitySettings extends React.Component {
         </div>
       </div>}
 
-      <SectionLabel name='email' {...labelProps}>Email</SectionLabel>
-      {expand.email && <div className='section email'>
-        <div className='section-item'>
-          <div className='half-column'>
-            <label>Send a weekly email inviting members to post?</label>
-            <p className='summary'>If this is checked, each week members will receive an email that they can reply to with their offers, requests and intentions.</p>
-          </div>
-          <div className='half-column right-align'>
-            <input type='checkbox' checked={community.settings.sends_email_prompts} onChange={() => this.toggle('settings.sends_email_prompts')}/>
-          </div>
-        </div>
-      </div>}
-
-      <SectionLabel name='slack' {...labelProps}>Send Updates to Slack</SectionLabel>
-      {expand.slack && <div className='section slack'>
+      <SectionLabel name='advanced' {...labelProps}>Advanced</SectionLabel>
+      {expand.advanced && <div className='section advanced'>
         <div className='section-item'>
           <div className='full-column'>
+            <label>Slack integration</label>
             {slackerror && <div className='alert alert-danger'>
               There was an error connecting this community to your Slack team.
             </div>}
@@ -467,7 +446,9 @@ export default class CommunitySettings extends React.Component {
                 Connect this community to a <a href='https://slack.com' target='_blank'>Slack</a> team and Hylo will notify a channel when there are new posts.
               </p>
               <a href={`https://slack.com/oauth/authorize?scope=incoming-webhook&client_id=${slackClientId}&redirect_uri=${addSlackUrl}`}>
-                <img alt='Add to Slack' height='40' width='139' src='https://platform.slack-edge.com/img/add_to_slack.png' srcSet='https://platform.slack-edge.com/img/add_to_slack.png 1x, https://platform.slack-edge.com/img/add_to_slack@2x.png 2x'/>
+                <img alt='Add to Slack' height='40' width='139'
+                  src='https://platform.slack-edge.com/img/add_to_slack.png'
+                  srcSet='https://platform.slack-edge.com/img/add_to_slack.png 1x, https://platform.slack-edge.com/img/add_to_slack@2x.png 2x'/>
               </a>
             </div>}
             {community.slack_hook_url && <div>
@@ -476,21 +457,44 @@ export default class CommunitySettings extends React.Component {
             </div>}
           </div>
         </div>
-      </div>}
-
-      <SectionLabel name='delete' {...labelProps}>Delete</SectionLabel>
-      {expand.delete && <div className='section delete'>
+        <div className='section-item'>
+          <div className='half-column'>
+            <label>Enable Events</label>
+            <p className='summary'>
+              Allow your members to create events (beta).
+            </p>
+          </div>
+          <div className='half-column right-align'>
+            <input type='checkbox' checked={!!get('events.enabled', community.settings)}
+              onChange={() => this.toggle('settings.events.enabled')}/>
+          </div>
+        </div>
+        <div className='section-item'>
+          <div className='half-column'>
+            <label>Enable Projects</label>
+            <p className='summary'>
+              Allow your members to create projects (beta).
+            </p>
+          </div>
+          <div className='half-column right-align'>
+            <input type='checkbox' checked={!!get('projects.enabled', community.settings)}
+              onChange={() => this.toggle('settings.projects.enabled')}/>
+          </div>
+        </div>
         <div className='section-item'>
           <div className='half-column'>
             <label>Delete this community</label>
-            <p className='summary'>This will delete the community, preventing users from joining, browsing or posting in this community. Existing posts will still be viewable on the "All Posts" page.</p>
+            <p className='summary'>
+              This will delete the community, preventing users from joining,
+              browsing or posting in this community. Existing posts will still
+              be viewable on the "All Posts" page.
+            </p>
           </div>
           <div className='half-column right-align'>
             <button type='button' onClick={this.delete}>Delete</button>
           </div>
         </div>
       </div>}
-
     </div>
   }
 }

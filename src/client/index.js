@@ -12,7 +12,6 @@ import trackClickthrough from './clickthrough'
 import updateLocation from './updateLocation'
 import polyfills from './polyfills'
 import { init as initLazyLoader } from '../components/LazyLoader'
-import getSocket from './getSocket'
 
 const { history, store } = configureStore(window.INITIAL_STATE, {history: browserHistory})
 const routes = makeRoutes(store)
@@ -23,7 +22,6 @@ trackClickthrough()
 polyfills()
 initLazyLoader()
 history.listen(updateLocation({store, routes, history}))
-window.getSocket = getSocket
 
 const component = (
   <Provider store={store}>

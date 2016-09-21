@@ -15,7 +15,6 @@ import { setMobileDevice } from '../actions'
 import { getCurrentCommunity } from '../models/community'
 import { getCurrentNetwork } from '../models/network'
 const { array, bool, func, object } = React.PropTypes
-import config from './../config'
 
 @prefetch(({ store, dispatch }) => {
   const { isMobile, people } = store.getState()
@@ -58,8 +57,7 @@ export default class App extends React.Component {
     dispatch: func,
     currentUser: object,
     isMobile: bool,
-    location: object,
-    getSocket: func
+    location: object
   }
 
   constructor (props) {
@@ -69,14 +67,7 @@ export default class App extends React.Component {
 
   getChildContext () {
     const { dispatch, currentUser, isMobile, location } = this.props
-    return {dispatch, currentUser, isMobile, location, getSocket: this.getSocket}
-  }
-
-  getSocket = () => {
-    // the socket is set up this way so that the sails.io.js library is only
-    // added to the client bundle. otherwise it causes the client-side tests to
-    // break
-    return window.getSocket()
+    return {dispatch, currentUser, isMobile, location}
   }
 
   componentDidMount () {

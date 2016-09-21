@@ -1,6 +1,6 @@
 import {
   cloneDeep, filter, get, includes, isArray, isEqual, mergeWith, omit, set, some,
-  transform, uniqBy
+  transform, uniqBy, without
 } from 'lodash'
 import { CLEAR_CACHE, SET_STATE } from '../actions'
 
@@ -124,3 +124,14 @@ export const composeReducers = (...reducers) => (state, action) =>
 
 export const handleSetState = (state = {}, { type, payload }) =>
   type === SET_STATE ? payload : state
+
+export const addOrRemovePersonId = (state, id, personId, attr) => {
+  const post = state[id]
+  const newIds = some(post[attr], id => id === personId)
+    ? without(post[attr], personId)
+    : (post[attr] || []).concat(personId)
+  return {
+    ...state,
+    [id]: {...post, [attr]: newIds}
+  }
+}

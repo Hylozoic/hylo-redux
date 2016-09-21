@@ -1,8 +1,6 @@
 import React from 'react'
-import {
-  difference, filter, first, includes, isEmpty, map, some, sortBy, values
-} from 'lodash'
-import { find, get } from 'lodash/fp'
+import { difference, first, includes, map, some, sortBy } from 'lodash'
+import { find, filter, get } from 'lodash/fp'
 const { array, bool, func, object, string } = React.PropTypes
 import cx from 'classnames'
 import cheerio from 'cheerio'
@@ -15,27 +13,26 @@ import { tagUrl } from '../routes'
 import A from './A'
 import Avatar from './Avatar'
 import Dropdown from './Dropdown'
+import Attachments from './Attachments'
 import { ClickCatchingSpan } from './ClickCatcher'
 import { handleMouseOver } from './TagPopover'
-import Comment from './Comment'
-import CommentForm from './CommentForm'
-import PeopleTyping from './PeopleTyping'
 import LazyLoader from './LazyLoader'
 import Icon from './Icon'
 import LinkedPersonSentence from './LinkedPersonSentence'
 import LinkPreview from './LinkPreview'
 import { connect } from 'react-redux'
 import { compose } from 'redux'
+import { navigate } from '../actions'
 import {
-  appendComment, followPost, navigate, removePost, startPostEdit, voteOnPost, pinPost
-} from '../actions'
+  completePost, followPost, removePost, startPostEdit, voteOnPost, pinPost
+} from '../actions/posts'
 import { same } from '../models'
-import { getComments, getCommunities, isPinned } from '../models/post'
+import { denormalizedPost, getComments, isPinned } from '../models/post'
 import { getCurrentCommunity } from '../models/community'
 import { canEditPost, canModerate } from '../models/currentUser'
 import { isMobile } from '../client/util'
-import { upstreamHost } from '../config'
 import decode from 'ent/decode'
+import CommentSection from './CommentSection'
 
 const spacer = <span>&nbsp; •&nbsp; </span>
 
@@ -45,7 +42,6 @@ export const presentDescription = (post, community, opts = {}) =>
 class Post extends React.Component {
   static propTypes = {
     post: object,
-    communities: array,
     community: object,
     comments: array,
     dispatch: func,
@@ -61,8 +57,8 @@ class Post extends React.Component {
   }
 
   render () {
-    const { post, communities, comments, expanded, onExpand, community } = this.props
-    const { tag, media, linkPreview } = post
+    const { post, comments, expanded, onExpand, community } = this.props
+    const { communities, tag, media, linkPreview } = post
     const image = find(m => m.type === 'image', media)
     const classes = cx('post', tag, {image, expanded})
     const title = linkifyHashtags(decode(sanitize(post.name || '')), get('slug', community))
@@ -87,22 +83,29 @@ export default compose(
   connect((state, { post }) => {
     return {
       comments: getComments(post, state),
-      communities: getCommunities(post, state),
-      community: getCurrentCommunity(state)
+      community: getCurrentCommunity(state),
+      post: denormalizedPost(post, state)
     }
   })
 )(Post)
 
 export const UndecoratedPost = Post // for testing
 
-export const Header = ({ communities }, { post, community }) => {
-  const { tag } = post
+export const Header = ({ communities }, { post, currentUser, dispatch }) => {
+  const { tag, fulfilled_at } = post
   const person = tag === 'welcome' ? post.relatedUsers[0] : post.user
   const createdAt = new Date(post.created_at)
+  const canEdit = canEditPost(currentUser, post)
+  const showCheckbox = post.tag === 'request' && (canEdit || fulfilled_at)
 
   return <div className='header'>
     <Menu/>
     <Avatar person={person}/>
+    {showCheckbox && <input type='checkbox'
+      className='completion-toggle'
+      checked={!!post.fulfilled_at}
+      onChange={() => canEdit && dispatch(completePost(post.id))}
+      readOnly={!canEdit}/>}
     {tag === 'welcome'
       ? <WelcomePostHeader communities={communities}/>
       : <div>
@@ -117,7 +120,7 @@ export const Header = ({ communities }, { post, community }) => {
         </div>}
   </div>
 }
-Header.contextTypes = {post: object, community: object}
+Header.contextTypes = {post: object, currentUser: object, dispatch: func}
 
 const Communities = ({ communities }, { community }) => {
   if (community) communities = sortBy(communities, c => c.id !== community.id)
@@ -127,9 +130,10 @@ const Communities = ({ communities }, { community }) => {
   const communityLink = community => <A to={`/c/${community.slug}`}>{community.name}</A>
   return <span className='communities'>
     &nbsp;in {communityLink(communities[0])}
+    {length > 1 && <span> + </span>}
     {length > 1 && <Dropdown className='post-communities-dropdown'
-      toggleChildren={<span> + {length - 1} other{length > 2 ? 's' : ''}</span>}>
-      {communities.map(c => <li key={c.id}>{communityLink(c)}</li>)}
+      toggleChildren={<span>{length - 1} other{length > 2 ? 's' : ''}</span>}>
+      {communities.slice(1).map(c => <li key={c.id}>{communityLink(c)}</li>)}
     </Dropdown>}
   </span>
 }
@@ -139,8 +143,8 @@ const getTags = text =>
   cheerio.load(text)('.hashtag').toArray().map(tag =>
     tag.children[0].data.replace(/^#/, ''))
 
-const extractTags = (shortDesc, fullDesc) => {
-  const tags = getTags(fullDesc)
+const extractTags = (shortDesc, fullDesc, omitTag) => {
+  const tags = filter(t => t !== omitTag, getTags(fullDesc))
   return tags.length === 0 ? [] : difference(tags, getTags(shortDesc))
 }
 
@@ -153,15 +157,17 @@ const HashtagLink = ({ tag, slug }, { dispatch }) => {
 HashtagLink.contextTypes = {dispatch: func}
 
 export const Details = ({ expanded, onExpand }, { post, community, dispatch }) => {
+  const truncatedSize = 300
   const { tag } = post
+  if (!community) community = post.communities[0]
   const slug = get('slug', community)
   let description = presentDescription(post, community)
   let extractedTags = []
-  const truncated = !expanded && textLength(description) > 200
+  const truncated = !expanded && textLength(description) > truncatedSize
   if (truncated) {
     const orig = description
-    description = truncate(description, 200)
-    extractedTags = extractTags(description, orig)
+    description = truncate(description, truncatedSize)
+    extractedTags = extractTags(description, orig, tag)
   }
   if (description) description = appendInP(description, '&nbsp;')
 
@@ -181,20 +187,6 @@ export const Details = ({ expanded, onExpand }, { post, community, dispatch }) =
   </div>
 }
 Details.contextTypes = {post: object, community: object, dispatch: func}
-
-const Attachments = (props, { post }) => {
-  const attachments = filter(post.media, m => m.type === 'gdoc')
-  if (isEmpty(attachments)) return <span/>
-
-  return <div className='post-section'>
-    {attachments.map((file, i) =>
-      <a key={i} className='attachment' href={file.url} target='_blank' title={file.name}>
-        <img src={file.thumbnail_url}/>
-        {truncate(file.name, 40).text}
-      </a>)}
-  </div>
-}
-Attachments.contextTypes = {post: object}
 
 const WelcomePostHeader = ({ communities }, { post }) => {
   let person = post.relatedUsers[0]
@@ -219,7 +211,7 @@ WelcomePostHeader.contextTypes = {post: object}
 
 export const Menu = (props, { dispatch, post, currentUser, community }) => {
   const canEdit = canEditPost(currentUser, post)
-  const following = some(post.followers, same('id', currentUser))
+  const following = some(post.follower_ids, id => id === get('id', currentUser))
   const pinned = isPinned(post, community)
   const edit = () => isMobile()
     ? dispatch(navigate(`/p/${post.id}/edit`))
@@ -249,100 +241,6 @@ export const Menu = (props, { dispatch, post, currentUser, community }) => {
   </Dropdown>
 }
 Menu.contextTypes = {post: object, currentUser: object, dispatch: func, community: object}
-
-export class CommentSection extends React.Component {
-  static propTypes = {
-    comments: array,
-    onExpand: func,
-    post: object,
-    expanded: bool
-  }
-
-  static contextTypes = {
-    community: object,
-    currentUser: object,
-    isProjectRequest: bool,
-    dispatch: func,
-    getSocket: func
-  }
-
-  constructor (props) {
-    super(props)
-    this.state = {
-      peopleTyping: {}
-    }
-  }
-
-  componentDidMount () {
-    const { post: { id }, expanded } = this.props
-    const { dispatch, getSocket } = this.context
-    if (expanded) {
-      if (!getSocket) return
-      this.socket = getSocket()
-      this.socket.post(`${upstreamHost}/noo/post/${id}/subscribe`)
-      this.socket.on('commentAdded', c => dispatch(appendComment(id, c)))
-      this.socket.on('userTyping', this.userTyping)
-    }
-  }
-
-  componentWillUnmount () {
-    const { post: { id }, expanded } = this.props
-    if (expanded && this.socket) {
-      this.socket.post(`${upstreamHost}/noo/post/${id}/unsubscribe`)
-      this.socket.off('commentAdded')
-      this.socket.off('userTyping')
-    }
-  }
-
-  userTyping = data => {
-    let newState = this.state
-    if (data.isTyping) {
-      newState.peopleTyping[data.userId] = data.userName
-    } else {
-      delete newState.peopleTyping[data.userId]
-    }
-    this.setState(newState)
-  }
-
-  startedTyping = () => {
-    const { post: { id } } = this.props
-    this.socket.post(`${upstreamHost}/noo/post/${id}/typing`, {isTyping: true})
-  }
-
-  stoppedTyping = () => {
-    const { post: { id } } = this.props
-    this.socket.post(`${upstreamHost}/noo/post/${id}/typing`, {isTyping: false})
-  }
-
-  render () {
-    let { post, comments, onExpand, expanded } = this.props
-    const truncate = !expanded
-    const { currentUser, community, isProjectRequest } = this.context
-    const placeholder = isProjectRequest ? 'How can you help?' : null
-    const peopleTyping = values(this.state.peopleTyping)
-
-    if (!comments) comments = []
-    comments = sortBy(comments, c => c.created_at)
-    if (truncate) comments = comments.slice(-3)
-
-    return <div className={cx('comments-section post-section', {empty: isEmpty(comments)})}>
-      {truncate && post.numComments > comments.length && <div className='comment show-all'>
-        <a onClick={() => onExpand()}>Show all {post.numComments} comments</a>
-      </div>}
-      {comments.map(c => <Comment comment={{...c, post_id: post.id}}
-        truncate={truncate}
-        expand={() => onExpand(c.id)}
-        community={community}
-        expanded={expanded}
-        key={c.id}/>)}
-      {peopleTyping.length > 0 && <PeopleTyping names={peopleTyping} showNames={false}/>}
-      {currentUser && <CommentForm startedTyping={this.startedTyping}
-        stoppedTyping={this.stoppedTyping}
-        postId={post.id}
-        {...{placeholder}}/>}
-    </div>
-  }
-}
 
 export const VoteButton = (props, { post, currentUser, dispatch }) => {
   let vote = () => dispatch(voteOnPost(post, currentUser))

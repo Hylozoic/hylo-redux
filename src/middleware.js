@@ -40,6 +40,20 @@ export function cacheMiddleware (store) {
   }
 }
 
+export const addDataToStoreMiddleware = store => next => action => {
+  const { type, payload, error, meta } = action
+  if (type.endsWith(_PENDING) || isPromise(payload)) return next(action)
+
+  if (!error && meta && meta.addDataToStore) {
+    forEach(meta.addDataToStore, (fn, bucket) => {
+      const data = fn(payload)
+      if (data) store.dispatch(addDataToStore(bucket, data, type))
+    })
+  }
+
+  return next(action)
+}
+
 export function apiMiddleware (req) {
   return store => next => action => {
     const { payload, meta } = action
@@ -49,16 +63,8 @@ export function apiMiddleware (req) {
     const cookie = req && req.headers.cookie
     let promise = fetchJSON(path, params, {method, cookie})
 
-    if (meta) {
-      if (meta.addDataToStore) {
-        promise = promise.then(payload => {
-          forEach(meta.addDataToStore, (fn, bucket) =>
-            store.dispatch(addDataToStore(bucket, fn(payload))))
-          return payload
-        })
-      }
-
-      if (meta.then) promise = promise.then(meta.then)
+    if (meta && meta.then) {
+      promise = promise.then(meta.then)
     }
 
     return next({...action, payload: promise})

@@ -2,9 +2,10 @@ import React from 'react'
 import { connect } from 'react-redux'
 import validator from 'validator'
 import {
-  closeModal, fetchCommunitySettings, updateTagInvitationEditor, sendCommunityTagInvitation,
+  closeModal, updateTagInvitationEditor, sendCommunityTagInvitation,
   SEND_COMMUNITY_TAG_INVITATION
 } from '../actions'
+import { fetchCommunitySettings } from '../actions/communities'
 import { Modal } from '../components/Modal'
 import ModalRow from '../components/ModalRow'
 import Avatar from '../components/Avatar'

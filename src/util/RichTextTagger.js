@@ -15,10 +15,20 @@ export const justCreatedAttribute = 'data-just-created'
 const nbsp = String.fromCharCode(160) // non-breaking space
 const triggerKeyCodes = [keyMap.HASH, keyMap.AT_SIGN]
 const triggers = ['#', '@']
-const template = keyCode =>
-  <a {...{[hashtagAttribute]: true, [justCreatedAttribute]: true}}>
-    {String.fromCharCode(keyCode)}
-  </a>
+
+const template = keyCode => {
+  const attrs = {
+    [hashtagAttribute]: true,
+    [justCreatedAttribute]: true,
+    spellCheck: false,
+    contentEditable: true,
+    autoComplete: false,
+    autoCorrect: false
+  }
+  // FIXME autoComplete and autoCorrect don't appear even though they are valid
+  // in React -- probably being stripped by tinymce?
+  return <a {...attrs}>{String.fromCharCode(keyCode)}</a>
+}
 
 const Mention = ({ person }) =>
   <a data-user-id={person.id} href={'/u/' + person.id}>

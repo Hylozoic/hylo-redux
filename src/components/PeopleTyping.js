@@ -11,8 +11,9 @@ export default class PeopleTyping extends React.Component {
     const { names, showNames } = this.props
     return <div className='typing'>
       <Chillipsis/>
-      {!showNames && names.length === 1 && <div>Someone is typing...</div>}
-      {showNames && names.length === 1 && <div>{names[0]} is typing...</div>}
+      {names.length === 1 && <div>
+        {showNames ? names[0] : 'Someone'} is typing...
+      </div>}
       {names.length > 1 && <div>Multiple people are typing...</div>}
     </div>
   }

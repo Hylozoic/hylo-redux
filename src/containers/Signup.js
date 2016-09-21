@@ -87,10 +87,13 @@ export default class Signup extends React.Component {
 
     const { actionError, location: { query }, community } = this.props
     const loginUrl = makeUrl('/login', pick(query, 'next', 'action', 'id', 'token'))
+    const subtitle = community ? null
+      : `If you're trying to join an existing community, please use the special
+        invitation link that you received from your community manager.`
 
     return <ModalOnlyPage id='signup' className='login-signup'>
       <CommunityHeader community={community}/>
-      <Modal title='Create your account.' standalone>
+      <Modal title='Create your account.' subtitle={subtitle} standalone>
         <form onSubmit={this.submit}>
           {actionError && <div className='alert alert-danger'>{actionError}</div>}
           {error && <div className='alert alert-danger'>{error}</div>}

@@ -1,27 +1,28 @@
 import {
   CHANGE_EVENT_RESPONSE_PENDING,
+  COMPLETE_POST_PENDING,
   CREATE_COMMENT,
   CREATE_POST,
   FETCH_POST,
   FETCH_POSTS,
   FETCH_PERSON,
-  FOLLOW_POST,
+  FOLLOW_POST_PENDING,
   PIN_POST_PENDING,
   REMOVE_POST,
   UPDATE_POST,
   VOTE_ON_POST_PENDING
 } from '../actions'
-import { compact, omit, find, some, without, includes, map, filter } from 'lodash'
+import { compact, omit, find, some, without, map } from 'lodash'
 import { get, isNull, omitBy } from 'lodash/fp'
-import { cloneSet, mergeList } from './util'
-import { same } from '../models'
+import { addOrRemovePersonId, mergeList } from './util'
 
 const normalize = (post) => omitBy(isNull, {
   ...post,
-  children: post.children ? map(post.children, c => c.id) : null,
-  communities: map(post.communities, c => c.id),
+  children: post.children ? map(post.children, c => c.id) : null, // FIXME should be child_ids
   numComments: post.num_comments || post.numComments,
-  num_comments: null
+  num_comments: null,
+  communities: null,
+  people: null
 })
 
 const normalizeUpdate = (post, params, payload) => {
@@ -52,28 +53,11 @@ const changeEventResponse = (post, response, user) => {
   return {...post, ...{ responders }}
 }
 
-const addOrRemoveFollower = (state, id, person) => {
-  let post = state[id]
-  let follower = find(post.followers, same('id', person))
-  let newFollowers = follower
-    ? without(post.followers, follower)
-    : (post.followers || []).concat(person)
-  return cloneSet(state, `${id}.followers`, newFollowers)
-}
-
-const addFollower = (state, id, person) => {
-  let post = state[id]
-  let follower = find(post.followers, same('id', person))
-  return follower
-    ? state
-    : cloneSet(state, `${id}.followers`, (post.followers || []).concat(person))
-}
-
 export default function (state = {}, action) {
   const { error, type, payload, meta } = action
   if (error) return state
 
-  let { id } = meta || {}
+  let { id, personId } = meta || {}
   let post = state[id]
 
   switch (type) {
@@ -89,22 +73,13 @@ export default function (state = {}, action) {
       var { response, user } = meta
       return {...state, [id]: changeEventResponse(post, response, user)}
     case VOTE_ON_POST_PENDING:
-      let { currentUser } = meta
-      let newPost
-      let myVote = includes(map(post.voters, 'id'), currentUser.id)
-
-      if (myVote) {
-        newPost = {...post, voters: filter(post.voters, v => v.id !== currentUser.id)}
-      } else {
-        newPost = {...post, voters: post.voters.concat(currentUser)}
-      }
-      return {...state, [id]: newPost}
+      return addOrRemovePersonId(state, id, personId, 'voter_ids')
     case REMOVE_POST:
       return {...state, [id]: null}
-    case FOLLOW_POST:
-      return addOrRemoveFollower(state, id, meta.person)
+    case FOLLOW_POST_PENDING:
+      return addOrRemovePersonId(state, id, personId, 'follower_ids')
     case CREATE_COMMENT:
-      const withFollower = addFollower(state, id, payload.user)
+      const withFollower = addOrRemovePersonId(state, id, payload.user_id, 'follower_ids')
       return {
         ...withFollower,
         [id]: {
@@ -118,16 +93,24 @@ export default function (state = {}, action) {
     case PIN_POST_PENDING:
       post = state[id]
       const membership = get(['memberships', meta.slug], post)
-      return {...state, [id]: {
-        ...post,
-        memberships: {
-          ...post.memberships,
-          [meta.slug]: {
-            ...membership,
-            pinned: !get('pinned', membership)
+      return {
+        ...state,
+        [id]: {
+          ...post,
+          memberships: {
+            ...post.memberships,
+            [meta.slug]: {...membership, pinned: !get('pinned', membership)}
           }
         }
-      }}
+      }
+    case COMPLETE_POST_PENDING:
+      return {
+        ...state,
+        [id]: {
+          ...post,
+          fulfilled_at: post.fulfilled_at ? null : new Date(0)
+        }
+      }
   }
   return state
 }

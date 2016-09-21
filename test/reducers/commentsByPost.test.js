@@ -10,10 +10,12 @@ describe('commentsByPost', () => {
     it('appends ids to state', () => {
       let action = {
         type: FETCH_COMMENTS,
-        payload: [
-          {id: '10', text: 'foo'},
-          {id: '11', text: 'bar'}
-        ],
+        payload: {
+          comments: [
+            {id: '10', text: 'foo'},
+            {id: '11', text: 'bar'}
+          ]
+        },
         meta: {id: '1', subject: 'post'}
       }
 

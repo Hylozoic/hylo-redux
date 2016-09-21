@@ -18,3 +18,5 @@ export const mostRecentCommunity = person => {
   var reverseDate = m => -Date.parse(m.last_viewed_at || '2001-01-01')
   return get(sortBy(person.memberships, reverseDate), '0.community')
 }
+
+export const getPerson = (id, state) => state.people[id]

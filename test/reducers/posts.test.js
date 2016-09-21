@@ -1,34 +1,14 @@
 require('../support')
 import posts from '../../src/reducers/posts'
-import { FETCH_POSTS, FOLLOW_POST, UPDATE_POST } from '../../src/actions'
+import { FETCH_POSTS, FOLLOW_POST_PENDING, UPDATE_POST } from '../../src/actions'
 
 describe('posts', () => {
   describe('on FETCH_POSTS', () => {
-    it('normalizes community data', () => {
-      let action = {
-        type: FETCH_POSTS,
-        payload: {
-          posts: [{id: 'a', name: 'hi', communities: [{id: 'c1'}, {id: 'c2'}]}]
-        },
-        meta: {
-          cache: {id: 'foo'}
-        }
-      }
-
-      let state = {}
-
-      let expectedState = {
-        a: {id: 'a', name: 'hi', communities: ['c1', 'c2']}
-      }
-
-      expect(posts(state, action)).to.deep.equal(expectedState)
-    })
-
     it('merges with existing post data', () => {
       let action = {
         type: FETCH_POSTS,
         payload: {
-          posts: [{id: 'a', name: 'hi', communities: []}]
+          posts: [{id: 'a', name: 'hi'}]
         },
         meta: {
           cache: {id: 'foo'}
@@ -40,7 +20,7 @@ describe('posts', () => {
       }
 
       let expectedState = {
-        a: {id: 'a', name: 'hi', description: 'hello', communities: []}
+        a: {id: 'a', name: 'hi', description: 'hello'}
       }
 
       expect(posts(state, action)).to.deep.equal(expectedState)
@@ -50,7 +30,7 @@ describe('posts', () => {
       let action = {
         type: FETCH_POSTS,
         payload: {
-          posts: [{id: 'a', name: 'hi', communities: [], memberships: {c3: {pinned: true}}}]
+          posts: [{id: 'a', name: 'hi', memberships: {c3: {pinned: true}}}]
         },
         meta: {
           cache: {id: 'foo'},
@@ -63,8 +43,12 @@ describe('posts', () => {
       }
 
       let expectedState = {
-        a: {id: 'a', name: 'hi', description: 'hello', communities: [],
-          memberships: {c1: {pinned: true}, c2: {pinned: false}, c3: {pinned: true}}}
+        a: {
+          id: 'a', name: 'hi', description: 'hello',
+          memberships: {
+            c1: {pinned: true}, c2: {pinned: false}, c3: {pinned: true}
+          }
+        }
       }
 
       expect(posts(state, action)).to.deep.equal(expectedState)
@@ -238,28 +222,28 @@ describe('posts', () => {
 
     it('removes an existing follower', () => {
       let action = {
-        type: FOLLOW_POST,
-        meta: {id: 'a', person}
+        type: FOLLOW_POST_PENDING,
+        meta: {id: 'a', personId: person.id}
       }
       let state = {
-        a: {name: 'post!', followers: [person, cat]}
+        a: {name: 'post!', follower_ids: [person.id, cat.id]}
       }
 
       let newState = posts(state, action)
-      expect(newState.a.followers).to.deep.equal([cat])
+      expect(newState.a.follower_ids).to.deep.equal([cat.id])
     })
 
     it('adds the current user as follower', () => {
       let action = {
-        type: FOLLOW_POST,
-        meta: {id: 'a', person}
+        type: FOLLOW_POST_PENDING,
+        meta: {id: 'a', personId: person.id}
       }
       let state = {
-        a: {name: 'post!', followers: [cat]}
+        a: {name: 'post!', follower_ids: [cat.id]}
       }
 
       let newState = posts(state, action)
-      expect(newState.a.followers).to.deep.equal([cat, person])
+      expect(newState.a.follower_ids).to.deep.equal([cat.id, person.id])
     })
   })
 })

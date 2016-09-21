@@ -1,16 +1,15 @@
 import React from 'react'
 import { defer, prefetch } from 'react-fetcher'
-import { get, pick, uniq } from 'lodash'
+import { get, isEmpty, pick, uniq } from 'lodash'
 import { makeUrl } from '../util/navigation'
 import { connect } from 'react-redux'
 import {
   FETCH_COMMUNITY_FOR_INVITATION,
-  fetchCommunity,
-  fetchCommunityForInvitation,
   login,
   navigate,
   setLoginError
 } from '../actions'
+import { fetchCommunity, fetchCommunityForInvitation } from '../actions/communities'
 import { LOGGED_IN, STARTED_LOGIN, alias, trackEvent } from '../util/analytics'
 import { Link } from 'react-router'
 import ServiceAuthButtons from '../components/ServiceAuthButtons'
@@ -75,6 +74,8 @@ export const goToNext = (currentUser, query) => {
 
     if (community) {
       next = communityUrl(community)
+    } else if (isEmpty(currentUser.memberships)) {
+      next = '/create'
     } else {
       next = `/u/${currentUser.id}`
     }

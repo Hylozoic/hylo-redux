@@ -17,18 +17,29 @@ const mainColumnWidth = 688 // defined in CSS
 const modalStyle = isMobile => {
   if (typeof window === 'undefined') return {}
   return {
-    left: isMobile ? 0
+    marginLeft: isMobile ? 0
       : position(document.getElementById('cover-image-page-content')).x,
     width: Math.min(mainColumnWidth,
       get(document.getElementById('main'), 'offsetWidth') || mainColumnWidth)
   }
 }
 
-export const BareModalWrapper = ({ children, onClick }) => {
-  return <div id={modalWrapperCSSId}>
-    <div className='backdrop' onClick={onClick}/>
-    {children}
-  </div>
+export class BareModalWrapper extends React.Component {
+  static propTypes = {children: object, onClick: func}
+
+  render () {
+    const { children } = this.props
+    const onClick = event => {
+      if (event.target !== this.refs.backdrop) return
+      return this.props.onClick(event)
+    }
+
+    return <div id={modalWrapperCSSId}>
+      <div className='scrolling-backdrop' ref='backdrop' onClick={onClick}>
+        {children}
+      </div>
+    </div>
+  }
 }
 
 export class ModalWrapper extends React.Component {

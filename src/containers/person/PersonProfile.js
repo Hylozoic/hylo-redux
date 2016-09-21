@@ -17,7 +17,8 @@ import AccessErrorMessage from '../../components/AccessErrorMessage'
 import CoverImagePage from '../../components/CoverImagePage'
 import Icon from '../../components/Icon'
 import Comment from '../../components/Comment'
-import { parse } from 'url'
+import { normalizeUrl } from '../../util/text'
+import { NonLinkAvatar } from '../../components/Avatar'
 import moment from 'moment'
 import { getPost } from '../../models/post'
 import { getCurrentCommunity } from '../../models/community'
@@ -93,9 +94,10 @@ const PersonProfile = compose(
   } = props
   const category = query.show
   const {
-    banner_url, bio, tags, location, url, created_at,
+    banner_url, bio, tags, location, created_at,
     facebook_url, linkedin_url, twitter_name
   } = person
+  const url = normalizeUrl(person.url)
 
   const joinDate = moment(created_at).format('MMMM YYYY')
   const requestCount = person.grouped_post_count.request || 0
@@ -105,8 +107,7 @@ const PersonProfile = compose(
 
   return <CoverImagePage id='person' image={banner_url || defaultBanner}>
     <div className='opener'>
-      <div className='avatar'
-        style={{backgroundImage: `url(${person.avatar_url})`}}/>
+      <NonLinkAvatar person={person}/>
       <h2>
         {person.name}
         <div className='social-media'>
@@ -118,7 +119,7 @@ const PersonProfile = compose(
       <p className='meta'>
         {location && <span>{location}{spacer}</span>}
         {url && <span>
-          <a href={url} target='_blank'>{parse(url).hostname}</a>
+          <a href={url.format()} target='_blank'>{url.hostname}</a>
           {spacer}
         </span>}
         Joined {joinDate}

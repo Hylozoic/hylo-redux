@@ -1,5 +1,5 @@
-import { hashBy, mergeList, toggleIncludes } from './util'
-import { some } from 'lodash'
+import { addOrRemovePersonId, hashBy, mergeList } from './util'
+import { omit } from 'lodash/fp'
 import {
   ADD_DATA_TO_STORE,
   APPEND_COMMENT,
@@ -19,13 +19,8 @@ export default function (state = {}, action) {
   // the cases where there isn't a payload
   switch (type) {
     case THANK_PENDING:
-      let { commentId, person } = meta
-      let thanks = toggleIncludes(state[commentId].thanks, person)
-      let isThanked = some(thanks, person)
-      return {
-        ...state,
-        [commentId]: {...state[commentId], thanks, isThanked}
-      }
+      let { id, personId } = meta
+      return addOrRemovePersonId(state, id, personId, 'thank_ids')
     case UPDATE_COMMENT_PENDING:
       return {
         ...state,
@@ -41,14 +36,12 @@ export default function (state = {}, action) {
       if (meta.bucket === 'comments') return mergeList(state, payload, 'id')
       break
     case APPEND_COMMENT:
-      return {...state, [payload.id]: payload}
-    case FETCH_COMMENTS:
-      return {...state, ...hashBy(payload, 'id')}
     case CREATE_COMMENT:
-      return {...state, [payload.id]: payload}
+      return {...state, [payload.id]: omit('people', payload)}
     case FETCH_POSTS:
       comments = payload.posts.reduce((acc, post) => acc.concat(post.comments || []), [])
       return {...state, ...hashBy(comments, 'id')}
+    case FETCH_COMMENTS:
     case FETCH_POST:
       return {...state, ...hashBy(payload.comments, 'id')}
     case REMOVE_COMMENT:

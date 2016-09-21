@@ -17,7 +17,7 @@ import {
   navigate
 } from '../../actions'
 import config from '../../config'
-const { upstreamHost } = config
+const { host } = config
 const slackClientId = config.slack.clientId
 import { avatarUploadSettings, bannerUploadSettings } from '../../models/community'
 import A from '../../components/A'
@@ -215,7 +215,7 @@ export default class CommunitySettings extends React.Component {
     const slackerror = this.props.location.query.slackerror
     const slugNotUnique = get('slug.unique', this.props.validation) === false
     const joinUrl = communityJoinUrl(community)
-    const addSlackUrl = `${upstreamHost}/noo/community/${community.id}/settings/slack`
+    const addSlackUrl = `${host}/noo/community/${community.id}/settings/slack`
 
     return <div className='form-sections' id='community-settings'>
       <SectionLabel name='appearance' {...labelProps}>Appearance</SectionLabel>

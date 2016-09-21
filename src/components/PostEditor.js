@@ -546,6 +546,8 @@ export default class PostEditorWrapper extends React.Component {
 
     if (!this.state.expanded) {
       const { currentUser } = this.context
+      if (!currentUser) return null
+
       return <div className='post-editor post-editor-wrapper' onClick={this.toggle}>
         <PostEditorHeader person={currentUser}/>
         <div className='prompt'>

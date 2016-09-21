@@ -10,7 +10,6 @@ import Projects from './containers/Projects'
 import { CreateCommunity, CreateCommunityInvite } from './containers/CreateCommunity'
 import CommunityProfile from './containers/community/CommunityProfile'
 import CommunityPosts from './containers/community/CommunityPosts'
-import CommunityEditor from './containers/community/CommunityEditor'
 import CommunityJoinForm from './containers/community/CommunityJoinForm'
 import CommunityJoinLinkHandler from './containers/community/CommunityJoinLinkHandler'
 import InvitationHandler from './containers/community/InvitationHandler'
@@ -103,7 +102,6 @@ export default function makeRoutes (store) {
       <Route path='settings' component={UserSettings} onEnter={requireLogin}/>
       <Route path='search' component={Search} onEnter={requireLogin}/>
       <Route path='u/:id' component={PersonProfile} onEnter={requireLogin}/>
-      <Route path='c/new' component={CommunityEditor} onEnter={requireLogin}/>
       <Route path='c/join' component={CommunityJoinForm} onEnter={requireLogin}/>
 
       <Route path='admin' component={Admin} onEnter={requireAdmin}/>

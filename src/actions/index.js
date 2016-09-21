@@ -1,4 +1,3 @@
-import invariant from 'invariant'
 import { push } from 'react-router-redux'
 import { cleanAndStringify } from '../util/caching'
 import { get } from 'lodash/fp'
@@ -197,30 +196,6 @@ export function fetchCurrentUser (refresh) {
   }
 }
 
-export function fetchCommunity (id) {
-  return {
-    type: FETCH_COMMUNITY,
-    payload: {api: true, path: `/noo/community/${id}`},
-    meta: {cache: {bucket: 'communities', id, requiredProp: 'description'}}
-  }
-}
-
-export function fetchCommunitySettings (id) {
-  return {
-    type: FETCH_COMMUNITY_SETTINGS,
-    payload: {api: true, path: `/noo/community/${id}/settings`},
-    meta: {cache: {bucket: 'communities', id, requiredProp: 'beta_access_code'}}
-  }
-}
-
-export function fetchCommunityModerators (id) {
-  return {
-    type: FETCH_COMMUNITY_MODERATORS,
-    payload: {api: true, path: `/noo/community/${id}/moderators`},
-    meta: {cache: {bucket: 'communities', id, requiredProp: 'moderators'}}
-  }
-}
-
 export function navigate (path) {
   return push(path)
 }
@@ -256,90 +231,11 @@ export function updateUserSettings (id, params) {
   }
 }
 
-export function leaveCommunity (communityId) {
-  return {
-    type: LEAVE_COMMUNITY,
-    payload: {api: true, path: `/noo/membership/${communityId}`, method: 'DELETE'},
-    meta: {communityId, optimistic: true}
-  }
-}
-
-export function updateCommunitySettings (id, params) {
-  invariant(params.slug, 'must include slug in params')
-  if (params.leader) params.leader_id = params.leader.id
-  return {
-    type: UPDATE_COMMUNITY_SETTINGS,
-    payload: {api: true, params, path: `/noo/community/${id}`, method: 'POST'},
-    meta: {slug: params.slug, params, optimistic: true}
-  }
-}
-
 export function updateMembershipSettings (communityId, params) {
   return {
     type: UPDATE_MEMBERSHIP_SETTINGS,
     payload: {api: true, params, path: `/noo/membership/${communityId}`, method: 'POST'},
     meta: {communityId, params, optimistic: true}
-  }
-}
-
-export function addCommunityModerator (community, moderator) {
-  return {
-    type: ADD_COMMUNITY_MODERATOR,
-    payload: {api: true, params: {userId: moderator.id}, path: `/noo/community/${community.id}/moderators`, method: 'POST'},
-    meta: {slug: community.slug, moderator, optimistic: true}
-  }
-}
-
-export function removeCommunityModerator (community, moderatorId) {
-  return {
-    type: REMOVE_COMMUNITY_MODERATOR,
-    payload: {api: true, path: `/noo/community/${community.id}/moderator/${moderatorId}`, method: 'DELETE'},
-    meta: {slug: community.slug, moderatorId, optimistic: true}
-  }
-}
-
-export function removeCommunityMember (community, userId, cacheId) {
-  return {
-    type: REMOVE_COMMUNITY_MEMBER,
-    payload: {api: true, path: `/noo/community/${community.id}/member/${userId}`, method: 'DELETE'},
-    meta: {optimistic: true, slug: community.slug, userId, cacheId}
-  }
-}
-
-export function validateCommunityAttribute (key, value, constraint) {
-  return {
-    type: VALIDATE_COMMUNITY_ATTRIBUTE,
-    payload: {api: true, params: {column: key, value, constraint}, path: '/noo/community/validate', method: 'POST'},
-    meta: {key}
-  }
-}
-
-export function resetCommunityValidation (key) {
-  return {
-    type: RESET_COMMUNITY_VALIDATION,
-    meta: {key}
-  }
-}
-
-export function updateCommunityEditor (subtree, changes) {
-  return {
-    type: UPDATE_COMMUNITY_EDITOR,
-    payload: changes,
-    meta: {subtree}
-  }
-}
-
-export function createCommunity (params) {
-  return {
-    type: CREATE_COMMUNITY,
-    payload: {api: true, params, path: '/noo/community', method: 'POST'}
-  }
-}
-
-export function joinCommunityWithCode (code, tagName) {
-  return {
-    type: JOIN_COMMUNITY_WITH_CODE,
-    payload: {api: true, params: {code, tagName}, path: '/noo/community/code', method: 'POST'}
   }
 }
 
@@ -391,14 +287,6 @@ export function resetError (type) {
   return {
     type: RESET_ERROR,
     meta: {type}
-  }
-}
-
-export function fetchCommunityForInvitation (token) {
-  return {
-    type: FETCH_COMMUNITY_FOR_INVITATION,
-    payload: {api: true, path: `/noo/invitation/${token}`},
-    meta: {token}
   }
 }
 
@@ -561,14 +449,6 @@ export function closeModal () {
 export function createTagInPostEditor () {
   return {
     type: CREATE_TAG_IN_POST_EDITOR
-  }
-}
-
-export function fetchCommunitiesForNetworkNav (networkId) {
-  return {
-    type: FETCH_COMMUNITIES_FOR_NETWORK_NAV,
-    payload: {api: true, path: `/noo/network/${networkId}/communitiesForNav`},
-    meta: {networkId}
   }
 }
 

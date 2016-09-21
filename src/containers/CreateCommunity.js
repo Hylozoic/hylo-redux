@@ -10,24 +10,26 @@ import { ModalInput, ModalSelect } from '../components/ModalRow'
 import Modal from '../components/Modal'
 import A from '../components/A'
 import Icon from '../components/Icon'
-import { categories } from './community/CommunityEditor'
 import { uploadImage } from '../actions/uploadImage'
 import {
   CREATE_COMMUNITY,
   UPLOAD_IMAGE,
-  createCommunity,
-  fetchCommunity,
   fetchInvitations,
   navigate,
+  updateInvitationEditor
+} from '../actions'
+import {
+  createCommunity,
+  fetchCommunity,
   resetCommunityValidation,
   sendCommunityInvitation,
   updateCommunityEditor,
-  updateInvitationEditor,
   validateCommunityAttribute
-} from '../actions'
+} from '../actions/communities'
 import {
   avatarUploadSettings,
   bannerUploadSettings,
+  categories,
   defaultAvatar,
   defaultBanner,
   getCurrentCommunity,

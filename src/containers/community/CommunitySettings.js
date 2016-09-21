@@ -6,16 +6,16 @@ const { object, func } = React.PropTypes
 import { find, isEmpty, reduce, set } from 'lodash'
 import { get } from 'lodash/fp'
 import { markdown, sanitize } from 'hylo-utils/text'
+import { navigate } from '../../actions'
 import {
-  updateCommunitySettings,
+  addCommunityModerator,
   fetchCommunitySettings,
   fetchCommunityModerators,
-  addCommunityModerator,
   removeCommunityModerator,
   resetCommunityValidation,
-  validateCommunityAttribute,
-  navigate
-} from '../../actions'
+  updateCommunitySettings,
+  validateCommunityAttribute
+} from '../../actions/communities'
 import config from '../../config'
 const { host } = config
 const slackClientId = config.slack.clientId

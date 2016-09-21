@@ -6,12 +6,12 @@ import cx from 'classnames'
 const { func, object, string } = React.PropTypes
 import {
   UPLOAD_IMAGE,
-  leaveCommunity,
   notify,
   toggleUserSettingsSection,
   updateMembershipSettings,
   updateUserSettings
  } from '../../actions'
+import { leaveCommunity } from '../../actions/communities'
 import { uploadImage } from '../../actions/uploadImage'
 import A from '../../components/A'
 import { formatDate } from '../../util/text'

@@ -5,12 +5,11 @@ import { makeUrl } from '../util/navigation'
 import { connect } from 'react-redux'
 import {
   FETCH_COMMUNITY_FOR_INVITATION,
-  fetchCommunity,
-  fetchCommunityForInvitation,
   login,
   navigate,
   setLoginError
 } from '../actions'
+import { fetchCommunity, fetchCommunityForInvitation } from '../actions/communities'
 import { LOGGED_IN, STARTED_LOGIN, alias, trackEvent } from '../util/analytics'
 import { Link } from 'react-router'
 import ServiceAuthButtons from '../components/ServiceAuthButtons'

@@ -4,7 +4,7 @@ import { connect } from 'react-redux'
 import { get, some, omit, filter, startsWith, contains } from 'lodash'
 import { fetchWithCache } from '../../util/caching'
 import { scrollToBottom } from '../../util/scrolling'
-import { fetchCommunities } from '../../actions/fetchCommunities'
+import { fetchCommunities } from '../../actions/communities'
 import { uploadImage } from '../../actions/uploadImage'
 import { avatarUploadSettings, bannerUploadSettings } from '../../models/network'
 import {

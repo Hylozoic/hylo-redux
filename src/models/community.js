@@ -52,3 +52,17 @@ export const defaultInvitationMessage = name =>
   `${name} is using Hylo, a new kind of social network that's designed to help communities and organizations create things together.\n\n` +
   "We're surrounded by incredible people, skills, and resources. But it can be hard to know whom to connect with, for what, and when. Often the things we need most are closer than we think.\n\n" +
   'Hylo makes it easy to discover the abundant skills, resources, and opportunities in your communities that might otherwise go unnoticed. Together, we can create whatever we can imagine.'
+
+export const categories = {
+  'coworking': 'Co-working space',
+  'makerspace': 'Maker space',
+  'startupAccelerator': 'Startup accelerator',
+  'communityCenter': 'Community center',
+  'localAffinityNetwork': 'Local affinity network',
+  'distributedAffinityNetwork': 'Distributed affinity network',
+  'event': 'Special event',
+  'neighborhood': 'Neighborhood',
+  'alumniCommunity': 'Alumni community',
+  'organization': 'Organization',
+  'other': 'Other'
+}

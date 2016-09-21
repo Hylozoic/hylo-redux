@@ -88,7 +88,7 @@ export default class TagDescriptionEditor extends React.Component {
                 onChange={event => edit(tag, description, !def)}
                 onFocus={() => this.refs.default.focus()}
                 onBlur={() => this.refs.default.blur()}/>
-              Make this topic a default for your community.
+              Make this a default topic for your community.
             </ModalRow>}
           </div>)}
         <div className='footer'>

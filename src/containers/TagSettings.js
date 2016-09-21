@@ -37,6 +37,11 @@ const TagSettings = ({ tags, community, dispatch, pending, total }) => {
       Removing a topic from this community prevents it from appearing in lists,
       but does not change or erase any posts or comments.
     </p>
+    <div className='header'>
+      <div className='right'>
+        <span className='meta default'>Default</span>
+      </div>
+    </div>
     {communityTags.map(tag => <div key={tag.id} className='topic-row'>
       <div className='right'>
         <A to={`/c/${slug}/tag/${tag.name}`}>

@@ -2,7 +2,7 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { prefetch } from 'react-fetcher'
 const { array, bool, func, object } = React.PropTypes
-import { toPairs, get, some, isEmpty, filter } from 'lodash/fp'
+import { toPairs, get, some, isEmpty } from 'lodash/fp'
 import validator from 'validator'
 import ModalOnlyPage from '../components/ModalOnlyPage'
 import AccessErrorMessage from '../components/AccessErrorMessage'
@@ -20,7 +20,6 @@ import {
 } from '../actions'
 import {
   createCommunity,
-  fetchCommunity,
   resetCommunityValidation,
   sendCommunityInvitation,
   updateCommunityEditor,
@@ -32,8 +31,7 @@ import {
   categories,
   defaultAvatar,
   defaultBanner,
-  getCurrentCommunity,
-  getCheckList
+  getCurrentCommunity
 } from '../models/community'
 import { canInvite } from '../models/currentUser'
 import { scrollToBottom } from '../util/scrolling'
@@ -45,7 +43,7 @@ import InvitationList from './community/InvitationList'
 
 const merkabaUrl = 'https://www.hylo.com/img/hylo-merkaba-300x300.png'
 
-const Topper = ({ community }) => {
+export const Topper = ({ community }) => {
   const { name, avatar_url } = community || {}
   const logoUrl = avatar_url || merkabaUrl
 
@@ -375,7 +373,7 @@ export class CreateCommunityInvite extends React.Component {
           onChange={update('message')}/>}
         {error && <div className='alert alert-danger'>{error}</div>}
         <div className='footer'>
-          <a className='button' onClick={submit}>Invite</a>
+          <a className='button ok' onClick={submit}>Invite</a>
           <A to={`/c/${community.slug}`} className='skip'>Skip</A>
         </div>
       </Modal>
@@ -386,54 +384,4 @@ export class CreateCommunityInvite extends React.Component {
         </Modal>}
     </ModalOnlyPage>
   }
-}
-
-@prefetch(({ dispatch, store }) => {
-  dispatch(fetchCommunity(get('slug', getCurrentCommunity(store.getState()))))
-})
-@connect(state => ({community: getCurrentCommunity(state)}))
-export class CreateCommunityThree extends React.Component {
-
-  static propTypes = {
-    dispatch: func,
-    community: object
-  }
-
-  render () {
-    const { dispatch, community } = this.props
-
-    const checkList = getCheckList(community)
-
-    const percent = (filter(ci => ci.done, checkList).length / checkList.length) * 100
-
-    return <ModalOnlyPage className='create-community'>
-      <Topper community={community}/>
-      <Modal title='Getting Started.'
-        className='create-community-three'
-        standalone>
-        <PercentBar percent={percent}/>
-        <div className='subtitle'>
-          To create a successful community with Hylo, we suggest completing the following:
-        </div>
-        {checkList.map(({ title, link, done, id }) =>
-          <CheckItem title={title} link={link} done={done} key={id} />)}
-        <button onClick={() => dispatch(navigate(`/c/${community.slug}`))}>Done</button>
-        <A to='/create/three' className='skip'>Do this later</A>
-      </Modal>
-    </ModalOnlyPage>
-  }
-}
-
-const CheckItem = ({ title, link, done }) => {
-  return <div className='check-item form-sections'>
-    <input type='checkbox' checked={done} />
-    {title}
-    <A to={link}>></A>
-  </div>
-}
-
-const PercentBar = ({ percent }) => {
-  return <div className='percent-bar'>
-    {percent}% completed
-  </div>
 }

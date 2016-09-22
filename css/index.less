@@ -334,6 +334,7 @@ ul.tags {
     border-top: 2px solid @faint-gray-border;
   }
 }
+
 .list-controls.tag-header {
   border-bottom: 1px solid @post-border;
 
@@ -1023,5 +1024,48 @@ ul.tags {
 
   .d3 {
     animation-delay: 0.6s;
+  }
+}
+
+.percent-bar {
+  margin-bottom: @p-bottom-margin;
+  .bar {
+    width: 100%;
+    background-color: @faint-gray-border;
+    height: 8px;
+    margin-bottom: 5px;
+    position: relative;
+  }
+  .completed-portion {
+    height: 100%;
+    background-color: @damian-green;
+    position: absolute;
+  }
+  .label {
+    color: @damian-green;
+  }
+}
+
+.check-item {
+  padding-left: @modal-row-side-padding;
+  line-height: 60px;
+  border-bottom: 1px solid @post-border;
+
+  &:hover {
+    background-color: @faint-gray-bg;
+    cursor: pointer;
+  }
+
+  input[type='checkbox'] {
+    margin-right: 15px;
+  }
+
+  > * {
+    vertical-align: middle;
+  }
+
+  .disclosure {
+    float: right;
+    margin-right: 20px;
   }
 }

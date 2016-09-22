@@ -9,7 +9,7 @@ import ExpandedPostModal from '../containers/ExpandedPostModal'
 import { NotificationsModal } from '../containers/Notifications'
 import cx from 'classnames'
 import { get } from 'lodash'
-const { array, bool, func, object, string, oneOfType } = React.PropTypes
+const { array, bool, func, node, object, string, oneOfType } = React.PropTypes
 
 export const modalWrapperCSSId = 'top-level-modal-wrapper'
 const mainColumnWidth = 688 // defined in CSS
@@ -128,7 +128,7 @@ Modal.propTypes = {
   children: oneOfType([array, object]),
   className: string,
   onCancel: func,
-  subtitle: string,
+  subtitle: oneOfType([string, node]),
   standalone: bool,
   title: oneOfType([string, object])
 }

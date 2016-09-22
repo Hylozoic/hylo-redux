@@ -5,7 +5,7 @@ import {
   CANCEL_TAG_DESCRIPTION_EDIT,
   CREATE_COMMENT,
   CREATE_POST,
-  CREATE_TAG_IN_POST_EDITOR,
+  CREATE_TAG_IN_MODAL,
   EDIT_TAG_DESCRIPTION,
   EDIT_NEW_TAG_AND_DESCRIPTION,
   REMOVE_DOC,
@@ -116,7 +116,7 @@ export const creatingTagAndDescription = (state = false, action) => {
   const { type } = action
   if (type === CANCEL_TAG_DESCRIPTION_EDIT) {
     return false
-  } else if (type === CREATE_TAG_IN_POST_EDITOR) {
+  } else if (type === CREATE_TAG_IN_MODAL) {
     return true
   }
 
@@ -139,7 +139,7 @@ export const tagDescriptionEdits = (state = {}, action) => {
     return {...state, [payload.tag]: payload.description}
   } else if (type === EDIT_NEW_TAG_AND_DESCRIPTION) {
     return {[payload.tag]: payload.description}
-  } else if (type === CREATE_TAG_IN_POST_EDITOR) {
+  } else if (type === CREATE_TAG_IN_MODAL) {
     return {}
   }
 

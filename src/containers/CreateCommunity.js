@@ -328,7 +328,7 @@ export class CreateCommunityInvite extends React.Component {
       .then(({ error }) => {
         if (error) return
         trackEvent(INVITED_COMMUNITY_MEMBERS, {community})
-        dispatch(navigate(`/c/${community.slug}`))
+        dispatch(navigate(`/c/${community.slug}/checklist`))
       })
     }
 

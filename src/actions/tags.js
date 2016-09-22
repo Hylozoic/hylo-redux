@@ -4,6 +4,7 @@ import {
   FETCH_TAGS,
   FOLLOW_TAG,
   REMOVE_TAG,
+  CREATE_TAG_IN_COMMUNITY,
   SHOW_ALL_TAGS,
   SHOW_SHARE_TAG
 } from './index'
@@ -42,6 +43,16 @@ export function removeTagFromCommunity (tag, slug) {
     type: REMOVE_TAG,
     payload: {api: true, path: `/noo/community/${slug}/tag/${id}`, method: 'DELETE'},
     meta: {id, name, slug}
+  }
+}
+
+export function createTagInCommunity (params, slug) {
+  console.log('createTagInCommunity, params', params)
+  console.log('slug', slug)
+  return {
+    type: CREATE_TAG_IN_COMMUNITY,
+    payload: {api: true, path: `/noo/community/${slug}/tag/`, method: 'POST'},
+    meta: {slug}
   }
 }
 

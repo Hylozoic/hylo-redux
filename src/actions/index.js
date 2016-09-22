@@ -21,7 +21,8 @@ export const CREATE_COMMENT = 'CREATE_COMMENT'
 export const CREATE_COMMUNITY = 'CREATE_COMMUNITY'
 export const CREATE_POST = 'CREATE_POST'
 export const CREATE_NETWORK = 'CREATE_NETWORK'
-export const CREATE_TAG_IN_POST_EDITOR = 'CREATE_TAG_IN_POST_EDITOR'
+export const CREATE_TAG_IN_COMMUNITY = 'CREATE_TAG_IN_COMMUNITY'
+export const CREATE_TAG_IN_MODAL = 'CREATE_TAG_IN_MODAL'
 export const EDIT_TAG_DESCRIPTION = 'EDIT_TAG_DESCRIPTION'
 export const EDIT_NEW_TAG_AND_DESCRIPTION = 'EDIT_NEW_TAG_AND_DESCRIPTION'
 export const FETCH_ACTIVITY = 'FETCH_ACTIVITY'
@@ -447,9 +448,9 @@ export function closeModal () {
   return {type: CLOSE_MODAL}
 }
 
-export function createTagInPostEditor () {
+export function createTagInModal () {
   return {
-    type: CREATE_TAG_IN_POST_EDITOR
+    type: CREATE_TAG_IN_MODAL
   }
 }
 

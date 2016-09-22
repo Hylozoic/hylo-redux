@@ -8,9 +8,12 @@ import Modal from '../../components/Modal'
 import A from '../../components/A'
 import { Topper } from '../CreateCommunity'
 import { prefetch } from 'react-fetcher'
-import { fetchCommunity } from '../../actions/communities'
+import { fetchCommunity, updateCommunityChecklist } from '../../actions/communities'
 
-@prefetch(({ dispatch, params: { id } }) => dispatch(fetchCommunity(id)))
+@prefetch(({ dispatch, params: { id } }) => {
+  return dispatch(updateCommunityChecklist(id))
+  .then(() => dispatch(fetchCommunity(id)))
+})
 @connect((state, { params: { id } }) => ({
   community: id ? state.communities[id] : getCurrentCommunity(state)
 }))

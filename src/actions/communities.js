@@ -15,6 +15,7 @@ import {
   REMOVE_COMMUNITY_MODERATOR,
   RESET_COMMUNITY_VALIDATION,
   UPDATE_COMMUNITY_EDITOR,
+  UPDATE_COMMUNITY_CHECKLIST,
   UPDATE_COMMUNITY_SETTINGS,
   VALIDATE_COMMUNITY_ATTRIBUTE
 } from './index'
@@ -153,5 +154,13 @@ export function updateCommunitySettings (id, params) {
     type: UPDATE_COMMUNITY_SETTINGS,
     payload: {api: true, params, path: `/noo/community/${id}`, method: 'POST'},
     meta: {slug: params.slug, params, optimistic: true}
+  }
+}
+
+export function updateCommunityChecklist (id) {
+  return {
+    type: UPDATE_COMMUNITY_CHECKLIST,
+    payload: {api: true, path: `/noo/community/${id}/update-checklist`, method: 'POST'},
+    meta: {id}
   }
 }

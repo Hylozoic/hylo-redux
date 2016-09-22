@@ -129,16 +129,16 @@ export const tagDescriptionEdits = (state = {}, action) => {
     const response = JSON.parse(payload.response.body)
     if (response.tagsMissingDescriptions) {
       return {
-        ...mapValues(response.tagsMissingDescriptions, () => ({description: '', def: false})),
+        ...mapValues(response.tagsMissingDescriptions, () => ({description: '', is_default: false})),
         ...state
       }
     }
   } else if (includes([START_POST_EDIT, CANCEL_POST_EDIT, CREATE_COMMENT], type)) {
     return {}
   } else if (type === EDIT_TAG_DESCRIPTION) {
-    return {...state, [payload.tag]: pick(['description', 'def'], payload)}
+    return {...state, [payload.tag]: pick(['description', 'is_default'], payload)}
   } else if (type === EDIT_NEW_TAG_AND_DESCRIPTION) {
-    return {[payload.tag]: pick(['description', 'def'], payload)}
+    return {[payload.tag]: pick(['description', 'is_default'], payload)}
   } else if (type === CREATE_TAG_IN_POST_EDITOR) {
     return {}
   }

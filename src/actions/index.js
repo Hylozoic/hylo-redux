@@ -420,12 +420,12 @@ export function cancelTagDescriptionEdit () {
   return {type: CANCEL_TAG_DESCRIPTION_EDIT}
 }
 
-export function editTagDescription (tag, description, def) {
-  return {type: EDIT_TAG_DESCRIPTION, payload: {tag, description, def}}
+export function editTagDescription (tag, description, is_default) {
+  return {type: EDIT_TAG_DESCRIPTION, payload: {tag, description, is_default}}
 }
 
-export function editNewTagAndDescription (tag, description, def) {
-  return {type: EDIT_NEW_TAG_AND_DESCRIPTION, payload: {tag, description, def}}
+export function editNewTagAndDescription (tag, description, is_default) {
+  return {type: EDIT_NEW_TAG_AND_DESCRIPTION, payload: {tag, description, is_default}}
 }
 
 export function showTagPopover (tagName, slug, node) {

@@ -35,12 +35,12 @@ export default class TagDescriptionEditor extends React.Component {
     } = this.props
     const cancel = () => dispatch(cancelTagDescriptionEdit())
     const editAction = creating ? editNewTagAndDescription : editTagDescription
-    const edit = debounce((tag, value, def) =>
-      dispatch(editAction(tag, value, def)), 200)
+    const edit = debounce((tag, value, is_default) =>
+      dispatch(editAction(tag, value, is_default)), 200)
 
     if (isEmpty(tags)) {
       if (!creating) return null
-      tags = {'': {description: '', def: false}}
+      tags = {'': {description: '', is_default: false}}
     }
 
     const validate = tags => {
@@ -68,24 +68,24 @@ export default class TagDescriptionEditor extends React.Component {
 
     return <BareModalWrapper>
       <Modal id='tag-description-editor' title={title} onCancel={cancel}>
-        {map(tags, ({ description, def }, tag) =>
+        {map(tags, ({ description, is_default }, tag) =>
           <div key={creating ? 'key' : tag} className={cx('tag-group', {creating})}>
             {creating
               ? <ModalInput label='Topic name' defaultValue={tag}
-              onChange={event => edit(event.target.value, description, def)}/>
+              onChange={event => edit(event.target.value, description, is_default)}/>
               : <div className='topic'>
                   <label>Topic name</label>
                   <span>#{tag}</span>
                 </div>}
             <ModalInput label='Description' defaultValue={description}
-              onChange={event => edit(tag, event.target.value, def)}/>
+              onChange={event => edit(tag, event.target.value, is_default)}/>
             {canModerate(currentUser, community) && <ModalRow
               ref='default'>
               <label>Make default</label>
               <input type='checkbox'
                 value='def'
-                defaultChecked={def}
-                onChange={event => edit(tag, description, !def)}
+                defaultChecked={is_default}
+                onChange={event => edit(tag, description, !is_default)}
                 onFocus={() => this.refs.default.focus()}
                 onBlur={() => this.refs.default.blur()}/>
               Make this a default topic for your community.

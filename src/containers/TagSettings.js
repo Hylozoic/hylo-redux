@@ -27,8 +27,8 @@ const TagSettings = ({ tags, community, dispatch, pending, total }) => {
       dispatch(removeTagFromCommunity(tag, slug))
   const canDelete = tag => !includes(['request', 'offer', 'intention'], tag.name)
 
-  const updateDefault = (tag, def) => {
-    dispatch(updateCommunityTag(tag, community, {def}))
+  const updateDefault = (tag, is_default) => {
+    dispatch(updateCommunityTag(tag, community, {is_default}))
   }
 
   return <div id='topic-settings'>
@@ -51,8 +51,8 @@ const TagSettings = ({ tags, community, dispatch, pending, total }) => {
           <Icon name='Trash'/>
         </a>}
         <input type='checkbox'
-          defaultChecked={tag.def}
-          onChange={() => updateDefault(tag, !tag.def)}/>
+          defaultChecked={tag.is_default}
+          onChange={() => updateDefault(tag, !tag.is_default)}/>
       </div>
       {tag.name}
       {tag.post_type && <span className='topic-post-type'>

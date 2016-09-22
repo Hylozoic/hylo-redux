@@ -1,7 +1,7 @@
 import React from 'react'
 import { prefetch } from 'react-fetcher'
 import { connect } from 'react-redux'
-import { fetchTags, removeTagFromCommunity, createTagInCommunity } from '../actions/tags'
+import { fetchTags, removeTagFromCommunity, updateCommunityTag, createTagInCommunity } from '../actions/tags'
 import { createTagInModal } from '../actions'
 import { getCurrentCommunity } from '../models/community'
 import A from '../components/A'
@@ -10,6 +10,7 @@ import ScrollListener from '../components/ScrollListener'
 import TagDescriptionEditor from '../components/TagDescriptionEditor'
 import { connectedListProps } from '../util/caching'
 import { includes } from 'lodash'
+import { map, find } from 'lodash/fp'
 const { object, bool, array, func, number } = React.PropTypes
 
 const subject = 'community'
@@ -54,6 +55,9 @@ export default class TagSettings extends React.Component {
 
   render () {
     const { tags, community, dispatch, pending, total, creatingTagAndDescription } = this.props
+    const findMembership = tag =>
+      find(m => m.community_id === community.id, tag.memberships)
+    const communityTags = map(tag => ({...tag, ...findMembership(tag)}), tags)
     const { slug } = community
     const offset = tags.length
     const loadMore = !pending && offset < total
@@ -64,13 +68,17 @@ export default class TagSettings extends React.Component {
         dispatch(removeTagFromCommunity(tag, slug))
     const canDelete = tag => !includes(['request', 'offer', 'intention'], tag.name)
 
+    const updateDefault = (tag, is_default) => {
+      dispatch(updateCommunityTag(tag, community, {is_default}))
+    }
+
     return <div id='topic-settings'>
       <h2>Manage Topics</h2>
       <p className='meta'>
         Removing a topic from this community prevents it from appearing in lists,
         but does not change or erase any posts or comments.
       </p>
-      {tags.map(tag => <div key={tag.id} className='topic-row'>
+      {communityTags.map(tag => <div key={tag.id} className='topic-row'>
         <div className='right'>
           <A to={`/c/${slug}/tag/${tag.name}`}>
             <Icon name='View'/>
@@ -78,6 +86,9 @@ export default class TagSettings extends React.Component {
           {canDelete(tag) && <a onClick={() => remove(tag)}>
             <Icon name='Trash'/>
           </a>}
+          <input type='checkbox'
+            defaultChecked={tag.is_default}
+            onChange={() => updateDefault(tag, !tag.is_default)}/>
         </div>
         {tag.name}
         {tag.post_type && <span className='topic-post-type'>

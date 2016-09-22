@@ -48,12 +48,10 @@ export function removeTagFromCommunity (tag, slug) {
 }
 
 export function createTagInCommunity (params, slug) {
-  console.log('createTagInCommunity, params', params)
-  console.log('slug', slug)
   return {
     type: CREATE_TAG_IN_COMMUNITY,
-    payload: {api: true, path: `/noo/community/${slug}/tag/`, method: 'POST'},
-    meta: {slug}
+    payload: {api: true, params, path: `/noo/community/${slug}/tag/`, method: 'POST'},
+    meta: {slug, optimistic: true}
   }
 }
 

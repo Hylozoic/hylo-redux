@@ -4,7 +4,9 @@ import { prefetch } from 'react-fetcher'
 import { fetch, ConnectedPostList } from '../ConnectedPostList'
 import PostEditor from '../../components/PostEditor'
 import { compose } from 'redux'
-import { isMember } from '../../models/currentUser'
+import { isMember, canModerate } from '../../models/currentUser'
+import { getChecklist } from '../../models/community'
+import { filter } from 'lodash/fp'
 const { func, object } = React.PropTypes
 
 const subject = 'community'
@@ -33,6 +35,7 @@ class CommunityPosts extends React.Component {
 
     return <div>
       {currentUser && <PostEditor community={community}/>}
+      {canModerate(currentUser, community) && <CommunitySetup community={community}/>}
       <ConnectedPostList {...{subject, id, query}}/>
       {!isMember(currentUser, community) && <div className='post-list-footer'>
         You are not a member of this community, so you are shown only posts that are marked as public.
@@ -48,3 +51,14 @@ export default compose(
     currentUser: state.people.current
   }))
 )(CommunityPosts)
+
+const CommunitySetup = ({ community }) => {
+  const checklist = getChecklist(community)
+  const percent = filter('done', checklist).length / checklist.length * 100
+
+  if (percent === 100) return null
+
+  return <div className='community-setup' onClick={navigate(`/c/${community.slug}/checklist`)}>
+    Your community is {percent}% complete. Click here to continue setting it up.
+  </div>
+}

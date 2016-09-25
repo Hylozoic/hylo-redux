@@ -16,12 +16,12 @@ import {
   UPLOAD_IMAGE,
   fetchInvitations,
   navigate,
-  updateInvitationEditor
+  updateInvitationEditor,
+  sendCommunityInvitation
 } from '../actions'
 import {
   createCommunity,
   resetCommunityValidation,
-  sendCommunityInvitation,
   updateCommunityEditor,
   validateCommunityAttribute
 } from '../actions/communities'

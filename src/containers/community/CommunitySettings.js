@@ -389,6 +389,15 @@ export default class CommunitySettings extends React.Component {
         </div>
         <div className='section-item'>
           <div className='half-column'>
+            <label>Allow people to discover and ask to join this community</label>
+            <p className='summary'>If this is enabled, non-members will be able to request to join this community. You can see <A to='/todo'>pending requests here</A>.</p>
+          </div>
+          <div className='half-column right-align'>
+            <input type='checkbox' checked={community.settings.discoverable} onChange={() => this.toggle('settings.discoverable')}/>
+          </div>
+        </div>
+        <div className='section-item'>
+          <div className='half-column'>
             <label>Invitation code</label>
             <p>{community.beta_access_code || '&nbsp;'}</p>
             <p className='summary'>This code can be given to people to allow them to join the community, instead of sending individual invitations by email.</p>

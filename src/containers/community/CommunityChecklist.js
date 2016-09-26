@@ -56,7 +56,7 @@ const CheckItem = ({ title, onClick, done }) => {
   </div>
 }
 
-const PercentBar = ({ percent }) => {
+export const PercentBar = ({ percent }) => {
   return <div className='percent-bar'>
     <div className='bar'>
       <div className='completed-portion' style={{width: `${percent}%`}}></div>

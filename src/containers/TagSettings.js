@@ -95,7 +95,7 @@ export default class TagSettings extends React.Component {
           {tag.post_type}
         </span>}
       </div>)}
-      <div className='topic-row'>
+      <div className='topic-row add-button-row'>
         <div className='right'>
           <a className='button' onClick={() => this.createTag()}>Add Topic</a>
         </div>

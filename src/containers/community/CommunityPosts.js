@@ -3,10 +3,12 @@ import { connect } from 'react-redux'
 import { prefetch } from 'react-fetcher'
 import { fetch, ConnectedPostList } from '../ConnectedPostList'
 import PostEditor from '../../components/PostEditor'
+import { PercentBar } from '../../containers/community/CommunityChecklist'
 import { compose } from 'redux'
 import { isMember, canModerate } from '../../models/currentUser'
 import { getChecklist } from '../../models/community'
 import { filter } from 'lodash/fp'
+import { navigate } from '../../actions'
 const { func, object } = React.PropTypes
 
 const subject = 'community'
@@ -52,13 +54,15 @@ export default compose(
   }))
 )(CommunityPosts)
 
-const CommunitySetup = ({ community }) => {
+const CommunitySetup = connect()(({ community, dispatch }) => {
   const checklist = getChecklist(community)
   const percent = filter('done', checklist).length / checklist.length * 100
 
   if (percent === 100) return null
 
-  return <div className='community-setup' onClick={navigate(`/c/${community.slug}/checklist`)}>
-    Your community is {percent}% complete. Click here to continue setting it up.
+  return <div className='community-setup'
+    onClick={() => dispatch(navigate(`/c/${community.slug}/checklist`))}>
+    <PercentBar percent={percent}/>
+    Your community is {percent}% setup. Click here to continue setting it up.
   </div>
-}
+})

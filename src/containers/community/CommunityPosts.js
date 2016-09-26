@@ -5,6 +5,8 @@ import { fetch, ConnectedPostList } from '../ConnectedPostList'
 import PostEditor from '../../components/PostEditor'
 import { compose } from 'redux'
 import { isMember } from '../../models/currentUser'
+import { navigate } from '../../actions'
+import { requestToJoinCommunity } from '../../actions/communities'
 const { func, object } = React.PropTypes
 
 const subject = 'community'
@@ -29,10 +31,18 @@ class CommunityPosts extends React.Component {
   }
 
   render () {
-    let { community, params: { id }, location: { query }, currentUser } = this.props
+    let { community, params: { id }, location: { query }, currentUser, dispatch } = this.props
+
+    const requestToJoin = () => {
+      if (!currentUser) dispatch(navigate(`/signup?next=/c/${community.slug}`))
+      dispatch(requestToJoinCommunity(community.slug))
+    }
 
     return <div>
       {currentUser && <PostEditor community={community}/>}
+      {!isMember(currentUser, community) && <div className='request-to-join'>
+        You are not a member of this community. <a onClick={requestToJoin}className='button'>Request to Join</a>
+      </div>}
       <ConnectedPostList {...{subject, id, query}}/>
       {!isMember(currentUser, community) && <div className='post-list-footer'>
         You are not a member of this community, so you are shown only posts that are marked as public.

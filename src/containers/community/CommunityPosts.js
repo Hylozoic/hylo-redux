@@ -3,10 +3,13 @@ import { connect } from 'react-redux'
 import { prefetch } from 'react-fetcher'
 import { fetch, ConnectedPostList } from '../ConnectedPostList'
 import PostEditor from '../../components/PostEditor'
+import { PercentBar } from '../../containers/community/CommunityChecklist'
 import { compose } from 'redux'
-import { isMember } from '../../models/currentUser'
+import { isMember, canModerate } from '../../models/currentUser'
 import { navigate } from '../../actions'
 import { requestToJoinCommunity } from '../../actions/communities'
+import { getChecklist } from '../../models/community'
+import { filter } from 'lodash/fp'
 const { func, object } = React.PropTypes
 
 const subject = 'community'
@@ -39,6 +42,7 @@ class CommunityPosts extends React.Component {
     }
 
     return <div>
+      {canModerate(currentUser, community) && <CommunitySetup community={community}/>}
       {currentUser && <PostEditor community={community}/>}
       {!isMember(currentUser, community) && <div className='request-to-join'>
         You are not a member of this community. <a onClick={requestToJoin}className='button'>Request to Join</a>
@@ -58,3 +62,16 @@ export default compose(
     currentUser: state.people.current
   }))
 )(CommunityPosts)
+
+const CommunitySetup = connect()(({ community, dispatch }) => {
+  const checklist = getChecklist(community)
+  const percent = filter('done', checklist).length / checklist.length * 100
+
+  if (percent === 100) return null
+
+  return <div className='community-setup'
+    onClick={() => dispatch(navigate(`/c/${community.slug}/checklist`))}>
+    <PercentBar percent={percent}/>
+    Your community is {percent}% setup. Click here to continue setting it up.
+  </div>
+})

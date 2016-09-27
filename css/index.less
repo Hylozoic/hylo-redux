@@ -825,9 +825,22 @@ ul.tags {
     margin-right: 25px;
   }
 
+  .header {
+    padding: 10px 25px;
+    .default {
+      font-size: 11px;
+      position: relative;
+      right: -10px;
+    }
+  }
+
   .topic-row {
     border-bottom: 1px solid @post-border;
     padding: 10px 25px;
+
+    &.add-button-row {
+      height: 55px;
+    }
 
     .topic-post-type {
       margin-left: 1em;
@@ -843,6 +856,14 @@ ul.tags {
 
     .right a {
       margin-left: 20px;
+    }
+
+    .right input {
+      margin-left: 20px;
+    }
+
+    .default {
+
     }
   }
 }

@@ -15,6 +15,7 @@ import {
   REMOVE_COMMUNITY_MODERATOR,
   RESET_COMMUNITY_VALIDATION,
   UPDATE_COMMUNITY_EDITOR,
+  UPDATE_COMMUNITY_CHECKLIST,
   UPDATE_COMMUNITY_SETTINGS,
   VALIDATE_COMMUNITY_ATTRIBUTE,
   REQUEST_TO_JOIN_COMMUNITY
@@ -161,5 +162,13 @@ export function requestToJoinCommunity (slug) {
   return {
     type: REQUEST_TO_JOIN_COMMUNITY,
     payload: {api: true, path: `/noo/community/${slug}/request-join`, method: 'POST'}
+  }
+}
+
+export function updateCommunityChecklist (id) {
+  return {
+    type: UPDATE_COMMUNITY_CHECKLIST,
+    payload: {api: true, path: `/noo/community/${id}/update-checklist`, method: 'POST'},
+    meta: {id}
   }
 }

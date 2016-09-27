@@ -21,7 +21,8 @@ export const CREATE_COMMENT = 'CREATE_COMMENT'
 export const CREATE_COMMUNITY = 'CREATE_COMMUNITY'
 export const CREATE_POST = 'CREATE_POST'
 export const CREATE_NETWORK = 'CREATE_NETWORK'
-export const CREATE_TAG_IN_POST_EDITOR = 'CREATE_TAG_IN_POST_EDITOR'
+export const CREATE_TAG_IN_COMMUNITY = 'CREATE_TAG_IN_COMMUNITY'
+export const CREATE_TAG_IN_MODAL = 'CREATE_TAG_IN_MODAL'
 export const EDIT_TAG_DESCRIPTION = 'EDIT_TAG_DESCRIPTION'
 export const EDIT_NEW_TAG_AND_DESCRIPTION = 'EDIT_NEW_TAG_AND_DESCRIPTION'
 export const FETCH_ACTIVITY = 'FETCH_ACTIVITY'
@@ -112,6 +113,7 @@ export const UPDATE_COMMENT_EDITOR = 'UPDATE_COMMENT_EDITOR'
 export const UPDATE_COMMUNITY_EDITOR = 'UPDATE_COMMUNITY_EDITOR'
 export const UPDATE_INVITATION_EDITOR = 'UPDATE_INVITATION_EDITOR'
 export const UPDATE_TAG_INVITATION_EDITOR = 'UPDATE_TAG_INVITATION_EDITOR'
+export const UPDATE_COMMUNITY_CHECKLIST = 'UPDATE_COMMUNITY_CHECKLIST'
 export const UPDATE_COMMUNITY_SETTINGS = 'UPDATE_COMMUNITY_SETTINGS'
 export const UPDATE_COMMUNITY_SETTINGS_PENDING = UPDATE_COMMUNITY_SETTINGS + _PENDING
 export const UPDATE_MEMBERSHIP_SETTINGS = 'UPDATE_MEMBERSHIP_SETTINGS'
@@ -121,6 +123,8 @@ export const UPDATE_NETWORK_PENDING = UPDATE_NETWORK + _PENDING
 export const UPDATE_NETWORK_EDITOR = 'UPDATE_NETWORK_EDITOR'
 export const UPDATE_POST = 'UPDATE_POST'
 export const UPDATE_POST_EDITOR = 'UPDATE_POST_EDITOR'
+export const UPDATE_COMMUNITY_TAG = 'UPDATE_COMMUNITY_TAG'
+export const UPDATE_COMMUNITY_TAG_PENDING = 'UPDATE_COMMUNITY_TAG_PENDING'
 export const UPDATE_USER_SETTINGS = 'UPDATE_USER_SETTINGS'
 export const UPDATE_USER_SETTINGS_PENDING = UPDATE_USER_SETTINGS + _PENDING
 export const UPLOAD_DOC = 'UPLOAD_DOC'
@@ -419,12 +423,12 @@ export function cancelTagDescriptionEdit () {
   return {type: CANCEL_TAG_DESCRIPTION_EDIT}
 }
 
-export function editTagDescription (tag, description) {
-  return {type: EDIT_TAG_DESCRIPTION, payload: {tag, description}}
+export function editTagDescription (tag, description, is_default) {
+  return {type: EDIT_TAG_DESCRIPTION, payload: {tag, description, is_default}}
 }
 
-export function editNewTagAndDescription (tag, description) {
-  return {type: EDIT_NEW_TAG_AND_DESCRIPTION, payload: {tag, description}}
+export function editNewTagAndDescription (tag, description, is_default) {
+  return {type: EDIT_NEW_TAG_AND_DESCRIPTION, payload: {tag, description, is_default}}
 }
 
 export function showTagPopover (tagName, slug, node) {
@@ -445,12 +449,6 @@ export function fetchTagSummary (tagName, id) {
 
 export function closeModal () {
   return {type: CLOSE_MODAL}
-}
-
-export function createTagInPostEditor () {
-  return {
-    type: CREATE_TAG_IN_POST_EDITOR
-  }
 }
 
 export function showExpandedPost (id, commentId) {

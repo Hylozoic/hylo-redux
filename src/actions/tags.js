@@ -4,8 +4,11 @@ import {
   FETCH_TAGS,
   FOLLOW_TAG,
   REMOVE_TAG,
+  CREATE_TAG_IN_COMMUNITY,
   SHOW_ALL_TAGS,
-  SHOW_SHARE_TAG
+  SHOW_SHARE_TAG,
+  UPDATE_COMMUNITY_TAG,
+  CREATE_TAG_IN_MODAL
 } from './index'
 
 export function followTag (id, tagName) {
@@ -45,6 +48,14 @@ export function removeTagFromCommunity (tag, slug) {
   }
 }
 
+export function createTagInCommunity (params, slug) {
+  return {
+    type: CREATE_TAG_IN_COMMUNITY,
+    payload: {api: true, params, path: `/noo/community/${slug}/tag/`, method: 'POST'},
+    meta: {slug, optimistic: true}
+  }
+}
+
 export function showAllTags (slug) {
   return {
     type: SHOW_ALL_TAGS
@@ -60,5 +71,24 @@ export function fetchLeftNavTags (id, refresh) {
     type: FETCH_LEFT_NAV_TAGS,
     payload: {api: true, path: `/noo/community/${id}/tags/followed`},
     meta: {id, cache: {id, bucket: 'tagsByCommunity', refresh}}
+  }
+}
+
+export function updateCommunityTag (tag, community, params) {
+  const { id, name } = tag
+  const { slug } = community
+  return {
+    type: UPDATE_COMMUNITY_TAG,
+    payload: {api: true, path: `/noo/community/${slug}/tag/${id}`, params, method: 'POST'},
+    meta: {
+      name, params, optimistic: true,
+      slug, communityId: community.id
+    }
+  }
+}
+
+export function createTagInModal () {
+  return {
+    type: CREATE_TAG_IN_MODAL
   }
 }

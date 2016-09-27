@@ -8,9 +8,13 @@ import Modal from '../../components/Modal'
 import A from '../../components/A'
 import { Topper } from '../CreateCommunity'
 import { prefetch } from 'react-fetcher'
-import { fetchCommunity } from '../../actions/communities'
+import { fetchCommunity, updateCommunityChecklist } from '../../actions/communities'
+import { navigate } from '../../actions'
 
-@prefetch(({ dispatch, params: { id } }) => dispatch(fetchCommunity(id)))
+@prefetch(({ dispatch, params: { id } }) =>
+  dispatch(updateCommunityChecklist(id))
+  .then(() => dispatch(fetchCommunity(id)))
+)
 @connect((state, { params: { id } }) => ({
   community: id ? state.communities[id] : getCurrentCommunity(state)
 }))
@@ -18,7 +22,7 @@ export default class CommunityChecklist extends React.Component {
   static propTypes = {dispatch: func, community: object}
 
   render () {
-    const { community } = this.props
+    const { community, dispatch } = this.props
     const checklist = getChecklist(community)
     const percent = filter('done', checklist).length / checklist.length * 100
 
@@ -32,7 +36,8 @@ export default class CommunityChecklist extends React.Component {
         className='create-community-three'
         standalone>
         {checklist.map(({ title, url, done }) =>
-          <CheckItem title={title} url={url} done={done} key={title}/>)}
+          <CheckItem title={title} done={done} key={title}
+            onClick={() => dispatch(navigate(url))}/>)}
         <div className='footer'>
           <A className='button ok' to={`/c/${community.slug}`}>
             Continue to your community
@@ -43,15 +48,15 @@ export default class CommunityChecklist extends React.Component {
   }
 }
 
-const CheckItem = ({ title, url, done }) => {
-  return <div className='check-item form-sections'>
+const CheckItem = ({ title, onClick, done }) => {
+  return <div className='check-item form-sections' onClick={onClick}>
     <input type='checkbox' checked={done}/>
     {title}
-    <A className='disclosure' to={url}>&#x3009;</A>
+    <span className='disclosure'>&#x3009;</span>
   </div>
 }
 
-const PercentBar = ({ percent }) => {
+export const PercentBar = ({ percent }) => {
   return <div className='percent-bar'>
     <div className='bar'>
       <div className='completed-portion' style={{width: `${percent}%`}}></div>

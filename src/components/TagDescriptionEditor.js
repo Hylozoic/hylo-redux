@@ -2,15 +2,20 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { cancelTagDescriptionEdit, editTagDescription, editNewTagAndDescription } from '../actions'
 import { debounce, keys, isEmpty, map } from 'lodash'
+import { get } from 'lodash/fp'
 import { hashtagWordRegex } from '../models/hashtag'
+import { getCurrentCommunity } from '../models/community'
+import { canModerate } from '../models/currentUser'
 import { BareModalWrapper, Modal } from './Modal'
-import { ModalInput } from './ModalRow'
+import ModalRow, { ModalInput } from './ModalRow'
 import cx from 'classnames'
 const { func, object, bool } = React.PropTypes
 
 @connect((state, props) => ({
   tags: state.tagDescriptionEdits,
-  creating: state.creatingTagAndDescription
+  creating: state.creatingTagAndDescription,
+  currentUser: get('people.current', state),
+  community: getCurrentCommunity(state)
 }))
 export default class TagDescriptionEditor extends React.Component {
   static propTypes = {
@@ -19,19 +24,23 @@ export default class TagDescriptionEditor extends React.Component {
     saveTagDescriptions: func,
     updatePostTag: func,
     dispatch: func,
-    creating: bool
+    creating: bool,
+    currentUser: object,
+    community: object
   }
 
   render () {
-    let { tags, saveParent, updatePostTag, dispatch, creating } = this.props
+    let {
+      tags, saveParent, updatePostTag, dispatch, creating, currentUser, community
+    } = this.props
     const cancel = () => dispatch(cancelTagDescriptionEdit())
     const editAction = creating ? editNewTagAndDescription : editTagDescription
-    const edit = debounce((tag, value) =>
-      dispatch(editAction(tag, value)), 200)
+    const edit = debounce((tag, value, is_default) =>
+      dispatch(editAction(tag, value, is_default)), 200)
 
     if (isEmpty(tags)) {
       if (!creating) return null
-      tags = {'': ''}
+      tags = {'': {description: '', is_default: false}}
     }
 
     const validate = tags => {
@@ -59,17 +68,29 @@ export default class TagDescriptionEditor extends React.Component {
 
     return <BareModalWrapper>
       <Modal id='tag-description-editor' title={title} onCancel={cancel}>
-        {map(tags, (description, tag, i) =>
-          <div key={creating ? i : tag} className={cx('tag-group', {creating})}>
+        {map(tags, ({ description, is_default }, tag) =>
+          <div key={creating ? 'key' : tag} className={cx('tag-group', {creating})}>
             {creating
               ? <ModalInput label='Topic name' defaultValue={tag}
-              onChange={event => edit(event.target.value, description)}/>
+              onChange={event => edit(event.target.value, description, is_default)}/>
               : <div className='topic'>
                   <label>Topic name</label>
                   <span>#{tag}</span>
                 </div>}
             <ModalInput label='Description' defaultValue={description}
-              onChange={event => edit(tag, event.target.value)}/>
+              onChange={event => edit(tag, event.target.value, is_default)}/>
+            {canModerate(currentUser, community) && <ModalRow
+              ref='default'>
+              <label>Make default</label>
+              <input type='checkbox'
+                value='def'
+                defaultChecked={is_default}
+                onChange={event => edit(tag, description, !is_default)}
+                onFocus={() => this.refs.default.focus()}
+                onBlur={() => this.refs.default.blur()}/>
+              Make this a default topic for your community.
+              <p className='meta help-text'>When a topic is set as default, it shows up in the topic dropdown menu for new posts, and all new members start out following that topic.</p>
+            </ModalRow>}
           </div>)}
         <div className='footer'>
           <button onClick={creating ? createTag : () => saveParent(tags)}

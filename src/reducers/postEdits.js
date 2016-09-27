@@ -1,11 +1,11 @@
 import { includes, mapValues, startCase, uniq } from 'lodash'
-import { get } from 'lodash/fp'
+import { pick, get } from 'lodash/fp'
 import {
   CANCEL_POST_EDIT,
   CANCEL_TAG_DESCRIPTION_EDIT,
   CREATE_COMMENT,
   CREATE_POST,
-  CREATE_TAG_IN_POST_EDITOR,
+  CREATE_TAG_IN_MODAL,
   EDIT_TAG_DESCRIPTION,
   EDIT_NEW_TAG_AND_DESCRIPTION,
   REMOVE_DOC,
@@ -116,7 +116,7 @@ export const creatingTagAndDescription = (state = false, action) => {
   const { type } = action
   if (type === CANCEL_TAG_DESCRIPTION_EDIT) {
     return false
-  } else if (type === CREATE_TAG_IN_POST_EDITOR) {
+  } else if (type === CREATE_TAG_IN_MODAL) {
     return true
   }
 
@@ -129,17 +129,17 @@ export const tagDescriptionEdits = (state = {}, action) => {
     const response = JSON.parse(payload.response.body)
     if (response.tagsMissingDescriptions) {
       return {
-        ...mapValues(response.tagsMissingDescriptions, () => ''),
+        ...mapValues(response.tagsMissingDescriptions, () => ({description: '', is_default: false})),
         ...state
       }
     }
   } else if (includes([START_POST_EDIT, CANCEL_POST_EDIT, CREATE_COMMENT], type)) {
     return {}
   } else if (type === EDIT_TAG_DESCRIPTION) {
-    return {...state, [payload.tag]: payload.description}
+    return {...state, [payload.tag]: pick(['description', 'is_default'], payload)}
   } else if (type === EDIT_NEW_TAG_AND_DESCRIPTION) {
-    return {[payload.tag]: payload.description}
-  } else if (type === CREATE_TAG_IN_POST_EDITOR) {
+    return {[payload.tag]: pick(['description', 'is_default'], payload)}
+  } else if (type === CREATE_TAG_IN_MODAL) {
     return {}
   }
 

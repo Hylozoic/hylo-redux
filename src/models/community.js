@@ -37,9 +37,9 @@ export const getFollowedTags = ({ slug }, state) =>
 export const getChecklist = community => {
   const { slug, settings: { checklist } } = community
   return [
-    {title: 'Add a logo', url: `/c/${slug}/settings`, done: !!get('logo', checklist)},
+    {title: 'Add a logo', url: `/c/${slug}/settings?expand=appearance`, done: !!get('logo', checklist)},
     {title: 'Invite members', url: `/c/${slug}/invite`, done: !!get('invite', checklist)},
-    {title: 'Set up topics', url: `/c/${slug}/invite`, done: !!get('topics', checklist)},
+    {title: 'Add a topic', url: `/c/${slug}/settings/tags?create=true`, done: !!get('topics', checklist)},
     {title: 'Make your first post', url: `/c/${slug}`, done: !!get('post', checklist)}
   ]
 }

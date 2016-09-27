@@ -36,7 +36,7 @@ import { attachmentParams } from '../util/shims'
 import { findUrls } from '../util/linkify'
 import { isKey, onEnter } from '../util/textInput'
 import { CREATE_POST, FETCH_LINK_PREVIEW, UPDATE_POST, UPLOAD_IMAGE } from '../actions'
-import { createTagInPostEditor } from '../actions'
+import { createTagInModal } from '../actions'
 import { ADDED_POST, EDITED_POST, trackEvent } from '../util/analytics'
 import { getCommunity, getCurrentCommunity } from '../models/community'
 import TagDescriptionEditor from './TagDescriptionEditor'
@@ -290,7 +290,7 @@ export class PostEditor extends React.Component {
     const editorType = this.editorType()
     const shouldSelectTag = !includes(['event', 'project'], editorType)
     const selectTag = tag => this.updateStore({tag})
-    const createTag = () => dispatch(createTagInPostEditor())
+    const createTag = () => dispatch(createTagInModal())
     const Subeditor = editorType === 'event' ? EventPostEditor
       : editorType === 'project' ? ProjectPostEditor : null
     const removeLinkPreview = () => this.updateStore({linkPreview: null})

@@ -450,12 +450,6 @@ export function closeModal () {
   return {type: CLOSE_MODAL}
 }
 
-export function createTagInModal () {
-  return {
-    type: CREATE_TAG_IN_MODAL
-  }
-}
-
 export function showExpandedPost (id, commentId) {
   return {type: SHOW_EXPANDED_POST, payload: {id, commentId}}
 }

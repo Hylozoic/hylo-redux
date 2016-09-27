@@ -36,8 +36,8 @@ class CommunityPosts extends React.Component {
     let { community, params: { id }, location: { query }, currentUser } = this.props
 
     return <div>
-      {currentUser && <PostEditor community={community}/>}
       {canModerate(currentUser, community) && <CommunitySetup community={community}/>}
+      {currentUser && <PostEditor community={community}/>}
       <ConnectedPostList {...{subject, id, query}}/>
       {!isMember(currentUser, community) && <div className='post-list-footer'>
         You are not a member of this community, so you are shown only posts that are marked as public.

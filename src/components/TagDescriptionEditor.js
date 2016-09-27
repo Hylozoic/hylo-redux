@@ -89,6 +89,7 @@ export default class TagDescriptionEditor extends React.Component {
                 onFocus={() => this.refs.default.focus()}
                 onBlur={() => this.refs.default.blur()}/>
               Make this a default topic for your community.
+              <p className='meta help-text'>When a topic is set as default, it shows up in the topic dropdown menu for new posts, and all new members start out following that topic.</p>
             </ModalRow>}
           </div>)}
         <div className='footer'>

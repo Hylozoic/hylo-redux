@@ -9,6 +9,7 @@ import { isMember, canModerate } from '../../models/currentUser'
 import { getChecklist } from '../../models/community'
 import { filter } from 'lodash/fp'
 import { navigate } from '../../actions'
+import { updateCommunityChecklist } from '../../actions/communities'
 const { func, object } = React.PropTypes
 
 const subject = 'community'
@@ -47,7 +48,9 @@ class CommunityPosts extends React.Component {
 }
 
 export default compose(
-  prefetch(({ dispatch, params, query }) => dispatch(fetch(subject, params.id, query))),
+  prefetch(({ dispatch, params: { id }, query }) =>
+    dispatch(updateCommunityChecklist(id))
+    .then(() => dispatch(fetch(subject, id, query)))),
   connect((state, { params }) => ({
     community: state.communities[params.id],
     currentUser: state.people.current

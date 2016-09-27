@@ -67,6 +67,6 @@ const CommunitySetup = connect()(({ community, dispatch }) => {
   return <div className='community-setup'
     onClick={() => dispatch(navigate(`/c/${community.slug}/checklist`))}>
     <PercentBar percent={percent}/>
-    Your community is {percent}% setup. Click here to continue setting it up.
+    Your community is {percent}% set up. Click here to continue setting it up.
   </div>
 })

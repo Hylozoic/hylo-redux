@@ -120,6 +120,8 @@ export const UPDATE_NETWORK_PENDING = UPDATE_NETWORK + _PENDING
 export const UPDATE_NETWORK_EDITOR = 'UPDATE_NETWORK_EDITOR'
 export const UPDATE_POST = 'UPDATE_POST'
 export const UPDATE_POST_EDITOR = 'UPDATE_POST_EDITOR'
+export const UPDATE_COMMUNITY_TAG = 'UPDATE_COMMUNITY_TAG'
+export const UPDATE_COMMUNITY_TAG_PENDING = 'UPDATE_COMMUNITY_TAG_PENDING'
 export const UPDATE_USER_SETTINGS = 'UPDATE_USER_SETTINGS'
 export const UPDATE_USER_SETTINGS_PENDING = UPDATE_USER_SETTINGS + _PENDING
 export const UPLOAD_DOC = 'UPLOAD_DOC'
@@ -418,12 +420,12 @@ export function cancelTagDescriptionEdit () {
   return {type: CANCEL_TAG_DESCRIPTION_EDIT}
 }
 
-export function editTagDescription (tag, description) {
-  return {type: EDIT_TAG_DESCRIPTION, payload: {tag, description}}
+export function editTagDescription (tag, description, is_default) {
+  return {type: EDIT_TAG_DESCRIPTION, payload: {tag, description, is_default}}
 }
 
-export function editNewTagAndDescription (tag, description) {
-  return {type: EDIT_NEW_TAG_AND_DESCRIPTION, payload: {tag, description}}
+export function editNewTagAndDescription (tag, description, is_default) {
+  return {type: EDIT_NEW_TAG_AND_DESCRIPTION, payload: {tag, description, is_default}}
 }
 
 export function showTagPopover (tagName, slug, node) {

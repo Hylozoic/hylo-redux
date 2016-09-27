@@ -157,10 +157,10 @@ export function updateCommunitySettings (id, params) {
   }
 }
 
-export function updateCommunityChecklist (id) {
+export function updateCommunityChecklist (slug) {
   return {
     type: UPDATE_COMMUNITY_CHECKLIST,
-    payload: {api: true, path: `/noo/community/${id}/update-checklist`, method: 'POST'},
-    meta: {id}
+    payload: {api: true, path: `/noo/community/${slug}/update-checklist`, method: 'POST'},
+    meta: {slug}
   }
 }

@@ -48,9 +48,10 @@ class CommunityPosts extends React.Component {
 }
 
 export default compose(
-  prefetch(({ dispatch, params: { id }, query }) =>
+  prefetch(({ dispatch, params: { id }, query }) => {
     dispatch(updateCommunityChecklist(id))
-    .then(() => dispatch(fetch(subject, id, query)))),
+    dispatch(fetch(subject, id, query))
+  }),
   connect((state, { params }) => ({
     community: state.communities[params.id],
     currentUser: state.people.current

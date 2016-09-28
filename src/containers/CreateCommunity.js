@@ -43,13 +43,16 @@ import InvitationList from './community/InvitationList'
 
 const merkabaUrl = 'https://www.hylo.com/img/hylo-merkaba-300x300.png'
 
-export const Topper = ({ community }) => {
+export const Topper = ({ community, showJoin }) => {
   const { name, avatar_url } = community || {}
   const logoUrl = avatar_url || merkabaUrl
 
   return <div className='modal-topper'>
     <div className='medium-avatar' style={{backgroundImage: `url(${logoUrl})`}}/>
     <h2>{name || 'Your New Community'}</h2>
+    {showJoin && <div className='before-modal'>
+      <A to='/c/join'>Trying to join a community?</A>
+    </div>}
   </div>
 }
 
@@ -187,7 +190,7 @@ export class CreateCommunity extends React.Component {
     const { expanded } = this.state
 
     return <ModalOnlyPage className='create-community'>
-      <Topper community={community}/>
+      <Topper community={community} showJoin={true}/>
       <Modal title='Create your community.'
         id='new-community-form'
         subtitle="Let's get started unlocking the creative potential of your community with Hylo."
@@ -231,9 +234,6 @@ export class CreateCommunity extends React.Component {
           <a className='button' ref='submit' onClick={this.submit}>Create</a>
         </div>
       </Modal>
-      <div className='after-modal'>
-        <A to='/c/join'>Trying to join a community?</A>
-      </div>
   </ModalOnlyPage>
   }
 }

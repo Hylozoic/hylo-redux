@@ -6,7 +6,7 @@ import PostEditor from '../../components/PostEditor'
 import { PercentBar } from '../../containers/community/CommunityChecklist'
 import { compose } from 'redux'
 import { isMember, canModerate } from '../../models/currentUser'
-import { navigate } from '../../actions'
+import { navigate, notify } from '../../actions'
 import { requestToJoinCommunity } from '../../actions/communities'
 import { getChecklist } from '../../models/community'
 import { filter } from 'lodash/fp'
@@ -37,8 +37,11 @@ class CommunityPosts extends React.Component {
     let { community, params: { id }, location: { query }, currentUser, dispatch } = this.props
 
     const requestToJoin = () => {
-      if (!currentUser) dispatch(navigate(`/signup?next=/c/${community.slug}`))
+      if (!currentUser) return dispatch(navigate(`/signup?next=/c/${community.slug}`))
       dispatch(requestToJoinCommunity(community.slug))
+      .then(({ error }) => error
+        ? dispatch(notify('There was a problem saving your request, please try again later', {type: 'error'}))
+        : dispatch(notify('Your request has been sent to the community managers')))
     }
 
     return <div>

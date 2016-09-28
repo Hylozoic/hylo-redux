@@ -195,7 +195,7 @@ export class CreateCommunity extends React.Component {
         id='new-community-form'
         subtitle="Let's get started unlocking the creative potential of your community with Hylo."
         standalone>
-        <ModalInput label='Name' ref='name' onChange={this.set('name')}
+        <ModalInput label='Community Name' ref='name' onChange={this.set('name')}
           errors={<div className='errors'>
             {errors.nameBlank && <p className='help error'>Please fill in this field.</p>}
             {errors.nameUsed && <p className='help error'>This name is already in use.</p>}
@@ -207,7 +207,7 @@ export class CreateCommunity extends React.Component {
               {errors.slugInvalid && <p className='help error'>Use lowercase letters, numbers, and hyphens only.</p>}
               {errors.slugUsed && <p className='help error'>This URL is already in use.</p>}
             </div>}/>
-        <ModalInput label='Description' ref='description' type='textarea' onChange={this.set('description')}
+          <ModalInput label='About your community' ref='description' type='textarea' onChange={this.set('description')}
           errors={
             <div className='errors'>
               {errors.descriptionBlank && <p className='help error'>Please fill in this field.</p>}

@@ -135,3 +135,14 @@ export const addOrRemovePersonId = (state, id, personId, attr) => {
     [id]: {...post, [attr]: newIds}
   }
 }
+
+export const addPersonId = (state, id, personId, attr) => {
+  const post = state[id]
+  const newIds = some(post[attr], id => id === personId)
+    ? post[attr]
+    : (post[attr] || []).concat(personId)
+  return {
+    ...state,
+    [id]: {...post, [attr]: newIds}
+  }
+}

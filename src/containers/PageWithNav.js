@@ -76,9 +76,9 @@ const PageWithNav = (props, context) => {
         {showNetworkNav && <NetworkNav
           communities={networkCommunities}
           network={network || community.network}/>}
-          {children}
-        </div>
-      </VelocityComponent>
+        {children}
+      </div>
+    </VelocityComponent>
   </div>
 }
 

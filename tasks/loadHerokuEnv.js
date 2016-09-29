@@ -1,5 +1,5 @@
 import { herokuConfig } from './util'
-import { extend, pick } from 'lodash'
+import { each, includes } from 'lodash'
 
 const keys = [
   'ASSET_HOST',
@@ -24,8 +24,12 @@ const keys = [
 export default function (done) {
   herokuConfig().info((err, vars) => {
     if (err) done(err)
+    each(vars, (v, k) => {
+      if (includes(keys, k) || k.startsWith('FEATURE_FLAG_')) {
+        process.env[k] = v
+      }
+    })
 
-    extend(process.env, pick(vars, keys))
     done()
   })
 }

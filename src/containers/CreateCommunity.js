@@ -186,7 +186,7 @@ export class CreateCommunity extends React.Component {
   }
 
   render () {
-    const { community, errors } = this.props
+    const { community, errors, uploadingImage } = this.props
 
     const { expanded } = this.state
 
@@ -229,7 +229,9 @@ export class CreateCommunity extends React.Component {
         {expanded && <div className='modal-input'>
           <label>Logo</label>
           <div className='small-logo' style={{backgroundImage: `url(${community.avatar_url})`}}></div>
-          <a className='button upload' onClick={() => this.attachImage('avatar')}>Upload</a>
+          <a className='button upload' onClick={() => this.attachImage('avatar')}>
+            {uploadingImage ? 'Saving...' : 'Upload'}
+          </a>
         </div>}
         <div className='footer'>
           <a className='button' ref='submit' onClick={this.submit}>Create</a>

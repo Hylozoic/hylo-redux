@@ -2,6 +2,7 @@ import { MemberRole } from './community'
 import { curry, find, maxBy, partialRight, some } from 'lodash'
 import { get } from 'lodash/fp'
 import { same, truthy } from './index'
+import { featureFlags } from '../config'
 
 // this works if community is an object with an id, or just an id
 export const membership = (currentUser, community) =>
@@ -39,6 +40,6 @@ export const newestMembership = currentUser =>
   maxBy(get('memberships', currentUser), 'created_at')
 
 export const hasFeature = (currentUser, key) => {
-  const flag = process.env[`FEATURE_FLAG_${key}`]
+  const flag = featureFlags()[key]
   return flag === 'on' || isTester(currentUser) && flag === 'testing'
 }

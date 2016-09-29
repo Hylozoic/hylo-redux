@@ -27,6 +27,10 @@ export default class ChecklistModal extends React.Component {
     const checklist = getChecklist(community)
     const percent = filter('done', checklist).length / checklist.length * 100
     const close = () => dispatch(closeModal())
+    const closeAndNavigate = url => {
+      close()
+      dispatch(navigate(url))
+    }
 
     return <Modal title='Getting started.'
       subtitle={<div>
@@ -37,7 +41,7 @@ export default class ChecklistModal extends React.Component {
       onCancel={onCancel}>
       {checklist.map(({ title, url, done }) =>
         <CheckItem title={title} done={done} key={title}
-          onClick={() => dispatch(navigate(url))}/>)}
+          onClick={() => closeAndNavigate(url)}/>)}
       <div className='footer'>
         <a className='button ok' onClick={close}>
           Done

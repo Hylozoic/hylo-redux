@@ -30,6 +30,7 @@ import {
   CANCEL_POST_EDIT,
   CANCEL_TYPEAHEAD,
   CHECK_FRESHNESS_POSTS,
+  CLEAR_INVITATION_EDITOR,
   CLOSE_MODAL,
   CREATE_COMMUNITY,
   CREATE_NETWORK,
@@ -413,6 +414,8 @@ const combinedReducers = combineReducers({
           error = failures.map(r => `Couldn't send to ${r.email}: ${r.error}.`).join(' ')
         }
         return {...state, success, error}
+      case CLEAR_INVITATION_EDITOR:
+        return {}
     }
     return state
   },

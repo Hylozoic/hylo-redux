@@ -17,7 +17,8 @@ import {
   fetchInvitations,
   navigate,
   updateInvitationEditor,
-  sendCommunityInvitation
+  sendCommunityInvitation,
+  clearInvitationEditor
 } from '../actions'
 import {
   createCommunity,
@@ -313,6 +314,8 @@ export class CreateCommunityInvite extends React.Component {
 
     const checklistUrl = `/c/${community.slug}?checklist=true`
 
+    const clearEditor = () => dispatch(clearInvitationEditor())
+
     let submit = () => {
       dispatch(updateInvitationEditor('results', null))
       setError(null)
@@ -330,6 +333,7 @@ export class CreateCommunityInvite extends React.Component {
       .then(({ error }) => {
         if (error) return
         trackEvent(INVITED_COMMUNITY_MEMBERS, {community})
+        clearEditor()
         dispatch(navigate(checklistUrl))
       })
     }
@@ -376,7 +380,7 @@ export class CreateCommunityInvite extends React.Component {
         {error && <div className='alert alert-danger'>{error}</div>}
         <div className='footer'>
           <a className='button ok' onClick={submit}>Invite</a>
-          <A to={checklistUrl} className='skip'>Skip</A>
+          <A to={checklistUrl} onClick={clearEditor} className='skip'>Skip</A>
         </div>
       </Modal>
 

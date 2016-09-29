@@ -6,6 +6,7 @@ import { closeModal } from '../actions'
 import BrowseTopicsModal from '../containers/BrowseTopicsModal'
 import ShareTopicModal from '../containers/ShareTopicModal'
 import ExpandedPostModal from '../containers/ExpandedPostModal'
+import ChecklistModal from '../containers/ChecklistModal'
 import { NotificationsModal } from '../containers/Notifications'
 import cx from 'classnames'
 import { get } from 'lodash'
@@ -82,6 +83,10 @@ export class ModalWrapper extends React.Component {
         break
       case 'notifications':
         modal = <NotificationsModal onCancel={close}/>
+        clickToClose = true
+        break
+      case 'checklist':
+        modal = <ChecklistModal onCancel={close}/>
         clickToClose = true
     }
 

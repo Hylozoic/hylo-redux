@@ -311,6 +311,8 @@ export class CreateCommunityInvite extends React.Component {
       dispatch(updateInvitationEditor(field, value))
     }
 
+    const checklistUrl = `/c/${community.slug}?checklist=true`
+
     let submit = () => {
       dispatch(updateInvitationEditor('results', null))
       setError(null)
@@ -328,7 +330,7 @@ export class CreateCommunityInvite extends React.Component {
       .then(({ error }) => {
         if (error) return
         trackEvent(INVITED_COMMUNITY_MEMBERS, {community})
-        dispatch(navigate(`/c/${community.slug}/checklist`))
+        dispatch(navigate(checklistUrl))
       })
     }
 
@@ -374,7 +376,7 @@ export class CreateCommunityInvite extends React.Component {
         {error && <div className='alert alert-danger'>{error}</div>}
         <div className='footer'>
           <a className='button ok' onClick={submit}>Invite</a>
-          <A to={`/c/${community.slug}`} className='skip'>Skip</A>
+          <A to={checklistUrl} className='skip'>Skip</A>
         </div>
       </Modal>
 

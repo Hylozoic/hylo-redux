@@ -3,12 +3,12 @@ import { connect } from 'react-redux'
 import { prefetch } from 'react-fetcher'
 import { fetch, ConnectedPostList } from '../ConnectedPostList'
 import PostEditor from '../../components/PostEditor'
-import { PercentBar } from '../../containers/community/CommunityChecklist'
+import { PercentBar } from '../../containers/ChecklistModal'
 import { compose } from 'redux'
 import { isMember, canModerate } from '../../models/currentUser'
 import { getChecklist } from '../../models/community'
 import { filter } from 'lodash/fp'
-import { navigate } from '../../actions'
+import { showModal } from '../../actions'
 import { updateCommunityChecklist } from '../../actions/communities'
 const { func, object } = React.PropTypes
 
@@ -31,6 +31,12 @@ class CommunityPosts extends React.Component {
   getChildContext () {
     let { community } = this.props
     return {community}
+  }
+
+  componentDidMount () {
+    let { location: { query }, dispatch } = this.props
+    let { checklist } = query || {}
+    if (checklist) dispatch(showModal('checklist'))
   }
 
   render () {
@@ -65,8 +71,8 @@ const CommunitySetup = connect()(({ community, dispatch }) => {
   if (percent === 100) return null
 
   return <div className='community-setup'
-    onClick={() => dispatch(navigate(`/c/${community.slug}/checklist`))}>
+    onClick={() => dispatch(dispatch(showModal('checklist')))}>
     <PercentBar percent={percent}/>
-    Your community is {percent}% set up. Click here to continue setting it up.
+    Your community is {percent}% set up. <a>Click here</a> to continue setting it up.
   </div>
 })

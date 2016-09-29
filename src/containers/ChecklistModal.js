@@ -53,7 +53,7 @@ export default class ChecklistModal extends React.Component {
 
 const CheckItem = ({ title, onClick, done }) => {
   return <div className='check-item form-sections' onClick={onClick}>
-    <input type='checkbox' checked={done}/>
+    <input type='checkbox' checked={done} readOnly/>
     {title}
     <span className='disclosure'>&#x3009;</span>
   </div>

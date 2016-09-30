@@ -7,6 +7,7 @@ import BrowseTopicsModal from '../containers/BrowseTopicsModal'
 import ShareTopicModal from '../containers/ShareTopicModal'
 import ExpandedPostModal from '../containers/ExpandedPostModal'
 import ChecklistModal from '../containers/ChecklistModal'
+import TagEditorModal from '../containers/TagEditorModal'
 import { NotificationsModal } from '../containers/Notifications'
 import cx from 'classnames'
 import { get } from 'lodash'
@@ -87,6 +88,12 @@ export class ModalWrapper extends React.Component {
         break
       case 'checklist':
         modal = <ChecklistModal onCancel={close}/>
+        clickToClose = true
+        break
+      case 'tag-editor':
+        modal = <TagEditorModal onCancel={close}
+          saveParent={params.save}
+          updatePostTag={params.updatePostTag}/>
         clickToClose = true
     }
 

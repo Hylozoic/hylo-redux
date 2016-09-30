@@ -1,13 +1,14 @@
 import React from 'react'
 import { connect } from 'react-redux'
-import { cancelTagDescriptionEdit, editTagDescription, editNewTagAndDescription } from '../actions'
 import { debounce, keys, isEmpty, map } from 'lodash'
 import { get } from 'lodash/fp'
-import { hashtagWordRegex } from '../models/hashtag'
+import { closeModal } from '../actions'
+import { cancelTagDescriptionEdit, editTagDescription, editNewTagAndDescription } from '../actions'
+import { BareModalWrapper, Modal } from '../components/Modal'
+import ModalRow, { ModalInput } from '../components/ModalRow'
 import { getCurrentCommunity } from '../models/community'
+import { hashtagWordRegex } from '../models/hashtag'
 import { canModerate } from '../models/currentUser'
-import { BareModalWrapper, Modal } from './Modal'
-import ModalRow, { ModalInput } from './ModalRow'
 import cx from 'classnames'
 const { func, object, bool } = React.PropTypes
 
@@ -17,7 +18,7 @@ const { func, object, bool } = React.PropTypes
   currentUser: get('people.current', state),
   community: getCurrentCommunity(state)
 }))
-export default class TagDescriptionEditor extends React.Component {
+export default class TagEditorModal extends React.Component {
   static propTypes = {
     tags: object,
     saveParent: func,

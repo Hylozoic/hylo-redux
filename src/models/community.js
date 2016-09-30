@@ -36,7 +36,8 @@ export const getFollowedTags = ({ slug }, state) =>
   values(pickBy('followed', state.tagsByCommunity[slug]))
 
 export const getChecklist = community => {
-  const { settings: { checklist } } = community
+  const { settings } = community
+  const { checklist } = settings || {}
   return [
     {title: 'Add a logo', action: showModal('add-logo'), done: !!get('logo', checklist)},
     {title: 'Add a banner', action: showModal('add-logo'), done: !!get('banner', checklist)},

@@ -8,9 +8,10 @@ import { createComment, updateCommentEditor, updateComment } from '../actions/co
 import { ADDED_COMMENT, trackEvent } from '../util/analytics'
 import { textLength } from '../util/text'
 import { onCmdOrCtrlEnter } from '../util/textInput'
-import TagDescriptionEditor from './TagDescriptionEditor'
 import cx from 'classnames'
 var { array, bool, func, object, string } = React.PropTypes
+
+const TagDescriptionEditor = () => null
 
 // The interval between repeated typing notifications to the web socket. We send
 // repeated notifications to make sure that a user gets notified even if they

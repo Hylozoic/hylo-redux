@@ -3,7 +3,8 @@ import { connect } from 'react-redux'
 import { debounce, keys, isEmpty, map } from 'lodash'
 import { get } from 'lodash/fp'
 import { closeModal } from '../actions'
-import { cancelTagDescriptionEdit, editTagDescription, editNewTagAndDescription } from '../actions'
+import { editTagDescription, editNewTagAndDescription } from '../actions'
+import { createTagInCommunity } from '../actions/tags'
 import { BareModalWrapper, Modal } from '../components/Modal'
 import ModalRow, { ModalInput } from '../components/ModalRow'
 import { getCurrentCommunity } from '../models/community'
@@ -14,7 +15,6 @@ const { func, object, bool } = React.PropTypes
 
 @connect((state, props) => ({
   tags: state.tagDescriptionEdits,
-  creating: state.creatingTagAndDescription,
   currentUser: get('people.current', state),
   community: getCurrentCommunity(state)
 }))
@@ -33,10 +33,16 @@ export default class TagEditorModal extends React.Component {
     let {
       tags, saveParent, updatePostTag, dispatch, creating, currentUser, community
     } = this.props
-    const cancel = () => dispatch(cancelTagDescriptionEdit())
+    const cancel = () => dispatch(closeModal())
     const editAction = creating ? editNewTagAndDescription : editTagDescription
     const edit = debounce((tag, value, is_default) =>
       dispatch(editAction(tag, value, is_default)), 200)
+
+    updatePostTag = updatePostTag || ((params) => {
+      const { dispatch, community: { slug } } = this.props
+      const name = Object.keys(params)[0]
+      dispatch(createTagInCommunity({...params[name], name}, slug))
+    })
 
     if (isEmpty(tags)) {
       if (!creating) return null
@@ -58,9 +64,15 @@ export default class TagEditorModal extends React.Component {
       }
       return true
     }
+
     const createTag = () => {
       if (!validate(tags)) return
       updatePostTag(tags)
+      cancel()
+    }
+
+    const saveTag = () => {
+      saveParent(tags)
       cancel()
     }
 
@@ -93,7 +105,7 @@ export default class TagEditorModal extends React.Component {
             </ModalRow>}
           </div>)}
         <div className='footer'>
-          <button onClick={creating ? createTag : () => saveParent(tags)}
+          <button onClick={creating ? createTag : saveTag}
             className='ok'>
             Create
           </button>

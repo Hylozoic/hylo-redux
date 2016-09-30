@@ -35,6 +35,7 @@ import { uploadDoc } from '../actions/uploadDoc'
 import { attachmentParams } from '../util/shims'
 import { findUrls } from '../util/linkify'
 import { isKey, onEnter } from '../util/textInput'
+import { responseMissingTagDescriptions } from '../util/api'
 import {
   showModal, CREATE_POST, FETCH_LINK_PREVIEW, UPDATE_POST, UPLOAD_IMAGE
 } from '../actions'
@@ -201,8 +202,8 @@ export class PostEditor extends React.Component {
     }
 
     dispatch((post ? updatePost : createPost)(id, params))
-    .then(({ error }) => {
-      if (error) {
+    .then(action => {
+      if (responseMissingTagDescriptions(action)) {
         return dispatch(showModal('tag-editor', {
           creating: false,
           saveParent: this.saveWithTagDescriptions

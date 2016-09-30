@@ -17,6 +17,7 @@ import A from '../../components/A'
 import { formatDate } from '../../util/text'
 import { debounce, get, sortBy, throttle, set } from 'lodash'
 import ListItemTagInput from '../../components/ListItemTagInput'
+import { hasFeature } from '../../models/currentUser'
 import { avatarUploadSettings, bannerUploadSettings } from '../../models/person'
 import { openPopup, setupPopupCallback, PROFILE_CONTEXT } from '../../util/auth'
 import { EDITED_USER_SETTINGS, trackEvent } from '../../util/analytics'
@@ -378,14 +379,16 @@ export default class UserSettings extends React.Component {
         </Item>}
       </Section>}
 
-      <SectionLabel name='payment' label='Payment Details' {...{dispatch, expand}}/>
-      {expand.payment && <Section className='payment'>
-        <Item>
-          <div className='full-column'>
-            <p>You do not belong to any communities that require a membership fee.</p>
-          </div>
-        </Item>
-      </Section>}
+      {hasFeature(currentUser, 'PAYMENT_SETTINGS') && <div>
+        <SectionLabel name='payment' label='Payment Details' {...{dispatch, expand}}/>
+        {expand.payment && <Section className='payment'>
+          <Item>
+            <div className='full-column'>
+              <p>You do not belong to any communities that require a membership fee.</p>
+            </div>
+          </Item>
+        </Section>}
+      </div>}
     </div>
   }
 }

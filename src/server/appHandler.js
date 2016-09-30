@@ -17,6 +17,7 @@ import { some, isEmpty, toPairs } from 'lodash'
 import { flow, map } from 'lodash/fp'
 import { parse } from 'url'
 import MobileDetect from 'mobile-detect'
+import { featureFlags } from '../config'
 
 const checkAPIErrors = (res, errors) => {
   if (!isEmpty(errors)) res.errors = errors
@@ -57,6 +58,7 @@ const createElement = state => markup =>
     initNewRelic: browserSnippet(),
     state: `window.INITIAL_STATE=${JSON.stringify(state).replace('</script>', '')}`,
     assetManifest: `window.ASSET_MANIFEST=${JSON.stringify(getManifest())}`,
+    featureFlags: `window.FEATURE_FLAGS=${JSON.stringify(featureFlags())}`,
     metaTags: state.metaTags
   })
 

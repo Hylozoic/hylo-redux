@@ -1,4 +1,5 @@
 import { parse } from 'url'
+import { once } from 'lodash'
 
 export const environment = process.env.NODE_ENV || 'development'
 const isServer = typeof window === 'undefined'
@@ -30,9 +31,23 @@ export const segment = {
   writeKey: process.env.SEGMENT_KEY
 }
 
+export const featureFlags = () => {
+  if (isServer) {
+    return once(() =>
+      Object.keys(process.env).reduce((flags, key) => {
+        if (key.startsWith('FEATURE_FLAG_')) {
+          flags[key.replace('FEATURE_FLAG_', '')] = process.env[key]
+        }
+        return flags
+      }, {}))()
+  } else {
+    return window.FEATURE_FLAGS
+  }
+}
+
 const config = {
   environment, filepickerKey, logLevel, upstreamHost, host, slack, s3, google,
-  facebook, segment
+  facebook, segment, featureFlags
 }
 
 if (!upstreamHost || !parse(upstreamHost).protocol) {

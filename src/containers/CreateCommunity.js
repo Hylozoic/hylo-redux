@@ -17,7 +17,8 @@ import {
   fetchInvitations,
   navigate,
   updateInvitationEditor,
-  sendCommunityInvitation
+  sendCommunityInvitation,
+  clearInvitationEditor
 } from '../actions'
 import {
   createCommunity,
@@ -43,13 +44,16 @@ import InvitationList from './community/InvitationList'
 
 const merkabaUrl = 'https://www.hylo.com/img/hylo-merkaba-300x300.png'
 
-export const Topper = ({ community }) => {
+export const Topper = ({ community, showJoin }) => {
   const { name, avatar_url } = community || {}
   const logoUrl = avatar_url || merkabaUrl
 
   return <div className='modal-topper'>
     <div className='medium-avatar' style={{backgroundImage: `url(${logoUrl})`}}/>
     <h2>{name || 'Your New Community'}</h2>
+    {showJoin && <div className='before-modal'>
+      <A to='/c/join'>Trying to join a community?</A>
+    </div>}
   </div>
 }
 
@@ -182,17 +186,17 @@ export class CreateCommunity extends React.Component {
   }
 
   render () {
-    const { community, errors } = this.props
+    const { community, errors, uploadingImage } = this.props
 
     const { expanded } = this.state
 
     return <ModalOnlyPage className='create-community'>
-      <Topper community={community}/>
+      <Topper community={community} showJoin={true}/>
       <Modal title='Create your community.'
         id='new-community-form'
         subtitle="Let's get started unlocking the creative potential of your community with Hylo."
         standalone>
-        <ModalInput label='Name' ref='name' onChange={this.set('name')}
+        <ModalInput label='Community Name' ref='name' onChange={this.set('name')}
           errors={<div className='errors'>
             {errors.nameBlank && <p className='help error'>Please fill in this field.</p>}
             {errors.nameUsed && <p className='help error'>This name is already in use.</p>}
@@ -204,7 +208,7 @@ export class CreateCommunity extends React.Component {
               {errors.slugInvalid && <p className='help error'>Use lowercase letters, numbers, and hyphens only.</p>}
               {errors.slugUsed && <p className='help error'>This URL is already in use.</p>}
             </div>}/>
-        <ModalInput label='Description' ref='description' type='textarea' onChange={this.set('description')}
+          <ModalInput label='About your community' ref='description' type='textarea' onChange={this.set('description')}
           errors={
             <div className='errors'>
               {errors.descriptionBlank && <p className='help error'>Please fill in this field.</p>}
@@ -225,15 +229,14 @@ export class CreateCommunity extends React.Component {
         {expanded && <div className='modal-input'>
           <label>Logo</label>
           <div className='small-logo' style={{backgroundImage: `url(${community.avatar_url})`}}></div>
-          <a className='button upload' onClick={() => this.attachImage('avatar')}>Upload</a>
+          <a className='button upload' onClick={() => this.attachImage('avatar')}>
+            {uploadingImage ? 'Saving...' : 'Upload'}
+          </a>
         </div>}
         <div className='footer'>
           <a className='button' ref='submit' onClick={this.submit}>Create</a>
         </div>
       </Modal>
-      <div className='after-modal'>
-        <A to='/c/join'>Trying to join a community?</A>
-      </div>
   </ModalOnlyPage>
   }
 }
@@ -311,6 +314,10 @@ export class CreateCommunityInvite extends React.Component {
       dispatch(updateInvitationEditor(field, value))
     }
 
+    const checklistUrl = `/c/${community.slug}?checklist=true`
+
+    const clearEditor = () => dispatch(clearInvitationEditor())
+
     let submit = () => {
       dispatch(updateInvitationEditor('results', null))
       setError(null)
@@ -328,7 +335,8 @@ export class CreateCommunityInvite extends React.Component {
       .then(({ error }) => {
         if (error) return
         trackEvent(INVITED_COMMUNITY_MEMBERS, {community})
-        dispatch(navigate(`/c/${community.slug}/checklist`))
+        clearEditor()
+        dispatch(navigate(checklistUrl))
       })
     }
 
@@ -374,7 +382,7 @@ export class CreateCommunityInvite extends React.Component {
         {error && <div className='alert alert-danger'>{error}</div>}
         <div className='footer'>
           <a className='button ok' onClick={submit}>Invite</a>
-          <A to={`/c/${community.slug}`} className='skip'>Skip</A>
+          <A to={checklistUrl} onClick={clearEditor} className='skip'>Skip</A>
         </div>
       </Modal>
 

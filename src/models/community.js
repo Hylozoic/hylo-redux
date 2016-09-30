@@ -40,7 +40,7 @@ export const getChecklist = community => {
     {title: 'Add a logo', url: `/c/${slug}/settings?expand=appearance`, done: !!get('logo', checklist)},
     {title: 'Invite members', url: `/c/${slug}/invite`, done: !!get('invite', checklist)},
     {title: 'Add a topic', url: `/c/${slug}/settings/tags?create=true`, done: !!get('topics', checklist)},
-    {title: 'Make your first post', url: `/c/${slug}`, done: !!get('post', checklist)}
+    {title: 'Start your first conversation', url: `/c/${slug}`, done: !!get('post', checklist)}
   ]
 }
 

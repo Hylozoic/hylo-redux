@@ -14,6 +14,7 @@ export const CHANGE_EVENT_RESPONSE = 'CHANGE_EVENT_RESPONSE'
 export const CHANGE_EVENT_RESPONSE_PENDING = CHANGE_EVENT_RESPONSE + _PENDING
 export const CHECK_FRESHNESS_POSTS = 'CHECK_FRESHNESS_POSTS'
 export const CLEAR_CACHE = 'CLEAR_CACHE'
+export const CLEAR_INVITATION_EDITOR = 'CLEAR_INVITATION_EDITOR'
 export const CLOSE_MODAL = 'CLOSE_MODAL'
 export const COMPLETE_POST = 'COMPLETE_POST'
 export const COMPLETE_POST_PENDING = COMPLETE_POST + _PENDING
@@ -331,6 +332,12 @@ export function sendCommunityInvitation (communityId, params) {
   return {
     type: SEND_COMMUNITY_INVITATION,
     payload: {api: true, path: `/noo/community/${communityId}/invite`, params, method: 'POST'}
+  }
+}
+
+export function clearInvitationEditor () {
+  return {
+    type: CLEAR_INVITATION_EDITOR
   }
 }
 

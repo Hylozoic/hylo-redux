@@ -8,6 +8,9 @@ import ShareTopicModal from '../containers/ShareTopicModal'
 import ExpandedPostModal from '../containers/ExpandedPostModal'
 import ChecklistModal from '../containers/ChecklistModal'
 import TagEditorModal from '../containers/TagEditorModal'
+import AddLogoModal from '../containers/AddLogoModal'
+import InviteModal from '../containers/InviteModal'
+import PostEditorModal from '../containers/PostEditorModal'
 import { NotificationsModal } from '../containers/Notifications'
 import cx from 'classnames'
 import { get } from 'lodash'
@@ -27,25 +30,30 @@ const modalStyle = isMobile => {
 }
 
 export class BareModalWrapper extends React.Component {
-  static propTypes = {children: object, onClick: func}
+  static propTypes = {children: object, onClick: func, top: bool}
 
   render () {
-    const { children } = this.props
+    const { children, top } = this.props
     const onClick = event => {
       if (event.target !== this.refs.backdrop) return
       return this.props.onClick(event)
     }
 
     return <div id={modalWrapperCSSId}>
-      <div className='scrolling-backdrop' ref='backdrop' onClick={onClick}>
-        {children}
-      </div>
+      {top
+        ? <div className='scrolling-backdrop' ref='backdrop' onClick={onClick}>
+            {children}
+          </div>
+        : <div>
+            {children}
+          </div>}
     </div>
   }
 }
 
 export class ModalWrapper extends React.Component {
-  static propTypes = {show: string, params: object}
+  static propTypes = {type: string, params: object, top: bool}
+  static defaultProps = {top: true}
   static contextTypes = {dispatch: func}
 
   lockScrolling = () => {
@@ -53,22 +61,22 @@ export class ModalWrapper extends React.Component {
   }
 
   componentWillReceiveProps (nextProps) {
-    if (nextProps.show && !this.props.show) {
+    if (nextProps.type && !this.props.type) {
       this.lockedScrollTop = document.body.scrollTop
       window.addEventListener('scroll', this.lockScrolling)
-    } else if (!nextProps.show && this.props.show) {
+    } else if (!nextProps.type && this.props.type) {
       window.removeEventListener('scroll', this.lockScrolling)
     }
   }
 
   render () {
-    const { show, params } = this.props
+    const { type, params, top } = this.props
     const { dispatch } = this.context
-    if (!show) return null
+    if (!type) return null
 
     let modal, clickToClose
     const close = () => dispatch(closeModal())
-    switch (show) {
+    switch (type) {
       case 'tags':
         modal = <BrowseTopicsModal onCancel={close}/>
         clickToClose = true
@@ -96,9 +104,22 @@ export class ModalWrapper extends React.Component {
           updatePostTag={params.updatePostTag}
           creating={params.creating}/>
         clickToClose = true
+        break
+      case 'add-logo':
+        modal = <AddLogoModal onCancel={close}/>
+        clickToClose = true
+        break
+      case 'invite':
+        modal = <InviteModal onCancel={close}/>
+        clickToClose = true
+        break
+      case 'post-editor':
+        modal = <PostEditorModal onCancel={close}/>
+        clickToClose = true
+        break
     }
 
-    return <BareModalWrapper onClick={() => clickToClose && close()}>
+    return <BareModalWrapper top={top} onClick={() => clickToClose && close()}>
       {modal}
     </BareModalWrapper>
   }

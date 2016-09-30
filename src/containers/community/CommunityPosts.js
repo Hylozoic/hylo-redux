@@ -71,7 +71,7 @@ const CommunitySetup = connect()(({ community, dispatch }) => {
   if (percent === 100) return null
 
   return <div className='community-setup'
-    onClick={() => dispatch(dispatch(showModal('checklist')))}>
+    onClick={() => dispatch(showModal('checklist'))}>
     <PercentBar percent={percent}/>
     Your community is {percent}% set up. <a>Click here</a> to continue setting it up.
   </div>

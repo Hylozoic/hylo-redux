@@ -5,7 +5,7 @@ import { get } from 'lodash/fp'
 import { closeModal } from '../actions'
 import { editTagDescription, editNewTagAndDescription } from '../actions'
 import { createTagInCommunity } from '../actions/tags'
-import { BareModalWrapper, Modal } from '../components/Modal'
+import { Modal } from '../components/Modal'
 import ModalRow, { ModalInput } from '../components/ModalRow'
 import { getCurrentCommunity } from '../models/community'
 import { hashtagWordRegex } from '../models/hashtag'
@@ -78,8 +78,7 @@ export default class TagEditorModal extends React.Component {
 
     const title = `Hey, you're creating ${keys(tags).length > 1 ? 'new topics.' : 'a new topic.'}`
 
-    return <BareModalWrapper>
-      <Modal id='tag-description-editor' title={title} onCancel={cancel}>
+    return <Modal id='tag-description-editor' title={title} onCancel={cancel}>
         {map(tags, ({ description, is_default }, tag) =>
           <div key={creating ? 'key' : tag} className={cx('tag-group', {creating})}>
             {creating
@@ -111,6 +110,5 @@ export default class TagEditorModal extends React.Component {
           </button>
         </div>
       </Modal>
-    </BareModalWrapper>
   }
 }

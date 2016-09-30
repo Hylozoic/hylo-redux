@@ -433,18 +433,18 @@ const combinedReducers = combineReducers({
     return state
   },
 
-  showModal: (state = {}, action) => {
+  openModals: (state = [], action) => {
     switch (action.type) {
       case SHOW_MODAL:
-        return {show: action.meta.name, params: action.payload}
+        return state.concat({type: action.meta.name, params: action.payload})
       case SHOW_ALL_TAGS:
-        return {show: 'tags'}
+        return state.concat({type: 'tags'})
       case SHOW_SHARE_TAG:
-        return {show: 'share-tag', params: action.payload}
+        return state.concat({type: 'share-tag', params: action.payload})
       case SHOW_EXPANDED_POST:
-        return {show: 'expanded-post', params: action.payload}
+        return state.concat({type: 'expanded-post', params: action.payload})
       case CLOSE_MODAL:
-        return null
+        return state.slice(0, -1)
     }
 
     return state

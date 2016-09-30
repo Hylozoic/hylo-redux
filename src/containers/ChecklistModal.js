@@ -3,7 +3,7 @@ import { connect } from 'react-redux'
 import { prefetch } from 'react-fetcher'
 import { filter } from 'lodash/fp'
 import { getCurrentCommunity, getChecklist } from '../models/community'
-import { closeModal, navigate } from '../actions'
+import { closeModal } from '../actions'
 import { Modal } from '../components/Modal'
 import { fetchCommunity, updateCommunityChecklist } from '../actions/communities'
 const { func, object } = React.PropTypes
@@ -27,10 +27,6 @@ export default class ChecklistModal extends React.Component {
     const checklist = getChecklist(community)
     const percent = filter('done', checklist).length / checklist.length * 100
     const close = () => dispatch(closeModal())
-    const closeAndNavigate = url => {
-      close()
-      dispatch(navigate(url))
-    }
 
     return <Modal title='Getting started.'
       subtitle={<div>
@@ -39,9 +35,9 @@ export default class ChecklistModal extends React.Component {
       </div>}
       className='create-community-three'
       onCancel={onCancel}>
-      {checklist.map(({ title, url, done }) =>
+      {checklist.map(({ title, action, done }) =>
         <CheckItem title={title} done={done} key={title}
-          onClick={() => closeAndNavigate(url)}/>)}
+          onClick={() => dispatch(action)}/>)}
       <div className='footer'>
         <a className='button ok' onClick={close}>
           Done

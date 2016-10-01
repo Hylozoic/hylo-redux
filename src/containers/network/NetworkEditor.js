@@ -224,7 +224,7 @@ export default class NetworkEditor extends React.Component {
     let { name, description, slug, avatar_url, banner_url, communities } = networkEdit
     let disableSubmit = some(omit(errors, 'server')) || validating || saving || uploadingImage
 
-    return <div id='network-editor' className='form-sections'>
+    return <div id='network-editor' className='form-sections simple-page'>
       { creating ? <h2>Create a network</h2> : <h2>Edit network</h2> }
       <p>Let's take the first step toward unlocking the creative potential of your network with Hylo.</p>
 

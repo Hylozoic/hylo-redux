@@ -14,7 +14,6 @@ const { func, object, bool } = React.PropTypes
 @connect((state, props) => ({
   tags: state.tagDescriptionEdits,
   creating: state.creatingTagAndDescription,
-  currentUser: get('people.current', state),
   community: getCurrentCommunity(state)
 }))
 export default class TagDescriptionEditor extends React.Component {
@@ -25,14 +24,16 @@ export default class TagDescriptionEditor extends React.Component {
     updatePostTag: func,
     dispatch: func,
     creating: bool,
-    currentUser: object,
     community: object
   }
 
+  static contextTypes = {currentUser: object}
+
   render () {
     let {
-      tags, saveParent, updatePostTag, dispatch, creating, currentUser, community
+      tags, saveParent, updatePostTag, dispatch, creating, community
     } = this.props
+    const { currentUser } = this.context
     const cancel = () => dispatch(cancelTagDescriptionEdit())
     const editAction = creating ? editNewTagAndDescription : editTagDescription
     const edit = debounce((tag, value, is_default) =>

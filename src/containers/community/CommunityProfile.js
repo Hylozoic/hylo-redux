@@ -12,11 +12,12 @@ const { func, object } = React.PropTypes
 class CommunityProfile extends React.Component {
   static propTypes = {
     community: object,
-    currentUser: object,
     children: object,
     location: object,
     dispatch: func
   }
+
+  static contextTypes = {currentUser: object}
 
   componentDidMount () {
     this.fetchCommunitiesForNetworkNav(this.props.community)
@@ -30,8 +31,9 @@ class CommunityProfile extends React.Component {
 
   fetchCommunitiesForNetworkNav (community) {
     const { dispatch } = this.props
+    const { currentUser } = this.context
     const networkId = get(community, 'network.id')
-    if (!networkId) return
+    if (!networkId || !currentUser) return
     dispatch(fetchCommunitiesForNetworkNav(networkId))
   }
 
@@ -51,21 +53,17 @@ class CommunityProfile extends React.Component {
 }
 
 export default compose(
-  prefetch(({ store, dispatch, params: { id } }) =>
+  prefetch(({ store, dispatch, params: { id }, currentUser }) =>
      dispatch(fetchCommunity(id))
     .then(() => {
       const state = store.getState()
       const communityId = get(state.communities[id], 'id')
-      const userId = get(state.people, 'current.id')
-      return saveCurrentCommunityId(dispatch, communityId, userId)
+      return saveCurrentCommunityId(dispatch, communityId, !!currentUser)
     })
   ),
   defer(({ params: { id }, store }) => {
     const community = store.getState().communities[id]
     return trackEvent(VIEWED_COMMUNITY, {community})
   }),
-  connect((state, props) => ({
-    community: state.communities[props.params.id],
-    currentUser: state.people.current
-  }))
+  connect((state, props) => ({community: state.communities[props.params.id]}))
 )(CommunityProfile)

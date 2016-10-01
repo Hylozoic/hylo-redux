@@ -6,21 +6,24 @@ describe('allPostsPrefetch', () => {
     var store, currentUser
 
     const slug = 'bazmunity'
-    const communityId = '4'
+    const community = {slug: 'bazmunity', id: '4'}
 
     before(() => {
       currentUser = {
         id: 42,
-        settings: {currentCommunityId: communityId},
-        memberships: [{community_id: communityId, community: {slug, id: communityId}}]
+        settings: {currentCommunityId: community.id},
+        memberships: [{community_id: community.id, community}]
       }
 
-      const state = {people: {current: currentUser}}
+      const state = {
+        people: {current: currentUser},
+        communities: {[community.slug]: community}
+      }
       store = configureStore(state).store
     })
 
     it('redirects to the community', () => {
-      allPostsPrefetch({dispatch: store.dispatch, query: {rd: 1}, currentUser})
+      allPostsPrefetch({store, dispatch: store.dispatch, query: {rd: 1}, currentUser})
       const { pathname } = store.getState().routing.locationBeforeTransitions
       expect(pathname).to.equal(`/c/${slug}`)
     })

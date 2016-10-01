@@ -178,7 +178,7 @@ export class CreateCommunity extends React.Component {
           return scrollToBottom()
         } else {
           trackEvent(ADDED_COMMUNITY, {community})
-          saveCurrentCommunityId(dispatch, payload.community_id, currentUser.id)
+          saveCurrentCommunityId(dispatch, payload.community_id, true)
           dispatch(navigate(`/invite`))
         }
       })
@@ -245,14 +245,12 @@ export class CreateCommunity extends React.Component {
   id && dispatch(fetchInvitations(id)))
 @connect((state, { params: { id } }) => ({
   community: id ? state.communities[id] : getCurrentCommunity(state),
-  currentUser: get('people.current', state),
   invitationEditor: get('invitationEditor', state),
   invitations: id ? state.invitations[id] : null
 }))
 export class CreateCommunityInvite extends React.Component {
   static propTypes = {
     community: object,
-    currentUser: object,
     invitationEditor: object,
     dispatch: func,
     invitations: array
@@ -297,8 +295,9 @@ export class CreateCommunityInvite extends React.Component {
   render () {
     const { expanded } = this.state
     const {
-      community, currentUser, dispatch, invitationEditor, invitations
+      community, dispatch, invitationEditor, invitations
     } = this.props
+    const { currentUser } = this.context
 
     if (!canInvite(currentUser, community)) {
       return <AccessErrorMessage error={{status: 403}}/>

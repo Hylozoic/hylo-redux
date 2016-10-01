@@ -1,17 +1,14 @@
-import { MemberRole } from './community'
+import { getCommunity, MemberRole } from './community'
 import { curry, find, maxBy, partialRight, some } from 'lodash'
-import { get } from 'lodash/fp'
+import { get, map } from 'lodash/fp'
 import { same, truthy } from './index'
 import { featureFlags } from '../config'
 
 // this works if community is an object with an id, or just an id
 export const membership = (currentUser, community) =>
   community && find(get('memberships', currentUser), m =>
-      m.community.id === (community.id || community) ||
-      m.community.slug === (community.slug || community))
-
-export const getCommunity = (currentUser, community) =>
-  get('community', membership(currentUser, community))
+    m.community_id === (community.id || community) ||
+    get('community.slug', m) === (community.slug || community))
 
 export const isMember = truthy(membership)
 
@@ -43,3 +40,19 @@ export const hasFeature = (currentUser, key) => {
   const flag = featureFlags()[key]
   return flag === 'on' || isTester(currentUser) && flag === 'testing'
 }
+
+export const denormalizedCurrentUser = state => {
+  const user = state.people.current
+  if (!user) return
+  return {
+    ...user,
+    memberships: map(membership => {
+      return ({
+        ...membership,
+        community: getCommunity(membership.community_id, state)
+      })
+    }, user.memberships)
+  }
+}
+
+export const isLoggedIn = state => !!state.people.current

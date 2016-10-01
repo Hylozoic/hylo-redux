@@ -15,18 +15,14 @@ const { func, object } = React.PropTypes
 const subject = 'community'
 
 class CommunityPosts extends React.Component {
-
   static propTypes = {
     dispatch: func,
     params: object,
     community: object,
-    location: object,
-    currentUser: object
+    location: object
   }
-
-  static childContextTypes = {
-    community: object
-  }
+  static contextTypes = {currentUser: object}
+  static childContextTypes = {community: object}
 
   getChildContext () {
     let { community } = this.props
@@ -40,7 +36,8 @@ class CommunityPosts extends React.Component {
   }
 
   render () {
-    let { community, params: { id }, location: { query }, currentUser } = this.props
+    const { community, params: { id }, location: { query } } = this.props
+    const { currentUser } = this.context
 
     return <div>
       {canModerate(currentUser, community) && <CommunitySetup community={community}/>}
@@ -61,10 +58,7 @@ export default compose(
       : Promise.resolve())
     .then(() => dispatch(fetch(subject, id, query)))
   }),
-  connect((state, { params }) => ({
-    community: state.communities[params.id],
-    currentUser: state.people.current
-  }))
+  connect((state, { params }) => ({community: state.communities[params.id]}))
 )(CommunityPosts)
 
 const CommunitySetup = connect()(({ community, dispatch }) => {

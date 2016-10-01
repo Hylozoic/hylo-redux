@@ -53,7 +53,9 @@ const normalize = person => {
     recent_offer: null,
     recent_request_id: get(person.recent_request, 'id'),
     recent_offer_id: get(person.recent_offer, 'id'),
-    left_nav_tags: null
+    left_nav_tags: null,
+    people: null,
+    communities: null
   })
 }
 
@@ -79,12 +81,12 @@ export default function (state = {}, action) {
         [currentUser.id]: null
       }
     case UPDATE_USER_SETTINGS_PENDING:
-      let { params, id } = meta
+      let { params } = meta
       const newCurrentUser = updateCurrentUser(state.current, params)
       return {
         ...state,
         current: newCurrentUser,
-        [id]: newCurrentUser
+        [state.current.id]: newCurrentUser
       }
     case LEAVE_COMMUNITY_PENDING:
       let memberships = filter(state.current.memberships, m => m.community_id !== meta.communityId)

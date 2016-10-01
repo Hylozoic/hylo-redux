@@ -1,13 +1,15 @@
 import qs from 'querystring'
+import { denormalizedCurrentUser } from '../models/currentUser'
 
 export const localsForPrefetch = ({ location, params, routes }, store) => {
+  const state = store.getState()
   return {
     location,
     params,
     store,
     path: location.pathname,
     dispatch: store.dispatch,
-    currentUser: store.getState().people.current,
+    currentUser: denormalizedCurrentUser(state),
 
     // for some reason location.query is correct on the server, but
     // on the client, it doesn't get set until after getPrefetchedData.

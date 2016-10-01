@@ -33,7 +33,6 @@ const fetch = fetchWithCache(fetchPeople)
     ...connectedListProps(state, {subject, id, query}, 'people'),
     cacheId,
     community: state.communities[id],
-    currentUser: state.people.current,
     error: findError(state.errors, FETCH_PEOPLE, 'peopleByQuery', cacheId),
     moderatorIds: state.peopleByQuery[qs.stringify({subject: 'community-moderators', id})] || [],
     isMobile: state.isMobile
@@ -49,11 +48,11 @@ export default class People extends React.Component {
     params: object,
     location: object,
     community: object,
-    currentUser: object,
     error: object,
     isMobile: bool,
     cacheId: string
   }
+  static contextTypes = {currentUser: object}
 
   loadMore = () => {
     let {
@@ -73,11 +72,11 @@ export default class People extends React.Component {
 
   render () {
     const {
-      pending, moderatorIds, location: { query }, community, currentUser, error,
+      pending, moderatorIds, location: { query }, community, error,
       total, isMobile, dispatch, cacheId
     } = this.props
+    const { currentUser } = this.context
     if (error) return <AccessErrorMessage error={error}/>
-    if (!currentUser) return <div>Loading...</div>
 
     const { search } = query
     const { slug } = community || {}

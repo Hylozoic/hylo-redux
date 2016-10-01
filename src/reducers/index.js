@@ -32,6 +32,7 @@ import {
   CHECK_FRESHNESS_POSTS,
   CLEAR_INVITATION_EDITOR,
   CLOSE_MODAL,
+  CONTINUE_LOGIN,
   CREATE_COMMUNITY,
   CREATE_NETWORK,
   FETCH_ACTIVITY,
@@ -40,6 +41,7 @@ import {
   FETCH_PEOPLE,
   FETCH_POSTS,
   FETCH_THANKS,
+  FINISH_LOGIN,
   HIDE_TAG_POPOVER,
   LOGIN,
   NAVIGATE,
@@ -141,6 +143,11 @@ const combinedReducers = combineReducers({
         break
       case SET_LOGIN_ERROR:
         if (payload) return {error: payload}
+        break
+      case CONTINUE_LOGIN:
+        return {...state, shouldRedirect: true, query: payload}
+      case FINISH_LOGIN:
+        return {}
     }
     return state
   },

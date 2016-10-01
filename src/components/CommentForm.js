@@ -1,5 +1,5 @@
 import React from 'react'
-import { get, debounce, throttle } from 'lodash'
+import { debounce, throttle } from 'lodash'
 import { connect } from 'react-redux'
 import Avatar from './Avatar'
 import RichTextEditor from './RichTextEditor'
@@ -22,7 +22,6 @@ const STOPPED_TYPING_WAIT_TIME = 8000
 
 @connect((state, { postId, commentId }) => {
   return ({
-    currentUser: get(state, 'people.current'),
     editingTagDescriptions: state.editingTagDescriptions,
     text: postId ? state.commentEdits.new[postId] : state.commentEdits.edit[commentId],
     newComment: !commentId,
@@ -31,7 +30,6 @@ const STOPPED_TYPING_WAIT_TIME = 8000
 })
 export default class CommentForm extends React.Component {
   static propTypes = {
-    currentUser: object,
     dispatch: func,
     startedTyping: func,
     stoppedTyping: func,
@@ -52,7 +50,8 @@ export default class CommentForm extends React.Component {
   }
 
   static contextTypes = {
-    isMobile: bool
+    isMobile: bool,
+    currentUser: object
   }
 
   constructor (props) {
@@ -94,10 +93,10 @@ export default class CommentForm extends React.Component {
 
   render () {
     const {
-      currentUser, editingTagDescriptions, dispatch, postId, commentId, text,
+      editingTagDescriptions, dispatch, postId, commentId, text,
       newComment, close, startedTyping, stoppedTyping, pending
     } = this.props
-    const { isMobile } = this.context
+    const { currentUser, isMobile } = this.context
     const editing = text !== undefined
     const storeId = newComment ? postId : commentId
     const updateStore = text => dispatch(updateCommentEditor(storeId, text, newComment))

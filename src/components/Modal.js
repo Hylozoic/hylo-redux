@@ -141,9 +141,9 @@ ModalContainer.propTypes = {
 ModalContainer.contextTypes = {isMobile: bool}
 
 export const Modal = (props, { isMobile }) => {
-  const { children, title, subtitle, onCancel, standalone } = props
+  const { children, title, subtitle, onCancel, standalone, noHeader } = props
   return <ModalContainer {...props}>
-    <div className='title'>
+    {!noHeader && <div className='title'>
       <h2>
         {title}
         {!standalone && <a className='close' onClick={onCancel}>
@@ -153,7 +153,7 @@ export const Modal = (props, { isMobile }) => {
       {subtitle && <div className='subtitle'>
         {subtitle}
       </div>}
-    </div>
+    </div>}
     {children}
   </ModalContainer>
 }
@@ -164,7 +164,8 @@ Modal.propTypes = {
   onCancel: func,
   subtitle: oneOfType([string, node]),
   standalone: bool,
-  title: oneOfType([string, object])
+  title: oneOfType([string, object]),
+  noHeader: bool
 }
 Modal.contextTypes = {isMobile: bool}
 

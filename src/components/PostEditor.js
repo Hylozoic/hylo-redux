@@ -526,7 +526,8 @@ export default class PostEditorWrapper extends React.Component {
     community: object,
     type: string,
     expanded: bool,
-    tag: string
+    tag: string,
+    onCancel: func
   }
 
   static contextTypes = {
@@ -543,12 +544,13 @@ export default class PostEditorWrapper extends React.Component {
   }
 
   render () {
-    const { type, post, community, tag } = this.props
+    let { type, post, community, tag, onCancel } = this.props
 
     // if PostEditorWrapper is being initialized with expanded=true, we don't
     // want to set up onCancel, because the entire component will probably be
     // unmounted when canceling takes place
-    const onCancel = this.props.expanded ? () => {} : this.toggle
+    onCancel = onCancel ||
+      (this.props.expanded ? () => {} : this.toggle)
 
     if (!this.state.expanded) {
       const { currentUser } = this.context

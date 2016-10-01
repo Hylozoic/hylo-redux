@@ -4,6 +4,7 @@ import { prefetch } from 'react-fetcher'
 import { getCurrentCommunity } from '../models/community'
 import { closeModal } from '../actions'
 import { Modal } from '../components/Modal'
+import PostEditor from '../components/PostEditor'
 import { fetchCommunity, updateCommunityChecklist } from '../actions/communities'
 const { func, object } = React.PropTypes
 
@@ -14,7 +15,7 @@ const { func, object } = React.PropTypes
 @connect((state) => ({
   community: getCurrentCommunity(state)
 }))
-export default class ChecklistModal extends React.Component {
+export default class PostEditorModal extends React.Component {
   static propTypes = {
     dispatch: func,
     community: object,
@@ -22,18 +23,11 @@ export default class ChecklistModal extends React.Component {
   }
 
   render () {
-    const { dispatch, onCancel } = this.props
+    const { dispatch, onCancel, community } = this.props
     const close = () => dispatch(closeModal())
 
-    return <Modal title='Post Editor.'
-      subtitle={'To build a successful community with Hylo, we suggest completing the following:'}
-      className='create-community-three'
-      onCancel={onCancel}>
-      <div className='footer'>
-        <a className='button ok' onClick={close}>
-          Done
-        </a>
-      </div>
+    return <Modal onCancel={onCancel} noHeader>
+      <PostEditor community={community} onCancel={close} expanded/>
     </Modal>
   }
 }

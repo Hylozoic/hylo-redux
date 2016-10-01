@@ -18,7 +18,7 @@ import { formatDate } from '../../util/text'
 import { debounce, get, sortBy, throttle, set } from 'lodash'
 import ListItemTagInput from '../../components/ListItemTagInput'
 import { hasFeature } from '../../models/currentUser'
-import { avatarUploadSettings, bannerUploadSettings } from '../../models/person'
+import { avatarUploadSettings, bannerUploadSettings, defaultBanner } from '../../models/person'
 import { openPopup, setupPopupCallback, PROFILE_CONTEXT } from '../../util/auth'
 import { EDITED_USER_SETTINGS, trackEvent } from '../../util/analytics'
 import { preventSpaces } from '../../util/textInput'
@@ -197,6 +197,7 @@ export default class UserSettings extends React.Component {
     let memberships = sortBy(currentUser.memberships, m => m.community.name)
     let { editing, edited, errors } = this.state
     let { avatar_url, banner_url } = currentUser
+    if (!banner_url) banner_url = defaultBanner
     let {
       bio, location, url, facebook_url, twitter_name, linkedin_url
     } = {...currentUser, ...editing}

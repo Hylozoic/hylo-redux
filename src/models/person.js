@@ -20,3 +20,5 @@ export const mostRecentCommunity = person => {
 }
 
 export const getPerson = (id, state) => state.people[id]
+
+export const defaultBanner = 'https://d3ngex8q79bk55.cloudfront.net/misc/default_user_banner.jpg'

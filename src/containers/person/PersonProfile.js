@@ -22,10 +22,10 @@ import { NonLinkAvatar } from '../../components/Avatar'
 import moment from 'moment'
 import { getPost } from '../../models/post'
 import { getCurrentCommunity } from '../../models/community'
+import { defaultBanner } from '../../models/person'
 
 const { func, object } = React.PropTypes
 
-const defaultBanner = 'https://d3ngex8q79bk55.cloudfront.net/misc/default_user_banner.jpg'
 const spacer = <span>&nbsp;&nbsp;•&nbsp;&nbsp;</span>
 const subject = 'person'
 

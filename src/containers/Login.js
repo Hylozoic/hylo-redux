@@ -22,7 +22,6 @@ import { ModalInput } from '../components/ModalRow'
 import Modal from '../components/Modal'
 import { denormalizedCurrentUser } from '../models/currentUser'
 import { getCommunity } from '../models/community'
-import storeShape from 'react-redux/lib/utils/storeShape'
 
 // export the decorators below so that Signup can use them as well
 
@@ -174,11 +173,9 @@ export class PostLoginRedirector extends React.Component {
     currentUser: object,
     fallbackUrl: string
   }
-  static contextTypes = {currentUser: object}
 
   componentDidUpdate () {
-    const { dispatch, login, fallbackUrl } = this.props
-    const { currentUser } = this.context
+    const { dispatch, login, currentUser, fallbackUrl } = this.props
     const { shouldRedirect, query } = login || {}
     if (shouldRedirect && currentUser) {
       alias(currentUser.id)
@@ -191,7 +188,6 @@ export class PostLoginRedirector extends React.Component {
     return null
   }
 }
-PostLoginRedirector.contextTypes = {store: storeShape, currentUser: object}
 
 const nextUrl = (query, fallbackUrl) => {
   let { next, action, token } = query || {}

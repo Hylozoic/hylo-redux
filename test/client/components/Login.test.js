@@ -20,7 +20,7 @@ describe('PostLoginRedirector', () => {
 
   const updateNode = state => {
     store = configureStore(state).store
-    const node = mount(<PostLoginRedirector/>, {context: {store, currentUser: user}})
+    const node = mount(<PostLoginRedirector/>, {context: {store}})
     node.instance().getWrappedInstance().componentDidUpdate()
   }
 

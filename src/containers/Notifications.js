@@ -30,14 +30,11 @@ const Notifications = compose(
   connect(state => {
     const community = getCurrentCommunity(state)
     const slug = get('slug', community) || 'all'
-    return {
-      ...getActivitiesProps(slug, state),
-      currentUser: state.people.current
-    }
+    return getActivitiesProps(slug, state)
   }),
   defer(() => trackEvent(VIEWED_NOTIFICATIONS))
 )((props, context) => {
-  const { currentUser, dispatch, total, pending, params } = props
+  const { dispatch, total, pending, params } = props
   const offset = props.activities.length
   const loadMore = !pending && offset < total
     ? () => dispatch(fetchActivity(offset, false, params.id))
@@ -59,7 +56,7 @@ const Notifications = compose(
     </div>
     <div className='activities'>
       {activities.map(activity =>
-        <Activity key={activity.id} {...{activity, currentUser, dispatch}}/>)}
+        <Activity key={activity.id} activity={activity}/>)}
       <ScrollListener onBottom={loadMore}/>
     </div>
   </div>
@@ -70,13 +67,12 @@ Notifications.propTypes = {
   comments: object,
   pending: bool,
   dispatch: func,
-  total: number,
-  currentUser: object
+  total: number
 }
 
 export default Notifications
 
-const Activity = ({ activity, currentUser, dispatch }) => {
+const Activity = ({ activity }, { dispatch }) => {
   const {
     actor, action, post, comment, unread, created_at, meta: { reasons }
   } = activity
@@ -114,6 +110,7 @@ const Activity = ({ activity, currentUser, dispatch }) => {
     </div>
   </div>
 }
+Activity.contextTypes = {dispatch: func}
 
 @connect((state, props) => getActivitiesProps('all', state))
 export class NotificationsModal extends React.Component {

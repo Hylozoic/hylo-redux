@@ -15,14 +15,14 @@ const { func, object } = React.PropTypes
     network && dispatch(setCurrentNetworkId(network.id))
   }))
 @connect((state, props) => ({
-  network: state.networks[props.params.id],
-  currentUser: state.people.current
+  network: state.networks[props.params.id]
 }))
 export default class NetworkProfile extends React.Component {
   static propTypes = {
     network: object,
     children: object,
-    dispatch: func
+    dispatch: func,
+    params: object
   }
 
   componentDidMount () {

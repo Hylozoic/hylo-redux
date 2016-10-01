@@ -144,7 +144,13 @@ export const VOTE_ON_POST_PENDING = VOTE_ON_POST + _PENDING
 export function login (email, password) {
   return {
     type: LOGIN,
-    payload: {api: true, path: '/login', params: {email, password}, method: 'post'}
+    payload: {api: true, path: '/login', params: {email, password}, method: 'post'},
+    meta: {
+      addDataToStore: {
+        people: get('people'),
+        communities: get('communities')
+      }
+    }
   }
 }
 
@@ -171,7 +177,13 @@ export function signup (name, email, password) {
   let params = {name, email, password, resp: 'user', login: true}
   return {
     type: SIGNUP,
-    payload: {api: true, path: '/noo/user', params, method: 'post'}
+    payload: {api: true, path: '/noo/user', params, method: 'post'},
+    meta: {
+      addDataToStore: {
+        people: get('people'),
+        communities: get('communities')
+      }
+    }
   }
 }
 

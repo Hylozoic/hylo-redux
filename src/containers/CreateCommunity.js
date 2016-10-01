@@ -256,6 +256,10 @@ export class CreateCommunityInvite extends React.Component {
     invitations: array
   }
 
+  static contextTypes = {
+    currentUser: object
+  }
+
   constructor (props) {
     super(props)
     this.state = {

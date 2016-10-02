@@ -5,6 +5,8 @@ import { makeUrl } from '../util/navigation'
 import { connect } from 'react-redux'
 import {
   FETCH_COMMUNITY_FOR_INVITATION,
+  continueLogin,
+  finishLogin,
   login,
   navigate,
   setLoginError
@@ -14,11 +16,12 @@ import { LOGGED_IN, STARTED_LOGIN, alias, trackEvent } from '../util/analytics'
 import { Link } from 'react-router'
 import ServiceAuthButtons from '../components/ServiceAuthButtons'
 import { communityUrl } from '../routes'
-import { getCommunity } from '../models/currentUser'
 const { func, object, string } = React.PropTypes
 import ModalOnlyPage from '../components/ModalOnlyPage'
 import { ModalInput } from '../components/ModalRow'
 import Modal from '../components/Modal'
+import { denormalizedCurrentUser } from '../models/currentUser'
+import { getCommunity } from '../models/community'
 
 // export the decorators below so that Signup can use them as well
 
@@ -55,35 +58,8 @@ export const connectForNext = section =>
         break
     }
 
-    return {
-      ...state[section],
-      currentUser: state.people.current,
-      community,
-      actionError
-    }
+    return {...state[section], community, actionError}
   }, null, null, {withRef: true})
-
-export const goToNext = (currentUser, query) => {
-  alias(currentUser.id)
-
-  let { next, action, token } = query
-
-  if (!next) {
-    const currentCommunityId = get(currentUser, 'settings.currentCommunityId')
-    const community = getCommunity(currentUser, currentCommunityId)
-
-    if (community) {
-      next = communityUrl(community)
-    } else if (isEmpty(currentUser.memberships)) {
-      next = '/create'
-    } else {
-      next = `/u/${currentUser.id}`
-    }
-  }
-
-  const params = action === 'use-invitation' ? {token} : {action}
-  return navigate(makeUrl(next, params))
-}
 
 const displayError = error => {
   if (!error) return
@@ -118,7 +94,6 @@ export default class Login extends React.Component {
     error: string,
     location: object,
     dispatch: func,
-    currentUser: object,
     community: object,
 
     // this is set when something is wrong with the data for the community, etc.
@@ -132,9 +107,9 @@ export default class Login extends React.Component {
     let email = this.refs.email.getValue()
     let password = this.refs.password.getValue()
     return dispatch(login(email, password))
-    .then(({ error }) => {
+    .then(({ error, payload }) => {
       if (error) return
-      dispatch(goToNext(this.props.currentUser, query))
+      dispatch(continueLogin(query))
       trackEvent(LOGGED_IN)
     })
   }
@@ -168,6 +143,55 @@ export default class Login extends React.Component {
           </div>
         </form>
       </Modal>
+      <PostLoginRedirector/>
     </ModalOnlyPage>
   }
+}
+
+@connect((state, props) => {
+  const currentUser = denormalizedCurrentUser(state)
+  if (!currentUser) return {}
+
+  const currentCommunityId = get(currentUser, 'settings.currentCommunityId')
+  const community = getCommunity(currentCommunityId, state)
+
+  var fallbackUrl
+  if (community) {
+    fallbackUrl = communityUrl(community)
+  } else if (isEmpty(currentUser.memberships)) {
+    fallbackUrl = '/create'
+  } else {
+    fallbackUrl = `/u/${currentUser.id}`
+  }
+
+  return {login: state.login, currentUser, fallbackUrl}
+}, null, null, {withRef: true})
+export class PostLoginRedirector extends React.Component {
+  static propTypes = {
+    dispatch: func,
+    login: object,
+    currentUser: object,
+    fallbackUrl: string
+  }
+
+  componentDidUpdate () {
+    const { dispatch, login, currentUser, fallbackUrl } = this.props
+    const { shouldRedirect, query } = login || {}
+    if (shouldRedirect && currentUser) {
+      alias(currentUser.id)
+      dispatch(navigate(nextUrl(query, fallbackUrl)))
+      dispatch(finishLogin())
+    }
+  }
+
+  render () {
+    return null
+  }
+}
+
+const nextUrl = (query, fallbackUrl) => {
+  let { next, action, token } = query || {}
+  if (!next) next = fallbackUrl
+  const params = action === 'use-invitation' ? {token} : {action}
+  return makeUrl(next, params)
 }

@@ -11,11 +11,11 @@ export const findError = (errors, type, bucket, id) => {
 
 // FIXME this shouldn't go in here; actions/util is for functions used only
 // within actions
-export const saveCurrentCommunityId = (dispatch, communityId, userId) => {
+export const saveCurrentCommunityId = (dispatch, communityId, isLoggedIn) => {
   if (!communityId) return
   const settings = {currentCommunityId: communityId}
-  if (userId && typeof window !== 'undefined') {
-    setTimeout(() => dispatch(updateUserSettings(userId, {settings})), 2000)
+  if (isLoggedIn && typeof window !== 'undefined') {
+    setTimeout(() => dispatch(updateUserSettings({settings})), 2000)
   }
   return dispatch(setCurrentCommunityId(communityId))
 }

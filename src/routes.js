@@ -41,11 +41,12 @@ import { debug } from './util/logging'
 import { makeUrl } from './util/navigation'
 import { get, isEmpty, pick } from 'lodash'
 import config from './config'
+import { isLoggedIn } from './models/currentUser'
 
 export default function makeRoutes (store) {
   const requireLoginWithOptions = (options = {}) => (nextState, replace) => {
     let { startAtSignup, addParams } = options
-    if (store.getState().people.current) return true
+    if (isLoggedIn(store.getState())) return true
 
     const start = startAtSignup ? 'signup' : 'login'
     debug(`redirecting to ${start}`)

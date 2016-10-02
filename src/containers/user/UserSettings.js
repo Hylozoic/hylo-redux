@@ -18,7 +18,7 @@ import { formatDate } from '../../util/text'
 import { debounce, get, sortBy, throttle, set } from 'lodash'
 import ListItemTagInput from '../../components/ListItemTagInput'
 import { hasFeature } from '../../models/currentUser'
-import { avatarUploadSettings, bannerUploadSettings } from '../../models/person'
+import { avatarUploadSettings, bannerUploadSettings, defaultBanner } from '../../models/person'
 import { openPopup, setupPopupCallback, PROFILE_CONTEXT } from '../../util/auth'
 import { EDITED_USER_SETTINGS, trackEvent } from '../../util/analytics'
 import { preventSpaces } from '../../util/textInput'
@@ -37,9 +37,8 @@ import Icon from '../../components/Icon'
       return dispatch(toggleUserSettingsSection(query.expand, true))
   }
 })
-@connect(({ people, userSettingsEditor, pending }) => ({
+@connect(({ userSettingsEditor, pending }) => ({
   pending: get(pending, `${UPLOAD_IMAGE}.subject`),
-  currentUser: people.current,
   expand: {},
   ...userSettingsEditor
 }))
@@ -50,12 +49,12 @@ export default class UserSettings extends React.Component {
   }
 
   static propTypes = {
-    currentUser: object,
     dispatch: func,
     location: object,
     expand: object,
     pending: string
   }
+  static contextTypes = {currentUser: object}
 
   componentDidMount () {
     setupPopupCallback('settings', this.props.dispatch)
@@ -121,7 +120,7 @@ export default class UserSettings extends React.Component {
   }
 
   edit (field) {
-    let { currentUser } = this.props
+    let { currentUser } = this.context
     let { editing, edited } = this.state
     edited[field] = currentUser[field]
     this.setState({editing: {...editing, [field]: true}})
@@ -133,8 +132,8 @@ export default class UserSettings extends React.Component {
   }
 
   update = (path, value) => {
-    let { currentUser, dispatch } = this.props
-    dispatch(updateUserSettings(currentUser.id, set({}, path, value)))
+    let { dispatch } = this.props
+    dispatch(updateUserSettings(set({}, path, value)))
     .then(({ error, payload }) => error && dispatch(notify(payload.message, {type: 'error'})))
     this.trackEdit()
   }
@@ -146,7 +145,7 @@ export default class UserSettings extends React.Component {
   delayedUpdate = debounce((path, value) => this.update(path, value), 2000)
 
   toggle (path) {
-    let { currentUser } = this.props
+    let { currentUser } = this.context
     this.update(path, !get(currentUser, path))
   }
 
@@ -168,7 +167,8 @@ export default class UserSettings extends React.Component {
   }
 
   attachImage (type) {
-    let { dispatch, currentUser } = this.props
+    const { dispatch } = this.props
+    const { currentUser } = this.context
     ;(() => {
       switch (type) {
         case 'avatar_url':
@@ -193,10 +193,12 @@ export default class UserSettings extends React.Component {
   }
 
   render () {
-    let { currentUser, expand, pending, dispatch } = this.props
+    const { currentUser } = this.context
+    let { expand, pending, dispatch } = this.props
     let memberships = sortBy(currentUser.memberships, m => m.community.name)
     let { editing, edited, errors } = this.state
     let { avatar_url, banner_url } = currentUser
+    if (!banner_url) banner_url = defaultBanner
     let {
       bio, location, url, facebook_url, twitter_name, linkedin_url
     } = {...currentUser, ...editing}

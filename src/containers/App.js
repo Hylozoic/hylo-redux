@@ -14,28 +14,25 @@ import { ModalWrapper } from '../components/Modal'
 import { setMobileDevice } from '../actions'
 import { getCurrentCommunity } from '../models/community'
 import { getCurrentNetwork } from '../models/network'
+import { denormalizedCurrentUser } from '../models/currentUser'
 const { array, bool, func, object } = React.PropTypes
 
-@prefetch(({ store, dispatch }) => {
-  const { isMobile, people } = store.getState()
-  if (!isMobile && typeof window === 'undefined' && people.current &&
-    get('settings.leftNavIsOpen', people.current) !== false) {
+@prefetch(({ store, dispatch, currentUser }) => {
+  const { isMobile } = store.getState()
+  if (!isMobile && typeof window === 'undefined' && currentUser &&
+    get('settings.leftNavIsOpen', currentUser) !== false) {
     return dispatch(toggleLeftNav())
   }
 })
 @connect((state, { params }) => {
-  const { isMobile, leftNavIsOpen, notifierMessages, openModals, tagPopover } = state
-  const community = getCurrentCommunity(state)
-  const network = getCurrentNetwork(state)
+  const {
+    isMobile, leftNavIsOpen, notifierMessages, openModals, tagPopover
+  } = state
   return {
-    network,
-    isMobile,
-    community,
-    openModals,
-    leftNavIsOpen,
-    notifierMessages,
-    tagPopover,
-    currentUser: state.people.current
+    isMobile, openModals, leftNavIsOpen, notifierMessages, tagPopover,
+    network: getCurrentNetwork(state),
+    community: getCurrentCommunity(state),
+    currentUser: denormalizedCurrentUser(state)
   }
 }, null, null, {withRef: true})
 export default class App extends React.Component {

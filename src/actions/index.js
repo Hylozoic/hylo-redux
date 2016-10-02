@@ -18,6 +18,7 @@ export const CLEAR_INVITATION_EDITOR = 'CLEAR_INVITATION_EDITOR'
 export const CLOSE_MODAL = 'CLOSE_MODAL'
 export const COMPLETE_POST = 'COMPLETE_POST'
 export const COMPLETE_POST_PENDING = COMPLETE_POST + _PENDING
+export const CONTINUE_LOGIN = 'CONTINUE_LOGIN'
 export const CREATE_COMMENT = 'CREATE_COMMENT'
 export const CREATE_COMMUNITY = 'CREATE_COMMUNITY'
 export const CREATE_POST = 'CREATE_POST'
@@ -51,6 +52,7 @@ export const FETCH_TAG = 'FETCH_TAG'
 export const FETCH_TAGS = 'FETCH_TAGS'
 export const FETCH_TAG_SUMMARY = 'FETCH_TAG_SUMMARY'
 export const FETCH_THANKS = 'FETCH_THANKS'
+export const FINISH_LOGIN = 'FINISH_LOGIN'
 export const FOLLOW_POST = 'FOLLOW_POST'
 export const FOLLOW_POST_PENDING = FOLLOW_POST + _PENDING
 export const FOLLOW_TAG = 'FOLLOW_TAG'
@@ -142,12 +144,26 @@ export const VOTE_ON_POST_PENDING = VOTE_ON_POST + _PENDING
 export function login (email, password) {
   return {
     type: LOGIN,
-    payload: {api: true, path: '/login', params: {email, password}, method: 'post'}
+    payload: {api: true, path: '/login', params: {email, password}, method: 'post'},
+    meta: {
+      addDataToStore: {
+        people: get('people'),
+        communities: get('communities')
+      }
+    }
   }
 }
 
 export function setLoginError (message) {
   return {type: SET_LOGIN_ERROR, payload: message}
+}
+
+export function continueLogin (query) {
+  return {type: CONTINUE_LOGIN, payload: query}
+}
+
+export function finishLogin () {
+  return {type: FINISH_LOGIN}
 }
 
 export function logout () {
@@ -161,7 +177,13 @@ export function signup (name, email, password) {
   let params = {name, email, password, resp: 'user', login: true}
   return {
     type: SIGNUP,
-    payload: {api: true, path: '/noo/user', params, method: 'post'}
+    payload: {api: true, path: '/noo/user', params, method: 'post'},
+    meta: {
+      addDataToStore: {
+        people: get('people'),
+        communities: get('communities')
+      }
+    }
   }
 }
 
@@ -196,7 +218,11 @@ export function fetchCurrentUser (refresh) {
     payload: {api: true, path: '/noo/user/me'},
     meta: {
       cache: {bucket: 'people', id: 'current', refresh},
-      then: resp => (resp.id ? resp : null)
+      then: resp => (resp.id ? resp : null),
+      addDataToStore: {
+        people: get('people'),
+        communities: get('communities')
+      }
     }
   }
 }
@@ -228,11 +254,11 @@ export function toggleLeftNav () {
   return {type: TOGGLE_LEFT_NAV}
 }
 
-export function updateUserSettings (id, params) {
+export function updateUserSettings (params) {
   return {
     type: UPDATE_USER_SETTINGS,
-    payload: {api: true, params, path: `/noo/user/${id}`, method: 'POST'},
-    meta: {id, params, optimistic: true}
+    payload: {api: true, params, path: '/noo/user/me', method: 'POST'},
+    meta: {params, optimistic: true}
   }
 }
 

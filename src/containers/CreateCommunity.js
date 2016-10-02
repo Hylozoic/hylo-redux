@@ -160,7 +160,7 @@ export class CreateCommunity extends React.Component {
   }
 
   submit = () => {
-    let { validating, dispatch, community, currentUser } = this.props
+    let { validating, dispatch, community } = this.props
     if (validating) return
 
     this.validateAll().then(() => {
@@ -172,7 +172,7 @@ export class CreateCommunity extends React.Component {
           return scrollToBottom()
         } else {
           trackEvent(ADDED_COMMUNITY, {community})
-          saveCurrentCommunityId(dispatch, payload.community_id, currentUser.id)
+          saveCurrentCommunityId(dispatch, payload.community_id, true)
           dispatch(navigate(`/invite`))
         }
       })

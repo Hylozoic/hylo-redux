@@ -12,19 +12,17 @@ const { array, bool, func, number, object } = React.PropTypes
 const subject = 'network'
 const fetch = fetchWithCache(fetchCommunities)
 
-const NetworkCommunities = compose(
+var NetworkCommunities = compose(
   prefetch(({ dispatch, params: { id }, query }) => dispatch(fetch(subject, id, query))),
   connect((state, { params: { id }, location: { query } }) => {
     return {
       ...connectedListProps(state, {subject, id, query}, 'communities'),
       network: state.networks[id],
-      currentUser: state.people.current,
       pending: state.pending[FETCH_COMMUNITIES]
     }
   })
 )(props => {
-  let { pending, communities, currentUser } = props
-  if (!currentUser) return <div>Loading...</div>
+  let { pending, communities } = props
 
   let loadMore = () => {
     let { communities, dispatch, total, pending, params: { id }, location: { query } } = props
@@ -47,8 +45,7 @@ NetworkCommunities.propTypes = {
   dispatch: func,
   total: number,
   params: object,
-  location: object,
-  currentUser: object
+  location: object
 }
 
 export default NetworkCommunities

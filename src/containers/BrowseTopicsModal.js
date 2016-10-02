@@ -11,7 +11,7 @@ import { modalWrapperCSSId, Modal } from '../components/Modal'
 import { isEmpty, some } from 'lodash'
 import { find } from 'lodash/fp'
 import { same } from '../models'
-import { newestMembership } from '../models/currentUser'
+import { denormalizedCurrentUser, newestMembership } from '../models/currentUser'
 import { humanDate } from '../util/text'
 import { tagUrl, userUrl } from '../routes'
 const { array, bool, func, number, object, string } = React.PropTypes
@@ -20,7 +20,7 @@ const subject = 'community'
 
 @connect(state => {
   const community = getCurrentCommunity(state) ||
-    newestMembership(state.people.current).community
+    newestMembership(denormalizedCurrentUser(state)).community
   return {
     community,
     ...connectedListProps(state, {subject, id: community.slug}, 'tags'),

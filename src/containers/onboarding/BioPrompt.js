@@ -5,15 +5,16 @@ import { ModalInput } from '../../components/ModalRow'
 import { updateUserSettings } from '../../actions'
 import A from '../../components/A'
 import { debounce } from 'lodash'
+import { find, map } from 'lodash/fp'
 import { CommunityHeader } from '../Signup'
-import { getCommunity } from '../../models/currentUser'
 import { nextOnboardingUrl } from '../../util/navigation'
 const { func, object } = React.PropTypes
 
 const BioPrompt = ({ location }, { currentUser, dispatch }) => {
-  const community = getCommunity(currentUser, {slug: location.query.community})
+  const community = find(c => c.slug === location.query.community,
+    map('community', currentUser.memberships))
   const update = debounce(bio =>
-    dispatch(updateUserSettings(currentUser.id, {bio})), 500)
+    dispatch(updateUserSettings({bio})), 500)
 
   return <ModalOnlyPage id='bio-prompt' className='login-signup'>
     <CommunityHeader community={community}/>

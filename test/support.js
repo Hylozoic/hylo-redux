@@ -2,6 +2,7 @@ import dotenv from 'dotenv'
 import chai from 'chai'
 import React from 'react'
 import { get, has, mapValues, omit } from 'lodash'
+import nock from 'nock'
 process.env.NODE_ENV = 'test'
 
 dotenv.load({path: './.env.test', silent: true})
@@ -54,6 +55,13 @@ export const helpers = {
 
   unspyify: (object, methodName) => {
     object[methodName] = object['_original' + methodName]
+  },
+
+  mockActionResponse: (action, resp) => {
+    const { HOST } = require('../src/util/api')
+    let { method, path } = action
+    method = (method || 'get').toLowerCase()
+    nock(HOST)[method](path).reply(200, resp)
   }
 }
 

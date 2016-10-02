@@ -1,7 +1,6 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { debounce, keys, isEmpty, map } from 'lodash'
-import { get } from 'lodash/fp'
 import { closeModal } from '../actions'
 import { editTagDescription, editNewTagAndDescription } from '../actions'
 import { createTagInCommunity } from '../actions/tags'
@@ -16,7 +15,6 @@ const { func, object, bool } = React.PropTypes
 
 @connect((state, props) => ({
   tags: state.tagDescriptionEdits,
-  currentUser: get('people.current', state),
   community: getCurrentCommunity(state)
 }))
 export default class TagEditorModal extends React.Component {
@@ -26,14 +24,16 @@ export default class TagEditorModal extends React.Component {
     useCreatedTag: func,
     dispatch: func,
     creating: bool,
-    currentUser: object,
     community: object
   }
 
+  static contextTypes = {currentUser: object}
+
   render () {
     let {
-      tags, saveParent, useCreatedTag, dispatch, creating, currentUser, community
+      tags, saveParent, useCreatedTag, dispatch, creating, community
     } = this.props
+    const { currentUser } = this.context
     const cancel = () => dispatch(closeModal())
     const editAction = creating ? editNewTagAndDescription : editTagDescription
     const edit = debounce((tag, value, is_default) =>

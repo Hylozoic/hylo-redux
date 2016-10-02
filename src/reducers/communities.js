@@ -46,11 +46,6 @@ export default function (state = {}, action) {
     case FETCH_COMMUNITY_MODERATORS:
       community = {...state[meta.cache.id], moderators: payload}
       return {...state, [meta.cache.id]: community}
-    case FETCH_CURRENT_USER:
-      if (payload && payload.memberships) {
-        return mergeList(state, payload.memberships.map(m => m.community), 'slug')
-      }
-      break
     case UPDATE_COMMUNITY_SETTINGS_PENDING:
       if (meta.params.active === false) {
         return omit(state, meta.slug)

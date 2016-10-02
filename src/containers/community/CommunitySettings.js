@@ -34,8 +34,7 @@ import { makeUrl } from '../../util/navigation'
 )
 @connect((state, { params }) => ({
   community: state.communities[params.id],
-  validation: state.communityValidation,
-  currentUser: get('people.current', state)
+  validation: state.communityValidation
 }))
 export default class CommunitySettings extends React.Component {
 
@@ -48,9 +47,10 @@ export default class CommunitySettings extends React.Component {
     community: object,
     dispatch: func,
     location: object,
-    currentUser: object,
     validation: object
   }
+
+  static contextTypes = {currentUser: object}
 
   setEditState = (field, value, errors) =>
     this.setState({
@@ -211,7 +211,7 @@ export default class CommunitySettings extends React.Component {
     const { avatar_url, banner_url } = community
     const { editing, edited, errors, expand } = this.state
     const labelProps = {expand, toggle: this.toggleSection}
-    const { is_admin } = this.props.currentUser
+    const { is_admin } = this.context.currentUser
     const slackerror = this.props.location.query.slackerror
     const slugNotUnique = get('slug.unique', this.props.validation) === false
     const joinUrl = communityJoinUrl(community)

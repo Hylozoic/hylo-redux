@@ -6,7 +6,7 @@ import { getCurrentCommunity, avatarUploadSettings, bannerUploadSettings } from 
 import { closeModal } from '../actions'
 import { uploadImage } from '../actions/uploadImage'
 import { Modal } from '../components/Modal'
-import { fetchCommunity } from '../actions/communities'
+import { fetchCommunity, updateCommunityChecklist } from '../actions/communities'
 import { updateCommunitySettings } from '../actions/communities'
 const { func, object } = React.PropTypes
 
@@ -26,6 +26,7 @@ export default class ChecklistModal extends React.Component {
   update (path, value) {
     let { dispatch, community: { id, slug } } = this.props
     return dispatch(updateCommunitySettings(id, set({slug}, path, value)))
+    .then(() => dispatch(updateCommunityChecklist(slug)))
   }
 
   attachImage (type) {

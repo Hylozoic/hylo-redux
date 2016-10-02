@@ -39,6 +39,7 @@ import { responseMissingTagDescriptions } from '../util/api'
 import {
   showModal, CREATE_POST, FETCH_LINK_PREVIEW, UPDATE_POST, UPLOAD_IMAGE
 } from '../actions'
+import { updateCommunityChecklist } from '../actions/communities'
 import { ADDED_POST, EDITED_POST, trackEvent } from '../util/analytics'
 import { getCommunity, getCurrentCommunity } from '../models/community'
 const { array, bool, func, object, string } = React.PropTypes
@@ -194,7 +195,7 @@ export class PostEditor extends React.Component {
   }
 
   save () {
-    const { dispatch, post, postEdit, id, postCommunities } = this.props
+    const { dispatch, post, postEdit, id, postCommunities, community } = this.props
     const params = {
       type: this.editorType(),
       ...postEdit,
@@ -213,6 +214,7 @@ export class PostEditor extends React.Component {
         tag: postEdit.tag,
         community: {name: get(postCommunities[0], 'name')}
       })
+      dispatch(updateCommunityChecklist(community.slug))
       this.cancel()
     })
   }
@@ -296,7 +298,7 @@ export class PostEditor extends React.Component {
     const shouldSelectTag = !includes(['event', 'project'], editorType)
     const selectTag = tag => this.updateStore({tag})
     const createTag = () => dispatch(showModal('tag-editor', {
-      updatePostTag: this.updatePostTagAndDescription,
+      useCreatedTag: this.updatePostTagAndDescription,
       creating: true
     }))
     const Subeditor = editorType === 'event' ? EventPostEditor

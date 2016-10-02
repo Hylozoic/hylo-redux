@@ -5,12 +5,11 @@ import { getCurrentCommunity } from '../models/community'
 import { closeModal } from '../actions'
 import { Modal } from '../components/Modal'
 import PostEditor from '../components/PostEditor'
-import { fetchCommunity, updateCommunityChecklist } from '../actions/communities'
+import { fetchCommunity } from '../actions/communities'
 const { func, object } = React.PropTypes
 
 @prefetch(({ dispatch, params: { id } }) =>
-  dispatch(updateCommunityChecklist(id))
-  .then(() => dispatch(fetchCommunity(id)))
+  dispatch(fetchCommunity(id))
 )
 @connect((state) => ({
   community: getCurrentCommunity(state)

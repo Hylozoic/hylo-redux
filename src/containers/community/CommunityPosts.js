@@ -6,10 +6,9 @@ import PostEditor from '../../components/PostEditor'
 import { PercentBar } from '../../containers/ChecklistModal'
 import { compose } from 'redux'
 import { isMember, canModerate } from '../../models/currentUser'
-import { getChecklist, getCommunity } from '../../models/community'
+import { getChecklist } from '../../models/community'
 import { filter } from 'lodash/fp'
 import { showModal } from '../../actions'
-import { updateCommunityChecklist } from '../../actions/communities'
 const { func, object } = React.PropTypes
 
 const subject = 'community'
@@ -54,13 +53,8 @@ class CommunityPosts extends React.Component {
 }
 
 export default compose(
-  prefetch(({ dispatch, params: { id }, query, currentUser, store }) => {
-    const community = getCommunity(id, store.getState())
-    return (canModerate(currentUser, community)
-      ? dispatch(updateCommunityChecklist(id))
-      : Promise.resolve())
-    .then(() => dispatch(fetch(subject, id, query)))
-  }),
+  prefetch(({ dispatch, params: { id }, query, currentUser, store }) =>
+    dispatch(fetch(subject, id, query))),
   connect((state, { params }) => ({
     community: state.communities[params.id],
     currentUser: state.people.current

@@ -5,6 +5,7 @@ import { get } from 'lodash/fp'
 import { closeModal } from '../actions'
 import { editTagDescription, editNewTagAndDescription } from '../actions'
 import { createTagInCommunity } from '../actions/tags'
+import { updateCommunityChecklist } from '../actions/communities'
 import { Modal } from '../components/Modal'
 import ModalRow, { ModalInput } from '../components/ModalRow'
 import { getCurrentCommunity } from '../models/community'
@@ -22,7 +23,7 @@ export default class TagEditorModal extends React.Component {
   static propTypes = {
     tags: object,
     saveParent: func,
-    updatePostTag: func,
+    useCreatedTag: func,
     dispatch: func,
     creating: bool,
     currentUser: object,
@@ -31,14 +32,14 @@ export default class TagEditorModal extends React.Component {
 
   render () {
     let {
-      tags, saveParent, updatePostTag, dispatch, creating, currentUser, community
+      tags, saveParent, useCreatedTag, dispatch, creating, currentUser, community
     } = this.props
     const cancel = () => dispatch(closeModal())
     const editAction = creating ? editNewTagAndDescription : editTagDescription
     const edit = debounce((tag, value, is_default) =>
       dispatch(editAction(tag, value, is_default)), 200)
 
-    updatePostTag = updatePostTag || ((params) => {
+    useCreatedTag = useCreatedTag || ((params) => {
       const { dispatch, community: { slug } } = this.props
       const name = Object.keys(params)[0]
       dispatch(createTagInCommunity({...params[name], name}, slug))
@@ -67,7 +68,8 @@ export default class TagEditorModal extends React.Component {
 
     const createTag = () => {
       if (!validate(tags)) return
-      updatePostTag(tags)
+      useCreatedTag(tags)
+      dispatch(updateCommunityChecklist(community.slug))
       cancel()
     }
 

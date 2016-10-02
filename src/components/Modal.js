@@ -101,7 +101,7 @@ export class ModalWrapper extends React.Component {
       case 'tag-editor':
         modal = <TagEditorModal onCancel={close}
           saveParent={params.saveParent}
-          updatePostTag={params.updatePostTag}
+          useCreatedTag={params.useCreatedTag}
           creating={params.creating}/>
         clickToClose = true
         break

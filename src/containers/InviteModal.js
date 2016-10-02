@@ -25,8 +25,7 @@ import { checklistUrl } from '../routes'
 const { func, object, bool } = React.PropTypes
 
 @prefetch(({ dispatch, params: { id } }) =>
-  dispatch(updateCommunityChecklist(id))
-  .then(() => dispatch(fetchCommunity(id)))
+  dispatch(fetchCommunity(id))
 )
 @connect((state) => ({
   community: getCurrentCommunity(state),
@@ -124,13 +123,13 @@ export default class InviteModal extends React.Component {
         if (error) return
         trackEvent(INVITED_COMMUNITY_MEMBERS, {community})
         clearEditor()
+        dispatch(updateCommunityChecklist(community.slug))
         close()
       })
     }
 
     return <Modal title='Invite people to join you.'
       id='community-invite-prompt'
-      className='create-community'
       standalone={standalone}
       onCancel={close}>
         <div className='modal-input csv-upload'>

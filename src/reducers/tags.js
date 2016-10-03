@@ -2,8 +2,8 @@ import {
   appendPayloadByPath, composeReducers, keyedCounter, mergeList
 } from './util'
 import {
-  FETCH_CURRENT_USER, FETCH_LEFT_NAV_TAGS, FETCH_LIVE_STATUS, FETCH_TAG,
-  FETCH_TAGS, FETCH_TAG_SUMMARY, FOLLOW_TAG_PENDING, REMOVE_TAG
+  CREATE_COMMUNITY, FETCH_CURRENT_USER, FETCH_LEFT_NAV_TAGS, FETCH_LIVE_STATUS,
+  FETCH_TAG, FETCH_TAGS, FETCH_TAG_SUMMARY, FOLLOW_TAG_PENDING, REMOVE_TAG
 } from '../actions'
 import { filter, fromPairs, merge, omitBy, toPairs } from 'lodash'
 import { get, pickBy, some } from 'lodash/fp'
@@ -75,6 +75,7 @@ export const tagsByCommunity = (state = {}, action) => {
       return mergeLeftNavTags(state, payload)
     case FETCH_LIVE_STATUS:
     case FETCH_CURRENT_USER:
+    case CREATE_COMMUNITY:
       return mergeLeftNavTags(state, get('left_nav_tags', payload))
     case FOLLOW_TAG_PENDING:
       oldCommunityTags = state[meta.id] || {}

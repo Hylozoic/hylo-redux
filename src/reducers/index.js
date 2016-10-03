@@ -268,6 +268,8 @@ const combinedReducers = combineReducers({
     }
 
     switch (type) {
+      case CREATE_COMMUNITY:
+        return {}
       case UPDATE_COMMUNITY_EDITOR:
         return {
           ...state,

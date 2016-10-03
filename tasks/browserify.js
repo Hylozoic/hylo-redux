@@ -28,7 +28,6 @@ const opts = {
 const setup = b => {
   b.transform('babelify')
   b.transform('envify')
-  b.transform('uglifyify')
   return b
 }
 
@@ -55,6 +54,7 @@ export function watch () {
 
 export function bundle () {
   return setup(browserify(opts))
+  .transform('uglifyify')
   .bundle()
   .on('error', gutil.log.bind(gutil, 'Browserify error'))
   .pipe(source('index.js'))

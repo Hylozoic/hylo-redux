@@ -18,8 +18,8 @@ const { array, bool, func, number, object, string } = React.PropTypes
 
 const subject = 'community'
 
-@connect(state => {
-  const community = getCurrentCommunity(state) ||
+@connect((state, props) => {
+  const community = props.community || getCurrentCommunity(state) ||
     newestMembership(denormalizedCurrentUser(state)).community
   return {
     community,

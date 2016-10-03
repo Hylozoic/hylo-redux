@@ -5,7 +5,7 @@ import { fetch, ConnectedPostList } from '../ConnectedPostList'
 import PostEditor from '../../components/PostEditor'
 import { PercentBar } from '../../containers/ChecklistModal'
 import { compose } from 'redux'
-import { isMember, canModerate } from '../../models/currentUser'
+import { isMember, canModerate, hasFeature } from '../../models/currentUser'
 import { getChecklist } from '../../models/community'
 import { filter } from 'lodash/fp'
 import { showModal } from '../../actions'
@@ -30,8 +30,11 @@ class CommunityPosts extends React.Component {
 
   componentDidMount () {
     let { location: { query }, dispatch } = this.props
+    const { currentUser } = this.context
     let { checklist } = query || {}
-    if (checklist) dispatch(showModal('checklist'))
+    if (checklist && hasFeature(currentUser, 'COMMUNITY_SETUP_CHECKLIST')) {
+      dispatch(showModal('checklist'))
+    }
   }
 
   render () {
@@ -39,7 +42,8 @@ class CommunityPosts extends React.Component {
     const { currentUser } = this.context
 
     return <div>
-      {canModerate(currentUser, community) && <CommunitySetup community={community}/>}
+      {hasFeature(currentUser, 'COMMUNITY_SETUP_CHECKLIST') && canModerate(currentUser, community) &&
+        <CommunitySetup community={community}/>}
       {currentUser && <PostEditor community={community}/>}
       <ConnectedPostList {...{subject, id, query}}/>
       {!isMember(currentUser, community) && <div className='post-list-footer'>

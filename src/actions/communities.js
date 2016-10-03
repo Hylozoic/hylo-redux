@@ -158,7 +158,7 @@ export function updateCommunitySettings (id, params) {
   return {
     type: UPDATE_COMMUNITY_SETTINGS,
     payload: {api: true, params, path: `/noo/community/${id}`, method: 'POST'},
-    meta: {slug: params.slug, params, optimistic: true}
+    meta: {id, slug: params.slug, params, optimistic: true}
   }
 }
 

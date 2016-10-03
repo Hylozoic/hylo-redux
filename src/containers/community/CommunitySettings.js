@@ -202,8 +202,9 @@ export default class CommunitySettings extends React.Component {
 
   componentDidMount () {
     let { location: { query } } = this.props
-    let { expand } = query || {}
-    if (expand) this.toggleSection(expand, true)
+    let { expand, slackerror } = query || {}
+    if (slackerror) this.toggleSection('advanced', true)
+    else if (expand) this.toggleSection(expand, true)
   }
 
   render () {

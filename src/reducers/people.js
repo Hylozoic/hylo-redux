@@ -64,6 +64,12 @@ const updateCurrentUser = (user, params) =>
     if (key === 'tags') return srcV
   })
 
+const normalizeMembership = membership => omitBy(isNull, {
+  ...membership,
+  community: null,
+  left_nav_tags: null
+})
+
 export default function (state = {}, action) {
   const { type, error, payload, meta } = action
   if (error) return state
@@ -162,7 +168,10 @@ export default function (state = {}, action) {
     case USE_INVITATION:
       return {
         ...state,
-        current: {...state.current, memberships: [payload, ...state.current.memberships]}
+        current: {...state.current, memberships: [
+          normalizeMembership(payload),
+          ...state.current.memberships
+        ]}
       }
     case FETCH_ACTIVITY:
       if (meta.resetCount) {

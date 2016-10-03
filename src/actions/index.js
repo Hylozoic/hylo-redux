@@ -7,6 +7,7 @@ export const ADD_COMMUNITY_MODERATOR = 'ADD_COMMUNITY_MODERATOR'
 export const ADD_COMMUNITY_MODERATOR_PENDING = ADD_COMMUNITY_MODERATOR + _PENDING
 export const ADD_DATA_TO_STORE = 'ADD_DATA_TO_STORE'
 export const APPEND_COMMENT = 'APPEND_COMMENT'
+export const APPROVE_JOIN_REQUEST = 'APPROVE_JOIN_REQUEST'
 export const CANCEL_POST_EDIT = 'CANCEL_POST_EDIT'
 export const CANCEL_TAG_DESCRIPTION_EDIT = 'CANCEL_TAG_DESCRIPTION_EDIT'
 export const CANCEL_TYPEAHEAD = 'CANCEL_TYPEAHEAD'
@@ -38,6 +39,7 @@ export const FETCH_COMMUNITY_SETTINGS = 'FETCH_COMMUNITY_SETTINGS'
 export const FETCH_CURRENT_USER = 'FETCH_CURRENT_USER'
 export const FETCH_FOLLOWED_TAGS = 'FETCH_FOLLOWED_TAGS'
 export const FETCH_INVITATIONS = 'FETCH_INVITATIONS'
+export const FETCH_JOIN_REQUESTS = 'FETCH_JOIN_REQUESTS'
 export const FETCH_LEFT_NAV_TAGS = 'FETCH_LEFT_NAV_TAGS'
 export const FETCH_LINK_PREVIEW = 'FETCH_LINK_PREVIEW'
 export const FETCH_LIVE_STATUS = 'FETCH_LIVE_STATUS'
@@ -347,6 +349,23 @@ export function fetchInvitations (communityId, offset = 0, reset) {
   }
 }
 
+export function fetchJoinRequests (communityId, offset = 0, reset) {
+  return {
+    type: FETCH_JOIN_REQUESTS,
+    payload: {
+      api: true,
+      path: `/noo/community/${communityId}/joinRequests?offset=${offset}`
+    },
+    meta: {
+      communityId,
+      reset,
+      cache: {
+        bucket: 'joinRequests', id: communityId, array: true, offset, limit: 20
+      }
+    }
+  }
+}
+
 export function updateInvitationEditor (field, value) {
   return {
     type: UPDATE_INVITATION_EDITOR,
@@ -506,4 +525,12 @@ export function addDataToStore (bucket, payload, fromType) {
 
 export function showModal (name, payload) {
   return {type: SHOW_MODAL, payload, meta: {name}}
+}
+
+export function approveJoinRequest (userId, slug) {
+  return {
+    type: APPROVE_JOIN_REQUEST,
+    payload: {api: true, params: {userId}, path: `/noo/community/${slug}/approve-join-request`, method: 'post'},
+    meta: {slug}
+  }
 }

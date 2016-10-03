@@ -19,7 +19,7 @@ const InvitationList = connect((state, { id }) => ({
   let loadMore = () =>
     !pending && offset < total && dispatch(fetchInvitations(id, offset))
 
-  return <div className='invitation-list'>
+  return <div className='person-table'>
     <table>
       <thead>
         <tr>

@@ -38,6 +38,7 @@ import {
   FETCH_ACTIVITY,
   FETCH_COMMUNITIES,
   FETCH_INVITATIONS,
+  FETCH_JOIN_REQUESTS,
   FETCH_PEOPLE,
   FETCH_POSTS,
   FETCH_THANKS,
@@ -208,6 +209,7 @@ const combinedReducers = combineReducers({
   totalActivities: keyedCounter(FETCH_ACTIVITY, 'total', 'meta.id'),
   totalCommunitiesByQuery: keyedCounter(FETCH_COMMUNITIES, 'communities_total'),
   totalInvitations: keyedCounter(FETCH_INVITATIONS, 'total', 'meta.communityId'),
+  totaljoinRequests: keyedCounter(FETCH_JOIN_REQUESTS, 'total', 'meta.communityId'),
   totalPostsByQuery: keyedCounter(FETCH_POSTS, 'posts_total'),
   totalPeopleByQuery: keyedCounter(FETCH_PEOPLE, 'total'),
   totalSearchResultsByQuery: keyedCounter(SEARCH, 'total'),
@@ -424,6 +426,23 @@ const combinedReducers = combineReducers({
       case CLEAR_INVITATION_EDITOR:
         return {}
     }
+    return state
+  },
+
+  joinRequests: (state = {}, action) => {
+    let { type, payload, error, meta } = action
+    if (error) return state
+
+    switch (type) {
+      case FETCH_JOIN_REQUESTS:
+        let { communityId, reset } = meta
+        if (reset) return {...state, [communityId]: payload.items}
+        return {
+          ...state,
+          [communityId]: [...(state[communityId] || []), ...payload.items]
+        }
+    }
+
     return state
   },
 

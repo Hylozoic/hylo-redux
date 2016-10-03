@@ -6,7 +6,7 @@ const { object, func, array } = React.PropTypes
 import { find, isEmpty, reduce, set } from 'lodash'
 import { get } from 'lodash/fp'
 import { markdown, sanitize } from 'hylo-utils/text'
-import { navigate, showModal, fetchInvitations } from '../../actions'
+import { navigate, showModal, fetchInvitations, fetchJoinRequests } from '../../actions'
 import {
   addCommunityModerator,
   fetchCommunitySettings,
@@ -26,18 +26,21 @@ import PersonChooser from '../../components/PersonChooser'
 import { communityJoinUrl } from '../../routes'
 import { makeUrl } from '../../util/navigation'
 import InvitationList from './InvitationList'
+import JoinRequestList from './JoinRequestList'
 
 @prefetch(({dispatch, params: {id}}) =>
   Promise.all([
     dispatch(fetchCommunitySettings(id)),
     dispatch(fetchCommunityModerators(id)),
-    dispatch(fetchInvitations(id))
+    dispatch(fetchInvitations(id)),
+    dispatch(fetchJoinRequests(id))
   ])
 )
 @connect((state, { params }) => ({
   community: state.communities[params.id],
   validation: state.communityValidation,
-  invitations: state.invitations[params.id]
+  invitations: state.invitations[params.id],
+  joinRequests: state.joinRequests[params.id]
 }))
 export default class CommunitySettings extends React.Component {
 
@@ -51,7 +54,8 @@ export default class CommunitySettings extends React.Component {
     dispatch: func,
     location: object,
     validation: object,
-    invitations: array
+    invitations: array,
+    joinRequests: array
   }
 
   static contextTypes = {currentUser: object}
@@ -211,7 +215,7 @@ export default class CommunitySettings extends React.Component {
   }
 
   render () {
-    const { community, dispatch, invitations } = this.props
+    const { community, dispatch, invitations, joinRequests } = this.props
     const { avatar_url, banner_url } = community
     const { editing, edited, errors, expand } = this.state
     const labelProps = {expand, toggle: this.toggleSection}
@@ -422,7 +426,17 @@ export default class CommunitySettings extends React.Component {
         {!isEmpty(invitations) &&
           <div className='section-item'>
             <div className='full-column'>
+              <label>Sent Invitations</label>
+              <p className='summary'>These are people you have already sent invitations to.</p>
               <InvitationList id={community.slug}/>
+            </div>
+          </div>}
+        {!isEmpty(joinRequests) &&
+          <div className='section-item'>
+            <div className='full-column'>
+              <label>Pending requests</label>
+              <p className='summary'>These are people who have requested to join. Use the button to approve.</p>
+              <JoinRequestList id={community.slug}/>
             </div>
           </div>}
       </div>}

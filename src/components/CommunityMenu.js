@@ -53,11 +53,11 @@ const CommunityMenu = ({ network, community }, { isMobile, dispatch, currentUser
     <Dropdown backdrop triangle toggleChildren={toggle} rivalrous='nav'>
       <li>
         <ul className='inner-list dropdown-menu'>
-          <li>
+          {menuItems.length > 1 && <li>
             <A to={url()}>
               <img src={allCommunities().avatar_url}/> All Communities
             </A>
-          </li>
+          </li>}
           {menuItems.slice(1).map(community => <li key={community.id}>
             <A to={url(community)} title={community.name}>
               <LazyLoader>

@@ -2,11 +2,11 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { prefetch } from 'react-fetcher'
 import cx from 'classnames'
-const { object, func } = React.PropTypes
+const { object, func, array } = React.PropTypes
 import { find, isEmpty, reduce, set } from 'lodash'
 import { get } from 'lodash/fp'
 import { markdown, sanitize } from 'hylo-utils/text'
-import { navigate } from '../../actions'
+import { navigate, showModal, fetchInvitations } from '../../actions'
 import {
   addCommunityModerator,
   fetchCommunitySettings,
@@ -25,16 +25,19 @@ import { uploadImage } from '../../actions/uploadImage'
 import PersonChooser from '../../components/PersonChooser'
 import { communityJoinUrl } from '../../routes'
 import { makeUrl } from '../../util/navigation'
+import InvitationList from './InvitationList'
 
 @prefetch(({dispatch, params: {id}}) =>
   Promise.all([
     dispatch(fetchCommunitySettings(id)),
-    dispatch(fetchCommunityModerators(id))
+    dispatch(fetchCommunityModerators(id)),
+    dispatch(fetchInvitations(id))
   ])
 )
 @connect((state, { params }) => ({
   community: state.communities[params.id],
-  validation: state.communityValidation
+  validation: state.communityValidation,
+  invitations: state.invitations[params.id]
 }))
 export default class CommunitySettings extends React.Component {
 
@@ -47,7 +50,8 @@ export default class CommunitySettings extends React.Component {
     community: object,
     dispatch: func,
     location: object,
-    validation: object
+    validation: object,
+    invitations: array
   }
 
   static contextTypes = {currentUser: object}
@@ -207,7 +211,7 @@ export default class CommunitySettings extends React.Component {
   }
 
   render () {
-    const { community } = this.props
+    const { community, dispatch, invitations } = this.props
     const { avatar_url, banner_url } = community
     const { editing, edited, errors, expand } = this.state
     const labelProps = {expand, toggle: this.toggleSection}
@@ -408,6 +412,19 @@ export default class CommunitySettings extends React.Component {
             <p className='summary'>You can copy this link for pasting in emails or embedding on your webpage to pre-populate the invite code for new members to easily join.</p>
           </div>
         </div>
+        <div className='section-item'>
+          <div className='full-column'>
+            <label>Invite members</label>
+            <p><button onClick={() => dispatch(showModal('invite'))}>Invite members</button></p>
+            <p className='summary'>Use this button to send email invitations to people you&#39;d like in your communtiy.</p>
+          </div>
+        </div>
+        {!isEmpty(invitations) &&
+          <div className='section-item'>
+            <div className='full-column'>
+              <InvitationList id={community.slug}/>
+            </div>
+          </div>}
       </div>}
 
       <SectionLabel name='moderators' {...labelProps}>Moderation</SectionLabel>

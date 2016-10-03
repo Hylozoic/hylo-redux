@@ -92,6 +92,21 @@
 #community-invitations {
   margin-top: 25px;
 
+  .avatar {
+    vertical-align: middle;
+    display: inline-block;
+    margin-right: 10px;
+  }
+
+  .summary {
+    margin-top: 25px;
+    border-top: 1px solid @post-border;
+    text-align: right;
+    padding: @modal-row-side-padding;
+  }
+}
+
+.invitation-list {
   table {
     width: 100%;
   }
@@ -115,19 +130,6 @@
 
   tr.even td {
     background-color: @faint-gray-bg;
-  }
-
-  .avatar {
-    vertical-align: middle;
-    display: inline-block;
-    margin-right: 10px;
-  }
-
-  .summary {
-    margin-top: 25px;
-    border-top: 1px solid @post-border;
-    text-align: right;
-    padding: @modal-row-side-padding;
   }
 
   .mobile({

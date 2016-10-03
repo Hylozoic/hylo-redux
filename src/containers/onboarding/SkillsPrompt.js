@@ -3,7 +3,6 @@ import Modal from '../../components/Modal'
 import ModalOnlyPage from '../../components/ModalOnlyPage'
 import ListItemTagInput from '../../components/ListItemTagInput'
 import { CommunityHeader } from '../Signup'
-import { preventSpaces } from '../../util/textInput'
 import { nextOnboardingUrl } from '../../util/navigation'
 import { updateUserSettings } from '../../actions'
 import A from '../../components/A'
@@ -25,9 +24,7 @@ const SkillsPrompt = ({ location }, { currentUser, dispatch }) => {
   return <ModalOnlyPage id='skills-prompt' className='login-signup'>
     <CommunityHeader community={community}/>
     <Modal standalone {...{title, subtitle}}>
-      <ListItemTagInput type='tags' person={currentUser}
-        className='modal-input'
-        filter={preventSpaces}
+      <ListItemTagInput type='tags' person={currentUser} className='modal-input'
         update={update}/>
       <span className='meta'>
         Press Enter (Return) after each tag. Use a dash (-) between words in a tag.

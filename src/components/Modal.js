@@ -52,7 +52,7 @@ export class BareModalWrapper extends React.Component {
 }
 
 export class ModalWrapper extends React.Component {
-  static propTypes = {type: string, params: object, top: bool}
+  static propTypes = {type: string, params: object, top: bool, bottom: bool}
   static defaultProps = {top: true}
   static contextTypes = {dispatch: func}
 
@@ -60,13 +60,12 @@ export class ModalWrapper extends React.Component {
     window.scrollTo(0, this.lockedScrollTop)
   }
 
-  componentWillReceiveProps (nextProps) {
-    if (nextProps.type && !this.props.type) {
-      this.lockedScrollTop = document.body.scrollTop
-      window.addEventListener('scroll', this.lockScrolling)
-    } else if (!nextProps.type && this.props.type) {
-      window.removeEventListener('scroll', this.lockScrolling)
-    }
+  componentDidMount () {
+    if (this.props.bottom) window.addEventListener('scroll', this.lockScrolling)
+  }
+
+  componentWillUnmount () {
+    if (this.props.bottom) window.removeEventListener('scroll', this.lockScrolling)
   }
 
   render () {
@@ -141,9 +140,9 @@ ModalContainer.propTypes = {
 ModalContainer.contextTypes = {isMobile: bool}
 
 export const Modal = (props, { isMobile }) => {
-  const { children, title, subtitle, onCancel, standalone, noHeader } = props
+  const { children, title, subtitle, onCancel, standalone } = props
   return <ModalContainer {...props}>
-    {!noHeader && <div className='title'>
+    {(title || subtitle) && <div className='title'>
       <h2>
         {title}
         {!standalone && <a className='close' onClick={onCancel}>
@@ -164,8 +163,7 @@ Modal.propTypes = {
   onCancel: func,
   subtitle: oneOfType([string, node]),
   standalone: bool,
-  title: oneOfType([string, object]),
-  noHeader: bool
+  title: oneOfType([string, object])
 }
 Modal.contextTypes = {isMobile: bool}
 

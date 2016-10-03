@@ -94,6 +94,7 @@ export default class App extends React.Component {
       {!isEmpty(tagPopover) && <TagPopover {...{tagPopover}}/>}
       {openModals.map((modal, i) =>
         <ModalWrapper key={i}
+          bottom={i === 0}
           top={i === openModals.length - 1}
           type={get('type', modal)}
           params={get('params', modal)}/>)}

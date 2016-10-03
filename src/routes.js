@@ -8,7 +8,6 @@ import AllCommunities, { AllPosts } from './containers/AllCommunities'
 import People from './containers/People'
 import Projects from './containers/Projects'
 import { CreateCommunity, CreateCommunityInvite } from './containers/CreateCommunity'
-import CommunityChecklist from './containers/community/CommunityChecklist'
 import CommunityProfile from './containers/community/CommunityProfile'
 import CommunityPosts from './containers/community/CommunityPosts'
 import CommunityJoinForm from './containers/community/CommunityJoinForm'
@@ -42,11 +41,12 @@ import { debug } from './util/logging'
 import { makeUrl } from './util/navigation'
 import { get, isEmpty, pick } from 'lodash'
 import config from './config'
+import { isLoggedIn } from './models/currentUser'
 
 export default function makeRoutes (store) {
   const requireLoginWithOptions = (options = {}) => (nextState, replace) => {
     let { startAtSignup, addParams } = options
-    if (store.getState().people.current) return true
+    if (isLoggedIn(store.getState())) return true
 
     const start = startAtSignup ? 'signup' : 'login'
     debug(`redirecting to ${start}`)
@@ -86,7 +86,6 @@ export default function makeRoutes (store) {
     <Route path='create' component={CreateCommunity} onEnter={requireLogin}/>
     <Route path='invite' component={CreateCommunityInvite} onEnter={requireLogin}/>
     <Route path='c/:id/invite' component={CreateCommunityInvite} onEnter={requireLogin}/>
-    <Route path='c/:id/checklist' component={CommunityChecklist} onEnter={requireLogin}/>
 
     <Route path='set-password' component={SetPassword}/>
 
@@ -207,3 +206,6 @@ export const isSearchUrl = (path) =>
 
 export const peopleUrl = community =>
   `${community ? '/c/' + community.slug : ''}/people`
+
+export const checklistUrl = community =>
+  `/c/${community.slug}?checklist=true`

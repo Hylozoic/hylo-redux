@@ -1,12 +1,13 @@
-require('../support')
+import { helpers } from '../support'
 import communities from '../../src/reducers/communities'
 import {
-  FETCH_CURRENT_USER,
   ADD_COMMUNITY_MODERATOR_PENDING,
   REMOVE_COMMUNITY_MODERATOR_PENDING,
   UPDATE_COMMUNITY_SETTINGS_PENDING,
-  USE_INVITATION
+  USE_INVITATION,
+  fetchCurrentUser
 } from '../../src/actions'
+import { configureStore } from '../../src/store'
 
 const community1 = {
   id: 'c1',
@@ -17,30 +18,40 @@ const community1 = {
 
 describe('communities', () => {
   describe('on FETCH_CURRENT_USER', () => {
-    it('normalizes community data', () => {
-      let action = {
-        type: FETCH_CURRENT_USER,
-        payload: {
-          id: 1,
-          memberships: [
-            {community: {id: 'c1', slug: 'c1'}},
-            {community: {id: 'c2', slug: 'c2'}}
-          ]
+    var store
+    const c1 = {id: 'c1', slug: 'c1'}
+    const c2 = {id: 'c2', slug: 'c2'}
+    const action = fetchCurrentUser()
+
+    before(() => {
+      store = configureStore({
+        communities: {
+          c1: {id: 'c1', slug: 'old'},
+          c3: {id: 'c3', slug: 'c3'}
         }
-      }
+      }).store
 
-      let state = {
-        c1: {id: 'c1', slug: 'old'},
-        c3: {id: 'c3', slug: 'c3'}
-      }
+      helpers.mockActionResponse(action, {
+        id: 1,
+        memberships: [
+          {community_id: c1.id},
+          {community_id: c2.id}
+        ],
+        communities: [c1, c2]
+      })
+    })
 
+    it('normalizes community data', () => {
       let expectedState = {
         c1: {id: 'c1', slug: 'c1'},
         c2: {id: 'c2', slug: 'c2'},
         c3: {id: 'c3', slug: 'c3'}
       }
 
-      expect(communities(state, action)).to.deep.equal(expectedState)
+      store.dispatch(action)
+      .then(() => {
+        expect(store.getState().communities).to.deep.equal(expectedState)
+      })
     })
   })
 

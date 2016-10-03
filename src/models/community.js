@@ -1,5 +1,6 @@
 import { values } from 'lodash'
 import { find, get, pickBy } from 'lodash/fp'
+import { showModal } from '../actions'
 
 export const MemberRole = {DEFAULT: 0, MODERATOR: 1}
 export const defaultBanner = 'https://d3ngex8q79bk55.cloudfront.net/misc/default_community_banner.jpg'
@@ -19,14 +20,18 @@ export const bannerUploadSettings = ({ id, slug }) => ({
   convert: {width: 1600, format: 'jpg', fit: 'max', rotate: 'exif'}
 })
 
-export const getCommunity = (idOrSlug, state) =>
-  state.communities[idOrSlug] || find(c => c.id === idOrSlug, state.communities)
+export const getCommunity = (idOrSlug, state) => {
+  const ret = state.communities[idOrSlug] || find(c => c.id === idOrSlug, state.communities)
+  return ret
+}
 
 export const getCurrentCommunity = state =>
-  getCommunity(state.currentCommunityId, state)
+  state.currentCommunityId ? getCommunity(state.currentCommunityId, state) : null
 
-export const getLastCommunity = state =>
-  getCommunity(get('people.current.settings.currentCommunityId', state), state)
+export const getLastCommunity = state => {
+  const lastCommunityId = get('people.current.settings.currentCommunityId', state)
+  return lastCommunityId ? getCommunity(lastCommunityId, state) : null
+}
 
 export const getCurrentOrLastCommunity = state =>
   state.currentCommunityId ? getCurrentCommunity(state) : getLastCommunity(state)
@@ -35,12 +40,14 @@ export const getFollowedTags = ({ slug }, state) =>
   values(pickBy('followed', state.tagsByCommunity[slug]))
 
 export const getChecklist = community => {
-  const { slug, settings: { checklist } } = community
+  const { settings } = community
+  const { checklist } = settings || {}
   return [
-    {title: 'Add a logo', url: `/c/${slug}/settings?expand=appearance`, done: !!get('logo', checklist)},
-    {title: 'Invite members', url: `/c/${slug}/invite`, done: !!get('invite', checklist)},
-    {title: 'Add a topic', url: `/c/${slug}/settings/tags?create=true`, done: !!get('topics', checklist)},
-    {title: 'Make your first post', url: `/c/${slug}`, done: !!get('post', checklist)}
+    {title: 'Add a logo', action: showModal('add-logo'), done: !!get('logo', checklist)},
+    {title: 'Add a banner', action: showModal('add-logo'), done: !!get('banner', checklist)},
+    {title: 'Invite members', action: showModal('invite'), done: !!get('invite', checklist)},
+    {title: 'Add a topic', action: showModal('tag-editor', {creating: true}), done: !!get('topics', checklist)},
+    {title: 'Start your first conversation', action: showModal('post-editor'), done: !!get('post', checklist)}
   ]
 }
 

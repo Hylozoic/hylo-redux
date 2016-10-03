@@ -12,12 +12,10 @@ const { func, object, string } = React.PropTypes
   .then(({ error, payload: { community, preexisting } }) =>
     error || dispatch(navigateAfterJoin(community, tagName, preexisting))))
 @connect(({ errors, people }, { tagName }) => ({
-  codeError: get(errors[JOIN_COMMUNITY_WITH_CODE], 'payload.response.body'),
-  currentUser: people.current
+  codeError: get(errors[JOIN_COMMUNITY_WITH_CODE], 'payload.response.body')
 }), null, null, {withRef: true})
 export default class CommunityJoinLinkHandler extends React.Component {
   static propTypes = {
-    currentUser: object,
     dispatch: func,
     params: object,
     codeError: string

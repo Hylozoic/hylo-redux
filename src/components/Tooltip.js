@@ -75,7 +75,7 @@ export default class Tooltip extends React.Component {
           [id]: true
         }
       }
-      dispatch(updateUserSettings(currentUser.id, {settings}))
+      dispatch(updateUserSettings({settings}))
     }
 
     return <span id={ttid}>

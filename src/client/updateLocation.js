@@ -1,7 +1,8 @@
 import { match } from 'react-router'
 import { getPrefetchedData, getDeferredData } from 'react-fetcher'
 import { debug } from '../util/logging'
-import { get, isEqual } from 'lodash'
+import { isEqual } from 'lodash'
+import { denormalizedCurrentUser } from '../models/currentUser'
 import { localsForPrefetch } from '../util/universal'
 import { identify } from '../util/analytics'
 import { calliOSBridge } from './util'
@@ -25,7 +26,7 @@ const updateLocation = opts => location => {
       return
     }
 
-    identify(get(store.getState(), 'people.current'))
+    identify(denormalizedCurrentUser(store.getState()))
     window.analytics.page()
 
     calliOSBridge({type: 'navigated', pathname: location.pathname})

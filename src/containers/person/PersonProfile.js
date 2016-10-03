@@ -22,10 +22,10 @@ import { NonLinkAvatar } from '../../components/Avatar'
 import moment from 'moment'
 import { getPost } from '../../models/post'
 import { getCurrentCommunity } from '../../models/community'
+import { defaultBanner } from '../../models/person'
 
 const { func, object } = React.PropTypes
 
-const defaultBanner = 'https://d3ngex8q79bk55.cloudfront.net/misc/default_user_banner.jpg'
 const spacer = <span>&nbsp;&nbsp;•&nbsp;&nbsp;</span>
 const subject = 'person'
 
@@ -56,17 +56,16 @@ const PersonProfile = compose(
     dispatch(fetchPerson(id))
     .then(({ payload: { shared_communities }, error }) => {
       if (error || !shared_communities) return
-      let { currentCommunityId, people: { current } } = store.getState()
+      let { currentCommunityId } = store.getState()
       if (includes(shared_communities, currentCommunityId)) return
-      return saveCurrentCommunityId(dispatch, shared_communities[0] || 'all', current.id)
+      return saveCurrentCommunityId(dispatch, shared_communities[0] || 'all', true)
     }),
     dispatch(initialFetch(id, query))
   ])),
-  defer(({ store, params: { id } }) => {
+  defer(({ store, params: { id }, currentUser }) => {
     let state = store.getState()
     let person = state.people[id]
     if (!person) return
-    let currentUser = state.people.current
     if (get(currentUser, 'id') === person.id) {
       return trackEvent(VIEWED_SELF)
     } else {
@@ -78,7 +77,6 @@ const PersonProfile = compose(
     return omitBy(isNull, {
       person,
       community: getCurrentCommunity(state),
-      currentUser: state.people.current,
       error: findError(state.errors, FETCH_PERSON, 'people', id),
       recentRequest: getPost(get(person, 'recent_request_id'), state),
       recentOffer: getPost(get(person, 'recent_offer_id'), state)
@@ -159,7 +157,6 @@ PersonProfile.propTypes = {
   params: object,
   person: object,
   children: object,
-  currentUser: object,
   error: object,
   location: object,
   dispatch: func,

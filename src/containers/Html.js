@@ -10,7 +10,9 @@ const rawScript = contents =>
   <script type='text/javascript' dangerouslySetInnerHTML={{__html: contents}}></script>
 
 const Html = props => {
-  const { pageTitle, markup, initNewRelic, state, assetManifest, metaTags } = props
+  const {
+    pageTitle, markup, initNewRelic, state, assetManifest, metaTags, featureFlags
+  } = props
   return <html>
     <head>
       {initNewRelic && rawScript(initNewRelic)}
@@ -26,6 +28,7 @@ const Html = props => {
       <div id='app' dangerouslySetInnerHTML={{__html: markup}}></div>
       {rawScript(state)}
       {rawScript(assetManifest)}
+      {rawScript(featureFlags)}
       <script src={assetUrl('/index.js')} defer></script>
     </body>
   </html>
@@ -37,7 +40,8 @@ Html.propTypes = {
   state: string,
   assetManifest: string,
   metaTags: object,
-  initNewRelic: string
+  initNewRelic: string,
+  featureFlags: string
 }
 
 export default Html

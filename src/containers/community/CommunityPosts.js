@@ -3,38 +3,42 @@ import { connect } from 'react-redux'
 import { prefetch } from 'react-fetcher'
 import { fetch, ConnectedPostList } from '../ConnectedPostList'
 import PostEditor from '../../components/PostEditor'
-import { PercentBar } from '../../containers/community/CommunityChecklist'
+import { PercentBar } from '../../containers/ChecklistModal'
 import { compose } from 'redux'
 import { isMember, canModerate } from '../../models/currentUser'
 import { navigate, notify } from '../../actions'
 import { requestToJoinCommunity } from '../../actions/communities'
 import { getChecklist } from '../../models/community'
 import { filter } from 'lodash/fp'
+import { showModal } from '../../actions'
 const { func, object } = React.PropTypes
 
 const subject = 'community'
 
 class CommunityPosts extends React.Component {
-
   static propTypes = {
     dispatch: func,
     params: object,
     community: object,
-    location: object,
-    currentUser: object
+    location: object
   }
-
-  static childContextTypes = {
-    community: object
-  }
+  static contextTypes = {currentUser: object}
+  static childContextTypes = {community: object}
 
   getChildContext () {
     let { community } = this.props
     return {community}
   }
 
+  componentDidMount () {
+    let { location: { query }, dispatch } = this.props
+    let { checklist } = query || {}
+    if (checklist) dispatch(showModal('checklist'))
+  }
+
   render () {
-    let { community, params: { id }, location: { query }, currentUser, dispatch } = this.props
+    let { community, params: { id }, location: { query }, dispatch } = this.props
+    const { currentUser } = this.context
 
     const requestToJoin = () => {
       if (!currentUser) return dispatch(navigate(`/signup?next=/c/${community.slug}`))
@@ -59,7 +63,8 @@ class CommunityPosts extends React.Component {
 }
 
 export default compose(
-  prefetch(({ dispatch, params, query }) => dispatch(fetch(subject, params.id, query))),
+  prefetch(({ dispatch, params: { id }, query, currentUser, store }) =>
+    dispatch(fetch(subject, id, query))),
   connect((state, { params }) => ({
     community: state.communities[params.id],
     currentUser: state.people.current
@@ -73,8 +78,8 @@ const CommunitySetup = connect()(({ community, dispatch }) => {
   if (percent === 100) return null
 
   return <div className='community-setup'
-    onClick={() => dispatch(navigate(`/c/${community.slug}/checklist`))}>
+    onClick={() => dispatch(showModal('checklist'))}>
     <PercentBar percent={percent}/>
-    Your community is {percent}% setup. Click here to continue setting it up.
+    Your community is {percent}% set up. <a>Click here</a> to continue setting it up.
   </div>
 })

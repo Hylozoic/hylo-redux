@@ -3,15 +3,15 @@ import { pick } from 'lodash'
 import { defer } from 'react-fetcher'
 import { makeUrl } from '../util/navigation'
 import { Link } from 'react-router'
-import { signup, setSignupError, toggleLeftNav } from '../actions'
+import { continueLogin, signup, setSignupError, toggleLeftNav } from '../actions'
 import ServiceAuthButtons from '../components/ServiceAuthButtons'
 import Modal from '../components/Modal'
 import ModalOnlyPage from '../components/ModalOnlyPage'
 import { ModalInput } from '../components/ModalRow'
 import validator from 'validator'
-import { prefetchForNext, connectForNext, goToNext } from './Login'
+import { prefetchForNext, connectForNext, PostLoginRedirector } from './Login'
 import { STARTED_SIGNUP, trackEvent } from '../util/analytics'
-const { func, object, string } = React.PropTypes
+const { bool, func, object, string } = React.PropTypes
 
 @prefetchForNext
 @connectForNext('signup')
@@ -69,7 +69,7 @@ export default class Signup extends React.Component {
     .then(({ error }) => {
       if (error) return
       dispatch(toggleLeftNav())
-      dispatch(goToNext(this.props.currentUser, query))
+      dispatch(continueLogin(query))
     })
   }
 
@@ -116,6 +116,7 @@ export default class Signup extends React.Component {
           </div>
       </form>
       </Modal>
+      <PostLoginRedirector/>
     </ModalOnlyPage>
   }
 }

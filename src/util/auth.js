@@ -1,6 +1,5 @@
-import { fetchCurrentUser } from '../actions'
+import { continueLogin, fetchCurrentUser } from '../actions'
 import { get } from 'lodash'
-import { goToNext } from '../containers/Login'
 import qs from 'querystring'
 
 export const LOGIN_CONTEXT = 'login'
@@ -54,7 +53,7 @@ export function setupPopupCallback (name, dispatch, errorAction) {
           .then(({ error, payload }) => {
             if (error) return
             const query = qs.parse(window.location.search.replace(/^\?/, ''))
-            return dispatch(goToNext(payload, query))
+            return dispatch(continueLogin(query))
           })
         }
         break

@@ -1,4 +1,4 @@
-require('../support')
+import { helpers } from '../support'
 import comments from '../../src/reducers/comments'
 import {
   FETCH_COMMENTS,
@@ -7,8 +7,6 @@ import {
 } from '../../src/actions'
 import { fetchActivity } from '../../src/actions/activity'
 import { configureStore } from '../../src/store'
-import { HOST } from '../../src/util/api'
-import nock from 'nock'
 
 describe('comments', () => {
   describe('on FETCH_COMMENTS', () => {
@@ -59,6 +57,7 @@ describe('comments', () => {
 
   describe('on FETCH_ACTIVITY', () => {
     let store
+    const action = fetchActivity(0, true)
 
     beforeEach(() => {
       store = configureStore({
@@ -67,9 +66,7 @@ describe('comments', () => {
           '2': {id: '2', user_id: '7'}
         }
       }).store
-
-      nock(HOST).get('/noo/activity?limit=20&offset=0&paginate=true&resetCount=true')
-      .reply(200, {
+      helpers.mockActionResponse(action, {
         items: [
           {id: '20', comment: {id: '2', text: 'bar'}},
           {id: '30', comment: {id: '3', text: 'baz'}},
@@ -79,7 +76,7 @@ describe('comments', () => {
     })
 
     it('extracts comments and appends to state', () => {
-      store.dispatch(fetchActivity(0, true))
+      store.dispatch(action)
       .then(() => {
         const { comments, activities } = store.getState()
 

@@ -42,7 +42,7 @@ const PageWithNav = (props, context) => {
     if (!isMobile) {
       setTimeout(() => {
         const settings = {leftNavIsOpen: open}
-        dispatch(updateUserSettings(currentUser.id, {settings}))
+        dispatch(updateUserSettings({settings}))
       }, 5000)
     }
   }
@@ -76,9 +76,9 @@ const PageWithNav = (props, context) => {
         {showNetworkNav && <NetworkNav
           communities={networkCommunities}
           network={network || community.network}/>}
-          {children}
-        </div>
-      </VelocityComponent>
+        {children}
+      </div>
+    </VelocityComponent>
   </div>
 }
 

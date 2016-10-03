@@ -125,7 +125,6 @@ const setupPage = (store, id, query, action) => {
   if (!post) return
 
   const communityId = get(post, 'communities.0') || 'all'
-  const userId = get(state.people, 'current.id')
 
   if (payload && !payload.api) {
     const { name, description, media } = payload
@@ -133,7 +132,7 @@ const setupPage = (store, id, query, action) => {
   }
 
   return Promise.all([
-    saveCurrentCommunityId(dispatch, communityId, userId),
+    saveCurrentCommunityId(dispatch, communityId, !!state.people.current),
 
     // when this page is clicked into from a post list, fetchPost will cause a
     // cache hit; however, there may be more comments than the 3 that were

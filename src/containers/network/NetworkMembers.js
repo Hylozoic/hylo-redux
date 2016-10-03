@@ -16,13 +16,11 @@ const NetworkMembers = compose(
   connect((state, { params: { id }, location: { query } }) => {
     return {
       ...connectedListProps(state, {subject, id, query}, 'people'),
-      network: state.networks[id],
-      currentUser: state.people.current
+      network: state.networks[id]
     }
   })
 )(props => {
-  let { pending, people, location: { query }, currentUser } = props
-  if (!currentUser) return <div>Loading...</div>
+  let { pending, people, location: { query } } = props
 
   let loadMore = () => {
     let { dispatch, total, params: { id } } = props
@@ -33,7 +31,6 @@ const NetworkMembers = compose(
   }
 
   return <div className='members'>
-
     {pending && <div className='loading'>Loading...</div>}
     <PersonCards people={people}/>
     <ScrollListener onBottom={loadMore}/>
@@ -46,8 +43,7 @@ NetworkMembers.propTypes = {
   dispatch: func,
   total: number,
   params: object,
-  location: object,
-  currentUser: object
+  location: object
 }
 
 export default NetworkMembers

@@ -1,14 +1,14 @@
 import React from 'react'
-import { get, debounce, throttle } from 'lodash'
+import { debounce, throttle } from 'lodash'
 import { connect } from 'react-redux'
 import Avatar from './Avatar'
 import RichTextEditor from './RichTextEditor'
-import { CREATE_COMMENT } from '../actions'
+import { CREATE_COMMENT, showModal } from '../actions'
 import { createComment, updateCommentEditor, updateComment } from '../actions/comments'
 import { ADDED_COMMENT, trackEvent } from '../util/analytics'
 import { textLength } from '../util/text'
 import { onCmdOrCtrlEnter } from '../util/textInput'
-import TagDescriptionEditor from './TagDescriptionEditor'
+import { responseMissingTagDescriptions } from '../util/api'
 import cx from 'classnames'
 var { array, bool, func, object, string } = React.PropTypes
 
@@ -22,8 +22,6 @@ const STOPPED_TYPING_WAIT_TIME = 8000
 
 @connect((state, { postId, commentId }) => {
   return ({
-    currentUser: get(state, 'people.current'),
-    editingTagDescriptions: state.editingTagDescriptions,
     text: postId ? state.commentEdits.new[postId] : state.commentEdits.edit[commentId],
     newComment: !commentId,
     pending: state.pending[CREATE_COMMENT]
@@ -31,7 +29,6 @@ const STOPPED_TYPING_WAIT_TIME = 8000
 })
 export default class CommentForm extends React.Component {
   static propTypes = {
-    currentUser: object,
     dispatch: func,
     startedTyping: func,
     stoppedTyping: func,
@@ -39,7 +36,6 @@ export default class CommentForm extends React.Component {
     commentId: string,
     mentionOptions: array,
     placeholder: string,
-    editingTagDescriptions: bool,
     text: string,
     newComment: bool,
     close: func,
@@ -52,7 +48,8 @@ export default class CommentForm extends React.Component {
   }
 
   static contextTypes = {
-    isMobile: bool
+    isMobile: bool,
+    currentUser: object
   }
 
   constructor (props) {
@@ -67,14 +64,23 @@ export default class CommentForm extends React.Component {
     const text = this.refs.editor.getContent().replace(/<p>&nbsp;<\/p>$/m, '')
     if (!text || textLength(text) < 2) return false
 
+    const showTagEditor = () => dispatch(showModal('tag-editor', {
+      creating: false,
+      saveParent: this.saveWithTagDescriptions
+    }))
+
     if (newComment) {
       dispatch(createComment(postId, text, this.state.tagDescriptions))
-      .then(({ error }) => {
-        if (error) return
+      .then(action => {
+        if (responseMissingTagDescriptions(action)) return showTagEditor()
+        if (action.error) return
         trackEvent(ADDED_COMMENT, {post: {id: postId}})
       })
     } else {
       dispatch(updateComment(commentId, text, this.state.tagDescriptions))
+      .then(action => {
+        if (responseMissingTagDescriptions(action)) return showTagEditor()
+      })
       close()
     }
 
@@ -94,10 +100,10 @@ export default class CommentForm extends React.Component {
 
   render () {
     const {
-      currentUser, editingTagDescriptions, dispatch, postId, commentId, text,
+      dispatch, postId, commentId, text,
       newComment, close, startedTyping, stoppedTyping, pending
     } = this.props
-    const { isMobile } = this.context
+    const { currentUser, isMobile } = this.context
     const editing = text !== undefined
     const storeId = newComment ? postId : commentId
     const updateStore = text => dispatch(updateCommentEditor(storeId, text, newComment))
@@ -125,8 +131,6 @@ export default class CommentForm extends React.Component {
       <Avatar person={currentUser}/>
       {editing
         ? <div className='content'>
-            {editingTagDescriptions && <TagDescriptionEditor
-              saveParent={this.saveWithTagDescriptions}/>}
             <RichTextEditor ref='editor' name='comment' startFocused
               content={text}
               onBlur={() => updateStore(this.refs.editor.getContent())}

@@ -38,11 +38,10 @@ const query = {offset: 0, limit: 1000}
   return dispatch(fetch(subject, id, query))
 })
 @connect((state, { params: { id } }) => {
-  let { people, networks, networkValidation, pending, typeaheadMatches, networkEdits } = state
+  let { networks, networkValidation, pending, typeaheadMatches, networkEdits } = state
 
   let saving = pending[CREATE_NETWORK]
   let uploadingImage = !!pending[UPLOAD_IMAGE]
-  let currentUser = people.current
 
   if (!id) id = 'new'
 
@@ -65,7 +64,7 @@ const query = {offset: 0, limit: 1000}
   return {
     communityChoices: typeaheadMatches[typeaheadId] || [],
     creating: id === 'new',
-    id, network, networkEdit, errors, validating, saving, uploadingImage, currentUser
+    id, network, networkEdit, errors, validating, saving, uploadingImage
   }
 })
 export default class NetworkEditor extends React.Component {
@@ -78,11 +77,12 @@ export default class NetworkEditor extends React.Component {
     dispatch: func,
     network: object,
     networkEdit: object,
-    currentUser: object,
     communityChoices: array,
     params: object,
     creating: bool
   }
+
+  static contextTypes = {currentUser: object}
 
   setValue = (key, value) => {
     let { id, dispatch } = this.props
@@ -170,7 +170,8 @@ export default class NetworkEditor extends React.Component {
       return []
     }
 
-    let { currentUser, networkEdit: { communities } } = this.props
+    let { networkEdit: { communities } } = this.props
+    const { currentUser } = this.context
     var match = c =>
       startsWith(c.name.toLowerCase(), term.toLowerCase()) &&
       !contains(communities, c.id)
@@ -216,19 +217,14 @@ export default class NetworkEditor extends React.Component {
 
   render () {
     let {
-      creating,
-      validating,
-      saving,
-      uploadingImage,
-      networkEdit,
-      errors,
-      communityChoices,
-      currentUser: { is_admin }
+      creating, validating, saving, uploadingImage, networkEdit, errors,
+      communityChoices
     } = this.props
+    const { currentUser: { is_admin } } = this.context
     let { name, description, slug, avatar_url, banner_url, communities } = networkEdit
     let disableSubmit = some(omit(errors, 'server')) || validating || saving || uploadingImage
 
-    return <div id='network-editor' className='form-sections'>
+    return <div id='network-editor' className='form-sections simple-page'>
       { creating ? <h2>Create a network</h2> : <h2>Edit network</h2> }
       <p>Let's take the first step toward unlocking the creative potential of your network with Hylo.</p>
 

@@ -13,6 +13,7 @@ import {
   ADD_COMMUNITY_MODERATOR_PENDING,
   REMOVE_COMMUNITY_MODERATOR_PENDING,
   TYPEAHEAD,
+  UPDATE_COMMUNITY_CHECKLIST,
   USE_INVITATION
 } from '../actions'
 import { mergeList } from './util'
@@ -45,11 +46,6 @@ export default function (state = {}, action) {
     case FETCH_COMMUNITY_MODERATORS:
       community = {...state[meta.cache.id], moderators: payload}
       return {...state, [meta.cache.id]: community}
-    case FETCH_CURRENT_USER:
-      if (payload && payload.memberships) {
-        return mergeList(state, payload.memberships.map(m => m.community), 'slug')
-      }
-      break
     case UPDATE_COMMUNITY_SETTINGS_PENDING:
       if (meta.params.active === false) {
         return omit(state, meta.slug)
@@ -77,6 +73,12 @@ export default function (state = {}, action) {
     case TYPEAHEAD:
       if (meta.id === 'network_communities') {
         return mergeList(state, payload, 'slug')
+      }
+      return state
+    case UPDATE_COMMUNITY_CHECKLIST:
+      community = state[meta.slug]
+      return {
+        ...state, [meta.slug]: {...community, settings: payload}
       }
   }
   return state

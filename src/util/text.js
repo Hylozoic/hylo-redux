@@ -146,7 +146,7 @@ export const emailsFromCSVFile = file => {
 
 export const emailsFromCSVString = csvString => {
   var stream = new Readable()
-  stream.push(csvString)
+  stream.push(csvString.toLowerCase())
   stream.push(null)
   return new Promise((resolve, reject) => {
     var emails = []
@@ -157,6 +157,8 @@ export const emailsFromCSVString = csvString => {
     .on('data', data => {
       if (data.email) {
         emails.push(data.email)
+      } else if (data['email address']) {
+        emails.push(data['email address'])
       } else {
         emails.push(data)
       }

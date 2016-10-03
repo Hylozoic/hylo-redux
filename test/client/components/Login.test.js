@@ -1,68 +1,66 @@
 require('../support')
-import { mocks, helpers } from '../../support'
-import Login from '../../../src/containers/Login.js'
-import { renderIntoDocument } from 'react-addons-test-utils'
-const { createElement } = helpers
-import { HOST } from '../../../src/util/api'
-import nock from 'nock'
+import Login, { PostLoginRedirector } from '../../../src/containers/Login'
 import { configureStore } from '../../../src/store'
 import { getUrlFromLocation } from '../../../src/util/navigation'
+import { mount } from 'enzyme'
+import React from 'react'
 
 const redirectUrl = store => {
   const location = store.getState().routing.locationBeforeTransitions
-  return getUrlFromLocation(location)
+  return location ? getUrlFromLocation(location) : null
 }
 
-describe('Login', () => {
-  describe('on successful login', () => {
-    var store, node
+describe('PostLoginRedirector', () => {
+  var user, store
+  var community = {id: '1', slug: 'foo'}
 
-    const setup = (loginResponse, props) => {
-      nock(HOST).post('/login').reply(200, loginResponse)
-      const component = createElement(Login, props, {store})
-      node = renderIntoDocument(component).getWrappedInstance()
-    }
+  beforeEach(() => {
+    user = {id: 42}
+  })
 
-    beforeEach(() => {
-      store = configureStore({}).store
+  const updateNode = state => {
+    store = configureStore(state).store
+    const node = mount(<PostLoginRedirector/>, {context: {store}})
+    node.instance().getWrappedInstance().componentDidUpdate()
+  }
+
+  it("redirects to the person's profile by default", () => {
+    user.memberships = [{community_id: community.id}]
+    updateNode({
+      login: {shouldRedirect: true},
+      people: {current: user},
+      communities: {foo: community}
     })
+    expect(redirectUrl(store)).to.equal('/u/42')
+  })
 
-    it("redirects to the person's profile by default", () => {
-      setup({id: 42, memberships: {id: 1}}, {location: {query: {}}})
-      return node.submit(mocks.event())
-      .then(() => {
-        expect(redirectUrl(store)).to.equal('/u/42')
-        expect(window.analytics.alias).to.have.been.called()
-      })
+  it('redirects to the community creation form if the user has no communities', () => {
+    updateNode({
+      login: {shouldRedirect: true},
+      people: {current: user},
+      communities: {foo: community}
     })
+    expect(redirectUrl(store)).to.equal('/create')
+    expect(window.analytics.alias).to.have.been.called()
+  })
 
-    it('redirects to the community creation form if the user has no communities', () => {
-      setup({id: 42}, {location: {query: {}}})
-      return node.submit(mocks.event())
-      .then(() => {
-        expect(redirectUrl(store)).to.equal('/create')
-        expect(window.analytics.alias).to.have.been.called()
-      })
+  it('redirects to the last visited community if available', () => {
+    user.settings = {currentCommunityId: community.id}
+    updateNode({
+      login: {shouldRedirect: true},
+      people: {current: user},
+      communities: {foo: community}
     })
+    expect(redirectUrl(store)).to.equal('/c/foo')
+    expect(window.analytics.alias).to.have.been.called()
+  })
 
-    it('redirects to the last visited community if available', () => {
-      const slug = 'foomunity'
-      const communityId = '5'
-      nock(HOST).get('/noo/community/foomunity').reply(200, {slug})
-      const user = {
-        id: 42,
-        settings: {currentCommunityId: communityId},
-        memberships: [{community_id: communityId, community: {id: communityId, slug}}]
-      }
-      setup(user, {location: {query: {}}})
-      return node.submit(mocks.event())
-      .then(() => expect(redirectUrl(store)).to.equal(`/c/${slug}`))
+  it('redirects to a specified location', () => {
+    updateNode({
+      login: {shouldRedirect: true, query: {next: '/c/sandbox'}},
+      people: {current: user},
+      communities: {foo: community}
     })
-
-    it('redirects to a specified location', () => {
-      setup({id: 42}, {location: {query: {next: '/c/sandbox'}}})
-      return node.submit(mocks.event())
-      .then(() => expect(redirectUrl(store)).to.equal('/c/sandbox'))
-    })
+    expect(redirectUrl(store)).to.equal('/c/sandbox')
   })
 })

@@ -39,7 +39,7 @@ describe('people', () => {
     it('updates the current user', () => {
       let action = {
         type: UPDATE_USER_SETTINGS_PENDING,
-        meta: {id: user1.id, params: {email: 'joe@bar.com'}}
+        meta: {params: {email: 'joe@bar.com'}}
       }
 
       let state = {
@@ -58,7 +58,7 @@ describe('people', () => {
     it('adds tags', () => {
       const action = {
         type: UPDATE_USER_SETTINGS_PENDING,
-        meta: {id: user1.id, params: {tags: ['foo', 'bar', 'baz', 'klunk']}}
+        meta: {params: {tags: ['foo', 'bar', 'baz', 'klunk']}}
       }
 
       const state = {
@@ -77,7 +77,7 @@ describe('people', () => {
     it('removes tags', () => {
       const action = {
         type: UPDATE_USER_SETTINGS_PENDING,
-        meta: {id: user1.id, params: {tags: ['foo', 'bar']}}
+        meta: {params: {tags: ['foo', 'bar']}}
       }
 
       const state = {

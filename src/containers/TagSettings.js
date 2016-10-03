@@ -1,13 +1,12 @@
 import React from 'react'
 import { prefetch } from 'react-fetcher'
 import { connect } from 'react-redux'
-import { fetchTags, removeTagFromCommunity, updateCommunityTag, createTagInCommunity } from '../actions/tags'
-import { createTagInModal } from '../actions/tags'
+import { fetchTags, removeTagFromCommunity, updateCommunityTag } from '../actions/tags'
+import { showModal } from '../actions'
 import { getCurrentCommunity } from '../models/community'
 import A from '../components/A'
 import Icon from '../components/Icon'
 import ScrollListener from '../components/ScrollListener'
-import TagDescriptionEditor from '../components/TagDescriptionEditor'
 import { connectedListProps } from '../util/caching'
 import { includes } from 'lodash'
 import { map, find } from 'lodash/fp'
@@ -18,11 +17,9 @@ const subject = 'community'
 @prefetch(({ params: { id }, dispatch }) =>
   dispatch(fetchTags({subject, id})))
 @connect((state, { params: { id }, location: { query } }) => {
-  const { creatingTagAndDescription } = state
   return ({
     ...connectedListProps(state, {subject, id, query}, 'tags'),
-    community: getCurrentCommunity(state),
-    creatingTagAndDescription
+    community: getCurrentCommunity(state)
   })
 })
 export default class TagSettings extends React.Component {
@@ -33,28 +30,17 @@ export default class TagSettings extends React.Component {
     community: object,
     location: object,
     pending: bool,
-    total: number,
-    creatingTagAndDescription: bool
-  }
-
-  componentDidMount () {
-    let { location: { query } } = this.props
-    let { create } = query || {}
-    if (create) this.createTag()
+    total: number
   }
 
   createTag () {
-    this.props.dispatch(createTagInModal())
-  }
-
-  saveTag (params) {
-    const { dispatch, community: { slug } } = this.props
-    const name = Object.keys(params)[0]
-    dispatch(createTagInCommunity({...params[name], name}, slug))
+    this.props.dispatch(showModal('tag-editor', {
+      creating: true
+    }))
   }
 
   render () {
-    const { tags, community, dispatch, pending, total, creatingTagAndDescription } = this.props
+    const { tags, community, dispatch, pending, total } = this.props
     const findMembership = tag =>
       find(m => m.community_id === community.id, tag.memberships)
     const communityTags = map(tag => ({...tag, ...findMembership(tag)}), tags)
@@ -100,7 +86,6 @@ export default class TagSettings extends React.Component {
           <a className='button' onClick={() => this.createTag()}>Add Topic</a>
         </div>
       </div>
-      {creatingTagAndDescription && <TagDescriptionEditor updatePostTag={params => this.saveTag(params)}/>}
       <ScrollListener onBottom={loadMore}/>
     </div>
   }

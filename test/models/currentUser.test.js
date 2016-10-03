@@ -8,8 +8,8 @@ describe('currentUser', () => {
 
       let user = {
         memberships: [
-          {community: {id: 'foo'}},
-          {community: {id: 'bar'}}
+          {community_id: 'foo'},
+          {community_id: 'bar'}
         ]
       }
 
@@ -23,8 +23,8 @@ describe('currentUser', () => {
 
       let user = {
         memberships: [
-          {community: {id: 'foo'}},
-          {community: {id: 'bar'}, role: MemberRole.MODERATOR}
+          {community_id: 'foo'},
+          {community_id: 'bar', role: MemberRole.MODERATOR}
         ]
       }
 
@@ -35,7 +35,7 @@ describe('currentUser', () => {
       let community = {id: 'bar', settings: {all_can_invite: true}}
       let user = {
         memberships: [
-          {community: {id: 'bar'}}
+          {community_id: 'bar'}
         ]
       }
 

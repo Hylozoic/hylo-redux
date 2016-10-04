@@ -61,7 +61,13 @@ describe('postsByQuery', () => {
         tag: 'sometag'
       }
 
-      let action = {type: CREATE_POST, payload: post}
+      let action = {
+        type: CREATE_POST,
+        payload: post,
+        meta: {
+          tags: ['suchtag']
+        }
+      }
 
       let state = {
         'subject=all-posts': ['a'],
@@ -72,7 +78,8 @@ describe('postsByQuery', () => {
         'subject=community&id=all&tag=sometag': ['f'],
         'subject=community&id=bar&tag=sometag': ['g'],
         'subject=community&id=all&tag=othertag': ['h'],
-        'subject=community&id=bar&tag=othertag': ['i']
+        'subject=community&id=bar&tag=othertag': ['i'],
+        'subject=community&id=bar&tag=suchtag': ['j']
       }
 
       let expectedState = {
@@ -84,7 +91,8 @@ describe('postsByQuery', () => {
         'subject=community&id=all&tag=sometag': ['p', 'f'],
         'subject=community&id=bar&tag=sometag': ['p', 'g'],
         'subject=community&id=all&tag=othertag': ['h'],
-        'subject=community&id=bar&tag=othertag': ['i']
+        'subject=community&id=bar&tag=othertag': ['i'],
+        'subject=community&id=bar&tag=suchtag': ['p', 'j']
       }
 
       expect(postsByQuery(state, action)).to.deep.equal(expectedState)

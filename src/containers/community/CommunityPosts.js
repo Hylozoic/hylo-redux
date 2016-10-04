@@ -5,7 +5,7 @@ import { fetch, ConnectedPostList } from '../ConnectedPostList'
 import PostEditor from '../../components/PostEditor'
 import { PercentBar } from '../../containers/ChecklistModal'
 import { compose } from 'redux'
-import { isMember, canModerate } from '../../models/currentUser'
+import { isMember, canModerate, hasFeature } from '../../models/currentUser'
 import { navigate, notify } from '../../actions'
 import { requestToJoinCommunity } from '../../actions/communities'
 import { getChecklist } from '../../models/community'
@@ -32,8 +32,11 @@ class CommunityPosts extends React.Component {
 
   componentDidMount () {
     let { location: { query }, dispatch } = this.props
+    const { currentUser } = this.context
     let { checklist } = query || {}
-    if (checklist) dispatch(showModal('checklist'))
+    if (checklist && hasFeature(currentUser, 'COMMUNITY_SETUP_CHECKLIST')) {
+      dispatch(showModal('checklist'))
+    }
   }
 
   render () {
@@ -49,7 +52,8 @@ class CommunityPosts extends React.Component {
     }
 
     return <div>
-      {canModerate(currentUser, community) && <CommunitySetup community={community}/>}
+      {hasFeature(currentUser, 'COMMUNITY_SETUP_CHECKLIST') && canModerate(currentUser, community) &&
+        <CommunitySetup community={community}/>}
       {currentUser && <PostEditor community={community}/>}
       {!isMember(currentUser, community) && <div className='request-to-join'>
         You are not a member of this community. <a onClick={requestToJoin}className='button'>Request to Join</a>

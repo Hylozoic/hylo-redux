@@ -78,9 +78,7 @@ export default class CommentForm extends React.Component {
       })
     } else {
       dispatch(updateComment(commentId, text, this.state.tagDescriptions))
-      .then(action => {
-        if (responseMissingTagDescriptions(action)) return showTagEditor()
-      })
+      .then(action => responseMissingTagDescriptions(action) && showTagEditor())
       close()
     }
 

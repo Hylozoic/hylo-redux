@@ -19,14 +19,13 @@ const makeNavLinks = (currentUser, community) => {
 
   return filter('url', [
     {url: rootUrl, icon: 'Comment-Alt', label: 'Conversations', index: true},
-    {url: url('tag/request'), icon: 'Comment-Alt', label: 'Requests'},
     get('settings.events.enabled', community) && {url: url('events'), icon: 'Calendar', label: 'Events'},
     get('settings.projects.enabled', community) && {url: url('projects'), icon: 'ProjectorScreen', label: 'Projects'},
     {url: url('people'), icon: 'Users', label: 'Members'},
-    {url: network && `/n/${network.slug}`, icon: 'merkaba', label: 'Network'},
-    {url: slug && url('about'), icon: 'Help', label: 'About'},
     canInvite(currentUser, community) && {url: url('invite'), icon: 'Mail', label: 'Invite'},
-    canModerate(currentUser, community) && {url: url('settings'), icon: 'Settings', label: 'Settings'}
+    {url: network && `/n/${network.slug}`, icon: 'merkaba', label: 'Network'},
+    canModerate(currentUser, community) && {url: url('settings'), icon: 'Settings', label: 'Settings'},
+    {url: slug && url('about'), icon: 'Help', label: 'About'}
   ])
 }
 

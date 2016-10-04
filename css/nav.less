@@ -2,7 +2,6 @@
 @left-nav-width: 208px;
 @menu-button-width: 87px;
 @mobile-top-nav-height: 60px;
-@main-menu-shrink-breakpoint: 940px;
 @main-menu-hide-breakpoint: 864px;
 
 nav {
@@ -293,6 +292,7 @@ nav {
   .main-menu {
     padding-left: 30px;
     display: inline-block;
+    position: absolute;
 
     > a {
       margin-right: 25px;
@@ -336,32 +336,6 @@ nav {
 
     @media (max-width: (@main-menu-hide-breakpoint - 1)) {
       display: none;
-    }
-
-    @media (max-width: (@main-menu-shrink-breakpoint - 1)) {
-      .a-2 {
-        display: none;
-      }
-
-      .li-0, .li-1 {
-        display: none;
-      }
-
-      .li-2 {
-        display: block;
-      }
-    }
-
-    @media (min-width: @main-menu-shrink-breakpoint) {
-      &.has-3-links, &.has-4-links {
-        .dropdown {
-          display: none;
-        }
-      }
-
-      .li-0, .li-1, .li-2 {
-        display: none;
-      }
     }
   }
 }
@@ -526,10 +500,7 @@ nav {
     display: inline-block;
     vertical-align: middle;
     .ellipsis;
-    max-width: 240px;
-    @media (max-width: (@main-menu-shrink-breakpoint - 1)) {
-      max-width: 200px;
-    }
+    max-width: 200px;
   }
 
   .subtitle {
@@ -674,20 +645,6 @@ nav {
 .leftNavIsOpen #topNav {
   .menu-button {
     width: @left-nav-width;
-  }
-
-  .main-menu {
-    @media (max-width: (@main-menu-shrink-breakpoint + @left-nav-width - 1)) {
-      .a-Projects, .a-Members {
-        display: none;
-      }
-      .li-Events {
-        display: none;
-      }
-      .li-Projects, .li-Members {
-        display: block;
-      }
-    }
   }
 }
 

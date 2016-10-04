@@ -108,6 +108,7 @@
     "gulp-uglify": "^2.0.0",
     "heroku-client": "^2.4.0",
     "istanbul": "1.1.0-alpha.1",
+    "istanbul-reports": "levity/istanbul-reports",
     "jsdom": "^9.4.2",
     "livereactload": "^2.1.0",
     "minimist": "^1.2.0",

@@ -1,13 +1,12 @@
 import React from 'react'
 import { prefetch } from 'react-fetcher'
 import { connect } from 'react-redux'
-import { fetchTags, removeTagFromCommunity, updateCommunityTag, createTagInCommunity } from '../actions/tags'
-import { createTagInModal } from '../actions/tags'
+import { fetchTags, removeTagFromCommunity, updateCommunityTag } from '../actions/tags'
+import { showModal } from '../actions'
 import { getCurrentCommunity } from '../models/community'
 import A from '../components/A'
 import Icon from '../components/Icon'
 import ScrollListener from '../components/ScrollListener'
-import TagDescriptionEditor from '../components/TagDescriptionEditor'
 import { connectedListProps } from '../util/caching'
 import { includes } from 'lodash'
 import { map, find } from 'lodash/fp'
@@ -18,11 +17,9 @@ const subject = 'community'
 @prefetch(({ params: { id }, dispatch }) =>
   dispatch(fetchTags({subject, id})))
 @connect((state, { params: { id }, location: { query } }) => {
-  const { creatingTagAndDescription } = state
   return ({
     ...connectedListProps(state, {subject, id, query}, 'tags'),
-    community: getCurrentCommunity(state),
-    creatingTagAndDescription
+    community: getCurrentCommunity(state)
   })
 })
 export default class TagSettings extends React.Component {
@@ -33,28 +30,17 @@ export default class TagSettings extends React.Component {
     community: object,
     location: object,
     pending: bool,
-    total: number,
-    creatingTagAndDescription: bool
-  }
-
-  componentDidMount () {
-    let { location: { query } } = this.props
-    let { create } = query || {}
-    if (create) this.createTag()
+    total: number
   }
 
   createTag () {
-    this.props.dispatch(createTagInModal())
-  }
-
-  saveTag (params) {
-    const { dispatch, community: { slug } } = this.props
-    const name = Object.keys(params)[0]
-    dispatch(createTagInCommunity({...params[name], name}, slug))
+    this.props.dispatch(showModal('tag-editor', {
+      creating: true
+    }))
   }
 
   render () {
-    const { tags, community, dispatch, pending, total, creatingTagAndDescription } = this.props
+    const { tags, community, dispatch, pending, total } = this.props
     const findMembership = tag =>
       find(m => m.community_id === community.id, tag.memberships)
     const communityTags = map(tag => ({...tag, ...findMembership(tag)}), tags)
@@ -78,29 +64,45 @@ export default class TagSettings extends React.Component {
         Removing a topic from this community prevents it from appearing in lists,
         but does not change or erase any posts or comments.
       </p>
-      {communityTags.map(tag => <div key={tag.id} className='topic-row'>
-        <div className='right'>
-          <A to={`/c/${slug}/tag/${tag.name}`}>
-            <Icon name='View'/>
-          </A>
-          {canDelete(tag) && <a onClick={() => remove(tag)}>
-            <Icon name='Trash'/>
-          </a>}
-          <input type='checkbox'
-            defaultChecked={tag.is_default}
-            onChange={() => updateDefault(tag, !tag.is_default)}/>
-        </div>
-        {tag.name}
-        {tag.post_type && <span className='topic-post-type'>
-          {tag.post_type}
-        </span>}
-      </div>)}
-      <div className='topic-row add-button-row'>
-        <div className='right'>
-          <a className='button' onClick={() => this.createTag()}>Add Topic</a>
-        </div>
+      <a className='button' onClick={() => this.createTag()}>Add Topic</a>
+      <table>
+        <thead>
+          <tr>
+            <th></th>
+            <th className='small-column'></th>
+            <th className='small-column'></th>
+            <th className='small-column'>default</th>
+          </tr>
+        </thead>
+        <tbody>
+          {communityTags.map(tag => <tr key={tag.id} className='topic-row'>
+            <td>
+              <span className='name'>{tag.name}</span>
+              {tag.post_type && <span className='topic-post-type'>
+                {tag.post_type}
+              </span>}
+              <p>{tag.description}</p>
+            </td>
+            <td className='small-column'>
+              <A to={`/c/${slug}/tag/${tag.name}`}>
+                <Icon name='View'/>
+              </A>
+            </td>
+            <td className='small-column'>
+              {canDelete(tag) && <a onClick={() => remove(tag)}>
+                <Icon name='Trash'/>
+              </a>}
+            </td>
+            <td className='small-column'>
+              <input type='checkbox'
+                defaultChecked={tag.is_default}
+                onChange={() => updateDefault(tag, !tag.is_default)}/>
+            </td>
+          </tr>)}
+        </tbody>
+      </table>
+      <div className='add-button-row'>
       </div>
-      {creatingTagAndDescription && <TagDescriptionEditor updatePostTag={params => this.saveTag(params)}/>}
       <ScrollListener onBottom={loadMore}/>
     </div>
   }

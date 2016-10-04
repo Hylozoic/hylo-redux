@@ -7,8 +7,7 @@ import {
   CREATE_TAG_IN_COMMUNITY,
   SHOW_ALL_TAGS,
   SHOW_SHARE_TAG,
-  UPDATE_COMMUNITY_TAG,
-  CREATE_TAG_IN_MODAL
+  UPDATE_COMMUNITY_TAG
 } from './index'
 
 export function followTag (id, tagName) {
@@ -84,11 +83,5 @@ export function updateCommunityTag (tag, community, params) {
       name, params, optimistic: true,
       slug, communityId: community.id
     }
-  }
-}
-
-export function createTagInModal () {
-  return {
-    type: CREATE_TAG_IN_MODAL
   }
 }

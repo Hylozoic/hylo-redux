@@ -1,5 +1,4 @@
 import React from 'react'
-import { findDOMNode } from 'react-dom'
 import { indexOf, isEmpty, omit } from 'lodash/fp'
 import { getKeyCode, keyMap } from '../util/textInput'
 var { array, func, object, bool, number } = React.PropTypes
@@ -62,10 +61,15 @@ export class KeyControlledList extends React.Component {
       case keyMap.ENTER:
         if (!isEmpty(this.props.children)) {
           const elementChoice = this.childrenWithRefs[this.state.selectedIndex]
-          const nodeChoice = findDOMNode(this.refs[elementChoice.ref])
-          this.change(elementChoice, nodeChoice, event)
+          if (elementChoice) {
+            const nodeChoice = this.refs[elementChoice.ref]
+            this.change(elementChoice, nodeChoice, event)
+            return true
+          } else {
+            event.preventDefault()
+            return false
+          }
         }
-        return true
     }
   }
 
@@ -107,7 +111,7 @@ export class KeyControlledItemList extends React.Component {
 
   // this method is called from other components
   handleKeys = event => {
-    this.refs.kcl.handleKeys(event)
+    return this.refs.kcl.handleKeys(event)
   }
 
   change = (choice, event) => {

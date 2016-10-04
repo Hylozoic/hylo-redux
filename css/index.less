@@ -820,7 +820,7 @@ ul.tags {
     margin-right: 25px;
   }
 
-  p {
+  > p {
     margin-left: 25px;
     margin-right: 25px;
   }
@@ -834,13 +834,50 @@ ul.tags {
     }
   }
 
+  .name {
+    .medium;
+  }
+
+  table {
+    width: 100%;
+  }
+
+  thead tr {
+    border-bottom: 1px solid @post-border;
+  }
+
+  th {
+    font-weight: normal;
+    .meta-text;
+  }
+
+  th, td {
+    padding: 10px 25px;
+    &.small-column {
+      padding-left: 0;
+      padding-right: 0;
+      width: 40px;
+      text-align: center;
+      box-sizing: content-box;
+    }
+    &:last-child {
+      padding-right: 25px;
+    }
+    vertical-align: top;
+    input[type="checkbox"] {
+      margin-top: 0;
+      position: relative;
+      top: -2px;
+    }
+  }
+
+  > .button {
+    margin-left: 25px;
+  }
+
   .topic-row {
     border-bottom: 1px solid @post-border;
-    padding: 10px 25px;
 
-    &.add-button-row {
-      height: 55px;
-    }
 
     .topic-post-type {
       margin-left: 1em;
@@ -862,8 +899,9 @@ ul.tags {
       margin-left: 20px;
     }
 
-    .default {
-
+    p {
+      .light;
+      margin-bottom: 0;
     }
   }
 }

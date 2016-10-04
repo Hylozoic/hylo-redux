@@ -1,5 +1,6 @@
 import { values } from 'lodash'
 import { find, get, pickBy } from 'lodash/fp'
+import { showModal } from '../actions'
 
 export const MemberRole = {DEFAULT: 0, MODERATOR: 1}
 export const defaultBanner = 'https://d3ngex8q79bk55.cloudfront.net/misc/default_community_banner.jpg'
@@ -39,13 +40,14 @@ export const getFollowedTags = ({ slug }, state) =>
   values(pickBy('followed', state.tagsByCommunity[slug]))
 
 export const getChecklist = community => {
-  const { slug, settings } = community
+  const { settings } = community
   const { checklist } = settings || {}
   return [
-    {title: 'Add a logo', url: `/c/${slug}/settings?expand=appearance`, done: !!get('logo', checklist)},
-    {title: 'Invite members', url: `/c/${slug}/invite`, done: !!get('invite', checklist)},
-    {title: 'Add a topic', url: `/c/${slug}/settings/tags?create=true`, done: !!get('topics', checklist)},
-    {title: 'Start your first conversation', url: `/c/${slug}`, done: !!get('post', checklist)}
+    {title: 'Add a logo', action: showModal('add-logo'), done: !!get('logo', checklist)},
+    {title: 'Add a banner', action: showModal('add-logo'), done: !!get('banner', checklist)},
+    {title: 'Invite members', action: showModal('invite'), done: !!get('invite', checklist)},
+    {title: 'Add a topic', action: showModal('tag-editor', {creating: true}), done: !!get('topics', checklist)},
+    {title: 'Start your first conversation', action: showModal('post-editor'), done: !!get('post', checklist)}
   ]
 }
 

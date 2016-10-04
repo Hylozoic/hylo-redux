@@ -1,4 +1,4 @@
-import { filter, get, mergeWith, pick, find, indexOf, map } from 'lodash'
+import { filter, get, mergeWith, find, indexOf, map } from 'lodash'
 import { isNull, omitBy } from 'lodash/fp'
 import { debug } from '../util/logging'
 import {
@@ -114,27 +114,12 @@ export default function (state = {}, action) {
       }
     case UPDATE_COMMUNITY_SETTINGS_PENDING:
       if (meta.params.active === false) {
-        memberships = filter(state.current.memberships, m => m.community.slug !== meta.params.slug)
+        memberships = filter(state.current.memberships, m => m.community_id !== meta.id)
         return {
           ...state,
           current: {...state.current, memberships}
         }
       }
-
-      var oldMembership = find(state.current.memberships, m => m.community.slug === meta.params.slug)
-      var newMembership = {
-        ...oldMembership,
-        community: {...oldMembership.community, ...pick(meta.params, 'name', 'slug', 'avatar_url')}
-      }
-
-      return {
-        ...state,
-        current: {
-          ...state.current,
-          memberships: replaceInArray(state.current.memberships, oldMembership, newMembership)
-        }
-      }
-
   }
 
   if (!payload) return state

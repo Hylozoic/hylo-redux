@@ -1,4 +1,5 @@
 require('../support')
+import mocks from '../../support/mocks'
 import React from 'react'
 import { KeyControlledList, KeyControlledItemList } from '../../../src/components/KeyControlledList'
 import {
@@ -6,6 +7,7 @@ import {
   scryRenderedDOMComponentsWithTag,
   Simulate
 } from 'react-addons-test-utils'
+import { keyMap } from '../../../src/util/textInput'
 import { times } from 'lodash'
 
 describe('KeyControlledList', () => {
@@ -100,5 +102,12 @@ describe('KeyControlledItemList', () => {
     Simulate.click(lis[2])
     expect(onChange).to.have.been.called.with(items[2])
     expect(onChange).to.have.been.called.exactly(1)
+  })
+
+  it('preserves the return value of handleKeys from its child', () => {
+    component = <KeyControlledItemList items={items} selected={items[3]} onChange={() => {}}/>
+    const node = renderIntoDocument(component)
+    const event = mocks.event({keyCode: keyMap.ENTER})
+    expect(node.handleKeys(event)).to.be.true
   })
 })

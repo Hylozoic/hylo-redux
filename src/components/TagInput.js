@@ -1,10 +1,13 @@
 import React from 'react'
-import { debounce, isEmpty } from 'lodash'
+import { debounce, includes, isEmpty } from 'lodash'
 import { KeyControlledItemList } from './KeyControlledList'
 import { getKeyCode, keyMap } from '../util/textInput'
 import { NonLinkAvatar } from './Avatar'
 import cx from 'classnames'
 const { array, bool, string, func } = React.PropTypes
+
+// keys that can be pressed to create a new tag
+const creationKeyCodes = [keyMap.ENTER, keyMap.SPACE, keyMap.COMMA]
 
 export default class TagInput extends React.Component {
   static propTypes = {
@@ -28,21 +31,26 @@ export default class TagInput extends React.Component {
   handleKeys = event => {
     let { allowNewTags, onSelect, handleInput, filter } = this.props
     const keyCode = getKeyCode(event)
+    const keyWasHandled = this.refs.list && this.refs.list.handleKeys(event)
 
-    if (this.refs.list) {
-      this.refs.list.handleKeys(event)
+    if (!keyWasHandled && allowNewTags) {
+      // if the current input has matching search results, you can press Escape
+      // to clear the results.
+      if (keyCode === keyMap.ESC) {
+        handleInput('')
+        return
+      }
 
-      // if the current input brings up search results, but you wish to enter
-      // the tag as-is rather than choosing a search result, you can press
-      // Escape to clear the results, then press Enter to select what you've
-      // typed
-      if (allowNewTags && keyCode === keyMap.ESC) handleInput('')
-      return
-    } else if (allowNewTags && keyCode === keyMap.ENTER) {
-      let { value } = event.target
-      onSelect({id: value, name: value})
-      this.resetInput()
-      return
+      // if there are no matches, or there are matches but none has been
+      // selected yet, you can also press any key listed in creationKeyCodes to
+      // create a tag based on what you've typed so far.
+      if (includes(creationKeyCodes, keyCode)) {
+        let { value } = event.target
+        onSelect({id: value, name: value})
+        this.resetInput()
+        event.preventDefault()
+        return
+      }
     }
 
     if (filter) filter(event)
@@ -85,7 +93,8 @@ export default class TagInput extends React.Component {
         onKeyDown={this.handleKeys}/>
 
       {!isEmpty(choices) && <div className='dropdown'>
-        <KeyControlledItemList className='dropdown-menu' ref='list' items={choices} onChange={this.select}/>
+        <KeyControlledItemList className='dropdown-menu' ref='list'
+          items={choices} onChange={this.select}/>
       </div>}
     </div>
   }

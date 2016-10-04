@@ -35,11 +35,13 @@ import { uploadDoc } from '../actions/uploadDoc'
 import { attachmentParams } from '../util/shims'
 import { findUrls } from '../util/linkify'
 import { isKey, onEnter } from '../util/textInput'
-import { CREATE_POST, FETCH_LINK_PREVIEW, UPDATE_POST, UPLOAD_IMAGE } from '../actions'
-import { createTagInModal } from '../actions/tags'
+import { responseMissingTagDescriptions } from '../util/api'
+import {
+  showModal, CREATE_POST, FETCH_LINK_PREVIEW, UPDATE_POST, UPLOAD_IMAGE
+} from '../actions'
+import { updateCommunityChecklist } from '../actions/communities'
 import { ADDED_POST, EDITED_POST, trackEvent } from '../util/analytics'
 import { getCommunity, getCurrentCommunity } from '../models/community'
-import TagDescriptionEditor from './TagDescriptionEditor'
 const { array, bool, func, object, string } = React.PropTypes
 
 export const newPostId = 'new-post'
@@ -182,25 +184,6 @@ export class PostEditor extends React.Component {
     })
   }
 
-  save () {
-    const { dispatch, post, postEdit, id, postCommunities } = this.props
-    const params = {
-      type: this.editorType(),
-      ...postEdit,
-      ...attachmentParams(post && post.media, postEdit.media)
-    }
-
-    dispatch((post ? updatePost : createPost)(id, params))
-    .then(({ error }) => {
-      if (error) return
-      trackEvent(post ? EDITED_POST : ADDED_POST, {
-        tag: postEdit.tag,
-        community: {name: get(postCommunities[0], 'name')}
-      })
-      this.cancel()
-    })
-  }
-
   saveWithTagDescriptions = tagDescriptions => {
     this.updateStore({tagDescriptions})
     this.saveIfValid()
@@ -209,6 +192,31 @@ export class PostEditor extends React.Component {
   updatePostTagAndDescription = tagDescriptions => {
     let tag = keys(tagDescriptions)[0]
     this.updateStore({tag, tagDescriptions})
+  }
+
+  save () {
+    const { dispatch, post, postEdit, id, postCommunities, community } = this.props
+    const params = {
+      type: this.editorType(),
+      ...postEdit,
+      ...attachmentParams(post && post.media, postEdit.media)
+    }
+
+    dispatch((post ? updatePost : createPost)(id, params))
+    .then(action => {
+      if (responseMissingTagDescriptions(action)) {
+        return dispatch(showModal('tag-editor', {
+          creating: false,
+          saveParent: this.saveWithTagDescriptions
+        }))
+      }
+      trackEvent(post ? EDITED_POST : ADDED_POST, {
+        tag: postEdit.tag,
+        community: {name: get(postCommunities[0], 'name')}
+      })
+      dispatch(updateCommunityChecklist(community.slug))
+      this.cancel()
+    })
   }
 
   // this method allows you to type as much as you want into the title field, by
@@ -280,8 +288,7 @@ export class PostEditor extends React.Component {
 
   render () {
     const {
-      post, postEdit, dispatch, imagePending, saving, id,
-      editingTagDescriptions, creatingTagAndDescription, defaultTags
+      post, postEdit, dispatch, imagePending, saving, id, defaultTags
     } = this.props
     const { currentUser } = this.context
     const { description, community_ids, tag, linkPreview } = postEdit
@@ -290,7 +297,10 @@ export class PostEditor extends React.Component {
     const editorType = this.editorType()
     const shouldSelectTag = !includes(['event', 'project'], editorType)
     const selectTag = tag => this.updateStore({tag})
-    const createTag = () => dispatch(createTagInModal())
+    const createTag = () => dispatch(showModal('tag-editor', {
+      useCreatedTag: this.updatePostTagAndDescription,
+      creating: true
+    }))
     const Subeditor = editorType === 'event' ? EventPostEditor
       : editorType === 'project' ? ProjectPostEditor : null
     const removeLinkPreview = () => this.updateStore({linkPreview: null})
@@ -376,9 +386,6 @@ export class PostEditor extends React.Component {
         </button>
 
       </div>
-      {(editingTagDescriptions || creatingTagAndDescription) && <TagDescriptionEditor
-        saveParent={this.saveWithTagDescriptions}
-        updatePostTag={this.updatePostTagAndDescription} />}
     </div>
   }
 }
@@ -521,7 +528,8 @@ export default class PostEditorWrapper extends React.Component {
     community: object,
     type: string,
     expanded: bool,
-    tag: string
+    tag: string,
+    onCancel: func
   }
 
   static contextTypes = {
@@ -538,12 +546,13 @@ export default class PostEditorWrapper extends React.Component {
   }
 
   render () {
-    const { type, post, community, tag } = this.props
+    let { type, post, community, tag, onCancel } = this.props
 
     // if PostEditorWrapper is being initialized with expanded=true, we don't
     // want to set up onCancel, because the entire component will probably be
     // unmounted when canceling takes place
-    const onCancel = this.props.expanded ? () => {} : this.toggle
+    onCancel = onCancel ||
+      (this.props.expanded ? () => {} : this.toggle)
 
     if (!this.state.expanded) {
       const { currentUser } = this.context

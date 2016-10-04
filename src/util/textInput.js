@@ -13,7 +13,8 @@ export const keyMap = {
   DOWN: 40,
   DELETE: 46,
   HASH: 35,
-  AT_SIGN: 64
+  AT_SIGN: 64,
+  COMMA: 188
 }
 
 export const isKey = (event, keyName) =>

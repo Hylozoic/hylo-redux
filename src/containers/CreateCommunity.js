@@ -3,22 +3,18 @@ import { connect } from 'react-redux'
 import { prefetch } from 'react-fetcher'
 const { array, bool, func, object } = React.PropTypes
 import { toPairs, get, some, isEmpty } from 'lodash/fp'
-import validator from 'validator'
 import ModalOnlyPage from '../components/ModalOnlyPage'
-import AccessErrorMessage from '../components/AccessErrorMessage'
 import { ModalInput, ModalSelect } from '../components/ModalRow'
 import Modal from '../components/Modal'
 import A from '../components/A'
 import Icon from '../components/Icon'
+import InviteModal from '../containers/InviteModal'
 import { uploadImage } from '../actions/uploadImage'
 import {
   CREATE_COMMUNITY,
   UPLOAD_IMAGE,
   fetchInvitations,
-  navigate,
-  updateInvitationEditor,
-  sendCommunityInvitation,
-  clearInvitationEditor
+  navigate
 } from '../actions'
 import {
   createCommunity,
@@ -34,13 +30,11 @@ import {
   defaultBanner,
   getCurrentCommunity
 } from '../models/community'
-import { canInvite } from '../models/currentUser'
 import { scrollToBottom } from '../util/scrolling'
-import { parseEmailString, emailsFromCSVFile } from '../util/text'
-import { ADDED_COMMUNITY, INVITED_COMMUNITY_MEMBERS, trackEvent } from '../util/analytics'
+import { ADDED_COMMUNITY, trackEvent } from '../util/analytics'
 import { saveCurrentCommunityId } from '../actions/util'
-import { defaultInvitationSubject, defaultInvitationMessage } from '../models/community'
 import InvitationList from './community/InvitationList'
+import { checklistUrl } from '../routes'
 
 const merkabaUrl = 'https://www.hylo.com/img/hylo-merkaba-300x300.png'
 
@@ -166,7 +160,7 @@ export class CreateCommunity extends React.Component {
   }
 
   submit = () => {
-    let { validating, dispatch, community, currentUser } = this.props
+    let { validating, dispatch, community } = this.props
     if (validating) return
 
     this.validateAll().then(() => {
@@ -245,149 +239,23 @@ export class CreateCommunity extends React.Component {
   id && dispatch(fetchInvitations(id)))
 @connect((state, { params: { id } }) => ({
   community: id ? state.communities[id] : getCurrentCommunity(state),
-  invitationEditor: get('invitationEditor', state),
   invitations: id ? state.invitations[id] : null
 }))
 export class CreateCommunityInvite extends React.Component {
   static propTypes = {
     community: object,
-    invitationEditor: object,
     dispatch: func,
     invitations: array
   }
 
-  static contextTypes = {
-    currentUser: object
-  }
-
-  constructor (props) {
-    super(props)
-    this.state = {
-      emails: '',
-      expanded: false
-    }
-  }
-
-  processCSV () {
-    const { dispatch } = this.props
-
-    const appendComma = string => {
-      if (isEmpty(string) || string.trim().slice(-1) === ',') return string
-      return string + ','
-    }
-
-    emailsFromCSVFile(this.refs.fileInput.files[0])
-    .then(emails => {
-      const textarea = this.refs.emails
-      dispatch(updateInvitationEditor('recipients',
-        appendComma(textarea.getValue()) + ' ' + emails.join(', ')))
-    })
-  }
-
-  componentDidMount () {
-    const { dispatch, community, invitationEditor } = this.props
-    const { subject, message } = invitationEditor
-
-    if (subject === undefined) {
-      dispatch(updateInvitationEditor('subject', defaultInvitationSubject(community.name)))
-    }
-    if (message === undefined) {
-      dispatch(updateInvitationEditor('message', defaultInvitationMessage(community.name)))
-    }
-  }
-
   render () {
-    const { expanded } = this.state
-    const {
-      community, dispatch, invitationEditor, invitations
-    } = this.props
-    const { currentUser } = this.context
+    const { community, invitations, dispatch } = this.props
 
-    if (!canInvite(currentUser, community)) {
-      return <AccessErrorMessage error={{status: 403}}/>
-    }
-
-    let { subject, message, recipients, moderator, error } = invitationEditor
-
-    let setError = text => dispatch(updateInvitationEditor('error', text))
-
-    let update = (field, toggle) => event => {
-      let { value } = event.target
-      if (toggle) value = !invitationEditor[field]
-      dispatch(updateInvitationEditor(field, value))
-    }
-
-    const checklistUrl = `/c/${community.slug}?checklist=true`
-
-    const clearEditor = () => dispatch(clearInvitationEditor())
-
-    let submit = () => {
-      dispatch(updateInvitationEditor('results', null))
-      setError(null)
-
-      if (!subject) return setError('The subject may not be blank.')
-      if (!message) return setError('The message may not be blank.')
-
-      let emails = parseEmailString(recipients)
-      if (isEmpty(emails)) return setError('Enter at least one email address.')
-
-      let badEmails = emails.filter(email => !validator.isEmail(email))
-      if (some(id => id, badEmails)) return setError(`These emails are invalid: ${badEmails.join(', ')}`)
-
-      dispatch(sendCommunityInvitation(community.id, {subject, message, emails, moderator}))
-      .then(({ error }) => {
-        if (error) return
-        trackEvent(INVITED_COMMUNITY_MEMBERS, {community})
-        clearEditor()
-        dispatch(navigate(checklistUrl))
-      })
-    }
+    const onClose = () => dispatch(navigate(checklistUrl(community)))
 
     return <ModalOnlyPage className='create-community'>
       <Topper community={community}/>
-      <Modal title='Invite people to join you.'
-      id='community-invite-prompt'
-      standalone>
-        <div className='modal-input csv-upload'>
-          <label className='custom-file-upload'>
-            <input type='file' onChange={() => this.processCSV()} ref='fileInput'/>
-            Browse
-          </label>
-          <label className='normal-label'>Import CSV File</label>
-          <p className='help-text'>The file should have a header row named "email" for the email column. Or it can be a file in which each line is a single email address.</p>
-        </div>
-        <ModalInput
-          className='emails'
-          label='Enter Emails'
-          ref='emails'
-          type='textarea'
-          value={recipients}
-          onChange={update('recipients')}
-          placeholder='Enter email addresses, separated by commas or line breaks'/>
-          <div className='toggle-section'>
-            <a onClick={() => this.setState({expanded: !expanded})}>
-              Customize Message
-              <Icon name={expanded ? 'Chevron-Up2' : 'Chevron-Down2'} />
-            </a>
-          </div>
-
-        {expanded && <ModalInput
-          label='Subject'
-          ref='subject'
-          value={subject}
-          onChange={update('subject')}/>}
-        {expanded && <ModalInput
-          label='Message'
-          ref='message'
-          type='textarea'
-          value={message}
-          onChange={update('message')}/>}
-        {error && <div className='alert alert-danger'>{error}</div>}
-        <div className='footer'>
-          <a className='button ok' onClick={submit}>Invite</a>
-          <A to={checklistUrl} onClick={clearEditor} className='skip'>Skip</A>
-        </div>
-      </Modal>
+      <InviteModal onClose={onClose} standalone/>
 
       {!isEmpty(invitations) &&
         <Modal title='Sent invitations' standalone id='community-invitations'>

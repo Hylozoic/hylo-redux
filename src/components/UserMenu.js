@@ -4,6 +4,7 @@ import { makeUrl } from '../util/navigation'
 import { calliOSBridge } from '../client/util'
 import Icon from './Icon'
 import SearchInput from './SearchInput'
+import { ThreadsDropdown } from '../containers/ThreadsDropdown'
 import { NotificationsDropdown } from '../containers/Notifications'
 import A from './A'
 import Dropdown from './Dropdown'
@@ -50,7 +51,7 @@ class SearchMenuItem extends React.Component {
   }
 }
 
-const UserMenu = ({ slug, newCount }, { isMobile, dispatch, currentUser }) => {
+const UserMenu = ({ slug, newMessageCount, newNotificationCount }, { isMobile, dispatch, currentUser }) => {
   const doLogout = () => {
     calliOSBridge({type: 'logout'})
     dispatch(navigate('/login'))
@@ -61,8 +62,12 @@ const UserMenu = ({ slug, newCount }, { isMobile, dispatch, currentUser }) => {
   return <ul className='right'>
     <SearchMenuItem/>
 
-    <li id='notifications-menu'>
-      <NotificationsDropdown newCount={newCount}/>
+    <li className='nav-notify-dropdown'>
+      <ThreadsDropdown newCount={newMessageCount}/>
+    </li>
+
+    <li className='nav-notify-dropdown'>
+      <NotificationsDropdown newCount={newNotificationCount}/>
     </li>
 
     <li>
@@ -70,7 +75,7 @@ const UserMenu = ({ slug, newCount }, { isMobile, dispatch, currentUser }) => {
         rivalrous='nav' backdrop={isMobile} toggleChildren={
           <div>
             <NonLinkAvatar person={currentUser}/>
-            {newCount > 0 && <div className='dot-badge'/>}
+            {newNotificationCount > 0 && <div className='dot-badge'/>}
           </div>
         }>
         <li>
@@ -81,7 +86,7 @@ const UserMenu = ({ slug, newCount }, { isMobile, dispatch, currentUser }) => {
         <li className='dropdown-notifications'>
           <a onClick={() => dispatch(showModal('notifications'))}>
             <Icon name='Bell'/> Notifications
-            {newCount > 0 && <span className='badge'>{newCount}</span>}
+            {newNotificationCount > 0 && <span className='badge'>{newNotificationCount}</span>}
           </a>
         </li>
         <li>

@@ -29,6 +29,7 @@ import NetworkPosts from './containers/network/NetworkPosts'
 import NetworkMembers from './containers/network/NetworkMembers'
 import AboutNetwork from './containers/network/AboutNetwork'
 import IconTest from './containers/IconTest'
+import ThreadPage from './containers/ThreadPage'
 import NetworkCommunities from './containers/network/NetworkCommunities'
 import NetworkEditor from './containers/network/NetworkEditor'
 import Search from './containers/Search'
@@ -137,6 +138,8 @@ export default function makeRoutes (store) {
         <Route path='tag/:tagName' component={TagPosts} onEnter={requireLogin} />
       </Route>
 
+      <Route path='t/:id' component={ThreadPage} onEnter={requireLogin}/>
+
       <Route path='p/:id' component={SinglePost}/>
       <Route path='n/new' component={NetworkEditor} onEnter={requireLogin}/>
       <Route path='n/:id' component={NetworkProfile} onEnter={requireLogin}>
@@ -181,6 +184,9 @@ export const commentUrl = comment =>
 
 export const postUrl = (postId, commentId) =>
   `/p/${postId}` + (commentId ? `#comment-${commentId}` : '')
+
+export const threadUrl = (threadId) =>
+  `/t/${threadId}`
 
 export const userUrl = (user) =>
   `/u/${user.id}`

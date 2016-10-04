@@ -10,6 +10,7 @@ import { textLength } from '../util/text'
 import { onCmdOrCtrlEnter } from '../util/textInput'
 import { responseMissingTagDescriptions } from '../util/api'
 import cx from 'classnames'
+import { getSocket, socketUrl } from '../client/websockets'
 var { array, bool, func, object, string } = React.PropTypes
 
 // The interval between repeated typing notifications to the web socket. We send
@@ -30,8 +31,6 @@ const STOPPED_TYPING_WAIT_TIME = 8000
 export default class CommentForm extends React.Component {
   static propTypes = {
     dispatch: func,
-    startedTyping: func,
-    stoppedTyping: func,
     postId: string,
     commentId: string,
     mentionOptions: array,
@@ -40,11 +39,6 @@ export default class CommentForm extends React.Component {
     newComment: bool,
     close: func,
     pending: bool
-  }
-
-  static defaultProps = {
-    startedTyping: function () {},
-    stoppedTyping: function () {}
   }
 
   static contextTypes = {
@@ -94,12 +88,12 @@ export default class CommentForm extends React.Component {
     const modifierKey = window.navigator.platform.startsWith('Mac')
       ? 'Cmd' : 'Ctrl'
     this.setState({modifierKey})
+    this.socket = getSocket()
   }
 
   render () {
     const {
-      dispatch, postId, commentId, text,
-      newComment, close, startedTyping, stoppedTyping, pending
+      dispatch, postId, commentId, text, newComment, close, pending
     } = this.props
     const { currentUser, isMobile } = this.context
     const editing = text !== undefined
@@ -110,9 +104,17 @@ export default class CommentForm extends React.Component {
     const setText = event => updateStore(event.target.value)
     const placeholder = this.props.placeholder || 'Add a comment...'
 
+    const stoppedTyping = () => {
+      if (!newComment) return
+      if (this.socket) this.socket.post(socketUrl(`/noo/post/${postId}/typing`), { isTyping: false })
+    }
+    const startedTyping = () => {
+      if (!newComment) return
+      if (this.socket) this.socket.post(socketUrl(`/noo/post/${postId}/typing`), { isTyping: true })
+    }
+
     const stopTyping = debounce(stoppedTyping, STOPPED_TYPING_WAIT_TIME)
     const startTyping = throttle(startedTyping, STARTED_TYPING_INTERVAL, {trailing: false})
-
     const handleKeyDown = e => {
       this.setState({enabled: this.refs.editor.getContent().length > 0})
       startTyping()

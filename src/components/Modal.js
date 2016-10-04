@@ -6,6 +6,7 @@ import { closeModal } from '../actions'
 import BrowseTopicsModal from '../containers/BrowseTopicsModal'
 import ShareTopicModal from '../containers/ShareTopicModal'
 import ExpandedPostModal from '../containers/ExpandedPostModal'
+import DirectMessageModal from '../containers/DirectMessageModal'
 import ChecklistModal from '../containers/ChecklistModal'
 import TagEditorModal from '../containers/TagEditorModal'
 import AddLogoModal from '../containers/AddLogoModal'
@@ -21,9 +22,12 @@ const mainColumnWidth = 688 // defined in CSS
 
 const modalStyle = isMobile => {
   if (typeof window === 'undefined') return {}
+  const windowWidth = window.innerWidth 
+  const pageContent = document.getElementById('cover-image-page-content')
+  const webMargin = pageContent ? position(pageContent).x : (windowWidth - mainColumnWidth) / 2 
   return {
     marginLeft: isMobile ? 0
-      : position(document.getElementById('cover-image-page-content')).x,
+      : webMargin, 
     width: Math.min(mainColumnWidth,
       get(document.getElementById('main'), 'offsetWidth') || mainColumnWidth)
   }
@@ -89,6 +93,10 @@ export class ModalWrapper extends React.Component {
         modal = <ExpandedPostModal id={params.id} commentId={params.commentId}/>
         clickToClose = true
         break
+      case 'direct-message':
+          modal = <DirectMessageModal userId={params.userId} userName={params.userName} onCancel={close}/>
+          clickToClose = true
+          break
       case 'notifications':
         modal = <NotificationsModal onCancel={close}/>
         clickToClose = true

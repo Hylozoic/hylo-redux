@@ -31,8 +31,12 @@ export const sanitizeTagInput = event =>
 const onKeyCode = curry((modifier, keyCode, callback, event) =>
   getKeyCode(event) === keyCode && (!modifier || event[modifier]) && callback(event))
 
+const onKeyCodeWithoutMod = curry((modifier, keyCode, callback, event) =>
+  getKeyCode(event) === keyCode && !event[modifier] && callback(event))
+
 // use like: <input type='text' onKeyDown={onEnter(callback)}/>
 export const onEnter = onKeyCode(null, keyMap.ENTER)
+export const onEnterNoShift = onKeyCodeWithoutMod('shiftKey', keyMap.ENTER)
 export const onCmdEnter = onKeyCode('metaKey', keyMap.ENTER)
 export const onCtrlEnter = onKeyCode('ctrlKey', keyMap.ENTER)
 export const onCmdOrCtrlEnter = (callback, event) =>

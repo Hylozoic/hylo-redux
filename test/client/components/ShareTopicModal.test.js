@@ -31,10 +31,10 @@ describe('ShareTopicModal', () => {
       people: {current: {id: 42}},
       communities: {[slug]: {slug, beta_access_code, id: currentCommunityId}},
       currentCommunityId,
-      showModal: {
-        show: 'share-tag',
+      openModals: [{
+        type: 'share-tag',
         params: {slug, tagName}
-      },
+      }],
       communitiesForNetworkNav: {}
     })
   })

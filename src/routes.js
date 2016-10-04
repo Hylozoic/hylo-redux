@@ -206,3 +206,6 @@ export const isSearchUrl = (path) =>
 
 export const peopleUrl = community =>
   `${community ? '/c/' + community.slug : ''}/people`
+
+export const checklistUrl = community =>
+  `/c/${community.slug}?checklist=true`

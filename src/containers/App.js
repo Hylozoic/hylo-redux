@@ -26,10 +26,10 @@ const { array, bool, func, object } = React.PropTypes
 })
 @connect((state, { params }) => {
   const {
-    isMobile, leftNavIsOpen, notifierMessages, showModal, tagPopover
+    isMobile, leftNavIsOpen, notifierMessages, openModals, tagPopover
   } = state
   return {
-    isMobile, showModal, leftNavIsOpen, notifierMessages, tagPopover,
+    isMobile, openModals, leftNavIsOpen, notifierMessages, tagPopover,
     network: getCurrentNetwork(state),
     community: getCurrentCommunity(state),
     currentUser: denormalizedCurrentUser(state)
@@ -45,7 +45,7 @@ export default class App extends React.Component {
     notifierMessages: array,
     dispatch: func,
     isMobile: bool,
-    showModal: object,
+    openModals: array,
     location: object,
     tagPopover: object
   }
@@ -81,10 +81,10 @@ export default class App extends React.Component {
   render () {
     const {
       children, community, dispatch, leftNavIsOpen, notifierMessages, isMobile,
-      showModal, tagPopover
+      openModals, tagPopover
     } = this.props
 
-    return <div className={cx({leftNavIsOpen, isMobile, showModal: !isEmpty(showModal)})}>
+    return <div className={cx({leftNavIsOpen, isMobile, showModal: !isEmpty(openModals)})}>
       {children}
 
       <Notifier messages={notifierMessages}
@@ -92,7 +92,12 @@ export default class App extends React.Component {
       <LiveStatusPoller community={community}/>
       <PageTitleController/>
       {!isEmpty(tagPopover) && <TagPopover {...{tagPopover}}/>}
-      <ModalWrapper show={get('show', showModal)} params={get('params', showModal)}/>
+      {openModals.map((modal, i) =>
+        <ModalWrapper key={i}
+          bottom={i === 0}
+          top={i === openModals.length - 1}
+          type={get('type', modal)}
+          params={get('params', modal)}/>)}
     </div>
   }
 }

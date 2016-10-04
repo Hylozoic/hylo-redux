@@ -1,5 +1,6 @@
 import { upstreamHost } from '../config'
 import fetch from 'isomorphic-fetch'
+import { get } from 'lodash/fp'
 
 export const HOST = typeof window === 'undefined'
   ? upstreamHost
@@ -25,3 +26,9 @@ export const fetchJSON = (path, params, options = {}) =>
       throw error
     })
   })
+
+export const responseMissingTagDescriptions = action => {
+  if (!action.error) return
+  const response = JSON.parse(get('payload.response.body', action) || '{}')
+  return !!response.tagsMissingDescriptions
+}

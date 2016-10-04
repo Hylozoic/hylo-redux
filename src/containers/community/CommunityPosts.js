@@ -5,11 +5,10 @@ import { fetch, ConnectedPostList } from '../ConnectedPostList'
 import PostEditor from '../../components/PostEditor'
 import { PercentBar } from '../../containers/ChecklistModal'
 import { compose } from 'redux'
-import { isMember, canModerate } from '../../models/currentUser'
-import { getChecklist, getCommunity } from '../../models/community'
+import { isMember, canModerate, hasFeature } from '../../models/currentUser'
+import { getChecklist } from '../../models/community'
 import { filter } from 'lodash/fp'
 import { showModal } from '../../actions'
-import { updateCommunityChecklist } from '../../actions/communities'
 const { func, object } = React.PropTypes
 
 const subject = 'community'
@@ -31,8 +30,11 @@ class CommunityPosts extends React.Component {
 
   componentDidMount () {
     let { location: { query }, dispatch } = this.props
+    const { currentUser } = this.context
     let { checklist } = query || {}
-    if (checklist) dispatch(showModal('checklist'))
+    if (checklist && hasFeature(currentUser, 'COMMUNITY_SETUP_CHECKLIST')) {
+      dispatch(showModal('checklist'))
+    }
   }
 
   render () {
@@ -40,7 +42,8 @@ class CommunityPosts extends React.Component {
     const { currentUser } = this.context
 
     return <div>
-      {canModerate(currentUser, community) && <CommunitySetup community={community}/>}
+      {hasFeature(currentUser, 'COMMUNITY_SETUP_CHECKLIST') && canModerate(currentUser, community) &&
+        <CommunitySetup community={community}/>}
       {currentUser && <PostEditor community={community}/>}
       <ConnectedPostList {...{subject, id, query}}/>
       {!isMember(currentUser, community) && <div className='post-list-footer'>
@@ -51,14 +54,12 @@ class CommunityPosts extends React.Component {
 }
 
 export default compose(
-  prefetch(({ dispatch, params: { id }, query, currentUser, store }) => {
-    const community = getCommunity(id, store.getState())
-    return (canModerate(currentUser, community)
-      ? dispatch(updateCommunityChecklist(id))
-      : Promise.resolve())
-    .then(() => dispatch(fetch(subject, id, query)))
-  }),
-  connect((state, { params }) => ({community: state.communities[params.id]}))
+  prefetch(({ dispatch, params: { id }, query, currentUser, store }) =>
+    dispatch(fetch(subject, id, query))),
+  connect((state, { params }) => ({
+    community: state.communities[params.id],
+    currentUser: state.people.current
+  }))
 )(CommunityPosts)
 
 const CommunitySetup = connect()(({ community, dispatch }) => {
@@ -68,7 +69,7 @@ const CommunitySetup = connect()(({ community, dispatch }) => {
   if (percent === 100) return null
 
   return <div className='community-setup'
-    onClick={() => dispatch(dispatch(showModal('checklist')))}>
+    onClick={() => dispatch(showModal('checklist'))}>
     <PercentBar percent={percent}/>
     Your community is {percent}% set up. <a>Click here</a> to continue setting it up.
   </div>

@@ -78,27 +78,44 @@ export default class TagSettings extends React.Component {
         Removing a topic from this community prevents it from appearing in lists,
         but does not change or erase any posts or comments.
       </p>
-      {communityTags.map(tag => <div key={tag.id} className='topic-row'>
-        <div className='right'>
-          <A to={`/c/${slug}/tag/${tag.name}`}>
-            <Icon name='View'/>
-          </A>
-          {canDelete(tag) && <a onClick={() => remove(tag)}>
-            <Icon name='Trash'/>
-          </a>}
-          <input type='checkbox'
-            defaultChecked={tag.is_default}
-            onChange={() => updateDefault(tag, !tag.is_default)}/>
-        </div>
-        {tag.name}
-        {tag.post_type && <span className='topic-post-type'>
-          {tag.post_type}
-        </span>}
-      </div>)}
-      <div className='topic-row add-button-row'>
-        <div className='right'>
-          <a className='button' onClick={() => this.createTag()}>Add Topic</a>
-        </div>
+      <a className='button' onClick={() => this.createTag()}>Add Topic</a>
+      <table>
+        <thead>
+          <tr>
+            <th></th>
+            <th className='small-column'></th>
+            <th className='small-column'></th>
+            <th className='small-column'>default</th>
+          </tr>
+        </thead>
+        <tbody>
+          {communityTags.map(tag => <tr key={tag.id} className='topic-row'>
+            <td>
+              <span className='name'>{tag.name}</span>
+              {tag.post_type && <span className='topic-post-type'>
+                {tag.post_type}
+              </span>}
+              <p>{tag.description}</p>
+            </td>
+            <td className='small-column'>
+              <A to={`/c/${slug}/tag/${tag.name}`}>
+                <Icon name='View'/>
+              </A>
+            </td>
+            <td className='small-column'>
+              {canDelete(tag) && <a onClick={() => remove(tag)}>
+                <Icon name='Trash'/>
+              </a>}
+            </td>
+            <td className='small-column'>
+              <input type='checkbox'
+                defaultChecked={tag.is_default}
+                onChange={() => updateDefault(tag, !tag.is_default)}/>
+            </td>
+          </tr>)}
+        </tbody>
+      </table>
+      <div className='add-button-row'>
       </div>
       {creatingTagAndDescription && <TagDescriptionEditor updatePostTag={params => this.saveTag(params)}/>}
       <ScrollListener onBottom={loadMore}/>

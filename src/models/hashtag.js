@@ -1,4 +1,4 @@
-import { get, isUndefined, omitBy, values } from 'lodash/fp'
+import { get, isUndefined, omitBy, uniq, values } from 'lodash/fp'
 import { mergeWith } from 'lodash'
 
 export const invalidCharacterRegex = /[^\w\-]/
@@ -14,3 +14,14 @@ export const aggregatedTags = ({ tagsByCommunity }) =>
       followed: get('followed', v0) || get('followed', v1),
       new_post_count: (get('new_post_count', v0) || 0) + (get('new_post_count', v1) || 0)
     }))
+
+// FIXME move this to hylo-utils
+export const tagsInText = (text = '') => {
+  const re = /(?:^| |>)#([A-Za-z][\w-]+)/g
+  var match
+  var tags = []
+  while ((match = re.exec(text)) != null) {
+    tags.push(match[1])
+  }
+  return uniq(tags)
+}

@@ -2,6 +2,7 @@ import { cloneDeep, pick } from 'lodash'
 import { get } from 'lodash/fp'
 import qs from 'querystring'
 import { cleanAndStringify } from '../util/caching'
+import { tagsInText } from '../models/hashtag'
 import {
   CANCEL_POST_EDIT,
   CHANGE_EVENT_RESPONSE,
@@ -25,7 +26,7 @@ export function createPost (id, params) {
   return {
     type: CREATE_POST,
     payload: {api: true, params, path: '/noo/post', method: 'POST'},
-    meta: {id}
+    meta: {id, tags: tagsInText(params.description)}
   }
 }
 

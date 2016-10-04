@@ -1,3 +1,4 @@
+import { get } from 'lodash/fp'
 import { includes, map, toPairs } from 'lodash'
 import qs from 'querystring'
 import { appendUniq } from './util'
@@ -8,11 +9,11 @@ import {
   FETCH_POSTS
 } from '../actions'
 
-const matchesCommunity = (key, post) => {
+const matchesCommunity = (key, post, tags) => {
   const communityIds = post.communities.map(c => c.slug).concat(post.communities.map(c => c.id))
   return key.subject === 'community' &&
     (includes(communityIds, key.id) || key.id === 'all') &&
-    (key.tag === post.tag || !key.tag)
+    (!key.tag || includes([post.tag].concat(tags), key.tag))
 }
 
 export default function (state = {}, action) {
@@ -29,9 +30,11 @@ export default function (state = {}, action) {
       // of them
       let updatedPostLists = toPairs(state).reduce((changedLists, [id, postIds]) => {
         let key = qs.parse(id)
+        let tags = get('tags', meta) || []
 
         if ((key.subject === 'person' && key.id === post.user.id) ||
-          key.subject === 'all-posts' || matchesCommunity(key, post)) {
+          key.subject === 'all-posts' ||
+          matchesCommunity(key, post, tags)) {
           changedLists[id] = [post.id, ...postIds]
         }
 

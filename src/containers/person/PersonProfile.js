@@ -23,6 +23,8 @@ import moment from 'moment'
 import { getPost } from '../../models/post'
 import { getCurrentCommunity } from '../../models/community'
 import { defaultBanner } from '../../models/person'
+import { DIRECT_MESSAGES } from '../../config/featureFlags'
+import { hasFeature } from '../../models/currentUser'
 
 const { func, object } = React.PropTypes
 
@@ -76,6 +78,7 @@ const PersonProfile = compose(
     const person = state.people[id]
     return omitBy(isNull, {
       person,
+      currentUser: state.people.current,
       community: getCurrentCommunity(state),
       error: findError(state.errors, FETCH_PERSON, 'people', id),
       recentRequest: getPost(get(person, 'recent_request_id'), state),
@@ -125,6 +128,7 @@ const PersonProfile = compose(
       <p className='bio'>{bio}</p>
       { currentUser &&
         person.id !== currentUser.id &&
+        hasFeature(currentUser, DIRECT_MESSAGES) &&
         <button
           onClick={() => dispatch(showDirectMessage(person.id, person.name))}
           className='dm-user'>

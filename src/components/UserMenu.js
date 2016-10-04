@@ -9,7 +9,8 @@ import { NotificationsDropdown } from '../containers/Notifications'
 import A from './A'
 import Dropdown from './Dropdown'
 import { NonLinkAvatar } from './Avatar'
-import { isAdmin } from '../models/currentUser'
+import { isAdmin, hasFeature } from '../models/currentUser'
+import { DIRECT_MESSAGES } from '../config/featureFlags'
 import cx from 'classnames'
 
 const { bool, func, object } = React.PropTypes
@@ -62,9 +63,10 @@ const UserMenu = ({ slug, newMessageCount, newNotificationCount }, { isMobile, d
   return <ul className='right'>
     <SearchMenuItem/>
 
-    <li className='nav-notify-dropdown'>
-      <ThreadsDropdown newCount={newMessageCount}/>
-    </li>
+    {currentUser && hasFeature(currentUser, DIRECT_MESSAGES) &&
+      <li className='nav-notify-dropdown'>
+        <ThreadsDropdown newCount={newMessageCount}/>
+    </li>}
 
     <li className='nav-notify-dropdown'>
       <NotificationsDropdown newCount={newNotificationCount}/>

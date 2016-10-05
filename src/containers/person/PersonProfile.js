@@ -3,7 +3,7 @@ import { compose } from 'redux'
 import { connect } from 'react-redux'
 import { prefetch, defer } from 'react-fetcher'
 import { commentUrl, peopleUrl } from '../../routes'
-import { FETCH_PERSON, fetchPerson, fetchThanks, navigate } from '../../actions'
+import { FETCH_PERSON, fetchPerson, fetchThanks, navigate, showDirectMessage } from '../../actions'
 import { saveCurrentCommunityId } from '../../actions/util'
 import { capitalize, compact, get, some, includes } from 'lodash'
 import { isNull, map, omitBy, sortBy } from 'lodash/fp'
@@ -23,6 +23,8 @@ import moment from 'moment'
 import { getPost } from '../../models/post'
 import { getCurrentCommunity } from '../../models/community'
 import { defaultBanner } from '../../models/person'
+import { DIRECT_MESSAGES } from '../../config/featureFlags'
+import { hasFeature } from '../../models/currentUser'
 
 const { func, object } = React.PropTypes
 
@@ -76,6 +78,7 @@ const PersonProfile = compose(
     const person = state.people[id]
     return omitBy(isNull, {
       person,
+      currentUser: state.people.current,
       community: getCurrentCommunity(state),
       error: findError(state.errors, FETCH_PERSON, 'people', id),
       recentRequest: getPost(get(person, 'recent_request_id'), state),
@@ -83,7 +86,7 @@ const PersonProfile = compose(
     })
   })
 )(props => {
-  const { person, error } = props
+  const { person, currentUser, error, dispatch } = props
   if (error) return <AccessErrorMessage error={error}/>
   if (!person || !person.grouped_post_count) return <div>Loading...</div>
 
@@ -123,6 +126,15 @@ const PersonProfile = compose(
         Joined {joinDate}
       </p>
       <p className='bio'>{bio}</p>
+      { currentUser &&
+        person.id !== currentUser.id &&
+        hasFeature(currentUser, DIRECT_MESSAGES) &&
+        <button
+          onClick={() => dispatch(showDirectMessage(person.id, person.name))}
+          className='dm-user'>
+          <Icon name='Message-Smile'/>
+          Message
+      </button>}
     </div>
     {some(tags) && <div className='skills'>
       <h3>Skills</h3>

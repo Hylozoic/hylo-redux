@@ -8,6 +8,7 @@ import commentsByPost from './commentsByPost'
 import communities from './communities'
 import communitiesByQuery from './communitiesByQuery'
 import communitiesForNetworkNav from './communitiesForNetworkNav'
+import messageEdits from './messageEdits'
 import networks from './networks'
 import networkEdits from './networkEdits'
 import people from './people'
@@ -41,6 +42,7 @@ import {
   FETCH_PEOPLE,
   FETCH_POSTS,
   FETCH_THANKS,
+  FIND_OR_CREATE_THREAD,
   FINISH_LOGIN,
   HIDE_TAG_POPOVER,
   LOGIN,
@@ -59,6 +61,7 @@ import {
   SET_MOBILE_DEVICE,
   SET_SIGNUP_ERROR,
   SHOW_ALL_TAGS,
+  SHOW_DIRECT_MESSAGE,
   SHOW_EXPANDED_POST,
   SHOW_MODAL,
   SHOW_SHARE_TAG,
@@ -105,6 +108,18 @@ const combinedReducers = combineReducers({
         return payload
       case SET_CURRENT_COMMUNITY_ID:
         return null
+    }
+
+    return state
+  },
+
+  threadsByUser: (state = {}, action) => {
+    let { error, type, payload, meta } = action
+    if (error) return state
+
+    switch (type) {
+      case FIND_OR_CREATE_THREAD:
+        return {...state, [meta.messageTo]: payload.id} 
     }
 
     return state
@@ -176,6 +191,7 @@ const combinedReducers = combineReducers({
   editingTagDescriptions,
   countFreshPostsByQuery: keyedCount(CHECK_FRESHNESS_POSTS, 'postsByQuery'),
   creatingTagAndDescription,
+  messageEdits,
   networks,
   networkEdits,
   pending,
@@ -452,6 +468,8 @@ const combinedReducers = combineReducers({
         return state.concat({type: 'share-tag', params: action.payload})
       case SHOW_EXPANDED_POST:
         return state.concat({type: 'expanded-post', params: action.payload})
+      case SHOW_DIRECT_MESSAGE:
+          return state.concat({type: 'direct-message', params: action.payload})
       case CLOSE_MODAL:
         return state.slice(0, -1)
     }

@@ -49,7 +49,7 @@ const PageWithNav = (props, context) => {
   const closeLeftNav = () => toggleLeftNavAndSave(false)
   const links = makeNavLinks(currentUser, community)
   const showNetworkNav = currentUser && !isMobile && networkCommunities &&
-    networkCommunities.length > 1
+    networkCommunities.length > 1 && !path.startsWith('/t/')
   const tagNotificationCount = filter(tag => tag.new_post_count > 0, tags).length
 
   return <div>

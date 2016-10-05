@@ -1,0 +1,1 @@
+export const DIRECT_MESSAGES = 'DIRECT_MESSAGES'

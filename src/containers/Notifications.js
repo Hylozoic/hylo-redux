@@ -6,18 +6,17 @@ import {
   markActivityRead, markAllActivitiesRead, navigate, showModal
 } from '../actions'
 import { fetchActivity } from '../actions/activity'
-import { get, map } from 'lodash/fp'
+import { get, map, isEmpty } from 'lodash/fp'
 import cx from 'classnames'
 import ScrollListener from '../components/ScrollListener'
 import Avatar from '../components/Avatar'
 import truncate from 'trunc-html'
 import { humanDate } from '../util/text'
 import { VIEWED_NOTIFICATIONS, trackEvent } from '../util/analytics'
-import { postUrl } from '../routes'
 import { getCurrentCommunity } from '../models/community'
 const { array, bool, func, number, object } = React.PropTypes
 import decode from 'ent/decode'
-import { getActivitiesProps, actionText, bodyText } from '../models/activity'
+import { getActivitiesProps, actionText, bodyText, destination } from '../models/activity'
 import { Modal } from '../components/Modal'
 import A from '../components/A'
 import { NonLinkAvatar } from '../components/Avatar'
@@ -74,19 +73,19 @@ export default Notifications
 
 const Activity = ({ activity }, { dispatch }) => {
   const {
-    actor, action, post, comment, unread, created_at, meta: { reasons }
+    actor, action, post, comment, community, unread, created_at, meta: { reasons }
   } = activity
   const spacer = <span>&nbsp;&nbsp;•&nbsp;&nbsp;</span>
 
   let text = bodyText(action, comment, post)
 
-  let postName = post.tag === 'welcome'
+  let postName = !isEmpty(post) && post.tag === 'welcome'
     ? `${post.relatedUsers[0].name}'s' welcoming post`
     : truncate(decode(post.name), 140).html
 
   let visit = () => {
     if (unread) dispatch(markActivityRead(activity.id))
-    dispatch(navigate(postUrl(post.id, get('id', comment))))
+    dispatch(navigate(destination(activity)))
   }
 
   return <div key={activity.id} className={cx('activity', {unread})}>
@@ -94,8 +93,8 @@ const Activity = ({ activity }, { dispatch }) => {
     <div className='content'>
       <div className='title'>
         {actor.name}
-        &nbsp;{actionText(action, comment, post, reasons)}&nbsp;
-        <a onClick={visit}>{postName}</a>
+        &nbsp;{actionText(action, comment, post, community, reasons)}&nbsp;
+        {postName && <a onClick={visit}>{postName}</a>}
       </div>
 
       {text && <div className='body-text' dangerouslySetInnerHTML={{__html: text}}/>}
@@ -179,16 +178,16 @@ export const NotificationsDropdown = connect(
 })
 
 const NotificationsDropdownItem = ({ activity, comment }, { dispatch }) => {
-  const { id, actor, action, post, unread, meta: { reasons } } = activity
-  const postName = truncate(decode(post.name), 140).html
+  const { id, actor, action, post, unread, community, meta: { reasons } } = activity
+  const postName = !isEmpty(post) && truncate(decode(post.name), 140).html
   const markAsRead = () => unread && dispatch(markActivityRead(id))
-  return <A to={postUrl(post.id, get('id', comment))} className={cx({unread})}
+  return <A to={destination(activity)} className={cx({unread})}
     onClick={markAsRead}>
     {unread && <div className='dot-badge'/>}
     <NonLinkAvatar person={actor}/>
     <span>
       <strong>{actor.name}</strong>&nbsp;
-      {actionText(action, comment, post, reasons)} {postName}
+      {actionText(action, comment, post, community, reasons)} {postName}
     </span>
   </A>
 }

@@ -2,6 +2,7 @@ import { compact, find, flow, get, map, reduce } from 'lodash/fp'
 import { includes } from 'lodash'
 import { FETCH_ACTIVITY } from '../actions'
 import { present } from '../util/text'
+import { postUrl } from '../routes'
 
 const getActivities = (slug, state) => {
   const { activitiesByCommunity, activities } = state
@@ -26,7 +27,7 @@ export const getActivitiesProps = (slug, state) => {
   }
 }
 
-export const actionText = (action, comment, post, reasons) => {
+export const actionText = (action, comment, post, community, reasons) => {
   switch (action) {
     case 'mention':
       if (!comment) return `mentioned you in their post`
@@ -43,6 +44,8 @@ export const actionText = (action, comment, post, reasons) => {
       const tagReason = find(r => r.startsWith('tag: '), reasons)
       const tag = tagReason.split(': ')[1]
       return `made a new post tagged with #${tag}:`
+    case 'joinRequest':
+      return `asked to join ${community.name}`
   }
 }
 
@@ -54,3 +57,8 @@ export const bodyText = (action, comment, post) => {
   const slug = get('communities.0.slug', post)
   return present(text, {slug, maxlength: 200})
 }
+
+export const destination = ({ post, comment, community }) =>
+  post.id
+    ? postUrl(post.id, get('id', comment))
+    : `/c/${community.slug}/settings?expand=access`

@@ -1,22 +1,13 @@
 import React from 'react'
-import { compose } from 'redux'
 import { connect } from 'react-redux'
-import { defer, prefetch } from 'react-fetcher'
-import { navigate } from '../actions'
-import { find, values } from 'lodash'
-import { get, map } from 'lodash/fp'
+import { find } from 'lodash'
+import { map } from 'lodash/fp'
 import cx from 'classnames'
-import ScrollListener from '../components/ScrollListener'
-import Avatar from '../components/Avatar'
-import truncate from 'trunc-html'
-import { humanDate } from '../util/text'
 import { threadUrl } from '../routes'
 import { FETCH_POSTS, markThreadRead, showDirectMessage } from '../actions'
 import { fetchPosts } from '../actions/fetchPosts'
-import { getCurrentCommunity } from '../models/community'
-import { getPost, denormalizedPost, getComments } from '../models/post'
-const { array, bool, func, number, object } = React.PropTypes
-import decode from 'ent/decode'
+import { getComments, getPost, denormalizedPost } from '../models/post'
+const { func, object } = React.PropTypes
 import A from '../components/A'
 import { NonLinkAvatar } from '../components/Avatar'
 import Dropdown from '../components/Dropdown'
@@ -24,8 +15,14 @@ import Icon from '../components/Icon'
 
 export const ThreadsDropdown = connect(
   (state, props) => {
-    return { 
-      threads: map(id => denormalizedPost(getPost(id, state), state), state.postsByQuery.threads),
+    return {
+      threads: map(id => {
+        const post = getPost(id, state)
+        return {
+          ...denormalizedPost(post, state),
+          comments: getComments(post, state)
+        }
+      }, state.postsByQuery.threads),
       pending: state.pending[FETCH_POSTS]
     }
   }
@@ -62,12 +59,10 @@ const Thread = ({ thread, latestComment }, { currentUser, dispatch }) => {
     {unread && <div className='dot-badge'/>}
     <NonLinkAvatar person={follower}/>
     <span>
-      <strong>{ follower.name }</strong>&nbsp;
-      { comment ? comment.text : '' }
+      <strong>{follower.name}</strong>&nbsp;
+      {comment.user_id === currentUser.id ? 'You: ' : ''}
+      {comment.text}
     </span>
   </A>
 }
-Thread.contextTypes = {
-  dispatch: func,
-  currentUser: object 
-}
+Thread.contextTypes = {dispatch: func, currentUser: object}

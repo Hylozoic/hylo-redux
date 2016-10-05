@@ -66,7 +66,7 @@ const UserMenu = ({ slug, newMessageCount, newNotificationCount }, { isMobile, d
     {currentUser && hasFeature(currentUser, DIRECT_MESSAGES) &&
       <li className='nav-notify-dropdown'>
         <ThreadsDropdown newCount={newMessageCount}/>
-    </li>}
+      </li>}
 
     <li className='nav-notify-dropdown'>
       <NotificationsDropdown newCount={newNotificationCount}/>

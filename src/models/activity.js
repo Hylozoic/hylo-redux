@@ -2,7 +2,7 @@ import { compact, find, flow, get, map, reduce } from 'lodash/fp'
 import { includes } from 'lodash'
 import { FETCH_ACTIVITY } from '../actions'
 import { present } from '../util/text'
-import { postUrl } from '../routes'
+import { postUrl, communityUrl, communitySettingsUrl } from '../routes'
 
 const getActivities = (slug, state) => {
   const { activitiesByCommunity, activities } = state
@@ -46,6 +46,8 @@ export const actionText = (action, comment, post, community, reasons) => {
       return `made a new post tagged with #${tag}:`
     case 'joinRequest':
       return `asked to join ${community.name}`
+    case 'approvedJoinRequest':
+      return `approved your request to join ${community.name}`
   }
 }
 
@@ -58,7 +60,12 @@ export const bodyText = (action, comment, post) => {
   return present(text, {slug, maxlength: 200})
 }
 
-export const destination = ({ post, comment, community }) =>
-  post.id
-    ? postUrl(post.id, get('id', comment))
-    : `/c/${community.slug}/settings?expand=access`
+export const destination = ({ post, comment, community, action }) => {
+  if (post.id) {
+    return postUrl(post.id, get('id', comment))
+  } else if (action === 'joinRequest') {
+    return `${communitySettingsUrl(community)}?expand=access`
+  } else {
+    return communityUrl(community)
+  }
+}

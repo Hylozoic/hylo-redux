@@ -1,21 +1,50 @@
 import React from 'react'
-const { array, bool } = React.PropTypes
+import { values } from 'lodash'
+import { getSocket } from '../client/websockets'
+const { bool } = React.PropTypes
 
 export default class PeopleTyping extends React.Component {
+
+  constructor (props) {
+    super(props)
+    this.state = {
+      peopleTyping: {}
+    }
+  }
+
   static propTypes = {
-    names: array,
     showNames: bool
   }
 
+  componentDidMount () {
+    this.socket = getSocket() 
+    this.socket.on('userTyping', this.userTyping.bind(this))
+  }
+
+  componentWillUnmount () {
+    if (this.socket) this.socket.off('userTyping')
+  }
+
+  userTyping (data) {
+    let newState = this.state
+    if (data.isTyping) {
+      newState.peopleTyping[data.userId] = data.userName
+    } else {
+      delete newState.peopleTyping[data.userId]
+    }
+    this.setState(newState)
+  }
+
   render () {
-    const { names, showNames } = this.props
-    return <div className='typing'>
+    const { showNames } = this.props
+    const names = values(this.state.peopleTyping)
+    return names.length ? <div className='typing'>
       <Chillipsis/>
       {names.length === 1 && <div>
         {showNames ? names[0] : 'Someone'} is typing...
       </div>}
       {names.length > 1 && <div>Multiple people are typing...</div>}
-    </div>
+    </div> : null
   }
 }
 

@@ -1,29 +1,23 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { get } from 'lodash'
-import { getCurrentCommunity, getFollowedTags } from '../models/community'
-import { closeModal, navigate, showDirectMessage } from '../actions'
+import { navigate, showDirectMessage } from '../actions'
 import { findOrCreateThread } from '../actions/threads'
 import { threadUrl } from '../routes'
-import { modalWrapperCSSId, Modal } from '../components/Modal'
+import { Modal } from '../components/Modal'
 import MessageToUserForm from '../components/MessageToUserForm'
 import PersonChooser from '../components/PersonChooser'
-import { newestMembership } from '../models/currentUser'
-const { array, bool, func, number, object, string } = React.PropTypes
+const { func, object, string } = React.PropTypes
 
 const PersonPicker = (props) => {
-  const { onSelect } = props
+  const { onSelect, exclude } = props
   const select = (person) => {
     onSelect(person.id, person.name)
   }
-  return <PersonChooser
-           placeholder='Start typing a name...'
-           onSelect={select}
-           typeaheadId='messageTo'/>
+  return <PersonChooser placeholder='Start typing a name...' onSelect={select}
+    typeaheadId='messageTo' exclude={exclude}/>
 }
-PersonPicker.propTypes = {
-  onSelect: func
-}
+PersonPicker.propTypes = {onSelect: func, exclude: object}
 
 @connect((state, { userId }) => {
   return ({
@@ -39,11 +33,9 @@ export default class DirectMessageModal extends React.Component {
     onCancel: func
   }
 
-  static contextTypes = {
-    dispatch: func
-  }
+  static contextTypes = {dispatch: func, currentUser: object}
 
-  componentDidMount() {
+  componentDidMount () {
     const { dispatch } = this.context
     const { postId, userId } = this.props
     if (userId && !postId) dispatch(findOrCreateThread(userId))
@@ -57,8 +49,9 @@ export default class DirectMessageModal extends React.Component {
 
   render () {
     const { onCancel, postId, userId, userName } = this.props
-    const { dispatch } = this.context
-    const title = userId ? `You and ${userName}` : <PersonPicker onSelect={this.onSelect.bind(this)}/>
+    const { dispatch, currentUser } = this.context
+    const title = userId ? `You and ${userName}`
+      : <PersonPicker onSelect={this.onSelect.bind(this)} exclude={currentUser}/>
 
     const onComplete = () => {
       dispatch(navigate(threadUrl(postId)))
@@ -70,5 +63,3 @@ export default class DirectMessageModal extends React.Component {
     </Modal>
   }
 }
-
-

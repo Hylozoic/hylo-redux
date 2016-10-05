@@ -55,7 +55,7 @@ class CommunityPosts extends React.Component {
       {hasFeature(currentUser, 'COMMUNITY_SETUP_CHECKLIST') && canModerate(currentUser, community) &&
         <CommunitySetup community={community}/>}
       {currentUser && <PostEditor community={community}/>}
-      {!isMember(currentUser, community) && <div className='request-to-join'>
+      {hasFeature(currentUser, 'REQUEST_TO_JOIN_COMMUNITY') && !isMember(currentUser, community) && <div className='request-to-join'>
         You are not a member of this community. <a onClick={requestToJoin}className='button'>Request to Join</a>
       </div>}
       <ConnectedPostList {...{subject, id, query}}/>

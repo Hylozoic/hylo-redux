@@ -8,6 +8,7 @@ export const ADD_COMMUNITY_MODERATOR_PENDING = ADD_COMMUNITY_MODERATOR + _PENDIN
 export const ADD_DATA_TO_STORE = 'ADD_DATA_TO_STORE'
 export const APPEND_COMMENT = 'APPEND_COMMENT'
 export const APPROVE_JOIN_REQUEST = 'APPROVE_JOIN_REQUEST'
+export const APPROVE_JOIN_REQUEST_PENDING = APPROVE_JOIN_REQUEST + _PENDING
 export const CANCEL_POST_EDIT = 'CANCEL_POST_EDIT'
 export const CANCEL_TAG_DESCRIPTION_EDIT = 'CANCEL_TAG_DESCRIPTION_EDIT'
 export const CANCEL_TYPEAHEAD = 'CANCEL_TYPEAHEAD'
@@ -531,6 +532,6 @@ export function approveJoinRequest (userId, slug) {
   return {
     type: APPROVE_JOIN_REQUEST,
     payload: {api: true, params: {userId}, path: `/noo/community/${slug}/approve-join-request`, method: 'post'},
-    meta: {slug}
+    meta: {userId, slug, optimistic: true}
   }
 }

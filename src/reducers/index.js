@@ -1,6 +1,7 @@
 import { combineReducers } from 'redux'
 import { routerReducer } from 'react-router-redux'
 import { some, get, partition, transform } from 'lodash'
+import { filter } from 'lodash/fp'
 import { activities, activitiesByCommunity } from './activities'
 import comments from './comments'
 import commentEdits from './commentEdits'
@@ -27,6 +28,7 @@ import {
 import { admin } from './admin'
 
 import {
+  APPROVE_JOIN_REQUEST_PENDING,
   CANCEL_POST_EDIT,
   CANCEL_TYPEAHEAD,
   CHECK_FRESHNESS_POSTS,
@@ -442,6 +444,12 @@ const combinedReducers = combineReducers({
         return {
           ...state,
           [communityId]: [...(state[communityId] || []), ...payload.items]
+        }
+      case APPROVE_JOIN_REQUEST_PENDING:
+        const { userId, slug } = meta
+        return {
+          ...state,
+          [slug]: filter(j => j.user.id !== userId, state[slug])
         }
     }
 

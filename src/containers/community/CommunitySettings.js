@@ -20,6 +20,7 @@ import config from '../../config'
 const { host } = config
 const slackClientId = config.slack.clientId
 import { avatarUploadSettings, bannerUploadSettings } from '../../models/community'
+import { hasFeature } from '../../models/currentUser'
 import A from '../../components/A'
 import { uploadImage } from '../../actions/uploadImage'
 import PersonChooser from '../../components/PersonChooser'
@@ -220,7 +221,8 @@ export default class CommunitySettings extends React.Component {
     const { avatar_url, banner_url } = community
     const { editing, edited, errors, expand } = this.state
     const labelProps = {expand, toggle: this.toggleSection}
-    const { is_admin } = this.context.currentUser
+    const { currentUser } = this.context
+    const { is_admin } = currentUser
     const slackerror = this.props.location.query.slackerror
     const slugNotUnique = get('slug.unique', this.props.validation) === false
     const joinUrl = communityJoinUrl(community)
@@ -396,7 +398,7 @@ export default class CommunitySettings extends React.Component {
             <input type='checkbox' checked={community.settings.all_can_invite} onChange={() => this.toggle('settings.all_can_invite')}/>
           </div>
         </div>
-        <div className='section-item'>
+        {hasFeature(currentUser, 'REQUEST_TO_JOIN_COMMUNITY') && <div className='section-item'>
           <div className='half-column'>
             <label>Allow people to discover and ask to join this community</label>
             <p className='summary'>If this is enabled, non-members will be able to request to join this community. You can see <A to='/todo'>pending requests here</A>.</p>
@@ -404,7 +406,7 @@ export default class CommunitySettings extends React.Component {
           <div className='half-column right-align'>
             <input type='checkbox' checked={community.settings.discoverable} onChange={() => this.toggle('settings.discoverable')}/>
           </div>
-        </div>
+        </div>}
         <div className='section-item'>
           <div className='half-column'>
             <label>Invitation code</label>
@@ -432,7 +434,7 @@ export default class CommunitySettings extends React.Component {
               <InvitationList id={community.slug}/>
             </div>
           </div>}
-        {!isEmpty(joinRequests) &&
+        {hasFeature(currentUser, 'REQUEST_TO_JOIN_COMMUNITY') && !isEmpty(joinRequests) &&
           <div className='section-item'>
             <div className='full-column'>
               <label>Pending requests</label>

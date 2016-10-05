@@ -23,6 +23,7 @@ const normalize = (post) => omitBy(isNull, {
   children: post.children ? map(post.children, c => c.id) : null, // FIXME should be child_ids
   numComments: post.num_comments || post.numComments,
   num_comments: null,
+  comments: null,
   communities: null,
   people: null
 })

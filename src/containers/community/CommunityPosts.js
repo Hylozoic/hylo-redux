@@ -30,33 +30,39 @@ class CommunityPosts extends React.Component {
     return {community}
   }
 
+  requestToJoin (opts) {
+    const { community, dispatch } = this.props
+    const { currentUser } = this.context
+
+    if (!currentUser) return dispatch(navigate(`/signup?next=/c/${community.slug}?join=true`))
+    return dispatch(requestToJoinCommunity(community.slug))
+    .then(({ error }) => error
+      ? dispatch(notify('There was a problem saving your request; please try again later.', {...opts, type: 'error'}))
+      : dispatch(notify('Your request to join has been sent to the community moderators.', opts)))
+  }
+
   componentDidMount () {
     let { location: { query }, dispatch } = this.props
     const { currentUser } = this.context
-    let { checklist } = query || {}
+    let { checklist, join } = query || {}
     if (checklist && hasFeature(currentUser, 'COMMUNITY_SETUP_CHECKLIST')) {
       dispatch(showModal('checklist'))
+    }
+    if (join && hasFeature(currentUser, 'REQUEST_TO_JOIN_COMMUNITY')) {
+      this.requestToJoin({maxage: false})
     }
   }
 
   render () {
-    let { community, params: { id }, location: { query }, dispatch } = this.props
+    let { community, params: { id }, location: { query } } = this.props
     const { currentUser } = this.context
-
-    const requestToJoin = () => {
-      if (!currentUser) return dispatch(navigate(`/signup?next=/c/${community.slug}`))
-      dispatch(requestToJoinCommunity(community.slug))
-      .then(({ error }) => error
-        ? dispatch(notify('There was a problem saving your request, please try again later', {type: 'error'}))
-        : dispatch(notify('Your request has been sent to the community managers')))
-    }
 
     return <div>
       {hasFeature(currentUser, 'COMMUNITY_SETUP_CHECKLIST') && canModerate(currentUser, community) &&
         <CommunitySetup community={community}/>}
-      {currentUser && <PostEditor community={community}/>}
+      {isMember(currentUser, community) && <PostEditor community={community}/>}
       {hasFeature(currentUser, 'REQUEST_TO_JOIN_COMMUNITY') && !isMember(currentUser, community) && <div className='request-to-join'>
-        You are not a member of this community. <a onClick={requestToJoin}className='button'>Request to Join</a>
+        You are not a member of this community. <a onClick={() => this.requestToJoin()}className='button'>Request to Join</a>
       </div>}
       <ConnectedPostList {...{subject, id, query}}/>
       {!isMember(currentUser, community) && <div className='post-list-footer'>

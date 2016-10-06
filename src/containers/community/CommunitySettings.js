@@ -30,12 +30,7 @@ import InvitationList from './InvitationList'
 import JoinRequestList from './JoinRequestList'
 
 @prefetch(({dispatch, params: {id}}) =>
-  Promise.all([
-    dispatch(fetchCommunitySettings(id)),
-    dispatch(fetchCommunityModerators(id)),
-    dispatch(fetchInvitations(id)),
-    dispatch(fetchJoinRequests(id))
-  ])
+    dispatch(fetchCommunitySettings(id))
 )
 @connect((state, { params }) => ({
   community: state.communities[params.id],
@@ -171,7 +166,19 @@ export default class CommunitySettings extends React.Component {
   }
 
   toggleSection = (section, open) => {
+    const { dispatch, community: { slug } } = this.props
     let { expand } = this.state
+    if (open || !expand[section]) {
+      switch (section) {
+        case 'access':
+          dispatch(fetchInvitations(slug))
+          dispatch(fetchJoinRequests(slug))
+          break
+        case 'moderators':
+          dispatch(fetchCommunityModerators(slug))
+          break
+      }
+    }
     this.setState({expand: {...expand, [section]: open || !expand[section]}})
   }
 
@@ -454,11 +461,13 @@ export default class CommunitySettings extends React.Component {
               edit or delete other members&#39; posts.
             </p>
 
-            {community.moderators.map(moderator => <div className='moderator' key={moderator.id}>
-              <a><span className='avatar' style={{backgroundImage: `url(${moderator.avatar_url})`}}></span></a>
-              <a className='name'>{moderator.name}</a>
-              <a className='close' onClick={() => this.removeModerator(moderator.id)}>&times;</a>
-            </div>)}
+            {community.moderators
+              ? community.moderators.map(moderator => <div className='moderator' key={moderator.id}>
+                  <a><span className='avatar' style={{backgroundImage: `url(${moderator.avatar_url})`}}></span></a>
+                  <a className='name'>{moderator.name}</a>
+                  <a className='close' onClick={() => this.removeModerator(moderator.id)}>&times;</a>
+                </div>)
+              : <div className='moderator'>Loading Moderators...</div>}
 
             <p>Search for members to grant moderator powers:</p>
             <PersonChooser

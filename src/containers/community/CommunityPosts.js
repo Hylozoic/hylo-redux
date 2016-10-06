@@ -42,13 +42,14 @@ class CommunityPosts extends React.Component {
   }
 
   componentDidMount () {
-    let { location: { query }, dispatch } = this.props
+    let { location: { query }, dispatch, community } = this.props
     const { currentUser } = this.context
     let { checklist, join } = query || {}
     if (checklist && hasFeature(currentUser, 'COMMUNITY_SETUP_CHECKLIST')) {
       dispatch(showModal('checklist'))
     }
-    if (join && hasFeature(currentUser, 'REQUEST_TO_JOIN_COMMUNITY')) {
+    if (join && hasFeature(currentUser, 'REQUEST_TO_JOIN_COMMUNITY') &&
+      !isMember(currentUser, community)) {
       this.requestToJoin({maxage: false})
     }
   }

@@ -443,7 +443,7 @@ const combinedReducers = combineReducers({
         if (reset) return {...state, [communityId]: payload.items}
         return {
           ...state,
-          [communityId]: [...(state[communityId] || []), ...payload.items]
+          [communityId]: payload.items
         }
       case APPROVE_JOIN_REQUEST_PENDING:
         const { userId, slug } = meta

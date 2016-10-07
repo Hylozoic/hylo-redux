@@ -1,4 +1,4 @@
-import { map } from 'lodash/fp'
+import { map, uniq } from 'lodash/fp'
 import { appendUniq } from './util'
 import {
   APPEND_COMMENT,
@@ -20,7 +20,10 @@ export default function (state = {}, action) {
       break
     case FETCH_POSTS:
       const commentsByPost = payload.posts.reduce((acc, post) => {
-        if (post.comments) acc[post.id] = post.comments.map(c => c.id)
+        if (post.comments) {
+          const existing = state[post.id] || []
+          acc[post.id] = uniq(existing.concat(map('id', post.comments)))
+        }
         return acc
       }, {})
       return {...state, ...commentsByPost}

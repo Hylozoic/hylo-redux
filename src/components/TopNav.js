@@ -8,6 +8,7 @@ import { MenuButton, leftNavWidth, leftNavEasing, menuButtonWidth } from './Left
 import { editorUrl } from '../containers/StandalonePostEditor'
 const { array, object, func, string, bool, number } = React.PropTypes
 import { viewportTop } from '../util/scrolling'
+import { makeUrl } from '../util/navigation'
 import { VelocityComponent } from 'velocity-react'
 import cx from 'classnames'
 import CommunityMenu, { allCommunities } from './CommunityMenu'
@@ -69,6 +70,9 @@ export default class TopNav extends React.Component {
       this.setState({isScrolling: viewportTop() > 0})
       window.addEventListener('scroll', this.handleScrollEvents)
     }
+    if (!this.context.currentUser) {
+      this.setState({returnPath: window.location.pathname})
+    }
   }
 
   componentWillUnmount () {
@@ -82,6 +86,7 @@ export default class TopNav extends React.Component {
       openLeftNav, leftNavIsOpen, path, network, links, notificationCount
     } = this.props
     const { currentUser, isMobile } = this.context
+    const { returnPath } = this.state
     const label = getLabel(path)
     const community = this.props.community || allCommunities()
     const { slug } = community
@@ -104,8 +109,8 @@ export default class TopNav extends React.Component {
         {currentUser
         ? <UserMenu {...{newNotificationCount, newMessageCount, slug}}/>
         : <ul className='right'>
-            <li><A to='/signup'>Sign up</A></li>
-            <li><A to='/login'>Log in</A></li>
+            <li><A to={makeUrl('/signup', {next: returnPath})}>Sign up</A></li>
+            <li><A to={makeUrl('/login', {next: returnPath})}>Log in</A></li>
           </ul>}
 
         <CommunityMenu {...{community, network}}/>

@@ -5,10 +5,12 @@ import { makeUrl } from '../util/navigation'
 import { connect } from 'react-redux'
 import {
   FETCH_COMMUNITY_FOR_INVITATION,
+  FETCH_POST,
   continueLogin,
   finishLogin,
   login,
   navigate,
+  resetError,
   setLoginError
 } from '../actions'
 import { fetchCommunity, fetchCommunityForInvitation } from '../actions/communities'
@@ -179,6 +181,9 @@ export class PostLoginRedirector extends React.Component {
     const { shouldRedirect, query } = login || {}
     if (shouldRedirect && currentUser) {
       alias(currentUser.id)
+      // if we were trying to log in from a single-post page, we need to clear
+      // this error so that we can view it after being redirected
+      dispatch(resetError(FETCH_POST))
       dispatch(navigate(nextUrl(query, fallbackUrl)))
       dispatch(finishLogin())
     }

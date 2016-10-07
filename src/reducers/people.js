@@ -1,4 +1,4 @@
-import { filter, get, mergeWith, find, indexOf, map } from 'lodash'
+import { filter, get, mergeWith, find, indexOf } from 'lodash'
 import { isNull, omitBy } from 'lodash/fp'
 import { debug } from '../util/logging'
 import {
@@ -160,33 +160,18 @@ export default function (state = {}, action) {
       }
     case FETCH_ACTIVITY:
       if (meta.resetCount) {
-        if (meta.id === 'all') {
-          return {
-            ...state,
-            current: {...state.current, new_notification_count: 0}
-          }
-        } else {
-          return {
-            ...state,
-            current: {
-              ...state.current,
-              memberships: map(state.current.memberships, m =>
-                m.community.slug === meta.id
-                  ? {...m, new_notification_count: 0}
-                  : m)
-            }
-          }
+        return {
+          ...state,
+          current: {...state.current, new_notification_count: 0}
         }
       }
       break
     case FETCH_LIVE_STATUS:
       if (!state.current) return state
+      const { new_notification_count } = payload
       return {
         ...state,
-        current: {
-          ...state.current,
-          new_notification_count: payload.new_notification_count
-        }
+        current: {...state.current, new_notification_count}
       }
   }
 

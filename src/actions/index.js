@@ -383,7 +383,8 @@ export function sendCommunityInvitation (communityId, params) {
   params.emails = params.emails.join(',')
   return {
     type: SEND_COMMUNITY_INVITATION,
-    payload: {api: true, path: `/noo/community/${communityId}/invite`, params, method: 'POST'}
+    payload: {api: true, path: `/noo/community/${communityId}/invite`, params, method: 'POST'},
+    meta: {communityId}
   }
 }
 

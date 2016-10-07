@@ -118,7 +118,7 @@ export default class InviteModal extends React.Component {
       let badEmails = emails.filter(email => !validator.isEmail(email))
       if (some(id => id, badEmails)) return setError(`These emails are invalid: ${badEmails.join(', ')}`)
 
-      dispatch(sendCommunityInvitation(community.id, {subject, message, emails, moderator}))
+      dispatch(sendCommunityInvitation(community.slug, {subject, message, emails, moderator}))
       .then(({ error }) => {
         if (error) return
         trackEvent(INVITED_COMMUNITY_MEMBERS, {community})

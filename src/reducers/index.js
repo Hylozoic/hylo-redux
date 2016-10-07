@@ -1,7 +1,7 @@
 import { combineReducers } from 'redux'
 import { routerReducer } from 'react-router-redux'
 import { some, get, partition, transform } from 'lodash'
-import { filter } from 'lodash/fp'
+import { filter, flow, map, compact } from 'lodash/fp'
 import { activities, activitiesByCommunity } from './activities'
 import comments from './comments'
 import commentEdits from './commentEdits'
@@ -122,7 +122,7 @@ const combinedReducers = combineReducers({
 
     switch (type) {
       case FIND_OR_CREATE_THREAD:
-        return {...state, [meta.messageTo]: payload.id} 
+        return {...state, [meta.messageTo]: payload.id}
     }
 
     return state
@@ -419,6 +419,17 @@ const combinedReducers = combineReducers({
           ...state,
           [communityId]: [...(state[communityId] || []), ...payload.items]
         }
+      case SEND_COMMUNITY_INVITATION:
+        communityId = meta.communityId
+        const newInvitations = flow(
+          map('email'),
+          compact,
+          map(email => ({email, created: new Date()}))
+        )(payload.results)
+        return {
+          ...state,
+          [communityId]: [...newInvitations, ...(state[communityId] || [])]
+        }
     }
 
     return state
@@ -496,7 +507,7 @@ const combinedReducers = combineReducers({
       case SHOW_EXPANDED_POST:
         return state.concat({type: 'expanded-post', params: action.payload})
       case SHOW_DIRECT_MESSAGE:
-          return state.concat({type: 'direct-message', params: action.payload})
+        return state.concat({type: 'direct-message', params: action.payload})
       case CLOSE_MODAL:
         return state.slice(0, -1)
     }

@@ -94,7 +94,7 @@ export default function (state = {}, action) {
         ...withFollower,
         [id]: {
           ...withFollower[id],
-          numComments: (get('comments.length', post) || 0) + 1
+          numComments: (post.numComments || 0) + 1
         }
       }
     case REMOVE_COMMENT:

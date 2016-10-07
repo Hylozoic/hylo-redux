@@ -1,6 +1,9 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { prefetch } from 'react-fetcher'
+import {
+  COMMUNITY_SETUP_CHECKLIST, REQUEST_TO_JOIN_COMMUNITY
+} from '../../config/featureFlags'
 import { fetch, ConnectedPostList } from '../ConnectedPostList'
 import PostEditor from '../../components/PostEditor'
 import { PercentBar } from '../../containers/ChecklistModal'
@@ -44,11 +47,11 @@ class CommunityPosts extends React.Component {
     let { location: { query }, dispatch, community } = this.props
     const { currentUser } = this.context
     let { checklist, join } = query || {}
-    if (checklist && hasFeature(currentUser, 'COMMUNITY_SETUP_CHECKLIST') &&
+    if (checklist && hasFeature(currentUser, COMMUNITY_SETUP_CHECKLIST) &&
       checklistPercentage(getChecklist(community)) !== 100) {
       dispatch(showModal('checklist'))
     }
-    if (join && hasFeature(currentUser, 'REQUEST_TO_JOIN_COMMUNITY') &&
+    if (join && hasFeature(currentUser, REQUEST_TO_JOIN_COMMUNITY) &&
       !isMember(currentUser, community)) {
       this.requestToJoin({maxage: false})
     }
@@ -59,10 +62,10 @@ class CommunityPosts extends React.Component {
     const { currentUser } = this.context
 
     return <div>
-      {hasFeature(currentUser, 'COMMUNITY_SETUP_CHECKLIST') && canModerate(currentUser, community) &&
+      {hasFeature(currentUser, COMMUNITY_SETUP_CHECKLIST) && canModerate(currentUser, community) &&
         <CommunitySetup community={community}/>}
       {isMember(currentUser, community) && <PostEditor community={community}/>}
-      {hasFeature(currentUser, 'REQUEST_TO_JOIN_COMMUNITY') && !isMember(currentUser, community) && <div className='request-to-join'>
+      {hasFeature(currentUser, REQUEST_TO_JOIN_COMMUNITY) && !isMember(currentUser, community) && <div className='request-to-join'>
         You are not a member of this community. <a onClick={() => this.requestToJoin()}className='button'>Request to Join</a>
       </div>}
       <ConnectedPostList {...{subject, id, query}}/>

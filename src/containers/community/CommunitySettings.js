@@ -21,6 +21,7 @@ const { host } = config
 const slackClientId = config.slack.clientId
 import { avatarUploadSettings, bannerUploadSettings } from '../../models/community'
 import { hasFeature } from '../../models/currentUser'
+import { REQUEST_TO_JOIN_COMMUNITY } from '../../config/featureFlags'
 import A from '../../components/A'
 import { uploadImage } from '../../actions/uploadImage'
 import PersonChooser from '../../components/PersonChooser'
@@ -405,7 +406,7 @@ export default class CommunitySettings extends React.Component {
             <input type='checkbox' checked={community.settings.all_can_invite} onChange={() => this.toggle('settings.all_can_invite')}/>
           </div>
         </div>
-        {hasFeature(currentUser, 'REQUEST_TO_JOIN_COMMUNITY') && <div className='section-item'>
+        {hasFeature(currentUser, REQUEST_TO_JOIN_COMMUNITY) && <div className='section-item'>
           <div className='half-column'>
             <label>Allow people to discover and ask to join this community</label>
             <p className='summary'>If this is enabled, non-members will be able to request to join this community. You can see <A to='/todo'>pending requests here</A>.</p>
@@ -436,7 +437,7 @@ export default class CommunitySettings extends React.Component {
               <InvitationList id={community.slug}/>
             </div>
           </div>}
-        {hasFeature(currentUser, 'REQUEST_TO_JOIN_COMMUNITY') && !isEmpty(joinRequests) &&
+        {hasFeature(currentUser, REQUEST_TO_JOIN_COMMUNITY) && !isEmpty(joinRequests) &&
           <div className='section-item'>
             <div className='full-column'>
               <label>Pending requests</label>

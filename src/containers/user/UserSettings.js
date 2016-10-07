@@ -11,6 +11,7 @@ import {
   updateMembershipSettings,
   updateUserSettings
  } from '../../actions'
+import { PAYMENT_SETTINGS } from '../../config/featureFlags'
 import { leaveCommunity } from '../../actions/communities'
 import { uploadImage } from '../../actions/uploadImage'
 import A from '../../components/A'
@@ -381,7 +382,7 @@ export default class UserSettings extends React.Component {
         </Item>}
       </Section>}
 
-      {hasFeature(currentUser, 'PAYMENT_SETTINGS') && <div>
+      {hasFeature(currentUser, PAYMENT_SETTINGS) && <div>
         <SectionLabel name='payment' label='Payment Details' {...{dispatch, expand}}/>
         {expand.payment && <Section className='payment'>
           <Item>

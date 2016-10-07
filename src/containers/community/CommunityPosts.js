@@ -8,8 +8,7 @@ import { compose } from 'redux'
 import { isMember, canModerate, hasFeature } from '../../models/currentUser'
 import { navigate, notify } from '../../actions'
 import { requestToJoinCommunity } from '../../actions/communities'
-import { getChecklist } from '../../models/community'
-import { filter } from 'lodash/fp'
+import { getChecklist, checklistPercentage } from '../../models/community'
 import { showModal } from '../../actions'
 const { func, object } = React.PropTypes
 
@@ -45,7 +44,8 @@ class CommunityPosts extends React.Component {
     let { location: { query }, dispatch, community } = this.props
     const { currentUser } = this.context
     let { checklist, join } = query || {}
-    if (checklist && hasFeature(currentUser, 'COMMUNITY_SETUP_CHECKLIST')) {
+    if (checklist && hasFeature(currentUser, 'COMMUNITY_SETUP_CHECKLIST') &&
+      checklistPercentage(getChecklist(community)) !== 100) {
       dispatch(showModal('checklist'))
     }
     if (join && hasFeature(currentUser, 'REQUEST_TO_JOIN_COMMUNITY') &&
@@ -84,7 +84,7 @@ export default compose(
 
 const CommunitySetup = connect()(({ community, dispatch }) => {
   const checklist = getChecklist(community)
-  const percent = filter('done', checklist).length / checklist.length * 100
+  const percent = checklistPercentage(checklist)
 
   if (percent === 100) return null
 

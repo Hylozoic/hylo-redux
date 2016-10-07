@@ -1,5 +1,5 @@
 import { values } from 'lodash'
-import { find, get, pickBy } from 'lodash/fp'
+import { find, get, pickBy, filter } from 'lodash/fp'
 import { showModal } from '../actions'
 
 export const MemberRole = {DEFAULT: 0, MODERATOR: 1}
@@ -50,6 +50,9 @@ export const getChecklist = community => {
     {title: 'Start your first conversation', action: showModal('post-editor'), done: !!get('post', checklist)}
   ]
 }
+
+export const checklistPercentage = checklist =>
+  filter('done', checklist).length / checklist.length * 100
 
 export const defaultInvitationSubject = name =>
   `Join ${name} on Hylo`

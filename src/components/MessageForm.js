@@ -1,15 +1,12 @@
 import React from 'react'
 import { get, debounce, throttle } from 'lodash'
 import { connect } from 'react-redux'
-import { CREATE_COMMENT } from '../actions'
 import { createComment, updateCommentEditor } from '../actions/comments'
 import { ADDED_COMMENT, trackEvent } from '../util/analytics'
 import { textLength } from '../util/text'
 import { onEnterNoShift } from '../util/textInput'
-import AutosizingTextarea from './AutosizingTextarea'
-import cx from 'classnames'
 import { getSocket, socketUrl } from '../client/websockets'
-var { array, bool, func, object, string } = React.PropTypes
+var { func, object, string } = React.PropTypes
 
 // The interval between repeated typing notifications to the web socket. We send
 // repeated notifications to make sure that a user gets notified even if they
@@ -34,10 +31,6 @@ export default class MessageForm extends React.Component {
     text: string
   }
 
-  static contextTypes = {
-    isMobile: bool,
-  }
-
   submit = event => {
     const { dispatch, postId, text } = this.props
     if (event) event.preventDefault()
@@ -59,10 +52,7 @@ export default class MessageForm extends React.Component {
   }
 
   render () {
-    const {
-      currentUser, dispatch, postId, text
-    } = this.props
-    const { isMobile } = this.context
+    const { dispatch, postId, text } = this.props
     const updateStore = text => dispatch(updateCommentEditor(postId, text, true))
 
     const setText = event => updateStore(event.target.value)
@@ -88,13 +78,11 @@ export default class MessageForm extends React.Component {
     }
 
     return <form onSubmit={this.submit} className='message-form'>
-            <textarea ref='editor' name='message'
-              value={text}
-              placeholder={placeholder}
-              onChange={setText}
-              onKeyUp={stopTyping}
-              onKeyDown={handleKeyDown}/>
+      <textarea ref='editor' name='message' value={text}
+        placeholder={placeholder}
+        onChange={setText}
+        onKeyUp={stopTyping}
+        onKeyDown={handleKeyDown}/>
     </form>
   }
 }
-

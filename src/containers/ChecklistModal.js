@@ -33,10 +33,10 @@ export default class ChecklistModal extends React.Component {
         <PercentBar percent={percent}/>
         To build a successful community with Hylo, we suggest completing the following:
       </div>}
-      className='create-community-three'
+      className='community-setup-checklist'
       onCancel={onCancel}>
       {checklist.map(({ title, action, done }) =>
-        <CheckItem title={title} done={done} key={title}
+        <CheckItem title={title} done={done} key={title} slug={community.slug}
           onClick={() => dispatch(action)}/>)}
       <div className='footer'>
         <a className='button ok' onClick={close}>
@@ -47,10 +47,13 @@ export default class ChecklistModal extends React.Component {
   }
 }
 
-const CheckItem = ({ title, onClick, done }) => {
-  return <div className='check-item form-sections' onClick={onClick}>
+const CheckItem = ({ title, onClick, done, slug }) => {
+  const completedTopic = done && title === 'Add a topic'
+  return <div className='check-item form-sections' onClick={!completedTopic && onClick}>
     <input type='checkbox' checked={done} readOnly/>
-    {title}
+    {title}&nbsp;
+    {completedTopic &&
+      <a href={`/c/${slug}/settings/tags`} className='see-all-topics'>See all topics</a>}
     <span className='disclosure'>&#x3009;</span>
   </div>
 }

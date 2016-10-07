@@ -4,12 +4,12 @@ import { connect } from 'react-redux'
 import { pick } from 'lodash/fp'
 import { FETCH_POST } from '../actions'
 import { fetchComments } from '../actions/comments'
-import { fetchPost } from '../actions/posts'
+import { fetchPost, updatePostReadTime } from '../actions/posts'
 import { findError } from '../actions/util'
 import AccessErrorMessage from '../components/AccessErrorMessage'
 import Thread from '../components/Thread'
 import { denormalizedPost, getComments, getPost } from '../models/post'
-const { array, bool, object, string } = React.PropTypes
+const { array, bool, func, object, string } = React.PropTypes
 
 @prefetch(({ store, dispatch, params: { id }, query }) =>
   dispatch(fetchPost(id))
@@ -25,7 +25,8 @@ const { array, bool, object, string } = React.PropTypes
 export default class ThreadPage extends React.Component {
   static propTypes = {
     post: object,
-    error: string
+    error: string,
+    dispatch: func
   }
 
   static childContextTypes = {
@@ -36,6 +37,11 @@ export default class ThreadPage extends React.Component {
   static contextTypes = {
     isMobile: bool,
     currentUser: object
+  }
+
+  componentDidMount () {
+    const { dispatch, post } = this.props
+    return dispatch(updatePostReadTime(post.id))
   }
 
   getChildContext () {

@@ -18,6 +18,7 @@ import {
   START_POST_EDIT,
   UPDATE_POST,
   UPDATE_POST_EDITOR,
+  UPDATE_POST_READ_TIME,
   VOTE_ON_POST
 } from './index'
 
@@ -143,5 +144,13 @@ export function completePost (id) {
     type: COMPLETE_POST,
     payload: {api: true, path: `/noo/post/${id}/fulfill`, method: 'POST'},
     meta: {optimistic: true, id}
+  }
+}
+
+export function updatePostReadTime (id) {
+  return {
+    type: UPDATE_POST_READ_TIME,
+    payload: {api: true, path: `/noo/post/${id}/update-last-read`, method: 'POST'},
+    meta: {id}
   }
 }

@@ -27,8 +27,8 @@ const { func, object, bool } = React.PropTypes
 @prefetch(({ dispatch, params: { id } }) =>
   dispatch(fetchCommunity(id))
 )
-@connect((state) => ({
-  community: getCurrentCommunity(state),
+@connect((state, { community }) => ({
+  community: community || getCurrentCommunity(state),
   invitationEditor: get('invitationEditor', state)
 }))
 export default class InviteModal extends React.Component {

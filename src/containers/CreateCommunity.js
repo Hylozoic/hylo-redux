@@ -255,7 +255,7 @@ export class CreateCommunityInvite extends React.Component {
 
     return <ModalOnlyPage className='create-community'>
       <Topper community={community}/>
-      <InviteModal onClose={onClose} standalone/>
+      <InviteModal onClose={onClose} community={community} standalone/>
 
       {!isEmpty(invitations) &&
         <Modal title='Sent invitations' standalone id='community-invitations'>

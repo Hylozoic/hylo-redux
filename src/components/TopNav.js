@@ -86,6 +86,7 @@ export default class TopNav extends React.Component {
     const community = this.props.community || allCommunities()
     const { slug } = community
     const newNotificationCount = get('new_notification_count', currentUser)
+    const newMessageCount = get('new_message_count', currentUser)
 
     const moveWithMenu = isMobile
       ? {marginLeft: leftNavIsOpen ? leftNavWidth : 0}
@@ -101,7 +102,7 @@ export default class TopNav extends React.Component {
               <MenuButton onClick={openLeftNav} notificationCount={notificationCount}/>
             </VelocityComponent>}
         {currentUser
-        ? <UserMenu {...{newNotificationCount, slug}}/>
+        ? <UserMenu {...{newNotificationCount, newMessageCount, slug}}/>
         : <ul className='right'>
             <li><A to='/signup'>Sign up</A></li>
             <li><A to='/login'>Log in</A></li>

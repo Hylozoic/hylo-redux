@@ -27,8 +27,7 @@ export const ThreadsDropdown = connect(
     }
   }
 )(props => {
-  const { threads, dispatch, pending } = props
-  const newCount = 1
+  const { threads, dispatch, pending, newCount } = props
   return <Dropdown alignRight rivalrous='nav' className='thread-list'
     onFirstOpen={() => dispatch(fetchPosts({ cacheId: 'threads', subject: 'threads' }))}
     toggleChildren={<span>

@@ -48,7 +48,7 @@ class Comment extends React.Component {
     if (truncated) text = truncateHtml(text, truncatedLength).html
     text = prependInP(text, `<a href='/u/${person.id}'><strong class='name'>${sanitize(person.name)}</strong></a>`)
     const remove = () => window.confirm('Delete this comment? This cannot be undone.') &&
-      dispatch(removeComment(comment.id))
+      dispatch(removeComment(comment.id, comment.post_id))
     const edit = () => {
       this.setState({editing: true})
       return dispatch(updateCommentEditor(comment.id, comment.text, false))

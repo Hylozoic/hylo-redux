@@ -14,6 +14,9 @@ export function fetchPosts (opts) {
   let path
 
   switch (subject) {
+    case 'threads':
+      path = '/noo/threads'
+      break
     case 'community':
       if (id === 'all' && tag) {
         path = `/noo/tag/${tag}/posts`

@@ -261,7 +261,7 @@ export default class CommunitySettings extends React.Component {
                 </form>
                 <p className='meta'>Warning: any links that refer to the old slug will no longer work.</p>
                 {!!get('slug.empty', errors) && <p className='help error'>Please fill in a slug.</p>}
-                {slugNotUnique && <p className='help error'>This code cannot be used; please choose another.</p>}
+                {slugNotUnique && <p className='help error'>This slug cannot be used; please choose another.</p>}
                 <div className='buttons'>
                   <button type='button' onClick={() => this.cancelEdit('slug')}>Cancel</button>
                   <button type='button' className='btn-primary' onClick={() => this.save('slug')}>Save</button>
@@ -389,15 +389,10 @@ export default class CommunitySettings extends React.Component {
           </div>
         </div>
         <div className='section-item'>
-          <div className='half-column'>
-            <label>Invitation code</label>
-            <p>{community.beta_access_code || '&nbsp;'}</p>
-            <p className='summary'>This code can be given to people to allow them to join the community, instead of sending individual invitations by email.</p>
-          </div>
-          <div className='half-column'>
+          <div className='full-column'>
             <label>Invitation code link</label>
             <p><a href={joinUrl}>{joinUrl}</a></p>
-            <p className='summary'>You can copy this link for pasting in emails or embedding on your webpage to pre-populate the invite code for new members to easily join.</p>
+            <p className='summary'>You can share this link to allow people to join your community without having to invite them individually.</p>
           </div>
         </div>
       </div>}

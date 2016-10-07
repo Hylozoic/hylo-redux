@@ -1,13 +1,16 @@
 import {
   CHANGE_EVENT_RESPONSE_PENDING,
   COMPLETE_POST_PENDING,
+  APPEND_COMMENT,
   CREATE_COMMENT,
   CREATE_POST,
   FETCH_POST,
   FETCH_POSTS,
   FETCH_PERSON,
+  FIND_OR_CREATE_THREAD,
   FOLLOW_POST_PENDING,
   PIN_POST_PENDING,
+  REMOVE_COMMENT,
   REMOVE_POST,
   UPDATE_POST,
   VOTE_ON_POST_PENDING
@@ -21,6 +24,7 @@ const normalize = (post) => omitBy(isNull, {
   children: post.children ? map(post.children, c => c.id) : null, // FIXME should be child_ids
   numComments: post.num_comments || post.numComments,
   num_comments: null,
+  comments: null,
   communities: null,
   people: null
 })
@@ -65,6 +69,7 @@ export default function (state = {}, action) {
       return mergeList(state, payload.posts.map(normalize), 'id')
     case CREATE_POST:
     case FETCH_POST:
+    case FIND_OR_CREATE_THREAD:
       return mergeList(state, listWithChildren(normalize(payload), payload), 'id')
     case UPDATE_POST:
       post = normalizeUpdate(post, meta.params, payload)
@@ -78,6 +83,7 @@ export default function (state = {}, action) {
       return {...state, [id]: null}
     case FOLLOW_POST_PENDING:
       return addOrRemovePersonId(state, id, personId, 'follower_ids')
+    case APPEND_COMMENT:
     case CREATE_COMMENT:
       const withFollower = addPersonId(state, id, payload.user_id, 'follower_ids')
       return {
@@ -86,6 +92,12 @@ export default function (state = {}, action) {
           ...withFollower[id],
           numComments: (get('comments.length', post) || 0) + 1
         }
+      }
+    case REMOVE_COMMENT:
+      post = state[meta.postId]
+      return {
+        ...state,
+        [post.id]: {...post, numComments: post.numComments - 1}
       }
     case FETCH_PERSON:
       const newPosts = compact([payload.recent_request, payload.recent_offer])

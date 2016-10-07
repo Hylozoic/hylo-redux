@@ -3,7 +3,7 @@ import { A, IndexA } from './A'
 import Icon from './Icon'
 import Dropdown from './Dropdown'
 import { filter, get } from 'lodash/fp'
-import { throttle } from 'lodash'
+import { throttle, times } from 'lodash'
 import { MenuButton, leftNavWidth, leftNavEasing, menuButtonWidth } from './LeftNav'
 import { editorUrl } from '../containers/StandalonePostEditor'
 const { array, object, func, string, bool, number } = React.PropTypes
@@ -85,7 +85,8 @@ export default class TopNav extends React.Component {
     const label = getLabel(path)
     const community = this.props.community || allCommunities()
     const { slug } = community
-    const newCount = get('new_notification_count', currentUser)
+    const newNotificationCount = get('new_notification_count', currentUser)
+    const newMessageCount = get('new_message_count', currentUser)
 
     const moveWithMenu = isMobile
       ? {marginLeft: leftNavIsOpen ? leftNavWidth : 0}
@@ -101,14 +102,14 @@ export default class TopNav extends React.Component {
               <MenuButton onClick={openLeftNav} notificationCount={notificationCount}/>
             </VelocityComponent>}
         {currentUser
-        ? <UserMenu {...{newCount, slug}}/>
+        ? <UserMenu {...{newNotificationCount, newMessageCount, slug}}/>
         : <ul className='right'>
             <li><A to='/signup'>Sign up</A></li>
             <li><A to='/login'>Log in</A></li>
           </ul>}
 
         <CommunityMenu {...{community, network}}/>
-        {currentUser && !network && <TopMainMenu links={links}/>}
+        {currentUser && !network && <TopMainMenu {...{links, leftNavIsOpen}}/>}
         {currentUser &&
           <A to={editorUrl(slug, getPostType(path))} className='compose'>
             <Icon name='Compose'/>
@@ -118,24 +119,71 @@ export default class TopNav extends React.Component {
   }
 }
 
-const TopMainMenu = ({ community, links }) => {
-  const LinkItem = ({ link, className }) => {
-    const { url, label, index } = link
-    const AComponent = index ? IndexA : A
-    return <AComponent to={url} className={className}>{label}</AComponent>
+class TopMainMenu extends React.Component {
+  static propTypes = {links: array, leftNavIsOpen: bool}
+
+  constructor (props) {
+    super(props)
+    this.state = {hiddenCount: 0}
   }
 
-  const topLinks = filter(l => l.label !== 'Network', links)
+  adjustMenu = (depth = 0) => {
+    const rightSide = document.querySelector('#topNav > .right')
+    const mainMenu = document.querySelector('#topNav > .main-menu')
+    const mainMenuEnd = mainMenu.offsetLeft + mainMenu.offsetWidth
+    const space = rightSide.offsetLeft - mainMenuEnd
+    const { hiddenCount } = this.state
+    if (space < 30) {
+      this.setState({hiddenCount: hiddenCount + 1})
+      if (depth < 6) this.adjustMenu(depth + 1)
+    } else if (space > 100 && hiddenCount > 0) {
+      this.setState({hiddenCount: Math.max(0, hiddenCount - 1)})
+      if (depth < 7) this.adjustMenu(depth + 1)
+    }
+  }
 
-  return <div className={`main-menu has-${topLinks.length}-links`}>
-    {topLinks.slice(1, 4).map((link, i) =>
-      <LinkItem className={`a-${i}`} link={link} key={link.label}/>)}
-    <Dropdown triangle className='overflow-menu' openOnHover
-      toggleChildren={<Icon name='More'/>}>
-      {topLinks.slice(1).map((link, i) =>
-        <li key={link.label} className={`li-${i}`}>
-          <LinkItem link={link}/>
-        </li>)}
-    </Dropdown>
-  </div>
+  componentDidUpdate (prevProps) {
+    const { leftNavIsOpen, links } = this.props
+    if (links !== prevProps.links) {
+      setTimeout(this.adjustMenu)
+    }
+    if (leftNavIsOpen !== prevProps.leftNavIsOpen) {
+      times(4, n => setTimeout(this.adjustMenu, 150 + 150 * n))
+    }
+  }
+
+  componentDidMount () {
+    this.throttledAdjustMenu = throttle(this.adjustMenu, 100)
+    window.addEventListener('resize', this.throttledAdjustMenu)
+    this.adjustMenu()
+  }
+
+  componentWillUnmount () {
+    window.removeEventListener('resize', this.throttledAdjustMenu)
+  }
+
+  render () {
+    const { links } = this.props
+    const { hiddenCount } = this.state
+
+    const LinkItem = ({ link, className }) => {
+      const { url, label, index } = link
+      const AComponent = index ? IndexA : A
+      return <AComponent to={url} className={className}>{label}</AComponent>
+    }
+
+    const topLinks = filter(l => l.label !== 'Network', links)
+
+    return <div className='main-menu'>
+      {topLinks.slice(1, topLinks.length - hiddenCount).map((link, i) =>
+        <LinkItem link={link} key={link.label}/>)}
+      {hiddenCount > 0 && <Dropdown triangle className='overflow-menu'
+        openOnHover toggleChildren={<Icon name='More'/>}>
+        {topLinks.slice(-hiddenCount).map((link, i) =>
+          <li key={link.label} className={`li-${i}`}>
+            <LinkItem link={link}/>
+          </li>)}
+      </Dropdown>}
+    </div>
+  }
 }

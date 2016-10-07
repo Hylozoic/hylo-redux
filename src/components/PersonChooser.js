@@ -2,18 +2,21 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { typeahead } from '../actions'
 import { isEmpty } from 'lodash'
+import { filter, get } from 'lodash/fp'
 import { KeyControlledItemList } from './KeyControlledList'
-var {array, func, string} = React.PropTypes
+const { array, func, object, string } = React.PropTypes
 
 @connect((state, props) => ({ choices: state.typeaheadMatches[props.typeaheadId] }))
 export default class PersonChooser extends React.Component {
 
   static propTypes = {
+    placeholder: string,
     communityId: string,
     typeaheadId: string,
     onSelect: func,
     dispatch: func,
-    choices: array
+    choices: array,
+    exclude: object
   }
 
   constructor (props) {
@@ -40,9 +43,10 @@ export default class PersonChooser extends React.Component {
   }
 
   render () {
-    let { choices } = this.props
+    let { choices, placeholder, exclude } = this.props
+    choices = filter(p => p.id !== get('id', exclude), choices)
     return <div className='chooser'>
-      <input className='form-control' ref='input' type='text' placeholder='Type...'
+      <input className='form-control' ref='input' type='text' placeholder={ placeholder || 'Type...' }
         onChange={this.handleInput}
         onKeyDown={this.handleKeys}/>
 

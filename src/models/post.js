@@ -48,3 +48,5 @@ export const denormalizedPost = (post, state) => ({
   voters: map(id => getPerson(id, state), post.voter_ids),
   communities: map(id => getCommunity(id, state), post.community_ids)
 })
+
+export const isMessageThread = post => get('type', post) === 'thread'

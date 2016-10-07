@@ -18,7 +18,7 @@ import CoverImagePage from '../components/CoverImagePage'
 import EventPost from '../components/EventPost'
 import ProjectPost from '../components/ProjectPost'
 import { getCurrentCommunity } from '../models/community'
-import { denormalizedPost, getComments, getPost } from '../models/post'
+import { denormalizedPost, getComments, getPost, isMessageThread } from '../models/post'
 import { fetch, ConnectedPostList } from './ConnectedPostList'
 const { array, bool, object, string, func } = React.PropTypes
 
@@ -30,7 +30,7 @@ const showTaggedPosts = post =>
 @prefetch(({ store, dispatch, params: { id }, query }) =>
   dispatch(fetchPost(id))
   .then(action =>
-    redirectToParent(store, id) || setupPage(store, id, query, action)))
+    redirect(store, id) || setupPage(store, id, query, action)))
 @connect((state, { params: { id } }) => {
   const post = getPost(id, state)
   return {
@@ -106,12 +106,16 @@ const showPost = (post) => {
   return <Post post={post} expanded/>
 }
 
-const redirectToParent = (store, id) => {
+const redirect = (store, id) => {
   const state = store.getState()
   if (state.isMobile) return false
   const post = state.posts[id]
   if (get(post, 'parent_post_id')) {
     store.dispatch(navigate(`/p/${post.parent_post_id}`))
+    return true
+  }
+  if (isMessageThread(post)) {
+    store.dispatch(navigate(`/t/${post.id}`))
     return true
   }
 }

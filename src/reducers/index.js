@@ -122,7 +122,7 @@ const combinedReducers = combineReducers({
 
     switch (type) {
       case FIND_OR_CREATE_THREAD:
-        return {...state, [meta.messageTo]: payload.id} 
+        return {...state, [meta.messageTo]: payload.id}
     }
 
     return state
@@ -496,7 +496,7 @@ const combinedReducers = combineReducers({
       case SHOW_EXPANDED_POST:
         return state.concat({type: 'expanded-post', params: action.payload})
       case SHOW_DIRECT_MESSAGE:
-          return state.concat({type: 'direct-message', params: action.payload})
+        return state.concat({type: 'direct-message', params: action.payload})
       case CLOSE_MODAL:
         return state.slice(0, -1)
     }

@@ -17,7 +17,8 @@ import {
   UPDATE_COMMUNITY_EDITOR,
   UPDATE_COMMUNITY_CHECKLIST,
   UPDATE_COMMUNITY_SETTINGS,
-  VALIDATE_COMMUNITY_ATTRIBUTE
+  VALIDATE_COMMUNITY_ATTRIBUTE,
+  REQUEST_TO_JOIN_COMMUNITY
 } from './index'
 
 export function fetchCommunities (opts) {
@@ -159,6 +160,13 @@ export function updateCommunitySettings (id, params) {
     type: UPDATE_COMMUNITY_SETTINGS,
     payload: {api: true, params, path: `/noo/community/${id}`, method: 'POST'},
     meta: {id, slug: params.slug, params, optimistic: true}
+  }
+}
+
+export function requestToJoinCommunity (slug) {
+  return {
+    type: REQUEST_TO_JOIN_COMMUNITY,
+    payload: {api: true, path: `/noo/community/${slug}/request-join`, method: 'POST'}
   }
 }
 

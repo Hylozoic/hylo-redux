@@ -170,6 +170,9 @@ export const origin = () =>
 export const communityUrl = (community, params) =>
   makeUrl(`/c/${community.slug}`, params)
 
+export const communitySettingsUrl = (community, params) =>
+  makeUrl(`/c/${community.slug}/settings`, params)
+
 export const networkUrl = network =>
   `/n/${network.slug}`
 

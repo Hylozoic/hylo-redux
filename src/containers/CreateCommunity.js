@@ -8,7 +8,7 @@ import { ModalInput, ModalSelect } from '../components/ModalRow'
 import Modal from '../components/Modal'
 import A from '../components/A'
 import Icon from '../components/Icon'
-import InviteModal from '../containers/InviteModal'
+import InviteModal from './InviteModal'
 import { uploadImage } from '../actions/uploadImage'
 import {
   CREATE_COMMUNITY,
@@ -258,7 +258,7 @@ export class CreateCommunityInvite extends React.Component {
       <InviteModal onClose={onClose} community={community} standalone/>
 
       {!isEmpty(invitations) &&
-        <Modal title='Sent invitations' standalone id='community-invitations'>
+        <Modal title='Sent invitations' standalone>
           <InvitationList id={community.slug}/>
         </Modal>}
     </ModalOnlyPage>

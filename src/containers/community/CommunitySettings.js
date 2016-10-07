@@ -2,11 +2,11 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { prefetch } from 'react-fetcher'
 import cx from 'classnames'
-const { object, func } = React.PropTypes
+const { object, func, array } = React.PropTypes
 import { find, isEmpty, reduce, set } from 'lodash'
 import { get } from 'lodash/fp'
 import { markdown, sanitize } from 'hylo-utils/text'
-import { navigate } from '../../actions'
+import { navigate, showModal, fetchInvitations, fetchJoinRequests } from '../../actions'
 import {
   addCommunityModerator,
   fetchCommunitySettings,
@@ -20,21 +20,23 @@ import config from '../../config'
 const { host } = config
 const slackClientId = config.slack.clientId
 import { avatarUploadSettings, bannerUploadSettings } from '../../models/community'
+import { hasFeature } from '../../models/currentUser'
 import A from '../../components/A'
 import { uploadImage } from '../../actions/uploadImage'
 import PersonChooser from '../../components/PersonChooser'
 import { communityJoinUrl } from '../../routes'
 import { makeUrl } from '../../util/navigation'
+import InvitationList from './InvitationList'
+import JoinRequestList from './JoinRequestList'
 
 @prefetch(({dispatch, params: {id}}) =>
-  Promise.all([
-    dispatch(fetchCommunitySettings(id)),
-    dispatch(fetchCommunityModerators(id))
-  ])
+    dispatch(fetchCommunitySettings(id))
 )
 @connect((state, { params }) => ({
   community: state.communities[params.id],
-  validation: state.communityValidation
+  validation: state.communityValidation,
+  invitations: state.invitations[params.id],
+  joinRequests: state.joinRequests[params.id]
 }))
 export default class CommunitySettings extends React.Component {
 
@@ -47,7 +49,9 @@ export default class CommunitySettings extends React.Component {
     community: object,
     dispatch: func,
     location: object,
-    validation: object
+    validation: object,
+    invitations: array,
+    joinRequests: array
   }
 
   static contextTypes = {currentUser: object}
@@ -162,7 +166,19 @@ export default class CommunitySettings extends React.Component {
   }
 
   toggleSection = (section, open) => {
+    const { dispatch, community: { slug } } = this.props
     let { expand } = this.state
+    if (open || !expand[section]) {
+      switch (section) {
+        case 'access':
+          dispatch(fetchInvitations(slug))
+          dispatch(fetchJoinRequests(slug))
+          break
+        case 'moderators':
+          dispatch(fetchCommunityModerators(slug))
+          break
+      }
+    }
     this.setState({expand: {...expand, [section]: open || !expand[section]}})
   }
 
@@ -208,11 +224,12 @@ export default class CommunitySettings extends React.Component {
   }
 
   render () {
-    const { community } = this.props
+    const { community, dispatch, invitations, joinRequests } = this.props
     const { avatar_url, banner_url } = community
     const { editing, edited, errors, expand } = this.state
     const labelProps = {expand, toggle: this.toggleSection}
-    const { is_admin } = this.context.currentUser
+    const { currentUser } = this.context
+    const { is_admin } = currentUser
     const slackerror = this.props.location.query.slackerror
     const slugNotUnique = get('slug.unique', this.props.validation) === false
     const joinUrl = communityJoinUrl(community)
@@ -388,6 +405,15 @@ export default class CommunitySettings extends React.Component {
             <input type='checkbox' checked={community.settings.all_can_invite} onChange={() => this.toggle('settings.all_can_invite')}/>
           </div>
         </div>
+        {hasFeature(currentUser, 'REQUEST_TO_JOIN_COMMUNITY') && <div className='section-item'>
+          <div className='half-column'>
+            <label>Allow people to discover and ask to join this community</label>
+            <p className='summary'>If this is enabled, non-members will be able to request to join this community. You can see <A to='/todo'>pending requests here</A>.</p>
+          </div>
+          <div className='half-column right-align'>
+            <input type='checkbox' checked={community.settings.discoverable} onChange={() => this.toggle('settings.discoverable')}/>
+          </div>
+        </div>}
         <div className='section-item'>
           <div className='full-column'>
             <label>Invitation code link</label>
@@ -395,6 +421,29 @@ export default class CommunitySettings extends React.Component {
             <p className='summary'>You can share this link to allow people to join your community without having to invite them individually.</p>
           </div>
         </div>
+        <div className='section-item'>
+          <div className='full-column'>
+            <label>Invite members</label>
+            <p><button onClick={() => dispatch(showModal('invite'))}>Invite members</button></p>
+            <p className='summary'>Use this button to send email invitations to people you&#39;d like in your communtiy.</p>
+          </div>
+        </div>
+        {!isEmpty(invitations) &&
+          <div className='section-item'>
+            <div className='full-column'>
+              <label>Sent Invitations</label>
+              <p className='summary'>These are people you have already sent invitations to.</p>
+              <InvitationList id={community.slug}/>
+            </div>
+          </div>}
+        {hasFeature(currentUser, 'REQUEST_TO_JOIN_COMMUNITY') && !isEmpty(joinRequests) &&
+          <div className='section-item'>
+            <div className='full-column'>
+              <label>Pending requests</label>
+              <p className='summary'>These are people who have requested to join. Use the button to approve.</p>
+              <JoinRequestList id={community.slug}/>
+            </div>
+          </div>}
       </div>}
 
       <SectionLabel name='moderators' {...labelProps}>Moderation</SectionLabel>
@@ -407,11 +456,13 @@ export default class CommunitySettings extends React.Component {
               edit or delete other members&#39; posts.
             </p>
 
-            {community.moderators.map(moderator => <div className='moderator' key={moderator.id}>
-              <a><span className='avatar' style={{backgroundImage: `url(${moderator.avatar_url})`}}></span></a>
-              <a className='name'>{moderator.name}</a>
-              <a className='close' onClick={() => this.removeModerator(moderator.id)}>&times;</a>
-            </div>)}
+            {community.moderators
+              ? community.moderators.map(moderator => <div className='moderator' key={moderator.id}>
+                  <a><span className='avatar' style={{backgroundImage: `url(${moderator.avatar_url})`}}></span></a>
+                  <a className='name'>{moderator.name}</a>
+                  <a className='close' onClick={() => this.removeModerator(moderator.id)}>&times;</a>
+                </div>)
+              : <div className='moderator'>Loading Moderators...</div>}
 
             <p>Search for members to grant moderator powers:</p>
             <PersonChooser

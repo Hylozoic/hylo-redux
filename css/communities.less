@@ -89,8 +89,20 @@
   }
 }
 
-#community-invitations {
-  margin-top: 25px;
+.person-table {
+
+  .summary {
+    margin-top: 25px;
+    border-top: 1px solid @post-border;
+    text-align: right;
+    padding: @modal-row-side-padding;
+  }
+
+  .avatar {
+    vertical-align: middle;
+    display: inline-block;
+    margin-right: 10px;
+  }
 
   table {
     width: 100%;
@@ -115,19 +127,6 @@
 
   tr.even td {
     background-color: @faint-gray-bg;
-  }
-
-  .avatar {
-    vertical-align: middle;
-    display: inline-block;
-    margin-right: 10px;
-  }
-
-  .summary {
-    margin-top: 25px;
-    border-top: 1px solid @post-border;
-    text-align: right;
-    padding: @modal-row-side-padding;
   }
 
   .mobile({

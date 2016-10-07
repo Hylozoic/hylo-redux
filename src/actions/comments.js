@@ -66,11 +66,11 @@ export function updateCommentEditor (id, text, newComment) {
   }
 }
 
-export function removeComment (id) {
+export function removeComment (id, postId) {
   return {
     type: REMOVE_COMMENT,
     payload: {api: true, path: `/noo/comment/${id}`, method: 'DELETE'},
-    meta: {id}
+    meta: {id, postId}
   }
 }
 

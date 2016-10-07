@@ -10,6 +10,7 @@ import {
   FIND_OR_CREATE_THREAD,
   FOLLOW_POST_PENDING,
   PIN_POST_PENDING,
+  REMOVE_COMMENT,
   REMOVE_POST,
   UPDATE_POST,
   VOTE_ON_POST_PENDING
@@ -91,6 +92,12 @@ export default function (state = {}, action) {
           ...withFollower[id],
           numComments: (get('comments.length', post) || 0) + 1
         }
+      }
+    case REMOVE_COMMENT:
+      post = state[meta.postId]
+      return {
+        ...state,
+        [post.id]: {...post, numComments: post.numComments - 1}
       }
     case FETCH_PERSON:
       const newPosts = compact([payload.recent_request, payload.recent_offer])

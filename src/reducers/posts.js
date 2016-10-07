@@ -84,6 +84,10 @@ export default function (state = {}, action) {
     case FOLLOW_POST_PENDING:
       return addOrRemovePersonId(state, id, personId, 'follower_ids')
     case APPEND_COMMENT:
+      return {
+        ...state,
+        [id]: {...state[id], numComments: (post.numComments || 0) + 1}
+      }
     case CREATE_COMMENT:
       const withFollower = addPersonId(state, id, payload.user_id, 'follower_ids')
       return {

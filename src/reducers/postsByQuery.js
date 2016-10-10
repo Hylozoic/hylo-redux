@@ -6,7 +6,8 @@ import { appendUniq } from './util'
 import {
   CREATE_POST,
   CLEAR_CACHE,
-  FETCH_POSTS
+  FETCH_POSTS,
+  FIND_OR_CREATE_THREAD
 } from '../actions'
 
 const matchesCommunity = (key, post, tags) => {
@@ -46,6 +47,11 @@ export default function (state = {}, action) {
         return {...state, [payload.id]: null}
       }
       break
+    case FIND_OR_CREATE_THREAD:
+      return {
+        ...state,
+        threads: [payload.id, ...(state.threads || [])]
+      }
   }
 
   return state

@@ -44,7 +44,6 @@ export default class DirectMessageModal extends React.Component {
   onSelect (userId, userName) {
     const { dispatch } = this.context
     dispatch(showDirectMessage(userId, userName))
-    dispatch(findOrCreateThread(userId))
   }
 
   render () {

@@ -1,5 +1,6 @@
 import React from 'react'
 import { filter } from 'lodash'
+import { get } from 'lodash/fp'
 const { array, func, object } = React.PropTypes
 import cx from 'classnames'
 import MessageSection from './MessageSection'
@@ -28,15 +29,30 @@ class Thread extends React.Component {
   }
 
   componentDidMount () {
-    const { post: { id } } = this.props
-    const { dispatch } = this.context
     this.socket = getSocket()
-    this.socket.post(socketUrl(`/noo/post/${id}/subscribe`))
-    this.socket.on('commentAdded', c => dispatch(appendComment(id, c)))
+    this.subscribe(this.props.post.id)
   }
 
   componentWillUnmount () {
-    const { post: { id } } = this.props
+    this.unsubscribe(this.props.post.id)
+  }
+
+  componentWillReceiveProps (nextProps) {
+    const oldId = get('post.id', this.props)
+    const newId = get('post.id', nextProps)
+    if (newId !== oldId) {
+      if (oldId) this.unsubscribe(oldId)
+      this.subscribe(newId)
+    }
+  }
+
+  subscribe (id) {
+    this.socket.post(socketUrl(`/noo/post/${id}/subscribe`))
+    this.socket.on('commentAdded', c =>
+      this.context.dispatch(appendComment(id, c)))
+  }
+
+  unsubscribe (id) {
     if (this.socket) {
       this.socket.post(socketUrl(`/noo/post/${id}/unsubscribe`))
       this.socket.off('commentAdded')

@@ -1,5 +1,5 @@
 import React from 'react'
-import { prefetch } from 'react-fetcher'
+import { prefetch, defer } from 'react-fetcher'
 import { connect } from 'react-redux'
 import { pick } from 'lodash/fp'
 import { FETCH_POST } from '../actions'
@@ -11,9 +11,10 @@ import Thread from '../components/Thread'
 import { denormalizedPost, getComments, getPost } from '../models/post'
 const { array, bool, func, object, string } = React.PropTypes
 
-@prefetch(({ store, dispatch, params: { id }, query }) =>
+@prefetch(({ dispatch, params: { id } }) =>
   dispatch(fetchPost(id))
   .then(({ error, payload }) => !error && payload && fetchComments(id)))
+@defer(({ dispatch, params: { id } }) => dispatch(updatePostReadTime(id)))
 @connect((state, { params: { id } }) => {
   const post = getPost(id, state)
   return {
@@ -37,11 +38,6 @@ export default class ThreadPage extends React.Component {
   static contextTypes = {
     isMobile: bool,
     currentUser: object
-  }
-
-  componentDidMount () {
-    const { dispatch, post } = this.props
-    return dispatch(updatePostReadTime(post.id))
   }
 
   getChildContext () {

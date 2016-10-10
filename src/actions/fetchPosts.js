@@ -16,6 +16,7 @@ export function fetchPosts (opts) {
   switch (subject) {
     case 'threads':
       path = '/noo/threads'
+      Object.assign(queryParams, {votes: false, reads: true})
       break
     case 'community':
       if (id === 'all' && tag) {

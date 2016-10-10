@@ -1,7 +1,7 @@
 import React from 'react'
 import { connect } from 'react-redux'
-import { find } from 'lodash'
-import { flow, map, sortBy } from 'lodash/fp'
+import { isEmpty } from 'lodash'
+import { compact, flow, map, sortBy } from 'lodash/fp'
 import cx from 'classnames'
 import { threadUrl } from '../routes'
 import { FETCH_POSTS, showDirectMessage } from '../actions'
@@ -17,11 +17,11 @@ const getThreads = state =>
   flow(
     map(id => {
       const post = getPost(id, state)
-      return {
-        ...denormalizedPost(post, state),
-        comments: getComments(post, state)
-      }
+      const comments = getComments(post, state)
+      if (isEmpty(comments)) return
+      return {...denormalizedPost(post, state), comments}
     }),
+    compact,
     sortBy(t => -1 * new Date(t.updated_at))
   )(state.postsByQuery.threads)
 
@@ -50,11 +50,10 @@ export const ThreadsDropdown = connect(
   </Dropdown>
 })
 
-const Thread = ({ thread, latestComment }, { currentUser, dispatch }) => {
-  const comment = thread.comments[thread.comments.length - 1]
-  const lastRead = find(currentUser.last_reads, l => l.post_id === thread.id.toString())
-  const unread = comment && lastRead && new Date(lastRead.last_read_at) < new Date(comment.created_at)
-  const { followers } = thread
+const Thread = ({ thread }, { currentUser, dispatch }) => {
+  const { comments, followers, last_read_at, updated_at } = thread
+  const comment = comments[comments.length - 1]
+  const unread = !last_read_at || new Date(updated_at) > new Date(last_read_at)
   const follower = followers.find(f => f.id !== currentUser.id)
   if (!comment || !follower) return null
 

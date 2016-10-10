@@ -1,10 +1,10 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { find } from 'lodash'
-import { map } from 'lodash/fp'
+import { flow, map, sortBy } from 'lodash/fp'
 import cx from 'classnames'
 import { threadUrl } from '../routes'
-import { FETCH_POSTS, markThreadRead, showDirectMessage } from '../actions'
+import { FETCH_POSTS, showDirectMessage } from '../actions'
 import { fetchPosts } from '../actions/fetchPosts'
 import { getComments, getPost, denormalizedPost } from '../models/post'
 const { func, object } = React.PropTypes
@@ -13,19 +13,23 @@ import { NonLinkAvatar } from '../components/Avatar'
 import Dropdown from '../components/Dropdown'
 import Icon from '../components/Icon'
 
+const getThreads = state =>
+  flow(
+    map(id => {
+      const post = getPost(id, state)
+      return {
+        ...denormalizedPost(post, state),
+        comments: getComments(post, state)
+      }
+    }),
+    sortBy(t => -1 * new Date(t.updated_at))
+  )(state.postsByQuery.threads)
+
 export const ThreadsDropdown = connect(
-  (state, props) => {
-    return {
-      threads: map(id => {
-        const post = getPost(id, state)
-        return {
-          ...denormalizedPost(post, state),
-          comments: getComments(post, state)
-        }
-      }, state.postsByQuery.threads),
-      pending: state.pending[FETCH_POSTS]
-    }
-  }
+  (state, props) => ({
+    threads: getThreads(state),
+    pending: state.pending[FETCH_POSTS]
+  })
 )(props => {
   const { threads, dispatch, pending, newCount } = props
   return <Dropdown alignRight rivalrous='nav' className='thread-list'
@@ -47,7 +51,7 @@ export const ThreadsDropdown = connect(
 })
 
 const Thread = ({ thread, latestComment }, { currentUser, dispatch }) => {
-  const comment = thread.comments[0]
+  const comment = thread.comments[thread.comments.length - 1]
   const lastRead = find(currentUser.last_reads, l => l.post_id === thread.id.toString())
   const unread = comment && lastRead && new Date(lastRead.last_read_at) < new Date(comment.created_at)
   const { followers } = thread

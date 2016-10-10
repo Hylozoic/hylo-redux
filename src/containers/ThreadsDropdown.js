@@ -44,7 +44,7 @@ export const ThreadsDropdown = connect(
       </div>
     </li>}
     {pending && <li className='loading'>Loading...</li>}
-    {threads.slice(0, 20).map(thread => <li key={thread.id}>
+    {threads.map(thread => <li key={thread.id}>
       <Thread thread={thread}/>
     </li>)}
   </Dropdown>

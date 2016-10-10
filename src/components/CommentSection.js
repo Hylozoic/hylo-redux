@@ -1,5 +1,6 @@
 import React from 'react'
-import { isEmpty, sortBy, values } from 'lodash'
+import { isEmpty } from 'lodash'
+import { sortBy } from 'lodash/fp'
 const { array, bool, func, object } = React.PropTypes
 import cx from 'classnames'
 import CommentForm from './CommentForm'
@@ -49,7 +50,7 @@ export default class CommentSection extends React.Component {
     const community = this.context.community || post.communities[0]
 
     if (!comments) comments = []
-    comments = sortBy(comments, c => c.created_at)
+    comments = sortBy('created_at', comments)
     if (truncate) comments = comments.slice(-3)
 
     return <div className={cx('comments-section post-section', {empty: isEmpty(comments)})}>

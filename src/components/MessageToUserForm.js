@@ -1,14 +1,15 @@
 import React from 'react'
-import { get, debounce, throttle } from 'lodash'
+import { get } from 'lodash'
 import { connect } from 'react-redux'
 import { createComment } from '../actions/comments'
-import { findOrCreateThread, updateMessageEditor } from '../actions/threads'
+import { updateMessageEditor } from '../actions/threads'
 import { textLength } from '../util/text'
 import { onCmdOrCtrlEnter } from '../util/textInput'
 import AutosizingTextarea from './AutosizingTextarea'
 import cx from 'classnames'
-const NEW_MESSAGE_ID = 'new'  
-var { array, bool, func, object, string } = React.PropTypes
+var { bool, func, object, string } = React.PropTypes
+
+const NEW_MESSAGE_ID = 'new'
 
 @connect((state, { userId }) => {
   return ({
@@ -69,9 +70,7 @@ export default class MessageToUserForm extends React.Component {
   }
 
   render () {
-    const {
-      currentUser, userId, text, newText
-    } = this.props
+    const { userId, text, newText } = this.props
     const { modifierKey } = this.state
     const { isMobile, dispatch } = this.context
     const updateStore = text => dispatch(updateMessageEditor(userId || NEW_MESSAGE_ID, text))
@@ -99,4 +98,3 @@ export default class MessageToUserForm extends React.Component {
     </form>
   }
 }
-

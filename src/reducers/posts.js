@@ -13,11 +13,12 @@ import {
   REMOVE_COMMENT,
   REMOVE_POST,
   UPDATE_POST,
+  UPDATE_POST_READ_TIME,
   VOTE_ON_POST_PENDING
 } from '../actions'
-import { compact, omit, find, some, without, map } from 'lodash'
+import { compact, omit, find, some, without, map, uniq } from 'lodash'
 import { get, isNull, omitBy } from 'lodash/fp'
-import { addPersonId, addOrRemovePersonId, mergeList } from './util'
+import { addOrRemovePersonId, mergeList } from './util'
 
 const normalize = (post) => omitBy(isNull, {
   ...post,
@@ -57,11 +58,18 @@ const changeEventResponse = (post, response, user) => {
   return {...post, ...{ responders }}
 }
 
+const updatePostProps = (state, postId, props) => {
+  return {
+    ...state,
+    [postId]: {...state[postId], ...props}
+  }
+}
+
 export default function (state = {}, action) {
   const { error, type, payload, meta } = action
   if (error) return state
 
-  let { id, personId } = meta || {}
+  let { id, personId, postId } = meta || {}
   let post = state[id]
 
   switch (type) {
@@ -84,25 +92,20 @@ export default function (state = {}, action) {
     case FOLLOW_POST_PENDING:
       return addOrRemovePersonId(state, id, personId, 'follower_ids')
     case APPEND_COMMENT:
-      return {
-        ...state,
-        [id]: {...state[id], numComments: (post.numComments || 0) + 1}
-      }
+      return updatePostProps(state, id, {
+        numComments: (post.numComments || 0) + 1,
+        updated_at: new Date()
+      })
     case CREATE_COMMENT:
-      const withFollower = addPersonId(state, id, payload.user_id, 'follower_ids')
-      return {
-        ...withFollower,
-        [id]: {
-          ...withFollower[id],
-          numComments: (post.numComments || 0) + 1
-        }
-      }
+      return updatePostProps(state, id, {
+        follower_ids: uniq(post.follower_ids.concat(payload.user_id)),
+        numComments: (post.numComments || 0) + 1,
+        updated_at: new Date()
+      })
     case REMOVE_COMMENT:
-      post = state[meta.postId]
-      return {
-        ...state,
-        [post.id]: {...post, numComments: post.numComments - 1}
-      }
+      return updatePostProps(state, postId, {
+        numComments: state[meta.postId].numComments - 1
+      })
     case FETCH_PERSON:
       const newPosts = compact([payload.recent_request, payload.recent_offer])
       return mergeList(state, newPosts.map(normalize), 'id')
@@ -120,13 +123,11 @@ export default function (state = {}, action) {
         }
       }
     case COMPLETE_POST_PENDING:
-      return {
-        ...state,
-        [id]: {
-          ...post,
-          fulfilled_at: post.fulfilled_at ? null : new Date(0)
-        }
-      }
+      return updatePostProps(state, id, {
+        fulfilled_at: post.fulfilled_at ? null : new Date()
+      })
+    case UPDATE_POST_READ_TIME:
+      return updatePostProps(state, id, {last_read_at: new Date()})
   }
   return state
 }

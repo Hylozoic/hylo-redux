@@ -1,4 +1,4 @@
-import { map, uniq } from 'lodash/fp'
+import { map, sortedUniq } from 'lodash/fp'
 import { appendUniq } from './util'
 import {
   APPEND_COMMENT,
@@ -22,7 +22,7 @@ export default function (state = {}, action) {
       const commentsByPost = payload.posts.reduce((acc, post) => {
         if (post.comments) {
           const existing = state[post.id] || []
-          acc[post.id] = uniq(existing.concat(map('id', post.comments)))
+          acc[post.id] = sortedUniq(existing.concat(map('id', post.comments)).sort())
         }
         return acc
       }, {})
@@ -31,7 +31,6 @@ export default function (state = {}, action) {
       if (!payload.comments) return state
       return {...state, [payload.id]: payload.comments.map(c => c.id)}
     case CREATE_COMMENT:
-      return appendUniq(state, meta.id, [payload.id])
     case APPEND_COMMENT:
       return appendUniq(state, meta.id, [payload.id])
   }

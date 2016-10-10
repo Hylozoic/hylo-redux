@@ -1,7 +1,7 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { get } from 'lodash'
-import { navigate, showDirectMessage } from '../actions'
+import { closeModal, navigate, showDirectMessage } from '../actions'
 import { findOrCreateThread } from '../actions/threads'
 import { threadUrl } from '../routes'
 import { Modal } from '../components/Modal'
@@ -55,6 +55,7 @@ export default class DirectMessageModal extends React.Component {
 
     const onComplete = () => {
       dispatch(navigate(threadUrl(postId)))
+      dispatch(closeModal())
       onCancel()
     }
 

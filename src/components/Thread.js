@@ -7,18 +7,18 @@ import MessageSection from './MessageSection'
 import MessageForm from './MessageForm'
 import PeopleTyping from './PeopleTyping'
 import { connect } from 'react-redux'
-import { compose } from 'redux'
 import { appendComment } from '../actions/comments'
+import { updatePostReadTime } from '../actions/posts'
 import { getComments } from '../models/post'
 import { getSocket, socketUrl } from '../client/websockets'
 
-class Thread extends React.Component {
+@connect((state, { post }) => ({
+  messages: getComments(post, state)
+}))
+export default class Thread extends React.Component {
   static propTypes = {
     post: object,
-    messages: array
-  }
-
-  static contextTypes = {
+    messages: array,
     dispatch: func
   }
 
@@ -30,7 +30,9 @@ class Thread extends React.Component {
 
   componentDidMount () {
     this.socket = getSocket()
-    this.subscribe(this.props.post.id)
+    const { post } = this.props
+    this.subscribe(post.id)
+    this.markAsRead(post)
   }
 
   componentWillUnmount () {
@@ -43,13 +45,19 @@ class Thread extends React.Component {
     if (newId !== oldId) {
       if (oldId) this.unsubscribe(oldId)
       this.subscribe(newId)
+      this.markAsRead(nextProps.post)
     }
+  }
+
+  markAsRead (post) {
+    const { dispatch, post: { id } } = this.props
+    dispatch(updatePostReadTime(id))
   }
 
   subscribe (id) {
     this.socket.post(socketUrl(`/noo/post/${id}/subscribe`))
     this.socket.on('commentAdded', c =>
-      this.context.dispatch(appendComment(id, c)))
+      this.props.dispatch(appendComment(id, c)))
   }
 
   unsubscribe (id) {
@@ -72,14 +80,6 @@ class Thread extends React.Component {
   }
 }
 
-export default compose(
-  connect((state, { post }) => {
-    return {
-      messages: getComments(post, state)
-    }
-  })
-)(Thread)
-
 export const Header = (props, { currentUser, post }) => {
   const followers = post.followers
   const gt2 = followers.length - 2
@@ -93,7 +93,4 @@ export const Header = (props, { currentUser, post }) => {
     <div className='title'>{title}</div>
   </div>
 }
-Header.contextTypes = {
-  post: object,
-  currentUser: object
-}
+Header.contextTypes = {post: object, currentUser: object}

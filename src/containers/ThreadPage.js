@@ -1,10 +1,10 @@
 import React from 'react'
-import { prefetch, defer } from 'react-fetcher'
+import { prefetch } from 'react-fetcher'
 import { connect } from 'react-redux'
 import { pick } from 'lodash/fp'
 import { FETCH_POST } from '../actions'
 import { fetchComments } from '../actions/comments'
-import { fetchPost, updatePostReadTime } from '../actions/posts'
+import { fetchPost } from '../actions/posts'
 import { findError } from '../actions/util'
 import AccessErrorMessage from '../components/AccessErrorMessage'
 import Thread from '../components/Thread'
@@ -14,7 +14,6 @@ const { array, bool, func, object, string } = React.PropTypes
 @prefetch(({ dispatch, params: { id } }) =>
   dispatch(fetchPost(id))
   .then(({ error, payload }) => !error && payload && fetchComments(id)))
-@defer(({ dispatch, params: { id } }) => dispatch(updatePostReadTime(id)))
 @connect((state, { params: { id } }) => {
   const post = getPost(id, state)
   return {

@@ -108,11 +108,13 @@ describe('people', () => {
       }
 
       let state = {
-        a: {id: 'a', foo: 'b', baz: 'd'}
+        a: {id: 'a', foo: 'b', baz: 'd'},
+        current: null
       }
 
       let expectedState = {
-        a: {id: 'a', foo: 'b', bar: 'c', baz: 'd'}
+        a: {id: 'a', foo: 'b', bar: 'c', baz: 'd'},
+        current: null
       }
 
       expect(people(state, action)).to.deep.equal(expectedState)

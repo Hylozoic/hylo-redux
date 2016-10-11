@@ -1,3 +1,4 @@
+import { composeReducers } from './util'
 import { filter, get, mergeWith, find, indexOf } from 'lodash'
 import { isNull, omitBy } from 'lodash/fp'
 import { debug } from '../util/logging'
@@ -70,22 +71,12 @@ const normalizeMembership = membership => omitBy(isNull, {
   left_nav_tags: null
 })
 
-export default function (state = {}, action) {
+const peopleReducer = (state = {}, action) => {
   const { type, error, payload, meta } = action
   if (error) return state
 
   // the cases where there isn't a payload
   switch (type) {
-    case LOGOUT:
-      let currentUser = state.current
-      if (!currentUser) return state
-
-      debug('un-caching person:', currentUser.id)
-      return {
-        ...state,
-        current: null,
-        [currentUser.id]: null
-      }
     case UPDATE_USER_SETTINGS_PENDING:
       let { params } = meta
       const newCurrentUser = updateCurrentUser(state.current, params)
@@ -166,14 +157,34 @@ export default function (state = {}, action) {
         }
       }
       break
-    case FETCH_LIVE_STATUS:
-      if (!state.current) return state
-      const { new_notification_count } = payload
-      return {
-        ...state,
-        current: {...state.current, new_notification_count}
-      }
+
   }
 
   return state
 }
+
+const currentUserReducer = (state = null, action) => {
+  const { error, payload, type } = action
+  if (error) return state
+
+  switch (type) {
+    case LOGOUT:
+      return null
+    case FETCH_LIVE_STATUS:
+      const { new_notification_count } = payload
+      return {...state, new_notification_count}
+  }
+
+  return state
+}
+
+export default composeReducers(
+  peopleReducer,
+  (state = {}, action) => {
+    const newState = currentUserReducer(state.current, action)
+    if (newState !== state.current) {
+      return {...state, current: newState}
+    }
+    return state
+  }
+)

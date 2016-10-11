@@ -20,7 +20,7 @@ describe('people', () => {
     it('removes the membership from current user', () => {
       let action = {
         type: LEAVE_COMMUNITY_PENDING,
-        meta: {communityId: 3}
+        meta: {id: 3}
       }
 
       let state = {
@@ -42,14 +42,10 @@ describe('people', () => {
         meta: {params: {email: 'joe@bar.com'}}
       }
 
-      let state = {
-        current: user1,
-        [user1.id]: user1
-      }
+      let state = {current: user1}
 
       let expectedState = {
-        current: {...user1, email: 'joe@bar.com'},
-        [user1.id]: {...user1, email: 'joe@bar.com'}
+        current: {...user1, email: 'joe@bar.com'}
       }
 
       expect(people(state, action)).to.deep.equal(expectedState)
@@ -61,14 +57,10 @@ describe('people', () => {
         meta: {params: {tags: ['foo', 'bar', 'baz', 'klunk']}}
       }
 
-      const state = {
-        current: user1,
-        [user1.id]: user1
-      }
+      const state = {current: user1}
 
       const expected = {
-        current: {...user1, tags: ['foo', 'bar', 'baz', 'klunk']},
-        [user1.id]: {...user1, tags: ['foo', 'bar', 'baz', 'klunk']}
+        current: {...user1, tags: ['foo', 'bar', 'baz', 'klunk']}
       }
 
       expect(people(state, action)).to.deep.equal(expected)
@@ -80,14 +72,10 @@ describe('people', () => {
         meta: {params: {tags: ['foo', 'bar']}}
       }
 
-      const state = {
-        current: user1,
-        [user1.id]: user1
-      }
+      const state = {current: user1}
 
       const expected = {
-        current: {...user1, tags: ['foo', 'bar']},
-        [user1.id]: {...user1, tags: ['foo', 'bar']}
+        current: {...user1, tags: ['foo', 'bar']}
       }
 
       const newState = people(state, action)

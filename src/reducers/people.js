@@ -75,46 +75,6 @@ const peopleReducer = (state = {}, action) => {
   const { type, error, payload, meta } = action
   if (error) return state
 
-  // the cases where there isn't a payload
-  switch (type) {
-    case UPDATE_USER_SETTINGS_PENDING:
-      let { params } = meta
-      const newCurrentUser = updateCurrentUser(state.current, params)
-      return {
-        ...state,
-        current: newCurrentUser,
-        [state.current.id]: newCurrentUser
-      }
-    case LEAVE_COMMUNITY_PENDING:
-      let memberships = filter(state.current.memberships, m => m.community_id !== meta.communityId)
-      return {
-        ...state,
-        current: {...state.current, memberships}
-      }
-    case UPDATE_MEMBERSHIP_SETTINGS_PENDING:
-      return {
-        ...state,
-        current: {
-          ...state.current,
-          memberships: updateOneMembershipsSettings(
-            state.current.memberships,
-            meta.communityId,
-            meta.params.settings
-          )
-        }
-      }
-    case UPDATE_COMMUNITY_SETTINGS_PENDING:
-      if (meta.params.active === false) {
-        memberships = filter(state.current.memberships, m => m.community_id !== meta.id)
-        return {
-          ...state,
-          current: {...state.current, memberships}
-        }
-      }
-  }
-
-  if (!payload) return state
-
   switch (type) {
     case ADD_DATA_TO_STORE:
       if (meta.bucket === 'people') {
@@ -130,49 +90,57 @@ const peopleReducer = (state = {}, action) => {
     case LOGIN:
     case SIGNUP:
     case FETCH_CURRENT_USER:
-      debug('caching person:', payload.id)
-      const normalized = normalize(payload)
-      return {
-        ...state,
-        [payload.id]: normalized,
-        current: normalized
-      }
+      if (payload) return {...state, [payload.id]: normalize(payload)}
+      break
     case FETCH_PEOPLE:
       return mergeList(state, payload.items.map(normalize), 'id')
-    case CREATE_COMMUNITY:
-    case JOIN_COMMUNITY_WITH_CODE:
-    case USE_INVITATION:
-      return {
-        ...state,
-        current: {...state.current, memberships: [
-          normalizeMembership(payload),
-          ...state.current.memberships
-        ]}
-      }
-    case FETCH_ACTIVITY:
-      if (meta.resetCount) {
-        return {
-          ...state,
-          current: {...state.current, new_notification_count: 0}
-        }
-      }
-      break
-
   }
 
   return state
 }
 
 const currentUserReducer = (state = null, action) => {
-  const { error, payload, type } = action
+  const { error, payload, type, meta } = action
   if (error) return state
+
+  if (type === LEAVE_COMMUNITY_PENDING ||
+    (type === UPDATE_COMMUNITY_SETTINGS_PENDING && meta.params.active === false)) {
+    return {
+      ...state,
+      memberships: filter(state.memberships, m => m.community_id !== meta.id)
+    }
+  }
 
   switch (type) {
     case LOGOUT:
       return null
+    case LOGIN:
+    case SIGNUP:
+    case FETCH_CURRENT_USER:
+      return payload ? normalize(payload) : null
+    case CREATE_COMMUNITY:
+    case JOIN_COMMUNITY_WITH_CODE:
+    case USE_INVITATION:
+      return {
+        ...state,
+        memberships: [normalizeMembership(payload), ...state.memberships]
+      }
+    case FETCH_ACTIVITY:
+      return meta.resetCount ? {...state, new_notification_count: 0} : state
     case FETCH_LIVE_STATUS:
       const { new_notification_count } = payload
       return {...state, new_notification_count}
+    case UPDATE_MEMBERSHIP_SETTINGS_PENDING:
+      return {
+        ...state,
+        memberships: updateOneMembershipsSettings(
+          state.memberships,
+          meta.communityId,
+          meta.params.settings
+        )
+      }
+    case UPDATE_USER_SETTINGS_PENDING:
+      return updateCurrentUser(state, meta.params)
   }
 
   return state

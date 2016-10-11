@@ -145,11 +145,11 @@ export function joinCommunityWithCode (code, tagName) {
   }
 }
 
-export function leaveCommunity (communityId) {
+export function leaveCommunity (id) {
   return {
     type: LEAVE_COMMUNITY,
-    payload: {api: true, path: `/noo/membership/${communityId}`, method: 'DELETE'},
-    meta: {communityId, optimistic: true}
+    payload: {api: true, path: `/noo/membership/${id}`, method: 'DELETE'},
+    meta: {id, optimistic: true}
   }
 }
 

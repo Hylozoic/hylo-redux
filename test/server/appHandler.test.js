@@ -55,11 +55,11 @@ describe('appHandler', () => {
       return appHandler(req, res)
       .then(() => {
         checkError(res)
-        expect(res.status).to.have.been.called.with(200)
-        expect(res.send).to.have.been.called
         expect(res.body).to.contain('<!DOCTYPE html>')
         expect(res.body).to.contain('Log in')
         expect(res.body).to.match(/<a .*href="\/signup" .*>Sign up<\/a>/)
+        expect(res.status).to.have.been.called.with(200)
+        expect(res.send).to.have.been.called
       })
     })
 

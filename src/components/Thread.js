@@ -7,10 +7,8 @@ import MessageSection from './MessageSection'
 import MessageForm from './MessageForm'
 import PeopleTyping from './PeopleTyping'
 import { connect } from 'react-redux'
-import { appendComment } from '../actions/comments'
 import { updatePostReadTime } from '../actions/posts'
 import { getComments } from '../models/post'
-import { getSocket, socketUrl } from '../client/websockets'
 
 @connect((state, { post }) => ({
   messages: getComments(post, state)
@@ -29,22 +27,14 @@ export default class Thread extends React.Component {
   }
 
   componentDidMount () {
-    this.socket = getSocket()
     const { post } = this.props
-    this.subscribe(post.id)
     this.markAsRead(post)
-  }
-
-  componentWillUnmount () {
-    this.unsubscribe(this.props.post.id)
   }
 
   componentWillReceiveProps (nextProps) {
     const oldId = get('post.id', this.props)
     const newId = get('post.id', nextProps)
     if (newId !== oldId) {
-      if (oldId) this.unsubscribe(oldId)
-      this.subscribe(newId)
       this.markAsRead(nextProps.post)
     }
   }
@@ -52,19 +42,6 @@ export default class Thread extends React.Component {
   markAsRead (post) {
     const { dispatch, post: { id } } = this.props
     dispatch(updatePostReadTime(id))
-  }
-
-  subscribe (id) {
-    this.socket.post(socketUrl(`/noo/post/${id}/subscribe`))
-    this.socket.on('commentAdded', c =>
-      this.props.dispatch(appendComment(id, c)))
-  }
-
-  unsubscribe (id) {
-    if (this.socket) {
-      this.socket.post(socketUrl(`/noo/post/${id}/unsubscribe`))
-      this.socket.off('commentAdded')
-    }
   }
 
   render () {

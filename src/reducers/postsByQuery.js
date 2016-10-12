@@ -4,6 +4,7 @@ import qs from 'querystring'
 import { appendUniq } from './util'
 
 import {
+  APPEND_THREAD,
   CREATE_POST,
   CLEAR_CACHE,
   FETCH_POSTS,
@@ -47,6 +48,7 @@ export default function (state = {}, action) {
         return {...state, [payload.id]: null}
       }
       break
+    case APPEND_THREAD:
     case FIND_OR_CREATE_THREAD:
       return {
         ...state,

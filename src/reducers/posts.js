@@ -2,6 +2,7 @@ import {
   CHANGE_EVENT_RESPONSE_PENDING,
   COMPLETE_POST_PENDING,
   APPEND_COMMENT,
+  APPEND_THREAD,
   CREATE_COMMENT,
   CREATE_POST,
   FETCH_POST,
@@ -75,6 +76,7 @@ export default function (state = {}, action) {
   switch (type) {
     case FETCH_POSTS:
       return mergeList(state, payload.posts.map(normalize), 'id')
+    case APPEND_THREAD:
     case CREATE_POST:
     case FETCH_POST:
     case FIND_OR_CREATE_THREAD:

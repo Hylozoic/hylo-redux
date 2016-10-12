@@ -2,6 +2,7 @@ import { map, sortedUniq } from 'lodash/fp'
 import { appendUniq } from './util'
 import {
   APPEND_COMMENT,
+  APPEND_THREAD,
   FETCH_COMMENTS,
   FETCH_POST,
   FETCH_POSTS,
@@ -27,6 +28,7 @@ export default function (state = {}, action) {
         return acc
       }, {})
       return {...state, ...commentsByPost}
+    case APPEND_THREAD:
     case FETCH_POST:
       if (!payload.comments) return state
       return {...state, [payload.id]: payload.comments.map(c => c.id)}

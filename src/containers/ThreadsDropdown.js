@@ -4,7 +4,9 @@ import { isEmpty } from 'lodash'
 import { compact, flow, map, sortBy } from 'lodash/fp'
 import cx from 'classnames'
 import { threadUrl } from '../routes'
-import { FETCH_POSTS, showDirectMessage, updateUserSettings } from '../actions'
+import { FETCH_POSTS, incrementUnreadThreads, showDirectMessage, updateUserSettings } from '../actions'
+import { appendComment } from '../actions/comments'
+import { appendThread } from '../actions/threads'
 import { fetchPosts } from '../actions/fetchPosts'
 import { getComments, getPost, denormalizedPost } from '../models/post'
 const { number, bool, string, array, func, object } = React.PropTypes
@@ -49,8 +51,8 @@ export class ThreadsDropdown extends React.Component {
     const { dispatch } = this.context
     this.socket = getSocket()
     this.socket.post(socketUrl('/noo/threads/subscribe'))
-    this.socket.on('newThread', t => console.log(t))
-    this.socket.on('messageAdded', m => console.log(m))
+    this.socket.on('newThread', this.newThread.bind(this))
+    this.socket.on('messageAdded', this.messageAdded.bind(this))
   }
 
   componentWillUnmount () {
@@ -59,6 +61,18 @@ export class ThreadsDropdown extends React.Component {
       this.socket.off('newThread')
       this.socket.off('messageAdded')
     }
+  }
+
+  newThread (thread) {
+    const { dispatch, currentUser } = this.context
+    dispatch(appendThread(thread))
+    dispatch(incrementUnreadThreads()) 
+    this.forceUpdate()
+  }
+
+  messageAdded (data) {
+    this.context.dispatch(appendComment(data.postId, data.message))
+    // if the threads dropdown isn't open, increment the unread count
   }
 
   render () {

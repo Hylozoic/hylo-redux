@@ -7,6 +7,7 @@ export const ADD_COMMUNITY_MODERATOR = 'ADD_COMMUNITY_MODERATOR'
 export const ADD_COMMUNITY_MODERATOR_PENDING = ADD_COMMUNITY_MODERATOR + _PENDING
 export const ADD_DATA_TO_STORE = 'ADD_DATA_TO_STORE'
 export const APPEND_COMMENT = 'APPEND_COMMENT'
+export const APPEND_THREAD = 'APPEND_THREAD'
 export const APPROVE_JOIN_REQUEST = 'APPROVE_JOIN_REQUEST'
 export const APPROVE_JOIN_REQUEST_PENDING = APPROVE_JOIN_REQUEST + _PENDING
 export const CANCEL_POST_EDIT = 'CANCEL_POST_EDIT'
@@ -63,6 +64,7 @@ export const FOLLOW_POST_PENDING = FOLLOW_POST + _PENDING
 export const FOLLOW_TAG = 'FOLLOW_TAG'
 export const FOLLOW_TAG_PENDING = FOLLOW_TAG + _PENDING
 export const HIDE_TAG_POPOVER = 'HIDE_TAG_POPOVER'
+export const INCREMENT_UNREAD_THREADS = 'INCREMENT_UNREAD_THREADS'
 export const JOIN_COMMUNITY_WITH_CODE = 'JOIN_COMMUNITY_WITH_CODE'
 export const LEAVE_COMMUNITY = 'LEAVE_COMMUNITY'
 export const LEAVE_COMMUNITY_PENDING = LEAVE_COMMUNITY + _PENDING
@@ -544,5 +546,11 @@ export function approveJoinRequest (userId, slug) {
     type: APPROVE_JOIN_REQUEST,
     payload: {api: true, params: {userId}, path: `/noo/community/${slug}/approve-join-request`, method: 'post'},
     meta: {userId, slug, optimistic: true}
+  }
+}
+
+export function incrementUnreadThreads () {
+  return {
+    type: INCREMENT_UNREAD_THREADS
   }
 }

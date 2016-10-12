@@ -30,6 +30,7 @@ import { admin } from './admin'
 
 import {
   APPROVE_JOIN_REQUEST_PENDING,
+  APPEND_THREAD,
   CANCEL_POST_EDIT,
   CANCEL_TYPEAHEAD,
   CHECK_FRESHNESS_POSTS,
@@ -121,6 +122,8 @@ const combinedReducers = combineReducers({
     if (error) return state
 
     switch (type) {
+      case APPEND_THREAD:
+        return {...state, [payload.user_id]: payload.id} // NOTE: key needs to reflect multi-person threads when we build it
       case FIND_OR_CREATE_THREAD:
         return {...state, [meta.messageTo]: payload.id}
     }

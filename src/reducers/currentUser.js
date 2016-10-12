@@ -7,6 +7,7 @@ import {
   FETCH_CURRENT_USER,
   FETCH_LIVE_STATUS,
   JOIN_COMMUNITY_WITH_CODE,
+  INCREMENT_UNREAD_THREADS,
   LEAVE_COMMUNITY_PENDING,
   LOGIN,
   LOGOUT,
@@ -83,6 +84,11 @@ export default function (state = null, action) {
     case FETCH_LIVE_STATUS:
       const { new_notification_count } = payload
       return {...state, new_notification_count}
+    case INCREMENT_UNREAD_THREADS:
+      return {
+        ...state,
+        new_message_count: state.new_message_count + 1
+      }
     case UPDATE_MEMBERSHIP_SETTINGS_PENDING:
       return {
         ...state,

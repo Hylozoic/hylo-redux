@@ -4,7 +4,7 @@ import { isEmpty } from 'lodash'
 import { compact, flow, map, sortBy } from 'lodash/fp'
 import cx from 'classnames'
 import { threadUrl } from '../routes'
-import { FETCH_POSTS, showDirectMessage } from '../actions'
+import { FETCH_POSTS, showDirectMessage, updateUserSettings } from '../actions'
 import { fetchPosts } from '../actions/fetchPosts'
 import { getComments, getPost, denormalizedPost } from '../models/post'
 const { func, object } = React.PropTypes
@@ -32,8 +32,11 @@ export const ThreadsDropdown = connect(
   })
 )(props => {
   const { threads, dispatch, pending, newCount } = props
+  const resetCount = () =>
+    dispatch(updateUserSettings({settings: {last_viewed_messages_at: new Date()}}))
   return <Dropdown alignRight rivalrous='nav' className='thread-list'
     onFirstOpen={() => dispatch(fetchPosts({ cacheId: 'threads', subject: 'threads' }))}
+    onOpen={resetCount}
     toggleChildren={<span>
       <Icon name='Message-Smile'/>
       {newCount > 0 && <div className='badge'>{newCount}</div>}

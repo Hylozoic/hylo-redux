@@ -6,14 +6,19 @@ import { debug } from '../util/logging'
 import { clearCache } from '../actions'
 import { connectedListProps, fetchWithCache, createCacheId } from '../util/caching'
 import { isEqual, pick, differenceBy, union } from 'lodash'
-import { get } from 'lodash/fp'
+import { find, get } from 'lodash/fp'
 const { array, bool, func, number, object, string } = React.PropTypes
 
 export const fetch = fetchWithCache(fetchPosts)
 
+const findExpandedPostId = state => {
+  const modal = find(m => m.type === 'expanded-post', state.openModals)
+  return get('params.id', modal)
+}
+
 @connect((state, props) => ({
   ...connectedListProps(state, props, 'posts'),
-  expandedPostId: get('params.id', state.showModal)
+  expandedPostId: findExpandedPostId(state)
 }), null, null, {withRef: true})
 export class ConnectedPostList extends React.Component {
   static propTypes = {

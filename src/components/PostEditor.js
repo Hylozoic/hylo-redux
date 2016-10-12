@@ -109,8 +109,8 @@ export class PostEditor extends React.Component {
   }
 
   updateStore = (data) => {
-    let { id, dispatch, community: { slug } } = this.props
-    dispatch(updatePostEditor(data, id, slug))
+    let { id, dispatch } = this.props
+    dispatch(updatePostEditor(data, id))
   }
 
   _self () {
@@ -191,14 +191,14 @@ export class PostEditor extends React.Component {
   }
 
   save () {
-    const { dispatch, post, postEdit, id, postCommunities, community } = this.props
+    const { dispatch, post, postEdit, id, postCommunities, currentCommunitySlug } = this.props
     const params = {
       type: this.editorType(),
       ...postEdit,
       ...attachmentParams(post && post.media, postEdit.media)
     }
 
-    dispatch((post ? updatePost : createPost)(id, params))
+    dispatch((post ? updatePost : createPost)(id, params, currentCommunitySlug))
     .then(action => {
       if (responseMissingTagDescriptions(action)) {
         return dispatch(showModal('tag-editor', {
@@ -210,7 +210,7 @@ export class PostEditor extends React.Component {
         tag: postEdit.tag,
         community: {name: get(postCommunities[0], 'name')}
       })
-      dispatch(updateCommunityChecklist(community.slug))
+      dispatch(updateCommunityChecklist(currentCommunitySlug))
       this.cancel()
     })
   }

@@ -1,7 +1,7 @@
 require('../support')
 import { tagsByCommunity, tagsByQuery, totalTagsByQuery } from '../../src/reducers/tags'
 import {
-  FETCH_LEFT_NAV_TAGS, FETCH_TAGS, REMOVE_TAG, UPDATE_POST_EDITOR, CREATE_TAG_IN_COMMUNITY
+  FETCH_LEFT_NAV_TAGS, FETCH_TAGS, REMOVE_TAG, CREATE_POST, UPDATE_POST, CREATE_TAG_IN_COMMUNITY
 } from '../../src/actions'
 
 const fetchAction = {
@@ -201,7 +201,7 @@ describe('tagsByCommunity', () => {
     expect(tagsByCommunity(state, action)).to.deep.equal(expected)
   })
 
-  it('adds a new tag on UPDATE_POST_EDITOR', () => {
+  it('adds a new tag on CREATE_POST', () => {
     const state = {
       wow: {
         foo: {id: 7, name: 'foo', followed: true},
@@ -231,14 +231,56 @@ describe('tagsByCommunity', () => {
     }
 
     const action = {
-      type: UPDATE_POST_EDITOR,
-      payload: {
-        tagDescriptions: {
+      type: CREATE_POST,
+      meta: {
+        slug: 'zoop',
+        createdTags: {
           thenewtagname: {description: 'its good', is_default: true}
         }
+      }
+    }
+
+    expect(tagsByCommunity(state, action)).to.deep.equal(expected)
+  })
+
+  it('adds a new tag on CREATE_POST', () => {
+    const state = {
+      wow: {
+        foo: {id: 7, name: 'foo', followed: true},
+        bar: {id: 8, name: 'bar', followed: true},
+        bip: {name: 'bip'}
       },
+      zoop: {
+        bop: {name: 'bop'}
+      }
+    }
+
+    const expected = {
+      wow: {
+        foo: {id: 7, name: 'foo', followed: true},
+        bar: {id: 8, name: 'bar', followed: true},
+        bip: {name: 'bip'}
+      },
+      zoop: {
+        bop: {name: 'bop'},
+        thenewtagname: {
+          name: 'thenewtagname',
+          followed: true,
+          description: 'its good',
+          is_default: true
+        }
+      }
+    }
+
+    const action = {
+      type: UPDATE_POST,
       meta: {
-        slug: 'zoop'
+        slug: 'zoop',
+        params: {
+          tagDescriptions: {
+            thenewtagname: {description: 'its good', is_default: true}
+          }
+        }
       }
     }
 

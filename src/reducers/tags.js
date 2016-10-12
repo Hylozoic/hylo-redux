@@ -3,8 +3,8 @@ import {
 } from './util'
 import {
   CREATE_COMMUNITY, FETCH_CURRENT_USER, FETCH_LEFT_NAV_TAGS, FETCH_LIVE_STATUS,
-  FETCH_TAG, FETCH_TAGS, FETCH_TAG_SUMMARY, FOLLOW_TAG_PENDING, REMOVE_TAG, UPDATE_POST_EDITOR,
-  CREATE_TAG_IN_COMMUNITY
+  FETCH_TAG, FETCH_TAGS, FETCH_TAG_SUMMARY, FOLLOW_TAG_PENDING, REMOVE_TAG,
+  CREATE_POST, UPDATE_POST, CREATE_TAG_IN_COMMUNITY
 } from '../actions'
 import { filter, fromPairs, merge, omitBy, toPairs, isEmpty } from 'lodash'
 import { get, pickBy, some } from 'lodash/fp'
@@ -64,7 +64,14 @@ export const tagsByCommunity = (state = {}, action) => {
   if (error) return state
 
   let oldCommunityTags, oldTag
-  let { slug } = meta
+  let { slug } = meta || {}
+
+  const addCreatedTags = (state, slug, createdTags) => {
+    if (isEmpty(createdTags)) return state
+    let tags = Object.keys(createdTags).map(key =>
+      ({...createdTags[key], name: key, followed: true}))
+    return {...state, [slug]: mergeList(state[slug], tags, 'name')}
+  }
 
   switch (type) {
     case FETCH_TAG:
@@ -79,13 +86,14 @@ export const tagsByCommunity = (state = {}, action) => {
     case FETCH_CURRENT_USER:
     case CREATE_COMMUNITY:
       return mergeLeftNavTags(state, get('left_nav_tags', payload))
-    case UPDATE_POST_EDITOR:
-      const { tagDescriptions } = payload
-      if (isEmpty(tagDescriptions)) return state
-      let tags = Object.keys(tagDescriptions).map(key => ({...tagDescriptions[key], name: key, followed: true}))
-      return {...state, [slug]: mergeList(state[slug], tags, 'name')}
+    case CREATE_POST:
+      const { createdTags } = meta
+      return addCreatedTags(state, slug, createdTags)
+    case UPDATE_POST:
+      const { params: { tagDescriptions } } = meta
+      return addCreatedTags(state, slug, tagDescriptions)
     case CREATE_TAG_IN_COMMUNITY:
-      tags = [{...meta.tag, followed: true}]
+      let tags = [{...meta.tag, followed: true}]
       return {...state, [slug]: mergeList(state[slug], tags, 'name')}
     case FOLLOW_TAG_PENDING:
       oldCommunityTags = state[meta.id] || {}

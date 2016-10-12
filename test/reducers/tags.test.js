@@ -1,6 +1,8 @@
 require('../support')
 import { tagsByCommunity, tagsByQuery, totalTagsByQuery } from '../../src/reducers/tags'
-import { FETCH_LEFT_NAV_TAGS, FETCH_TAGS, REMOVE_TAG } from '../../src/actions'
+import {
+  FETCH_LEFT_NAV_TAGS, FETCH_TAGS, REMOVE_TAG, UPDATE_POST_EDITOR, CREATE_TAG_IN_COMMUNITY
+} from '../../src/actions'
 
 const fetchAction = {
   type: FETCH_TAGS,
@@ -193,6 +195,90 @@ describe('tagsByCommunity', () => {
         zang: [
           {name: 'bar'}
         ]
+      }
+    }
+
+    expect(tagsByCommunity(state, action)).to.deep.equal(expected)
+  })
+
+  it('adds a new tag on UPDATE_POST_EDITOR', () => {
+    const state = {
+      wow: {
+        foo: {id: 7, name: 'foo', followed: true},
+        bar: {id: 8, name: 'bar', followed: true},
+        bip: {name: 'bip'}
+      },
+      zoop: {
+        bop: {name: 'bop'}
+      }
+    }
+
+    const expected = {
+      wow: {
+        foo: {id: 7, name: 'foo', followed: true},
+        bar: {id: 8, name: 'bar', followed: true},
+        bip: {name: 'bip'}
+      },
+      zoop: {
+        bop: {name: 'bop'},
+        thenewtagname: {
+          name: 'thenewtagname',
+          followed: true,
+          description: 'its good',
+          is_default: true
+        }
+      }
+    }
+
+    const action = {
+      type: UPDATE_POST_EDITOR,
+      payload: {
+        tagDescriptions: {
+          thenewtagname: {description: 'its good', is_default: true}
+        }
+      },
+      meta: {
+        slug: 'zoop'
+      }
+    }
+
+    expect(tagsByCommunity(state, action)).to.deep.equal(expected)
+  })
+
+  it('adds a new tag on CREATE_TAG_IN_COMMUNITY', () => {
+    const state = {
+      wow: {
+        foo: {id: 7, name: 'foo', followed: true},
+        bar: {id: 8, name: 'bar', followed: true},
+        bip: {name: 'bip'}
+      },
+      zoop: {
+        bop: {name: 'bop'}
+      }
+    }
+
+    const expected = {
+      wow: {
+        foo: {id: 7, name: 'foo', followed: true},
+        bar: {id: 8, name: 'bar', followed: true},
+        bip: {name: 'bip'}
+      },
+      zoop: {
+        bop: {name: 'bop'},
+        thenewtagname: {
+          name: 'thenewtagname',
+          followed: true,
+          description: 'its good',
+          is_default: true
+        }
+      }
+    }
+
+    const action = {
+      type: CREATE_TAG_IN_COMMUNITY,
+      meta: {
+        tag: {name: 'thenewtagname', description: 'its good', is_default: true},
+        slug: 'zoop'
       }
     }
 

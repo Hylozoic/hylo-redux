@@ -82,7 +82,7 @@ export const tagsByCommunity = (state = {}, action) => {
       const { tagDescriptions } = payload
       let { slug } = meta
       if (isEmpty(tagDescriptions)) return state
-      let tags = Object.keys(tagDescriptions).map(key => ({ name: key, followed: true }))
+      let tags = Object.keys(tagDescriptions).map(key => ({...tagDescriptions[key], name: key, followed: true}))
       return {...state, [slug]: mergeList(state[slug], tags, 'name')}
     case CREATE_TAG_IN_COMMUNITY:
       slug = meta.slug

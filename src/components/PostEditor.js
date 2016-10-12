@@ -41,7 +41,7 @@ import {
 } from '../actions'
 import { updateCommunityChecklist } from '../actions/communities'
 import { ADDED_POST, EDITED_POST, trackEvent } from '../util/analytics'
-import { getCommunity, getCurrentCommunity } from '../models/community'
+import { getCommunity, getCurrentCommunity, getDefaultTags } from '../models/community'
 const { array, bool, func, object, string } = React.PropTypes
 
 export const newPostId = 'new-post'
@@ -68,7 +68,7 @@ export const newPostId = 'new-post'
     editingTagDescriptions,
     creatingTagAndDescription,
     postCommunities,
-    defaultTags: get(currentCommunity, 'defaultTags')
+    defaultTags: map('name', getDefaultTags(currentCommunity, state))
   }
 }, null, null, {withRef: true}))
 export class PostEditor extends React.Component {
@@ -109,8 +109,8 @@ export class PostEditor extends React.Component {
   }
 
   updateStore = (data) => {
-    let { id, dispatch } = this.props
-    dispatch(updatePostEditor(data, id))
+    let { id, dispatch, community: { slug } } = this.props
+    dispatch(updatePostEditor(data, id, slug))
   }
 
   _self () {

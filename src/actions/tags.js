@@ -51,7 +51,7 @@ export function createTagInCommunity (params, slug) {
   return {
     type: CREATE_TAG_IN_COMMUNITY,
     payload: {api: true, params, path: `/noo/community/${slug}/tag/`, method: 'POST'},
-    meta: {slug, optimistic: true}
+    meta: {slug, tag: params, optimistic: true}
   }
 }
 

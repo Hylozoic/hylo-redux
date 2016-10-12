@@ -79,6 +79,8 @@ export default class TagInput extends React.Component {
     if (!tags) tags = []
     if (!placeholder) placeholder = 'Type...'
 
+    console.log('in tag input', tags)
+
     return <div className={cx('tag-input', className)} onClick={this.focus}>
       <ul>
         {tags.map(t => <li key={t.id} className='tag'>

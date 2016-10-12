@@ -60,11 +60,11 @@ export function cancelPostEdit (id) {
   return {type: CANCEL_POST_EDIT, meta: {id}}
 }
 
-export function updatePostEditor (payload, id) {
+export function updatePostEditor (payload, id, slug) {
   return {
     type: UPDATE_POST_EDITOR,
     payload,
-    meta: {id}
+    meta: {id, slug}
   }
 }
 

@@ -64,6 +64,7 @@ export const tagsByCommunity = (state = {}, action) => {
   if (error) return state
 
   let oldCommunityTags, oldTag
+  let { slug } = meta
 
   switch (type) {
     case FETCH_TAG:
@@ -80,12 +81,10 @@ export const tagsByCommunity = (state = {}, action) => {
       return mergeLeftNavTags(state, get('left_nav_tags', payload))
     case UPDATE_POST_EDITOR:
       const { tagDescriptions } = payload
-      let { slug } = meta
       if (isEmpty(tagDescriptions)) return state
       let tags = Object.keys(tagDescriptions).map(key => ({...tagDescriptions[key], name: key, followed: true}))
       return {...state, [slug]: mergeList(state[slug], tags, 'name')}
     case CREATE_TAG_IN_COMMUNITY:
-      slug = meta.slug
       tags = [{...meta.tag, followed: true}]
       return {...state, [slug]: mergeList(state[slug], tags, 'name')}
     case FOLLOW_TAG_PENDING:

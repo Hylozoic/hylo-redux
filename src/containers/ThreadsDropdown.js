@@ -7,11 +7,12 @@ import { threadUrl } from '../routes'
 import { FETCH_POSTS, showDirectMessage, updateUserSettings } from '../actions'
 import { fetchPosts } from '../actions/fetchPosts'
 import { getComments, getPost, denormalizedPost } from '../models/post'
-const { func, object } = React.PropTypes
+const { number, bool, string, array, func, object } = React.PropTypes
 import A from '../components/A'
 import { NonLinkAvatar } from '../components/Avatar'
 import Dropdown from '../components/Dropdown'
 import Icon from '../components/Icon'
+import { getSocket, socketUrl } from '../client/websockets'
 
 const getThreads = state =>
   flow(
@@ -25,33 +26,67 @@ const getThreads = state =>
     sortBy(t => -1 * new Date(t.updated_at))
   )(state.postsByQuery.threads)
 
-export const ThreadsDropdown = connect(
+@connect(
   (state, props) => ({
     threads: getThreads(state),
     pending: state.pending[FETCH_POSTS]
   })
-)(props => {
-  const { threads, dispatch, pending, newCount } = props
-  const resetCount = () =>
-    dispatch(updateUserSettings({settings: {last_viewed_messages_at: new Date()}}))
-  return <Dropdown alignRight rivalrous='nav' className='thread-list'
-    onFirstOpen={() => dispatch(fetchPosts({ cacheId: 'threads', subject: 'threads' }))}
-    onOpen={resetCount}
-    toggleChildren={<span>
-      <Icon name='Message-Smile'/>
-      {newCount > 0 && <div className='badge'>{newCount}</div>}
-    </span>}>
-    {!pending && <li className='top'>
-      <div className='newMessage' onClick={() => dispatch(showDirectMessage())}>
-        <Icon name='Compose'/><span className='button-text'>New Message</span>
-      </div>
-    </li>}
-    {pending && <li className='loading'>Loading...</li>}
-    {threads.map(thread => <li key={thread.id}>
-      <Thread thread={thread}/>
-    </li>)}
-  </Dropdown>
-})
+)
+export class ThreadsDropdown extends React.Component {
+
+  static propTypes = {
+    threads: array,
+    pending: bool,
+    newCount: number 
+  }
+
+  static contextTypes = {
+    dispatch: func,
+    currentUser: object
+  }
+
+  componentDidMount () {
+    const { dispatch } = this.context
+    this.socket = getSocket()
+    this.socket.post(socketUrl('/noo/threads/subscribe'))
+    this.socket.on('newThread', t => console.log(t))
+    this.socket.on('messageAdded', m => console.log(m))
+  }
+
+  componentWillUnmount () {
+    if (this.socket) {
+      this.socket.post(socketUrl('/noo/threads/unsubscribe'))
+      this.socket.off('newThread')
+      this.socket.off('messageAdded')
+    }
+  }
+
+  render () {
+    const { threads, pending, newCount } = this.props
+    const { dispatch } = this.context
+
+    const resetCount = () =>
+      dispatch(updateUserSettings({settings: {last_viewed_messages_at: new Date()}}))
+
+    return <Dropdown alignRight rivalrous='nav' className='thread-list'
+      onFirstOpen={() => dispatch(fetchPosts({ cacheId: 'threads', subject: 'threads' }))}
+      onOpen={resetCount}
+      toggleChildren={<span>
+        <Icon name='Message-Smile'/>
+        {newCount > 0 && <div className='badge'>{newCount}</div>}
+      </span>}>
+      {!pending && <li className='top'>
+        <div className='newMessage' onClick={() => dispatch(showDirectMessage())}>
+          <Icon name='Compose'/><span className='button-text'>New Message</span>
+        </div>
+      </li>}
+      {pending && <li className='loading'>Loading...</li>}
+      {threads.map(thread => <li key={thread.id}>
+        <Thread thread={thread}/>
+      </li>)}
+    </Dropdown>
+  }
+}
 
 const Thread = ({ thread }, { currentUser, dispatch }) => {
   const { comments, followers, last_read_at, updated_at } = thread

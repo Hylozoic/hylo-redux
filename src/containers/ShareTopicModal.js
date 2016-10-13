@@ -52,7 +52,7 @@ export default class ShareTopicModal extends React.Component {
 
   render () {
     const { onCancel, tagName, community, dispatch, pending,
-      tagInvitationEditor: { recipients, recipient, error, success } } = this.props
+      tagInvitationEditor: { recipients, error, success } } = this.props
 
     const { copied } = this.state
 
@@ -114,7 +114,7 @@ export default class ShareTopicModal extends React.Component {
             </span>
           : <span> Loading...</span>}
       </div>
-      <HybridInviteInput recipients={recipients} recipient={recipient}
+      <HybridInviteInput recipients={recipients}
         communityId={community.id}
         typeaheadId='invite'
         removeRecipient={removeRecipient}
@@ -141,7 +141,6 @@ class HybridInviteInput extends React.Component {
     communityId: string,
     dispatch: func,
     recipients: array,
-    recipient: string,
     addRecipient: func,
     removeRecipient: func,
     choices: array,
@@ -149,7 +148,7 @@ class HybridInviteInput extends React.Component {
   }
 
   handleInput = event => {
-    var value = event.target.value
+    var { value } = event.target
     const {
       dispatch, typeaheadId, communityId, addRecipient
     } = this.props
@@ -182,7 +181,7 @@ class HybridInviteInput extends React.Component {
   }
 
   render () {
-    const { recipients, recipient, removeRecipient, choices } = this.props
+    const { recipients, removeRecipient, choices } = this.props
 
     const newChoices = filter(c => !includes(c.id, map('id', recipients)), choices)
 
@@ -217,7 +216,6 @@ class HybridInviteInput extends React.Component {
         placeholder={placeholder}
         onFocus={onFocus}
         onBlur={onBlur}
-        value={recipient}
         onChange={this.handleInput}
         onKeyDown={this.handleKeys}
         />

@@ -9,8 +9,8 @@ import A from '../../components/A'
 import { find, map } from 'lodash/fp'
 const { func, object } = React.PropTypes
 
-const SkillsPrompt = ({ location }, { currentUser, dispatch }) => {
-  const community = find(c => c.slug === location.query.community,
+const SkillsPrompt = ({ location, community }, { currentUser, dispatch }) => {
+  community = community || find(c => c.slug === location.query.community,
     map('community', currentUser.memberships))
   const update = (path, value) =>
     dispatch(updateUserSettings({[path]: value}))

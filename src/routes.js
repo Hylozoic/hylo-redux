@@ -47,6 +47,7 @@ import { isLoggedIn } from './models/currentUser'
 export default function makeRoutes (store) {
   const requireLoginWithOptions = (options = {}) => (nextState, replace) => {
     let { startAtSignup, addParams } = options
+
     if (isLoggedIn(store.getState())) return true
 
     const start = startAtSignup ? 'signup' : 'login'
@@ -100,6 +101,12 @@ export default function makeRoutes (store) {
     <Route path='p/new' component={StandalonePostEditor} onEnter={requireLogin}/>
     <Route path='p/:id/edit' component={StandalonePostEditor} onEnter={requireLogin}/>
 
+    <Route path='h/use-invitation' component={InvitationHandler}
+      onEnter={requireLoginWithOptions({
+        startAtSignup: true,
+        addParams: ({ location: { query: { token, email } } }) => ({token, email, action: 'use-invitation'})
+      })}/>
+
     <Route component={PageWithNav}>
       <Route path='settings' component={UserSettings} onEnter={requireLogin}/>
       <Route path='search' component={Search} onEnter={requireLogin}/>
@@ -107,12 +114,6 @@ export default function makeRoutes (store) {
       <Route path='c/join' component={CommunityJoinForm} onEnter={requireLogin}/>
 
       <Route path='admin' component={Admin} onEnter={requireAdmin}/>
-
-      <Route path='h/use-invitation' component={InvitationHandler}
-        onEnter={requireLoginWithOptions({
-          startAtSignup: true,
-          addParams: ({ location: { query: { token, email } } }) => ({token, email, action: 'use-invitation'})
-        })}/>
 
       <Route path='c/:id/join/:code' component={CommunityJoinLinkHandler}
         onEnter={requireLoginWithOptions({

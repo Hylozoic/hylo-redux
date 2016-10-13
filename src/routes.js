@@ -111,7 +111,7 @@ export default function makeRoutes (store) {
       <Route path='h/use-invitation' component={InvitationHandler}
         onEnter={requireLoginWithOptions({
           startAtSignup: true,
-          addParams: ({ location: { query: { token } } }) => ({token, action: 'use-invitation'})
+          addParams: ({ location: { query: { token, email } } }) => ({token, email, action: 'use-invitation'})
         })}/>
 
       <Route path='c/:id/join/:code' component={CommunityJoinLinkHandler}

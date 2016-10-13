@@ -12,8 +12,8 @@ import Avatar from '../components/Avatar'
 import { KeyControlledItemList } from '../components/KeyControlledList'
 import { communityTagJoinUrl } from '../routes'
 import { getKeyCode, keyMap } from '../util/textInput'
-import { get, isEmpty, some } from 'lodash'
-import { filter, includes, map, flow, omitBy, curry } from 'lodash/fp'
+import { compact, get, isEmpty, some } from 'lodash'
+import { filter, includes, map, flow, curry } from 'lodash/fp'
 import { typeahead } from '../actions'
 import cx from 'classnames'
 import copy from 'copy-to-clipboard'
@@ -77,21 +77,19 @@ export default class ShareTopicModal extends React.Component {
     }
 
     const submit = () => {
+      if (isEmpty(recipients)) {
+        return setError('Enter at least one email address or user.')
+      }
+
+      const emails = filter(r => !r.id, recipients)
+      const badEmails = filter(e => !validator.isEmail(e), emails)
+      if (some(badEmails)) {
+        return setError(`These emails are invalid: ${badEmails.join(', ')}`)
+      }
+
       setError(null)
-
-      if (isEmpty(recipients)) return setError('Enter at least one email address or user.')
-
-      const users = flow(
-        filter('id'),
-        map('id'))(recipients)
-
-      const emails = omitBy('id', recipients)
-
-      let badEmails = emails.filter(email => !validator.isEmail(email))
-      if (some(badEmails)) return setError(`These emails are invalid: ${badEmails.join(', ')}`)
-
       dispatch(sendCommunityTagInvitation(community.id, tagName, {
-        users,
+        users: compact(map('id', recipients)),
         emails: emails.join(',')
       }))
     }
@@ -134,7 +132,9 @@ export default class ShareTopicModal extends React.Component {
   }
 }
 
-@connect((state, props) => ({ choices: state.typeaheadMatches[props.typeaheadId] }))
+@connect(({ typeaheadMatches }, { typeaheadId }) => ({
+  choices: typeaheadMatches[typeaheadId]
+}))
 class HybridInviteInput extends React.Component {
 
   static propTypes = {

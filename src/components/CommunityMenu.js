@@ -26,7 +26,7 @@ export const allCommunities = () => ({
 
 const CommunityMenu = ({ network, community }, { isMobile, dispatch, currentUser, location }) => {
   // don't show All Communities if the user is in only one
-  if (currentUser.memberships.length === 1 && !community.id) {
+  if (get('memberships.length', currentUser) === 1 && !community.id) {
     community = currentUser.memberships[0].community
   }
   const firstItem = network ? merge(network, {isNetwork: true}) : community

@@ -69,9 +69,6 @@ export default class ShareTopicModal extends React.Component {
       update('recipients', recipients.concat(recipient))
     }
 
-    const updateRecipient = text =>
-      update('recipient', text)
-
     const removeRecipient = recipient => {
       const test = recipient.id
         ? r => r.id !== recipient.id
@@ -124,7 +121,6 @@ export default class ShareTopicModal extends React.Component {
         typeaheadId='invite'
         removeRecipient={removeRecipient}
         addRecipient={addRecipient}
-        updateRecipient={updateRecipient}
         />
       {error && <div className='alert alert-danger'>{error}</div>}
       {success && <div className='alert alert-success'>{success}</div>}
@@ -148,7 +144,6 @@ class HybridInviteInput extends React.Component {
     recipient: string,
     addRecipient: func,
     removeRecipient: func,
-    updateRecipient: func,
     choices: array,
     typeaheadId: string
   }

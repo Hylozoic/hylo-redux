@@ -3,9 +3,10 @@ import {
 } from './util'
 import {
   CREATE_COMMUNITY, FETCH_CURRENT_USER, FETCH_LEFT_NAV_TAGS, FETCH_LIVE_STATUS,
-  FETCH_TAG, FETCH_TAGS, FETCH_TAG_SUMMARY, FOLLOW_TAG_PENDING, REMOVE_TAG
+  FETCH_TAG, FETCH_TAGS, FETCH_TAG_SUMMARY, FOLLOW_TAG_PENDING, REMOVE_TAG,
+  CREATE_POST, UPDATE_POST, CREATE_TAG_IN_COMMUNITY
 } from '../actions'
-import { filter, fromPairs, merge, omitBy, toPairs } from 'lodash'
+import { filter, fromPairs, merge, omitBy, toPairs, isEmpty } from 'lodash'
 import { get, pickBy, some } from 'lodash/fp'
 import qs from 'querystring'
 
@@ -63,6 +64,14 @@ export const tagsByCommunity = (state = {}, action) => {
   if (error) return state
 
   let oldCommunityTags, oldTag
+  let { slug } = meta || {}
+
+  const addCreatedTags = (state, slug, createdTags) => {
+    if (isEmpty(createdTags)) return state
+    let tags = Object.keys(createdTags).map(key =>
+      ({...createdTags[key], name: key, followed: true}))
+    return {...state, [slug]: mergeList(state[slug], tags, 'name')}
+  }
 
   switch (type) {
     case FETCH_TAG:
@@ -77,6 +86,15 @@ export const tagsByCommunity = (state = {}, action) => {
     case FETCH_CURRENT_USER:
     case CREATE_COMMUNITY:
       return mergeLeftNavTags(state, get('left_nav_tags', payload))
+    case CREATE_POST:
+      const { createdTags } = meta
+      return addCreatedTags(state, slug, createdTags)
+    case UPDATE_POST:
+      const { params: { tagDescriptions } } = meta
+      return addCreatedTags(state, slug, tagDescriptions)
+    case CREATE_TAG_IN_COMMUNITY:
+      let tags = [{...meta.tag, followed: true}]
+      return {...state, [slug]: mergeList(state[slug], tags, 'name')}
     case FOLLOW_TAG_PENDING:
       oldCommunityTags = state[meta.id] || {}
       oldTag = oldCommunityTags[meta.tagName]
@@ -103,7 +121,7 @@ export const tagsByCommunity = (state = {}, action) => {
         [meta.slug]: omitBy(state[meta.slug], t => t.name === meta.name)
       }
     case FETCH_TAGS:
-      const slug = qs.parse(meta.cache.id).id
+      slug = qs.parse(meta.cache.id).id
       const itemsObj = {
         [slug]: fromPairs(payload.items.map(tag => [tag.name, tag]))
       }

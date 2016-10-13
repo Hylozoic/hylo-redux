@@ -39,7 +39,7 @@ import PageWithNav from './containers/PageWithNav'
 import TestBench from './containers/TestBench'
 import { debug } from './util/logging'
 import { makeUrl } from './util/navigation'
-import { get, isEmpty, pick } from 'lodash'
+import { get, pick } from 'lodash'
 import config from './config'
 import { isLoggedIn } from './models/currentUser'
 

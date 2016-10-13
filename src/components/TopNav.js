@@ -13,6 +13,7 @@ import { VelocityComponent } from 'velocity-react'
 import cx from 'classnames'
 import CommunityMenu, { allCommunities } from './CommunityMenu'
 import UserMenu from './UserMenu'
+import { isCommunityUrl } from '../routes'
 
 const getPostType = path => {
   if (path.endsWith('events')) return 'event'
@@ -109,9 +110,9 @@ export default class TopNav extends React.Component {
         {currentUser
         ? <UserMenu {...{newNotificationCount, newMessageCount, slug}}/>
         : <ul className='right'>
-            <li><A to={makeUrl('/signup', {next: returnPath})}>Sign up</A></li>
+            {!isCommunityUrl(path) && <li><A to={makeUrl('/signup', {next: returnPath})}>Sign up</A></li>}
             <li><A to={makeUrl('/login', {next: returnPath})}>Log in</A></li>
-          </ul>}
+        </ul>}
 
         <CommunityMenu {...{community, network}}/>
         {currentUser && !network && <TopMainMenu {...{links, leftNavIsOpen}}/>}

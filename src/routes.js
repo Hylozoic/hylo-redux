@@ -210,6 +210,9 @@ export const tagUrlComponents = (url) => {
   }
 }
 
+export const isCommunityUrl = (path) =>
+  path.match(/\/c\/[^/]+$/)
+
 export const isSearchUrl = (path) =>
   path.split('?')[0] === '/search'
 

@@ -70,14 +70,6 @@ export default function makeRoutes (store) {
     }
   }
 
-  const requireCommunity = (options = {}) => (nextState, replace) => {
-    if (!requireLoginWithOptions(options)(nextState, replace)) return
-
-    if (isEmpty(get(store.getState().people.current, 'memberships'))) {
-      replace('/c/join')
-    }
-  }
-
   return <Route component={App}>
     <Route path='/' onEnter={(_, replace) => replace('/app')}/>
     <Route path='signup' component={Signup}/>
@@ -149,7 +141,7 @@ export default function makeRoutes (store) {
       <Route path='n/:id/edit' component={NetworkEditor} onEnter={requireLogin}/>
 
       <Route component={AllCommunities}>
-        <Route path='app' component={AllPosts} onEnter={requireCommunity()}/>
+        <Route path='app' component={AllPosts}/>
         <Route path='tag/:tagName' component={TagPosts}/>
         <Route path='projects' component={Projects} onEnter={requireLogin}/>
         <Route path='events' component={Events} onEnter={requireLogin}/>

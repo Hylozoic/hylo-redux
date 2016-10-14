@@ -16,7 +16,9 @@ import { VIEWED_NOTIFICATIONS, trackEvent } from '../util/analytics'
 import { getCurrentCommunity } from '../models/community'
 const { array, bool, func, number, object } = React.PropTypes
 import decode from 'ent/decode'
-import { getActivitiesProps, actionText, bodyText, destination } from '../models/activity'
+import {
+  getActivitiesProps, actionText, bodyText, destination, activityAction
+} from '../models/activity'
 import { Modal } from '../components/Modal'
 import A from '../components/A'
 import { NonLinkAvatar } from '../components/Avatar'
@@ -181,8 +183,12 @@ const NotificationsDropdownItem = ({ activity, comment }, { dispatch }) => {
   const { id, actor, action, post, unread, community, meta: { reasons } } = activity
   const postName = !isEmpty(post) && truncate(decode(post.name), 140).html
   const markAsRead = () => unread && dispatch(markActivityRead(id))
+  const onClick = () => {
+    markAsRead()
+    dispatch(activityAction(activity))
+  }
   return <A to={destination(activity)} className={cx({unread})}
-    onClick={markAsRead}>
+    onClick={onClick}>
     {unread && <div className='dot-badge'/>}
     <NonLinkAvatar person={actor}/>
     <span>

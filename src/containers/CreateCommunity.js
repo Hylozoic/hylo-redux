@@ -6,7 +6,6 @@ import { toPairs, get, some, isEmpty } from 'lodash/fp'
 import ModalOnlyPage from '../components/ModalOnlyPage'
 import { ModalInput, ModalSelect } from '../components/ModalRow'
 import Modal from '../components/Modal'
-import A from '../components/A'
 import Icon from '../components/Icon'
 import InviteModal from './InviteModal'
 import { uploadImage } from '../actions/uploadImage'
@@ -55,16 +54,13 @@ const generateSlug = (name, oldSlug) => {
   }
 }
 
-export const Topper = ({ community, showJoin }) => {
+export const Topper = ({ community }) => {
   const { name, avatar_url } = community || {}
   const logoUrl = avatar_url || merkabaUrl
 
   return <div className='modal-topper'>
     <div className='medium-avatar' style={{backgroundImage: `url(${logoUrl})`}}/>
     <h2>{name || 'Your New Community'}</h2>
-    {showJoin && <div className='before-modal'>
-      <A to='/c/join'>Trying to join a community?</A>
-    </div>}
   </div>
 }
 
@@ -226,7 +222,7 @@ export class CreateCommunity extends React.Component {
     const slug = editedSlug ? community.slug : generatedSlug
 
     return <ModalOnlyPage className='create-community'>
-      <Topper community={community} showJoin={true}/>
+      <Topper community={community}/>
       <Modal title='Create your community.'
         id='new-community-form'
         subtitle="Let's get started unlocking the creative potential of your community with Hylo."

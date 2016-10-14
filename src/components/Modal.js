@@ -22,12 +22,12 @@ const mainColumnWidth = 688 // defined in CSS
 
 const modalStyle = isMobile => {
   if (typeof window === 'undefined') return {}
-  const windowWidth = window.innerWidth 
+  const windowWidth = window.innerWidth
   const pageContent = document.getElementById('cover-image-page-content')
-  const webMargin = pageContent ? position(pageContent).x : (windowWidth - mainColumnWidth) / 2 
+  const webMargin = pageContent ? position(pageContent).x : (windowWidth - mainColumnWidth) / 2
   return {
     marginLeft: isMobile ? 0
-      : webMargin, 
+      : webMargin,
     width: Math.min(mainColumnWidth,
       get(document.getElementById('main'), 'offsetWidth') || mainColumnWidth)
   }
@@ -65,7 +65,10 @@ export class ModalWrapper extends React.Component {
   }
 
   componentDidMount () {
-    if (this.props.bottom) window.addEventListener('scroll', this.lockScrolling)
+    if (this.props.bottom) {
+      this.lockedScrollTop = document.body.scrollTop
+      window.addEventListener('scroll', this.lockScrolling)
+    }
   }
 
   componentWillUnmount () {
@@ -94,9 +97,9 @@ export class ModalWrapper extends React.Component {
         clickToClose = true
         break
       case 'direct-message':
-          modal = <DirectMessageModal userId={params.userId} userName={params.userName} onCancel={close}/>
-          clickToClose = true
-          break
+        modal = <DirectMessageModal userId={params.userId} userName={params.userName} onCancel={close}/>
+        clickToClose = true
+        break
       case 'notifications':
         modal = <NotificationsModal onCancel={close}/>
         clickToClose = true

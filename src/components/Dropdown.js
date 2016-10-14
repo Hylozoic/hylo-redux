@@ -22,6 +22,7 @@ export default class Dropdown extends React.Component {
     alignRight: bool,
     toggleChildren: object.isRequired,
     onFirstOpen: func,
+    onOpen: func,
     backdrop: bool,
     triangle: bool,
     openOnHover: bool,
@@ -40,7 +41,9 @@ export default class Dropdown extends React.Component {
   }
 
   toggle = (event, context) => {
-    const { active } = this.state
+    const { active, neverOpened } = this.state
+    const { onFirstOpen, onOpen, rivalrous } = this.props
+
     this.setState({active: !active})
     if (active) {
       this.setState({hoverOpened: false})
@@ -49,15 +52,16 @@ export default class Dropdown extends React.Component {
       if (context === 'hover') {
         this.setState({hoverOpened: true})
       }
-      if (this.state.neverOpened) {
+      if (neverOpened) {
         this.setState({neverOpened: false})
-        if (this.props.onFirstOpen) this.props.onFirstOpen()
+        if (onFirstOpen) onFirstOpen()
       }
-      if (this.props.rivalrous) {
+      if (rivalrous) {
         window.dispatchEvent(new window.CustomEvent(DROPDOWN_OPENED, {
-          detail: {name: this.props.rivalrous}
+          detail: {name: rivalrous}
         }))
       }
+      if (onOpen) onOpen()
     }
     if (event) {
       event.stopPropagation()

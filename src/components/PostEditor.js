@@ -41,7 +41,7 @@ import {
 } from '../actions'
 import { updateCommunityChecklist } from '../actions/communities'
 import { ADDED_POST, EDITED_POST, trackEvent } from '../util/analytics'
-import { getCommunity, getCurrentCommunity } from '../models/community'
+import { getCommunity, getCurrentCommunity, getDefaultTags } from '../models/community'
 const { array, bool, func, object, string } = React.PropTypes
 
 export const newPostId = 'new-post'
@@ -68,7 +68,7 @@ export const newPostId = 'new-post'
     editingTagDescriptions,
     creatingTagAndDescription,
     postCommunities,
-    defaultTags: get(currentCommunity, 'defaultTags')
+    defaultTags: map('name', getDefaultTags(currentCommunity, state))
   }
 }, null, null, {withRef: true}))
 export class PostEditor extends React.Component {
@@ -191,14 +191,14 @@ export class PostEditor extends React.Component {
   }
 
   save () {
-    const { dispatch, post, postEdit, id, postCommunities, community } = this.props
+    const { dispatch, post, postEdit, id, postCommunities, currentCommunitySlug } = this.props
     const params = {
       type: this.editorType(),
       ...postEdit,
       ...attachmentParams(post && post.media, postEdit.media)
     }
 
-    dispatch((post ? updatePost : createPost)(id, params))
+    dispatch((post ? updatePost : createPost)(id, params, currentCommunitySlug))
     .then(action => {
       if (responseMissingTagDescriptions(action)) {
         return dispatch(showModal('tag-editor', {
@@ -210,7 +210,7 @@ export class PostEditor extends React.Component {
         tag: postEdit.tag,
         community: {name: get(postCommunities[0], 'name')}
       })
-      dispatch(updateCommunityChecklist(community.slug))
+      dispatch(updateCommunityChecklist(currentCommunitySlug))
       this.cancel()
     })
   }

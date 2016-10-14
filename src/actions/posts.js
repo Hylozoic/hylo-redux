@@ -23,11 +23,17 @@ import {
 } from './index'
 
 // id refers to the id of the editing context, e.g. 'new-event'
-export function createPost (id, params) {
+export function createPost (id, params, slug) {
   return {
     type: CREATE_POST,
     payload: {api: true, params, path: '/noo/post', method: 'POST'},
-    meta: {id, tags: tagsInText(params.description)}
+    meta: {
+      id,
+      tags: tagsInText(params.description),
+      createdTags: params.tagDescriptions,
+      optimistic: true,
+      slug
+    }
   }
 }
 
@@ -68,11 +74,11 @@ export function updatePostEditor (payload, id) {
   }
 }
 
-export function updatePost (id, params) {
+export function updatePost (id, params, slug) {
   return {
     type: UPDATE_POST,
     payload: {api: true, params, path: `/noo/post/${id}`, method: 'POST'},
-    meta: {id, params}
+    meta: {id, params, optimistic: true, slug}
   }
 }
 

@@ -21,7 +21,13 @@ export default prefetch(setCommunityAndFetchTags)(AllCommunities)
 const subject = 'all-posts'
 
 export const allPostsPrefetch = ({ store, dispatch, currentUser, query }) => {
-  const { id, settings: { currentCommunityId } } = currentUser
+  const { id, settings: { currentCommunityId }, memberships } = currentUser
+
+  if (memberships.length === 1) {
+    const community = getCommunity(memberships[0].community_id, store.getState())
+    if (community) return dispatch(navigate(communityUrl(community)))
+  }
+
   if (query.rd && currentCommunityId && currentCommunityId !== 'all') {
     const community = getCommunity(currentCommunityId, store.getState())
     if (community) return dispatch(navigate(communityUrl(community)))

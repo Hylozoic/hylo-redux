@@ -25,6 +25,10 @@ export const allCommunities = () => ({
 })
 
 const CommunityMenu = ({ network, community }, { isMobile, dispatch, currentUser, location }) => {
+  // don't show All Communities if the user is in only one
+  if (get('memberships.length', currentUser) === 1 && !community.id) {
+    community = currentUser.memberships[0].community
+  }
   const firstItem = network ? merge(network, {isNetwork: true}) : community
   const menuItems = getMenuItems(currentUser, firstItem)
   const currentItem = menuItems[0]
@@ -70,7 +74,7 @@ const CommunityMenu = ({ network, community }, { isMobile, dispatch, currentUser
       </li>
       <li className='start'>
         <div>
-          <A to='/create'>Start</A> a community
+          <A to='/create'>Start your own community</A>
         </div>
       </li>
     </Dropdown>

@@ -39,6 +39,9 @@ export const getCurrentOrLastCommunity = state =>
 export const getFollowedTags = ({ slug }, state) =>
   values(pickBy('followed', state.tagsByCommunity[slug]))
 
+export const getDefaultTags = (community, state) =>
+  values(pickBy('is_default', state.tagsByCommunity[get('slug', community)]))
+
 export const getChecklist = community => {
   const { settings } = community
   const { checklist } = settings || {}

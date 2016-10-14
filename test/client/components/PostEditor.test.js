@@ -12,6 +12,12 @@ const { click } = Simulate
 const { createElement, wait } = helpers
 
 const currentUser = {id: 'person'}
+const post = {id: 'foo'}
+const community = {
+  id: 'f',
+  slug: 'f',
+  name: 'Foo Community'
+}
 
 const state = {
   pending: {},
@@ -25,21 +31,19 @@ const state = {
   },
   typeaheadMatches: {},
   communities: {
-    f: {
-      id: 'f',
-      name: 'Foo Community'
-    }
-  }
+    f: community
+  },
+  currentCommunityId: 'f',
+  tagsByCommunity: {}
 }
 
-const post = {id: 'foo'}
 let component, node, store
 
 const render = (state, post, storeSetupCallback) => {
   store = mocks.redux.store(state)
   if (storeSetupCallback) storeSetupCallback(store)
   const context = {store, dispatch: store.dispatch, currentUser}
-  component = createElement(PostEditor, {post}, context)
+  component = createElement(PostEditor, {post, community}, context)
   node = renderIntoDocument(component).getWrappedInstance()
 }
 

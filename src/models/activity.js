@@ -64,7 +64,7 @@ export const destination = ({ post, comment, community, action }) => {
   if (post.id) {
     return postUrl(post.id, get('id', comment))
   } else if (action === 'joinRequest') {
-    return `${communitySettingsUrl(community)}?expand=access`
+    return `${communitySettingsUrl(community)}?expand=join_requests`
   } else {
     return communityUrl(community)
   }

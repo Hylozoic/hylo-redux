@@ -2,7 +2,6 @@ import React from 'react'
 import { humanDate } from '../../util/text'
 import A from '../../components/A'
 import Avatar from '../../components/Avatar'
-import ScrollListener from '../../components/ScrollListener'
 import { FETCH_INVITATIONS, fetchInvitations } from '../../actions'
 import cx from 'classnames'
 import { get } from 'lodash'
@@ -42,12 +41,16 @@ const InvitationList = connect((state, { id }) => ({
             <td>{humanDate(invitation.created)}</td>
           </tr>
         })}
+        {offset < total && <tr>
+          <td>
+            <button onClick={loadMore}>Load More</button>
+          </td>
+        </tr>}
       </tbody>
     </table>
-    <ScrollListener onBottom={loadMore}/>
-    {offset >= total && <p className='summary'>
-      {total} invitations sent, {invitations.filter(i => i.user).length} used
-    </p>}
+    {offset < total
+      ? <p className='summary'> showing {invitations.length} of {total} invitations, {invitations.filter(i => i.user).length} used</p>
+      : <p className='summary'> {total} invitations sent, {invitations.filter(i => i.user).length} used}</p>}
   </div>
 })
 

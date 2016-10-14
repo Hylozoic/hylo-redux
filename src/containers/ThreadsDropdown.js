@@ -1,7 +1,7 @@
 import React from 'react'
 import { connect } from 'react-redux'
-import { isEmpty } from 'lodash'
-import { compact, flow, map, sortBy } from 'lodash/fp'
+import { includes, isEmpty } from 'lodash'
+import { compact, filter, flow, map, sortBy } from 'lodash/fp'
 import cx from 'classnames'
 import { threadUrl } from '../routes'
 import { FETCH_POSTS, incrementUnreadThreads, showDirectMessage, updateUserSettings } from '../actions'
@@ -31,12 +31,14 @@ const getThreads = state =>
 @connect(
   (state, props) => ({
     threads: getThreads(state),
-    pending: state.pending[FETCH_POSTS]
+    pending: state.pending[FETCH_POSTS],
+    openedThreadId: state.openedThreadId
   })
 )
 export class ThreadsDropdown extends React.Component {
 
   static propTypes = {
+    openedThreadId: string,
     threads: array,
     pending: bool,
     newCount: number 
@@ -47,12 +49,19 @@ export class ThreadsDropdown extends React.Component {
     currentUser: object
   }
 
+  constructor (props) {
+    super(props)
+    this.state = { open: false }
+  }
+
   componentDidMount () {
     const { dispatch } = this.context
     this.socket = getSocket()
-    this.socket.post(socketUrl('/noo/threads/subscribe'))
-    this.socket.on('newThread', this.newThread.bind(this))
-    this.socket.on('messageAdded', this.messageAdded.bind(this))
+    if (this.socket) {
+      this.socket.post(socketUrl('/noo/threads/subscribe'))
+      this.socket.on('newThread', this.newThread)
+      this.socket.on('messageAdded', this.messageAdded)
+    }
   }
 
   componentWillUnmount () {
@@ -63,28 +72,58 @@ export class ThreadsDropdown extends React.Component {
     }
   }
 
-  newThread (thread) {
-    const { dispatch, currentUser } = this.context
+  newThread = thread => {
+    const { dispatch } = this.context
     dispatch(appendThread(thread))
-    dispatch(incrementUnreadThreads()) 
-    this.forceUpdate()
+    if (!this.state.open) {
+      dispatch(incrementUnreadThreads()) 
+    }
   }
 
-  messageAdded (data) {
-    this.context.dispatch(appendComment(data.postId, data.message))
-    // if the threads dropdown isn't open, increment the unread count
+  messageAdded = data => {
+    const { postId, message, oldUpdatedAt } = data
+    const { dispatch } = this.context
+    const { openedThreadId, threads, newCount } = this.props
+    const thisThreadOpen = openedThreadId === postId
+
+    const readThreadIds = threads => {
+      const filtered = filter(t => {
+        return t.last_read_at && new Date(t.id === postId ? oldUpdatedAt : t.updated_at) < new Date(t.last_read_at)
+      }, threads)
+      return map(t => t.id, filtered) 
+    }
+
+    if (this.state.open || thisThreadOpen) {
+      dispatch(appendComment(postId, message)) 
+    }
+    else {
+      if (!threads.length) {
+        dispatch(fetchPosts({ cacheId: 'threads', subject: 'threads'}))
+        .then(({ payload }) => { 
+          includes(readThreadIds(payload.posts), postId) && dispatch(incrementUnreadThreads()) 
+        })
+      }
+      else {
+        (includes(readThreadIds(threads), postId) || newCount === 0)  && dispatch(incrementUnreadThreads())
+        dispatch(appendComment(postId, message)) 
+      } 
+    }
   }
 
   render () {
     const { threads, pending, newCount } = this.props
     const { dispatch } = this.context
 
-    const resetCount = () =>
+    const onOpen = () => {
       dispatch(updateUserSettings({settings: {last_viewed_messages_at: new Date()}}))
+      this.setState({ open: true })
+    }
+    const onClose = () => this.setState({ open: false })
 
     return <Dropdown alignRight rivalrous='nav' className='thread-list'
       onFirstOpen={() => dispatch(fetchPosts({ cacheId: 'threads', subject: 'threads' }))}
-      onOpen={resetCount}
+      onOpen={onOpen}
+      onClose={onClose}
       toggleChildren={<span>
         <Icon name='Message-Smile'/>
         {newCount > 0 && <div className='badge'>{newCount}</div>}

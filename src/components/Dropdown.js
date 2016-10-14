@@ -23,6 +23,7 @@ export default class Dropdown extends React.Component {
     toggleChildren: object.isRequired,
     onFirstOpen: func,
     onOpen: func,
+    onClose: func,
     backdrop: bool,
     triangle: bool,
     openOnHover: bool,
@@ -70,7 +71,9 @@ export default class Dropdown extends React.Component {
   }
 
   hide = () => {
+    const { onClose } = this.props
     if (this.state.active) this.setState({active: false})
+    if (onClose) onClose()
     return true
   }
 

@@ -52,6 +52,8 @@ import {
   LOGIN,
   NAVIGATE,
   NOTIFY,
+  ON_THREAD_PAGE,
+  OFF_THREAD_PAGE,
   REMOVE_NOTIFICATION,
   RESET_ERROR,
   RESET_COMMUNITY_VALIDATION,
@@ -181,6 +183,17 @@ const combinedReducers = combineReducers({
         break
       case SET_SIGNUP_ERROR:
         if (payload) return {error: payload}
+    }
+    return state
+  },
+
+  openedThreadId: (state = null, action) => {
+    let { type, payload } = action
+    switch (type) {
+      case ON_THREAD_PAGE:
+        return payload.id 
+      case OFF_THREAD_PAGE:
+        return null
     }
     return state
   },

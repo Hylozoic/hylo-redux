@@ -94,6 +94,7 @@ export default function (state = {}, action) {
     case FOLLOW_POST_PENDING:
       return addOrRemovePersonId(state, id, personId, 'follower_ids')
     case APPEND_COMMENT:
+      if (!post) return state 
       return updatePostProps(state, id, {
         numComments: (post.numComments || 0) + 1,
         updated_at: new Date()

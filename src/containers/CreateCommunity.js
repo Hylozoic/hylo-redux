@@ -112,6 +112,7 @@ export class CreateCommunity extends React.Component {
       this.setState({
         generatedSlug: newGeneratedSlug
       })
+      this.resetValidation('slug')
       this.checkUnique('slug', newGeneratedSlug)
     }
   }

@@ -119,7 +119,8 @@ export default class Login extends React.Component {
   render () {
     const { actionError, location: { query }, community } = this.props
     const error = displayError(this.props.error)
-    const signupUrl = makeUrl('/signup', pick(query, 'next', 'action', 'id', 'token'))
+    const signupUrl = makeUrl('/signup', pick(query, 'next', 'action', 'id', 'token', 'email'))
+    const { email } = query
 
     return <ModalOnlyPage id='login' className='login-signup'>
       {community && <div className='modal-topper'>
@@ -133,7 +134,7 @@ export default class Login extends React.Component {
           <div className='oauth'>
             <ServiceAuthButtons errorAction={setLoginError}/>
           </div>
-          <ModalInput label='Email' ref='email'/>
+          <ModalInput label='Email' ref='email' defaultValue={email}/>
           <ModalInput label='Password' ref='password' type='password'/>
           <div className='footer'>
             <input ref='submit' type='submit' value='Log in'/>

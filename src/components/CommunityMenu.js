@@ -72,7 +72,7 @@ const CommunityMenu = ({ network, community }, { isMobile, dispatch, currentUser
           </li>)}
         </ul>
       </li>
-      <li className='join-or-start'>
+      <li className='start'>
         <div>
           <A to='/create'>Start your own community</A>
         </div>

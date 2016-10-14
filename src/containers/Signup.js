@@ -11,7 +11,7 @@ import { ModalInput } from '../components/ModalRow'
 import validator from 'validator'
 import { prefetchForNext, connectForNext, PostLoginRedirector } from './Login'
 import { STARTED_SIGNUP, trackEvent } from '../util/analytics'
-const { bool, func, object, string } = React.PropTypes
+const { func, object, string } = React.PropTypes
 
 @prefetchForNext
 @connectForNext('signup')
@@ -86,10 +86,11 @@ export default class Signup extends React.Component {
     }
 
     const { actionError, location: { query }, community } = this.props
-    const loginUrl = makeUrl('/login', pick(query, 'next', 'action', 'id', 'token'))
+    const loginUrl = makeUrl('/login', pick(query, 'next', 'action', 'id', 'token', 'email'))
     const subtitle = community ? null
       : `If you're trying to join an existing community, please use the special
         invitation link that you received from your community manager.`
+    const { email } = query
 
     return <ModalOnlyPage id='signup' className='login-signup'>
       <CommunityHeader community={community}/>
@@ -105,8 +106,8 @@ export default class Signup extends React.Component {
 
           <h4>Or sign up with email</h4>
 
-          <ModalInput label='Full name' ref='name' />
-          <ModalInput label='Email' ref='email' />
+          <ModalInput label='Full name' ref='name'/>
+          <ModalInput label='Email' ref='email' defaultValue={email}/>
           <ModalInput label='Password' ref='password' type='password'/>
           <div className='footer'>
             <input type='submit' value='Sign up'/>

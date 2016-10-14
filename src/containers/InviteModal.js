@@ -16,7 +16,8 @@ import { ModalInput } from '../components/ModalRow'
 import {
   updateInvitationEditor,
   sendCommunityInvitation,
-  clearInvitationEditor
+  clearInvitationEditor,
+  notify
 } from '../actions'
 import { fetchCommunity, updateCommunityChecklist } from '../actions/communities'
 import { INVITED_COMMUNITY_MEMBERS, trackEvent } from '../util/analytics'
@@ -125,6 +126,8 @@ export default class InviteModal extends React.Component {
         clearEditor()
         dispatch(updateCommunityChecklist(community.slug))
         close()
+        const clause = emails.length > 1 ? 's have' : ' has'
+        dispatch(notify(`Your invitation${clause} been sent`))
       })
     }
 

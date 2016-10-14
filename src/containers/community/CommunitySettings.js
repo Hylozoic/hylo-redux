@@ -406,15 +406,6 @@ export default class CommunitySettings extends React.Component {
             <input type='checkbox' checked={community.settings.all_can_invite} onChange={() => this.toggle('settings.all_can_invite')}/>
           </div>
         </div>
-        {hasFeature(currentUser, REQUEST_TO_JOIN_COMMUNITY) && <div className='section-item'>
-          <div className='half-column'>
-            <label>Allow people to discover and ask to join this community</label>
-            <p className='summary'>If this is enabled, non-members will be able to request to join this community. You can see <A to='/todo'>pending requests here</A>.</p>
-          </div>
-          <div className='half-column right-align'>
-            <input type='checkbox' checked={community.settings.discoverable} onChange={() => this.toggle('settings.discoverable')}/>
-          </div>
-        </div>}
         <div className='section-item'>
           <div className='full-column'>
             <label>Invitation code link</label>

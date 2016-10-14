@@ -3,7 +3,7 @@ import { humanDate } from '../../util/text'
 import A from '../../components/A'
 import Avatar from '../../components/Avatar'
 import ScrollListener from '../../components/ScrollListener'
-import { FETCH_JOIN_REQUESTS, fetchJoinRequests, approveJoinRequest } from '../../actions'
+import { FETCH_JOIN_REQUESTS, fetchJoinRequests, approveJoinRequest, notify } from '../../actions'
 import cx from 'classnames'
 import { get } from 'lodash'
 import { connect } from 'react-redux'
@@ -21,6 +21,13 @@ const JoinRequestList = connect((state, { id }) => ({
 
   const approve = userId =>
     dispatch(approveJoinRequest(userId, id))
+    .then(({ error }) => {
+      if (error) {
+        dispatch(notify('There was a problem approving this request; please try again later.', {type: 'error'}))
+      } else {
+        dispatch(notify('Request approved.'))
+      }
+    })
 
   return <div className='person-table'>
     <table>
@@ -47,7 +54,7 @@ const JoinRequestList = connect((state, { id }) => ({
     </table>
     <ScrollListener onBottom={loadMore}/>
     {offset >= total && <p className='summary'>
-      {total} pending requests to join.
+      {total} pending request{total > 1 && 's'} to join.
     </p>}
   </div>
 })

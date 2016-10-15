@@ -27,6 +27,7 @@ import { uploadImage } from '../../actions/uploadImage'
 import PersonChooser from '../../components/PersonChooser'
 import { communityJoinUrl } from '../../routes'
 import { makeUrl } from '../../util/navigation'
+import { position } from '../../util/scrolling'
 import InvitationList from './InvitationList'
 import JoinRequestList from './JoinRequestList'
 
@@ -169,6 +170,11 @@ export default class CommunitySettings extends React.Component {
   toggleSection = (section, open) => {
     const { dispatch, community: { slug } } = this.props
     let { expand } = this.state
+    let goToJoinRequests
+    if (section === 'join_requests') {
+      section = 'access'
+      goToJoinRequests = true
+    }
     if (open || !expand[section]) {
       switch (section) {
         case 'access':
@@ -181,6 +187,13 @@ export default class CommunitySettings extends React.Component {
       }
     }
     this.setState({expand: {...expand, [section]: open || !expand[section]}})
+    if (goToJoinRequests) {
+      setTimeout(() => {
+        if (this.refs.joinRequests) {
+          window.scrollTo(0, position(this.refs.joinRequests).y + 400)
+        }
+      }, 1000)
+    }
   }
 
   addModerator = person => {
@@ -406,15 +419,6 @@ export default class CommunitySettings extends React.Component {
             <input type='checkbox' checked={community.settings.all_can_invite} onChange={() => this.toggle('settings.all_can_invite')}/>
           </div>
         </div>
-        {hasFeature(currentUser, REQUEST_TO_JOIN_COMMUNITY) && <div className='section-item'>
-          <div className='half-column'>
-            <label>Allow people to discover and ask to join this community</label>
-            <p className='summary'>If this is enabled, non-members will be able to request to join this community. You can see <A to='/todo'>pending requests here</A>.</p>
-          </div>
-          <div className='half-column right-align'>
-            <input type='checkbox' checked={community.settings.discoverable} onChange={() => this.toggle('settings.discoverable')}/>
-          </div>
-        </div>}
         <div className='section-item'>
           <div className='full-column'>
             <label>Invitation code link</label>
@@ -438,7 +442,7 @@ export default class CommunitySettings extends React.Component {
             </div>
           </div>}
         {hasFeature(currentUser, REQUEST_TO_JOIN_COMMUNITY) && !isEmpty(joinRequests) &&
-          <div className='section-item'>
+          <div className='section-item' ref='joinRequests'>
             <div className='full-column'>
               <label>Pending requests</label>
               <p className='summary'>These are people who have requested to join. Use the button to approve.</p>

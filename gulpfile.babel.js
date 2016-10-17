@@ -1,5 +1,4 @@
 import gulp from 'gulp'
-import nodemon from 'gulp-nodemon'
 import livereload from 'gulp-livereload'
 import { watch, bundle } from './tasks/browserify'
 import { lessDev, lessDist } from './tasks/less'
@@ -8,7 +7,7 @@ import { debounce } from 'lodash'
 import upload from './tasks/upload'
 import updateHeroku from './tasks/updateHeroku'
 import loadHerokuEnv from './tasks/loadHerokuEnv'
-import rev from 'gulp-rev'
+import { writeToManifest } from './tasks/util'
 import { exec } from 'shelljs'
 import runSequence from 'run-sequence'
 const seq = (...args) => done => runSequence(...args, done)
@@ -20,7 +19,7 @@ gulp.task('watch-js', watch)
 gulp.task('build-dev-css', lessDev)
 
 gulp.task('serve', function () {
-  nodemon({
+  require('nodemon')({
     script: './src/server',
     exec: './node_modules/.bin/babel-node',
     ignore: ['public/**/*', 'dist/**/*']
@@ -63,11 +62,8 @@ gulp.task('clean-dist', function () {
 })
 
 gulp.task('copy-dist-images', function () {
-  return gulp.src('public/img/**/*', {base: 'public'})
-  .pipe(rev())
-  .pipe(gulp.dest('dist'))
-  .pipe(rev.manifest({base: 'dist', path: 'dist/manifest.json', merge: true}))
-  .pipe(gulp.dest('dist'))
+  const task = gulp.src('public/img/**/*', {base: 'public'})
+  return writeToManifest(task)
 })
 
 gulp.task('dotenv', () => require('dotenv').load())

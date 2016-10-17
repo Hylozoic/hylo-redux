@@ -19,7 +19,7 @@ import gutil from 'gulp-util'
 import sourcemaps from 'gulp-sourcemaps'
 import streamify from 'gulp-streamify'
 import uglify from 'gulp-uglify'
-import rev from 'gulp-rev'
+import { writeToManifest } from './util'
 
 const opts = {
   entries: ['./src/client']
@@ -53,7 +53,7 @@ export function watch () {
 }
 
 export function bundle () {
-  return setup(browserify(opts))
+  const task = setup(browserify(opts))
   .transform('uglifyify')
   .bundle()
   .on('error', gutil.log.bind(gutil, 'Browserify error'))
@@ -61,9 +61,6 @@ export function bundle () {
   .pipe(buffer())
   .pipe(sourcemaps.init({loadMaps: true}))
   .pipe(streamify(uglify()))
-  .pipe(rev())
-  .pipe(sourcemaps.write('./'))
-  .pipe(gulp.dest('dist'))
-  .pipe(rev.manifest({base: 'dist', path: 'dist/manifest.json', merge: true}))
-  .pipe(gulp.dest('dist'))
+
+  return writeToManifest(task, true)
 }

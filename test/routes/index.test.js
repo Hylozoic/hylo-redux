@@ -1,3 +1,4 @@
+require('../support')
 import { tagUrlComponents } from '../../src/routes'
 
 describe('tagUrlComponents', () => {

@@ -118,6 +118,7 @@
     "randomstring": "^1.1.5",
     "react-addons-test-utils": "^15.0.2",
     "react-proxy": "^1.1.1",
+    "remove": "^0.1.5",
     "rework-plugin-url": "^1.1.0",
     "run-sequence": "^1.1.5",
     "shelljs": "^0.7.3",

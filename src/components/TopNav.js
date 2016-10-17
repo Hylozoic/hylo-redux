@@ -102,11 +102,12 @@ export default class TopNav extends React.Component {
 
     return <VelocityComponent animation={moveWithMenu} easing={leftNavEasing}>
       <nav id='topNav' className={cx('clearfix', {scrolling: this.state.isScrolling})}>
-        {isMobile
+        {currentUser && (isMobile
           ? <MenuButton onClick={openLeftNav} label={label} notificationCount={notificationCount}/>
           : <VelocityComponent animation={widenMenuButton} easing={leftNavEasing}>
               <MenuButton onClick={openLeftNav} notificationCount={notificationCount}/>
-            </VelocityComponent>}
+            </VelocityComponent>)}
+
         {currentUser
         ? <UserMenu {...{newNotificationCount, newMessageCount, slug}}/>
         : <ul className='right'>

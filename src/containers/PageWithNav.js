@@ -53,12 +53,12 @@ const PageWithNav = (props, context) => {
   const tagNotificationCount = filter(tag => tag.new_post_count > 0, tags).length
 
   return <div>
-    <LeftNav opened={leftNavIsOpen}
+    {currentUser && <LeftNav opened={leftNavIsOpen}
       links={links}
       community={community}
       network={network}
       tags={tags}
-      close={closeLeftNav}/>
+      close={closeLeftNav}/>}
 
     <TopNav currentUser={currentUser}
       links={links}

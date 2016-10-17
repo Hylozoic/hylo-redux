@@ -1,6 +1,6 @@
 import { composeReducers } from './util'
 import { get } from 'lodash'
-import { isNull, omitBy } from 'lodash/fp'
+import { isNull, isUndefined, omitBy } from 'lodash/fp'
 import { debug } from '../util/logging'
 import {
   ADD_DATA_TO_STORE,
@@ -14,7 +14,7 @@ import { mergeList } from './util'
 import currentUserReducer from './currentUser'
 
 export const normalize = person => {
-  return omitBy(isNull, {
+  return omitBy(x => isNull(x) || isUndefined(x), {
     ...person,
     recent_request: null,
     recent_offer: null,

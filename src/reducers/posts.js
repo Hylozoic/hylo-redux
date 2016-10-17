@@ -17,10 +17,10 @@ import {
   VOTE_ON_POST_PENDING
 } from '../actions'
 import { compact, omit, find, some, without, map, uniq } from 'lodash'
-import { get, isNull, omitBy } from 'lodash/fp'
+import { get, isNull, isUndefined, omitBy } from 'lodash/fp'
 import { addOrRemovePersonId, mergeList } from './util'
 
-const normalize = (post) => omitBy(isNull, {
+const normalize = (post) => omitBy(x => isNull(x) || isUndefined(x), {
   ...post,
   children: post.children ? map(post.children, c => c.id) : null, // FIXME should be child_ids
   numComments: post.num_comments || post.numComments,

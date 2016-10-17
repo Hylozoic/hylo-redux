@@ -6,7 +6,7 @@ import { commentUrl, peopleUrl } from '../../routes'
 import { FETCH_PERSON, fetchPerson, fetchThanks, navigate, showDirectMessage } from '../../actions'
 import { saveCurrentCommunityId } from '../../actions/util'
 import { capitalize, compact, get, some, includes } from 'lodash'
-import { isNull, map, omitBy, sortBy } from 'lodash/fp'
+import { isNull, isUndefined, map, omitBy, sortBy } from 'lodash/fp'
 import { VIEWED_PERSON, VIEWED_SELF, trackEvent } from '../../util/analytics'
 import { findError } from '../../actions/util'
 import PostList from '../../components/PostList'
@@ -76,7 +76,7 @@ const PersonProfile = compose(
   }),
   connect((state, { params: { id } }) => {
     const person = state.people[id]
-    return omitBy(isNull, {
+    return omitBy(x => isNull(x) || isUndefined(x), {
       person,
       currentUser: state.people.current,
       community: getCurrentCommunity(state),

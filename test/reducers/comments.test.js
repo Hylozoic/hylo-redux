@@ -76,14 +76,14 @@ describe('comments', () => {
     })
 
     it('extracts comments and appends to state', () => {
-      store.dispatch(action)
+      return store.dispatch(action)
       .then(() => {
         const { comments, activities } = store.getState()
 
         expect(comments).to.deep.equal({
           '1': {id: '1', text: 'foo'},
           '2': {id: '2', user_id: '7', text: 'bar'},
-          '3': {id: '3', text: 'baz', user: {id: 'a', name: 'Alf'}}
+          '3': {id: '3', text: 'baz'}
         })
 
         expect(activities).to.deep.equal({

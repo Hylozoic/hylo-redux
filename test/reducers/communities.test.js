@@ -48,7 +48,7 @@ describe('communities', () => {
         c3: {id: 'c3', slug: 'c3'}
       }
 
-      store.dispatch(action)
+      return store.dispatch(action)
       .then(() => {
         expect(store.getState().communities).to.deep.equal(expectedState)
       })

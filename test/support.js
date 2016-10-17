@@ -59,7 +59,7 @@ export const helpers = {
 
   mockActionResponse: (action, resp) => {
     const { HOST } = require('../src/util/api')
-    let { method, path } = action
+    let { method, path } = action.payload
     method = (method || 'get').toLowerCase()
     nock(HOST)[method](path).reply(200, resp)
   }

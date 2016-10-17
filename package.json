@@ -46,7 +46,7 @@
     "dotenv": "^2.0.0",
     "ent": "^2.2.0",
     "express": "^4.13.3",
-    "history": "^3.0.0",
+    "history": "^4.2.0",
     "hylo-utils": "Hylozoic/hylo-utils",
     "imagesloaded": "^4.1.0",
     "isomorphic-fetch": "^2.2.0",

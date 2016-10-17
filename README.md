@@ -52,6 +52,7 @@ Create a file named `.env.deploy` in the project root, or get the variables belo
 ```
 HEROKU_API_TOKEN=some_token
 HEROKU_APP_NAME=some_app_name
+DIST_PATH=dist
 ```
 The specified token should be one that has access to the specified app.
 

@@ -1,9 +1,9 @@
-import { mocks, helpers } from '../support'
+import { mocks } from '../support'
 import { FETCH_TAG } from '../../src/actions'
 import TagPosts from '../../src/containers/tag/TagPosts'
 import { renderToString } from 'react-dom/server'
 import cheerio from 'cheerio'
-const { createElement } = helpers
+import { createElement } from '../support/helpers'
 
 describe('TagPosts', () => {
   describe('with a 404 on FETCH_TAG', () => {

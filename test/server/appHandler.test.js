@@ -1,4 +1,4 @@
-import { helpers, mocks } from '../support'
+import { mocks } from '../support'
 import nock from 'nock'
 import { inspect } from 'util'
 import { get } from 'lodash'
@@ -8,6 +8,7 @@ import { fetchPost } from '../../src/actions/posts'
 import { fetchCurrentUser } from '../../src/actions'
 import { HOST } from '../../src/util/api'
 import cheerio from 'cheerio'
+import { mockActionResponse } from '../support/helpers'
 
 const checkError = res => {
   if (res.statusCode === 500) {
@@ -157,8 +158,8 @@ describe('appHandler', () => {
         user: {name: ''},
         created_at: new Date()
       }
-      helpers.mockActionResponse(fetchPost(1), post)
-      helpers.mockActionResponse(fetchCurrentUser(), {})
+      mockActionResponse(fetchPost(1), post)
+      mockActionResponse(fetchCurrentUser(), {})
     })
 
     it('displays the post', () => {

@@ -1,4 +1,4 @@
-import { helpers } from '../support'
+require('../support')
 import communities from '../../src/reducers/communities'
 import {
   ADD_COMMUNITY_MODERATOR_PENDING,
@@ -8,6 +8,7 @@ import {
   fetchCurrentUser
 } from '../../src/actions'
 import { configureStore } from '../../src/store'
+import { mockActionResponse } from '../support/helpers'
 
 const community1 = {
   id: 'c1',
@@ -31,7 +32,7 @@ describe('communities', () => {
         }
       }).store
 
-      helpers.mockActionResponse(action, {
+      mockActionResponse(action, {
         id: 1,
         memberships: [
           {community_id: c1.id},

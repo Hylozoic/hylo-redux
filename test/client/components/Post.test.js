@@ -1,5 +1,6 @@
 require('../support')
-import { mocks, helpers } from '../../support'
+import { mocks } from '../../support'
+import { createElement } from '../../support/helpers'
 import Post from '../../../src/components/Post'
 import {
   findRenderedDOMComponentWithClass,
@@ -59,7 +60,7 @@ describe('Post', () => {
     const props = {post, expanded: true}
     const store = mocks.redux.store(state)
     const context = {store, dispatch: store.dispatch}
-    let component = helpers.createElement(Post, props, context)
+    let component = createElement(Post, props, context)
     let node = renderIntoDocument(component)
     findRenderedDOMComponentWithClass(node, 'post')
     let details = findRenderedDOMComponentWithClass(node, 'details')
@@ -79,7 +80,7 @@ describe('Post', () => {
       }
     })
     const context = {store, dispatch: store.dispatch}
-    let component = helpers.createElement(Post, props, context)
+    let component = createElement(Post, props, context)
     let node = renderIntoDocument(component)
     findRenderedDOMComponentWithClass(node, 'post')
     let details = findRenderedDOMComponentWithClass(node, 'details')
@@ -93,7 +94,7 @@ describe('Post', () => {
     const props = {post: post2}
     const store = mocks.redux.store(state)
     const context = {store, dispatch: store.dispatch}
-    let component = helpers.createElement(Post, props, context)
+    let component = createElement(Post, props, context)
     let node = renderIntoDocument(component)
     let communities = findRenderedDOMComponentWithClass(node, 'communities')
     let expected = '&nbsp;in <a>Foomunity</a><span> + </span><div class="dropdown post-communities-dropdown" tabindex="99"><a class="dropdown-toggle"><span>3 others</span></a><ul class="dropdown-menu"></ul><span></span></div>'

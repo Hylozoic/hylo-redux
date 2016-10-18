@@ -2,13 +2,12 @@ require('../support')
 import React from 'react'
 import { mount } from 'enzyme'
 import { configureStore } from '../../../src/store'
-import { helpers } from '../../support'
 import App from '../../../src/containers/App.js'
 import ShareTopicModal from '../../../src/containers/ShareTopicModal.js'
 import {
   renderIntoDocument, findRenderedDOMComponentWithClass
 } from 'react-addons-test-utils'
-const { createElement } = helpers
+import { createElement } from '../../support/helpers'
 import { keyMap } from '../../../src/util/textInput'
 
 describe('ShareTopicModal', () => {

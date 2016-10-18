@@ -1,9 +1,9 @@
-import { mocks, helpers } from '../support'
+import { mocks } from '../support'
 import { sample, times } from 'lodash'
 import { renderToString } from 'react-dom/server'
 import PostList from '../../src/components/PostList'
 import cheerio from 'cheerio'
-const { createElement } = helpers
+import { createElement } from '../support/helpers'
 const { user } = mocks.models
 
 const user1 = user()

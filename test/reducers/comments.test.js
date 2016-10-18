@@ -1,4 +1,4 @@
-import { helpers } from '../support'
+require('../support')
 import comments from '../../src/reducers/comments'
 import {
   FETCH_COMMENTS,
@@ -7,6 +7,7 @@ import {
 } from '../../src/actions'
 import { fetchActivity } from '../../src/actions/activity'
 import { configureStore } from '../../src/store'
+import { mockActionResponse } from '../support/helpers'
 
 describe('comments', () => {
   describe('on FETCH_COMMENTS', () => {
@@ -66,7 +67,7 @@ describe('comments', () => {
           '2': {id: '2', user_id: '7'}
         }
       }).store
-      helpers.mockActionResponse(action, {
+      mockActionResponse(action, {
         items: [
           {id: '20', comment: {id: '2', text: 'bar'}},
           {id: '30', comment: {id: '3', text: 'baz'}},

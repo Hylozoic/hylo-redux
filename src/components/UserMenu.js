@@ -53,6 +53,7 @@ class SearchMenuItem extends React.Component {
 }
 
 const UserMenu = ({ slug, newMessageCount, newNotificationCount }, { isMobile, dispatch, currentUser }) => {
+  const {settings:{last_viewed_messages_at}} = currentUser
   const doLogout = () => {
     calliOSBridge({type: 'logout'})
     dispatch(navigate('/login'))
@@ -65,7 +66,7 @@ const UserMenu = ({ slug, newMessageCount, newNotificationCount }, { isMobile, d
 
     {currentUser && hasFeature(currentUser, DIRECT_MESSAGES) &&
       <li className='nav-notify-dropdown'>
-        <ThreadsDropdown newCount={newMessageCount}/>
+        <ThreadsDropdown lastViewed={last_viewed_messages_at} newCount={newMessageCount}/>
       </li>}
 
     <li className='nav-notify-dropdown'>

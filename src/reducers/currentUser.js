@@ -7,9 +7,11 @@ import {
   FETCH_CURRENT_USER,
   FETCH_LIVE_STATUS,
   JOIN_COMMUNITY_WITH_CODE,
+  INCREMENT_UNSEEN_THREADS,
   LEAVE_COMMUNITY_PENDING,
   LOGIN,
   LOGOUT,
+  SET_UNSEEN_THREAD_COUNT,
   SIGNUP,
   UPDATE_USER_SETTINGS_PENDING,
   UPDATE_COMMUNITY_SETTINGS_PENDING,
@@ -83,6 +85,16 @@ export default function (state = null, action) {
     case FETCH_LIVE_STATUS:
       const { new_notification_count } = payload
       return new_notification_count ? {...state, new_notification_count} : state
+    case INCREMENT_UNSEEN_THREADS:
+      return {
+        ...state,
+        new_message_count: state.new_message_count + 1
+      }
+    case SET_UNSEEN_THREAD_COUNT:
+      return {
+        ...state,
+        new_message_count: payload.count
+      }
     case UPDATE_MEMBERSHIP_SETTINGS_PENDING:
       return {
         ...state,

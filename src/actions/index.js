@@ -7,6 +7,7 @@ export const ADD_COMMUNITY_MODERATOR = 'ADD_COMMUNITY_MODERATOR'
 export const ADD_COMMUNITY_MODERATOR_PENDING = ADD_COMMUNITY_MODERATOR + _PENDING
 export const ADD_DATA_TO_STORE = 'ADD_DATA_TO_STORE'
 export const APPEND_COMMENT = 'APPEND_COMMENT'
+export const APPEND_THREAD = 'APPEND_THREAD'
 export const APPROVE_JOIN_REQUEST = 'APPROVE_JOIN_REQUEST'
 export const APPROVE_JOIN_REQUEST_PENDING = APPROVE_JOIN_REQUEST + _PENDING
 export const CANCEL_POST_EDIT = 'CANCEL_POST_EDIT'
@@ -63,6 +64,7 @@ export const FOLLOW_POST_PENDING = FOLLOW_POST + _PENDING
 export const FOLLOW_TAG = 'FOLLOW_TAG'
 export const FOLLOW_TAG_PENDING = FOLLOW_TAG + _PENDING
 export const HIDE_TAG_POPOVER = 'HIDE_TAG_POPOVER'
+export const INCREMENT_UNSEEN_THREADS = 'INCREMENT_UNSEEN_THREADS'
 export const JOIN_COMMUNITY_WITH_CODE = 'JOIN_COMMUNITY_WITH_CODE'
 export const LEAVE_COMMUNITY = 'LEAVE_COMMUNITY'
 export const LEAVE_COMMUNITY_PENDING = LEAVE_COMMUNITY + _PENDING
@@ -74,6 +76,8 @@ export const MARK_ALL_ACTIVITIES_READ = 'MARK_ALL_ACTIVITIES_READ'
 export const MARK_ALL_ACTIVITIES_READ_PENDING = MARK_ALL_ACTIVITIES_READ + _PENDING
 export const NAVIGATE = 'NAVIGATE'
 export const NOTIFY = 'NOTIFY'
+export const ON_THREAD_PAGE = 'ON_THREAD_PAGE'
+export const OFF_THREAD_PAGE = 'OFF_THREAD_PAGE'
 export const PIN_POST = 'PIN_POST'
 export const PIN_POST_PENDING = 'PIN_POST' + _PENDING
 export const REGISTER_TOOLTIP = 'REGISTER_TOOLTIP'
@@ -92,6 +96,7 @@ export const RESET_COMMUNITY_VALIDATION = 'RESET_COMMUNITY_VALIDATION'
 export const RESET_ERROR = 'RESET_ERROR'
 export const RESET_NETWORK_VALIDATION = 'RESET_NETWORK_VALIDATION'
 export const SET_STATE = 'SET_STATE'
+export const SET_UNSEEN_THREAD_COUNT = 'SET_UNSEEN_THREAD_COUNT'
 export const SEARCH = 'SEARCH'
 export const SEND_COMMUNITY_INVITATION = 'SEND_COMMUNITY_INVITATION'
 export const SEND_COMMUNITY_TAG_INVITATION = 'SEND_COMMUNITY_TAG_INVITATION'
@@ -546,5 +551,18 @@ export function approveJoinRequest (userId, slug) {
     type: APPROVE_JOIN_REQUEST,
     payload: {api: true, params: {userId}, path: `/noo/community/${slug}/approve-join-request`, method: 'post'},
     meta: {userId, slug, optimistic: true}
+  }
+}
+
+export function incrementUnseenThreads () {
+  return {
+    type: INCREMENT_UNSEEN_THREADS
+  }
+}
+
+export function setUnseenThreadCount (count) {
+  return {
+    type: SET_UNSEEN_THREAD_COUNT,
+    payload: { count }
   }
 }

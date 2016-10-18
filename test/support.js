@@ -11,6 +11,10 @@ chai.use(require('chai-spies'))
 global.expect = chai.expect
 global.spy = chai.spy
 
+afterEach(() => {
+  nock.cleanAll()
+})
+
 const createElement = (componentClass, props, context) => {
   context = {
     dispatch: get(context, 'store.dispatch'),

@@ -39,6 +39,7 @@ export default class Thread extends React.Component {
   }
 
   componentWillReceiveProps (nextProps) {
+    const { dispatch } = this.props
     const oldId = get('post.id', this.props)
     const newId = get('post.id', nextProps)
     if (newId !== oldId) {

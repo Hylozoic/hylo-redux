@@ -10,7 +10,12 @@ import {
 export function appendThread (thread) {
   return {
     type: APPEND_THREAD,
-    payload: thread 
+    payload: thread,
+    meta: {
+      addDataToStore: {
+        people: get('people')
+      }
+    }
   }
 }
 

@@ -4,10 +4,11 @@ import { includes, isEmpty } from 'lodash'
 import { compact, filter, flow, map, sortBy } from 'lodash/fp'
 import cx from 'classnames'
 import { threadUrl } from '../routes'
-import { FETCH_POSTS, incrementUnreadThreads, showDirectMessage, updateUserSettings } from '../actions'
+import { FETCH_POSTS, setUnseenThreadCount, incrementUnseenThreads, showDirectMessage, updateUserSettings } from '../actions'
 import { appendComment } from '../actions/comments'
 import { appendThread } from '../actions/threads'
 import { fetchPosts } from '../actions/fetchPosts'
+import { unseenThreadCount } from '../util/threads'
 import { getComments, getPost, denormalizedPost } from '../models/post'
 const { number, bool, string, array, func, object } = React.PropTypes
 import A from '../components/A'
@@ -41,6 +42,7 @@ export class ThreadsDropdown extends React.Component {
     openedThreadId: string,
     threads: array,
     pending: bool,
+    lastViewed: string,
     newCount: number 
   }
 
@@ -76,38 +78,31 @@ export class ThreadsDropdown extends React.Component {
     const { dispatch } = this.context
     dispatch(appendThread(thread))
     if (!this.state.open) {
-      dispatch(incrementUnreadThreads()) 
+      dispatch(incrementUnseenThreads()) 
     }
   }
 
+  setUnseen = (threads, lastViewed) =>
+    this.context.dispatch(setUnseenThreadCount(unseenThreadCount(threads, lastViewed))) 
+
   messageAdded = data => {
-    const { postId, message, oldUpdatedAt } = data
+    const { postId, message } = data
     const { dispatch } = this.context
-    const { openedThreadId, threads, newCount } = this.props
+    const setUnseen = this.setUnseen
+    const { lastViewed, openedThreadId, threads, newCount } = this.props
     const thisThreadOpen = openedThreadId === postId
 
-    const readThreadIds = threads => {
-      const filtered = filter(t => {
-        return t.last_read_at && new Date(t.id === postId ? oldUpdatedAt : t.updated_at) < new Date(t.last_read_at)
-      }, threads)
-      return map(t => t.id, filtered) 
-    }
+    if (this.state.open || thisThreadOpen) return dispatch(appendComment(postId, message)) 
 
-    if (this.state.open || thisThreadOpen) {
-      dispatch(appendComment(postId, message)) 
+    if (!threads.length) { // or you don't have the thread in question?
+      dispatch(fetchPosts({ cacheId: 'threads', subject: 'threads'}))
+      .then(({ payload }) => setUnseen(payload.posts, lastViewed))
     }
     else {
-      if (!threads.length) {
-        dispatch(fetchPosts({ cacheId: 'threads', subject: 'threads'}))
-        .then(({ payload }) => { 
-          includes(readThreadIds(payload.posts), postId) && dispatch(incrementUnreadThreads()) 
-        })
-      }
-      else {
-        (includes(readThreadIds(threads), postId) || newCount === 0)  && dispatch(incrementUnreadThreads())
-        dispatch(appendComment(postId, message)) 
-      } 
-    }
+      dispatch(appendComment(postId, message)) 
+      const updatedThreads = map(t => t.id === postId ? { ...t, updated_at: message.created_at } : t, threads)
+      setUnseen(updatedThreads, lastViewed)
+    } 
   }
 
   render () {
@@ -115,7 +110,7 @@ export class ThreadsDropdown extends React.Component {
     const { dispatch } = this.context
 
     const onOpen = () => {
-      dispatch(updateUserSettings({settings: {last_viewed_messages_at: new Date()}}))
+      dispatch(updateUserSettings({settings: {last_viewed_messages_at: new Date().toISOString()}}))
       this.setState({ open: true })
     }
     const onClose = () => this.setState({ open: false })

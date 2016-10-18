@@ -97,14 +97,14 @@ export default function (state = {}, action) {
       if (!post) return state 
       return updatePostProps(state, id, {
         numComments: (post.numComments || 0) + 1,
-        updated_at: new Date()
+        updated_at: new Date().toISOString()
       })
     case CREATE_COMMENT:
       return updatePostProps(state, id, {
         follower_ids: uniq((post.follower_ids || []).concat(payload.user_id)),
         numComments: (post.numComments || 0) + 1,
-        updated_at: new Date(),
-        last_read_at: new Date()
+        updated_at: new Date().toISOString(),
+        last_read_at: new Date().toISOString()
       })
     case REMOVE_COMMENT:
       return updatePostProps(state, postId, {
@@ -128,10 +128,10 @@ export default function (state = {}, action) {
       }
     case COMPLETE_POST_PENDING:
       return updatePostProps(state, id, {
-        fulfilled_at: post.fulfilled_at ? null : new Date()
+        fulfilled_at: post.fulfilled_at ? null : new Date().toISOString()
       })
     case UPDATE_POST_READ_TIME:
-      return updatePostProps(state, id, {last_read_at: new Date()})
+      return updatePostProps(state, id, {last_read_at: new Date().toISOString()})
   }
   return state
 }

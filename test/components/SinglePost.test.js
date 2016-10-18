@@ -2,10 +2,8 @@ require('../support')
 import SinglePost from '../../src/containers/SinglePost'
 import { fetchPost, unfollowPost } from '../../src/actions/posts'
 import { configureStore } from '../../src/store'
-import { renderToString } from 'react-dom/server'
-import cheerio from 'cheerio'
 import { getPrefetchedData } from 'react-fetcher'
-import { createElement, mockActionResponse } from '../support/helpers'
+import { mockActionResponse } from '../support/helpers'
 
 const bob = {id: '2', name: 'bob'}
 const eva = {id: '5', name: 'eva'}
@@ -13,7 +11,7 @@ const post = {id: '1', name: 'foo', user_id: bob.id, follower_ids: [eva.id]}
 
 describe('SinglePost', () => {
   describe('with action=unfollow query param', () => {
-    var component, store, params, query
+    var store, params, query
 
     before(() => {
       store = configureStore({
@@ -24,8 +22,6 @@ describe('SinglePost', () => {
       mockActionResponse(unfollowPost(post.id, eva.id), {})
       params = {id: post.id}
       query = {action: 'unfollow'}
-      const props = {params, query, location: {query, search: '?action=unfollow'}}
-      component = createElement(SinglePost, props, {store})
     })
 
     it('unfollows the post', () => {
@@ -33,7 +29,6 @@ describe('SinglePost', () => {
         store, params, query, dispatch: store.dispatch
       })
       .then(() => {
-        renderToString(component)
         const state = store.getState()
         expect(state.posts[post.id].follower_ids).to.be.empty
         const message = state.notifierMessages[0]

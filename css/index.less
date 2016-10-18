@@ -926,6 +926,11 @@ ul.tags {
     list-style-type: none;
     .clearfix;
 
+    &.show-more {
+      padding: 10px 25px;
+      min-height: 0px;
+    }
+
     .name {
       display: block;
       .medium;
@@ -963,6 +968,10 @@ ul.tags {
       position: relative;
       top: -1px;
       vertical-align: middle;
+      &.show-more {
+        color: @damian-green;
+        border-color: @damian-green;
+      }
       &.unfollow {
         padding: 0 16px 0 20px;
       }

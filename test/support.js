@@ -59,7 +59,10 @@ export const helpers = {
 
   mockActionResponse: (action, resp) => {
     const { HOST } = require('../src/util/api')
-    let { method, path } = action.payload
+    let { method, path, api } = action.payload || {}
+    if (!api) {
+      throw new Error("Can't use mockActionResponse with a non-API action")
+    }
     method = (method || 'get').toLowerCase()
     nock(HOST)[method](path).reply(200, resp)
   }

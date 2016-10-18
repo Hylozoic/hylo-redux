@@ -2,7 +2,13 @@ import React from 'react'
 import { prefetch } from 'react-fetcher'
 import { connect } from 'react-redux'
 import { get } from 'lodash'
+import { CommunityHeader } from '../Signup'
+import SkillsPrompt from '../onboarding/SkillsPrompt'
+import Modal from '../../components/Modal'
+import A from '../../components/A'
+import ModalOnlyPage from '../../components/ModalOnlyPage'
 import { USE_INVITATION, useInvitation } from '../../actions'
+import { defaultAvatar } from '../../models/community'
 import { navigateAfterJoin } from '../../util/navigation'
 const { func, object, string } = React.PropTypes
 
@@ -32,10 +38,19 @@ export default class InvitationHandler extends React.Component {
         break
     }
 
-    return <div>
-      {tokenError
-        ? <div className='alert alert-danger'>{errorMessage}</div>
-        : <div>Loading...</div>}
-    </div>
+    const mockCommunity = {name: '... checking invitation link...', avatar_url: defaultAvatar}
+    const mockLocation = {pathname: '', query: {}}
+
+    if (tokenError) {
+      return <ModalOnlyPage id='invitation-error' className='login-signup'>
+        <CommunityHeader community={mockCommunity}/>
+        <Modal standalone>
+            <div className='alert alert-danger'>{errorMessage}</div>
+            <div className='modal-input'><A to='/app'>Click here</A> to view your communities</div>
+        </Modal>
+      </ModalOnlyPage>
+    } else {
+      return <SkillsPrompt location={mockLocation} community={mockCommunity}/>
+    }
   }
 }

@@ -13,7 +13,7 @@ Experimental version of the Hylo.com frontend, written with React and Redux.
 * better management of complexity
   * as always: less coupling, more adaptability
 
-## Usage
+## Development
 
 Use node ^6.2.2.
 
@@ -26,11 +26,23 @@ UPSTREAM_HOST=http://localhost:3001
 LOG_LEVEL=debug
 ```
 
-Create a file named `.env.test` with the same contents, except with `LOG_LEVEL` changed to `warn`, to reduce noise when running tests.
-
 Then it's just the usual: `npm install`, `npm start`, `npm test`.
 
 It depends on a running instance of [hylo-node](https://github.com/Hylozoic/hylo-node), the location of which is set with `UPSTREAM_HOST`.
+
+## Testing
+
+Create a file named `.env.test` with similar contents as `.env` above:
+```
+ASSET_HOST=http://test-asset-host
+ASSET_PATH=test-assets
+DIST_PATH=dist-test
+NODE_ENV=test
+LOG_LEVEL=warn # change to "info" to get a lot more console output
+UPSTREAM_HOST=http://test.host
+```
+
+Run all the tests with `npm test`; run only the server-side tests with `npm run test-server`; run only the client-side tests (which use jsdom to simulate a browser) with `npm run test-client`. You can run a single test file with `npm run test-server -- filename.js`.
 
 ## Deployment
 
@@ -40,6 +52,7 @@ Create a file named `.env.deploy` in the project root, or get the variables belo
 ```
 HEROKU_API_TOKEN=some_token
 HEROKU_APP_NAME=some_app_name
+DIST_PATH=dist
 ```
 The specified token should be one that has access to the specified app.
 
@@ -60,7 +73,7 @@ We use `gulp-rev` to create "fingerprinted" static assets (CSS, JS, and images),
 
 The final path to each static asset is determined with the use of the environment variables `ASSET_HOST` and `ASSET_PATH`. See `util/assets.js`.
 
-If you want to test asset management in development, set `ASSET_PATH` to `dist`, leave `ASSET_HOST` blank, and `USE_ASSET_MANIFEST` to anything. Create a symlink from `$PROJECT_ROOT/public/dist` to `$PROJECT_ROOT/dist`. You will then have to run `gulp build-dev` to regenerate fingerprinted assets and `manifest.json` after any changes.
+If you want to test asset management in development, set `ASSET_PATH` to any value (e.g `dist-dev`), leave `ASSET_HOST` blank, and `USE_ASSET_MANIFEST` to 1. You will then have to run `gulp build-dev` to regenerate fingerprinted assets and `manifest.json` after any changes.
 
 If you want to have your development instance point to assets that were deployed to production (e.g. to test a production issue), set `ASSET_HOST`, `ASSET_PATH`, `SOURCE_VERSION`, and `USE_ASSET_MANIFEST` to match their values in production. Also set `NODE_ENV` to 'production'.
 

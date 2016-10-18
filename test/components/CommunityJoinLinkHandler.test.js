@@ -1,10 +1,10 @@
-import { mocks, helpers } from '../support'
+import { mocks } from '../support'
 import CommunityJoinLinkHandler from '../../src/containers/community/CommunityJoinLinkHandler'
 import { renderToString } from 'react-dom/server'
 import cheerio from 'cheerio'
 import { JOIN_COMMUNITY_WITH_CODE } from '../../src/actions'
 import { getPrefetchedData } from 'react-fetcher'
-const { createElement } = helpers
+import { createElement } from '../support/helpers'
 import { configureStore } from '../../src/store'
 import { getUrlFromLocation } from '../../src/util/navigation'
 import { HOST } from '../../src/util/api'

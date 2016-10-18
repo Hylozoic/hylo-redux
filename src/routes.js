@@ -10,7 +10,6 @@ import Projects from './containers/Projects'
 import { CreateCommunity, CreateCommunityInvite } from './containers/CreateCommunity'
 import CommunityProfile from './containers/community/CommunityProfile'
 import CommunityPosts from './containers/community/CommunityPosts'
-import CommunityJoinForm from './containers/community/CommunityJoinForm'
 import CommunityJoinLinkHandler from './containers/community/CommunityJoinLinkHandler'
 import InvitationHandler from './containers/community/InvitationHandler'
 import AboutCommunity from './containers/community/AboutCommunity'
@@ -40,13 +39,14 @@ import PageWithNav from './containers/PageWithNav'
 import TestBench from './containers/TestBench'
 import { debug } from './util/logging'
 import { makeUrl } from './util/navigation'
-import { get, isEmpty, pick } from 'lodash'
+import { get, pick } from 'lodash'
 import config from './config'
 import { isLoggedIn } from './models/currentUser'
 
 export default function makeRoutes (store) {
   const requireLoginWithOptions = (options = {}) => (nextState, replace) => {
     let { startAtSignup, addParams } = options
+
     if (isLoggedIn(store.getState())) return true
 
     const start = startAtSignup ? 'signup' : 'login'
@@ -71,14 +71,6 @@ export default function makeRoutes (store) {
     }
   }
 
-  const requireCommunity = (options = {}) => (nextState, replace) => {
-    if (!requireLoginWithOptions(options)(nextState, replace)) return
-
-    if (isEmpty(get(store.getState().people.current, 'memberships'))) {
-      replace('/c/join')
-    }
-  }
-
   return <Route component={App}>
     <Route path='/' onEnter={(_, replace) => replace('/app')}/>
     <Route path='signup' component={Signup}/>
@@ -100,19 +92,18 @@ export default function makeRoutes (store) {
     <Route path='p/new' component={StandalonePostEditor} onEnter={requireLogin}/>
     <Route path='p/:id/edit' component={StandalonePostEditor} onEnter={requireLogin}/>
 
+    <Route path='h/use-invitation' component={InvitationHandler}
+      onEnter={requireLoginWithOptions({
+        startAtSignup: true,
+        addParams: ({ location: { query: { token, email } } }) => ({token, email, action: 'use-invitation'})
+      })}/>
+
     <Route component={PageWithNav}>
       <Route path='settings' component={UserSettings} onEnter={requireLogin}/>
       <Route path='search' component={Search} onEnter={requireLogin}/>
       <Route path='u/:id' component={PersonProfile} onEnter={requireLogin}/>
-      <Route path='c/join' component={CommunityJoinForm} onEnter={requireLogin}/>
 
       <Route path='admin' component={Admin} onEnter={requireAdmin}/>
-
-      <Route path='h/use-invitation' component={InvitationHandler}
-        onEnter={requireLoginWithOptions({
-          startAtSignup: true,
-          addParams: ({ location: { query: { token } } }) => ({token, action: 'use-invitation'})
-        })}/>
 
       <Route path='c/:id/join/:code' component={CommunityJoinLinkHandler}
         onEnter={requireLoginWithOptions({
@@ -151,7 +142,7 @@ export default function makeRoutes (store) {
       <Route path='n/:id/edit' component={NetworkEditor} onEnter={requireLogin}/>
 
       <Route component={AllCommunities}>
-        <Route path='app' component={AllPosts} onEnter={requireCommunity()}/>
+        <Route path='app' component={AllPosts}/>
         <Route path='tag/:tagName' component={TagPosts}/>
         <Route path='projects' component={Projects} onEnter={requireLogin}/>
         <Route path='events' component={Events} onEnter={requireLogin}/>
@@ -209,6 +200,9 @@ export const tagUrlComponents = (url) => {
     tagName: match[2]
   }
 }
+
+export const isCommunityUrl = (path) =>
+  path.match(/\/c\/[^/]+$/)
 
 export const isSearchUrl = (path) =>
   path.split('?')[0] === '/search'

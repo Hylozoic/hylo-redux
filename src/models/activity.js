@@ -1,6 +1,6 @@
 import { compact, find, flow, get, map, reduce } from 'lodash/fp'
 import { includes } from 'lodash'
-import { FETCH_ACTIVITY } from '../actions'
+import { FETCH_ACTIVITY, fetchCurrentUser } from '../actions'
 import { present } from '../util/text'
 import { postUrl, communityUrl, communitySettingsUrl } from '../routes'
 
@@ -64,8 +64,11 @@ export const destination = ({ post, comment, community, action }) => {
   if (post.id) {
     return postUrl(post.id, get('id', comment))
   } else if (action === 'joinRequest') {
-    return `${communitySettingsUrl(community)}?expand=access`
+    return `${communitySettingsUrl(community)}?expand=join_requests`
   } else {
     return communityUrl(community)
   }
 }
+
+export const activityAction = ({ action }) =>
+  action === 'approvedJoinRequest' && fetchCurrentUser(true)

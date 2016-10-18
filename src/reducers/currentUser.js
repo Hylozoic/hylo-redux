@@ -84,7 +84,7 @@ export default function (state = null, action) {
       return meta.resetCount ? {...state, new_notification_count: 0} : state
     case FETCH_LIVE_STATUS:
       const { new_notification_count } = payload
-      return {...state, new_notification_count}
+      return new_notification_count ? {...state, new_notification_count} : state
     case INCREMENT_UNSEEN_THREADS:
       return {
         ...state,

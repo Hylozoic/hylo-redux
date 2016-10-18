@@ -1,5 +1,7 @@
 coverage/
 dist/
+dist-dev/
+dist-test/
 node_modules/
 src-es5/
 public/dist

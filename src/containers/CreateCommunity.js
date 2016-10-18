@@ -6,7 +6,6 @@ import { toPairs, get, some, isEmpty } from 'lodash/fp'
 import ModalOnlyPage from '../components/ModalOnlyPage'
 import { ModalInput, ModalSelect } from '../components/ModalRow'
 import Modal from '../components/Modal'
-import A from '../components/A'
 import Icon from '../components/Icon'
 import InviteModal from './InviteModal'
 import { uploadImage } from '../actions/uploadImage'
@@ -38,16 +37,30 @@ import { checklistUrl } from '../routes'
 
 const merkabaUrl = 'https://www.hylo.com/img/hylo-merkaba-300x300.png'
 
-export const Topper = ({ community, showJoin }) => {
+const incrementSuffix = str => {
+  const regexp = /\d+$/
+  if (!str.match(regexp)) {
+    return str + '-1'
+  } else {
+    return str.replace(/\d+$/, d => +d + 1)
+  }
+}
+
+const generateSlug = (name, oldSlug) => {
+  if (oldSlug) {
+    return incrementSuffix(oldSlug)
+  } else {
+    return name && name.toLowerCase().replace(/\s/g, '-') || ''
+  }
+}
+
+export const Topper = ({ community }) => {
   const { name, avatar_url } = community || {}
   const logoUrl = avatar_url || merkabaUrl
 
   return <div className='modal-topper'>
     <div className='medium-avatar' style={{backgroundImage: `url(${logoUrl})`}}/>
     <h2>{name || 'Your New Community'}</h2>
-    {showJoin && <div className='before-modal'>
-      <A to='/c/join'>Trying to join a community?</A>
-    </div>}
   </div>
 }
 
@@ -82,7 +95,21 @@ export class CreateCommunity extends React.Component {
   constructor (props) {
     super(props)
     this.state = {
-      expanded: false
+      expanded: false,
+      generatedSlug: '',
+      editedSlug: false
+    }
+  }
+
+  componentWillReceiveProps (nextProps) {
+    const { editedSlug, generatedSlug } = this.state
+    if (!editedSlug && get('errors.slugUsed', nextProps)) {
+      const newGeneratedSlug = generateSlug(null, generatedSlug)
+      this.setState({
+        generatedSlug: newGeneratedSlug
+      })
+      this.resetValidation('slug')
+      this.checkUnique('slug', newGeneratedSlug)
     }
   }
 
@@ -99,9 +126,17 @@ export class CreateCommunity extends React.Component {
     this.props.dispatch(validateCommunityAttribute(key, value, 'unique'))
 
   set = key => event => {
-    let { value } = event.target
+    const { value } = event.target
     this.setValue(key, value)
     this.validate(key, value)
+    if (key === 'slug' && !this.state.editedSlug) {
+      this.setState({editedSlug: true})
+    }
+    if (key === 'name' && !this.state.editedSlug) {
+      const generatedSlug = generateSlug(value)
+      this.setState({generatedSlug})
+      this.checkUnique('slug', generatedSlug)
+    }
   }
 
   validate (key, value) {
@@ -129,7 +164,7 @@ export class CreateCommunity extends React.Component {
 
         this.setError(error)
 
-        if (some(error)) {
+        if (some(id => id, error)) {
           this.resetValidation('slug')
         } else {
           return this.checkUnique('slug', value)
@@ -182,10 +217,12 @@ export class CreateCommunity extends React.Component {
   render () {
     const { community, errors, uploadingImage } = this.props
 
-    const { expanded } = this.state
+    const { expanded, editedSlug, generatedSlug } = this.state
+
+    const slug = editedSlug ? community.slug : generatedSlug
 
     return <ModalOnlyPage className='create-community'>
-      <Topper community={community} showJoin={true}/>
+      <Topper community={community}/>
       <Modal title='Create your community.'
         id='new-community-form'
         subtitle="Let's get started unlocking the creative potential of your community with Hylo."
@@ -196,6 +233,7 @@ export class CreateCommunity extends React.Component {
             {errors.nameUsed && <p className='help error'>This name is already in use.</p>}
           </div>}/>
         <ModalInput label='URL' ref='url' prefix='https://hylo.com/c/' onChange={this.set('slug')}
+          value={slug}
           errors={
             <div className='errors'>
               {errors.slugBlank && <p className='help error'>Please fill in this field.</p>}

@@ -90,8 +90,8 @@ export default class TagEditorModal extends React.Component {
                   <label>Topic name</label>
                   <span>#{tag}</span>
                 </div>}
-            <ModalInput label='Description' defaultValue={description}
-              onChange={event => edit(tag, event.target.value, is_default)}/>
+            <ModalInput label='Description' defaultValue={description} type='textarea'
+              onChange={event => edit(tag, event.target.value, is_default)} maxLength={140}/>
             {canModerate(currentUser, community) && <ModalRow
               ref='default'>
               <label>Make default</label>

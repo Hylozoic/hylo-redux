@@ -1,6 +1,6 @@
 import React from 'react'
 import cx from 'classnames'
-const { func, string, array, object } = React.PropTypes
+const { func, string, array, object, number } = React.PropTypes
 import { get } from 'lodash/fp'
 
 export default class ModalRow extends React.Component {
@@ -48,6 +48,7 @@ export class ModalInput extends React.Component {
     type: string,
     onChange: func,
     prefix: string,
+    maxLength: number,
     errors: object
   }
 
@@ -58,7 +59,7 @@ export class ModalInput extends React.Component {
   render () {
     const {
       label, placeholder, defaultValue, value, onChange, className, type, prefix,
-      errors
+      maxLength, errors
     } = this.props
 
     const onFocus = () => this.refs.row.focus()
@@ -77,7 +78,8 @@ export class ModalInput extends React.Component {
               value={value}
               onChange={onChange}
               onFocus={onFocus}
-              onBlur={onBlur} />
+              onBlur={onBlur}
+              maxLength={maxLength} />
             : <input type={type || 'text'} ref='input'
               placeholder={placeholder}
               defaultValue={defaultValue}
@@ -93,7 +95,8 @@ export class ModalInput extends React.Component {
               value={value}
               onChange={onChange}
               onFocus={onFocus}
-              onBlur={onBlur} />
+              onBlur={onBlur}
+              maxLength={maxLength} />
             : <input type={type || 'text'} ref='input'
               placeholder={placeholder}
               defaultValue={defaultValue}

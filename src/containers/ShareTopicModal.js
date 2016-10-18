@@ -12,8 +12,8 @@ import Avatar from '../components/Avatar'
 import { KeyControlledItemList } from '../components/KeyControlledList'
 import { communityTagJoinUrl } from '../routes'
 import { getKeyCode, keyMap } from '../util/textInput'
-import { get, isEmpty, some } from 'lodash'
-import { filter, includes, map, flow, omitBy, curry } from 'lodash/fp'
+import { compact, get, isEmpty, some } from 'lodash'
+import { filter, includes, map, flow, curry } from 'lodash/fp'
 import { typeahead } from '../actions'
 import cx from 'classnames'
 import copy from 'copy-to-clipboard'
@@ -52,7 +52,7 @@ export default class ShareTopicModal extends React.Component {
 
   render () {
     const { onCancel, tagName, community, dispatch, pending,
-      tagInvitationEditor: { recipients, recipient, error, success } } = this.props
+      tagInvitationEditor: { recipients, error, success } } = this.props
 
     const { copied } = this.state
 
@@ -69,9 +69,6 @@ export default class ShareTopicModal extends React.Component {
       update('recipients', recipients.concat(recipient))
     }
 
-    const updateRecipient = text =>
-      update('recipient', text)
-
     const removeRecipient = recipient => {
       const test = recipient.id
         ? r => r.id !== recipient.id
@@ -80,21 +77,19 @@ export default class ShareTopicModal extends React.Component {
     }
 
     const submit = () => {
+      if (isEmpty(recipients)) {
+        return setError('Enter at least one email address or user.')
+      }
+
+      const emails = filter(r => !r.id, recipients)
+      const badEmails = filter(e => !validator.isEmail(e), emails)
+      if (some(badEmails)) {
+        return setError(`These emails are invalid: ${badEmails.join(', ')}`)
+      }
+
       setError(null)
-
-      if (isEmpty(recipients)) return setError('Enter at least one email address or user.')
-
-      const users = flow(
-        filter('id'),
-        map('id'))(recipients)
-
-      const emails = omitBy('id', recipients)
-
-      let badEmails = emails.filter(email => !validator.isEmail(email))
-      if (some(badEmails)) return setError(`These emails are invalid: ${badEmails.join(', ')}`)
-
       dispatch(sendCommunityTagInvitation(community.id, tagName, {
-        users,
+        users: compact(map('id', recipients)),
         emails: emails.join(',')
       }))
     }
@@ -119,12 +114,11 @@ export default class ShareTopicModal extends React.Component {
             </span>
           : <span> Loading...</span>}
       </div>
-      <HybridInviteInput recipients={recipients} recipient={recipient}
+      <HybridInviteInput recipients={recipients}
         communityId={community.id}
         typeaheadId='invite'
         removeRecipient={removeRecipient}
         addRecipient={addRecipient}
-        updateRecipient={updateRecipient}
         />
       {error && <div className='alert alert-danger'>{error}</div>}
       {success && <div className='alert alert-success'>{success}</div>}
@@ -138,23 +132,23 @@ export default class ShareTopicModal extends React.Component {
   }
 }
 
-@connect((state, props) => ({ choices: state.typeaheadMatches[props.typeaheadId] }))
+@connect(({ typeaheadMatches }, { typeaheadId }) => ({
+  choices: typeaheadMatches[typeaheadId]
+}))
 class HybridInviteInput extends React.Component {
 
   static propTypes = {
     communityId: string,
     dispatch: func,
     recipients: array,
-    recipient: string,
     addRecipient: func,
     removeRecipient: func,
-    updateRecipient: func,
     choices: array,
     typeaheadId: string
   }
 
   handleInput = event => {
-    var value = event.target.value
+    var { value } = event.target
     const {
       dispatch, typeaheadId, communityId, addRecipient
     } = this.props
@@ -187,7 +181,7 @@ class HybridInviteInput extends React.Component {
   }
 
   render () {
-    const { recipients, recipient, removeRecipient, choices } = this.props
+    const { recipients, removeRecipient, choices } = this.props
 
     const newChoices = filter(c => !includes(c.id, map('id', recipients)), choices)
 
@@ -222,7 +216,6 @@ class HybridInviteInput extends React.Component {
         placeholder={placeholder}
         onFocus={onFocus}
         onBlur={onBlur}
-        value={recipient}
         onChange={this.handleInput}
         onKeyDown={this.handleKeys}
         />

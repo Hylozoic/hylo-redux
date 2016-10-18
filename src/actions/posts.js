@@ -16,6 +16,7 @@ import {
   REMOVE_IMAGE,
   REMOVE_POST,
   START_POST_EDIT,
+  UNFOLLOW_POST,
   UPDATE_POST,
   UPDATE_POST_EDITOR,
   UPDATE_POST_READ_TIME,
@@ -118,6 +119,14 @@ export function followPost (id, person) {
     type: FOLLOW_POST,
     payload: {api: true, path: `/noo/post/${id}/follow`, method: 'POST'},
     meta: {id, personId: person.id, optimistic: true}
+  }
+}
+
+export function unfollowPost (id, personId) {
+  return {
+    type: UNFOLLOW_POST,
+    payload: {api: true, path: `/noo/post/${id}/follow`, method: 'DELETE'},
+    meta: {id, personId, optimistic: true}
   }
 }
 

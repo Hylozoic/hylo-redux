@@ -2,11 +2,11 @@ import React from 'react'
 import Post from '../components/Post'
 import { prefetch } from 'react-fetcher'
 import { connect } from 'react-redux'
-import { get, includes } from 'lodash'
-import { pick } from 'lodash/fp'
-import { FETCH_POST, navigate, setMetaTags } from '../actions'
+import { includes } from 'lodash'
+import { get, pick } from 'lodash/fp'
+import { FETCH_POST, navigate, notify, setMetaTags } from '../actions'
 import { fetchComments } from '../actions/comments'
-import { fetchPost } from '../actions/posts'
+import { fetchPost, unfollowPost } from '../actions/posts'
 import { saveCurrentCommunityId } from '../actions/util'
 import { ogMetaTags } from '../util'
 import A from '../components/A'
@@ -80,7 +80,7 @@ export default class SinglePost extends React.Component {
           Back to project
         </A>
       </div>}
-      <CoverImagePage id='single-post' image={get(community, 'banner_url')}>
+      <CoverImagePage id='single-post' image={get('banner_url', community)}>
         {editing ? <PostEditor post={post} expanded/> : showPost(post)}
 
         {showTaggedPosts(post) && <div>
@@ -108,9 +108,8 @@ const showPost = (post) => {
 
 const redirect = (store, id) => {
   const state = store.getState()
-  if (state.isMobile) return false
   const post = state.posts[id]
-  if (get(post, 'parent_post_id')) {
+  if (!state.isMobile && get('parent_post_id', post)) {
     store.dispatch(navigate(`/p/${post.parent_post_id}`))
     return true
   }
@@ -127,30 +126,36 @@ const setupPage = (store, id, query, action) => {
   const state = store.getState()
   const post = state.posts[id]
   if (!post) return
+  const currentUser = state.people.current
 
-  const communityId = get(post, 'communities.0') || 'all'
+  const communityId = get('communities.0', post) || 'all'
 
   if (payload && !payload.api) {
     const { name, description, media } = payload
-    dispatch(setMetaTags(ogMetaTags(name, description, get(media, '0'))))
+    dispatch(setMetaTags(ogMetaTags(name, description, get('0', media))))
   }
 
   return Promise.all([
-    saveCurrentCommunityId(dispatch, communityId, !!state.people.current),
+    saveCurrentCommunityId(dispatch, communityId, !!currentUser),
 
     // when this page is clicked into from a post list, fetchPost will cause a
     // cache hit; however, there may be more comments than the 3 that were
     // included in the list, so we have to call fetchComments to retrieve the
     // rest. but when fetchPost did not cause a cache hit, we know that its
     // response contained all comments, so we can skip the additional call.
-    cacheHit && post.numComments > 3 && dispatch(fetchComments(id, {offset: 3})),
+    cacheHit && post.numComments > 3 &&
+      dispatch(fetchComments(id, {offset: 3})).then(scroll),
 
     // if this is an event or project, fetch the first page of results for
     // tagged posts.
     showTaggedPosts(post) && dispatch(fetch(subject, communityId,
-      {...query, tag: post.tag, omit: post.id}))
+      {...query, tag: post.tag, omit: post.id})),
+
+    get('action', query) === 'unfollow' && currentUser &&
+      dispatch(unfollowPost(post.id, currentUser.id)).then(({ error }) => !error &&
+        dispatch(notify('Notifications for this post are now off.',
+          {type: 'info', maxage: null})))
   ])
-  .then(scroll) // must be deferred until after comments are loaded
 }
 
 const scroll = () => {

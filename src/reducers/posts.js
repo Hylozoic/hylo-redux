@@ -12,6 +12,7 @@ import {
   PIN_POST_PENDING,
   REMOVE_COMMENT,
   REMOVE_POST,
+  UNFOLLOW_POST_PENDING,
   UPDATE_POST,
   UPDATE_POST_READ_TIME,
   VOTE_ON_POST_PENDING
@@ -91,6 +92,12 @@ export default function (state = {}, action) {
       return {...state, [id]: null}
     case FOLLOW_POST_PENDING:
       return addOrRemovePersonId(state, id, personId, 'follower_ids')
+    case UNFOLLOW_POST_PENDING:
+      post = state[id]
+      return {
+        ...state,
+        [id]: {...post, follower_ids: without(post.follower_ids, personId)}
+      }
     case APPEND_COMMENT:
       return updatePostProps(state, id, {
         numComments: (post.numComments || 0) + 1,

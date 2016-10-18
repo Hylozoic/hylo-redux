@@ -19,7 +19,7 @@ export function followTag (id, tagName) {
 }
 
 export function fetchTags (opts) {
-  const { subject, id, limit } = opts
+  const { subject, id, limit, sort } = opts
   const offset = opts.offset || 0
   const cacheId = createCacheId(subject, id)
 
@@ -27,7 +27,7 @@ export function fetchTags (opts) {
   if (subject === 'community') {
     path = `/noo/community/${id}/tags`
   }
-  path += '?' + cleanAndStringify({limit, offset})
+  path += '?' + cleanAndStringify({limit, offset, sort})
 
   return {
     type: FETCH_TAGS,

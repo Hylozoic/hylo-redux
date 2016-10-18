@@ -42,7 +42,7 @@ export default class BrowseTopicsModal extends React.Component {
 
   componentDidMount () {
     const { dispatch, community } = this.props
-    dispatch(fetchTags({subject, id: community.slug}))
+    dispatch(fetchTags({subject, id: community.slug, sort: 'popularity'}))
   }
 
   render () {
@@ -60,7 +60,7 @@ export default class BrowseTopicsModal extends React.Component {
       : null
 
     const loadMore = !pending && offset < total
-      ? () => dispatch(fetchTags({subject, id: community.slug, offset}))
+      ? () => dispatch(fetchTags({subject, id: community.slug, offset, sort: 'popularity'}))
       : () => {}
 
     const scrollListenerProps = {

@@ -53,7 +53,7 @@ class SearchMenuItem extends React.Component {
 }
 
 const UserMenu = ({ slug, newMessageCount, newNotificationCount }, { isMobile, dispatch, currentUser }) => {
-  const {settings:{last_viewed_messages_at}} = currentUser
+  const { settings: { last_viewed_messages_at } } = currentUser
   const doLogout = () => {
     calliOSBridge({type: 'logout'})
     dispatch(navigate('/login'))

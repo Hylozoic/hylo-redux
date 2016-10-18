@@ -1,9 +1,11 @@
-import { mocks } from '../support'
+import { helpers, mocks } from '../support'
 import nock from 'nock'
 import { inspect } from 'util'
 import { get } from 'lodash'
 import appHandler from '../../src/server/appHandler'
 import { FETCH_CURRENT_USER } from '../../src/actions'
+import { fetchPost } from '../../src/actions/posts'
+import { fetchCurrentUser } from '../../src/actions'
 import { HOST } from '../../src/util/api'
 import cheerio from 'cheerio'
 
@@ -155,7 +157,8 @@ describe('appHandler', () => {
         user: {name: ''},
         created_at: new Date()
       }
-      nock(HOST).get('/noo/post/1?comments=1&votes=1&children=1').reply(200, post)
+      helpers.mockActionResponse(fetchPost(1), post)
+      helpers.mockActionResponse(fetchCurrentUser(), {})
     })
 
     it('displays the post', () => {

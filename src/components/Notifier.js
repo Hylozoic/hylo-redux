@@ -32,6 +32,7 @@ const className = messageType => {
   switch (messageType) {
     case 'error': return 'danger'
   }
+  // bootstrap's standard types: success, info, warning, danger
   return messageType
 }
 

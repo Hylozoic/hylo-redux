@@ -28,31 +28,32 @@ export default class Thread extends React.Component {
     return {post: this.props.post}
   }
 
-  componentDidMount () {
-    const { post, dispatch } = this.props
-    dispatch(onThreadPage(post.id))
+  setupForThread (post) {
     this.markAsRead(post)
-    this.socket = getSocket()
+    this.props.dispatch(onThreadPage(post.id))
     if (this.socket) {
       this.socket.post(socketUrl(`/noo/post/${post.id}/subscribe`)) // for people typing
     }
+    this.refs.form.getWrappedInstance().focus()
+  }
+
+  componentDidMount () {
+    this.socket = getSocket()
+    this.setupForThread(this.props.post)
   }
 
   componentWillReceiveProps (nextProps) {
-    const { dispatch } = this.props
     const oldId = get('post.id', this.props)
     const newId = get('post.id', nextProps)
     if (newId !== oldId) {
       if (this.socket) {
         this.socket.post(socketUrl(`/noo/post/${oldId}/unsubscribe`))
-        this.socket.post(socketUrl(`/noo/post/${newId}/subscribe`))
       }
-      this.markAsRead(nextProps.post)
-      dispatch(onThreadPage(nextProps.post.id))
+      this.setupForThread(nextProps.post)
     }
   }
 
-  componentWillUnmount() {
+  componentWillUnmount () {
     const postId = get('post.id', this.props)
     this.props.dispatch(offThreadPage())
     if (this.socket) {
@@ -73,7 +74,7 @@ export default class Thread extends React.Component {
       <Header />
       <MessageSection {...{messages}}/>
       <PeopleTyping showNames/>
-      <MessageForm postId={post.id} />
+      <MessageForm postId={post.id} ref='form'/>
     </div>
   }
 }

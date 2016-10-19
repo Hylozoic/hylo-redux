@@ -21,7 +21,7 @@ const STOPPED_TYPING_WAIT_TIME = 8000
     currentUser: get(state, 'people.current'),
     text: state.commentEdits.new[postId]
   })
-})
+}, null, null, {withRef: true})
 export default class MessageForm extends React.Component {
   static propTypes = {
     currentUser: object,
@@ -49,6 +49,10 @@ export default class MessageForm extends React.Component {
 
   componentDidMount () {
     this.socket = getSocket()
+  }
+
+  focus () {
+    this.refs.editor.focus()
   }
 
   render () {

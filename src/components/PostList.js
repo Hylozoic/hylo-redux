@@ -81,7 +81,7 @@ class PostList extends React.Component {
       return <Post post={post} onExpand={commentId => this.expand(post.id, commentId)}/>
     }
 
-    return <span>
+    return <div className='post-list-wrapper'>
       {isMobile && !hideMobileSearch && <MobileSearch search={doSearch}/>}
       <RefreshButton refresh={refreshPostList} count={freshCount}/>
       <ul className='posts'>
@@ -92,7 +92,7 @@ class PostList extends React.Component {
       </ul>
       {pending && !isEmpty(posts) && <div className='paginating'>Loading more...</div>}
       {loadMore && <ScrollListener onBottom={loadMore} padding={5}/>}
-    </span>
+    </div>
   }
 }
 

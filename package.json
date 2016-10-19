@@ -60,7 +60,6 @@
     "newrelic": "^1.27.2",
     "object-assign": "^4.1.0",
     "pretty-date": "^0.2.0",
-    "querystring": "^0.2.0",
     "randomstring": "^1.1.5",
     "react": "^15.3.1",
     "react-addons-shallow-compare": "^15.1.0",

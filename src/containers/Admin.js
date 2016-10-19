@@ -98,7 +98,7 @@ export default class Admin extends React.Component {
 
   constructor (props) {
     super(props)
-    this.state = {loginAs: '', communitySelection: 'top'}
+    this.state = {loginAs: '', communitySelection: 'top10'}
   }
 
   componentDidMount () {
@@ -112,7 +112,7 @@ export default class Admin extends React.Component {
       const { metrics } = this.props
       const communities = sortBy(values(metrics), c => -c.events.length).slice(0, 20)
       ;[ this.minDate, this.maxDate ] = findDateRange(communities)
-      this.setState({rerender: true, communitySelection: 'top'})
+      this.setState({rerender: true, communitySelection: 'top10'})
     })
   }
 
@@ -122,10 +122,15 @@ export default class Admin extends React.Component {
     const { communitySelection, loginAs, rerender } = this.state
     let communities
 
-    if (communitySelection === 'top') {
-      communities = sortBy(values(metrics), c => -c.events.length).slice(0, 10)
-    } else {
-      communities = filter(c => c.id === communitySelection, metrics)
+    switch (communitySelection) {
+      case 'top10':
+        communities = sortBy(values(metrics), c => -c.events.length).slice(0, 10)
+        break
+      case 'top50':
+        communities = sortBy(values(metrics), c => -c.events.length).slice(0, 50)
+        break
+      default:
+        communities = filter(c => c.id === communitySelection, metrics)
     }
 
     if (rerender) {
@@ -156,7 +161,8 @@ export default class Admin extends React.Component {
 
       <p>
         <select value={communitySelection} onChange={e => this.setState({communitySelection: e.target.value, rerender: true})}>
-          <option value='top'>Top 10</option>
+          <option value='top10'>Top 10</option>
+          <option value='top50'>Top 50</option>
           {allCommunities.map(c =>
             <option key={c.id} value={c.id}>{c.name}</option>)}
         </select>

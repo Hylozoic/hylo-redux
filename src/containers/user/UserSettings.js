@@ -18,7 +18,7 @@ import A from '../../components/A'
 import { formatDate } from '../../util/text'
 import { debounce, get, sortBy, throttle, set } from 'lodash'
 import ListItemTagInput from '../../components/ListItemTagInput'
-import { hasFeature } from '../../models/currentUser'
+import { denormalizedCurrentUser, hasFeature } from '../../models/currentUser'
 import { avatarUploadSettings, bannerUploadSettings, defaultBanner } from '../../models/person'
 import { openPopup, setupPopupCallback, PROFILE_CONTEXT } from '../../util/auth'
 import { EDITED_USER_SETTINGS, trackEvent } from '../../util/analytics'
@@ -38,10 +38,11 @@ import Icon from '../../components/Icon'
       return dispatch(toggleUserSettingsSection(query.expand, true))
   }
 })
-@connect(({ userSettingsEditor, pending }) => ({
-  pending: get(pending, `${UPLOAD_IMAGE}.subject`),
+@connect(state => ({
+  pending: get(state.pending, `${UPLOAD_IMAGE}.subject`),
   expand: {},
-  ...userSettingsEditor
+  ...state.userSettingsEditor,
+  currentUser: denormalizedCurrentUser(state)
 }))
 export default class UserSettings extends React.Component {
   constructor (props) {
@@ -50,12 +51,12 @@ export default class UserSettings extends React.Component {
   }
 
   static propTypes = {
+    currentUser: object,
     dispatch: func,
     location: object,
     expand: object,
     pending: string
   }
-  static contextTypes = {currentUser: object}
 
   componentDidMount () {
     setupPopupCallback('settings', this.props.dispatch)
@@ -121,7 +122,7 @@ export default class UserSettings extends React.Component {
   }
 
   edit (field) {
-    let { currentUser } = this.context
+    let { currentUser } = this.props
     let { editing, edited } = this.state
     edited[field] = currentUser[field]
     this.setState({editing: {...editing, [field]: true}})
@@ -146,7 +147,7 @@ export default class UserSettings extends React.Component {
   delayedUpdate = debounce((path, value) => this.update(path, value), 2000)
 
   toggle (path) {
-    let { currentUser } = this.context
+    let { currentUser } = this.props
     this.update(path, !get(currentUser, path))
   }
 
@@ -168,8 +169,7 @@ export default class UserSettings extends React.Component {
   }
 
   attachImage (type) {
-    const { dispatch } = this.props
-    const { currentUser } = this.context
+    const { currentUser, dispatch } = this.props
     ;(() => {
       switch (type) {
         case 'avatar_url':
@@ -194,10 +194,9 @@ export default class UserSettings extends React.Component {
   }
 
   render () {
-    const { currentUser } = this.context
-    let { expand, pending, dispatch } = this.props
-    let memberships = sortBy(currentUser.memberships, m => m.community.name)
-    let { editing, edited, errors } = this.state
+    const { currentUser, expand, pending, dispatch } = this.props
+    const memberships = sortBy(currentUser.memberships, m => m.community.name)
+    const { editing, edited, errors } = this.state
     let { avatar_url, banner_url } = currentUser
     if (!banner_url) banner_url = defaultBanner
     let {

@@ -50,7 +50,10 @@ const generateSlug = (name, oldSlug) => {
   if (oldSlug) {
     return incrementSuffix(oldSlug)
   } else {
-    return name && name.toLowerCase().replace(/\s/g, '-') || ''
+    if (!name) return ''
+    return name.toLowerCase().substring(0, 40).trim()
+    .replace(/\s/g, '-')
+    .replace(/[\!\?'"\/\\\.,]/g, '')
   }
 }
 
@@ -135,7 +138,7 @@ export class CreateCommunity extends React.Component {
     if (key === 'name' && !this.state.editedSlug) {
       const generatedSlug = generateSlug(value)
       this.setState({generatedSlug})
-      this.checkUnique('slug', generatedSlug)
+      this.validate('slug', generatedSlug)
     }
   }
 
@@ -231,8 +234,10 @@ export class CreateCommunity extends React.Component {
           errors={<div className='errors'>
             {errors.nameBlank && <p className='help error'>Please fill in this field.</p>}
             {errors.nameUsed && <p className='help error'>This name is already in use.</p>}
-          </div>}/>
-        <ModalInput label='URL' ref='url' prefix='https://hylo.com/c/' onChange={this.set('slug')}
+          </div>}
+          maxLength={80}/>
+        <ModalInput label='URL' ref='url' prefix='https://hylo.com/c/'
+          onChange={this.set('slug')}
           value={slug}
           errors={
             <div className='errors'>
@@ -240,7 +245,9 @@ export class CreateCommunity extends React.Component {
               {errors.slugInvalid && <p className='help error'>Use lowercase letters, numbers, and hyphens only.</p>}
               {errors.slugUsed && <p className='help error'>This URL is already in use.</p>}
             </div>}/>
-          <ModalInput label='About your community' ref='description' type='textarea' onChange={this.set('description')}
+        <ModalInput label='About your community' ref='description'
+          type='textarea'
+          onChange={this.set('description')}
           errors={
             <div className='errors'>
               {errors.descriptionBlank && <p className='help error'>Please fill in this field.</p>}

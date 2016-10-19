@@ -1,7 +1,7 @@
 import React from 'react'
 import { connect } from 'react-redux'
-import { includes, isEmpty } from 'lodash'
-import { compact, filter, flow, map, sortBy } from 'lodash/fp'
+import { isEmpty } from 'lodash'
+import { compact, flow, map, sortBy } from 'lodash/fp'
 import cx from 'classnames'
 import { threadUrl } from '../routes'
 import { FETCH_POSTS, setUnseenThreadCount, incrementUnseenThreads, showDirectMessage, updateUserSettings } from '../actions'
@@ -43,7 +43,7 @@ export class ThreadsDropdown extends React.Component {
     threads: array,
     pending: bool,
     lastViewed: string,
-    newCount: number 
+    newCount: number
   }
 
   static contextTypes = {
@@ -57,7 +57,6 @@ export class ThreadsDropdown extends React.Component {
   }
 
   componentDidMount () {
-    const { dispatch } = this.context
     this.socket = getSocket()
     if (this.socket) {
       this.socket.post(socketUrl('/noo/threads/subscribe'))
@@ -78,31 +77,29 @@ export class ThreadsDropdown extends React.Component {
     const { dispatch } = this.context
     dispatch(appendThread(thread))
     if (!this.state.open) {
-      dispatch(incrementUnseenThreads()) 
+      dispatch(incrementUnseenThreads())
     }
   }
 
   setUnseen = (threads, lastViewed) =>
-    this.context.dispatch(setUnseenThreadCount(unseenThreadCount(threads, lastViewed))) 
+    this.context.dispatch(setUnseenThreadCount(unseenThreadCount(threads, lastViewed)))
 
   messageAdded = data => {
     const { postId, message } = data
     const { dispatch } = this.context
-    const setUnseen = this.setUnseen
-    const { lastViewed, openedThreadId, threads, newCount } = this.props
+    const { lastViewed, openedThreadId, threads } = this.props
     const thisThreadOpen = openedThreadId === postId
 
-    if (this.state.open || thisThreadOpen) return dispatch(appendComment(postId, message)) 
+    if (this.state.open || thisThreadOpen) return dispatch(appendComment(postId, message))
 
     if (!threads.length) { // or you don't have the thread in question?
-      dispatch(fetchPosts({ cacheId: 'threads', subject: 'threads'}))
-      .then(({ payload }) => setUnseen(payload.posts, lastViewed))
-    }
-    else {
-      dispatch(appendComment(postId, message)) 
+      dispatch(fetchPosts({cacheId: 'threads', subject: 'threads'}))
+      .then(({ payload }) => this.setUnseen(payload.posts, lastViewed))
+    } else {
+      dispatch(appendComment(postId, message))
       const updatedThreads = map(t => t.id === postId ? { ...t, updated_at: message.created_at } : t, threads)
-      setUnseen(updatedThreads, lastViewed)
-    } 
+      this.setUnseen(updatedThreads, lastViewed)
+    }
   }
 
   render () {

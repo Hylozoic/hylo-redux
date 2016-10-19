@@ -1,4 +1,4 @@
-import { isMember, canInvite } from '../../src/models/currentUser'
+import { isMember, isTester, canInvite } from '../../src/models/currentUser'
 import { MemberRole } from '../../src/models/community'
 
 describe('currentUser', () => {
@@ -40,6 +40,20 @@ describe('currentUser', () => {
       }
 
       expect(canInvite(user, community)).to.be.true
+    })
+  })
+
+  describe('.isTester', () => {
+    it('returns true if the user is in a community with test feature access', () => {
+      const u1 = {
+        memberships: [{community_id: 1}, {community_id: 39}]
+      }
+      const u2 = {
+        memberships: [{community_id: 1}, {community_id: 1972}]
+      }
+
+      expect(isTester(u1)).to.be.true
+      expect(isTester(u2)).to.be.true
     })
   })
 })

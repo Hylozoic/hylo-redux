@@ -73,7 +73,7 @@ export class RichTextTagger {
     const pos = rng.startOffset
     if (pos === 0) return true
 
-    const char = rng.startContainer.textContent.slice(pos - 1)
+    const char = rng.startContainer.textContent.slice(pos - 1)[0]
     return includes([nbsp, ' '], char) // Chrome & Firefox respectively
   }
 

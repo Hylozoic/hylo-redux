@@ -14,7 +14,7 @@ import { useRouterHistory } from 'react-router'
 
 export function configureStore (initialState, opts = {}) {
   const isServer = typeof window === 'undefined'
-  const isTesting = process.env.NODE_ENV === 'test'
+  const isDev = process.env.NODE_ENV === 'development'
   const history = opts.history || useRouterHistory(createHistory)()
 
   var middleware = compact(flatten([
@@ -27,7 +27,7 @@ export function configureStore (initialState, opts = {}) {
     optimisticMiddleware,
     pendingPromiseMiddleware,
     promiseMiddleware,
-    !isServer && !isTesting && createLogger({collapsed: true})
+    !isServer && isDev && createLogger({collapsed: true})
   ]))
 
   const store = compose(

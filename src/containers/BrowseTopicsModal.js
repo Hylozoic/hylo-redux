@@ -71,10 +71,10 @@ export default class BrowseTopicsModal extends React.Component {
                 followed={followed}/>
             })}
             {loadMore && <li className='show-more'>
-              <span className='meta'>Showing {tags.length} of {total}.</span>
-              <div className='right'>
-                <a className='button show-more' onClick={loadMore}>Show more</a>
-              </div>
+              <span className='meta'>
+                Showing {tags.length} of {total}.
+                <a onClick={loadMore}>Show more</a>
+              </span>
             </li>}
           </ul>}
       {onboarding && <div className='footer'>

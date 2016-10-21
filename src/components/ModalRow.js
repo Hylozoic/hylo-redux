@@ -65,8 +65,6 @@ export class ModalInput extends React.Component {
     const onFocus = () => this.refs.row.focus()
     const onBlur = () => this.refs.row.blur()
 
-    console.log('maxLength', maxLength)
-
     return <ModalRow className={className} field={this.refs.input} ref='row'>
       <label>{label}</label>
       {errors}

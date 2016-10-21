@@ -149,9 +149,10 @@ export class InviteForm extends React.Component {
         trackEvent(INVITED_COMMUNITY_MEMBERS, {community})
         clearEditor()
         dispatch(updateCommunityChecklist(community.slug))
-        onClose()
+        onClose && onClose()
         const clause = emails.length > 1 ? 's have' : ' has'
         dispatch(notify(`Your invitation${clause} been sent`))
+        dispatch(updateInvitationEditor('recipients', ''))
       })
     }
 

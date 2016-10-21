@@ -926,6 +926,11 @@ ul.tags {
     list-style-type: none;
     .clearfix;
 
+    &.show-more {
+      padding: 10px 25px;
+      min-height: 0px;
+    }
+
     .name {
       display: block;
       .medium;
@@ -941,6 +946,11 @@ ul.tags {
 
     .meta {
       margin-left: 13px;
+      a {
+        .meta;
+        margin-left: 5px;
+        color: @damian-green;
+      }
     }
 
     .followers {

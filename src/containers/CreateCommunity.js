@@ -213,7 +213,7 @@ export class CreateCommunity extends React.Component {
   }
 
   render () {
-    const { community, errors, uploadingImage } = this.props
+    const { community, errors, uploadingImage, saving } = this.props
     const { expanded } = this.state
 
     return <ModalOnlyPage className='create-community'>
@@ -265,7 +265,10 @@ export class CreateCommunity extends React.Component {
           </a>
         </div>}
         <div className='footer'>
-          <a className='button' ref='submit' onClick={this.submit}>Create</a>
+          <a className='button' ref='submit' onClick={this.submit}
+            disabled={saving}>
+            {saving ? 'Creating...' : 'Create'}
+          </a>
         </div>
       </Modal>
   </ModalOnlyPage>

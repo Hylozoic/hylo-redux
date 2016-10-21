@@ -128,7 +128,7 @@ const setupPage = (store, id, query, action) => {
   if (!post) return
   const currentUser = state.people.current
 
-  const communityId = get('communities.0', post) || 'all'
+  const communityId = get('community_ids.0', post) || 'all'
 
   if (payload && !payload.api) {
     const { name, description, media } = payload

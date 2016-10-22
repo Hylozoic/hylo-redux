@@ -1,6 +1,6 @@
 require('../support')
 import React from 'react'
-import makeRoutes from '../../src/routes'
+import makeRoutes from '../../src/routes/makeRoutes'
 import { configureStore } from '../../src/store'
 import { renderToString } from 'react-dom/server'
 import { match, RouterContext } from 'react-router'

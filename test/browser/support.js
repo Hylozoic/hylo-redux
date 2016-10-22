@@ -40,7 +40,10 @@ export const removeTestFile = () => {
   }
 }
 
-export const loadTestFile = (opts = {}) =>
-  nightmare().goto('file://' + testFilePath)
+export const loadTestFile = (beforeGoto) => {
+  const n = nightmare()
+  if (typeof beforeGoto === 'function') beforeGoto(n)
+  return n.goto('file://' + testFilePath)
+}
 
 require('../support')

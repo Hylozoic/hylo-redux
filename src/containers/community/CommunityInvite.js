@@ -78,14 +78,9 @@ export default class CommunitySettings extends React.Component {
       <div>
         <InviteForm community={community}/>
       </div>
-      {!isEmpty(invitations) &&
-        <div>
-          <label>Sent Invitations</label>
-          <p className='summary'>These are people you have already sent invitations to.</p>
-          <InvitationList id={community.slug}/>
-        </div>}
+      {!isEmpty(invitations) && <InvitationList id={community.slug}/>}
       {hasFeature(currentUser, REQUEST_TO_JOIN_COMMUNITY) && !isEmpty(joinRequests) &&
-        <div ref='joinRequests'>
+        <div className='join-requests' ref='joinRequests'>
           <label>Requests</label>
           <JoinRequestList id={community.slug}/>
         </div>}

@@ -113,12 +113,24 @@
     margin-right: 10px;
   }
 
+  tr {
+    border-top: 1px solid @post-border;
+    &:last-child {
+      border-bottom: 1px solid @post-border;
+    }
+  }
+
   table {
     width: 100%;
   }
 
+  td {
+    color: @gray-text;
+    font-weight: 300;
+  }
+
   th, td {
-    padding: 6px 10px;
+    padding: 15px 10px;
 
     &:first-child {
       padding-left: @modal-row-side-padding;
@@ -132,10 +144,6 @@
 
   td.unused {
     color: transparent;
-  }
-
-  tr.even td {
-    background-color: @faint-gray-bg;
   }
 
   .mobile({
@@ -153,6 +161,11 @@
       }
     }
   });
+
+  .table-button {
+    font-weight: 300;
+    color: @faint-gray-text;
+  }
 }
 
 #community-checklist {
@@ -222,7 +235,30 @@
         .green-button;
       }
     }
-
   }
 
+  .invitations {
+    padding-top: 25px;
+    border-top: 1px solid @post-border;
+    label {
+      padding-left: 25px;
+      font-size: 20px;
+      font-weight: 500;
+      .count {
+        .meta-text;
+        margin-left: 10px;
+      }
+    }
+    .summary {
+      padding-left: 25px;
+    }
+    .resend-all {
+      .round-button;
+      color: @damian-green;
+      float: right;
+      border: 1px solid @post-border;
+      position: relative;
+      top: -60px;
+    }
+  }
 }

@@ -15,6 +15,8 @@ import { communityJoinUrl } from '../../routes'
 import InvitationList from './InvitationList'
 import JoinRequestList from './JoinRequestList'
 import { InviteForm } from '../InviteModal'
+import Icon from '../../components/Icon'
+import copy from 'copy-to-clipboard'
 
 @prefetch(({dispatch, params: {id}}) =>
   Promise.all([
@@ -41,6 +43,13 @@ export default class CommunitySettings extends React.Component {
 
   static contextTypes = {currentUser: object}
 
+  constructor (props) {
+    super(props)
+    this.state = {
+      copied: false
+    }
+  }
+
   update (path, value) {
     let { dispatch, community: { id, slug } } = this.props
     return dispatch(updateCommunitySettings(id, set({slug}, path, value)))
@@ -53,13 +62,18 @@ export default class CommunitySettings extends React.Component {
   render () {
     const { community, invitations, joinRequests } = this.props
     const { currentUser } = this.context
+    const { copied } = this.state
     const joinUrl = communityJoinUrl(community)
 
+    const copyLink = () => copy(joinUrl) && this.setState({copied: true})
+
     return <div className='form-sections' id='community-invite-settings'>
-      <div>
-        <label>Invitation code link</label>
-        <p><a href={joinUrl}>{joinUrl}</a></p>
-        <p className='summary'>You can share this link to allow people to join your community without having to invite them individually.</p>
+      <div className='modal-input invitation-link'>
+        <Icon name='Link'/>Anyone with this link can join the community <br /><a href={joinUrl}>{joinUrl}</a>
+        <div className='copy-link-wrapper'>
+          {copied && <span className='copied'>(copied) </span>}
+          <a className='copy-link' onClick={copyLink}>Copy Link</a>
+        </div>
       </div>
       <div>
         <InviteForm community={community}/>

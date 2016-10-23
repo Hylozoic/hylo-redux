@@ -160,19 +160,19 @@ export class InviteForm extends React.Component {
       <div className='modal-input csv-upload'>
         <label className='custom-file-upload'>
           <input type='file' onChange={() => this.processCSV()} ref='fileInput'/>
-          Browse
+          Upload CSV
         </label>
-        <label className='normal-label'>Import CSV File</label>
+        <label className='normal-label'>Import CSV File (optional)</label>
         <p className='help-text'>The file should have a header row named "email" for the email column. Or it can be a file in which each line is a single email address.</p>
       </div>
       <ModalInput
         className='emails'
-        label='Enter Emails'
         ref='emails'
         type='textarea'
         value={recipients}
         onChange={update('recipients')}
-        placeholder='Enter email addresses, separated by commas or line breaks'/>
+        prefix='To'
+        placeholder='Emails (use commas to separate)'/>
         <div className='toggle-section'>
           <a onClick={() => this.setState({expanded: !expanded})}>
             Customize Message

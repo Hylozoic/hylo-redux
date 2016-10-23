@@ -80,10 +80,7 @@ export default class CommunitySettings extends React.Component {
       </div>
       {!isEmpty(invitations) && <InvitationList id={community.slug}/>}
       {hasFeature(currentUser, REQUEST_TO_JOIN_COMMUNITY) && !isEmpty(joinRequests) &&
-        <div className='join-requests' ref='joinRequests'>
-          <label>Requests</label>
-          <JoinRequestList id={community.slug}/>
-        </div>}
+        <JoinRequestList id={community.slug}/>}
     </div>
   }
 }

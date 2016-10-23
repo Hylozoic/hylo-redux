@@ -104,7 +104,6 @@
     margin-top: 25px;
     border-top: 1px solid @post-border;
     text-align: right;
-    padding: @modal-row-side-padding;
   }
 
   .avatar {
@@ -115,9 +114,6 @@
 
   tr {
     border-top: 1px solid @post-border;
-    &:last-child {
-      border-bottom: 1px solid @post-border;
-    }
   }
 
   table {
@@ -240,25 +236,55 @@
   .invitations {
     padding-top: 25px;
     border-top: 1px solid @post-border;
-    label {
-      padding-left: 25px;
-      font-size: 20px;
-      font-weight: 500;
-      .count {
-        .meta-text;
-        margin-left: 10px;
+    .invitations-header {
+      padding-left: @modal-row-side-padding;
+      padding-right: @modal-row-side-padding;
+      label {
+        font-size: 20px;
+        font-weight: 500;
+        .count {
+          .meta-text;
+          margin-left: 10px;
+        }
       }
+      .resend-all {
+        .round-button;
+        color: @damian-green;
+        float: right;
+        border: 1px solid @post-border;
+        position: relative;
+        top: -60px;
+      }
+
     }
-    .summary {
-      padding-left: 25px;
-    }
-    .resend-all {
-      .round-button;
-      color: @damian-green;
-      float: right;
-      border: 1px solid @post-border;
-      position: relative;
-      top: -60px;
+  }
+
+  .join-requests {
+    padding-top: 25px;
+    padding-bottom: 25px;
+    border-top: 1px solid @post-border;
+    .join-requests-header {
+      padding-left: @modal-row-side-padding;
+      padding-right: @modal-row-side-padding;
+      label {
+        font-size: 20px;
+        font-weight: 500;
+        .count {
+          margin-left: 10px;
+          position: relative;
+          top: -2px;
+          color: @faint-gray-text;
+          font-weight: 400;
+        }
+      }
+      .approve-all {
+        .round-button;
+        color: @damian-green;
+        float: right;
+        border: 1px solid @post-border;
+        position: relative;
+        top: -60px;
+      }
     }
   }
 }

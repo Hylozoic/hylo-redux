@@ -13,6 +13,8 @@ const { array, bool, func, string } = React.PropTypes
 import { position } from '../util/scrolling'
 import { loadScript } from '../client/util'
 
+const TINYMCE_ASSET_URL = 'https://cdn.tinymce.com/4/tinymce.min.js'
+
 const editorConfig = {
   menubar: false,
   statusbar: false,
@@ -115,7 +117,7 @@ export default class RichTextEditor extends React.Component {
       startFocused
     } = this.props
 
-    Promise.resolve(window.tinymce || loadScript('https://cdn.tinymce.com/4/tinymce.min.js'))
+    Promise.resolve(window.tinymce || loadScript(TINYMCE_ASSET_URL))
     .then(() => this.setState({loadedTinyMCE: true}))
     .then(() => this._pollForEditor(editor => {
       onReady && onReady(editor)

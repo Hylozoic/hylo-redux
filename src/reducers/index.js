@@ -30,6 +30,7 @@ import { admin } from './admin'
 
 import {
   APPROVE_JOIN_REQUEST_PENDING,
+  APPROVE_ALL_JOIN_REQUESTS_PENDING,
   CANCEL_POST_EDIT,
   CANCEL_TYPEAHEAD,
   CHECK_FRESHNESS_POSTS,
@@ -480,10 +481,15 @@ const combinedReducers = combineReducers({
           [communityId]: payload.items
         }
       case APPROVE_JOIN_REQUEST_PENDING:
-        const { userId, slug } = meta
+        let { userId, slug } = meta
         return {
           ...state,
           [slug]: filter(j => j.user.id !== userId, state[slug])
+        }
+      case APPROVE_ALL_JOIN_REQUESTS_PENDING:
+        return {
+          ...state,
+          [meta.slug]: []
         }
     }
 

@@ -2,7 +2,9 @@ import React from 'react'
 import { humanDate } from '../../util/text'
 import A from '../../components/A'
 import Avatar from '../../components/Avatar'
-import { FETCH_JOIN_REQUESTS, approveJoinRequest, notify } from '../../actions'
+import {
+  FETCH_JOIN_REQUESTS, approveJoinRequest, approveAllJoinRequests, notify
+} from '../../actions'
 import cx from 'classnames'
 import { connect } from 'react-redux'
 
@@ -23,7 +25,15 @@ const JoinRequestList = connect((state, { id }) => ({
       }
     })
 
-  const approveAll = () => console.log('Approve all')
+  const approveAll = () =>
+    dispatch(approveAllJoinRequests(id))
+    .then(({ error }) => {
+      if (error) {
+        dispatch(notify('There was a approving these requests; please try again later.', {type: 'error'}))
+      } else {
+        dispatch(notify('All requests approved'))
+      }
+    })
 
   return <div className='join-requests'>
     <div className='join-requests-header'>

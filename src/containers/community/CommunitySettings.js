@@ -27,7 +27,6 @@ import { uploadImage } from '../../actions/uploadImage'
 import PersonChooser from '../../components/PersonChooser'
 import { communityJoinUrl } from '../../routes'
 import { makeUrl } from '../../util/navigation'
-import { position } from '../../util/scrolling'
 import InvitationList from './InvitationList'
 import JoinRequestList from './JoinRequestList'
 
@@ -170,10 +169,8 @@ export default class CommunitySettings extends React.Component {
   toggleSection = (section, open) => {
     const { dispatch, community: { slug } } = this.props
     let { expand } = this.state
-    let goToJoinRequests
     if (section === 'join_requests') {
       section = 'access'
-      goToJoinRequests = true
     }
     if (open || !expand[section]) {
       switch (section) {
@@ -187,13 +184,6 @@ export default class CommunitySettings extends React.Component {
       }
     }
     this.setState({expand: {...expand, [section]: open || !expand[section]}})
-    if (goToJoinRequests) {
-      setTimeout(() => {
-        if (this.refs.joinRequests) {
-          window.scrollTo(0, position(this.refs.joinRequests).y + 400)
-        }
-      }, 1000)
-    }
   }
 
   addModerator = person => {

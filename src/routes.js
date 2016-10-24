@@ -165,6 +165,9 @@ export const communityUrl = (community, params) =>
 export const communitySettingsUrl = (community, params) =>
   makeUrl(`/c/${community.slug}/settings`, params)
 
+export const communityJoinRequestsUrl = (community, params) =>
+  makeUrl(`/c/${community.slug}/invite#join_requests`, params)
+
 export const networkUrl = network =>
   `/n/${network.slug}`
 

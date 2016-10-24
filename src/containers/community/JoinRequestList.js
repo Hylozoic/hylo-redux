@@ -48,7 +48,7 @@ const JoinRequestList = connect((state, { id }) => ({
           <tr>
             <th>User</th>
             <th>Time Requested</th>
-            <th>Approve</th>
+            <th></th>
           </tr>
         </thead>
         <tbody>

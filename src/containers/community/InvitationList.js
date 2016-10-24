@@ -34,7 +34,7 @@ const InvitationList = connect((state, { id }) => ({
       if (error) {
         dispatch(notify('There was a problem sending these invitations; please try again later.', {type: 'error'}))
       } else {
-        dispatch(notify('Invitations sent'))
+        dispatch(notify('Your invitations have been queued and will be sent shortly.'))
       }
     })
   const sendInvitation = email =>
@@ -59,7 +59,7 @@ const InvitationList = connect((state, { id }) => ({
             <th>Recipient</th>
             <th>Used by</th>
             <th>Time sent</th>
-            <th>Resend</th>
+            <th></th>
           </tr>
         </thead>
         <tbody>

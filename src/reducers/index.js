@@ -52,6 +52,7 @@ import {
   NAVIGATE,
   NOTIFY,
   REMOVE_NOTIFICATION,
+  RESEND_ALL_COMMUNITY_INVITATIONS_PENDING,
   RESET_ERROR,
   RESET_COMMUNITY_VALIDATION,
   RESET_NETWORK_VALIDATION,
@@ -429,6 +430,12 @@ const combinedReducers = combineReducers({
         return {
           ...state,
           [communityId]: [...newInvitations, ...(state[communityId] || [])]
+        }
+      case RESEND_ALL_COMMUNITY_INVITATIONS_PENDING:
+        communityId = meta.communityId
+        return {
+          ...state,
+          [communityId]: map(i => i.user ? i : ({...i, created: new Date()}), (state[communityId]) || [])
         }
     }
 

@@ -25,7 +25,7 @@ const JoinRequestList = connect((state, { id }) => ({
 
   const approveAll = () => console.log('Approve all')
 
-  return <div className='join-requests' ref='joinRequests'>
+  return <div className='join-requests'>
     <div className='join-requests-header'>
       <label>Requests<span className='count'>{total}</span></label>
       <p className='summary'>These are people who have asked to join.</p>

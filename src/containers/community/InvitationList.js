@@ -2,18 +2,22 @@ import React from 'react'
 import { humanDate } from '../../util/text'
 import A from '../../components/A'
 import Avatar from '../../components/Avatar'
-import { FETCH_INVITATIONS, fetchInvitations } from '../../actions'
+import {
+  FETCH_INVITATIONS, fetchInvitations, sendCommunityInvitation, notify,
+  resendAllCommunityInvitations
+} from '../../actions'
 import cx from 'classnames'
-import { get } from 'lodash'
+import { get, uniqBy } from 'lodash/fp'
 import { connect } from 'react-redux'
 
 const InvitationList = connect((state, { id }) => ({
+  invitationEditor: get('invitationEditor', state),
   invitations: state.invitations[id],
   total: state.totalInvitations[id],
   pending: state.pending[FETCH_INVITATIONS]
 }))(props => {
-  const { invitations, pending, total, dispatch, id } = props
-  const offset = get(invitations, 'length') || 0
+  const { invitations, pending, total, dispatch, id, invitationEditor } = props
+  const offset = get('length', invitations) || 0
 
   const loadMore = () =>
     !pending && offset < total && dispatch(fetchInvitations(id, offset))
@@ -22,9 +26,26 @@ const InvitationList = connect((state, { id }) => ({
     ? `showing ${invitations.length} of ${total} invitations, ${invitations.filter(i => i.user).length} used`
     : `${total} invitations sent, ${invitations.filter(i => i.user).length} used`
 
-  const resendAll = () => console.log('resending all')
-  const sendInvitation = email => console.log('sendInvitation to', email)
+  const { subject, message, moderator } = invitationEditor
 
+  const resendAll = () =>
+    dispatch(resendAllCommunityInvitations(id, {subject, message}))
+    .then(({ error }) => {
+      if (error) {
+        dispatch(notify('There was a problem sending these invitations; please try again later.', {type: 'error'}))
+      } else {
+        dispatch(notify('Invitations sent'))
+      }
+    })
+  const sendInvitation = email =>
+    dispatch(sendCommunityInvitation(id, {subject, message, emails: [email], moderator}))
+    .then(({ error }) => {
+      if (error) {
+        dispatch(notify('There was a problem sending this invitation; please try again later.', {type: 'error'}))
+      } else {
+        dispatch(notify(`Invitation sent to ${email}.`))
+      }
+    })
   return <div className='invitations'>
     <div className='invitations-header'>
       <label>Pending Invitations <span className='count'>{countText}</span></label>
@@ -42,7 +63,7 @@ const InvitationList = connect((state, { id }) => ({
           </tr>
         </thead>
         <tbody>
-          {(invitations || []).map((invitation, index) => {
+          {uniqBy('email', (invitations || [])).map((invitation, index) => {
             let person = invitation.user
             return <tr key={invitation.id} className={cx({even: index % 2 === 0})}>
               <td>{invitation.email}</td>

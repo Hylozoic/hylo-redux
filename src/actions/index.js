@@ -88,6 +88,8 @@ export const REMOVE_NOTIFICATION = 'REMOVE_NOTIFICATION'
 export const REMOVE_POST = 'REMOVE_POST'
 export const REMOVE_TAG = 'REMOVE_TAG'
 export const REQUEST_TO_JOIN_COMMUNITY = 'REQUEST_TO_JOIN_COMMUNITY'
+export const RESEND_ALL_COMMUNITY_INVITATIONS = 'RESEND_ALL_COMMUNITY_INVITATIONS'
+export const RESEND_ALL_COMMUNITY_INVITATIONS_PENDING = RESEND_ALL_COMMUNITY_INVITATIONS + _PENDING
 export const RESET_COMMUNITY_VALIDATION = 'RESET_COMMUNITY_VALIDATION'
 export const RESET_ERROR = 'RESET_ERROR'
 export const RESET_NETWORK_VALIDATION = 'RESET_NETWORK_VALIDATION'
@@ -385,6 +387,14 @@ export function sendCommunityInvitation (communityId, params) {
   return {
     type: SEND_COMMUNITY_INVITATION,
     payload: {api: true, path: `/noo/community/${communityId}/invite`, params, method: 'POST'},
+    meta: {communityId}
+  }
+}
+
+export function resendAllCommunityInvitations (communityId, params) {
+  return {
+    type: RESEND_ALL_COMMUNITY_INVITATIONS,
+    payload: {api: true, path: `/noo/community/${communityId}/re-invite-all`, params, method: 'POST'},
     meta: {communityId}
   }
 }

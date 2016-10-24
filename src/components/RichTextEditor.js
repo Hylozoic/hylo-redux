@@ -207,7 +207,7 @@ export default class RichTextEditor extends React.Component {
         onSetContent={this._handleChange}
         content={content}/>}
 
-      {!isEmpty(typeaheadOptions) &&
+      {!isEmpty(typeaheadOptions) && this.tagger && this.tagger.isInTag() &&
         <div className='dropdown active' style={{left, top}}>
           <KeyControlledItemList className='dropdown-menu'
             ref='list'

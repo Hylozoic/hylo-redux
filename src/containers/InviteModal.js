@@ -36,9 +36,35 @@ export default class InviteModal extends React.Component {
   static propTypes = {
     dispatch: func,
     community: object,
-    invitationEditor: object,
     standalone: bool,
     onClose: func
+  }
+
+  render () {
+    const {
+      community, dispatch, standalone, onClose
+    } = this.props
+
+    const close = onClose || (() => dispatch(closeModal()))
+
+    return <Modal title='Invite people to join you.'
+      standalone={standalone}
+      onCancel={close}>
+      <InviteForm onClose={close} community={community} standalone={standalone}/>
+    </Modal>
+  }
+}
+
+@connect((state, { community }) => ({
+  invitationEditor: get('invitationEditor', state)
+}))
+export class InviteForm extends React.Component {
+  static propTypes = {
+    dispatch: func,
+    community: object,
+    invitationEditor: object,
+    onClose: func,
+    standalone: bool
   }
 
   static contextTypes = {
@@ -84,11 +110,9 @@ export default class InviteModal extends React.Component {
   render () {
     const { expanded } = this.state
     const {
-      community, dispatch, invitationEditor, standalone, onClose
+      dispatch, invitationEditor, community, onClose, standalone
     } = this.props
     const { currentUser } = this.context
-
-    const close = onClose || (() => dispatch(closeModal()))
 
     if (!canInvite(currentUser, community)) {
       return <AccessErrorMessage error={{status: 403}}/>
@@ -125,55 +149,53 @@ export default class InviteModal extends React.Component {
         trackEvent(INVITED_COMMUNITY_MEMBERS, {community})
         clearEditor()
         dispatch(updateCommunityChecklist(community.slug))
-        close()
+        onClose && onClose()
         const clause = emails.length > 1 ? 's have' : ' has'
         dispatch(notify(`Your invitation${clause} been sent`))
+        dispatch(updateInvitationEditor('recipients', ''))
       })
     }
 
-    return <Modal title='Invite people to join you.'
-      id='community-invite-prompt'
-      standalone={standalone}
-      onCancel={close}>
-        <div className='modal-input csv-upload'>
-          <label className='custom-file-upload'>
-            <input type='file' onChange={() => this.processCSV()} ref='fileInput'/>
-            Browse
-          </label>
-          <label className='normal-label'>Import CSV File</label>
-          <p className='help-text'>The file should have a header row named "email" for the email column. Or it can be a file in which each line is a single email address.</p>
+    return <span id='community-invite-form'>
+      <div className='modal-input csv-upload'>
+        <label className='custom-file-upload'>
+          <input type='file' onChange={() => this.processCSV()} ref='fileInput'/>
+          Upload CSV
+        </label>
+        <label className='normal-label'>Import CSV File (optional)</label>
+        <p className='help-text'>The file should have a header row named "email" for the email column. Or it can be a file in which each line is a single email address.</p>
+      </div>
+      <ModalInput
+        className='emails'
+        ref='emails'
+        type='textarea'
+        value={recipients}
+        onChange={update('recipients')}
+        prefix='To'
+        placeholder='Emails (use commas to separate)'/>
+        <div className='toggle-section'>
+          <a onClick={() => this.setState({expanded: !expanded})}>
+            Customize Message
+            <Icon name={expanded ? 'Chevron-Up2' : 'Chevron-Down2'} />
+          </a>
         </div>
-        <ModalInput
-          className='emails'
-          label='Enter Emails'
-          ref='emails'
-          type='textarea'
-          value={recipients}
-          onChange={update('recipients')}
-          placeholder='Enter email addresses, separated by commas or line breaks'/>
-          <div className='toggle-section'>
-            <a onClick={() => this.setState({expanded: !expanded})}>
-              Customize Message
-              <Icon name={expanded ? 'Chevron-Up2' : 'Chevron-Down2'} />
-            </a>
-          </div>
 
-        {expanded && <ModalInput
-          label='Subject'
-          ref='subject'
-          value={subject}
-          onChange={update('subject')}/>}
-        {expanded && <ModalInput
-          label='Message'
-          ref='message'
-          type='textarea'
-          value={message}
-          onChange={update('message')}/>}
-        {error && <div className='alert alert-danger'>{error}</div>}
-        <div className='footer'>
-          <a className='button ok' onClick={submit}>Invite</a>
-          {standalone && <A to={checklistUrl(community)} onClick={clearEditor} className='skip'>Skip</A>}
-        </div>
-      </Modal>
+      {expanded && <ModalInput
+        label='Subject'
+        ref='subject'
+        value={subject}
+        onChange={update('subject')}/>}
+      {expanded && <ModalInput
+        label='Message'
+        ref='message'
+        type='textarea'
+        value={message}
+        onChange={update('message')}/>}
+      {error && <div className='alert alert-danger'>{error}</div>}
+      <div className='footer'>
+        <a className='button ok' onClick={submit}>Invite</a>
+        {standalone && <A to={checklistUrl(community)} onClick={clearEditor} className='skip'>Skip</A>}
+      </div>
+    </span>
   }
 }

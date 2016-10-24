@@ -2,7 +2,7 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { prefetch } from 'react-fetcher'
 const { array, bool, func, object } = React.PropTypes
-import { toPairs, get, some, isEmpty } from 'lodash/fp'
+import { toPairs, get, some } from 'lodash/fp'
 import ModalOnlyPage from '../components/ModalOnlyPage'
 import { ModalInput, ModalSelect } from '../components/ModalRow'
 import Modal from '../components/Modal'
@@ -32,7 +32,6 @@ import {
 import { scrollToBottom } from '../util/scrolling'
 import { ADDED_COMMUNITY, trackEvent } from '../util/analytics'
 import { saveCurrentCommunityId } from '../actions/util'
-import InvitationList from './community/InvitationList'
 import { checklistUrl } from '../routes'
 
 const merkabaUrl = 'https://www.hylo.com/img/hylo-merkaba-300x300.png'
@@ -289,18 +288,13 @@ export class CreateCommunityInvite extends React.Component {
   }
 
   render () {
-    const { community, invitations, dispatch } = this.props
+    const { community, dispatch } = this.props
 
     const onClose = () => dispatch(navigate(checklistUrl(community)))
 
     return <ModalOnlyPage className='create-community'>
       <Topper community={community}/>
       <InviteModal onClose={onClose} community={community} standalone/>
-
-      {!isEmpty(invitations) &&
-        <Modal title='Sent invitations' standalone>
-          <InvitationList id={community.slug}/>
-        </Modal>}
     </ModalOnlyPage>
   }
 }

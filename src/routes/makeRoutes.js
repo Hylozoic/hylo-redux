@@ -14,6 +14,7 @@ import CommunityJoinLinkHandler from '../containers/community/CommunityJoinLinkH
 import InvitationHandler from '../containers/community/InvitationHandler'
 import AboutCommunity from '../containers/community/AboutCommunity'
 import CommunitySettings from '../containers/community/CommunitySettings'
+import CommunityInvite from '../containers/community/CommunityInvite'
 import TagSettings from '../containers/TagSettings'
 import TagPosts from '../containers/tag/TagPosts'
 import BioPrompt from '../containers/onboarding/BioPrompt'
@@ -77,7 +78,6 @@ export default function makeRoutes (store) {
 
     <Route path='create' component={CreateCommunity} onEnter={requireLogin}/>
     <Route path='invite' component={CreateCommunityInvite} onEnter={requireLogin}/>
-    <Route path='c/:id/invite' component={CreateCommunityInvite} onEnter={requireLogin}/>
 
     <Route path='set-password' component={SetPassword}/>
 
@@ -126,6 +126,7 @@ export default function makeRoutes (store) {
         <Route path='settings/tags' component={TagSettings}/>
         <Route path='settings' component={CommunitySettings} onEnter={requireLogin}/>
         <Route path='tag/:tagName' component={TagPosts} onEnter={requireLogin} />
+        <Route path='invite' component={CommunityInvite} onEnter={requireLogin}/>
       </Route>
 
       <Route path='t/:id' component={ThreadPage} onEnter={requireLogin}/>

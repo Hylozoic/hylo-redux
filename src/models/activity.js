@@ -2,7 +2,7 @@ import { compact, find, flow, get, map, reduce } from 'lodash/fp'
 import { includes } from 'lodash'
 import { FETCH_ACTIVITY, fetchCurrentUser } from '../actions'
 import { present } from '../util/text'
-import { postUrl, communityUrl, communitySettingsUrl } from '../routes'
+import { postUrl, communityUrl, communityJoinRequestsUrl } from '../routes'
 
 const getActivities = (slug, state) => {
   const { activitiesByCommunity, activities } = state
@@ -64,7 +64,7 @@ export const destination = ({ post, comment, community, action }) => {
   if (post.id) {
     return postUrl(post.id, get('id', comment))
   } else if (action === 'joinRequest') {
-    return `${communitySettingsUrl(community)}?expand=join_requests`
+    return communityJoinRequestsUrl(community)
   } else {
     return communityUrl(community)
   }

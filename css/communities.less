@@ -7,7 +7,7 @@
   });
 }
 
-.create-community, #community-invite-prompt {
+.create-community, #community-invite-form {
   textarea {
     width: 100%;
     height: 160px;
@@ -57,7 +57,7 @@
   }
 }
 
-#community-invite-prompt {
+#community-invite-form {
   input[type="file"] {
     display: none
   }
@@ -86,8 +86,14 @@
   }
 
   .emails {
+    .prefix {
+      display: inline-block;
+      position: relative;
+      top: 20px;
+    }
     textarea {
-      height: 100px;
+      padding-left: 30px !important;
+      height: 40px;
     }
   }
 }
@@ -98,7 +104,6 @@
     margin-top: 25px;
     border-top: 1px solid @post-border;
     text-align: right;
-    padding: @modal-row-side-padding;
   }
 
   .avatar {
@@ -107,12 +112,21 @@
     margin-right: 10px;
   }
 
+  tr {
+    border-top: 1px solid @post-border;
+  }
+
   table {
     width: 100%;
   }
 
+  td {
+    color: @gray-text;
+    font-weight: 300;
+  }
+
   th, td {
-    padding: 6px 10px;
+    padding: 15px 10px;
 
     &:first-child {
       padding-left: @modal-row-side-padding;
@@ -126,10 +140,6 @@
 
   td.unused {
     color: transparent;
-  }
-
-  tr.even td {
-    background-color: @faint-gray-bg;
   }
 
   .mobile({
@@ -147,10 +157,134 @@
       }
     }
   });
+
+  .table-button {
+    font-weight: 300;
+    color: @faint-gray-text;
+  }
 }
 
 #community-checklist {
   .footer {
     border-top: 0;
+  }
+}
+
+#community-invite-settings {
+  background-color: white;
+  .modal-input {
+    .modal-input-row;
+  }
+
+  .invitation-link {
+    padding-top: 25px;
+    background-color: white;
+    .icon {
+      display: block;
+      float: left;
+      margin-right: 10px;
+      color: white;
+      background-color: @damian-green;
+      height: 32px;
+      width: 32px;
+      border-radius: 32px;
+      font-size: 20px;
+      padding-left: 6px;
+      padding-top: 6px;
+    }
+    a {
+      color: @damian-green;
+    }
+    .copy-link-wrapper {
+      position: relative;
+      top: -30px;
+      float: right;
+      .copy-link {
+        .round-button;
+        color: @damian-green;
+        border: 1px solid @post-border;
+      }
+      .copied {
+        color: @damian-red;
+      }
+    }
+  }
+
+  .csv-upload {
+    background-color: white;
+    .custom-file-upload {
+      font-size: inherit;
+      letter-spacing: inherit;
+      font-weight: inherit;
+      text-transform: none;
+    }
+  }
+
+  .footer {
+    .modal-input-row;
+    background-color: white;
+    button, a.button {
+      .round-button;
+      padding: 0 20px;
+
+      &.ok {
+        .green-button;
+      }
+    }
+  }
+
+  .invitations {
+    padding-top: 25px;
+    border-top: 1px solid @post-border;
+    .invitations-header {
+      padding-left: @modal-row-side-padding;
+      padding-right: @modal-row-side-padding;
+      label {
+        font-size: 20px;
+        font-weight: 500;
+        .count {
+          .meta-text;
+          margin-left: 10px;
+        }
+      }
+      .resend-all {
+        .round-button;
+        color: @damian-green;
+        float: right;
+        border: 1px solid @post-border;
+        position: relative;
+        top: -60px;
+      }
+
+    }
+  }
+
+  .join-requests {
+    padding-top: 25px;
+    padding-bottom: 25px;
+    border-top: 1px solid @post-border;
+    .join-requests-header {
+      padding-left: @modal-row-side-padding;
+      padding-right: @modal-row-side-padding;
+      label {
+        font-size: 20px;
+        font-weight: 500;
+        .count {
+          margin-left: 10px;
+          position: relative;
+          top: -2px;
+          color: @faint-gray-text;
+          font-weight: 400;
+        }
+      }
+      .approve-all {
+        .round-button;
+        color: @damian-green;
+        float: right;
+        border: 1px solid @post-border;
+        position: relative;
+        top: -60px;
+      }
+    }
   }
 }

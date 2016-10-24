@@ -8,6 +8,8 @@ export const ADD_COMMUNITY_MODERATOR_PENDING = ADD_COMMUNITY_MODERATOR + _PENDIN
 export const ADD_DATA_TO_STORE = 'ADD_DATA_TO_STORE'
 export const APPEND_COMMENT = 'APPEND_COMMENT'
 export const APPEND_THREAD = 'APPEND_THREAD'
+export const APPROVE_ALL_JOIN_REQUESTS = 'APPROVE_ALL_JOIN_REQUESTS'
+export const APPROVE_ALL_JOIN_REQUESTS_PENDING = APPROVE_ALL_JOIN_REQUESTS + _PENDING
 export const APPROVE_JOIN_REQUEST = 'APPROVE_JOIN_REQUEST'
 export const APPROVE_JOIN_REQUEST_PENDING = APPROVE_JOIN_REQUEST + _PENDING
 export const CANCEL_POST_EDIT = 'CANCEL_POST_EDIT'
@@ -92,6 +94,8 @@ export const REMOVE_NOTIFICATION = 'REMOVE_NOTIFICATION'
 export const REMOVE_POST = 'REMOVE_POST'
 export const REMOVE_TAG = 'REMOVE_TAG'
 export const REQUEST_TO_JOIN_COMMUNITY = 'REQUEST_TO_JOIN_COMMUNITY'
+export const RESEND_ALL_COMMUNITY_INVITATIONS = 'RESEND_ALL_COMMUNITY_INVITATIONS'
+export const RESEND_ALL_COMMUNITY_INVITATIONS_PENDING = RESEND_ALL_COMMUNITY_INVITATIONS + _PENDING
 export const RESET_COMMUNITY_VALIDATION = 'RESET_COMMUNITY_VALIDATION'
 export const RESET_ERROR = 'RESET_ERROR'
 export const RESET_NETWORK_VALIDATION = 'RESET_NETWORK_VALIDATION'
@@ -396,6 +400,14 @@ export function sendCommunityInvitation (communityId, params) {
   }
 }
 
+export function resendAllCommunityInvitations (communityId, params) {
+  return {
+    type: RESEND_ALL_COMMUNITY_INVITATIONS,
+    payload: {api: true, path: `/noo/community/${communityId}/re-invite-all`, params, method: 'POST'},
+    meta: {communityId}
+  }
+}
+
 export function clearInvitationEditor () {
   return {
     type: CLEAR_INVITATION_EDITOR
@@ -551,6 +563,14 @@ export function approveJoinRequest (userId, slug) {
     type: APPROVE_JOIN_REQUEST,
     payload: {api: true, params: {userId}, path: `/noo/community/${slug}/approve-join-request`, method: 'post'},
     meta: {userId, slug, optimistic: true}
+  }
+}
+
+export function approveAllJoinRequests (slug) {
+  return {
+    type: APPROVE_ALL_JOIN_REQUESTS,
+    payload: {api: true, path: `/noo/community/${slug}/approve-all-join-requests`, method: 'post'},
+    meta: {slug, optimistic: true}
   }
 }
 

@@ -6,7 +6,7 @@ const { object, func, array } = React.PropTypes
 import { find, isEmpty, reduce, set } from 'lodash'
 import { get } from 'lodash/fp'
 import { markdown, sanitize } from 'hylo-utils/text'
-import { navigate, showModal, fetchInvitations, fetchJoinRequests } from '../../actions'
+import { navigate, fetchInvitations, fetchJoinRequests } from '../../actions'
 import {
   addCommunityModerator,
   fetchCommunitySettings,
@@ -20,16 +20,10 @@ import config from '../../config'
 const { host } = config
 const slackClientId = config.slack.clientId
 import { avatarUploadSettings, bannerUploadSettings } from '../../models/community'
-import { hasFeature } from '../../models/currentUser'
-import { REQUEST_TO_JOIN_COMMUNITY } from '../../config/featureFlags'
 import A from '../../components/A'
 import { uploadImage } from '../../actions/uploadImage'
 import PersonChooser from '../../components/PersonChooser'
-import { communityJoinUrl } from '../../routes'
 import { makeUrl } from '../../util/navigation'
-import { position } from '../../util/scrolling'
-import InvitationList from './InvitationList'
-import JoinRequestList from './JoinRequestList'
 
 @prefetch(({dispatch, params: {id}}) =>
     dispatch(fetchCommunitySettings(id))
@@ -170,10 +164,8 @@ export default class CommunitySettings extends React.Component {
   toggleSection = (section, open) => {
     const { dispatch, community: { slug } } = this.props
     let { expand } = this.state
-    let goToJoinRequests
     if (section === 'join_requests') {
       section = 'access'
-      goToJoinRequests = true
     }
     if (open || !expand[section]) {
       switch (section) {
@@ -187,13 +179,6 @@ export default class CommunitySettings extends React.Component {
       }
     }
     this.setState({expand: {...expand, [section]: open || !expand[section]}})
-    if (goToJoinRequests) {
-      setTimeout(() => {
-        if (this.refs.joinRequests) {
-          window.scrollTo(0, position(this.refs.joinRequests).y + 400)
-        }
-      }, 1000)
-    }
   }
 
   addModerator = person => {
@@ -238,7 +223,7 @@ export default class CommunitySettings extends React.Component {
   }
 
   render () {
-    const { community, dispatch, invitations, joinRequests } = this.props
+    const { community } = this.props
     const { avatar_url, banner_url } = community
     const { editing, edited, errors, expand } = this.state
     const labelProps = {expand, toggle: this.toggleSection}
@@ -246,7 +231,6 @@ export default class CommunitySettings extends React.Component {
     const { is_admin } = currentUser
     const slackerror = this.props.location.query.slackerror
     const slugNotUnique = get('slug.unique', this.props.validation) === false
-    const joinUrl = communityJoinUrl(community)
     const addSlackUrl = `${host}/noo/community/${community.id}/settings/slack`
 
     return <div className='form-sections' id='community-settings'>
@@ -419,38 +403,7 @@ export default class CommunitySettings extends React.Component {
             <input type='checkbox' checked={community.settings.all_can_invite} onChange={() => this.toggle('settings.all_can_invite')}/>
           </div>
         </div>
-        <div className='section-item'>
-          <div className='full-column'>
-            <label>Invitation code link</label>
-            <p><a href={joinUrl}>{joinUrl}</a></p>
-            <p className='summary'>You can share this link to allow people to join your community without having to invite them individually.</p>
-          </div>
-        </div>
-        <div className='section-item'>
-          <div className='full-column'>
-            <label>Invite members</label>
-            <p><button onClick={() => dispatch(showModal('invite'))}>Invite members</button></p>
-            <p className='summary'>Use this button to send email invitations to people you&#39;d like in your communtiy.</p>
-          </div>
-        </div>
-        {!isEmpty(invitations) &&
-          <div className='section-item'>
-            <div className='full-column'>
-              <label>Sent Invitations</label>
-              <p className='summary'>These are people you have already sent invitations to.</p>
-              <InvitationList id={community.slug}/>
-            </div>
-          </div>}
-        {hasFeature(currentUser, REQUEST_TO_JOIN_COMMUNITY) && !isEmpty(joinRequests) &&
-          <div className='section-item' ref='joinRequests'>
-            <div className='full-column'>
-              <label>Pending requests</label>
-              <p className='summary'>These are people who have requested to join. Use the button to approve.</p>
-              <JoinRequestList id={community.slug}/>
-            </div>
-          </div>}
       </div>}
-
       <SectionLabel name='moderators' {...labelProps}>Moderation</SectionLabel>
       {expand.moderators && <div className='section moderators'>
         <div className='section-item'>

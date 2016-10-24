@@ -29,8 +29,9 @@ import {
 import { admin } from './admin'
 
 import {
-  APPROVE_JOIN_REQUEST_PENDING,
   APPEND_THREAD,
+  APPROVE_JOIN_REQUEST_PENDING,
+  APPROVE_ALL_JOIN_REQUESTS_PENDING,
   CANCEL_POST_EDIT,
   CANCEL_TYPEAHEAD,
   CHECK_FRESHNESS_POSTS,
@@ -55,6 +56,7 @@ import {
   ON_THREAD_PAGE,
   OFF_THREAD_PAGE,
   REMOVE_NOTIFICATION,
+  RESEND_ALL_COMMUNITY_INVITATIONS_PENDING,
   RESET_ERROR,
   RESET_COMMUNITY_VALIDATION,
   RESET_NETWORK_VALIDATION,
@@ -191,7 +193,7 @@ const combinedReducers = combineReducers({
     let { type, payload } = action
     switch (type) {
       case ON_THREAD_PAGE:
-        return payload.id 
+        return payload.id
       case OFF_THREAD_PAGE:
         return null
     }
@@ -446,6 +448,12 @@ const combinedReducers = combineReducers({
           ...state,
           [communityId]: [...newInvitations, ...(state[communityId] || [])]
         }
+      case RESEND_ALL_COMMUNITY_INVITATIONS_PENDING:
+        communityId = meta.communityId
+        return {
+          ...state,
+          [communityId]: map(i => i.user ? i : ({...i, created: new Date()}), (state[communityId]) || [])
+        }
     }
 
     return state
@@ -489,10 +497,15 @@ const combinedReducers = combineReducers({
           [communityId]: payload.items
         }
       case APPROVE_JOIN_REQUEST_PENDING:
-        const { userId, slug } = meta
+        let { userId, slug } = meta
         return {
           ...state,
           [slug]: filter(j => j.user.id !== userId, state[slug])
+        }
+      case APPROVE_ALL_JOIN_REQUESTS_PENDING:
+        return {
+          ...state,
+          [meta.slug]: []
         }
     }
 

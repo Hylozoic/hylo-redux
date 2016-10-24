@@ -138,6 +138,7 @@
 
   .modal-input {
     .modal-input-row;
+    position: relative;
 
     .prefix-group {
       display: table;
@@ -153,8 +154,8 @@
     }
 
     .errors {
-      float: right;
-      display: inline;
+      position: absolute;
+      right: @modal-row-side-padding;
       .help.error {
         padding-left: 15px;
         color: @error-color;

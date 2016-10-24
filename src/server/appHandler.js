@@ -2,7 +2,7 @@ import { browserSnippet, setTransactionNameFromProps } from './newrelic' // this
 import React from 'react'
 import { renderToString, renderToStaticMarkup } from 'react-dom/server'
 import Html from '../containers/Html'
-import makeRoutes from '../routes'
+import makeRoutes from '../routes/makeRoutes'
 import { configureStore } from '../store'
 import { Provider } from 'react-redux'
 import { match, RouterContext } from 'react-router'

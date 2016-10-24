@@ -57,15 +57,14 @@ class Comment extends React.Component {
       this.setState({editing: false})
     }
 
-    return editing
-      ? <CommentForm commentId={comment.id} close={closeEdit}/>
-      : <div className='comment' data-comment-id={comment.id}>
+    if (editing) return <CommentForm commentId={comment.id} close={closeEdit}/>
+
+    return <div className='comment' data-comment-id={comment.id}>
       {canEditComment(currentUser, comment, community) &&
         <Dropdown alignRight toggleChildren={<span className='icon-More'></span>}>
           <li><a onClick={edit}>Edit</a></li>
           <li><a onClick={remove}>Remove</a></li>
-        </Dropdown>
-        }
+        </Dropdown>}
       <a name={`comment-${comment.id}`}></a>
       <Avatar person={person}/>
       <div className='content'>

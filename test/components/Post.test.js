@@ -1,9 +1,9 @@
-import { helpers } from '../support'
+require('../support')
 import { renderToString } from 'react-dom/server'
 import { Details, Voters } from '../../src/components/Post'
 import cheerio from 'cheerio'
 import decode from 'ent/decode'
-const { createElement } = helpers
+import { createElement } from '../support/helpers'
 
 describe('Voters', () => {
   const currentUser = {id: 'x'}

@@ -1,5 +1,6 @@
 require('../support')
-import { mocks, helpers } from '../../support'
+import { mocks } from '../../support'
+import { createElement } from '../../support/helpers'
 import ConnectedPostList from '../../../src/containers/ConnectedPostList'
 import {
   findRenderedDOMComponentWithClass,
@@ -39,7 +40,7 @@ describe('ConnectedPostList', () => {
       const props = {subject: 'community', id: 'foo'}
       const store = mocks.redux.store(state)
       const context = {store, community}
-      let component = helpers.createElement(ConnectedPostList, props, context)
+      let component = createElement(ConnectedPostList, props, context)
       let node = renderIntoDocument(component).getWrappedInstance()
       let refreshButton = findRenderedDOMComponentWithClass(node, 'refresh-button')
       expect(refreshButton.innerHTML).to.equal('3 new posts')

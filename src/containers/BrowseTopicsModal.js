@@ -4,10 +4,9 @@ import { getCurrentCommunity, getFollowedTags } from '../models/community'
 import { connectedListProps } from '../util/caching'
 import { closeModal } from '../actions'
 import { fetchTags, followTag } from '../actions/tags'
-import ScrollListener from '../components/ScrollListener'
 import Icon from '../components/Icon'
 import A from '../components/A'
-import { modalWrapperCSSId, Modal } from '../components/Modal'
+import { Modal } from '../components/Modal'
 import { isEmpty, some } from 'lodash'
 import { find } from 'lodash/fp'
 import { same } from '../models'
@@ -42,7 +41,7 @@ export default class BrowseTopicsModal extends React.Component {
 
   componentDidMount () {
     const { dispatch, community } = this.props
-    dispatch(fetchTags({subject, id: community.slug}))
+    dispatch(fetchTags({subject, limit: 10, id: community.slug, sort: 'popularity'}))
   }
 
   render () {
@@ -59,14 +58,8 @@ export default class BrowseTopicsModal extends React.Component {
       ? `Follow the topics you're interested in to join the conversation with other members.`
       : null
 
-    const loadMore = !pending && offset < total
-      ? () => dispatch(fetchTags({subject, id: community.slug, offset}))
-      : () => {}
-
-    const scrollListenerProps = {
-      onBottom: loadMore,
-      elementId: onboarding ? null : modalWrapperCSSId
-    }
+    const loadMore = !pending && offset < total &&
+      (() => dispatch(fetchTags({subject, id: community.slug, offset, sort: 'popularity'})))
 
     return <Modal {...{title, subtitle}} id='browse-all-topics' onCancel={onCancel}
       standalone={onboarding}>
@@ -77,8 +70,13 @@ export default class BrowseTopicsModal extends React.Component {
               return <TagRow tag={tag} community={community} key={tag.id}
                 followed={followed}/>
             })}
+            {loadMore && <li className='show-more'>
+              <span className='meta'>
+                Showing {tags.length} of {total}.
+                <a onClick={loadMore}>Show more</a>
+              </span>
+            </li>}
           </ul>}
-      <ScrollListener {...scrollListenerProps}/>
       {onboarding && <div className='footer'>
         <A className='button' to={nextUrl}>Next</A>
       </div>}

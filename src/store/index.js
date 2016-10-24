@@ -11,10 +11,11 @@ import {
 import { syncHistoryWithStore } from 'react-router-redux'
 import createHistory from 'history/lib/createMemoryHistory'
 import { useRouterHistory } from 'react-router'
+import { environment } from '../config'
 
 export function configureStore (initialState, opts = {}) {
   const isServer = typeof window === 'undefined'
-  const isTesting = process.env.NODE_ENV === 'test'
+  const isDev = environment === 'development'
   const history = opts.history || useRouterHistory(createHistory)()
 
   var middleware = compact(flatten([
@@ -27,7 +28,7 @@ export function configureStore (initialState, opts = {}) {
     optimisticMiddleware,
     pendingPromiseMiddleware,
     promiseMiddleware,
-    !isServer && !isTesting && createLogger({collapsed: true})
+    !isServer && isDev && createLogger({collapsed: true})
   ]))
 
   const store = compose(

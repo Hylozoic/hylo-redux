@@ -1,6 +1,6 @@
 import React from 'react'
 import { throttle, isEmpty, sortBy, values } from 'lodash'
-const { array, bool, func, object } = React.PropTypes
+const { array, bool, string, func, object } = React.PropTypes
 import cx from 'classnames'
 import Message from './Message'
 import { appendComment } from '../actions/comments'

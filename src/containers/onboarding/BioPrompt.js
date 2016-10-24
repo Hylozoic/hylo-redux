@@ -19,7 +19,7 @@ const BioPrompt = ({ location }, { currentUser, dispatch }) => {
   return <ModalOnlyPage id='bio-prompt' className='login-signup'>
     <CommunityHeader community={community}/>
     <Modal standalone title='How would you describe yourself in 140 characters?'>
-      <ModalInput label='Describe yourself' maxLength='140'
+      <ModalInput label='Describe yourself' maxLength={140}
         defaultValue={currentUser.bio || ''}
         onChange={event => update(event.target.value)}/>
       <div className='footer'>

@@ -4,8 +4,11 @@ import { inspect } from 'util'
 import { get } from 'lodash'
 import appHandler from '../../src/server/appHandler'
 import { FETCH_CURRENT_USER } from '../../src/actions'
+import { fetchPost } from '../../src/actions/posts'
+import { fetchCurrentUser } from '../../src/actions'
 import { HOST } from '../../src/util/api'
 import cheerio from 'cheerio'
+import { mockActionResponse } from '../support/helpers'
 
 const checkError = res => {
   if (res.statusCode === 500) {
@@ -88,7 +91,7 @@ describe('appHandler', () => {
     let community = {id: 1, name: 'House', slug: 'house', banner_url: bannerUrl, settings: {}}
 
     beforeEach(() => {
-      nock(HOST).get('/noo/user/me').reply(200, {id: 1, name: 'cat'})
+      nock(HOST).get('/noo/user/me').reply(200, {id: 1, name: 'cat', settings: {}})
       nock(HOST).get('/noo/community/house').reply(200, community)
       nock(HOST).get('/noo/community/house/posts?offset=0&limit=20').reply(200, {
         posts: [], posts_total: 0
@@ -155,7 +158,8 @@ describe('appHandler', () => {
         user: {name: ''},
         created_at: new Date()
       }
-      nock(HOST).get('/noo/post/1?comments=1&votes=1&children=1').reply(200, post)
+      mockActionResponse(fetchPost(1), post)
+      mockActionResponse(fetchCurrentUser(), {})
     })
 
     it('displays the post', () => {

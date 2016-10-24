@@ -58,53 +58,31 @@ export class ModalInput extends React.Component {
 
   render () {
     const {
-      label, placeholder, defaultValue, value, onChange, className, type, prefix,
+      label, placeholder, defaultValue, value, onChange, className, prefix,
       maxLength, errors
     } = this.props
 
-    const onFocus = () => this.refs.row.focus()
-    const onBlur = () => this.refs.row.blur()
+    const type = this.props.type || 'text'
+
+    const inputProps = {
+      placeholder, defaultValue, value, onChange, maxLength,
+      onFocus: () => this.refs.row.focus(),
+      onBlur: () => this.refs.row.blur()
+    }
+
+    const input = type === 'textarea'
+      ? <textarea ref='input' {...inputProps}/>
+      : <input type={type} ref='input' {...inputProps}/>
 
     return <ModalRow className={className} field={this.refs.input} ref='row'>
       <label>{label}</label>
       {errors}
       {prefix
         ? <div className='prefix-group'>
-          <span className='prefix'>{prefix}</span>
-          {type === 'textarea'
-            ? <textarea ref='input'
-              placeholder={placeholder}
-              defaultValue={defaultValue}
-              value={value}
-              onChange={onChange}
-              onFocus={onFocus}
-              onBlur={onBlur}
-              maxLength={maxLength} />
-            : <input type={type || 'text'} ref='input'
-              placeholder={placeholder}
-              defaultValue={defaultValue}
-              value={value}
-              onChange={onChange}
-              onFocus={onFocus}
-              onBlur={onBlur} />}
-        </div>
-        : type === 'textarea'
-            ? <textarea ref='input'
-              placeholder={placeholder}
-              defaultValue={defaultValue}
-              value={value}
-              onChange={onChange}
-              onFocus={onFocus}
-              onBlur={onBlur}
-              maxLength={maxLength} />
-            : <input type={type || 'text'} ref='input'
-              placeholder={placeholder}
-              defaultValue={defaultValue}
-              value={value}
-              onChange={onChange}
-              onFocus={onFocus}
-              onBlur={onBlur} />
-      }
+            <span className='prefix'>{prefix}</span>
+            {input}
+          </div>
+        : input}
     </ModalRow>
   }
 }

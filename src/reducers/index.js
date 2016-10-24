@@ -29,6 +29,7 @@ import {
 import { admin } from './admin'
 
 import {
+  APPEND_THREAD,
   APPROVE_JOIN_REQUEST_PENDING,
   APPROVE_ALL_JOIN_REQUESTS_PENDING,
   CANCEL_POST_EDIT,
@@ -52,6 +53,8 @@ import {
   LOGIN,
   NAVIGATE,
   NOTIFY,
+  ON_THREAD_PAGE,
+  OFF_THREAD_PAGE,
   REMOVE_NOTIFICATION,
   RESEND_ALL_COMMUNITY_INVITATIONS_PENDING,
   RESET_ERROR,
@@ -123,6 +126,8 @@ const combinedReducers = combineReducers({
     if (error) return state
 
     switch (type) {
+      case APPEND_THREAD:
+        return {...state, [payload.user_id]: payload.id} // NOTE: key needs to reflect multi-person threads when we build it
       case FIND_OR_CREATE_THREAD:
         return {...state, [meta.messageTo]: payload.id}
     }
@@ -180,6 +185,17 @@ const combinedReducers = combineReducers({
         break
       case SET_SIGNUP_ERROR:
         if (payload) return {error: payload}
+    }
+    return state
+  },
+
+  openedThreadId: (state = null, action) => {
+    let { type, payload } = action
+    switch (type) {
+      case ON_THREAD_PAGE:
+        return payload.id
+      case OFF_THREAD_PAGE:
+        return null
     }
     return state
   },

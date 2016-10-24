@@ -2,6 +2,7 @@ import {
   CHANGE_EVENT_RESPONSE_PENDING,
   COMPLETE_POST_PENDING,
   APPEND_COMMENT,
+  APPEND_THREAD,
   CREATE_COMMENT,
   CREATE_POST,
   FETCH_POST,
@@ -12,6 +13,7 @@ import {
   PIN_POST_PENDING,
   REMOVE_COMMENT,
   REMOVE_POST,
+  UNFOLLOW_POST_PENDING,
   UPDATE_POST,
   UPDATE_POST_READ_TIME,
   VOTE_ON_POST_PENDING
@@ -75,6 +77,7 @@ export default function (state = {}, action) {
   switch (type) {
     case FETCH_POSTS:
       return mergeList(state, payload.posts.map(normalize), 'id')
+    case APPEND_THREAD:
     case CREATE_POST:
     case FETCH_POST:
     case FIND_OR_CREATE_THREAD:
@@ -91,17 +94,24 @@ export default function (state = {}, action) {
       return {...state, [id]: null}
     case FOLLOW_POST_PENDING:
       return addOrRemovePersonId(state, id, personId, 'follower_ids')
+    case UNFOLLOW_POST_PENDING:
+      post = state[id]
+      return {
+        ...state,
+        [id]: {...post, follower_ids: without(post.follower_ids, personId)}
+      }
     case APPEND_COMMENT:
+      if (!post) return state 
       return updatePostProps(state, id, {
         numComments: (post.numComments || 0) + 1,
-        updated_at: new Date()
+        updated_at: new Date().toISOString()
       })
     case CREATE_COMMENT:
       return updatePostProps(state, id, {
         follower_ids: uniq((post.follower_ids || []).concat(payload.user_id)),
         numComments: (post.numComments || 0) + 1,
-        updated_at: new Date(),
-        last_read_at: new Date()
+        updated_at: new Date().toISOString(),
+        last_read_at: new Date().toISOString()
       })
     case REMOVE_COMMENT:
       return updatePostProps(state, postId, {
@@ -125,10 +135,10 @@ export default function (state = {}, action) {
       }
     case COMPLETE_POST_PENDING:
       return updatePostProps(state, id, {
-        fulfilled_at: post.fulfilled_at ? null : new Date()
+        fulfilled_at: post.fulfilled_at ? null : new Date().toISOString()
       })
     case UPDATE_POST_READ_TIME:
-      return updatePostProps(state, id, {last_read_at: new Date()})
+      return updatePostProps(state, id, {last_read_at: new Date().toISOString()})
   }
   return state
 }

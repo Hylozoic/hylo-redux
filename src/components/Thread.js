@@ -7,8 +7,8 @@ import MessageSection from './MessageSection'
 import MessageForm from './MessageForm'
 import PeopleTyping from './PeopleTyping'
 import { connect } from 'react-redux'
-import { appendComment } from '../actions/comments'
 import { updatePostReadTime } from '../actions/posts'
+import { onThreadPage, offThreadPage } from '../actions/threads'
 import { getComments } from '../models/post'
 import { getSocket, socketUrl } from '../client/websockets'
 
@@ -28,43 +28,42 @@ export default class Thread extends React.Component {
     return {post: this.props.post}
   }
 
-  componentDidMount () {
-    this.socket = getSocket()
-    const { post } = this.props
-    this.subscribe(post.id)
+  setupForThread (post) {
     this.markAsRead(post)
+    this.props.dispatch(onThreadPage(post.id))
+    if (this.socket) {
+      this.socket.post(socketUrl(`/noo/post/${post.id}/subscribe`)) // for people typing
+    }
+    this.refs.form.getWrappedInstance().focus()
   }
 
-  componentWillUnmount () {
-    this.unsubscribe(this.props.post.id)
+  componentDidMount () {
+    this.socket = getSocket()
+    this.setupForThread(this.props.post)
   }
 
   componentWillReceiveProps (nextProps) {
     const oldId = get('post.id', this.props)
     const newId = get('post.id', nextProps)
     if (newId !== oldId) {
-      if (oldId) this.unsubscribe(oldId)
-      this.subscribe(newId)
-      this.markAsRead(nextProps.post)
+      if (this.socket) {
+        this.socket.post(socketUrl(`/noo/post/${oldId}/unsubscribe`))
+      }
+      this.setupForThread(nextProps.post)
+    }
+  }
+
+  componentWillUnmount () {
+    const postId = get('post.id', this.props)
+    this.props.dispatch(offThreadPage())
+    if (this.socket) {
+      this.socket.post(socketUrl(`/noo/post/${postId}/unsubscribe`))
     }
   }
 
   markAsRead (post) {
-    const { dispatch, post: { id } } = this.props
-    dispatch(updatePostReadTime(id))
-  }
-
-  subscribe (id) {
-    this.socket.post(socketUrl(`/noo/post/${id}/subscribe`))
-    this.socket.on('commentAdded', c =>
-      this.props.dispatch(appendComment(id, c)))
-  }
-
-  unsubscribe (id) {
-    if (this.socket) {
-      this.socket.post(socketUrl(`/noo/post/${id}/unsubscribe`))
-      this.socket.off('commentAdded')
-    }
+    const { dispatch } = this.props
+    dispatch(updatePostReadTime(post.id))
   }
 
   render () {
@@ -73,9 +72,9 @@ export default class Thread extends React.Component {
 
     return <div className={classes}>
       <Header />
-      <MessageSection {...{post, messages}}/>
+      <MessageSection {...{messages}}/>
       <PeopleTyping showNames/>
-      <MessageForm postId={post.id} />
+      <MessageForm postId={post.id} ref='form'/>
     </div>
   }
 }

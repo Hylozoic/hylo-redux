@@ -1,5 +1,5 @@
 require('../support')
-import { mocks, helpers } from '../../support'
+import { mocks } from '../../support'
 import { cloneDeep, set } from 'lodash'
 import { PostEditor } from '../../../src/components/PostEditor'
 import { FETCH_TAG } from '../../../src/actions'
@@ -9,7 +9,7 @@ import {
   Simulate
 } from 'react-addons-test-utils'
 const { click } = Simulate
-const { createElement, wait } = helpers
+import { createElement, wait } from '../../support/helpers'
 
 const currentUser = {id: 'person'}
 const post = {id: 'foo'}

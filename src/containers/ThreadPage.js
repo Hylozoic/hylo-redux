@@ -17,7 +17,7 @@ const { array, bool, func, object, string } = React.PropTypes
 @connect((state, { params: { id } }) => {
   const post = getPost(id, state)
   return {
-    post: denormalizedPost(post, state),
+    post: post ? denormalizedPost(post, state) : null,
     comments: getComments(post, state),
     error: findError(state.errors, FETCH_POST, 'posts', id)
   }
@@ -25,7 +25,7 @@ const { array, bool, func, object, string } = React.PropTypes
 export default class ThreadPage extends React.Component {
   static propTypes = {
     post: object,
-    error: string,
+    error: object,
     dispatch: func
   }
 

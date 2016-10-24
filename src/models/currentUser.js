@@ -1,14 +1,14 @@
 import { getCommunity, MemberRole } from './community'
-import { curry, find, maxBy, partialRight, some } from 'lodash'
+import { curry, find, maxBy, some } from 'lodash'
 import { get, map } from 'lodash/fp'
 import { same, truthy } from './index'
 import { featureFlags } from '../config'
 
 // this works if community is an object with an id, or just an id
-export const membership = (currentUser, community) =>
+export const membership = curry((currentUser, community) =>
   community && find(get('memberships', currentUser), m =>
     m.community_id === (community.id || community) ||
-    get('community.slug', m) === (community.slug || community))
+    get('community.slug', m) === (community.slug || community)))
 
 export const isMember = truthy(membership)
 
@@ -22,7 +22,11 @@ export const canInvite = (currentUser, community) =>
 
 export const isAdmin = truthy(get('is_admin'))
 
-export const isTester = partialRight(isMember, {id: 39, slug: 'hylo'})
+export const isTester = user =>
+  some([
+    {id: 39, slug: 'hylo'},
+    {id: 1972, slug: 'testmetalab'}
+  ], membership(user))
 
 export const canEditPost = (currentUser, post) => {
   return same('id', currentUser, post.user) ||

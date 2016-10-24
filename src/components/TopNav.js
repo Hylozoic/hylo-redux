@@ -40,11 +40,11 @@ export default class TopNav extends React.Component {
     network: object,
     leftNavIsOpen: bool,
     links: array,
+    currentUser: object,
     notificationCount: number
   }
 
   static contextTypes = {
-    currentUser: object,
     isMobile: bool
   }
 
@@ -71,7 +71,7 @@ export default class TopNav extends React.Component {
       this.setState({isScrolling: viewportTop() > 0})
       window.addEventListener('scroll', this.handleScrollEvents)
     }
-    if (!this.context.currentUser) {
+    if (!this.props.currentUser) {
       this.setState({returnPath: window.location.pathname})
     }
   }
@@ -84,9 +84,9 @@ export default class TopNav extends React.Component {
 
   render () {
     const {
-      openLeftNav, leftNavIsOpen, path, network, links, notificationCount
+      currentUser, openLeftNav, leftNavIsOpen, path, network, links, notificationCount
     } = this.props
-    const { currentUser, isMobile } = this.context
+    const { isMobile } = this.context
     const { returnPath } = this.state
     const label = getLabel(path)
     const community = this.props.community || allCommunities()
@@ -102,11 +102,12 @@ export default class TopNav extends React.Component {
 
     return <VelocityComponent animation={moveWithMenu} easing={leftNavEasing}>
       <nav id='topNav' className={cx('clearfix', {scrolling: this.state.isScrolling})}>
-        {isMobile
+        {currentUser && (isMobile
           ? <MenuButton onClick={openLeftNav} label={label} notificationCount={notificationCount}/>
           : <VelocityComponent animation={widenMenuButton} easing={leftNavEasing}>
               <MenuButton onClick={openLeftNav} notificationCount={notificationCount}/>
-            </VelocityComponent>}
+            </VelocityComponent>)}
+
         {currentUser
         ? <UserMenu {...{newNotificationCount, newMessageCount, slug}}/>
         : <ul className='right'>

@@ -3,6 +3,7 @@ import { omit } from 'lodash/fp'
 import {
   ADD_DATA_TO_STORE,
   APPEND_COMMENT,
+  APPEND_THREAD,
   FETCH_COMMENTS,
   FETCH_POST,
   FETCH_POSTS,
@@ -41,6 +42,7 @@ export default function (state = {}, action) {
     case FETCH_POSTS:
       comments = payload.posts.reduce((acc, post) => acc.concat(post.comments || []), [])
       return {...state, ...hashBy(comments, 'id')}
+    case APPEND_THREAD:
     case FETCH_COMMENTS:
     case FETCH_POST:
       return {...state, ...hashBy(payload.comments, 'id')}

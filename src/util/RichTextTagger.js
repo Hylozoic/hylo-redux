@@ -21,7 +21,6 @@ const template = keyCode => {
     [hashtagAttribute]: true,
     [justCreatedAttribute]: true,
     spellCheck: false,
-    contentEditable: true,
     autoComplete: false,
     autoCorrect: false
   }
@@ -47,6 +46,7 @@ export class RichTextTagger {
   }
 
   search (term) {
+    if (term === this.lastSearch) return
     this.lastSearch = term
     this.autocomplete(term, this.domNode())
   }

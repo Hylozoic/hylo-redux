@@ -3,10 +3,12 @@ import { compose } from 'redux'
 import { connect } from 'react-redux'
 import { prefetch, defer } from 'react-fetcher'
 import { get } from 'lodash'
+import { FETCH_COMMUNITY } from '../../actions'
 import { fetchCommunity, fetchCommunitiesForNetworkNav } from '../../actions/communities'
 import { saveCurrentCommunityId } from '../../actions/util'
 import { VIEWED_COMMUNITY, trackEvent } from '../../util/analytics'
 import CoverImagePage from '../../components/CoverImagePage'
+import AccessErrorMessage from '../../components/AccessErrorMessage'
 const { func, object } = React.PropTypes
 
 class CommunityProfile extends React.Component {
@@ -14,13 +16,15 @@ class CommunityProfile extends React.Component {
     community: object,
     children: object,
     location: object,
-    dispatch: func
+    dispatch: func,
+    error: object
   }
 
   static contextTypes = {currentUser: object}
 
   componentDidMount () {
-    this.fetchCommunitiesForNetworkNav(this.props.community)
+    const { community } = this.props
+    if (community) this.fetchCommunitiesForNetworkNav(community)
   }
 
   componentWillReceiveProps (nextProps) {
@@ -38,7 +42,11 @@ class CommunityProfile extends React.Component {
   }
 
   render () {
-    let { community, children } = this.props
+    const { community, children, error } = this.props
+
+    if (error) {
+      return <AccessErrorMessage error={error}/>
+    }
 
     // we might have partial data for a community already; if this component
     // renders without banner_url, it'll cause a request to an invalid url
@@ -63,7 +71,10 @@ export default compose(
   ),
   defer(({ params: { id }, store }) => {
     const community = store.getState().communities[id]
-    return trackEvent(VIEWED_COMMUNITY, {community})
+    if (community) return trackEvent(VIEWED_COMMUNITY, {community})
   }),
-  connect((state, props) => ({community: state.communities[props.params.id]}))
+  connect((state, props) => ({
+    community: state.communities[props.params.id],
+    error: state.errors[FETCH_COMMUNITY]
+  }))
 )(CommunityProfile)

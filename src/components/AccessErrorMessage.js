@@ -2,6 +2,10 @@ import React from 'react'
 const { object } = React.PropTypes
 
 const AccessErrorMessage = ({ error }) => {
+  // handle the case in which the entire action that caused the error was passed
+  // to this component, instead of just error.payload.response
+  if (error.payload) error = error.payload.response
+
   let errorMessage
   switch (error.status) {
     case 403:

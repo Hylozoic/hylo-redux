@@ -194,8 +194,19 @@ ul.posts {
     .non-mobile({
       padding-right: @post-content-right-margin + 15px;
     });
+
     p:last-child {
       display: inline;
+    }
+
+    p {
+      a {
+        word-wrap: break-word;
+
+        &.hashtag {
+          word-wrap: normal;
+        }
+      }
     }
   }
 

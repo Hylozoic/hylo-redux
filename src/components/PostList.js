@@ -13,7 +13,7 @@ import { makeUrl } from '../util/navigation'
 import { navigate, showExpandedPost } from '../actions'
 import SearchInput from './SearchInput'
 import Icon from './Icon'
-const { array, bool, func, number } = React.PropTypes
+const { array, bool, func, number, string } = React.PropTypes
 
 @connect((state, { posts }) => ({
   editingPostIds: state.isMobile ? [] : getEditingPostIds(posts, state)
@@ -29,7 +29,8 @@ class PostList extends React.Component {
     hide: array,
     dispatch: func,
     hideMobileSearch: bool,
-    isMobile: bool
+    isMobile: bool,
+    noPostsMessage: string
   }
 
   static contextTypes = {
@@ -55,14 +56,14 @@ class PostList extends React.Component {
   render () {
     const {
       hide, editingPostIds, pending, loadMore, refreshPostList, freshCount,
-      dispatch, hideMobileSearch, isMobile
+      dispatch, hideMobileSearch, isMobile, noPostsMessage
     } = this.props
     const posts = filter(p => !includes(p.id, hide), this.props.posts)
     const doSearch = text => dispatch(navigate(makeUrl('/search', {q: text})))
 
     if (!pending && posts.length === 0) {
       return <span>
-        <div className='no-results'>No posts to show.</div>
+        <div className='no-results'>{noPostsMessage || 'No posts to show.'}</div>
       </span>
     }
 

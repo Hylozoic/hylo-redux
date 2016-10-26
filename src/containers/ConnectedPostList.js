@@ -33,7 +33,8 @@ export class ConnectedPostList extends React.Component {
     omit: string, // omit posts with this id from the query
     hide: array, // just hide posts with this id from the results
     hideMobileSearch: bool,
-    expandedPostId: string
+    expandedPostId: string,
+    noPostsMessage: string
   }
 
   loadMore = () => {
@@ -81,7 +82,7 @@ export class ConnectedPostList extends React.Component {
   render () {
     const {
       dispatch, freshCount, posts, total, pending, subject, id, query,
-      hideMobileSearch, expandedPostId
+      hideMobileSearch, expandedPostId, noPostsMessage
     } = this.props
 
     const hide = union(this.props.hide, [expandedPostId])
@@ -95,8 +96,9 @@ export class ConnectedPostList extends React.Component {
     }
 
     debug(`posts: ${posts ? posts.length : 0} / ${total || '??'}`)
-    return <PostList posts={posts || []} {...{pending, refreshPostList, freshCount}}
-      loadMore={this.loadMore} hide={hide} hideMobileSearch={hideMobileSearch}/>
+    return <PostList posts={posts || []} loadMore={this.loadMore} hide={hide}
+      hideMobileSearch={hideMobileSearch}
+      {...{pending, refreshPostList, freshCount, noPostsMessage}}/>
   }
 }
 

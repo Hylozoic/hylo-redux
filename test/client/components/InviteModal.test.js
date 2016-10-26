@@ -34,6 +34,10 @@ describe.only('InviteForm', () => {
   })
 
   it('validates emails', () => {
+    node.find('.footer a').first().simulate('click')
+    expect(node.find('div .alert-danger').first().text())
+    .to.equal('Enter at least one email address.')
+
     node.find('.emails textarea').first().simulate('change', {
       target: {value: 'nogood, bademail'}
     })

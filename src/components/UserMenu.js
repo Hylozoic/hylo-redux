@@ -64,7 +64,7 @@ const UserMenu = ({ slug, newMessageCount, newNotificationCount }, { isMobile, d
   return <ul className='right'>
     <SearchMenuItem/>
 
-    {currentUser && hasFeature(currentUser, DIRECT_MESSAGES) &&
+    {hasFeature(currentUser, DIRECT_MESSAGES) &&
       <li className='nav-notify-dropdown'>
         <ThreadsDropdown lastViewed={last_viewed_messages_at} newCount={newMessageCount}/>
       </li>}

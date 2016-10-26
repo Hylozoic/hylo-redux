@@ -109,11 +109,11 @@ export default class TopNav extends React.Component {
             </VelocityComponent>)}
 
         {currentUser
-        ? <UserMenu {...{newNotificationCount, newMessageCount, slug}}/>
-        : <ul className='right'>
-            {!isCommunityUrl(path) && <li><A to={makeUrl('/signup', {next: returnPath})}>Sign up</A></li>}
-            <li><A to={makeUrl('/login', {next: returnPath})}>Log in</A></li>
-        </ul>}
+          ? <UserMenu {...{newNotificationCount, newMessageCount, slug}}/>
+          : <ul className='right'>
+              {!isCommunityUrl(path) && <li><A to={makeUrl('/signup', {next: returnPath})}>Sign up</A></li>}
+              <li><A to={makeUrl('/login', {next: returnPath})}>Log in</A></li>
+            </ul>}
 
         <CommunityMenu {...{community, network}}/>
         {currentUser && !network && <TopMainMenu {...{links, leftNavIsOpen}}/>}

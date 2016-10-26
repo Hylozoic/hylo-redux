@@ -47,7 +47,7 @@ export class KeyControlledList extends React.Component {
   // this method is called from other components
   // returning true indicates that the event has been handled
   handleKeys = event => {
-    const makeChoice = () => {
+    const chooseCurrentItem = () => {
       if (isEmpty(this.props.children)) return false
 
       const elementChoice = this.childrenWithRefs[this.state.selectedIndex]
@@ -71,15 +71,15 @@ export class KeyControlledList extends React.Component {
         this.changeSelection(1)
         return true
       case keyMap.TAB:
-        if (this.props.tabChooses) return makeChoice()
+        if (this.props.tabChooses) return chooseCurrentItem()
         break
       case keyMap.SPACE:
         // FIXME we should be consistent with defaults, so either change this or
         // tabChooses above
-        if (this.props.spaceChooses !== false) return makeChoice()
+        if (this.props.spaceChooses !== false) return chooseCurrentItem()
         break
       case keyMap.ENTER:
-        return makeChoice()
+        return chooseCurrentItem()
     }
 
     return false

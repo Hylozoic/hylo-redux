@@ -51,7 +51,9 @@ export default class PersonChooser extends React.Component {
         onKeyDown={this.handleKeys}/>
 
       {!isEmpty(choices) && <div className='dropdown active'>
-        <KeyControlledItemList className='dropdown-menu' ref='list' items={choices} onChange={this.select}/>
+        <KeyControlledItemList className='dropdown-menu' ref='list'
+          items={choices} onChange={this.select}
+          spaceChooses={false}/>
       </div>}
     </div>
   }

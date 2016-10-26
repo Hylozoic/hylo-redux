@@ -9,7 +9,8 @@ export class KeyControlledList extends React.Component {
     onChange: func,
     children: array,
     selectedIndex: number,
-    tabChooses: bool
+    tabChooses: bool,
+    spaceChooses: bool
   }
 
   static defaultProps = {
@@ -44,7 +45,22 @@ export class KeyControlledList extends React.Component {
   }
 
   // this method is called from other components
+  // returning true indicates that the event has been handled
   handleKeys = event => {
+    const makeChoice = () => {
+      if (isEmpty(this.props.children)) return false
+
+      const elementChoice = this.childrenWithRefs[this.state.selectedIndex]
+      if (elementChoice) {
+        const nodeChoice = this.refs[elementChoice.ref]
+        this.change(elementChoice, nodeChoice, event)
+        return true
+      }
+
+      event.preventDefault()
+      return false
+    }
+
     switch (getKeyCode(event)) {
       case keyMap.UP:
         event.preventDefault()
@@ -54,23 +70,19 @@ export class KeyControlledList extends React.Component {
         event.preventDefault()
         this.changeSelection(1)
         return true
-      case keyMap.TAB: // eslint-disable-line no-fallthrough
-        if (!this.props.tabChooses) return true
-        // otherwise execution continues in the next case
+      case keyMap.TAB:
+        if (this.props.tabChooses) return makeChoice()
+        break
       case keyMap.SPACE:
+        // FIXME we should be consistent with defaults, so either change this or
+        // tabChooses above
+        if (this.props.spaceChooses !== false) return makeChoice()
+        break
       case keyMap.ENTER:
-        if (!isEmpty(this.props.children)) {
-          const elementChoice = this.childrenWithRefs[this.state.selectedIndex]
-          if (elementChoice) {
-            const nodeChoice = this.refs[elementChoice.ref]
-            this.change(elementChoice, nodeChoice, event)
-            return true
-          } else {
-            event.preventDefault()
-            return false
-          }
-        }
+        return makeChoice()
     }
+
+    return false
   }
 
   change = (element, node, event) => {

@@ -43,10 +43,13 @@ class Comment extends React.Component {
     const person = comment.user
     const { thank_ids } = comment
     const isThanked = some(thank_ids, id => id === get('id', currentUser))
+
     let text = present(sanitize(comment.text), {slug: get('slug', community)})
     const truncated = truncate && textLength(text) > truncatedLength
     if (truncated) text = truncateHtml(text, truncatedLength).html
-    text = prependInP(text, `<a href='/u/${person.id}'><strong class='name'>${sanitize(person.name)}</strong></a>`)
+    const name = sanitize(person.name).replace(/ /g, '&nbsp;')
+    text = prependInP(text, `<a href='/u/${person.id}'><strong class='name'>${name}</strong></a>`)
+
     const remove = () => window.confirm('Delete this comment? This cannot be undone.') &&
       dispatch(removeComment(comment.id, comment.post_id))
     const edit = () => {

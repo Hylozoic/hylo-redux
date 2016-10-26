@@ -11,7 +11,7 @@ describe('Comment', () => {
   var comment, store, node
 
   beforeEach(() => {
-    comment = {id: '1', text: 'yes!', user: {id: '6', name: 'jo'}}
+    comment = {id: '1', text: 'yes!', user: {id: '6', name: 'jo klunk'}}
   })
 
   const render = () => {
@@ -28,8 +28,12 @@ describe('Comment', () => {
 
   it('behaves as expected', () => {
     render()
-    expect(node.find('.content .text').text()).to.equal('jo' + 'yes!')
-    expect(node.find('.content .text').html()).to.include('<strong class="name">jo</strong>')
+    expect(node.find('.content .text').text())
+    .to.equal('jo' + String.fromCharCode(160) + 'klunk' + 'yes!')
+
+    expect(node.find('.content .text').html())
+    .to.include('<strong class="name">jo&nbsp;klunk</strong>')
+
     expect(node.find('.content > div > span a').text()).to.equal('Say thanks')
 
     node.find('a.thanks').simulate('click')

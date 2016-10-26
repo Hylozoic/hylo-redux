@@ -1,5 +1,5 @@
 import { getCommunity, MemberRole } from './community'
-import { curry, find, maxBy, some } from 'lodash'
+import { curry, find, includes, intersection, isEmpty, maxBy, some } from 'lodash'
 import { get, map } from 'lodash/fp'
 import { same, truthy } from './index'
 import { featureFlags } from '../config'
@@ -33,6 +33,12 @@ export const canEditPost = (currentUser, post) => {
     some(post.communities.map(c => c.id ? c.id : c), canModerate(currentUser)) ||
     isAdmin(currentUser)
 }
+
+export const canComment = (currentUser, post) =>
+  currentUser && includes(post.follower_ids, currentUser.id) ||
+    !isEmpty(intersection(
+      map('community_id', get('memberships', currentUser)),
+      post.community_ids))
 
 export const canEditComment = (currentUser, comment, community) =>
   canModerate(currentUser, community) || same('id', currentUser, comment.user)

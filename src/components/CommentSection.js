@@ -8,6 +8,7 @@ import PeopleTyping from './PeopleTyping'
 import Comment from './Comment'
 import { appendComment } from '../actions/comments'
 import { getSocket, socketUrl } from '../client/websockets'
+import { canComment } from '../models/currentUser'
 
 export default class CommentSection extends React.Component {
   static propTypes = {
@@ -64,7 +65,8 @@ export default class CommentSection extends React.Component {
         expanded={expanded}
         key={c.id}/>)}
       <PeopleTyping showNames={false}/>
-      {currentUser && <CommentForm postId={post.id} {...{placeholder}}/>}
+      {canComment(currentUser, post) &&
+        <CommentForm postId={post.id} {...{placeholder}}/>}
     </div>
   }
 }

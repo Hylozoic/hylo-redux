@@ -1,4 +1,4 @@
-import { isMember, isTester, canInvite } from '../../src/models/currentUser'
+import { canComment, isMember, isTester, canInvite } from '../../src/models/currentUser'
 import { MemberRole } from '../../src/models/community'
 
 describe('currentUser', () => {
@@ -54,6 +54,27 @@ describe('currentUser', () => {
 
       expect(isTester(u1)).to.be.true
       expect(isTester(u2)).to.be.true
+    })
+  })
+
+  describe('.canComment', () => {
+    it('is true if the user is a follower', () => {
+      expect(canComment({id: 1}, {follower_ids: [1, 8]})).to.be.true
+    })
+
+    it("is true if the user is in one of the post's communities", () => {
+      const user = {id: 1, memberships: [{community_id: 2}]}
+      expect(canComment(user, {community_ids: [5, 2]})).to.be.true
+    })
+
+    it('is false if there is no user', () => {
+      expect(canComment(null, {follower_ids: [4]})).to.be.false
+    })
+
+    it('is false otherwise', () => {
+      const user = {id: 1, memberships: [{community_id: 2}]}
+      const post = {community_ids: [5, 3], follower_ids: [3, 7]}
+      expect(canComment(user, post)).to.be.false
     })
   })
 })

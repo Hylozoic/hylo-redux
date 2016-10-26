@@ -18,14 +18,9 @@ const { func, object } = React.PropTypes
 
 const subject = 'community'
 
-const BioPrompt = ({ location, community, tags }, { currentUser, dispatch }) => {
+const BioPrompt = ({ location, community, skipTopics }, { currentUser, dispatch }) => {
   const update = debounce(bio =>
     dispatch(updateUserSettings({bio})), 500)
-
-  const isNotDefault = tag =>
-    !find(m => m.community_id === community.id, tag.memberships).is_default
-
-  const skipTopics = isEmpty(filter(isNotDefault, tags))
 
   return <ModalOnlyPage id='bio-prompt' className='login-signup'>
     <CommunityHeader community={community}/>
@@ -45,8 +40,10 @@ export default compose(
   prefetch(({ query, dispatch }) => dispatch(fetchTags({subject, limit: 10, id: query.community, sort: 'popularity'}))),
   connect((state, { location }) => {
     const community = getCommunity(location.query.community, state)
-    return {
-      community,
-      ...connectedListProps(state, {subject, id: community.slug}, 'tags')
-    }
+    const { tags } = connectedListProps(state, {subject, id: community.slug}, 'tags')
+    const isNotDefault = tag =>
+      !find(m => m.community_id === community.id, tag.memberships).is_default
+    const skipTopics = isEmpty(filter(isNotDefault, tags))
+
+    return { community, skipTopics }
   }))(BioPrompt)

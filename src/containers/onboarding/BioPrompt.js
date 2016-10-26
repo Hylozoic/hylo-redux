@@ -1,18 +1,24 @@
 import React from 'react'
+import { connect } from 'react-redux'
+import { prefetch } from 'react-fetcher'
+import { compose } from 'redux'
 import Modal from '../../components/Modal'
 import ModalOnlyPage from '../../components/ModalOnlyPage'
 import { ModalInput } from '../../components/ModalRow'
 import { updateUserSettings } from '../../actions'
+import { fetchTags } from '../../actions/tags'
 import A from '../../components/A'
 import { debounce } from 'lodash'
-import { find, map } from 'lodash/fp'
+import { find, filter, isEmpty } from 'lodash/fp'
 import { CommunityHeader } from '../Signup'
 import { nextOnboardingUrl } from '../../util/navigation'
+import { getCommunity } from '../../models/community'
+import { connectedListProps } from '../../util/caching'
 const { func, object } = React.PropTypes
 
-const BioPrompt = ({ location }, { currentUser, dispatch }) => {
-  const community = find(c => c.slug === location.query.community,
-    map('community', currentUser.memberships))
+const subject = 'community'
+
+const BioPrompt = ({ location, community, skipTopics }, { currentUser, dispatch }) => {
   const update = debounce(bio =>
     dispatch(updateUserSettings({bio})), 500)
 
@@ -23,11 +29,21 @@ const BioPrompt = ({ location }, { currentUser, dispatch }) => {
         defaultValue={currentUser.bio || ''}
         onChange={event => update(event.target.value)}/>
       <div className='footer'>
-        <A className='button' to={nextOnboardingUrl(location)}>Next</A>
+        <A className='button' to={nextOnboardingUrl(location, skipTopics)}>Next</A>
       </div>
     </Modal>
   </ModalOnlyPage>
 }
 BioPrompt.contextTypes = {currentUser: object, dispatch: func}
 
-export default BioPrompt
+export default compose(
+  prefetch(({ query, dispatch }) => dispatch(fetchTags({subject, limit: 10, id: query.community, sort: 'popularity'}))),
+  connect((state, { location }) => {
+    const community = getCommunity(location.query.community, state)
+    const { tags } = connectedListProps(state, {subject, id: community.slug}, 'tags')
+    const isNotDefault = tag =>
+      !find(m => m.community_id === community.id, tag.memberships).is_default
+    const skipTopics = isEmpty(filter(isNotDefault, tags))
+
+    return { community, skipTopics }
+  }))(BioPrompt)

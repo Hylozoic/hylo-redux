@@ -28,12 +28,13 @@ export const navigateAfterJoin = ({ slug }, tagName, preexisting) =>
     ? navigate(tagName ? tagUrl(tagName, slug) : `/c/${slug}`)
     : navigate(makeUrl('/add-skills', {community: slug, tagName}))
 
-export const nextOnboardingUrl = ({ pathname, query: { tagName, community } }) => {
+export const nextOnboardingUrl = ({ pathname, query: { tagName, community } }, skipTopics) => {
   switch (pathname) {
     case '/add-skills':
       return makeUrl('/add-bio', {community, tagName})
     case '/add-bio':
-      return makeUrl('/choose-topics', {community, tagName})
+      if (!skipTopics) return makeUrl('/choose-topics', {community, tagName})
+      // else it drops down into the next case
     case '/choose-topics':
       return tagName ? tagUrl(tagName, community) : `/c/${community}`
   }

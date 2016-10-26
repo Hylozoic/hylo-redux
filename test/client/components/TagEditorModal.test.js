@@ -6,7 +6,7 @@ import TagEditorModal from '../../../src/containers/TagEditorModal'
 import { MemberRole } from '../../../src/models/community'
 import { wait } from '../../support/helpers'
 
-describe.only('TagEditorModal', () => {
+describe('TagEditorModal', () => {
   var node, store, currentUser
 
   const community = {

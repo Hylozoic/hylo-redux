@@ -11,10 +11,11 @@ import {
   FIND_OR_CREATE_THREAD
 } from '../actions'
 
-const matchesCommunity = (key, post, tags) => {
+const keyMatchesPost = (key, post, tags) => {
   const communityIds = post.communities.map(c => c.slug).concat(post.communities.map(c => c.id))
   return key.subject === 'community' &&
     (includes(communityIds, key.id) || key.id === 'all') &&
+    (!key.type || key.type === post.type) &&
     (!key.tag || includes([post.tag].concat(tags), key.tag))
 }
 
@@ -36,7 +37,7 @@ export default function (state = {}, action) {
 
         if ((key.subject === 'person' && key.id === post.user.id) ||
           key.subject === 'all-posts' ||
-          matchesCommunity(key, post, tags)) {
+          keyMatchesPost(key, post, tags)) {
           changedLists[id] = [post.id, ...postIds]
         }
 

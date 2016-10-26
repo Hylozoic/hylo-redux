@@ -97,5 +97,42 @@ describe('postsByQuery', () => {
 
       expect(postsByQuery(state, action)).to.deep.equal(expectedState)
     })
+
+    it('prepends typed posts only to caches of matching type', () => {
+      let post = {
+        id: 'p',
+        user: {id: '1'},
+        communities: [{slug: 'foo'}, {slug: 'bar'}],
+        type: 'project'
+      }
+
+      let action = {
+        type: CREATE_POST,
+        payload: post,
+        meta: {
+          tags: ['suchtag']
+        }
+      }
+
+      let state = {
+        'subject=all-posts': ['a'],
+        'subject=community&id=foo': ['b'],
+        'subject=community&id=all&type=event': ['f'],
+        'subject=community&id=all&type=project': ['f'],
+        'subject=community&id=foo&type=event': ['g'],
+        'subject=community&id=foo&type=project': ['h']
+      }
+
+      let expectedState = {
+        'subject=all-posts': ['p', 'a'],
+        'subject=community&id=foo': ['p', 'b'],
+        'subject=community&id=all&type=event': ['f'],
+        'subject=community&id=all&type=project': ['p', 'f'],
+        'subject=community&id=foo&type=event': ['g'],
+        'subject=community&id=foo&type=project': ['p', 'h']
+      }
+
+      expect(postsByQuery(state, action)).to.deep.equal(expectedState)
+    })
   })
 })

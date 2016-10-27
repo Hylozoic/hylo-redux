@@ -35,7 +35,7 @@ describe('TagEditorModal', () => {
       var alertMessage, useCreatedTag
 
       beforeEach(() => {
-        useCreatedTag = spy(p => console.log('PRAMZ', p))
+        useCreatedTag = spy(() => {})
         store = configureStore(initialState).store
         node = mount(<TagEditorModal creating useCreatedTag={useCreatedTag}/>, {
           context: { store, currentUser },
@@ -78,6 +78,19 @@ describe('TagEditorModal', () => {
             submit.simulate('click')
             expect(alertMessage)
             .to.equal('Topic names can only use letters, numbers and underscores, with no spaces.')
+
+            input.simulate('change', {
+              target: {value: 'agood_Tagname23'}
+            })
+            return wait(300, () => {
+              submit.simulate('click')
+              expect(useCreatedTag).to.have.been.called.with({
+                agood_Tagname23: {
+                  description: '',
+                  is_default: false
+                }
+              })
+            })
           })
         })
       })

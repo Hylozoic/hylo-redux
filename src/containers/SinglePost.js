@@ -132,7 +132,7 @@ const setupPage = (store, id, query, action) => {
   const { community_ids } = post
   const communityId = includes(community_ids, currentCommunityId)
     ? currentCommunityId
-    : (community_ids[0] || 'all')
+    : (get('0', community_ids) || 'all')
 
   if (payload && !payload.api) {
     const { name, description, media } = payload

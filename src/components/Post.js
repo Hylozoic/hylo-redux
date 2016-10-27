@@ -229,7 +229,7 @@ export const Menu = (props, { dispatch, post, currentUser, community }) => {
     {canModerate(currentUser, community) && <li>
       <a onClick={pin}>{pinned ? 'Unpin post' : 'Pin post'}</a>
     </li>}
-    {canEdit && <li><a onClick={edit}>Edit</a></li>}
+    {canEdit && <li><a className='edit' onClick={edit}>Edit</a></li>}
     {canEdit && <li><a onClick={remove}>Remove</a></li>}
     <li>
       <a onClick={() => dispatch(followPost(post.id, currentUser))}>

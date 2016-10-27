@@ -56,8 +56,9 @@ class PostList extends React.Component {
   render () {
     const {
       hide, editingPostIds, pending, loadMore, refreshPostList, freshCount,
-      dispatch, hideMobileSearch, isMobile, noPostsMessage
+      dispatch, hideMobileSearch, noPostsMessage
     } = this.props
+    const { isMobile } = this.context
     const posts = filter(p => !includes(p.id, hide), this.props.posts)
     const doSearch = text => dispatch(navigate(makeUrl('/search', {q: text})))
 

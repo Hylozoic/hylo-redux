@@ -14,6 +14,7 @@ import { get, find, isEmpty, some, sortBy } from 'lodash'
 import { same } from '../models'
 import { denormalizedPost, getComments, imageUrl } from '../models/post'
 import { getCurrentCommunity } from '../models/community'
+import { canComment } from '../models/currentUser'
 import { Header, presentDescription } from './Post'
 import CommentSection from './CommentSection'
 import decode from 'ent/decode'
@@ -22,14 +23,7 @@ const { array, func, object } = React.PropTypes
 
 const shouldShowTag = tag => tag && tag !== 'event'
 
-export const EventPostCard = connect(
-  (state, { post }) => ({
-    comments: getComments(post, state),
-    community: getCurrentCommunity(state),
-    isMobile: state.isMobile,
-    post: denormalizedPost(post, state)
-  })
-)(({ post, comments, community, isMobile, dispatch }) => {
+const UndecoratedEventPostCard = ({ post, comments, community, isMobile, dispatch }, { currentUser }) => {
   const { start_time, end_time, user, id, name } = post
   const start = new Date(start_time)
   const end = end_time && new Date(end_time)
@@ -54,10 +48,21 @@ export const EventPostCard = connect(
     </div>}
     <Attendance post={post} showButton limit={7} alignRight/>
     <div className='comments-section-spacer'/>
-    <CommentSection post={post} comments={comments}
-      onExpand={() => dispatch(navigate(url))}/>
+    {canComment(currentUser, post) && <CommentSection post={post}
+      comments={comments}
+      onExpand={() => dispatch(navigate(url))}/>}
   </div>
-})
+}
+UndecoratedEventPostCard.contextTypes = {currentUser: object}
+
+export const EventPostCard = connect(
+  (state, { post }) => ({
+    comments: getComments(post, state),
+    community: getCurrentCommunity(state),
+    isMobile: state.isMobile,
+    post: denormalizedPost(post, state)
+  })
+)(UndecoratedEventPostCard)
 
 const Attendance = ({ post, limit, showButton, className, children }, { currentUser }) => {
   const { responders } = post
@@ -102,7 +107,7 @@ const RSVPSelect = ({ post, alignRight }, { currentUser, dispatch }) => {
 RSVPSelect.contextTypes = {currentUser: object, dispatch: func}
 
 const EventPost = (props, context) => {
-  const { post, community, communities, comments } = context
+  const { post, community, communities, comments, currentUser } = context
   const { name, start_time, end_time, location, tag } = post
   const description = presentDescription(post, community)
   const title = decode(name || '')
@@ -136,13 +141,15 @@ const EventPost = (props, context) => {
       </div>}
     </div>
 
-    <CommentSection post={post} comments={comments} expanded/>
+    {canComment(currentUser, post) && <CommentSection post={post}
+      comments={comments} expanded/>}
   </div>
 }
 EventPost.contextTypes = {
   post: object,
   communities: array,
-  comments: array
+  comments: array,
+  currentUser: object
 }
 
 export default EventPost

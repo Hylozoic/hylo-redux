@@ -9,6 +9,7 @@ import { find, some } from 'lodash/fp'
 import { same } from '../models'
 import { denormalizedPost, getComments, getPost, imageUrl } from '../models/post'
 import { getCurrentCommunity } from '../models/community'
+import { canComment } from '../models/currentUser'
 import Icon from './Icon'
 import Post from './Post'
 import Video from './Video'
@@ -33,7 +34,7 @@ const Deadline = ({ time }) => {
 }
 
 const ProjectPost = (props, context) => {
-  const { post, community, comments, communities } = context
+  const { post, community, comments, communities, currentUser } = context
   const { tag, media, location, user } = post
   const title = decode(post.name || '')
   const video = find(m => m.type === 'video', media)
@@ -78,14 +79,16 @@ const ProjectPost = (props, context) => {
       </h3>
       {requests.map(id => <ProjectRequest key={id} {...{id, community}}/>)}
     </div>}
-    <CommentSection post={post} comments={comments} expanded/>
+    {canComment(currentUser, post) && <CommentSection post={post}
+      comments={comments} expanded/>}
   </div>
 }
 ProjectPost.contextTypes = {
   community: object,
   communities: array,
   post: object,
-  comments: array
+  comments: array,
+  currentUser: object
 }
 
 export default ProjectPost
@@ -190,14 +193,7 @@ class ProjectRequest extends React.Component {
 
 const spacer = <span>&nbsp; •&nbsp; </span>
 
-export const ProjectPostCard = connect(
-  (state, { post }) => ({
-    comments: getComments(post, state),
-    community: getCurrentCommunity(state),
-    isMobile: state.isMobile,
-    post: denormalizedPost(post, state)
-  })
-)(({ post, community, comments, dispatch, isMobile }) => {
+const UndecoratedProjectPostCard = ({ post, community, comments, dispatch, isMobile }, { currentUser }) => {
   const { name, user, tag, end_time, id } = post
   const url = `/p/${post.id}`
   const backgroundImage = `url(${imageUrl(post)})`
@@ -233,7 +229,18 @@ export const ProjectPostCard = connect(
     </div>}
     <Supporters post={post} simple/>
     <div className='comments-section-spacer'/>
-    <CommentSection post={post} comments={comments}
-      onExpand={() => dispatch(navigate(url))}/>
+    {canComment(currentUser, post) && <CommentSection post={post}
+      comments={comments}
+      onExpand={() => dispatch(navigate(url))}/>}
   </div>
-})
+}
+UndecoratedProjectPostCard.contextTypes = {currentUser: object}
+
+export const ProjectPostCard = connect(
+  (state, { post }) => ({
+    comments: getComments(post, state),
+    community: getCurrentCommunity(state),
+    isMobile: state.isMobile,
+    post: denormalizedPost(post, state)
+  })
+)(UndecoratedProjectPostCard)

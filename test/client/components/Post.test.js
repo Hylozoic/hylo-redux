@@ -59,7 +59,7 @@ const post2 = {
   community_ids: ['1', '2', '3', '4']
 }
 
-describe.only('Post', () => {
+describe('Post', () => {
   it('renders expanded', () => {
     const props = {post, expanded: true}
     const store = mocks.redux.store(state)

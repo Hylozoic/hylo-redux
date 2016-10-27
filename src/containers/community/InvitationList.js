@@ -74,9 +74,12 @@ const InvitationList = connect((state, { id }) => ({
                   </td>
                 : <td className='unused'>unused</td>}
               <td>{humanDate(invitation.created)}</td>
-              <td><a className='table-button' onClick={() => sendInvitation(invitation.email)}>
-                Resend
-              </a></td>
+              {person
+                ? <td/>
+                : <td><a className='table-button' onClick={() => sendInvitation(invitation.email)}>
+                    Resend
+                  </a></td>
+              }
             </tr>
           })}
           {offset < total && <tr><td /><td /><td />

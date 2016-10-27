@@ -65,7 +65,7 @@ export default class CommentSection extends React.Component {
         expanded={expanded}
         key={c.id}/>)}
       <PeopleTyping showNames={false}/>
-      {canComment(currentUser, post) &&
+      {(canComment(currentUser, post) || isProjectRequest) &&
         <CommentForm postId={post.id} {...{placeholder}}/>}
     </div>
   }

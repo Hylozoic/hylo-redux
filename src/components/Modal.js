@@ -124,7 +124,7 @@ export class ModalWrapper extends React.Component {
         clickToClose = true
         break
       case 'post-editor':
-        modal = <PostEditorModal onCancel={close}/>
+        modal = <PostEditorModal post={params.post} onCancel={close}/>
         clickToClose = true
         break
     }

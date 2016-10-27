@@ -118,7 +118,7 @@ const Supporters = ({ post, simple }, { currentUser, dispatch }) => {
 Supporters.contextTypes = {currentUser: object, dispatch: func}
 
 @connect((state, { id }) => ({
-  post: getPost(id, state)
+  post: denormalizedPost(getPost(id, state), state)
 }))
 class ProjectRequest extends React.Component {
   static propTypes = {

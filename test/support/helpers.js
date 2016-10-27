@@ -41,6 +41,11 @@ export const spyify = (object, methodName) => {
   object[methodName] = spy(object[methodName])
 }
 
+export const mockify = (object, methodName, func) => {
+  object['_original' + methodName] = object[methodName]
+  object[methodName] = spy(func)
+}
+
 export const unspyify = (object, methodName) => {
   object[methodName] = object['_original' + methodName]
 }

@@ -3,13 +3,17 @@
   "engines": {
     "node": "6.2.2"
   },
+  "nyc": {
+    "sourceMap": false,
+    "instrument": false
+  },
   "scripts": {
     "start": "./node_modules/.bin/gulp",
     "es5": "node src-es5/server",
     "test": "npm run test-server && npm run test-client && npm run test-browser",
-    "test-server": "./node_modules/.bin/babel-node ./node_modules/.bin/_mocha",
-    "test-client": "./node_modules/.bin/babel-node ./node_modules/.bin/_mocha -- test/client/index.js",
-    "test-browser": "./node_modules/.bin/babel-node ./node_modules/.bin/_mocha -- test/browser/index.js",
+    "test-server": "./node_modules/.bin/mocha --compilers js:babel-register",
+    "test-client": "./node_modules/.bin/mocha --compilers js:babel-register test/client/index.js",
+    "test-browser": "./node_modules/.bin/mocha --compilers js:babel-register test/browser/index.js",
     "cover": "./cover",
     "autotest": "./node_modules/.bin/gulp autotest",
     "deploy": "./node_modules/.bin/gulp deploy"
@@ -87,6 +91,7 @@
   },
   "devDependencies": {
     "aws-sdk": "^2.2.17",
+    "babel-plugin-istanbul": "^2.0.3",
     "babel-plugin-react-transform": "^2.0.0",
     "babel-polyfill": "^6.9.1",
     "babelify": "^7.3.0",
@@ -108,8 +113,6 @@
     "gulp-streamify": "^1.0.2",
     "gulp-uglify": "^2.0.0",
     "heroku-client": "^2.4.0",
-    "istanbul": "1.1.0-alpha.1",
-    "istanbul-reports": "levity/istanbul-reports",
     "jsdom": "^9.4.2",
     "livereactload": "^3.0.1",
     "minimist": "^1.2.0",
@@ -117,6 +120,7 @@
     "nightmare": "^2.8.1",
     "nock": "^8.0.0",
     "node-notifier": "^4.3.1",
+    "nyc": "^8.3.2",
     "randomstring": "^1.1.5",
     "react-addons-test-utils": "^15.0.2",
     "react-proxy": "^1.1.1",

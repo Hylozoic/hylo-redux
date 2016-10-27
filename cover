@@ -1,10 +1,6 @@
 #!/bin/bash
-ISTANBUL=./node_modules/.bin/istanbul
-MOCHA="./node_modules/.bin/_mocha -- --compilers js:babel-register -R dot"
+NYC="./node_modules/.bin/nyc --reporter=lcov"
+MOCHA="./node_modules/.bin/_mocha --compilers js:babel-register -R dot"
 
-$ISTANBUL cover --print none --dir coverage/server $MOCHA && \
-$ISTANBUL cover --print none --dir coverage/client $MOCHA test/client/index.js && \
-$ISTANBUL report && \
-node ./tasks/printCoverage.js
-
+$NYC bash -c "$MOCHA; $MOCHA test/client/index.js"
 exit $?

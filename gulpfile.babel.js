@@ -35,7 +35,7 @@ function clearScreen () {
 gulp.task('autotest', function () {
   const argv = require('minimist')(process.argv)
   const file = argv.file || argv.f
-  const run = './node_modules/.bin/babel-node ./node_modules/.bin/_mocha -R progress'
+  const run = './node_modules/.bin/mocha --compilers js:babel-register -R progress'
   const cmd = file
     ? `${run} -- ${file}`
     : `${run} && ${run} -- test/client/index.js`

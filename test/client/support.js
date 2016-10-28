@@ -11,7 +11,8 @@ jsdom.changeURL(window, process.env.UPSTREAM_HOST)
 window.tinymce = {
   init: () => {},
   EditorManager: {
-    editors: []
+    editors: [],
+    execCommand: () => {}
   }
 }
 

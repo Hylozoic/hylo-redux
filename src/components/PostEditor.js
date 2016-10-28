@@ -171,7 +171,7 @@ export class PostEditor extends React.Component {
 
   saveWithTagDescriptions = tagDescriptions => {
     this.updateStore({tagDescriptions})
-    this.saveIfValid()
+    return this.saveIfValid()
   }
 
   updatePostTagAndDescription = tagDescriptions => {
@@ -189,7 +189,7 @@ export class PostEditor extends React.Component {
       ...attachmentParams(post && post.media, postEdit.media)
     }
 
-    dispatch((post ? updatePost : createPost)(id, params, currentCommunitySlug))
+    return dispatch((post ? updatePost : createPost)(id, params, currentCommunitySlug))
     .then(action => {
       if (responseMissingTagDescriptions(action)) {
         return dispatch(showModal('tag-editor', {
@@ -203,7 +203,7 @@ export class PostEditor extends React.Component {
       })
       dispatch(updateCommunityChecklist(currentCommunitySlug))
       this.cancel()
-      if (onSave) onSave()
+      if (onSave) return onSave()
     })
   }
 

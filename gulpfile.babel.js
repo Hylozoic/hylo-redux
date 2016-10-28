@@ -37,8 +37,8 @@ gulp.task('autotest', function () {
   const file = argv.file || argv.f
   const run = './node_modules/.bin/mocha --compilers js:babel-register -R progress'
   const cmd = file
-    ? `${run} -- ${file}`
-    : `${run} && ${run} -- test/client/index.js`
+    ? `${run} ${file}`
+    : `${run} && ${run} test/client/index.js`
   gulp.watch(['src/**/*', 'test/**/*'], debounce(function () {
     clearScreen()
     spawn('bash', ['-c', cmd], {stdio: 'inherit'})

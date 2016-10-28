@@ -17,7 +17,29 @@ const { bool, func, object } = React.PropTypes
 
 const subject = 'community'
 
-class TagPosts extends React.Component {
+function reloadTag (dispatch, name, id, query) {
+  // resetError needs to be dispatched here in case we loaded the page for a tag
+  // that didn't yet exist, and then created a first post with that tag
+  dispatch(resetError(FETCH_TAG))
+  return dispatch(fetchTag(name, id))
+  .then(({ payload }) => payload.post
+    ? dispatch(navigate(`/p/${payload.post.id}`))
+    : dispatch(fetch(subject, id || 'all', {...query, tag: name})))
+}
+
+@prefetch(({ dispatch, params: { tagName, id }, query }) =>
+  reloadTag(dispatch, tagName, id, query))
+@connect((state, { params: { tagName, id } }) => {
+  const tag = get(['tagsByCommunity', id || 'all', tagName], state)
+  return {
+    isMobile: state.isMobile,
+    tag,
+    redirecting: !!get('post.id', tag),
+    community: get(['communities', id], state),
+    tagError: get(FETCH_TAG, state.errors)
+  }
+})
+export default class TagPosts extends React.Component {
   static propTypes = {
     dispatch: func,
     params: object,
@@ -29,13 +51,8 @@ class TagPosts extends React.Component {
     isMobile: bool
   }
 
-  static childContextTypes = {
-    community: object
-  }
-
-  static contextTypes = {
-    currentUser: object
-  }
+  static childContextTypes = {community: object}
+  static contextTypes = {currentUser: object}
 
   getChildContext () {
     const { community } = this.props
@@ -44,13 +61,20 @@ class TagPosts extends React.Component {
 
   render () {
     const {
-      params: { tagName, id }, location: { query }, tag, dispatch, redirecting,
+      params: { tagName, id }, location: { query }, dispatch, redirecting,
       community, tagError, isMobile
     } = this.props
     const { currentUser } = this.context
+    let tag = this.props.tag
+    let tagExists = true
 
     if (get('meta.tagName', tagError) === tagName) {
-      return <AccessErrorMessage error={tagError.payload.response}/>
+      if (tagError.payload.response.status === 404) {
+        tagExists = false
+        tag = {name: tagName, id: 'nonexistent'}
+      } else {
+        return <AccessErrorMessage error={tagError}/>
+      }
     }
 
     // we check tag.id here because tag will be non-null if we're clicking a
@@ -58,8 +82,8 @@ class TagPosts extends React.Component {
     if (!tag || !tag.id || redirecting) {
       return <div className='loading'>Please wait...</div>
     }
-    const { owner, followers, followerCount } = tag
 
+    const { owner, followers, followerCount } = tag
     const toggleFollow = () => dispatch(followTag(id, tagName))
 
     return <div className='tag-posts'>
@@ -71,48 +95,32 @@ class TagPosts extends React.Component {
         {!isMobile && followers &&
           <Followers followers={sortBy(followers, f => f.id !== owner.id)}
             followerCount={followerCount}/>}
-        {canInvite(currentUser, community) &&
+        {tagExists && canInvite(currentUser, community) &&
           <button className='invite' onClick={() => dispatch(showShareTag(tagName, id))}>+</button>}
-        <span className='buttons'>
-          {id && <button id='follow-button'
+        {tagExists && id && <span className='buttons'>
+          <button id='follow-button'
             className={tag.followed ? 'unfollow' : 'follow'}
             onClick={toggleFollow}>
             {tag.followed ? 'Unfollow' : 'Follow'}
-          </button>}
-          {id && <Tooltip id='follow'
+          </button>
+          <Tooltip id='follow'
             index={3}
             arrow='right'
             position='bottom'
             parentId='follow-button'
             title='Follow Topics'>
             <p>Follow topics you’re interested in to receive an in-app notification when there is a new Conversation in that topic.</p>
-          </Tooltip>}
-        </span>
+          </Tooltip>
+        </span>}
+        {!tagExists && <span className='unused-message'>No one has used this topic yet.</span>}
       </div>
-      {currentUser && <PostEditor community={community} tag={tagName}/>}
-      <ConnectedPostList {...{subject, id: id || 'all', query: {...query, tag: tagName}}}/>
+      {currentUser && <PostEditor community={community} tag={tagName}
+        placeholder='Start a conversation on this topic'
+        onSave={() => reloadTag(dispatch, tagName, id, query)}/>}
+      {tagExists && <ConnectedPostList {...{subject, id: id || 'all', query: {...query, tag: tagName}}}/>}
     </div>
   }
 }
-
-export default compose(
-  prefetch(({ dispatch, params: { tagName, id }, query }) => {
-    return dispatch(fetchTag(tagName, id))
-    .then(({ payload }) => payload.post
-      ? dispatch(navigate(`/p/${payload.post.id}`))
-      : dispatch(fetch(subject, id || 'all', {...query, tag: tagName})))
-  }),
-  connect((state, { params: { tagName, id } }) => {
-    const tag = get(['tagsByCommunity', id || 'all', tagName], state)
-    return {
-      isMobile: state.isMobile,
-      tag,
-      redirecting: !!get('post.id', tag),
-      community: get(['communities', id], state),
-      tagError: get(FETCH_TAG, state.errors)
-    }
-  })
-)(TagPosts)
 
 const Followers = ({followers, followerCount}) => {
   const adjustedCount = followerCount - 3

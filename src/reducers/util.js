@@ -39,6 +39,7 @@ export function updateMedia (obj, type, url) {
 // new properties, update the values of existing properties, and do not lose any
 // existing properties that aren't contained in their new counterpart.
 export const mergeList = (state, items, key, opts = {}) => {
+  if (!state) state = {}
   let mergedItems = items.reduce((m, newItem) => {
     const id = newItem[key]
     const oldItemCopy = omit(state[id], opts.drop)

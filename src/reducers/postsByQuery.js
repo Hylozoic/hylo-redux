@@ -12,7 +12,7 @@ import {
 } from '../actions'
 
 const keyMatchesPost = (key, post, tags) => {
-  const communityIds = post.communities.map(c => c.slug).concat(post.communities.map(c => c.id))
+  const communityIds = map(post.communities, 'slug').concat(map(post.communities, 'id'))
   return key.subject === 'community' &&
     (includes(communityIds, key.id) || key.id === 'all') &&
     (!key.type || key.type === post.type) &&

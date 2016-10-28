@@ -53,11 +53,11 @@ export default class TagEditorModal extends React.Component {
     const validate = tags => {
       // only called when creating a tag so we can assume there is exactly one tag
       let tag = keys(tags)[0]
-      if (tag[0].match(/[^A-Za-z]/)) {
-        window.alert('Topic names must start with a letter')
+      if (!tag || tag.length < 2) {
+        window.alert('Topic names must be at least 2 characters.')
         return false
-      } else if (tag.length < 2) {
-        window.alert('Topic names must be at least 2 characters')
+      } else if (tag[0].match(/[^A-Za-z]/)) {
+        window.alert('Topic names must start with a letter.')
         return false
       } else if (!tag.match(hashtagWordRegex)) {
         window.alert('Topic names can only use letters, numbers and underscores, with no spaces.')

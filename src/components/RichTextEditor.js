@@ -186,7 +186,7 @@ export default class RichTextEditor extends React.Component {
   }
 
   getContent () {
-    return this.getEditor().getContent()
+    if (this.getEditor()) return this.getEditor().getContent()
   }
 
   getEditor () {

@@ -88,7 +88,9 @@ export class PostEditor extends React.Component {
     editingTagDescriptions: bool,
     creatingTagAndDescription: bool,
     postCommunities: array,
-    defaultTags: array
+    defaultTags: array,
+    placeholder: string,
+    onSave: func
   }
 
   static contextTypes = {
@@ -178,7 +180,9 @@ export class PostEditor extends React.Component {
   }
 
   save () {
-    const { dispatch, post, postEdit, id, postCommunities, currentCommunitySlug } = this.props
+    const {
+      dispatch, post, postEdit, id, postCommunities, currentCommunitySlug, onSave
+    } = this.props
     const params = {
       type: this.editorType(),
       ...postEdit,
@@ -199,6 +203,7 @@ export class PostEditor extends React.Component {
       })
       dispatch(updateCommunityChecklist(currentCommunitySlug))
       this.cancel()
+      if (onSave) onSave()
     })
   }
 
@@ -271,7 +276,7 @@ export class PostEditor extends React.Component {
 
   render () {
     const {
-      post, postEdit, dispatch, imagePending, saving, id, defaultTags
+      post, postEdit, dispatch, imagePending, saving, id, defaultTags, placeholder
     } = this.props
     const { currentUser } = this.context
     const { description, community_ids, tag, linkPreview } = postEdit
@@ -295,7 +300,7 @@ export class PostEditor extends React.Component {
         <AutosizingTextarea type='text' ref='title' className='title'
           value={name}
           maxLength={120}
-          placeholder={placeholderText(this.editorType())}
+          placeholder={placeholder || placeholderText(this.editorType())}
           onKeyDown={onEnter(this.goToDetails)}
           onChange={event => this.updateTitle(event)}/>
       </div>
@@ -512,7 +517,8 @@ export default class PostEditorWrapper extends React.Component {
     type: string,
     expanded: bool,
     tag: string,
-    onCancel: func
+    onCancel: func,
+    placeholder: string
   }
 
   static contextTypes = {
@@ -529,13 +535,12 @@ export default class PostEditorWrapper extends React.Component {
   }
 
   render () {
-    let { type, post, community, tag, onCancel } = this.props
+    let { expanded, onCancel, type, ...otherProps } = this.props
 
     // if PostEditorWrapper is being initialized with expanded=true, we don't
     // want to set up onCancel, because the entire component will probably be
     // unmounted when canceling takes place
-    onCancel = onCancel ||
-      (this.props.expanded ? () => {} : this.toggle)
+    onCancel = onCancel || (expanded ? () => {} : this.toggle)
 
     if (!this.state.expanded) {
       const { currentUser } = this.context
@@ -544,12 +549,12 @@ export default class PostEditorWrapper extends React.Component {
       return <div className='post-editor post-editor-wrapper' onClick={this.toggle}>
         <PostEditorHeader person={currentUser}/>
         <div className='prompt'>
-          {placeholderText(type)}
+          {otherProps.placeholder || placeholderText(type)}
         </div>
       </div>
     }
 
-    return <PostEditor {...{post, community, type, onCancel, tag}}/>
+    return <PostEditor {...{onCancel, type, ...otherProps}}/>
   }
 }
 

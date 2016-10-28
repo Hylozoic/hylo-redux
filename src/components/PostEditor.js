@@ -162,22 +162,9 @@ export class PostEditor extends React.Component {
 
   saveIfValid () {
     const self = this._self()
-
-    // this forces a final blur event on TinyMCE
-    const { tagSelector, title } = self.refs
-    tagSelector ? tagSelector.focus() : title.focus()
-
-    self.validate().then(valid => {
-      if (!valid) return
-      // we use setTimeout here to avoid a race condition. the description field
-      // (tinymce) doesn't fire its change event until it loses focus, and
-      // there's an additional delay due to the use of setDelayed.
-      //
-      // so if we click Save immediately after typing in the description
-      // field, we have to wait for events from the description field to be
-      // handled, otherwise the last edit will be lost.
-      setTimeout(() => self.save(), 200)
-    })
+    // make sure the very last change to the details field is not lost
+    self.updateStore({description: self.refs.details.getContent()})
+    return self.validate().then(valid => valid && self.save())
   }
 
   saveWithTagDescriptions = tagDescriptions => {

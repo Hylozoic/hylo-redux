@@ -19,11 +19,16 @@ export const handleMouseOver = dispatch => event => {
   if (node.nodeName.toLowerCase() === 'a' && node.getAttribute('class') === 'hashtag') {
     canceledPopover = false
 
+    const hide = () =>
+      dispatch(hideTagPopover())
+
     const cancel = () => {
       canceledPopover = true
       node.removeEventListener('mouseleave', cancel)
+      node.removeEventListener('click', hide)
     }
     node.addEventListener('mouseleave', cancel)
+    node.addEventListener('click', hide)
 
     const { tagName, slug } = tagUrlComponents(node.getAttribute('href'))
     setTimeout(() => {

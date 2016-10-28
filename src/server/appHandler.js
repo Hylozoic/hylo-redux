@@ -14,7 +14,7 @@ import { localsForPrefetch } from '../util/universal'
 import { getManifest } from '../util/assets'
 import { makeUrl } from '../util/navigation'
 import { some, isEmpty, toPairs } from 'lodash'
-import { flow, map } from 'lodash/fp'
+import { flow, get, map } from 'lodash/fp'
 import { parse } from 'url'
 import MobileDetect from 'mobile-detect'
 import { featureFlags } from '../config'
@@ -22,9 +22,9 @@ import { featureFlags } from '../config'
 const checkAPIErrors = (res, errors) => {
   if (!isEmpty(errors)) res.errors = errors
 
-  return some(toPairs(errors), ([key, { payload: { response } }]) => {
-    if (!response) return false
-    let { status, url } = response
+  return some(toPairs(errors), ([key, error]) => {
+    if (!get('payload.response', error)) return false
+    const { payload: { response: { status, url } } } = error
     debug(red(`${key} caused ${status} at ${url}`))
     return true
   })

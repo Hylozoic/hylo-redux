@@ -483,17 +483,6 @@ export function setCurrentNetworkId (id) {
   return {type: SET_CURRENT_NETWORK_ID, payload: id}
 }
 
-export function fetchTag (tagName, communityId) {
-  const path = communityId
-    ? `/noo/community/${communityId}/tag/${tagName}`
-    : `/noo/tag/${tagName}`
-  return {
-    type: FETCH_TAG,
-    payload: {api: true, path},
-    meta: {id: communityId || 'all', tagName}
-  }
-}
-
 export function setMobileDevice (enabled = true) {
   return {type: SET_MOBILE_DEVICE, payload: enabled}
 }
@@ -516,14 +505,6 @@ export function showTagPopover (tagName, slug, node) {
 
 export function hideTagPopover () {
   return {type: HIDE_TAG_POPOVER}
-}
-
-export function fetchTagSummary (tagName, id) {
-  return {
-    type: FETCH_TAG_SUMMARY,
-    payload: {api: true, path: `/noo/community/${id}/tag/${tagName}/summary`},
-    meta: {tagName, id}
-  }
 }
 
 export function closeModal () {

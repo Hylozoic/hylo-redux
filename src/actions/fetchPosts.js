@@ -3,14 +3,14 @@ import { FETCH_POSTS, CHECK_FRESHNESS_POSTS } from './index'
 import { get } from 'lodash/fp'
 
 export function fetchPosts (opts) {
-  // communityId is only used when fetching a tag
   const {
     subject, id, limit, type, tag, sort, search, filter, cacheId, omit
   } = opts
   const offset = opts.offset || 0
   const queryParams = {
     offset, limit, type, tag, sort, search, filter, omit,
-    comments: true, votes: true}
+    comments: true, votes: true
+  }
   let path
 
   switch (subject) {

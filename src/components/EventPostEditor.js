@@ -3,7 +3,7 @@ import { get } from 'lodash/fp'
 import Icon from './Icon'
 import DatetimePicker from 'react-datetime'
 import { sanitizeTagInput } from '../util/textInput'
-import { fetchTag } from '../actions'
+import { fetchTag } from '../actions/tags'
 const { func, object } = React.PropTypes
 
 export const validateTag = (tag, dispatch) => {

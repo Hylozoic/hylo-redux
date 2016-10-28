@@ -27,7 +27,7 @@ const STOPPED_TYPING_WAIT_TIME = 8000
     newComment: !commentId,
     pending: state.pending[CREATE_COMMENT]
   })
-})
+}, null, null, {withRef: true})
 export default class CommentForm extends React.Component {
   static propTypes = {
     dispatch: func,
@@ -51,12 +51,14 @@ export default class CommentForm extends React.Component {
     this.state = {}
   }
 
-  submit = event => {
+  submit = (event, newTagDescriptions) => {
     const { dispatch, postId, commentId, newComment, close, pending } = this.props
     if (event) event.preventDefault()
     if (!this.state.enabled || pending) return
     const text = this.refs.editor.getContent().replace(/<p>&nbsp;<\/p>$/m, '')
     if (!text || textLength(text) < 2) return false
+
+    const tagDescriptions = newTagDescriptions || this.state.tagDescriptions
 
     const showTagEditor = () => dispatch(showModal('tag-editor', {
       creating: false,
@@ -64,14 +66,14 @@ export default class CommentForm extends React.Component {
     }))
 
     if (newComment) {
-      dispatch(createComment(postId, text, this.state.tagDescriptions))
+      dispatch(createComment(postId, text, tagDescriptions))
       .then(action => {
         if (responseMissingTagDescriptions(action)) return showTagEditor()
         if (action.error) return
         trackEvent(ADDED_COMMENT, {post: {id: postId}})
       })
     } else {
-      dispatch(updateComment(commentId, text, this.state.tagDescriptions))
+      dispatch(updateComment(commentId, text, tagDescriptions))
       .then(action => responseMissingTagDescriptions(action) && showTagEditor())
       close()
     }
@@ -81,7 +83,7 @@ export default class CommentForm extends React.Component {
 
   saveWithTagDescriptions = tagDescriptions => {
     this.setState({tagDescriptions})
-    this.submit()
+    this.submit(null, tagDescriptions)
   }
 
   componentDidMount () {

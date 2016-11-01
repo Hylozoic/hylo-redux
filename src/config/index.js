@@ -30,6 +30,9 @@ export const facebook = {
 export const segment = {
   writeKey: process.env.SEGMENT_KEY
 }
+export const intercom = {
+  appId: process.env.INTERCOM_APP_ID
+}
 
 export const featureFlags = () => {
   if (isServer) {
@@ -47,7 +50,7 @@ export const featureFlags = () => {
 
 const config = {
   environment, filepickerKey, logLevel, upstreamHost, host, slack, s3, google,
-  facebook, segment, featureFlags
+  facebook, segment, featureFlags, intercom
 }
 
 if (!upstreamHost || !parse(upstreamHost).protocol) {

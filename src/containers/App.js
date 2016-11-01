@@ -1,5 +1,6 @@
 import React from 'react'
 import cx from 'classnames'
+import { intercom } from '../config'
 import { prefetch } from 'react-fetcher'
 import { connect } from 'react-redux'
 import { debounce, isEmpty } from 'lodash'
@@ -105,6 +106,13 @@ export default class App extends React.Component {
           top={i === openModals.length - 1}
           type={get('type', modal)}
           params={get('params', modal)}/>)}
+      <IntercomButton/>
     </div>
   }
+}
+
+const IntercomButton = () => {
+  const href = `mailto:${intercom.appId}@incoming.intercom.io`
+  const id = 'custom-intercom-launcher'
+  return <a {...{id, href}} target='_blank'>?</a>
 }

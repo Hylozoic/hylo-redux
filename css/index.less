@@ -1122,3 +1122,32 @@ ul.tags {
     margin-right: 20px;
   }
 }
+
+#custom-intercom-launcher {
+  position: fixed;
+  bottom: 10px;
+  right: 10px;
+  height: 48px;
+  width: 48px;
+  border-radius: 48px;
+  line-height: 46px;
+  font-size: 28px;
+  .mobile({
+    height: 42px;
+    width: 42px;
+    border-radius: 42px;
+    line-height: 40px;
+    font-size: 22px;
+  });
+  text-align: center;
+  vertical-align: middle;
+  cursor: pointer;
+  color: @damian-green;
+  border: 1px solid @damian-green;
+  background-color: @faint-gray-bg;
+  text-decoration: none;
+  .medium;
+  &:hover {
+    opacity: 0.8;
+  }
+}

@@ -46,10 +46,10 @@ describe('currentUser', () => {
   describe('.isTester', () => {
     it('returns true if the user is in a community with test feature access', () => {
       const u1 = {
-        memberships: [{community_id: 1}, {community_id: 39}]
+        memberships: [{community_id: '1'}, {community_id: '29'}]
       }
       const u2 = {
-        memberships: [{community_id: 1}, {community_id: 1972}]
+        memberships: [{community_id: '1'}, {community_id: '1972'}]
       }
 
       expect(isTester(u1)).to.be.true

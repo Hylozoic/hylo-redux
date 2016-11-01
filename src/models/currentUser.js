@@ -24,8 +24,8 @@ export const isAdmin = truthy(get('is_admin'))
 
 export const isTester = user =>
   some([
-    {id: 39, slug: 'hylo'},
-    {id: 1972, slug: 'testmetalab'}
+    {id: '29', slug: 'hylo'},
+    {id: '1972', slug: 'testmetalab'}
   ], membership(user))
 
 export const canEditPost = (currentUser, post) => {

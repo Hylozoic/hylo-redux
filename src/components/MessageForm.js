@@ -1,5 +1,5 @@
 import React from 'react'
-import { get, debounce, throttle } from 'lodash'
+import { get, throttle } from 'lodash'
 import { connect } from 'react-redux'
 import { createComment, updateCommentEditor } from '../actions/comments'
 import { ADDED_COMMENT, trackEvent } from '../util/analytics'
@@ -7,14 +7,6 @@ import { textLength } from '../util/text'
 import { onEnterNoShift } from '../util/textInput'
 import { getSocket, socketUrl } from '../client/websockets'
 var { func, object, string } = React.PropTypes
-
-// The interval between repeated typing notifications to the web socket. We send
-// repeated notifications to make sure that a user gets notified even if they
-// load a comment thread after someone else has already started typing.
-const STARTED_TYPING_INTERVAL = 5000
-
-// The time to wait for inactivity before announcing that typing has stopped.
-const STOPPED_TYPING_WAIT_TIME = 8000
 
 @connect((state, { postId }) => {
   return ({
@@ -55,6 +47,26 @@ export default class MessageForm extends React.Component {
     this.refs.editor.focus()
   }
 
+  sendIsTyping (isTyping) {
+    const { postId } = this.props
+    if (this.socket) {
+      this.socket.post(socketUrl(`/noo/post/${postId}/typing`), {isTyping})
+    }
+  }
+
+  // broadcast "I'm typing!" every 5 seconds starting when the user is typing.
+  // We send repeated notifications to make sure that a user gets notified even
+  // if they load a comment thread after someone else has already started
+  // typing.
+  //
+  // then, 8 seconds after typing stops, broadcast "I'm not typing!". if typing
+  // resumes, cancel the 8-second countdown.
+  startTyping = throttle(() => {
+    this.sendIsTyping(true)
+    if (this.queuedStop) clearTimeout(this.queuedStop)
+    this.queuedStop = setTimeout(() => this.sendIsTyping(false), 8000)
+  }, 5000)
+
   render () {
     const { dispatch, postId, text } = this.props
     const updateStore = text => dispatch(updateCommentEditor(postId, text, true))
@@ -62,19 +74,10 @@ export default class MessageForm extends React.Component {
     const setText = event => updateStore(event.target.value)
     const placeholder = this.props.placeholder || 'Type a message...'
 
-    const stoppedTyping = () => {
-      if (this.socket) this.socket.post(socketUrl(`/noo/post/${postId}/typing`), { isTyping: false })
-    }
-    const startedTyping = () => {
-      if (this.socket) this.socket.post(socketUrl(`/noo/post/${postId}/typing`), { isTyping: true })
-    }
-
-    const stopTyping = debounce(stoppedTyping, STOPPED_TYPING_WAIT_TIME)
-    const startTyping = throttle(startedTyping, STARTED_TYPING_INTERVAL, {trailing: false})
     const handleKeyDown = e => {
-      startTyping()
+      this.startTyping()
       onEnterNoShift(e => {
-        stoppedTyping()
+        this.sendIsTyping(false)
         e.preventDefault()
         this.submit()
         updateStore('')
@@ -85,7 +88,7 @@ export default class MessageForm extends React.Component {
       <textarea ref='editor' name='message' value={text}
         placeholder={placeholder}
         onChange={setText}
-        onKeyUp={stopTyping}
+        onKeyUp={this.stopTyping}
         onKeyDown={handleKeyDown}/>
     </form>
   }

@@ -1,5 +1,5 @@
 import React from 'react'
-import { navigate, logout, showModal } from '../actions'
+import { navigate, logout, showModal, resetTooltips } from '../actions'
 import { makeUrl } from '../util/navigation'
 import { calliOSBridge } from '../client/util'
 import Icon from './Icon'
@@ -53,7 +53,7 @@ class SearchMenuItem extends React.Component {
 }
 
 const UserMenu = ({ slug, newMessageCount, newNotificationCount }, { isMobile, dispatch, currentUser }) => {
-  const { settings: { last_viewed_messages_at } } = currentUser
+  const { settings: { last_viewed_messages_at }, id } = currentUser
   const doLogout = () => {
     calliOSBridge({type: 'logout'})
     dispatch(navigate('/login'))
@@ -96,6 +96,11 @@ const UserMenu = ({ slug, newMessageCount, newNotificationCount }, { isMobile, d
           <A to={'/settings'}>
             <Icon name='Settings'/> Settings
           </A>
+        </li>
+        <li>
+          <a onClick={() => dispatch(resetTooltips(id))}>
+            <Icon name='ProjectorScreen'/> Start Tour
+          </a>
         </li>
         {isAdmin(currentUser) && <li>
           <A to={'/admin'}>

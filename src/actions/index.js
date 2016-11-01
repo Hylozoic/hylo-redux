@@ -119,6 +119,7 @@ export const SHOW_SHARE_TAG = 'SHOW_SHARE_TAG'
 export const SHOW_TAG_POPOVER = 'SHOW_TAG_POPOVER'
 export const SIGNUP = 'SIGNUP'
 export const START_POST_EDIT = 'START_POST_EDIT'
+export const RESET_TOOLTIPS = 'RESET_TOOLTIPS'
 export const THANK = 'THANK'
 export const THANK_PENDING = THANK + _PENDING
 export const TOGGLE_LEFT_NAV = 'TOGGLE_LEFT_NAV'
@@ -565,5 +566,12 @@ export function setUnseenThreadCount (count) {
   return {
     type: SET_UNSEEN_THREAD_COUNT,
     payload: { count }
+  }
+}
+
+export function resetTooltips (userId) {
+  return {
+    type: RESET_TOOLTIPS,
+    payload: {api: true, path: `/noo/user/${userId}/reset-tooltips`, method: 'post'}
   }
 }

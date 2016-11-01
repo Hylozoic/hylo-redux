@@ -340,13 +340,6 @@ nav {
   }
 }
 
-.isMobile.loggedOut #topNav {
-  #community-menu {
-    float: left;
-    margin-left: 15px;
-  }
-}
-
 .dot-badge {
   border-radius: @dot-badge-size;
   width: @dot-badge-size;
@@ -672,6 +665,13 @@ nav {
   .lazy-loader {
     display: inline-block;
   }
+}
+
+.loggedOut #community-menu {
+  .mobile({
+    float: left;
+    margin-left: 15px;
+  });
 }
 
 .leftNavIsOpen #topNav {

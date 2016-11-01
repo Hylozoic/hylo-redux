@@ -80,13 +80,12 @@ export default class App extends React.Component {
 
   render () {
     const {
-      children, community, dispatch, leftNavIsOpen, notifierMessages, isMobile,
+      children, community, dispatch, leftNavIsOpen, notifierMessages,
       openModals, tagPopover, currentUser
     } = this.props
 
     const classes = cx({
       leftNavIsOpen,
-      isMobile,
       loggedIn: !!currentUser,
       loggedOut: !currentUser,
       showModal: !isEmpty(openModals)

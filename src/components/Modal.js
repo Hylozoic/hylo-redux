@@ -14,6 +14,7 @@ import InviteModal from '../containers/InviteModal'
 import PostEditorModal from '../containers/PostEditorModal'
 import { NotificationsModal } from '../containers/Notifications'
 import cx from 'classnames'
+import { get } from 'lodash/fp'
 const { array, bool, func, node, object, string, oneOfType } = React.PropTypes
 
 export const modalWrapperCSSId = 'top-level-modal-wrapper'
@@ -116,7 +117,7 @@ export class ModalWrapper extends React.Component {
         clickToClose = true
         break
       case 'post-editor':
-        modal = <PostEditorModal onCancel={close}/>
+        modal = <PostEditorModal post={get('post', params)} onCancel={close}/>
         clickToClose = true
         break
     }

@@ -1,6 +1,5 @@
 import React from 'react'
 import Icon from '../components/Icon'
-import { position } from '../util/scrolling'
 import { closeModal } from '../actions'
 // circular import; code smell; refactor?
 import BrowseTopicsModal from '../containers/BrowseTopicsModal'

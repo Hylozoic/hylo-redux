@@ -18,11 +18,17 @@ import { get } from 'lodash/fp'
 const { array, bool, func, node, object, string, oneOfType } = React.PropTypes
 
 export const modalWrapperCSSId = 'top-level-modal-wrapper'
+const mainColumnWidth = 688 // defined in CSS
 
+// this has to cover the cases:
+//  - desktop, left nav open
+//  - desktop, left nav closed
+//  - mobile
+//
 const modalStyle = isMobile => {
   if (typeof window === 'undefined') return {}
-  const pageContent = document.getElementById('cover-image-page-content')
-  const marginLeft = pageContent ? position(pageContent).x : 0
+  const main = document.getElementById('main')
+  const marginLeft = Math.max((main.offsetWidth - mainColumnWidth) / 2, 0) + main.offsetLeft
   return {marginLeft}
 }
 

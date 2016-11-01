@@ -18,6 +18,9 @@
     width: 100%;
     background-color: @faint-gray-bg;
     padding: 15px 15px 15px 30px;
+    .mobile({
+      padding: 10px 15px;
+    });
     border-bottom: 1px solid @post-border;
     flex-grow: 0;
     flex-shrink: 0;
@@ -27,9 +30,8 @@
       display: block;
       .thread-title-text;
       text-decoration: none;
-    }  
+    }
   }
-  
 
   .messages-section {
     width: 100%;
@@ -38,32 +40,35 @@
     flex-basis: 0;
     overflow-y: scroll;
     background-color: #FFF;
-    border-bottom: 1px solid @post-border; 
+    border-bottom: 1px solid @post-border;
     padding: 10px 0;
+  }
 
-    .message {
-      padding: 5px 0 5px 30px;    
+  .message {
+    padding: 5px 0 5px 30px;
+    .mobile({
+      padding: 5px 15px;
+    });
 
-      .avatar {
-        float: left;
-        background-position: center;
-        background-size: cover;
-        width: @avatar-size-default;
-        height: @avatar-size-default;
-        border-radius: @avatar-size-default;
+    .avatar {
+      float: left;
+      background-position: center;
+      background-size: cover;
+      width: @avatar-size-default;
+      height: @avatar-size-default;
+      border-radius: @avatar-size-default;
+    }
+
+    .content {
+      margin-left: 50px;
+
+      strong.name {
+        color: @damian-green;
+        margin-right: 8px;
       }
 
-      .content {
-        margin-left: 50px;
-
-        strong.name {
-          color: @damian-green;
-          margin-right: 8px;
-        }
-
-        .date {
-          color: @faint-gray-text;
-        }
+      .date {
+        color: @faint-gray-text;
       }
     }
   }
@@ -76,7 +81,7 @@
     background: #FFF;
     color: @faint-gray-text;
     padding: 10px 0 10px 30px;
-    border-bottom: 1px solid @post-border; 
+    border-bottom: 1px solid @post-border;
 
     > div {
       display: inline-block;
@@ -119,7 +124,7 @@
 
     input {
       width: 200px;
-    } 
+    }
   }
 }
 

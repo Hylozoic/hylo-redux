@@ -14,23 +14,15 @@ import InviteModal from '../containers/InviteModal'
 import PostEditorModal from '../containers/PostEditorModal'
 import { NotificationsModal } from '../containers/Notifications'
 import cx from 'classnames'
-import { get } from 'lodash'
 const { array, bool, func, node, object, string, oneOfType } = React.PropTypes
 
 export const modalWrapperCSSId = 'top-level-modal-wrapper'
-const mainColumnWidth = 688 // defined in CSS
 
 const modalStyle = isMobile => {
   if (typeof window === 'undefined') return {}
-  const windowWidth = window.innerWidth
   const pageContent = document.getElementById('cover-image-page-content')
-  const webMargin = pageContent ? position(pageContent).x : (windowWidth - mainColumnWidth) / 2
-  return {
-    marginLeft: isMobile ? 0
-      : webMargin,
-    width: Math.min(mainColumnWidth,
-      get(document.getElementById('main'), 'offsetWidth') || mainColumnWidth)
-  }
+  const marginLeft = pageContent ? position(pageContent).x : 0
+  return {marginLeft}
 }
 
 export class BareModalWrapper extends React.Component {

@@ -21,8 +21,10 @@
   }
 
   .modal {
-    max-width: @main-column-width;
-    margin: 10vh auto;
+    .non-mobile({
+      width: @main-column-width;
+      margin: 10vh auto;
+    });
   }
 }
 
@@ -166,12 +168,6 @@
 
   > .meta {
     padding: 0 @modal-row-side-padding;
-  }
-}
-
-.isMobile #top-level-modal-wrapper {
-  .modal {
-    margin: 0;
   }
 }
 

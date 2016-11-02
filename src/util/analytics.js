@@ -1,5 +1,6 @@
 import { get, partial } from 'lodash'
 import { mostRecentCommunity } from '../models/person'
+import moment from 'moment-timezone'
 
 // These strings were not used prior to hylo-redux
 export const ADDED_COMMUNITY = 'Add community'
@@ -72,7 +73,8 @@ export const identify = person => {
   window.analytics.identify(id, {
     email, name, post_count, createdAt: created_at,
     provider: get(account, 'provider_key'),
-    community: get(community, 'name')
+    community: get(community, 'name'),
+    'Signup Week': moment.tz(created_at, 'UTC').startOf('week').toISOString()
   })
 }
 

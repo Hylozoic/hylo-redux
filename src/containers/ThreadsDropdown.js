@@ -16,6 +16,8 @@ import { NonLinkAvatar } from '../components/Avatar'
 import Dropdown from '../components/Dropdown'
 import Icon from '../components/Icon'
 import { getSocket, socketUrl } from '../client/websockets'
+import { truncate } from '../util/text'
+import { Modal } from '../components/Modal'
 
 const getThreads = state =>
   flow(
@@ -29,15 +31,12 @@ const getThreads = state =>
     sortBy(t => -1 * new Date(t.updated_at))
   )(state.postsByQuery.threads)
 
-@connect(
-  (state, props) => ({
-    threads: getThreads(state),
-    pending: state.pending[FETCH_POSTS],
-    openedThreadId: state.openedThreadId
-  })
-)
+@connect((state, props) => ({
+  threads: getThreads(state),
+  pending: state.pending[FETCH_POSTS],
+  openedThreadId: state.openedThreadId
+}))
 export class ThreadsDropdown extends React.Component {
-
   static propTypes = {
     openedThreadId: string,
     threads: array,
@@ -113,7 +112,7 @@ export class ThreadsDropdown extends React.Component {
     const onClose = () => this.setState({ open: false })
 
     return <Dropdown alignRight rivalrous='nav' className='thread-list'
-      onFirstOpen={() => dispatch(fetchPosts({ cacheId: 'threads', subject: 'threads' }))}
+      onFirstOpen={() => dispatch(fetchPosts({cacheId: 'threads', subject: 'threads'}))}
       onOpen={onOpen}
       onClose={onClose}
       toggleChildren={<span>
@@ -146,8 +145,47 @@ const Thread = ({ thread }, { currentUser, dispatch }) => {
     <span>
       <strong>{follower.name}</strong>&nbsp;
       {comment.user_id === currentUser.id ? 'You: ' : ''}
-      {comment.text}
+      {truncate(comment.text, 80)}
     </span>
   </A>
 }
 Thread.contextTypes = {dispatch: func, currentUser: object}
+
+@connect(state => ({
+  threads: getThreads(state),
+  pending: state.pending[FETCH_POSTS]
+}))
+export class ThreadsModal extends React.Component {
+  static propTypes = {
+    dispatch: func,
+    threads: array,
+    onCancel: func,
+    pending: bool
+  }
+
+  componentDidMount () {
+    this.props.dispatch(fetchPosts({cacheId: 'threads', subject: 'threads'}))
+  }
+
+  render () {
+    const { onCancel, threads, pending, dispatch } = this.props
+    const startNewMessage = event => {
+      dispatch(showDirectMessage())
+      event.stopPropagation()
+    }
+
+    return <Modal id='threads-modal' onCancel={onCancel} title='Messages'>
+      <ul onClick={onCancel} className='thread-list'>
+        {!pending && <li className='top'>
+          <div className='newMessage' onClick={startNewMessage}>
+            <Icon name='Compose'/><span className='button-text'>New Message</span>
+          </div>
+        </li>}
+        {pending && <li className='loading'>Loading...</li>}
+        {threads.map(thread => <li key={thread.id}>
+          <Thread thread={thread}/>
+        </li>)}
+      </ul>
+    </Modal>
+  }
+}

@@ -12,6 +12,7 @@ import AddLogoModal from '../containers/AddLogoModal'
 import InviteModal from '../containers/InviteModal'
 import PostEditorModal from '../containers/PostEditorModal'
 import { NotificationsModal } from '../containers/Notifications'
+import { ThreadsModal } from '../containers/ThreadsDropdown'
 import cx from 'classnames'
 import { get } from 'lodash/fp'
 const { array, bool, func, node, object, string, oneOfType } = React.PropTypes
@@ -125,6 +126,8 @@ export class ModalWrapper extends React.Component {
         modal = <PostEditorModal post={get('post', params)} onCancel={close}/>
         clickToClose = true
         break
+      case 'threads':
+        modal = <ThreadsModal onCancel={close}/>
     }
 
     return <BareModalWrapper top={top} onClick={() => clickToClose && close()}>

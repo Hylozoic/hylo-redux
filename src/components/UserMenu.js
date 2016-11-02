@@ -92,6 +92,12 @@ const UserMenu = ({ slug, newMessageCount, newNotificationCount }, { isMobile, d
             {newNotificationCount > 0 && <span className='badge'>{newNotificationCount}</span>}
           </a>
         </li>
+        <li className='dropdown-threads'>
+          <a onClick={() => dispatch(showModal('threads'))}>
+            <Icon name='Message-Smile'/> Messages
+            {newMessageCount > 0 && <span className='badge'>{newMessageCount}</span>}
+          </a>
+        </li>
         <li>
           <A to={'/settings'}>
             <Icon name='Settings'/> Settings

@@ -104,8 +104,8 @@ export default class App extends React.Component {
         <ModalWrapper key={i}
           bottom={i === 0}
           top={i === openModals.length - 1}
-          type={get('type', modal)}
-          params={get('params', modal)}/>)}
+          type={modal.type}
+          params={modal.params}/>)}
       <IntercomButton/>
     </div>
   }

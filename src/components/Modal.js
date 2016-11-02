@@ -28,6 +28,7 @@ const mainColumnWidth = 688 // defined in CSS
 const modalStyle = isMobile => {
   if (typeof window === 'undefined') return {}
   const main = document.getElementById('main')
+  if (!main) return {} // this should be the case only during tests
   const marginLeft = Math.max((main.offsetWidth - mainColumnWidth) / 2, 0) + main.offsetLeft
   return {marginLeft}
 }

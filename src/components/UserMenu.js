@@ -61,6 +61,8 @@ const UserMenu = ({ slug, newMessageCount, newNotificationCount }, { isMobile, d
     return false
   }
 
+  const showDotBadge = newNotificationCount > 0 || newMessageCount > 0
+
   return <ul className='right'>
     <SearchMenuItem/>
 
@@ -78,7 +80,7 @@ const UserMenu = ({ slug, newMessageCount, newNotificationCount }, { isMobile, d
         rivalrous='nav' backdrop={isMobile} toggleChildren={
           <div>
             <NonLinkAvatar person={currentUser}/>
-            {newNotificationCount > 0 && <div className='dot-badge'/>}
+            {showDotBadge && <div className='dot-badge'/>}
           </div>
         }>
         <li>

@@ -106,7 +106,7 @@ const UserMenu = ({ slug, newMessageCount, newNotificationCount }, { isMobile, d
         </li>
         <li>
           <a onClick={() => dispatch(resetTooltips(id))}>
-            <Icon name='ProjectorScreen'/> Start Tour
+            <Icon name='ProjectorScreen'/> Start tour
           </a>
         </li>
         {isAdmin(currentUser) && <li>

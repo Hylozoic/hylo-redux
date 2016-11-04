@@ -8,7 +8,7 @@ import MessageForm from './MessageForm'
 import A from './A'
 import PeopleTyping from './PeopleTyping'
 import { connect } from 'react-redux'
-import { updatePostReadTime } from '../actions/posts'
+
 import { onThreadPage, offThreadPage } from '../actions/threads'
 import { getComments } from '../models/post'
 import { getSocket, socketUrl } from '../client/websockets'
@@ -30,7 +30,6 @@ export default class Thread extends React.Component {
   }
 
   setupForThread (post) {
-    this.markAsRead(post)
     this.props.dispatch(onThreadPage(post.id))
     if (this.socket) {
       this.socket.post(socketUrl(`/noo/post/${post.id}/subscribe`)) // for people typing
@@ -62,18 +61,13 @@ export default class Thread extends React.Component {
     }
   }
 
-  markAsRead (post) {
-    const { dispatch } = this.props
-    dispatch(updatePostReadTime(post.id))
-  }
-
   render () {
     const { post, messages } = this.props
     const classes = cx('thread')
 
     return <div className={classes}>
       <Header />
-      <MessageSection {...{messages}}/>
+      <MessageSection {...{messages}} thread={post}/>
       <PeopleTyping showNames/>
       <MessageForm postId={post.id} ref='form'/>
     </div>

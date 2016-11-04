@@ -93,17 +93,19 @@ export default class CommentForm extends React.PureComponent {
     this.socket = getSocket()
   }
 
+  setText (text) {
+    const { dispatch, commentId, postId, newComment } = this.props
+    const storeId = newComment ? postId : commentId
+    dispatch(updateCommentEditor(storeId, text, newComment))
+  }
+
+  delaySetText = debounce(text => this.setText(text), 50)
+
   render () {
-    const {
-      dispatch, postId, commentId, text, newComment, close, pending
-    } = this.props
+    const { postId, text, newComment, close, pending } = this.props
     const { currentUser, isMobile } = this.context
     const editing = text !== undefined
-    const storeId = newComment ? postId : commentId
-    const updateStore = text => dispatch(updateCommentEditor(storeId, text, newComment))
-    const edit = () => updateStore('')
-
-    const setText = event => updateStore(event.target.value)
+    const edit = () => this.setText('')
     const placeholder = this.props.placeholder || 'Add a comment...'
 
     const stoppedTyping = () => {
@@ -135,8 +137,8 @@ export default class CommentForm extends React.PureComponent {
         ? <div className='content'>
             <RichTextEditor ref='editor' name='comment' startFocused
               content={text}
-              onBlur={() => updateStore(this.refs.editor.getContent())}
-              onChange={setText}
+              onBlur={() => this.setText(this.refs.editor.getContent())}
+              onChange={ev => this.delaySetText(ev.target.value)}
               onKeyUp={stopTyping}
               onKeyDown={handleKeyDown}/>
             <input type='submit' value='Post' ref='button'

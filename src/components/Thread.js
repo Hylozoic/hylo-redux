@@ -8,7 +8,6 @@ import MessageForm from './MessageForm'
 import A from './A'
 import PeopleTyping from './PeopleTyping'
 import { connect } from 'react-redux'
-
 import { onThreadPage, offThreadPage } from '../actions/threads'
 import { getComments } from '../models/post'
 import { getSocket, socketUrl } from '../client/websockets'

@@ -6,7 +6,7 @@ import validator from 'validator'
 import {
   getCurrentCommunity, defaultInvitationSubject, defaultInvitationMessage
 } from '../models/community'
-import { canInvite } from '../models/currentUser'
+import { canInvite, canModerate } from '../models/currentUser'
 import { closeModal } from '../actions'
 import A from '../components/A'
 import AccessErrorMessage from '../components/AccessErrorMessage'
@@ -200,7 +200,7 @@ export class InviteForm extends React.Component {
       <div className='footer'>
         <a className='button ok' onClick={submit}>Invite</a>
         {standalone && <A to={checklistUrl(community)} onClick={clearEditor} className='skip'>Skip</A>}
-        {allowModerators && <span className='moderator'>
+        {allowModerators && canModerate(currentUser, community) && <span className='moderator'>
           <input type='checkbox' checked={moderator} onChange={update('moderator', true)}/>
           <span className='meta'>Check to invite these people to be moderators of the community.</span>
         </span>}

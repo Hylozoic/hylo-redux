@@ -38,7 +38,7 @@ const editorConfig = {
 @autoproxy(connect((state, { name }) => ({
   typeaheadOptions: get(state, `typeaheadMatches.${name}`)
 }), null, null, {withRef: true}))
-export default class RichTextEditor extends React.Component {
+export default class RichTextEditor extends React.PureComponent {
   static propTypes = {
     onChange: func.isRequired,
     onKeyUp: func,

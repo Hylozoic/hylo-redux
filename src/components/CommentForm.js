@@ -28,7 +28,7 @@ const STOPPED_TYPING_WAIT_TIME = 8000
     pending: state.pending[CREATE_COMMENT]
   })
 }, null, null, {withRef: true})
-export default class CommentForm extends React.Component {
+export default class CommentForm extends React.PureComponent {
   static propTypes = {
     dispatch: func,
     postId: string,

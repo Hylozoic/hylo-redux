@@ -2,11 +2,11 @@ require('../support')
 import { mount } from 'enzyme'
 import React from 'react'
 import CommentForm from '../../../src/components/CommentForm'
-import CREATE_COMMENT from '../../../src/actions'
+import { CREATE_COMMENT } from '../../../src/actions'
 import { configureStore } from '../../../src/store'
 const { object, func } = React.PropTypes
 
-describe.only('CommentForm', () => {
+describe('CommentForm', () => {
   let community = {id: '1', name: 'Foomunity', slug: 'foo'}
 
   let currentUser = {
@@ -37,12 +37,11 @@ describe.only('CommentForm', () => {
     }
   }
 
-  it.only('posts updated tagDescriptions when saveWithTagDescriptions is called', () => {
+  it('posts updated tagDescriptions when saveWithTagDescriptions is called', () => {
     var createCommentParams
     const store = configureStore(state).store
     store.oldDispatch = store.dispatch
     store.dispatch = function (action) {
-      console.log('DISPATCHING:', action)
       if (action.type === CREATE_COMMENT) {
         createCommentParams = action.payload.params
       }
@@ -59,7 +58,7 @@ describe.only('CommentForm', () => {
       thenewtag: {description: 'something', is_default: false}
     })
     expect(createCommentParams).to.deep.equal({
-      text: 'comment text',
+      text: 'some generic comment',
       tagDescriptions: {
         thenewtag: {description: 'something', is_default: false}
       }

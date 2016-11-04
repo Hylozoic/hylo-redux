@@ -45,34 +45,44 @@ export class ConnectedPostList extends React.Component {
     }
   }
 
-  setCheckFreshnessInterval (cachedPosts) {
-    let { dispatch, subject, id, query, omit } = this.props
-    var dispatchCheckFreshness = () => dispatch(checkFreshness(
+  checkForUpdates = currentPosts => {
+    const { dispatch, subject, id, query, omit } = this.props
+
+    this.visibility.visible() && dispatch(checkFreshness(
       subject,
       id,
-      cachedPosts.map(p => pick(p, ['id', 'updated_at'])),
+      (currentPosts || this.props.posts).map(p => pick(p, ['id', 'updated_at'])),
       {limit: 5, offset: 0, omit, ...query}
     ))
 
-    if (this.intervalId) {
-      clearInterval(this.intervalId)
-    }
+    // every time we check for updates, whether it's due to the timeout
+    // elapsing, the contents of the list changing, or the user returning to the
+    // browser tab, we want to reset the timeout so that we don't check too
+    // frequently. this is why we use setTimeout repeatedly instead of
+    // setInterval.
+    this.scheduleCheckForUpdates()
+  }
 
-    this.intervalId = setInterval(dispatchCheckFreshness, 60 * 1000)
+  scheduleCheckForUpdates (currentPosts) {
+    if (this.scheduledCheck) clearTimeout(this.scheduledCheck)
+    this.scheduledCheck = setTimeout(this.checkForUpdates, 60000)
   }
 
   componentDidMount () {
-    this.setCheckFreshnessInterval(this.props.posts)
+    this.scheduleCheckForUpdates(this.props.posts)
+    this.visibility = require('visibility')()
+    this.visibility.on('show', this.checkForUpdates)
   }
 
   componentWillReceiveProps (nextProps) {
     if (differenceBy(nextProps.posts, this.props.posts, 'id').length !== 0) {
-      this.setCheckFreshnessInterval(nextProps.posts)
+      this.scheduleCheckForUpdates(nextProps.posts)
     }
   }
 
   componentWillUnmount () {
-    clearInterval(this.intervalId)
+    clearTimeout(this.scheduledCheck)
+    this.visibility.removeListener('show', this.checkForUpdates)
   }
 
   shouldComponentUpdate (nextProps) {

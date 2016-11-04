@@ -1,7 +1,8 @@
 require('../support')
 import ScrollListener from '../../../src/components/ScrollListener'
-import { renderIntoDocument } from 'react-addons-test-utils'
-import { createElement, spyify, unspyify } from '../../support/helpers'
+import { mount } from 'enzyme'
+import React from 'react'
+import { spyify, unspyify } from '../../support/helpers'
 
 describe('ScrollListener', () => {
   var onBottom
@@ -9,8 +10,7 @@ describe('ScrollListener', () => {
   beforeEach(() => {
     onBottom = spy(() => {})
     spyify(window, 'addEventListener')
-    const component = createElement(ScrollListener, {onBottom})
-    renderIntoDocument(component)
+    mount(<ScrollListener onBottom={onBottom}/>)
     document.body.scrollHeight = 5000
     window.innerHeight = 400
   })

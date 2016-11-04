@@ -202,7 +202,7 @@ export class InviteForm extends React.Component {
         {standalone && <A to={checklistUrl(community)} onClick={clearEditor} className='skip'>Skip</A>}
         {allowModerators && <span className='moderator'>
           <input type='checkbox' checked={moderator} onChange={update('moderator', true)}/>
-          <span className='meta'>Check to invite these people to be moderators of the communtiy.</span>
+          <span className='meta'>Check to invite these people to be moderators of the community.</span>
         </span>}
       </div>
     </span>

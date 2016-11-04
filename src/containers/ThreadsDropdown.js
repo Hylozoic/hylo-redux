@@ -1,10 +1,16 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { isEmpty } from 'lodash'
-import { compact, flow, map, sortBy } from 'lodash/fp'
+import { compact, flow, last, map, sortBy } from 'lodash/fp'
 import cx from 'classnames'
 import { threadUrl } from '../routes'
-import { FETCH_POSTS, setUnseenThreadCount, incrementUnseenThreads, showDirectMessage, updateUserSettings } from '../actions'
+import {
+  FETCH_POSTS,
+  setUnseenThreadCount,
+  incrementUnseenThreads,
+  showDirectMessage,
+  updateUserSettings
+} from '../actions'
 import { appendComment } from '../actions/comments'
 import { appendThread } from '../actions/threads'
 import { fetchPosts } from '../actions/fetchPosts'
@@ -126,15 +132,15 @@ export class ThreadsDropdown extends React.Component {
       </li>}
       {pending && <li className='loading'>Loading...</li>}
       {threads.map(thread => <li key={thread.id}>
-        <Thread thread={thread}/>
+        <ThreadListItem thread={thread}/>
       </li>)}
     </Dropdown>
   }
 }
 
-const Thread = ({ thread }, { currentUser, dispatch }) => {
+const ThreadListItem = ({ thread }, { currentUser, dispatch }) => {
   const { comments, followers, last_read_at, updated_at } = thread
-  const comment = comments[comments.length - 1]
+  const comment = last(sortBy('created_at', comments))
   const unread = !last_read_at || new Date(updated_at) > new Date(last_read_at)
   const follower = followers.find(f => f.id !== currentUser.id)
   if (!comment || !follower) return null
@@ -149,7 +155,7 @@ const Thread = ({ thread }, { currentUser, dispatch }) => {
     </span>
   </A>
 }
-Thread.contextTypes = {dispatch: func, currentUser: object}
+ThreadListItem.contextTypes = {dispatch: func, currentUser: object}
 
 @connect(state => ({
   threads: getThreads(state),
@@ -183,7 +189,7 @@ export class ThreadsModal extends React.Component {
         </li>}
         {pending && <li className='loading'>Loading...</li>}
         {threads.map(thread => <li key={thread.id}>
-          <Thread thread={thread}/>
+          <ThreadListItem thread={thread}/>
         </li>)}
       </ul>
     </Modal>

@@ -37,7 +37,7 @@ describe.only('CommentForm', () => {
     }
   }
 
-  it('posts updated tagDescriptions when saveWithTagDescriptions is called', () => {
+  it.only('posts updated tagDescriptions when saveWithTagDescriptions is called', () => {
     var createCommentParams
     const store = configureStore(state).store
     store.oldDispatch = store.dispatch
@@ -53,6 +53,7 @@ describe.only('CommentForm', () => {
       childContextTypes: {store: object, currentUser: object, dispatch: func}
     })
     const wrappedInstance = node.instance().getWrappedInstance()
+    wrappedInstance.refs.editor.getContent = () => 'some generic comment'
     wrappedInstance.setState({enabled: true})
     wrappedInstance.saveWithTagDescriptions({
       thenewtag: {description: 'something', is_default: false}

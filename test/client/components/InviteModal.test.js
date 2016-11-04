@@ -62,7 +62,8 @@ describe('InviteForm', () => {
     expect(sendInvitationParams).to.deep.equal({
       emails: 'a@2.com,b@b.com',
       subject: defaultInvitationSubject(community.name),
-      message: defaultInvitationMessage(community.name)
+      message: defaultInvitationMessage(community.name),
+      moderator: undefined
     })
   })
 

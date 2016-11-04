@@ -64,7 +64,8 @@ export class InviteForm extends React.Component {
     community: object,
     invitationEditor: object,
     onClose: func,
-    standalone: bool
+    standalone: bool,
+    allowModerators: bool
   }
 
   static contextTypes = {
@@ -110,7 +111,7 @@ export class InviteForm extends React.Component {
   render () {
     const { expanded } = this.state
     const {
-      dispatch, invitationEditor, community, onClose, standalone
+      dispatch, invitationEditor, community, onClose, standalone, allowModerators
     } = this.props
     const { currentUser } = this.context
 
@@ -118,7 +119,7 @@ export class InviteForm extends React.Component {
       return <AccessErrorMessage error={{status: 403}}/>
     }
 
-    let { subject, message, recipients, error } = invitationEditor
+    let { subject, message, moderator, recipients, error } = invitationEditor
 
     let setError = text => dispatch(updateInvitationEditor('error', text))
 
@@ -128,7 +129,11 @@ export class InviteForm extends React.Component {
       dispatch(updateInvitationEditor(field, value))
     }
 
-    const clearEditor = () => dispatch(clearInvitationEditor())
+    const clearEditor = () => {
+      dispatch(clearInvitationEditor())
+      dispatch(updateInvitationEditor('subject', defaultInvitationSubject(community.name)))
+      dispatch(updateInvitationEditor('message', defaultInvitationMessage(community.name)))
+    }
 
     let submit = () => {
       dispatch(updateInvitationEditor('results', null))
@@ -143,7 +148,7 @@ export class InviteForm extends React.Component {
       let badEmails = emails.filter(email => !validator.isEmail(email))
       if (some(id => id, badEmails)) return setError(`These emails are invalid: ${badEmails.join(', ')}`)
 
-      dispatch(sendCommunityInvitation(community.slug, {subject, message, emails}))
+      dispatch(sendCommunityInvitation(community.slug, {subject, message, emails, moderator}))
       .then(({ error }) => {
         if (error) return
         trackEvent(INVITED_COMMUNITY_MEMBERS, {community})
@@ -195,6 +200,10 @@ export class InviteForm extends React.Component {
       <div className='footer'>
         <a className='button ok' onClick={submit}>Invite</a>
         {standalone && <A to={checklistUrl(community)} onClick={clearEditor} className='skip'>Skip</A>}
+        {allowModerators && <span className='moderator'>
+          <input type='checkbox' checked={moderator} onChange={update('moderator', true)}/>
+          <span className='meta'>Check to invite these people to be moderators of the community.</span>
+        </span>}
       </div>
     </span>
   }

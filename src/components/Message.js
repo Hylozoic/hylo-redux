@@ -1,6 +1,5 @@
 import React from 'react'
 import Avatar from './Avatar'
-import A from './A'
 import { humanDate, present } from '../util/text'
 import { sanitize } from 'hylo-utils/text'
 var { func, object } = React.PropTypes
@@ -26,7 +25,7 @@ class Message extends React.Component {
       <Avatar person={person}/>
       <div className='content'>
         <div>
-          <A to={`/u/${person.id}`}><strong className='name'>{sanitize(person.name)}</strong></A>
+          <strong className='name'>{sanitize(person.name)}</strong>
           <span className='date'>{humanDate(message.created_at)}</span>
         </div>
         <div className='text'>

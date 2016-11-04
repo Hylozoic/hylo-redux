@@ -77,7 +77,7 @@ export const Topper = ({ community }) => {
   errors.nameUsed = get('name.unique', communityValidation) === false
   errors.slugUsed = get('slug.unique', communityValidation) === false
 
-  if (!community) community = {}
+  if (!community) community = {slug: ''}
   if (!community.avatar_url) community.avatar_url = defaultAvatar
   if (!community.banner_url) community.banner_url = defaultBanner
 

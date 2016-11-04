@@ -1,6 +1,8 @@
 import { cleanAndStringify, createCacheId } from '../util/caching'
 import {
   FETCH_LEFT_NAV_TAGS,
+  FETCH_TAG,
+  FETCH_TAG_SUMMARY,
   FETCH_TAGS,
   FOLLOW_TAG,
   REMOVE_TAG,
@@ -9,6 +11,25 @@ import {
   SHOW_SHARE_TAG,
   UPDATE_COMMUNITY_TAG
 } from './index'
+
+export function fetchTag (tagName, communityId) {
+  const path = communityId
+    ? `/noo/community/${communityId}/tag/${tagName}`
+    : `/noo/tag/${tagName}`
+  return {
+    type: FETCH_TAG,
+    payload: {api: true, path},
+    meta: {id: communityId || 'all', tagName}
+  }
+}
+
+export function fetchTagSummary (tagName, id) {
+  return {
+    type: FETCH_TAG_SUMMARY,
+    payload: {api: true, path: `/noo/community/${id}/tag/${tagName}/summary`},
+    meta: {tagName, id}
+  }
+}
 
 export function followTag (id, tagName) {
   return {

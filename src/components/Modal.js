@@ -1,6 +1,5 @@
 import React from 'react'
 import Icon from '../components/Icon'
-import { position } from '../util/scrolling'
 import { closeModal } from '../actions'
 // circular import; code smell; refactor?
 import BrowseTopicsModal from '../containers/BrowseTopicsModal'
@@ -13,24 +12,25 @@ import AddLogoModal from '../containers/AddLogoModal'
 import InviteModal from '../containers/InviteModal'
 import PostEditorModal from '../containers/PostEditorModal'
 import { NotificationsModal } from '../containers/Notifications'
+import { ThreadsModal } from '../containers/ThreadsDropdown'
 import cx from 'classnames'
-import { get } from 'lodash'
+import { get } from 'lodash/fp'
 const { array, bool, func, node, object, string, oneOfType } = React.PropTypes
 
 export const modalWrapperCSSId = 'top-level-modal-wrapper'
 const mainColumnWidth = 688 // defined in CSS
 
+// this has to cover the cases:
+//  - desktop, left nav open
+//  - desktop, left nav closed
+//  - mobile
+//
 const modalStyle = isMobile => {
   if (typeof window === 'undefined') return {}
-  const windowWidth = window.innerWidth
-  const pageContent = document.getElementById('cover-image-page-content')
-  const webMargin = pageContent ? position(pageContent).x : (windowWidth - mainColumnWidth) / 2
-  return {
-    marginLeft: isMobile ? 0
-      : webMargin,
-    width: Math.min(mainColumnWidth,
-      get(document.getElementById('main'), 'offsetWidth') || mainColumnWidth)
-  }
+  const main = document.getElementById('main')
+  if (!main) return {} // this should be the case only during tests
+  const marginLeft = Math.max((main.offsetWidth - mainColumnWidth) / 2, 0) + main.offsetLeft
+  return {marginLeft}
 }
 
 export class BareModalWrapper extends React.Component {
@@ -124,9 +124,11 @@ export class ModalWrapper extends React.Component {
         clickToClose = true
         break
       case 'post-editor':
-        modal = <PostEditorModal onCancel={close}/>
+        modal = <PostEditorModal post={get('post', params)} onCancel={close}/>
         clickToClose = true
         break
+      case 'threads':
+        modal = <ThreadsModal onCancel={close}/>
     }
 
     return <BareModalWrapper top={top} onClick={() => clickToClose && close()}>

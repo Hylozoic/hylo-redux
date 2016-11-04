@@ -5,6 +5,7 @@ const { array, func, object } = React.PropTypes
 import cx from 'classnames'
 import MessageSection from './MessageSection'
 import MessageForm from './MessageForm'
+import A from './A'
 import PeopleTyping from './PeopleTyping'
 import { connect } from 'react-redux'
 import { updatePostReadTime } from '../actions/posts'
@@ -83,13 +84,13 @@ export const Header = (props, { currentUser, post }) => {
   const followers = post.followers
   const gt2 = followers.length - 2
   const { id } = currentUser
-  const otherFollowers = filter(followers, f => f.id !== id)
-  const title = otherFollowers.length > 1
-    ? `You, ${followers[0].name}, and ${gt2} other${gt2 === 1 ? '' : 's'}`
-    : `You and ${otherFollowers[0].name}`
+  const others = filter(followers, f => f.id !== id)
 
   return <div className='header'>
-    <div className='title'>{title}</div>
+    <div className='title'>
+      You and <A to={`/u/${others[0].id}`}>{others[0].name}</A>
+      {others.length > 1 && <span>and ${gt2} other{gt2 === 1 ? '' : 's'}</span>}
+    </div>
   </div>
 }
 Header.contextTypes = {post: object, currentUser: object}

@@ -22,7 +22,7 @@ import LinkedPersonSentence from './LinkedPersonSentence'
 import LinkPreview from './LinkPreview'
 import { connect } from 'react-redux'
 import { compose } from 'redux'
-import { navigate } from '../actions'
+import { navigate, showModal } from '../actions'
 import {
   completePost, followPost, removePost, startPostEdit, voteOnPost, pinPost
 } from '../actions/posts'
@@ -65,7 +65,7 @@ class Post extends React.Component {
 
     return <div className={classes}>
       <a name={`post-${post.id}`}></a>
-      <Header communities={communities}/>
+      <Header communities={communities} expanded={expanded}/>
       <p className='title post-section' dangerouslySetInnerHTML={{__html: title}}></p>
       {image && <LazyLoader>
         <img src={image.url} className='post-section full-image'/>
@@ -91,7 +91,7 @@ export default compose(
 
 export const UndecoratedPost = Post // for testing
 
-export const Header = ({ communities }, { post, currentUser, dispatch }) => {
+export const Header = ({ communities, expanded }, { post, currentUser, dispatch }) => {
   const { tag, fulfilled_at } = post
   const person = tag === 'welcome' ? post.relatedUsers[0] : post.user
   const createdAt = new Date(post.created_at)
@@ -99,7 +99,7 @@ export const Header = ({ communities }, { post, currentUser, dispatch }) => {
   const showCheckbox = post.tag === 'request' && (canEdit || fulfilled_at)
 
   return <div className='header'>
-    <Menu/>
+    <Menu expanded={expanded}/>
     <Avatar person={person}/>
     {showCheckbox && <input type='checkbox'
       className='completion-toggle'
@@ -215,7 +215,8 @@ export const Menu = (props, { dispatch, post, currentUser, community }) => {
   const pinned = isPinned(post, community)
   const edit = () => isMobile()
     ? dispatch(navigate(`/p/${post.id}/edit`))
-    : dispatch(startPostEdit(post))
+    : dispatch(startPostEdit(post)) &&
+      props.expanded && dispatch(showModal('post-editor', {post}))
   const remove = () => window.confirm('Are you sure? This cannot be undone.') &&
     dispatch(removePost(post.id))
   const pin = () => dispatch(pinPost(get('slug', community), post.id))
@@ -228,7 +229,7 @@ export const Menu = (props, { dispatch, post, currentUser, community }) => {
     {canModerate(currentUser, community) && <li>
       <a onClick={pin}>{pinned ? 'Unpin post' : 'Pin post'}</a>
     </li>}
-    {canEdit && <li><a onClick={edit}>Edit</a></li>}
+    {canEdit && <li><a className='edit' onClick={edit}>Edit</a></li>}
     {canEdit && <li><a onClick={remove}>Remove</a></li>}
     <li>
       <a onClick={() => dispatch(followPost(post.id, currentUser))}>

@@ -185,7 +185,7 @@ class TopMainMenu extends React.Component {
       {topLinks.slice(1, topLinks.length - hiddenCount).map((link, i) =>
         <LinkItem link={link} key={link.label}/>)}
       {hiddenCount > 0 && <Dropdown triangle className='overflow-menu'
-        openOnHover toggleChildren={<Icon name='More'/>}>
+        toggleChildren={<Icon name='More'/>}>
         {topLinks.slice(-hiddenCount).map((link, i) =>
           <li key={link.label} className={`li-${i}`}>
             <LinkItem link={link}/>

@@ -126,8 +126,7 @@ const PersonProfile = compose(
         Joined {joinDate}
       </p>
       <p className='bio'>{bio}</p>
-      { currentUser &&
-        person.id !== currentUser.id &&
+      {currentUser && person.id !== currentUser.id &&
         hasFeature(currentUser, DIRECT_MESSAGES) &&
         <button
           onClick={() => dispatch(showDirectMessage(person.id, person.name))}

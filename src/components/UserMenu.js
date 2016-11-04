@@ -1,5 +1,5 @@
 import React from 'react'
-import { navigate, logout, showModal } from '../actions'
+import { navigate, logout, showModal, resetTooltips } from '../actions'
 import { makeUrl } from '../util/navigation'
 import { calliOSBridge } from '../client/util'
 import Icon from './Icon'
@@ -53,13 +53,15 @@ class SearchMenuItem extends React.Component {
 }
 
 const UserMenu = ({ slug, newMessageCount, newNotificationCount }, { isMobile, dispatch, currentUser }) => {
-  const { settings: { last_viewed_messages_at } } = currentUser
+  const { settings: { last_viewed_messages_at }, id } = currentUser
   const doLogout = () => {
     calliOSBridge({type: 'logout'})
     dispatch(navigate('/login'))
     dispatch(logout())
     return false
   }
+
+  const showDotBadge = newNotificationCount > 0 || newMessageCount > 0
 
   return <ul className='right'>
     <SearchMenuItem/>
@@ -78,7 +80,7 @@ const UserMenu = ({ slug, newMessageCount, newNotificationCount }, { isMobile, d
         rivalrous='nav' backdrop={isMobile} toggleChildren={
           <div>
             <NonLinkAvatar person={currentUser}/>
-            {newNotificationCount > 0 && <div className='dot-badge'/>}
+            {showDotBadge && <div className='dot-badge'/>}
           </div>
         }>
         <li>
@@ -92,10 +94,22 @@ const UserMenu = ({ slug, newMessageCount, newNotificationCount }, { isMobile, d
             {newNotificationCount > 0 && <span className='badge'>{newNotificationCount}</span>}
           </a>
         </li>
+        {hasFeature(currentUser, DIRECT_MESSAGES) &&
+          <li className='dropdown-threads'>
+            <a onClick={() => dispatch(showModal('threads'))}>
+              <Icon name='Message-Smile'/> Messages
+              {newMessageCount > 0 && <span className='badge'>{newMessageCount}</span>}
+            </a>
+          </li>}
         <li>
           <A to={'/settings'}>
             <Icon name='Settings'/> Settings
           </A>
+        </li>
+        <li>
+          <a onClick={() => dispatch(resetTooltips(id))}>
+            <Icon name='ProjectorScreen'/> Start tour
+          </a>
         </li>
         {isAdmin(currentUser) && <li>
           <A to={'/admin'}>

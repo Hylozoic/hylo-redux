@@ -1,5 +1,6 @@
 import React from 'react'
 import cx from 'classnames'
+import { intercom } from '../config'
 import { prefetch } from 'react-fetcher'
 import { connect } from 'react-redux'
 import { debounce, isEmpty } from 'lodash'
@@ -80,13 +81,12 @@ export default class App extends React.Component {
 
   render () {
     const {
-      children, community, dispatch, leftNavIsOpen, notifierMessages, isMobile,
+      children, community, dispatch, leftNavIsOpen, notifierMessages,
       openModals, tagPopover, currentUser
     } = this.props
 
     const classes = cx({
       leftNavIsOpen,
-      isMobile,
       loggedIn: !!currentUser,
       loggedOut: !currentUser,
       showModal: !isEmpty(openModals)
@@ -104,8 +104,15 @@ export default class App extends React.Component {
         <ModalWrapper key={i}
           bottom={i === 0}
           top={i === openModals.length - 1}
-          type={get('type', modal)}
-          params={get('params', modal)}/>)}
+          type={modal.type}
+          params={modal.params}/>)}
+      <IntercomButton/>
     </div>
   }
+}
+
+const IntercomButton = () => {
+  const href = `mailto:${intercom.appId}@incoming.intercom.io`
+  const id = 'custom-intercom-launcher'
+  return <a {...{id, href}} target='_blank'>?</a>
 }

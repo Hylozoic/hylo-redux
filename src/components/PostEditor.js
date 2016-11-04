@@ -88,7 +88,9 @@ export class PostEditor extends React.Component {
     editingTagDescriptions: bool,
     creatingTagAndDescription: bool,
     postCommunities: array,
-    defaultTags: array
+    defaultTags: array,
+    placeholder: string,
+    onSave: func
   }
 
   static contextTypes = {
@@ -162,27 +164,14 @@ export class PostEditor extends React.Component {
 
   saveIfValid () {
     const self = this._self()
-
-    // this forces a final blur event on TinyMCE
-    const { tagSelector, title } = self.refs
-    tagSelector ? tagSelector.focus() : title.focus()
-
-    self.validate().then(valid => {
-      if (!valid) return
-      // we use setTimeout here to avoid a race condition. the description field
-      // (tinymce) doesn't fire its change event until it loses focus, and
-      // there's an additional delay due to the use of setDelayed.
-      //
-      // so if we click Save immediately after typing in the description
-      // field, we have to wait for events from the description field to be
-      // handled, otherwise the last edit will be lost.
-      setTimeout(() => self.save(), 200)
-    })
+    // make sure the very last change to the details field is not lost
+    self.updateStore({description: self.refs.details.getContent()})
+    return self.validate().then(valid => valid && self.save())
   }
 
   saveWithTagDescriptions = tagDescriptions => {
     this.updateStore({tagDescriptions})
-    this.saveIfValid()
+    return this.saveIfValid()
   }
 
   updatePostTagAndDescription = tagDescriptions => {
@@ -191,14 +180,16 @@ export class PostEditor extends React.Component {
   }
 
   save () {
-    const { dispatch, post, postEdit, id, postCommunities, currentCommunitySlug } = this.props
+    const {
+      dispatch, post, postEdit, id, postCommunities, currentCommunitySlug, onSave
+    } = this.props
     const params = {
       type: this.editorType(),
       ...postEdit,
       ...attachmentParams(post && post.media, postEdit.media)
     }
 
-    dispatch((post ? updatePost : createPost)(id, params, currentCommunitySlug))
+    return dispatch((post ? updatePost : createPost)(id, params, currentCommunitySlug))
     .then(action => {
       if (responseMissingTagDescriptions(action)) {
         return dispatch(showModal('tag-editor', {
@@ -212,6 +203,7 @@ export class PostEditor extends React.Component {
       })
       dispatch(updateCommunityChecklist(currentCommunitySlug))
       this.cancel()
+      if (onSave) return onSave()
     })
   }
 
@@ -284,7 +276,7 @@ export class PostEditor extends React.Component {
 
   render () {
     const {
-      post, postEdit, dispatch, imagePending, saving, id, defaultTags
+      post, postEdit, dispatch, imagePending, saving, id, defaultTags, placeholder
     } = this.props
     const { currentUser } = this.context
     const { description, community_ids, tag, linkPreview } = postEdit
@@ -308,7 +300,7 @@ export class PostEditor extends React.Component {
         <AutosizingTextarea type='text' ref='title' className='title'
           value={name}
           maxLength={120}
-          placeholder={placeholderText(this.editorType())}
+          placeholder={placeholder || placeholderText(this.editorType())}
           onKeyDown={onEnter(this.goToDetails)}
           onChange={event => this.updateTitle(event)}/>
       </div>
@@ -525,7 +517,8 @@ export default class PostEditorWrapper extends React.Component {
     type: string,
     expanded: bool,
     tag: string,
-    onCancel: func
+    onCancel: func,
+    placeholder: string
   }
 
   static contextTypes = {
@@ -542,13 +535,12 @@ export default class PostEditorWrapper extends React.Component {
   }
 
   render () {
-    let { type, post, community, tag, onCancel } = this.props
+    let { expanded, onCancel, type, ...otherProps } = this.props
 
     // if PostEditorWrapper is being initialized with expanded=true, we don't
     // want to set up onCancel, because the entire component will probably be
     // unmounted when canceling takes place
-    onCancel = onCancel ||
-      (this.props.expanded ? () => {} : this.toggle)
+    onCancel = onCancel || (expanded ? () => {} : this.toggle)
 
     if (!this.state.expanded) {
       const { currentUser } = this.context
@@ -557,12 +549,12 @@ export default class PostEditorWrapper extends React.Component {
       return <div className='post-editor post-editor-wrapper' onClick={this.toggle}>
         <PostEditorHeader person={currentUser}/>
         <div className='prompt'>
-          {placeholderText(type)}
+          {otherProps.placeholder || placeholderText(type)}
         </div>
       </div>
     }
 
-    return <PostEditor {...{post, community, type, onCancel, tag}}/>
+    return <PostEditor {...{onCancel, type, ...otherProps}}/>
   }
 }
 

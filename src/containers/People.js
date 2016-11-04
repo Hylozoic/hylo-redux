@@ -17,7 +17,7 @@ import { findError } from '../actions/util'
 import qs from 'querystring'
 import { NonLinkAvatar } from '../components/Avatar'
 import { humanDate } from '../util/text'
-import { tagUrl } from '../routes'
+import { tagUrl, inviteSettingsUrl } from '../routes'
 
 const subject = 'community'
 const fetch = fetchWithCache(fetchPeople)
@@ -112,7 +112,7 @@ export default class People extends React.Component {
       </div>
       <div className='member-controls'>
         {total} member{total === 1 ? '' : 's'}
-        {canInvite(currentUser, community) && <A to={`/invite`}>
+        {canInvite(currentUser, community) && <A to={inviteSettingsUrl(community)}>
           Invite members
         </A>}
       </div>

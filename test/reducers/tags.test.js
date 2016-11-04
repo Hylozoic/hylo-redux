@@ -1,7 +1,8 @@
 require('../support')
 import { tagsByCommunity, tagsByQuery, totalTagsByQuery } from '../../src/reducers/tags'
 import {
-  FETCH_LEFT_NAV_TAGS, FETCH_TAGS, REMOVE_TAG, CREATE_POST, UPDATE_POST, CREATE_TAG_IN_COMMUNITY
+  FETCH_LEFT_NAV_TAGS, FETCH_TAGS, REMOVE_TAG, CREATE_POST, UPDATE_POST, CREATE_TAG_IN_COMMUNITY,
+  FETCH_COMMUNITY
 } from '../../src/actions'
 
 const fetchAction = {
@@ -321,6 +322,40 @@ describe('tagsByCommunity', () => {
       meta: {
         tag: {name: 'thenewtagname', description: 'its good', is_default: true},
         slug: 'zoop'
+      }
+    }
+
+    expect(tagsByCommunity(state, action)).to.deep.equal(expected)
+  })
+
+  it('sets is_default from defaultTags on FETCH_COMMUNITY', () => {
+    const state = {
+      hum: {
+        foo: {name: 'foo', otherStuff: {foo: 'bar'}, followed: true}
+      },
+      wow: {
+        foo: {id: 7, name: 'foo', followed: true},
+        bar: {id: 8, name: 'bar', followed: true},
+        bip: {name: 'bip'}
+      }
+    }
+
+    const expected = {
+      hum: {
+        foo: {name: 'foo', otherStuff: {foo: 'bar'}, followed: true}
+      },
+      wow: {
+        foo: {id: 7, name: 'foo', followed: true, is_default: true},
+        bar: {id: 8, name: 'bar', followed: true, is_default: false},
+        bip: {name: 'bip', is_default: true}
+      }
+    }
+
+    const action = {
+      type: FETCH_COMMUNITY,
+      payload: {
+        slug: 'wow',
+        defaultTags: ['foo', 'bip']
       }
     }
 

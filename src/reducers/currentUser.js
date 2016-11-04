@@ -11,6 +11,7 @@ import {
   LEAVE_COMMUNITY_PENDING,
   LOGIN,
   LOGOUT,
+  RESET_TOOLTIPS,
   SET_UNSEEN_THREAD_COUNT,
   SIGNUP,
   UPDATE_USER_SETTINGS_PENDING,
@@ -106,6 +107,14 @@ export default function (state = null, action) {
       }
     case UPDATE_USER_SETTINGS_PENDING:
       return updateCurrentUser(state, meta.params)
+    case RESET_TOOLTIPS:
+      return {
+        ...state,
+        settings: {
+          ...state.settings,
+          viewedTooltips: {}
+        }
+      }
   }
 
   return state

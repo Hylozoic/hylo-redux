@@ -4,10 +4,10 @@ import {
 import {
   CREATE_COMMUNITY, FETCH_CURRENT_USER, FETCH_LEFT_NAV_TAGS, FETCH_LIVE_STATUS,
   FETCH_TAG, FETCH_TAGS, FETCH_TAG_SUMMARY, FOLLOW_TAG_PENDING, REMOVE_TAG,
-  CREATE_POST, UPDATE_POST, CREATE_TAG_IN_COMMUNITY
+  CREATE_POST, UPDATE_POST, CREATE_TAG_IN_COMMUNITY, FETCH_COMMUNITY
 } from '../actions'
 import { filter, fromPairs, merge, omitBy, toPairs, isEmpty } from 'lodash'
-import { get, pickBy, some } from 'lodash/fp'
+import { get, pickBy, some, includes, mapValues } from 'lodash/fp'
 import qs from 'querystring'
 
 const matchesRemovedTag = (id, slug) => {
@@ -126,6 +126,15 @@ export const tagsByCommunity = (state = {}, action) => {
         [slug]: fromPairs(payload.items.map(tag => [tag.name, tag]))
       }
       return merge({}, state, itemsObj)
+    case FETCH_COMMUNITY:
+      slug = payload.slug
+      return {
+        ...state,
+        [slug]: mapValues(t => ({
+          ...t,
+          is_default: includes(t.name, payload.defaultTags)
+        }), state[slug])
+      }
   }
   return state
 }

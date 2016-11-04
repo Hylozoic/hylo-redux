@@ -124,11 +124,15 @@ const setupPage = (store, id, query, action) => {
   const { dispatch } = store
   if (error) return
   const state = store.getState()
-  const post = state.posts[id]
+  const { currentCommunityId, posts, people } = state
+  const post = posts[id]
   if (!post) return
-  const currentUser = state.people.current
 
-  const communityId = get('community_ids.0', post) || 'all'
+  const currentUser = people.current
+  const { community_ids } = post
+  const communityId = includes(community_ids, currentCommunityId)
+    ? currentCommunityId
+    : (get('0', community_ids) || 'all')
 
   if (payload && !payload.api) {
     const { name, description, media } = payload
@@ -136,7 +140,8 @@ const setupPage = (store, id, query, action) => {
   }
 
   return Promise.all([
-    saveCurrentCommunityId(dispatch, communityId, !!currentUser),
+    communityId !== currentCommunityId &&
+      saveCurrentCommunityId(dispatch, communityId, !!currentUser),
 
     // when this page is clicked into from a post list, fetchPost will cause a
     // cache hit; however, there may be more comments than the 3 that were

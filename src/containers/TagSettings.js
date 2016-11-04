@@ -61,6 +61,8 @@ export default class TagSettings extends React.Component {
     return <div id='topic-settings'>
       <h2>Manage Topics</h2>
       <p className='meta'>
+        When a topic is set as default, it shows up in the topic dropdown menu for new posts,
+        and all new members start out following that topic.
         Removing a topic from this community prevents it from appearing in lists,
         but does not change or erase any posts or comments.
       </p>

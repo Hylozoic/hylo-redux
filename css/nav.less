@@ -215,7 +215,8 @@ nav {
       border-left: 1px solid rgba(0,0,0,.13);
       font-size: 13px;
       margin-top: 6px;
-      overflow-y: visible;
+      overflow-y: scroll;
+      max-height: 80vh;
       box-shadow: 0 6px 12px rgba(0,0,0,0.055);
       .mobile({
         margin-top: 20px;
@@ -283,7 +284,7 @@ nav {
     }
   }
 
-  .dropdown-notifications {
+  .dropdown-notifications, .dropdown-threads {
     .non-mobile({
       display: none;
     });
@@ -337,13 +338,6 @@ nav {
     @media (max-width: (@main-menu-hide-breakpoint - 1)) {
       display: none;
     }
-  }
-}
-
-.isMobile.loggedOut #topNav {
-  #community-menu {
-    float: left;
-    margin-left: 15px;
   }
 }
 
@@ -672,6 +666,13 @@ nav {
   .lazy-loader {
     display: inline-block;
   }
+}
+
+.loggedOut #community-menu {
+  .mobile({
+    float: left;
+    margin-left: 15px;
+  });
 }
 
 .leftNavIsOpen #topNav {

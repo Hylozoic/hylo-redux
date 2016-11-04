@@ -7,8 +7,8 @@ import { get } from 'lodash'
 import { tagUrlComponents } from '../routes'
 import { position } from '../util/scrolling'
 import { nounCount } from '../util/text'
-import { showTagPopover, hideTagPopover, fetchTagSummary, navigate } from '../actions/index'
-import { followTag } from '../actions/tags'
+import { showTagPopover, hideTagPopover, navigate } from '../actions/index'
+import { fetchTagSummary, followTag } from '../actions/tags'
 const { string, object, func, array, number, bool } = React.PropTypes
 
 let canceledPopover

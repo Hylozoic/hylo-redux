@@ -13,6 +13,7 @@ const keys = [
   'GOOGLE_BROWSER_KEY',
   'GOOGLE_CLIENT_ID',
   'HOST',
+  'INTERCOM_APP_ID',
   'LOG_LEVEL',
   'NODE_ENV',
   'SEGMENT_KEY',

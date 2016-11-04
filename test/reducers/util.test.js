@@ -1,6 +1,8 @@
 require('../support')
 import { combineReducers, createStore } from 'redux'
-import { toggleIncludes, handleSetState, composeReducers } from '../../src/reducers/util'
+import {
+  toggleIncludes, handleSetState, composeReducers, mergeList
+} from '../../src/reducers/util'
 import { SET_STATE } from '../../src/actions'
 
 describe('toggleIncludes', () => {
@@ -42,5 +44,51 @@ describe('handleSetState', () => {
       stringReducer: 'default'
     }
     expect(store.getState()).to.deep.equal(expected)
+  })
+})
+
+describe('mergeList', () => {
+  it('works with null initial state', () => {
+    const newItems = [
+      {id: 1, name: 'foo'},
+      {id: 2, name: 'bar'}
+    ]
+    expect(mergeList(null, newItems, 'id')).to.deep.equal({
+      1: {id: 1, name: 'foo'},
+      2: {id: 2, name: 'bar'}
+    })
+  })
+
+  it('preserves existing properties', () => {
+    const initialItems = {
+      1: {id: 1, name: 'foo'},
+      2: {id: 2, name: 'bar', settings: {ok: 'maybe'}},
+      3: {id: 3, name: 'baz'}
+    }
+
+    const newItems = [
+      {id: 1, name: 'foo', settings: {ok: 'yes'}},
+      {id: 2, name: 'bar'}
+    ]
+
+    expect(mergeList(initialItems, newItems, 'id')).to.deep.equal({
+      1: {id: 1, name: 'foo', settings: {ok: 'yes'}},
+      2: {id: 2, name: 'bar', settings: {ok: 'maybe'}},
+      3: {id: 3, name: 'baz'}
+    })
+  })
+
+  it('overrides array values', () => {
+    const initialItems = {
+      1: {id: 1, name: 'foo', panels: ['top', 'bottom']}
+    }
+
+    const newItems = [
+      {id: 1, name: 'foo', panels: ['left', 'right']}
+    ]
+
+    expect(mergeList(initialItems, newItems, 'id')).to.deep.equal({
+      1: {id: 1, name: 'foo', panels: ['left', 'right']}
+    })
   })
 })

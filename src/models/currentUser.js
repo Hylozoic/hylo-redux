@@ -1,6 +1,6 @@
 import { getCommunity, MemberRole } from './community'
 import { curry, find, includes, intersection, isEmpty, maxBy, some } from 'lodash'
-import { get, map } from 'lodash/fp'
+import { eq, flow, get, map } from 'lodash/fp'
 import { same, truthy } from './index'
 import { featureFlags } from '../config'
 
@@ -12,9 +12,13 @@ export const membership = curry((currentUser, community) =>
 
 export const isMember = truthy(membership)
 
+export const isModerator = curry((currentUser, community) =>
+  flow(
+    membership(currentUser), get('role'), eq(MemberRole.MODERATOR)
+  )(community))
+
 export const canModerate = curry((currentUser, community) =>
-  get('role', membership(currentUser, community)) === MemberRole.MODERATOR ||
-    isAdmin(currentUser))
+  !!community && (isModerator(currentUser, community) || isAdmin(currentUser)))
 
 export const canInvite = (currentUser, community) =>
   canModerate(currentUser, community) ||
@@ -24,8 +28,8 @@ export const isAdmin = truthy(get('is_admin'))
 
 export const isTester = user =>
   some([
-    {id: 39, slug: 'hylo'},
-    {id: 1972, slug: 'testmetalab'}
+    {id: '29', slug: 'hylo'},
+    {id: '1972', slug: 'testmetalab'}
   ], membership(user))
 
 export const canEditPost = (currentUser, post) => {

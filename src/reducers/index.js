@@ -55,6 +55,7 @@ import {
   NOTIFY,
   ON_THREAD_PAGE,
   OFF_THREAD_PAGE,
+  REMOVE_COMMUNITY_MEMBER_PENDING,
   REMOVE_NOTIFICATION,
   RESEND_ALL_COMMUNITY_INVITATIONS_PENDING,
   RESET_ERROR,
@@ -247,7 +248,15 @@ const combinedReducers = combineReducers({
   totalInvitations: keyedCounter(FETCH_INVITATIONS, 'total', 'meta.communityId'),
   totaljoinRequests: keyedCounter(FETCH_JOIN_REQUESTS, 'total', 'meta.communityId'),
   totalPostsByQuery: keyedCounter(FETCH_POSTS, 'posts_total'),
-  totalPeopleByQuery: keyedCounter(FETCH_PEOPLE, 'total'),
+
+  totalPeopleByQuery: composeReducers(
+    keyedCounter(FETCH_PEOPLE, 'total'),
+    (state, { type, meta }) => {
+      if (type !== REMOVE_COMMUNITY_MEMBER_PENDING) return state
+      return {...state, [meta.cacheId]: state[meta.cacheId] - 1}
+    }
+  ),
+
   totalSearchResultsByQuery: keyedCounter(SEARCH, 'total'),
   totalTagsByQuery,
 

@@ -13,3 +13,4 @@ public/index.css
 .env.deploy
 npm-debug.log
 .DS_Store
+.nyc_output/

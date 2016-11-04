@@ -22,7 +22,7 @@ describe('optimisticMiddleware', () => {
   })
 
   describe('with a promise payload and meta.optimistic', () => {
-    it('appends a dispatch to SET_STATE on error', () => {
+    it('dispatches SET_STATE on error', () => {
       const action = {
         type: 'FOO',
         payload: new Promise((resolve, reject) => reject('promise failed')),

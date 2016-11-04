@@ -1,15 +1,19 @@
 require('../support')
 import { mocks } from '../../support'
 import { createElement } from '../../support/helpers'
+import React from 'react'
+import { mount } from 'enzyme'
+import { configureStore } from '../../../src/store'
 import Post from '../../../src/components/Post'
 import {
   findRenderedDOMComponentWithClass,
   renderIntoDocument
 } from 'react-addons-test-utils'
+const { object, func } = React.PropTypes
 
 const stripComments = markup => markup.replace(/<!--[^>]*-->/g, '')
 
-let post = {
+const post = {
   id: 'p',
   name: 'i have &quot;something&quot; for you!',
   description: 'it is very special.',
@@ -22,7 +26,7 @@ let post = {
   follower_ids: ['x', 'y']
 }
 
-let state = {
+const state = {
   communities: {
     foo: {id: '1', name: 'Foomunity', slug: 'foo'},
     bar: {id: '2', name: 'Barmunity', slug: 'bar'},
@@ -43,7 +47,7 @@ let state = {
   }
 }
 
-let post2 = {
+const post2 = {
   id: '2',
   name: 'This post is in four different communities!',
   description: "It's just that relevant",
@@ -99,5 +103,23 @@ describe('Post', () => {
     let communities = findRenderedDOMComponentWithClass(node, 'communities')
     let expected = '&nbsp;in <a>Foomunity</a><span> + </span><div class="dropdown post-communities-dropdown" tabindex="99"><a class="dropdown-toggle"><span>3 others</span></a><ul class="dropdown-menu"></ul><span></span></div>'
     expect(stripComments(communities.innerHTML)).to.equal(expected)
+  })
+
+  it('opens PostEditorModal on edit when expanded', () => {
+    const store = configureStore(state).store
+    const node = mount(<Post expanded post={post}/>, {
+      context: {store, dispatch: store.dispatch, currentUser: state.people.current},
+      childContextTypes: {store: object, dispatch: func, currentUser: object}
+    })
+    node.find('.dropdown-toggle').first().simulate('click')
+    node.find('.post-menu .edit').first().simulate('click')
+    const updatedState = store.getState()
+    expect(updatedState.openModals[0].type).to.equal('post-editor')
+    expect(updatedState.openModals[0].params.post).to.contain({
+      name: post.name, description: post.description
+    })
+    expect(updatedState.postEdits[post.id]).to.contain({
+      name: post.name, description: post.description
+    })
   })
 })

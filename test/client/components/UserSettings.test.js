@@ -25,7 +25,7 @@ describe('UserSettings', () => {
 
     const node = mount(<UserSettings {...props}/>, {context: {store}})
     expect(node.find('.section-label').map(n => n.text().trim()))
-    .to.deep.equal(['Profile', 'Account', 'Communities'])
+    .to.deep.equal(['Profile', 'Account', 'Communities', 'Payment Details'])
 
     store.dispatch(toggleUserSettingsSection('communities', true))
 

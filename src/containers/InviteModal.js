@@ -113,7 +113,7 @@ export class InviteForm extends React.Component {
     const {
       dispatch, invitationEditor, community, onClose, standalone, allowModerators
     } = this.props
-    const { currentUser } = this.context
+    const { currentUser } = this.context    
 
     if (!canInvite(currentUser, community)) {
       return <AccessErrorMessage error={{status: 403}}/>

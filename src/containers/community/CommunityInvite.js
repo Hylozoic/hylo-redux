@@ -30,12 +30,11 @@ import copy from 'copy-to-clipboard'
   invitations: state.invitations[params.id],
   joinRequests: state.joinRequests[params.id]
 }))
-export default class CommunitySettings extends React.Component {
+export default class CommunityInvite extends React.Component {
 
   static propTypes = {
     community: object,
     dispatch: func,
-    location: object,
     validation: object,
     invitations: array,
     joinRequests: array

@@ -33,6 +33,7 @@ describe('CommunityInvite', () => {
       invitations: {[community.slug]: [{id: 1}]},
       joinRequests: {[community.slug]: [{id: 1, user: {}}]}
     }).store
+    window.FEATURE_FLAGS = {REQUEST_TO_JOIN_COMMUNITY: 'on'}
   })
 
   it('renders without errors', () => {

@@ -51,7 +51,6 @@ export const newestMembership = currentUser =>
   maxBy(get('memberships', currentUser), 'created_at')
 
 export const hasFeature = (currentUser, key) => {
-  if (process.env.NODE_ENV === 'test') return true
   if (!key) throw new Error("Can't call hasFeature without a key")
   const flag = featureFlags()[key]
   return flag === 'on' || isTester(currentUser) && flag === 'testing'

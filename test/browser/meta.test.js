@@ -16,7 +16,10 @@ describe('browser testing setup', () => {
   })
 
   describe('rendering a React component', () => {
-    before(() => useTestFileScaffold('meta'))
+    before(function () {
+      this.timeout(5000)
+      return useTestFileScaffold('meta')
+    })
     after(() => removeTestFile())
 
     it('works', function () {

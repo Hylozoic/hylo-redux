@@ -55,7 +55,7 @@ export default class CommentForm extends React.Component {
     const { dispatch, postId, commentId, newComment, close, pending } = this.props
     if (event) event.preventDefault()
     if (!this.state.enabled || pending) return
-    const text = (this.refs.editor.getContent()).replace(/<p>&nbsp;<\/p>$/m, '')
+    const text = this.refs.editor.getContent().replace(/<p>&nbsp;<\/p>$/m, '')
     if (!text || textLength(text) < 2) return false
 
     const tagDescriptions = newTagDescriptions || this.state.tagDescriptions

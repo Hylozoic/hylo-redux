@@ -1,6 +1,8 @@
 import { createWriteStream, writeFileSync, unlinkSync } from 'fs'
 import nightmare from 'nightmare'
 import browserify from 'browserify'
+import { omit } from 'lodash'
+import { randomBytes } from 'crypto'
 
 const testFilePath = '/tmp/hylo-redux-test.html'
 const testBundlePath = '/tmp/hylo-redux-test.js'
@@ -16,21 +18,25 @@ export const useTestFileScaffold = name =>
   createBundle(`test/browser/support/scaffolds/${name}.js`)
   .then(() => {
     writeTestFile(`<html>
-    <body></body>
+    <body><div id="root"></div></body>
     <script type='text/javascript' src='file://${testBundlePath}'></script>
     </html>`)
   })
 
-export const createBundle = filename => {
-  return new Promise((resolve, reject) =>
+export const createBundle = filename =>
+  new Promise((resolve, reject) => {
+    const startTime = new Date() // eslint-disable-line no-unused-vars
     browserify({entries: [filename]})
     .transform('babelify')
     .transform('envify')
     .on('error', reject)
     .bundle()
     .pipe(createWriteStream(testBundlePath))
-    .on('finish', () => resolve()))
-}
+    .on('finish', () => {
+      // console.log(`bundled ${filename} in ${new Date() - startTime}ms`)
+      resolve()
+    })
+  })
 
 export const removeTestFile = () => {
   try {
@@ -40,10 +46,46 @@ export const removeTestFile = () => {
   }
 }
 
-export const loadTestFile = (beforeGoto) => {
-  const n = nightmare()
-  if (typeof beforeGoto === 'function') beforeGoto(n)
+export const loadTestFile = (options = {}) => {
+  const n = nightmare(omit(options, 'before'))
+  if (typeof options.before === 'function') options.before(n)
   return n.goto('file://' + testFilePath)
+}
+
+export class TestRunner {
+  constructor (options = {}) {
+    this.options = options
+    this.mare = nightmare(omit(options, 'before'))
+
+    this.log = []
+    this.mare.on('console', (type, message) => {
+      if (type === 'log') return this.log.push(message)
+      console.log(`${type}: ${message}`)
+    })
+  }
+
+  start () {
+    const { scaffold } = this.options
+    return Promise.resolve(scaffold && useTestFileScaffold(scaffold))
+    .then(() => this.mare.goto('file://' + testFilePath))
+  }
+
+  stop () {
+    const random = randomBytes(8).toString('hex')
+    const filename = `./.nyc_output/${random}.json`
+    return this.mare.evaluate(() => window.__coverage__)
+    .end()
+    .then(coverage => writeFileSync(filename, JSON.stringify(coverage)))
+    .then(() => removeTestFile())
+  }
+
+  wait (...args) {
+    return this.mare.wait(...args)
+  }
+
+  evaluate (...args) {
+    return this.mare.wait(...args)
+  }
 }
 
 require('../support')

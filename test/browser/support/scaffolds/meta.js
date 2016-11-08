@@ -16,4 +16,4 @@ class TestComponent extends React.Component {
   }
 }
 
-render(<TestComponent/>, document.body)
+render(<TestComponent/>, document.getElementById('root'))

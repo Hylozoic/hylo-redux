@@ -28,8 +28,7 @@ const getThreads = state =>
       return {...denormalizedPost(post, state), comments}
     }),
     compact,
-    sortBy(t => -1 * new Date(t.updated_at),
-  )
+    sortBy(t => -1 * new Date(t.updated_at))
   )(state.postsByQuery.threads)
 
 @connect((state, props) => ({

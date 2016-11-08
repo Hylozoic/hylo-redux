@@ -64,7 +64,6 @@ export default class CommentForm extends React.PureComponent {
       creating: false,
       saveParent: this.saveWithTagDescriptions
     }))
-
     if (newComment) {
       dispatch(createComment(postId, text, tagDescriptions))
       .then(action => {

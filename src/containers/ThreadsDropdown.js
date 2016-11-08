@@ -42,7 +42,7 @@ const getThreads = state =>
   pending: state.pending[FETCH_POSTS],
   openedThreadId: state.openedThreadId
 }))
-export class ThreadsDropdown extends React.Component {
+export default class ThreadsDropdown extends React.Component {
   static propTypes = {
     openedThreadId: string,
     threads: array,

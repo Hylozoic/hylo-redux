@@ -3,6 +3,7 @@ import { mount } from 'enzyme'
 import React from 'react'
 import CommunityPosts from '../../../src/containers/community/CommunityPosts'
 import { configureStore } from '../../../src/store'
+import { MemberRole } from '../../../src/models/community'
 
 const community = {
   id: '1',
@@ -16,7 +17,8 @@ const currentUser = {
   id: '5',
   memberships: {
     [community.slug]: {
-      community_id: community.id
+      community_id: community.id,
+      role: MemberRole.MODERATOR
     }
   }
 }

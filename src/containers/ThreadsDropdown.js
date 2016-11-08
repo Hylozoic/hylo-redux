@@ -28,7 +28,8 @@ const getThreads = state =>
       return {...denormalizedPost(post, state), comments}
     }),
     compact,
-    sortBy(t => -1 * new Date(t.updated_at))
+    sortBy(t => -1 * new Date(t.updated_at),
+  )
   )(state.postsByQuery.threads)
 
 @connect((state, props) => ({
@@ -36,7 +37,7 @@ const getThreads = state =>
   pending: state.pending[FETCH_POSTS],
   openedThreadId: state.openedThreadId
 }))
-export class ThreadsDropdown extends React.Component {
+export default class ThreadsDropdown extends React.Component {
   static propTypes = {
     openedThreadId: string,
     threads: array,

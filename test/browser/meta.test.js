@@ -7,7 +7,8 @@ describe('browser testing setup', () => {
     before(() => writeTestFile(`<html><body>hello world!</body></html>`))
     after(() => removeTestFile())
 
-    it('works', () => {
+    it('works', function () {
+      this.timeout(5000)
       return loadTestFile()
       .evaluate(() => document.body.textContent)
       .end()
@@ -23,6 +24,7 @@ describe('browser testing setup', () => {
     after(() => removeTestFile())
 
     it('works', function () {
+      this.timeout(5000)
       return loadTestFile()
       .evaluate(() => document.querySelector('span').textContent)
       .end()

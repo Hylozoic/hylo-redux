@@ -5,7 +5,7 @@ import { VelocityTransitionGroup } from 'velocity-react'
 import { position } from '../util/scrolling'
 import { findChildLink, dispatchEvent } from '../util'
 import { KeyControlledList } from './KeyControlledList'
-const { array, bool, func, object, string, number } = React.PropTypes
+const { array, bool, func, object, string, number, oneOfType } = React.PropTypes
 
 const DROPDOWN_OPENED = 'dropdown-opened'
 
@@ -30,7 +30,8 @@ export default class Dropdown extends React.Component {
     rivalrous: string,
     keyControlled: bool,
     tabIndex: number,
-    onChange: func
+    onChange: func,
+    insteadOfOpening: oneOfType([func, bool])
   }
 
   static defaultProps = {
@@ -110,7 +111,7 @@ export default class Dropdown extends React.Component {
   render () {
     const {
       toggleChildren, children, alignRight, backdrop, triangle, openOnHover, id,
-      keyControlled, tabIndex
+      keyControlled, tabIndex, insteadOfOpening
     } = this.props
     const { hoverOpened } = this.state
     const { isMobile } = this.context
@@ -135,7 +136,7 @@ export default class Dropdown extends React.Component {
 
     return <div {...{id, className, tabIndex}} ref='parent'
       onKeyDown={this.handleKeys}>
-      <a className='dropdown-toggle' onClick={this.toggle}
+      <a className='dropdown-toggle' onClick={insteadOfOpening || this.toggle}
         onMouseEnter={ev => openOnHover && this.toggle(ev, 'hover')}>
         {toggleChildren}
       </a>

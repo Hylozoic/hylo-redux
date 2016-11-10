@@ -2,20 +2,19 @@ import React from 'react'
 import cx from 'classnames'
 import { nextPath } from '../util/navigation'
 import { merge } from 'lodash'
-import { filter, flow, get, map, sortBy } from 'lodash/fp'
-import { same } from '../models'
+import { flow, get, map, sortBy } from 'lodash/fp'
 import { IndexA, A } from './A'
 import Dropdown from './Dropdown'
 import LazyLoader from './LazyLoader'
 import { assetUrl } from '../util/assets'
+import { navigate } from '../actions'
 const { object, func, bool } = React.PropTypes
 
 const getMenuItems = (currentUser, firstItem) =>
   [firstItem].concat(flow(
     get('memberships'),
     sortBy(m => -Date.parse(m.last_viewed_at || '2001-01-01')),
-    map('community'),
-    firstItem.isNetwork ? i => i : filter(c => !same('id', firstItem, c))
+    map('community')
   )(currentUser))
 
 export const allCommunities = () => ({
@@ -26,7 +25,8 @@ export const allCommunities = () => ({
 
 const CommunityMenu = ({ network, community }, { isMobile, dispatch, currentUser, location }) => {
   // don't show All Communities if the user is in only one
-  if (get('memberships.length', currentUser) === 1 && !community.id) {
+  const onlyOneCommunity = get('memberships.length', currentUser) === 1
+  if (onlyOneCommunity && !community.id) {
     community = currentUser.memberships[0].community
   }
   const firstItem = network ? merge(network, {isNetwork: true}) : community
@@ -47,6 +47,8 @@ const CommunityMenu = ({ network, community }, { isMobile, dispatch, currentUser
     ? <img src={currentItem.avatar_url}/>
     : <span className='caret'/>
 
+  const visitCommunity = () => dispatch(navigate(`/c/${community.slug}`))
+
   return <div id='community-menu'>
     <IndexA to={conversationsUrl}>
       <img src={currentItem.avatar_url}/>
@@ -54,7 +56,8 @@ const CommunityMenu = ({ network, community }, { isMobile, dispatch, currentUser
         {currentItem.name}
       </span>
     </IndexA>
-    <Dropdown backdrop triangle toggleChildren={toggle} rivalrous='nav'>
+    <Dropdown backdrop triangle toggleChildren={toggle} rivalrous='nav'
+      insteadOfOpening={onlyOneCommunity && visitCommunity}>
       <li>
         <ul className='inner-list dropdown-menu'>
           {menuItems.length > 1 && <li>

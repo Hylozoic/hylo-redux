@@ -23,6 +23,7 @@ const Html = props => {
       {map(metaTags, (val, key) => <meta property={key} content={val} key={key} />)}
       <script type='text/javascript' src='https://use.typekit.net/npw4ouq.js'></script>
       <script type='text/javascript'>{`try{Typekit.load({async:true});}catch(e){}`}</script>
+      {isProd && <script src='//cdn.optimizely.com/js/2520710496.js'></script>}
     </head>
     <body>
       <div id='app' dangerouslySetInnerHTML={{__html: markup}}></div>

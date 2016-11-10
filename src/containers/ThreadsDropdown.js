@@ -25,6 +25,9 @@ import { getSocket, socketUrl } from '../client/websockets'
 import { truncate } from '../util/text'
 import { Modal } from '../components/Modal'
 
+const setLastViewedToNow = () =>
+  updateUserSettings({settings: {last_viewed_messages_at: new Date().toISOString()}})
+
 const getThreads = state =>
   flow(
     map(id => {
@@ -113,7 +116,7 @@ export default class ThreadsDropdown extends React.Component {
     const { dispatch } = this.context
 
     const onOpen = () => {
-      dispatch(updateUserSettings({settings: {last_viewed_messages_at: new Date().toISOString()}}))
+      dispatch(setLastViewedToNow())
       this.setState({ open: true })
     }
     const onClose = () => this.setState({ open: false })
@@ -171,7 +174,9 @@ export class ThreadsModal extends React.Component {
   }
 
   componentDidMount () {
-    this.props.dispatch(fetchPosts({cacheId: 'threads', subject: 'threads'}))
+    const { dispatch } = this.props
+    dispatch(fetchPosts({cacheId: 'threads', subject: 'threads'}))
+    dispatch(setLastViewedToNow())
   }
 
   render () {

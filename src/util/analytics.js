@@ -1,4 +1,5 @@
-import { get, partial } from 'lodash'
+import { partial } from 'lodash'
+import { get } from 'lodash/fp'
 import { mostRecentCommunity } from '../models/person'
 import moment from 'moment-timezone'
 
@@ -6,6 +7,7 @@ import moment from 'moment-timezone'
 export const ADDED_COMMUNITY = 'Add community'
 export const EDITED_USER_SETTINGS = 'Edit user settings'
 export const INVITED_COMMUNITY_MEMBERS = 'Invited community members'
+export const SEARCHED = 'Search'
 
 // These strings correspond to the names of events in Mixpanel with historical
 // data, so they should be changed with care
@@ -44,6 +46,7 @@ export function trackEvent (eventName, options = {}) {
       track({post_tag: tag, community: community.name})
       break
     case CLICKTHROUGH:
+    case SEARCHED:
       track({community, ...otherOptions})
       break
     case EDITED_USER_SETTINGS:
@@ -63,6 +66,10 @@ export function trackEvent (eventName, options = {}) {
   return Promise.resolve()
 }
 
+export const trackSearch = (term, type, community) => {
+  trackEvent(SEARCHED, {community: get('name', community), term, type})
+}
+
 export const identify = person => {
   if (!person) return
 
@@ -72,8 +79,8 @@ export const identify = person => {
 
   window.analytics.identify(id, {
     email, name, post_count, createdAt: created_at,
-    provider: get(account, 'provider_key'),
-    community: get(community, 'name'),
+    provider: get('provider_key', account),
+    community: get('name', community),
     'Signup Week': moment.tz(created_at, 'UTC').startOf('week').toISOString()
   })
 }

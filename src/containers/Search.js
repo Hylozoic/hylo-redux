@@ -4,7 +4,8 @@ import { connect } from 'react-redux'
 import { connectedListProps, fetchWithCache, refetch } from '../util/caching'
 import { makeUrl } from '../util/navigation'
 import { navigate, search } from '../actions'
-import { debounce, get, isEmpty } from 'lodash'
+import { debounce, isEmpty } from 'lodash'
+import { get } from 'lodash/fp'
 import Select from '../components/Select'
 import Comment from '../components/Comment'
 import Avatar from '../components/Avatar'
@@ -15,6 +16,7 @@ import CoverImagePage from '../components/CoverImagePage'
 import { commentUrl } from '../routes'
 import decode from 'ent/decode'
 import { denormalizedComment } from '../models/comment'
+import { trackSearch } from '../util/analytics'
 const { array, bool, func, number, object } = React.PropTypes
 
 const types = [
@@ -42,7 +44,7 @@ export default class Search extends React.Component {
 
   constructor (props) {
     super(props)
-    this.state = {textInput: get(props, 'location.query.q')}
+    this.state = {textInput: get('location.query.q', props)}
   }
 
   componentWillReceiveProps (nextProps) {
@@ -50,6 +52,24 @@ export default class Search extends React.Component {
     if (this.props.location.query.q !== newQ) {
       this.setState({textInput: newQ})
     }
+  }
+
+  trackSearch (prevProps) {
+    const { location: { query } } = this.props
+    if (!query.q) return
+    if (prevProps) {
+      const prevQuery = prevProps.location.query
+      if (prevQuery.q === query.q && prevQuery.type === query.type) return
+    }
+    trackSearch(query.q, query.type || 'everything')
+  }
+
+  componentDidMount () {
+    this.trackSearch()
+  }
+
+  componentDidUpdate (prevProps) {
+    this.trackSearch(prevProps)
   }
 
   updateSearch = debounce(opts => {
@@ -140,7 +160,7 @@ const CommentResult = connect((state, { comment }) => ({
   comment: denormalizedComment(comment, state)
 }))(({ comment, dispatch }) => {
   const { post } = comment
-  const welcomedPerson = get(post, 'relatedUsers.0')
+  const welcomedPerson = get('relatedUsers.0', post)
   const url = commentUrl(comment)
   const visit = () => dispatch(navigate(url))
   return <div className='comment-result'>

@@ -18,6 +18,7 @@ import qs from 'querystring'
 import { NonLinkAvatar } from '../components/Avatar'
 import { humanDate } from '../util/text'
 import { tagUrl, inviteSettingsUrl } from '../routes'
+import { trackSearch } from '../util/analytics'
 
 const subject = 'community'
 const fetch = fetchWithCache(fetchPeople)
@@ -65,10 +66,28 @@ export default class People extends React.Component {
     }
   }
 
+  trackSearch (prevProps) {
+    const { location: { query } } = this.props
+    if (!query.search) return
+    if (prevProps) {
+      const prevQuery = prevProps.location.query
+      if (prevQuery.search === query.search) return
+    }
+    trackSearch(query.search, 'members', this.props.community)
+  }
+
+  componentDidMount () {
+    this.trackSearch()
+  }
+
+  componentDidUpdate (prevProps) {
+    this.trackSearch(prevProps)
+  }
+
   updateQuery = debounce(opts => {
     let { dispatch, location } = this.props
     dispatch(refetch(opts, location))
-  }, 200)
+  }, 500)
 
   render () {
     const {

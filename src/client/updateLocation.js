@@ -15,6 +15,7 @@ const updateLocation = opts => location => {
   match({routes, location}, (error, redirectLocation, props) => {
     if (redirectLocation) return history.replace(redirectLocation)
     if (error) return console.error(error)
+    let sameLocation
 
     // WEIRD: when the logout action is dispatched, it triggers a history event
     // even though the location didn't change. i don't know why that happens,
@@ -22,22 +23,28 @@ const updateLocation = opts => location => {
     // one.
     if (prevLocation && location.pathname === prevLocation.pathname &&
       isEqual(location.search, prevLocation.search)) {
-      debug('suppressed a redundant history event')
-      return
+      sameLocation = true
+    }
+
+    const components = props.routes.map(r => r.component)
+    const locals = localsForPrefetch(props, store)
+
+    const loadData = () =>
+      // don't prefetch for the first route after page load, because it's all
+      // been loaded on the server already
+      Promise.resolve(prevLocation && getPrefetchedData(components, locals))
+      .then(() => getDeferredData(components, locals))
+      .then(() => prevLocation = location)
+
+    if (sameLocation) {
+      debug('reloading data for current page')
+      return loadData()
     }
 
     identify(denormalizedCurrentUser(store.getState()))
     window.analytics.page()
-
     calliOSBridge({type: 'navigated', pathname: location.pathname})
-
-    // don't prefetch for the first route after page load, because it's all been
-    // loaded on the server already
-    const components = props.routes.map(r => r.component)
-    const locals = localsForPrefetch(props, store)
-    Promise.resolve(prevLocation && getPrefetchedData(components, locals))
-    .then(() => getDeferredData(components, locals))
-    .then(() => prevLocation = location)
+    loadData()
   })
 }
 

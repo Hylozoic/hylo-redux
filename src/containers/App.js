@@ -9,8 +9,8 @@ import Notifier from '../components/Notifier'
 import LiveStatusPoller from '../components/LiveStatusPoller'
 import PageTitleController from '../components/PageTitleController'
 import TagPopover from '../components/TagPopover'
-import { removeNotification, toggleLeftNav } from '../actions'
-import { iOSAppVersion, isMobile as testIsMobile } from '../client/util'
+import { removeNotification, toggleLeftNav, navigate } from '../actions'
+import { iOSAppVersion, isMobile as testIsMobile, calliOSBridge } from '../client/util'
 import { ModalWrapper } from '../components/Modal'
 import { setMobileDevice } from '../actions'
 import { getCurrentCommunity } from '../models/community'
@@ -72,6 +72,12 @@ export default class App extends React.Component {
     const version = Number(iOSAppVersion())
     if (version < 1.7) {
       window.location = 'https://www.hylo.com/newapp'
+    }
+
+    if (version >= 1.9) {
+      calliOSBridge({type: 'loaded'}, path => {
+        if (path) this.props.dispatch(navigate(path))
+      })
     }
 
     window.addEventListener('resize', debounce(event => {

@@ -17,7 +17,7 @@ export default class ExpandedPostModal extends React.Component {
 
   componentDidMount () {
     const { commentId, post: { id }, dispatch } = this.props
-    dispatch(fetchComments(id, {offset: 3}))
+    dispatch(fetchComments(id, {refresh: true}))
     .then(() => {
       if (commentId) {
         const wrapper = document.getElementById(modalWrapperCSSId)

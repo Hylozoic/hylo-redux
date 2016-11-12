@@ -10,9 +10,8 @@ import {
 import { get } from 'lodash/fp'
 
 export function fetchComments (postId, opts = {}) {
-  // these are ignored since the comment API doesn't do pagination yet
-  let limit = opts.limit || 1000
-  let offset = opts.offset || 0
+  let { limit, refresh, beforeId, newest } = opts
+  if (!limit) limit = 1000
 
   return {
     type: FETCH_COMMENTS,
@@ -20,7 +19,7 @@ export function fetchComments (postId, opts = {}) {
     meta: {
       id: postId,
       subject: 'post',
-      cache: {id: postId, bucket: 'commentsByPost', limit, offset, array: true},
+      cache: {id: postId, bucket: 'commentsByPost', limit, refresh, array: true},
       addDataToStore: {
         people: get('people')
       }

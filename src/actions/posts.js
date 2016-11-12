@@ -38,8 +38,9 @@ export function createPost (id, params, slug) {
   }
 }
 
-export function fetchPost (id) {
-  let querystring = cleanAndStringify({comments: 1, votes: 1, children: 1})
+export function fetchPost (id, opts = {}) {
+  let querystring = opts.minimal ? ''
+    : cleanAndStringify({comments: 1, votes: 1, children: 1})
 
   return {
     type: FETCH_POST,

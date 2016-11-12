@@ -9,11 +9,11 @@ import { findError } from '../actions/util'
 import AccessErrorMessage from '../components/AccessErrorMessage'
 import Thread from '../components/Thread'
 import { denormalizedPost, getComments, getPost } from '../models/post'
-const { array, bool, func, object, string } = React.PropTypes
+const { array, bool, func, object } = React.PropTypes
 
 @prefetch(({ dispatch, params: { id } }) =>
-  dispatch(fetchPost(id))
-  .then(({ error, payload }) => !error && payload && fetchComments(id)))
+  dispatch(fetchPost(id, {minimal: true}))
+  .then(() => dispatch(fetchComments(id, {refresh: true, newest: true, limit: 20}))))
 @connect((state, { params: { id } }) => {
   const post = getPost(id, state)
   return {

@@ -4,6 +4,7 @@ import {
   CREATE_NETWORK,
   CREATE_POST,
   FETCH_ACTIVITY,
+  FETCH_COMMENTS,
   FETCH_COMMUNITIES,
   FETCH_INVITATIONS,
   FETCH_PEOPLE,
@@ -37,6 +38,7 @@ export default function pending (state = {}, action) {
     toggle(SEND_COMMUNITY_INVITATION) ||
     toggle(SEND_COMMUNITY_TAG_INVITATION) ||
     toggle(FETCH_INVITATIONS) ||
+    toggle(FETCH_COMMENTS) ||
     toggle(FETCH_COMMUNITIES) ||
     toggle(FETCH_TAGS) ||
     toggle(SEARCH) ||

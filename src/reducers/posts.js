@@ -101,7 +101,7 @@ export default function (state = {}, action) {
         [id]: {...post, follower_ids: without(post.follower_ids, personId)}
       }
     case APPEND_COMMENT:
-      if (!post) return state 
+      if (!post) return state
       return updatePostProps(state, id, {
         numComments: (post.numComments || 0) + 1,
         updated_at: new Date().toISOString()

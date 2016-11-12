@@ -25,6 +25,7 @@ export function cacheMiddleware (store) {
           : state[bucket]))
 
     if (array) {
+      if (!offset) offset = 0
       if (hit && hit.length > offset) {
         debug(`cache hit: ${bucket}[${id}][${offset}] + ${limit}`)
         return Promise.resolve({...action, payload: hit, cacheHit: true})

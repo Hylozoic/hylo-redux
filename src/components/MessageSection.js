@@ -5,9 +5,7 @@ import cx from 'classnames'
 import Message from './Message'
 import { position } from '../util/scrolling'
 import { findDOMNode } from 'react-dom'
-import { appendComment } from '../actions/comments'
 import { updatePostReadTime } from '../actions/posts'
-import { getSocket, socketUrl } from '../client/websockets'
 
 export default class MessageSection extends React.Component {
   static propTypes = {
@@ -22,25 +20,25 @@ export default class MessageSection extends React.Component {
     dispatch: func
   }
 
-  constructor(props) {
+  constructor (props) {
     super(props)
     this.state = {
       scrolledUp: false
     }
   }
 
-  componentDidMount() {
+  componentDidMount () {
     this.scrollToBottom()
   }
 
-  componentDidUpdate(prevProps) {
+  componentDidUpdate (prevProps) {
     const messagesLength = this.props.messages.length
     const oldMessagesLength = prevProps.messages.length
     const { scrolledUp } = this.state
     if (!scrolledUp && messagesLength !== oldMessagesLength) this.scrollToBottom()
   }
 
-  scrollToMessage(id) {
+  scrollToMessage (id) {
     const message = findDOMNode(this['message' + id])
     const messageTop = position(message, this.list).y -
       document.querySelector('.thread .header').offsetHeight -
@@ -65,13 +63,13 @@ export default class MessageSection extends React.Component {
     this.markAsRead()
   }
 
-  markAsRead() {
+  markAsRead () {
     const { thread } = this.props
     const { dispatch } = this.context
     dispatch(updatePostReadTime(thread.id))
   }
 
-  render() {
+  render () {
     const { thread } = this.props
     const messages = sortBy(this.props.messages || [], 'created_at')
     const { currentUser } = this.context

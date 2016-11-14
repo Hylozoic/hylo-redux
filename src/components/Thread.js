@@ -34,7 +34,6 @@ export default class Thread extends React.Component {
   }
 
   setupForThread (post) {
-    this.markAsRead(post)
     this.props.dispatch(onThreadPage(post.id))
     if (this.socket) {
       this.socket.post(socketUrl(`/noo/post/${post.id}/subscribe`)) // for people typing
@@ -66,11 +65,6 @@ export default class Thread extends React.Component {
     }
   }
 
-  markAsRead (post) {
-    const { dispatch } = this.props
-    dispatch(updatePostReadTime(post.id))
-  }
-
   render () {
     const { post, messages, pending, dispatch } = this.props
     const classes = cx('thread')
@@ -83,7 +77,7 @@ export default class Thread extends React.Component {
 
     return <div className={classes}>
       <Header />
-      <MessageSection {...{messages, pending}} onScrollToTop={loadMore} ref='messageSection'/>
+      <MessageSection {...{messages, pending}} thread={post} onScrollToTop={loadMore} ref='messageSection'/>
       <PeopleTyping showNames/>
       <MessageForm postId={post.id} ref='form'/>
     </div>

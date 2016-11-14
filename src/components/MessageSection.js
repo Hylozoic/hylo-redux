@@ -5,12 +5,16 @@ import cx from 'classnames'
 import Message from './Message'
 import { position } from '../util/scrolling'
 import { findDOMNode } from 'react-dom'
+import { appendComment } from '../actions/comments'
+import { updatePostReadTime } from '../actions/posts'
+import { getSocket, socketUrl } from '../client/websockets'
 
 export default class MessageSection extends React.Component {
   static propTypes = {
     messages: array,
     onScrollToTop: func,
-    pending: bool
+    pending: bool,
+    thread: object
   }
 
   static contextTypes = {
@@ -18,23 +22,25 @@ export default class MessageSection extends React.Component {
     dispatch: func
   }
 
-  constructor (props) {
+  constructor(props) {
     super(props)
     this.state = {
       scrolledUp: false
     }
   }
 
-  componentDidMount () {
-    this._scrollToBottom()
+  componentDidMount() {
+    this.scrollToBottom()
   }
 
-  componentDidUpdate () {
+  componentDidUpdate(prevProps) {
+    const messagesLength = this.props.messages.length
+    const oldMessagesLength = prevProps.messages.length
     const { scrolledUp } = this.state
-    if (!scrolledUp) this._scrollToBottom()
+    if (!scrolledUp && messagesLength !== oldMessagesLength) this.scrollToBottom()
   }
 
-  scrollToMessage (id) {
+  scrollToMessage(id) {
     const message = findDOMNode(this['message' + id])
     const messageTop = position(message, this.list).y -
       document.querySelector('.thread .header').offsetHeight -
@@ -42,29 +48,46 @@ export default class MessageSection extends React.Component {
     this.list.scrollTop = messageTop
   }
 
-  _handleScroll = throttle(target => {
+  handleScroll = throttle(target => {
     const { scrolledUp } = this.state
     const { scrollTop, scrollHeight, offsetHeight } = target
     const onBottom = scrollTop > scrollHeight - offsetHeight
-    if (!onBottom && !scrolledUp) this.setState({scrolledUp: true})
-    else if (onBottom && scrolledUp) this.setState({scrolledUp: false})
-
+    if (!onBottom && !scrolledUp) this.setState({ scrolledUp: true })
+    else if (onBottom && scrolledUp) {
+      this.setState({ scrolledUp: false })
+      this.markAsRead()
+    }
     if (scrollTop <= 20 && this.props.onScrollToTop) this.props.onScrollToTop()
   }, 500, {trailing: true})
 
-  _scrollToBottom () {
+  scrollToBottom = () => {
     this.list.scrollTop = this.list.scrollHeight
+    this.markAsRead()
   }
 
-  render () {
+  markAsRead() {
+    const { thread } = this.props
+    const { dispatch } = this.context
+    dispatch(updatePostReadTime(thread.id))
+  }
+
+  render() {
+    const { thread } = this.props
     const messages = sortBy(this.props.messages || [], 'created_at')
+    const { currentUser } = this.context
+    const { scrolledUp } = this.state
+
+    const latestMessage = messages.length && messages[messages.length - 1]
+    const latestFromOther = latestMessage && latestMessage.user_id !== currentUser.id
+    const newFromOther = latestFromOther && thread.last_read_at && new Date(latestMessage.created_at) > new Date(thread.last_read_at)
 
     return <div className={cx('messages-section', {empty: isEmpty(messages)})}
       ref={list => this.list = list}
-      onScroll={e => this._handleScroll(e.target)}>
+      onScroll={e => this.handleScroll(e.target)}>
       {this.props.pending && <div className='message'>Loading...</div>}
       {messages.map(m =>
         <Message ref={node => this['message' + m.id] = node} message={m} key={m.id}/>)}
+      {newFromOther && scrolledUp && <div className='newMessagesNotify' onClick={this.scrollToBottom}>New Messages</div>}
     </div>
   }
 }

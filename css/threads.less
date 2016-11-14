@@ -1,3 +1,5 @@
+@scroll-button-height: 36px;
+@scroll-button-width: 150px;
 
 .thread {
   display: flex;
@@ -42,6 +44,35 @@
     background-color: #FFF;
     border-bottom: 1px solid @post-border;
     padding: 10px 0;
+
+    .newMessagesNotify {
+      position: fixed;
+      background-color: @damian-red;
+      color: #FFF;
+      border-radius: 5px;
+      bottom: 65px;
+      left: 50%;
+      margin-left: -@scroll-button-width/2;
+      cursor: pointer;
+      line-height: @scroll-button-height;
+      border-radius: @scroll-button-height;
+      width: @scroll-button-width;
+      text-align: center;
+
+      &:after {
+        top: 100%;
+        left: 50%;
+        border: solid transparent;
+        content: " ";
+        height: 0;
+        width: 0;
+        position: absolute;
+        pointer-events: none;
+        border-top-color: @damian-red;
+        border-width: 7px;
+        margin-left: -7px;
+      }
+    }
   }
 
   .message {

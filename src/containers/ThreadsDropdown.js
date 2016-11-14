@@ -93,7 +93,6 @@ export default class ThreadsDropdown extends React.Component {
     this.context.dispatch(setUnseenThreadCount(unseenThreadCount(threads, lastViewed)))
 
   messageAdded = data => {
-    console.log('socket event received: ', data)
     const { postId, message } = data
     const { dispatch } = this.context
     const { lastViewed, openedThreadId, threads } = this.props

@@ -7,6 +7,7 @@ import { textLength } from '../util/text'
 import { onCmdOrCtrlEnter } from '../util/textInput'
 import AutosizingTextarea from './AutosizingTextarea'
 import cx from 'classnames'
+import { trackEvent, SENT_MESSAGE } from '../util/analytics'
 var { bool, func, object, string } = React.PropTypes
 
 const NEW_MESSAGE_ID = 'new'
@@ -65,6 +66,7 @@ export default class MessageToUserForm extends React.Component {
     dispatch(createComment(postId, text)).then(({ error }) => {
       if (error) return
       onComplete()
+      trackEvent(SENT_MESSAGE)
     })
     return false
   }

@@ -10,10 +10,10 @@ import PeopleTyping from './PeopleTyping'
 import { connect } from 'react-redux'
 import { FETCH_COMMENTS } from '../actions'
 import { fetchComments } from '../actions/comments'
-import { updatePostReadTime } from '../actions/posts'
 import { onThreadPage, offThreadPage } from '../actions/threads'
 import { getComments } from '../models/post'
 import { getSocket, socketUrl } from '../client/websockets'
+import { trackEvent, VIEWED_MESSAGE_THREAD } from '../util/analytics'
 
 @connect((state, { post }) => ({
   messages: getComments(post, state),
@@ -39,6 +39,7 @@ export default class Thread extends React.Component {
       this.socket.post(socketUrl(`/noo/post/${post.id}/subscribe`)) // for people typing
     }
     this.refs.form.getWrappedInstance().focus()
+    trackEvent(VIEWED_MESSAGE_THREAD)
   }
 
   componentDidMount () {

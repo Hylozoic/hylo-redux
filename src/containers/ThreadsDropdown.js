@@ -24,6 +24,7 @@ import Icon from '../components/Icon'
 import { getSocket, socketUrl } from '../client/websockets'
 import { truncate } from '../util/text'
 import { Modal } from '../components/Modal'
+import { trackEvent, VIEWED_MESSAGE_THREAD_LIST } from '../util/analytics'
 
 const setLastViewedToNow = () =>
   updateUserSettings({settings: {last_viewed_messages_at: new Date().toISOString()}})
@@ -116,6 +117,7 @@ export default class ThreadsDropdown extends React.Component {
 
     const onOpen = () => {
       dispatch(setLastViewedToNow())
+      trackEvent(VIEWED_MESSAGE_THREAD_LIST)
       this.setState({ open: true })
     }
     const onClose = () => this.setState({ open: false })

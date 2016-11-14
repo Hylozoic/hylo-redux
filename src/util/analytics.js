@@ -8,6 +8,9 @@ export const ADDED_COMMUNITY = 'Add community'
 export const EDITED_USER_SETTINGS = 'Edit user settings'
 export const INVITED_COMMUNITY_MEMBERS = 'Invited community members'
 export const SEARCHED = 'Search'
+export const SENT_MESSAGE = 'Messages: Send a message'
+export const VIEWED_MESSAGE_THREAD = 'Messages: View a thread'
+export const VIEWED_MESSAGE_THREAD_LIST = 'Messages: View list of threads'
 
 // These strings correspond to the names of events in Mixpanel with historical
 // data, so they should be changed with care
@@ -51,8 +54,11 @@ export function trackEvent (eventName, options = {}) {
       break
     case EDITED_USER_SETTINGS:
     case LOGGED_IN:
+    case SENT_MESSAGE:
     case STARTED_LOGIN:
     case STARTED_SIGNUP:
+    case VIEWED_MESSAGE_THREAD:
+    case VIEWED_MESSAGE_THREAD_LIST:
     case VIEWED_NOTIFICATIONS:
     case VIEWED_SELF:
       track()

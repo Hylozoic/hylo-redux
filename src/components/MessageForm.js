@@ -2,7 +2,7 @@ import React from 'react'
 import { get, throttle } from 'lodash'
 import { connect } from 'react-redux'
 import { createComment, updateCommentEditor } from '../actions/comments'
-import { ADDED_COMMENT, trackEvent } from '../util/analytics'
+import { SENT_MESSAGE, trackEvent } from '../util/analytics'
 import { textLength } from '../util/text'
 import { onEnterNoShift } from '../util/textInput'
 import { getSocket, socketUrl } from '../client/websockets'
@@ -33,7 +33,7 @@ export default class MessageForm extends React.Component {
     .then(({ error }) => {
       if (error) return
       dispatch(updateCommentEditor(postId, '', true))
-      trackEvent(ADDED_COMMENT, {post: {id: postId}})
+      trackEvent(SENT_MESSAGE)
     })
 
     return false

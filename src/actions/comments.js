@@ -8,19 +8,21 @@ import {
   UPDATE_COMMENT_EDITOR
 } from './index'
 import { get } from 'lodash/fp'
+import { cleanAndStringify } from '../util/caching'
 
 export function fetchComments (postId, opts = {}) {
-  // these are ignored since the comment API doesn't do pagination yet
-  let limit = opts.limit || 1000
-  let offset = opts.offset || 0
+  let { limit, refresh, beforeId, newest } = opts
+  if (!limit) limit = 1000
+
+  let querystring = cleanAndStringify({beforeId, newest, limit})
 
   return {
     type: FETCH_COMMENTS,
-    payload: {api: true, path: `/noo/post/${postId}/comments`},
+    payload: {api: true, path: `/noo/post/${postId}/comments?${querystring}`},
     meta: {
       id: postId,
       subject: 'post',
-      cache: {id: postId, bucket: 'commentsByPost', limit, offset, array: true},
+      cache: {id: postId, bucket: 'commentsByPost', limit, refresh, array: true},
       addDataToStore: {
         people: get('people')
       }

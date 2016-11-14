@@ -1,26 +1,30 @@
 import React from 'react'
 import { filter } from 'lodash'
-import { get } from 'lodash/fp'
-const { array, func, object } = React.PropTypes
+import { get, map, min } from 'lodash/fp'
+const { array, bool, func, object } = React.PropTypes
 import cx from 'classnames'
 import MessageSection from './MessageSection'
 import MessageForm from './MessageForm'
 import A from './A'
 import PeopleTyping from './PeopleTyping'
 import { connect } from 'react-redux'
+import { FETCH_COMMENTS } from '../actions'
+import { fetchComments } from '../actions/comments'
 import { updatePostReadTime } from '../actions/posts'
 import { onThreadPage, offThreadPage } from '../actions/threads'
 import { getComments } from '../models/post'
 import { getSocket, socketUrl } from '../client/websockets'
 
 @connect((state, { post }) => ({
-  messages: getComments(post, state)
+  messages: getComments(post, state),
+  pending: state.pending[FETCH_COMMENTS]
 }))
 export default class Thread extends React.Component {
   static propTypes = {
     post: object,
     messages: array,
-    dispatch: func
+    dispatch: func,
+    pending: bool
   }
 
   static childContextTypes = {post: object}
@@ -68,12 +72,18 @@ export default class Thread extends React.Component {
   }
 
   render () {
-    const { post, messages } = this.props
+    const { post, messages, pending, dispatch } = this.props
     const classes = cx('thread')
+    const loadMore = () => {
+      if (pending || messages.length >= post.numComments) return
+      const beforeId = min(map('id', messages))
+      dispatch(fetchComments(post.id, {refresh: true, newest: true, limit: 20, beforeId}))
+      .then(() => this.refs.messageSection.scrollToMessage(beforeId))
+    }
 
     return <div className={classes}>
       <Header />
-      <MessageSection {...{messages}}/>
+      <MessageSection {...{messages, pending}} onScrollToTop={loadMore} ref='messageSection'/>
       <PeopleTyping showNames/>
       <MessageForm postId={post.id} ref='form'/>
     </div>

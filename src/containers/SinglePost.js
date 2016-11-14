@@ -149,7 +149,7 @@ const setupPage = (store, id, query, action) => {
     // rest. but when fetchPost did not cause a cache hit, we know that its
     // response contained all comments, so we can skip the additional call.
     cacheHit && post.numComments > 3 &&
-      dispatch(fetchComments(id, {offset: 3})).then(scroll),
+      dispatch(fetchComments(id, {refresh: true})).then(scroll),
 
     // if this is an event or project, fetch the first page of results for
     // tagged posts.

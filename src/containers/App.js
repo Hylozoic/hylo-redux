@@ -3,7 +3,7 @@ import cx from 'classnames'
 import { intercom } from '../config'
 import { prefetch } from 'react-fetcher'
 import { connect } from 'react-redux'
-import { debounce, isEmpty } from 'lodash'
+import { debounce, isEmpty, pick } from 'lodash'
 import { get } from 'lodash/fp'
 import Notifier from '../components/Notifier'
 import LiveStatusPoller from '../components/LiveStatusPoller'
@@ -26,11 +26,8 @@ const { array, bool, func, object } = React.PropTypes
   }
 })
 @connect((state, { params }) => {
-  const {
-    isMobile, leftNavIsOpen, notifierMessages, openModals, tagPopover
-  } = state
   return {
-    isMobile, openModals, leftNavIsOpen, notifierMessages, tagPopover,
+    ...pick(state, 'isMobile', 'leftNavIsOpen', 'notifierMessages', 'openModals', 'tagPopover'),
     network: getCurrentNetwork(state),
     community: getCurrentCommunity(state),
     currentUser: denormalizedCurrentUser(state)
@@ -48,7 +45,8 @@ export default class App extends React.Component {
     isMobile: bool,
     openModals: array,
     location: object,
-    tagPopover: object
+    tagPopover: object,
+    showIntercomButton: bool
   }
 
   static childContextTypes = {
@@ -88,7 +86,7 @@ export default class App extends React.Component {
   render () {
     const {
       children, community, dispatch, leftNavIsOpen, notifierMessages,
-      openModals, tagPopover, currentUser
+      openModals, tagPopover, currentUser, location
     } = this.props
 
     const classes = cx({
@@ -97,6 +95,8 @@ export default class App extends React.Component {
       loggedOut: !currentUser,
       showModal: !isEmpty(openModals)
     })
+
+    const showIntercomButton = !location.pathname.startsWith('/t/')
 
     return <div className={classes}>
       {children}
@@ -112,7 +112,7 @@ export default class App extends React.Component {
           top={i === openModals.length - 1}
           type={modal.type}
           params={modal.params}/>)}
-      <IntercomButton/>
+      {showIntercomButton && <IntercomButton/>}
     </div>
   }
 }

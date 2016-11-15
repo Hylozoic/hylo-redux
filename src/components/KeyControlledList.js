@@ -3,6 +3,8 @@ import { indexOf, isEmpty, omit } from 'lodash/fp'
 import { getKeyCode, keyMap } from '../util/textInput'
 var { array, func, object, bool, number } = React.PropTypes
 
+const propsToOmit = ['onChange', 'tabChooses', 'spaceChooses', 'selectedIndex']
+
 export class KeyControlledList extends React.Component {
 
   static propTypes = {
@@ -106,7 +108,7 @@ export class KeyControlledList extends React.Component {
           : element
       })
 
-    return <ul {...omit(['onChange', 'tabChooses', 'selectedIndex'], props)}>
+    return <ul {...omit(propsToOmit, props)}>
       {this.childrenWithRefs}
     </ul>
   }

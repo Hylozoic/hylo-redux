@@ -4,6 +4,7 @@ import { mostRecentCommunity } from '../models/person'
 import moment from 'moment-timezone'
 
 // These strings were not used prior to hylo-redux
+export const ADDED_SKILL = 'Add skill'
 export const ADDED_COMMUNITY = 'Add community'
 export const EDITED_USER_SETTINGS = 'Edit user settings'
 export const INVITED_COMMUNITY_MEMBERS = 'Invited community members'
@@ -30,16 +31,24 @@ export const VIEWED_PERSON = 'Member Profiles: Loaded a profile'
 export const VIEWED_SELF = 'Member Profiles: Loaded Own Profile'
 
 export function trackEvent (eventName, options = {}) {
+  const track = partial(window.analytics.track, eventName)
+
   // "context" here means "the context in which something happened", e.g.
   // context for STARTED_MESSAGE is "dropdown", "profile", etc.
   const { person, post, tag, community, context, ...otherOptions } = options
-  const track = partial(window.analytics.track, eventName)
+
+  // we're being explicit here about which properties are included with each
+  // event, rather than sending everything, in order to conform to legacy data
+  // and also to prevent accidental "namespace pollution" in Mixpanel
   switch (eventName) {
     case ADDED_COMMUNITY:
     case VIEWED_COMMUNITY:
     case INVITED_COMMUNITY_MEMBERS:
     case OPENED_POST_EDITOR:
       track({community: get('name', community)})
+      break
+    case ADDED_SKILL:
+      track({context, tag})
       break
     case STARTED_MESSAGE:
       track({context})

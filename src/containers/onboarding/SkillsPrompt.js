@@ -12,8 +12,7 @@ const { func, object } = React.PropTypes
 const SkillsPrompt = ({ location, community }, { currentUser, dispatch }) => {
   community = community || find(c => c.slug === location.query.community,
     map('community', currentUser.memberships))
-  const update = (path, value) =>
-    dispatch(updateUserSettings({[path]: value}))
+  const update = (path, value) => dispatch(updateUserSettings({[path]: value}))
 
   const title = `Are there any skills, passions or interests you'd like to be
   known for in your community?`
@@ -25,7 +24,7 @@ const SkillsPrompt = ({ location, community }, { currentUser, dispatch }) => {
     <CommunityHeader community={community}/>
     <Modal standalone {...{title, subtitle}}>
       <ListItemTagInput type='tags' person={currentUser} className='modal-input'
-        update={update}/>
+        update={update} context='onboarding'/>
       <span className='meta'>
         Press Enter (Return) after each tag. Use a dash (-) between words in a tag.
       </span>

@@ -288,7 +288,7 @@ export default class UserSettings extends React.Component {
           <div className='full-column'>
             <label>My skills</label>
             <ListItemTagInput type='tags' person={currentUser}
-              update={this.update} filter={preventSpaces}/>
+              update={this.update} filter={preventSpaces} context='profile'/>
           </div>
         </Item>
         <Item>

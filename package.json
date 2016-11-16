@@ -123,7 +123,7 @@
     "node-notifier": "^4.3.1",
     "nyc": "^8.3.2",
     "randomstring": "^1.1.5",
-    "react-addons-test-utils": "^15.0.2",
+    "react-addons-test-utils": "^15.4.0",
     "react-proxy": "^1.1.1",
     "remove": "^0.1.5",
     "rework-plugin-url": "^1.1.0",

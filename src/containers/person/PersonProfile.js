@@ -7,7 +7,7 @@ import { FETCH_PERSON, fetchPerson, fetchThanks, navigate, showDirectMessage } f
 import { saveCurrentCommunityId } from '../../actions/util'
 import { capitalize, compact, get, some, includes } from 'lodash'
 import { isNull, isUndefined, map, omitBy, sortBy } from 'lodash/fp'
-import { VIEWED_PERSON, VIEWED_SELF, trackEvent } from '../../util/analytics'
+import { STARTED_MESSAGE, VIEWED_PERSON, VIEWED_SELF, trackEvent } from '../../util/analytics'
 import { findError } from '../../actions/util'
 import PostList from '../../components/PostList'
 import A from '../../components/A'
@@ -105,6 +105,10 @@ const PersonProfile = compose(
   const offerCount = person.grouped_post_count.offer || 0
   const TabLink = setupTabLink(props)
   const postsToHide = category ? [] : map('id', compact([recentRequest, recentOffer]))
+  const startMessage = () => {
+    trackEvent(STARTED_MESSAGE, {context: 'profile'})
+    return dispatch(showDirectMessage(person.id, person.name))
+  }
 
   return <CoverImagePage id='person' image={banner_url || defaultBanner}>
     <div className='opener'>
@@ -128,11 +132,8 @@ const PersonProfile = compose(
       <p className='bio'>{bio}</p>
       {currentUser && person.id !== currentUser.id &&
         hasFeature(currentUser, DIRECT_MESSAGES) &&
-        <button
-          onClick={() => dispatch(showDirectMessage(person.id, person.name))}
-          className='dm-user'>
-          <Icon name='Message-Smile'/>
-          Message
+        <button onClick={startMessage} className='dm-user'>
+          <Icon name='Message-Smile'/> Message
       </button>}
     </div>
     {some(tags) && <div className='skills'>

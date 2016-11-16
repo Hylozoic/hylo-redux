@@ -9,6 +9,7 @@ export const EDITED_USER_SETTINGS = 'Edit user settings'
 export const INVITED_COMMUNITY_MEMBERS = 'Invited community members'
 export const OPENED_POST_EDITOR = 'Open post editor'
 export const SEARCHED = 'Search'
+export const STARTED_MESSAGE = 'Messages: Start a message'
 export const SENT_MESSAGE = 'Messages: Send a message'
 export const VIEWED_MESSAGE_THREAD = 'Messages: View a thread'
 export const VIEWED_MESSAGE_THREAD_LIST = 'Messages: View list of threads'
@@ -29,7 +30,9 @@ export const VIEWED_PERSON = 'Member Profiles: Loaded a profile'
 export const VIEWED_SELF = 'Member Profiles: Loaded Own Profile'
 
 export function trackEvent (eventName, options = {}) {
-  const { person, post, tag, community, ...otherOptions } = options
+  // "context" here means "the context in which something happened", e.g.
+  // context for STARTED_MESSAGE is "dropdown", "profile", etc.
+  const { person, post, tag, community, context, ...otherOptions } = options
   const track = partial(window.analytics.track, eventName)
   switch (eventName) {
     case ADDED_COMMUNITY:
@@ -37,6 +40,9 @@ export function trackEvent (eventName, options = {}) {
     case INVITED_COMMUNITY_MEMBERS:
     case OPENED_POST_EDITOR:
       track({community: get('name', community)})
+      break
+    case STARTED_MESSAGE:
+      track({context})
       break
     case VIEWED_PERSON:
       let { id, name } = person

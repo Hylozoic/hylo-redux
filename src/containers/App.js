@@ -96,7 +96,8 @@ export default class App extends React.Component {
       showModal: !isEmpty(openModals)
     })
 
-    const showIntercomButton = !location.pathname.startsWith('/t/')
+    const { pathname } = location || {}
+    const showIntercomButton = pathname && !location.pathname.startsWith('/t/')
 
     return <div className={classes}>
       {children}

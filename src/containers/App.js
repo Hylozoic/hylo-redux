@@ -45,8 +45,7 @@ export default class App extends React.Component {
     isMobile: bool,
     openModals: array,
     location: object,
-    tagPopover: object,
-    showIntercomButton: bool
+    tagPopover: object
   }
 
   static childContextTypes = {

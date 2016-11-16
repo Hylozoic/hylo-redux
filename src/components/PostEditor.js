@@ -39,7 +39,7 @@ import {
   showModal, CREATE_POST, FETCH_LINK_PREVIEW, UPDATE_POST, UPLOAD_IMAGE
 } from '../actions'
 import { updateCommunityChecklist } from '../actions/communities'
-import { ADDED_POST, EDITED_POST, trackEvent } from '../util/analytics'
+import { ADDED_POST, EDITED_POST, OPENED_POST_EDITOR, trackEvent } from '../util/analytics'
 import { getCommunity, getCurrentCommunity, getDefaultTags } from '../models/community'
 const { array, bool, func, object, string } = React.PropTypes
 
@@ -526,6 +526,9 @@ export default class PostEditorWrapper extends React.Component {
   }
 
   toggle = () => {
+    if (!this.state.expanded) {
+      trackEvent(OPENED_POST_EDITOR, {community: this.props.community})
+    }
     this.setState({expanded: !this.state.expanded})
   }
 

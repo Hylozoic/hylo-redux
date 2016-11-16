@@ -7,6 +7,7 @@ import moment from 'moment-timezone'
 export const ADDED_COMMUNITY = 'Add community'
 export const EDITED_USER_SETTINGS = 'Edit user settings'
 export const INVITED_COMMUNITY_MEMBERS = 'Invited community members'
+export const OPENED_POST_EDITOR = 'Open post editor'
 export const SEARCHED = 'Search'
 export const SENT_MESSAGE = 'Messages: Send a message'
 export const VIEWED_MESSAGE_THREAD = 'Messages: View a thread'
@@ -34,7 +35,8 @@ export function trackEvent (eventName, options = {}) {
     case ADDED_COMMUNITY:
     case VIEWED_COMMUNITY:
     case INVITED_COMMUNITY_MEMBERS:
-      track({community: community.name})
+    case OPENED_POST_EDITOR:
+      track({community: get('name', community)})
       break
     case VIEWED_PERSON:
       let { id, name } = person

@@ -57,10 +57,10 @@ const CommunityMenu = ({ network, community }, { isMobile, dispatch, currentUser
       </span>
     </IndexA>
     <Dropdown backdrop triangle toggleChildren={toggle} rivalrous='nav'
-      insteadOfOpening={onlyOneCommunity && visitCommunity}>
+      insteadOfOpening={onlyOneCommunity && isMobile && visitCommunity}>
       <li>
         <ul className='inner-list dropdown-menu'>
-          {menuItems.length > 1 && <li>
+          {menuItems.length > 2 && <li>
             <A to={url()}>
               <img src={allCommunities().avatar_url}/> All Communities
             </A>

@@ -1,5 +1,6 @@
 import React from 'react'
 import { debounce, includes, isEmpty } from 'lodash'
+import { uniqBy } from 'lodash/fp'
 import { KeyControlledItemList } from './KeyControlledList'
 import { getKeyCode, keyMap } from '../util/textInput'
 import { NonLinkAvatar } from './Avatar'
@@ -81,7 +82,7 @@ export default class TagInput extends React.Component {
 
     return <div className={cx('tag-input', className)} onClick={this.focus}>
       <ul>
-        {tags.map(t => <li key={t.id} className='tag'>
+        {uniqBy('id', tags).map(t => <li key={t.id} className='tag'>
           {t.avatar_url && <NonLinkAvatar person={t}/>}
           {t.label || t.name}
           <a onClick={this.remove(t)} className='remove'>&times;</a>

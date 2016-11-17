@@ -36,8 +36,8 @@ export default class EventPostEditor extends React.Component {
     const { start_time, end_time, tag, type } = postEdit
     if (type !== 'event') setTimeout(() => update({type: 'event'})) // smelly
 
-    const startTime = start_time ? new Date(start_time) : null
-    const endTime = end_time ? new Date(end_time) : null
+    const startTime = start_time ? new Date(start_time) : ''
+    const endTime = end_time ? new Date(end_time) : ''
     const updateTag = tag => update({tag, tagEdited: true})
     const updateTime = name => time => {
       if (time._isAMomentObject) update({[name]: time.toISOString()})

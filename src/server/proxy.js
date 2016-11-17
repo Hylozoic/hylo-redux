@@ -3,6 +3,7 @@ const mime = require('mime')
 const request = require('request')
 const streamifier = require('streamifier')
 const cache = LRU(50)
+import { gzip } from 'zlib'
 import { setTransactionName } from './newrelic'
 
 const staticPages = [
@@ -40,10 +41,22 @@ const transformPathname = pathname => {
 
 const getAndStore = url => {
   const chunks = []
-  return request.get(url, {gzip: true})
-  .on('response', upstreamRes => {
-    upstreamRes.on('data', d => chunks.push(d))
-    upstreamRes.on('end', () => cache.set(url, Buffer.concat(chunks)))
+  return new Promise((resolve, reject) => {
+    request.get(url)
+    .on('error', reject)
+    .on('response', upstreamRes => {
+      const gzipped = upstreamRes.headers['content-encoding'] === 'gzip'
+      upstreamRes.on('data', d => chunks.push(d))
+      upstreamRes.on('end', () => {
+        const doc = Buffer.concat(chunks)
+        const save = value => cache.set(url, value) && resolve(value)
+        if (gzipped) {
+          save(doc)
+        } else {
+          gzip(doc, (err, buf) => err ? reject(err) : save(buf))
+        }
+      })
+    })
   })
 }
 
@@ -58,15 +71,20 @@ const handlePage = (req, res) => {
   const cachedValue = cache.get(newUrl)
 
   console.log(`${pathname} -> ${newUrl} ${cachedValue ? '☺' : '↑'}`)
-  if (cachedValue) {
+
+  const sendCachedData = data => {
     var mimeType = mime.lookup(newUrl)
     res.set('Content-Type', mimeType)
     res.set('Content-Encoding', 'gzip')
-    streamifier.createReadStream(cachedValue).pipe(res)
+    streamifier.createReadStream(data).pipe(res)
+  }
+
+  if (cachedValue) {
+    sendCachedData(cachedValue)
   } else {
     getAndStore(newUrl)
-    .on('error', err => res.serverError(err.message))
-    .pipe(res)
+    .then(() => sendCachedData(cache.get(newUrl)))
+    .catch(err => res.serverError(err.message))
   }
 }
 

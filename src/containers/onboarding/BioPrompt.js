@@ -14,13 +14,18 @@ import { CommunityHeader } from '../Signup'
 import { nextOnboardingUrl } from '../../util/navigation'
 import { getCommunity } from '../../models/community'
 import { connectedListProps } from '../../util/caching'
+import { trackEvent, ADDED_BIO } from '../../util/analytics'
 const { func, object } = React.PropTypes
 
 const subject = 'community'
 
+const trackBioUpdate = debounce(() => trackEvent(ADDED_BIO, {context: 'onboarding'}), 10000)
+
 const BioPrompt = ({ location, community, skipTopics }, { currentUser, dispatch }) => {
-  const update = debounce(bio =>
-    dispatch(updateUserSettings({bio})), 500)
+  const update = debounce(bio => {
+    trackBioUpdate()
+    return dispatch(updateUserSettings({bio}))
+  }, 500)
 
   return <ModalOnlyPage id='bio-prompt' className='login-signup'>
     <CommunityHeader community={community}/>

@@ -13,6 +13,7 @@ import { same } from '../models'
 import { denormalizedCurrentUser, newestMembership } from '../models/currentUser'
 import { humanDate } from '../util/text'
 import { tagUrl, userUrl } from '../routes'
+import { trackEvent, FOLLOWED_TOPIC } from '../util/analytics'
 const { array, bool, func, number, object, string } = React.PropTypes
 
 const subject = 'community'
@@ -68,7 +69,7 @@ export default class BrowseTopicsModal extends React.Component {
             {tags.map(tag => {
               const followed = some(followedTags, same('name', tag))
               return <TagRow tag={tag} community={community} key={tag.id}
-                followed={followed}/>
+                followed={followed} onboarding={onboarding}/>
             })}
             {loadMore && <li className='show-more'>
               <span className='meta'>
@@ -84,15 +85,16 @@ export default class BrowseTopicsModal extends React.Component {
   }
 }
 
-const TagRow = ({ tag, community, followed }, { isMobile, dispatch }) => {
+const TagRow = ({ tag, community, followed, onboarding }, { isMobile, dispatch }) => {
   const { id, name, post_type } = tag
   const { slug } = community
   const membership = find(m => same('id', community), tag.memberships)
   const { description, follower_count, owner, created_at } = membership
   const close = () => dispatch(closeModal())
+  const controls = <TagRowControls {...{follower_count, slug, followed, name, onboarding}}/>
 
   return <li key={id}>
-    {!isMobile && <TagRowControls {...{follower_count, slug, followed, name}}/>}
+    {!isMobile && controls}
     <A className='name' to={tagUrl(name, slug)} onClick={close}># {name}</A>
     {(description || post_type) && <p className='description'>
       {description || post_type}
@@ -100,13 +102,21 @@ const TagRow = ({ tag, community, followed }, { isMobile, dispatch }) => {
     {!isEmpty(owner) && <span className='meta'>
       created by <A to={userUrl(owner)}>{owner.name}</A> {humanDate(created_at)}
     </span>}
-    {isMobile && <TagRowControls {...{follower_count, slug, followed, name}}/>}
+    {isMobile && controls}
   </li>
 }
 TagRow.contextTypes = {isMobile: bool, dispatch: func}
 
-const TagRowControls = ({ followed, follower_count, slug, name }, { dispatch }) => {
-  const follow = () => dispatch(followTag(slug, name))
+const TagRowControls = ({ followed, follower_count, slug, name, onboarding }, { dispatch }) => {
+  const follow = () => {
+    if (!followed) {
+      trackEvent(FOLLOWED_TOPIC, {
+        tag: name,
+        context: onboarding ? 'onboarding' : 'modal'
+      })
+    }
+    return dispatch(followTag(slug, name))
+  }
   return <div className='right'>
     <span className='followers'>
       <Icon name='Users'/>

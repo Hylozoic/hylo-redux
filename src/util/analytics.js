@@ -4,9 +4,11 @@ import { mostRecentCommunity } from '../models/person'
 import moment from 'moment-timezone'
 
 // These strings were not used prior to hylo-redux
+export const ADDED_BIO = 'Add bio'
 export const ADDED_SKILL = 'Add skill'
 export const ADDED_COMMUNITY = 'Add community'
 export const EDITED_USER_SETTINGS = 'Edit user settings'
+export const FOLLOWED_TOPIC = 'Follow topic'
 export const INVITED_COMMUNITY_MEMBERS = 'Invited community members'
 export const OPENED_POST_EDITOR = 'Open post editor'
 export const SEARCHED = 'Search'
@@ -48,8 +50,10 @@ export function trackEvent (eventName, options = {}) {
       track({community: get('name', community)})
       break
     case ADDED_SKILL:
+    case FOLLOWED_TOPIC:
       track({context, tag})
       break
+    case ADDED_BIO:
     case STARTED_MESSAGE:
       track({context})
       break

@@ -41,7 +41,8 @@ server.get('/robots.txt', notFound)
 
 // api proxy
 server.use((req, res, next) => {
-  if (!req.originalUrl.startsWith('/noo')) return next()
+  if (!req.originalUrl.startsWith('/noo') &&
+    !req.originalUrl.startsWith('/admin/kue')) return next()
 
   let url = upstreamHost + req.originalUrl
   info(magenta(`${req.method} ${url}`))

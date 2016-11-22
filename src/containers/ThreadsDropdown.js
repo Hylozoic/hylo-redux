@@ -6,6 +6,7 @@ import cx from 'classnames'
 import { threadUrl } from '../routes'
 import {
   FETCH_POSTS,
+  closeModal,
   setUnseenThreadCount,
   incrementUnseenThreads,
   showDirectMessage,
@@ -187,6 +188,7 @@ export class ThreadsModal extends React.Component {
   render () {
     const { onCancel, threads, pending, dispatch } = this.props
     const startNewMessage = event => {
+      dispatch(closeModal())
       dispatch(showDirectMessage())
       event.stopPropagation()
     }

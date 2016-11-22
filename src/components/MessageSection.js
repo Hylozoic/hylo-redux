@@ -55,7 +55,7 @@ export default class MessageSection extends React.Component {
       this.setState({ scrolledUp: false })
       this.markAsRead()
     }
-    if (scrollTop <= 20 && this.props.onScrollToTop) this.props.onScrollToTop()
+    if (scrollTop <= 50 && this.props.onScrollToTop) this.props.onScrollToTop()
   }, 500, {trailing: true})
 
   scrollToBottom = () => {
@@ -82,10 +82,11 @@ export default class MessageSection extends React.Component {
     return <div className={cx('messages-section', {empty: isEmpty(messages)})}
       ref={list => this.list = list}
       onScroll={e => this.handleScroll(e.target)}>
-      {this.props.pending && <div className='message'>Loading...</div>}
-      {messages.map(m =>
-        <Message ref={node => this['message' + m.id] = node} message={m} key={m.id}/>)}
-      {newFromOther && scrolledUp && <div className='newMessagesNotify' onClick={this.scrollToBottom}>New Messages</div>}
+      <div className='messages-section-inner'>
+        {messages.map(m =>
+          <Message ref={node => this['message' + m.id] = node} message={m} key={m.id}/>)}
+            {newFromOther && scrolledUp && <div className='newMessagesNotify' onClick={this.scrollToBottom}>New Messages</div>}
+      </div>
     </div>
   }
 }

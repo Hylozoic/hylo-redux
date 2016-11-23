@@ -1,10 +1,12 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { openPopup, setupPopupCallback, LOGIN_CONTEXT } from '../util/auth'
+import { LOGIN_ATTEMPTED, trackEvent } from '../util/analytics'
 const { func } = React.PropTypes
 
-const startAuth = service => event => {
-  openPopup(service, LOGIN_CONTEXT)
+const startAuth = provider => event => {
+  trackEvent(LOGIN_ATTEMPTED, {provider})
+  openPopup(provider, LOGIN_CONTEXT)
   event.preventDefault()
 }
 

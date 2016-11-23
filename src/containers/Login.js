@@ -14,7 +14,9 @@ import {
   setLoginError
 } from '../actions'
 import { fetchCommunity, fetchCommunityForInvitation } from '../actions/communities'
-import { LOGGED_IN, STARTED_LOGIN, alias, trackEvent } from '../util/analytics'
+import {
+  LOGGED_IN, STARTED_LOGIN, LOGIN_ATTEMPTED, LOGIN_FAILED, alias, trackEvent
+} from '../util/analytics'
 import { Link } from 'react-router'
 import ServiceAuthButtons from '../components/ServiceAuthButtons'
 import { communityUrl } from '../routes'
@@ -108,11 +110,16 @@ export default class Login extends React.Component {
     event.preventDefault()
     let email = this.refs.email.getValue()
     let password = this.refs.password.getValue()
+    trackEvent(LOGIN_ATTEMPTED, {provider: 'password'})
     return dispatch(login(email, password))
     .then(({ error, payload }) => {
-      if (error) return
+      if (error) {
+        const reason = this.props.error.split('.')[0]
+        trackEvent(LOGIN_FAILED, {provider: 'password', reason})
+        return
+      }
       dispatch(continueLogin(query))
-      trackEvent(LOGGED_IN)
+      trackEvent(LOGGED_IN, {provider: 'password'})
     })
   }
 

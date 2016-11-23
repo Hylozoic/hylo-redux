@@ -1,6 +1,7 @@
 import { continueLogin, fetchCurrentUser } from '../actions'
 import { get } from 'lodash'
 import qs from 'querystring'
+import { LOGIN_FAILED, LOGGED_IN, trackEvent } from '../util/analytics'
 
 export const LOGIN_CONTEXT = 'login'
 export const PROFILE_CONTEXT = 'profile'
@@ -42,12 +43,14 @@ export function setupPopupCallback (name, dispatch, errorAction) {
   if (get(window, 'popupDone.callingContext') === name) return
 
   window.popupDone = opts => {
-    let { context, error } = opts
+    let { context, error, provider } = opts
     switch (context) {
       case LOGIN_CONTEXT:
         if (error) {
+          trackEvent(LOGIN_FAILED, {provider, reason: error})
           dispatch(errorAction(error))
         } else {
+          trackEvent(LOGGED_IN, {provider})
           dispatch(errorAction(null))
           dispatch(fetchCurrentUser())
           .then(({ error, payload }) => {

@@ -57,10 +57,6 @@ export function trackEvent (eventName, props = {}) {
   return Promise.resolve()
 }
 
-export const trackSearch = (term, type, community) => {
-  trackEvent(SEARCHED, {community, term, type})
-}
-
 export const identify = person => {
   if (!person) return
 

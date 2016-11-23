@@ -16,7 +16,7 @@ import CoverImagePage from '../components/CoverImagePage'
 import { commentUrl } from '../routes'
 import decode from 'ent/decode'
 import { denormalizedComment } from '../models/comment'
-import { trackSearch } from '../util/analytics'
+import { SEARCHED, trackEvent } from '../util/analytics'
 const { array, bool, func, number, object } = React.PropTypes
 
 const types = [
@@ -61,7 +61,7 @@ export default class Search extends React.Component {
       const prevQuery = prevProps.location.query
       if (prevQuery.q === query.q && prevQuery.type === query.type) return
     }
-    trackSearch(query.q, query.type || 'everything')
+    trackEvent(SEARCHED, {term: query.q, type: query.type || 'everything'})
   }
 
   componentDidMount () {

@@ -1,5 +1,5 @@
 import {
-  loadTestFile, writeTestFile, useTestFileScaffold, removeTestFile
+  loadTestFile, writeTestFile, TestRunner, removeTestFile
 } from './support'
 
 describe('browser testing setup', function () {
@@ -18,10 +18,14 @@ describe('browser testing setup', function () {
   })
 
   describe('rendering a React component', () => {
-    before(function () {
-      return useTestFileScaffold('meta')
+    var runner
+
+    before(() => {
+      runner = new TestRunner({scaffold: 'meta'})
+      return runner.start()
     })
-    after(() => removeTestFile())
+
+    after(() => runner.stop())
 
     it('works', function () {
       return loadTestFile()

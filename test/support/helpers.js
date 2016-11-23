@@ -37,9 +37,16 @@ export const wait = (millis, cb) =>
   new Promise((resolve, _) =>
     setTimeout(() => resolve(cb ? cb() : null), millis))
 
-export const spyify = (object, methodName) => {
-  object['_original' + methodName] = object[methodName]
-  object[methodName] = spy(object[methodName])
+const isSpy = (func) => !!func.__spy
+
+export const spyify = (object, methodName, func) => {
+  if (!isSpy(object[methodName])) object['_original' + methodName] = object[methodName]
+
+  object[methodName] = spy((...args) => {
+    const ret = object['_original' + methodName](...args)
+    if (func) func(...args, ret)
+    return ret
+  })
 }
 
 export const mockify = (object, methodName, func) => {

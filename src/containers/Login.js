@@ -65,7 +65,7 @@ export const connectForNext = section =>
     return {...state[section], community, actionError}
   }, null, null, {withRef: true})
 
-const displayError = error => {
+export const displayError = error => {
   if (!error) return
 
   if (error === 'no user') return 'Login was canceled or no user data was found.'

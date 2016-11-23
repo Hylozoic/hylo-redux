@@ -94,7 +94,7 @@ ProjectPost.contextTypes = {
 export default ProjectPost
 
 const Supporters = ({ post, simple }, { currentUser, dispatch }) => {
-  const { followers, end_time } = post
+  const { followers, ends_at } = post
   const isFollowing = some(same('id', currentUser), followers)
   const follow = () => dispatch(followPost(post.id, currentUser))
 
@@ -103,7 +103,7 @@ const Supporters = ({ post, simple }, { currentUser, dispatch }) => {
       <h3>
         {followers.length} supporter{followers.length === 1 ? '' : 's'}
       </h3>
-      {end_time && <Deadline time={end_time}/>}
+      {ends_at && <Deadline time={ends_at}/>}
     </div>}
     {!isEmpty(followers) && <LinkedPersonSentence people={followers} className='blurb meta'>
       support{followers.length > 1 || some(same('id', currentUser), followers) ? '' : 's'}
@@ -194,7 +194,7 @@ class ProjectRequest extends React.Component {
 const spacer = <span>&nbsp; •&nbsp; </span>
 
 const UndecoratedProjectPostCard = ({ post, community, comments, dispatch, isMobile }, { currentUser }) => {
-  const { name, user, tag, end_time, id } = post
+  const { name, user, tag, ends_at, id } = post
   const url = `/p/${post.id}`
   const backgroundImage = `url(${imageUrl(post)})`
 
@@ -209,8 +209,8 @@ const UndecoratedProjectPostCard = ({ post, community, comments, dispatch, isMob
       <A to={url} style={{backgroundImage}}/>
     </LazyLoader>
     <div className='meta'>
-      {end_time && <span>
-        <Deadline time={end_time}/>
+      {ends_at && <span>
+        <Deadline time={ends_at}/>
         {spacer}
       </span>}
       {tag && <span className='hashtag-segment'>

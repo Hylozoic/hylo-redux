@@ -13,7 +13,7 @@ const { func, object } = React.PropTypes
 
 const setDefaults = query => {
   let filter = (query.filter ? query.filter : 'future')
-  return {...query, filter, type: 'event', sort: 'start_time'}
+  return {...query, filter, type: 'event', sort: 'starts_at'}
 }
 
 const Events = ({ location, params, community }, { currentUser }) => {
@@ -43,11 +43,11 @@ export default compose(
 export const EventListControls = ({ query, location }, { dispatch }) => {
   const showingPast = query.filter !== 'future'
 
-  // we don't want type=event, sort=start_time, filter=future to show up in the
+  // we don't want type=event, sort=starts_at, filter=future to show up in the
   // url so we set custom default values for refetch
   const querystringDefaults = {
     type: 'event',
-    sort: 'start_time',
+    sort: 'starts_at',
     filter: 'future'
   }
 

@@ -55,8 +55,8 @@ export default class ProjectPostEditor extends React.Component {
 
   render () {
     const { postEdit, update, requests } = this.props
-    const { end_time, tag, type } = postEdit
-    const endTime = end_time ? new Date(end_time) : null
+    const { ends_at, tag, type } = postEdit
+    const endsAt = ends_at ? new Date(ends_at) : null
     const updateTag = tag => update({tag, tagEdited: true})
     const videoUrl = get('url', getVideo(postEdit)) || ''
     if (type !== 'project') setTimeout(() => update({type: 'project'}))
@@ -81,8 +81,8 @@ export default class ProjectPostEditor extends React.Component {
         <div className='deadline'>
           <Icon name='Calendar'/>
           <DatetimePicker inputProps={{placeholder: 'deadline'}}
-            value={endTime}
-            onChange={m => update({end_time: m.toISOString()})}/>
+            value={endsAt}
+            onChange={m => update({ends_at: m.toISOString()})}/>
         </div>
         <div className='location'>
           <Icon name='Pin-1'/>

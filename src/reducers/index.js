@@ -451,7 +451,7 @@ const combinedReducers = combineReducers({
         const newInvitations = flow(
           map('email'),
           compact,
-          map(email => ({email, created: new Date()}))
+          map(email => ({email, created_at: new Date()}))
         )(payload.results)
         return {
           ...state,
@@ -461,7 +461,7 @@ const combinedReducers = combineReducers({
         communityId = meta.communityId
         return {
           ...state,
-          [communityId]: map(i => i.user ? i : ({...i, created: new Date()}), (state[communityId]) || [])
+          [communityId]: map(i => i.user ? i : ({...i, created_at: new Date()}), (state[communityId]) || [])
         }
     }
 

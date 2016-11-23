@@ -9,6 +9,8 @@ export const ADDED_SKILL = 'Add skill'
 export const ADDED_COMMUNITY = 'Add community'
 export const EDITED_USER_SETTINGS = 'Edit user settings'
 export const FOLLOWED_TOPIC = 'Follow topic'
+export const LOGIN_ATTEMPTED = 'Login attempt'
+export const LOGIN_FAILED = 'Login failure'
 export const INVITED_COMMUNITY_MEMBERS = 'Invited community members'
 export const OPENED_POST_EDITOR = 'Open post editor'
 export const SEARCHED = 'Search'
@@ -32,69 +34,31 @@ export const VIEWED_NOTIFICATIONS = 'Notifications: View'
 export const VIEWED_PERSON = 'Member Profiles: Loaded a profile'
 export const VIEWED_SELF = 'Member Profiles: Loaded Own Profile'
 
-export function trackEvent (eventName, options = {}) {
+export function trackEvent (eventName, props = {}) {
   const track = partial(window.analytics.track, eventName)
+  const { person, post, community, ...otherProps } = props
 
-  // "context" here means "the context in which something happened", e.g.
-  // context for STARTED_MESSAGE is "dropdown", "profile", etc.
-  const { person, post, tag, community, context, ...otherOptions } = options
-
-  // we're being explicit here about which properties are included with each
-  // event, rather than sending everything, in order to conform to legacy data
-  // and also to prevent accidental "namespace pollution" in Mixpanel
   switch (eventName) {
-    case ADDED_COMMUNITY:
-    case VIEWED_COMMUNITY:
-    case INVITED_COMMUNITY_MEMBERS:
-    case OPENED_POST_EDITOR:
-      track({community: get('name', community)})
-      break
-    case ADDED_SKILL:
-    case FOLLOWED_TOPIC:
-      track({context, tag})
-      break
-    case ADDED_BIO:
-    case STARTED_MESSAGE:
-      track({context})
-      break
     case VIEWED_PERSON:
       let { id, name } = person
-      track({id, name})
+      track({id, name, ...otherProps})
       break
     case ADDED_COMMENT:
     case SHOWED_POST_COMMENTS:
-      track({post_id: post.id})
-      break
-    case ADDED_POST:
-    case EDITED_POST:
-      track({post_tag: tag, community: community.name})
+      track({post_id: post.id, ...otherProps})
       break
     case CLICKTHROUGH:
-    case SEARCHED:
-      track({community, ...otherOptions})
-      break
-    case EDITED_USER_SETTINGS:
-    case LOGGED_IN:
-    case SENT_MESSAGE:
-    case STARTED_LOGIN:
-    case STARTED_SIGNUP:
-    case VIEWED_MESSAGE_THREAD:
-    case VIEWED_MESSAGE_THREAD_LIST:
-    case VIEWED_NOTIFICATIONS:
-    case VIEWED_SELF:
-      track()
+      track({community, ...otherProps})
       break
     default:
-      const message = `Don't know how to handle event named "${eventName}"`
-      window.alert(message)
-      throw new Error(message)
+      track({community: get('name', community), ...otherProps})
   }
 
   return Promise.resolve()
 }
 
 export const trackSearch = (term, type, community) => {
-  trackEvent(SEARCHED, {community: get('name', community), term, type})
+  trackEvent(SEARCHED, {community, term, type})
 }
 
 export const identify = person => {

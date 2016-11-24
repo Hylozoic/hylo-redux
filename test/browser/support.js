@@ -2,7 +2,6 @@ import { createWriteStream, writeFileSync, unlinkSync } from 'fs'
 import nightmare from 'nightmare'
 import browserify from 'browserify'
 import { omit } from 'lodash'
-import { randomBytes } from 'crypto'
 
 const testFilePath = '/tmp/hylo-redux-test.html'
 const testBundlePath = '/tmp/hylo-redux-test.js'
@@ -71,11 +70,13 @@ export class TestRunner {
   }
 
   stop () {
-    const random = randomBytes(8).toString('hex')
-    const filename = `./.nyc_output/${random}.json`
     return this.mare.evaluate(() => window.__coverage__)
     .end()
-    .then(coverage => writeFileSync(filename, JSON.stringify(coverage)))
+    .then(coverage => {
+      if (!coverage) return
+      const filename = `./.nyc_output/${this.options.scaffold}.json`
+      writeFileSync(filename, JSON.stringify(coverage))
+    })
     .then(() => removeTestFile())
   }
 

@@ -28,6 +28,7 @@ export default class MessageSection extends React.Component {
   }
 
   componentDidMount () {
+    this.visibility = require('visibility')()
     this.scrollToBottom()
   }
 
@@ -60,10 +61,14 @@ export default class MessageSection extends React.Component {
 
   scrollToBottom = () => {
     this.list.scrollTop = this.list.scrollHeight
-    this.markAsRead()
+    if (this.visibility.visible()) {
+      this.markAsRead()
+    } else {
+      this.visibility.once('show', this.markAsRead)
+    }
   }
 
-  markAsRead () {
+  markAsRead = () => {
     const { thread } = this.props
     const { dispatch } = this.context
     dispatch(updatePostReadTime(thread.id))

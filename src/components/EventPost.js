@@ -24,9 +24,9 @@ const { array, func, object } = React.PropTypes
 const shouldShowTag = tag => tag && tag !== 'event'
 
 const UndecoratedEventPostCard = ({ post, comments, community, isMobile, dispatch }, { currentUser }) => {
-  const { start_time, end_time, user, id, name } = post
-  const start = new Date(start_time)
-  const end = end_time && new Date(end_time)
+  const { starts_at, ends_at, user, id, name } = post
+  const start = new Date(starts_at)
+  const end = ends_at && new Date(ends_at)
   const time = timeRangeBrief(start, end)
   const timeFull = timeRangeFull(start, end)
 
@@ -108,11 +108,11 @@ RSVPSelect.contextTypes = {currentUser: object, dispatch: func}
 
 const EventPost = (props, context) => {
   const { post, community, communities, comments, currentUser } = context
-  const { name, start_time, end_time, location, tag } = post
+  const { name, starts_at, ends_at, location, tag } = post
   const description = presentDescription(post, community)
   const title = decode(name || '')
-  const start = new Date(start_time)
-  const end = end_time && new Date(end_time)
+  const start = new Date(starts_at)
+  const end = ends_at && new Date(ends_at)
   const image = imageUrl(post, false)
 
   return <div className='post event boxy-post'>

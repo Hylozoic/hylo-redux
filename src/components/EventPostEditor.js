@@ -33,11 +33,11 @@ export default class EventPostEditor extends React.Component {
 
   render () {
     const { postEdit, update } = this.props
-    const { start_time, end_time, tag, type } = postEdit
+    const { starts_at, ends_at, tag, type } = postEdit
     if (type !== 'event') setTimeout(() => update({type: 'event'})) // smelly
 
-    const startTime = start_time ? new Date(start_time) : ''
-    const endTime = end_time ? new Date(end_time) : ''
+    const startsAt = starts_at ? new Date(starts_at) : ''
+    const endsAt = ends_at ? new Date(ends_at) : ''
     const updateTag = tag => update({tag, tagEdited: true})
     const updateTime = name => time => {
       if (time._isAMomentObject) update({[name]: time.toISOString()})
@@ -47,14 +47,14 @@ export default class EventPostEditor extends React.Component {
       <div className='start-time'>
         <Icon name='Calendar'/>
         <DatetimePicker inputProps={{placeholder: 'start time'}}
-          defaultValue={startTime}
-          onBlur={updateTime('start_time')}/>
+          defaultValue={startsAt}
+          onBlur={updateTime('starts_at')}/>
       </div>
       <div className='end-time'>
         <Icon name='Calendar'/>
         <DatetimePicker inputProps={{placeholder: 'end time'}}
-          defaultValue={endTime}
-          onBlur={updateTime('end_time')}/>
+          defaultValue={endsAt}
+          onBlur={updateTime('ends_at')}/>
       </div>
       <div className='location'>
         <Icon name='Pin-1'/>

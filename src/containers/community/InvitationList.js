@@ -73,7 +73,7 @@ const InvitationList = connect((state, { id }) => ({
                     <A to={`/u/${person.id}`}>{person.name}</A>
                   </td>
                 : <td className='unused'>unused</td>}
-              <td>{humanDate(invitation.created)}</td>
+              <td>{humanDate(invitation.created_at)}</td>
               {person
                 ? <td/>
                 : <td><a className='table-button' onClick={() => sendInvitation(invitation.email)}>

@@ -152,5 +152,8 @@ export default function makeRoutes (store) {
       <Route path='testbench' component={TestBench}/>
       <Route path='icons' component={IconTest}/>
     </Route>
+
+    {/* legacy route name, for old versions of the mobile app */}
+    <Route path='h/forgot-password' component={SetPassword}/>
   </Route>
 }

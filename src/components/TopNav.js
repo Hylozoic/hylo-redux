@@ -2,7 +2,7 @@ import React from 'react'
 import { A, IndexA } from './A'
 import Icon from './Icon'
 import Dropdown from './Dropdown'
-import { filter, get } from 'lodash/fp'
+import { filter } from 'lodash/fp'
 import { throttle, times } from 'lodash'
 import { MenuButton, leftNavWidth, leftNavEasing, menuButtonWidth } from './LeftNav'
 import { editorUrl } from '../containers/StandalonePostEditor'
@@ -41,7 +41,7 @@ export default class TopNav extends React.Component {
     leftNavIsOpen: bool,
     links: array,
     currentUser: object,
-    notificationCount: number
+    tagNotificationCount: number
   }
 
   static contextTypes = {
@@ -84,15 +84,14 @@ export default class TopNav extends React.Component {
 
   render () {
     const {
-      currentUser, openLeftNav, leftNavIsOpen, path, network, links, notificationCount
+      currentUser, openLeftNav, leftNavIsOpen, path, network, links,
+      tagNotificationCount
     } = this.props
     const { isMobile } = this.context
     const { returnPath } = this.state
     const label = getLabel(path)
     const community = this.props.community || allCommunities()
     const { slug } = community
-    const newNotificationCount = get('new_notification_count', currentUser)
-    const newMessageCount = get('new_message_count', currentUser)
 
     const moveWithMenu = isMobile
       ? {marginLeft: leftNavIsOpen ? leftNavWidth : 0}
@@ -103,13 +102,13 @@ export default class TopNav extends React.Component {
     return <VelocityComponent animation={moveWithMenu} easing={leftNavEasing}>
       <nav id='topNav' className={cx('clearfix', {scrolling: this.state.isScrolling})}>
         {currentUser && (isMobile
-          ? <MenuButton onClick={openLeftNav} label={label} notificationCount={notificationCount}/>
+          ? <MenuButton onClick={openLeftNav} label={label} notificationCount={tagNotificationCount}/>
           : <VelocityComponent animation={widenMenuButton} easing={leftNavEasing}>
-              <MenuButton onClick={openLeftNav} notificationCount={notificationCount}/>
+              <MenuButton onClick={openLeftNav} notificationCount={tagNotificationCount}/>
             </VelocityComponent>)}
 
         {currentUser
-          ? <UserMenu {...{newNotificationCount, newMessageCount, slug}}/>
+          ? <UserMenu slug={slug}/>
           : <ul className='right'>
               {!isCommunityUrl(path) && <li><A to={makeUrl('/signup', {next: returnPath})}>Sign up</A></li>}
               <li><A to={makeUrl('/login', {next: returnPath})}>Log in</A></li>

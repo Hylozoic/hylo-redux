@@ -6,7 +6,7 @@ const { string } = React.PropTypes
 
 @connect((state) => {
   const community = getCurrentCommunity(state)
-  let count = get('new_notification_count', state.people.current) || 0
+  const count = state.newMessageCount + state.newNotificationCount
   let title = community ? community.name : 'Hylo'
   return {
     pageTitle: (count > 0 ? `(${count}) ` : '') + title,

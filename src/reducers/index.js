@@ -1,7 +1,7 @@
 import { combineReducers } from 'redux'
 import { routerReducer } from 'react-router-redux'
-import { some, get, partition, transform } from 'lodash'
-import { filter, flow, map, compact } from 'lodash/fp'
+import { some, includes, partition, transform } from 'lodash'
+import { filter, flow, get, map, compact } from 'lodash/fp'
 import { activities, activitiesByCommunity } from './activities'
 import comments from './comments'
 import commentEdits from './commentEdits'
@@ -12,6 +12,7 @@ import communitiesForNetworkNav from './communitiesForNetworkNav'
 import messageEdits from './messageEdits'
 import networks from './networks'
 import networkEdits from './networkEdits'
+import newMessageCount from './newMessageCount'
 import people from './people'
 import peopleByQuery from './peopleByQuery'
 import postEdits, {
@@ -42,8 +43,10 @@ import {
   CREATE_NETWORK,
   FETCH_ACTIVITY,
   FETCH_COMMUNITIES,
+  FETCH_CURRENT_USER,
   FETCH_INVITATIONS,
   FETCH_JOIN_REQUESTS,
+  FETCH_LIVE_STATUS,
   FETCH_PEOPLE,
   FETCH_POSTS,
   FETCH_THANKS,
@@ -216,6 +219,7 @@ const combinedReducers = combineReducers({
   messageEdits,
   networks,
   networkEdits,
+  newMessageCount,
   pending,
   people,
   peopleByQuery,
@@ -414,7 +418,10 @@ const combinedReducers = combineReducers({
       case TOGGLE_USER_SETTINGS_SECTION:
         return {
           ...state,
-          expand: {...state.expand, [payload]: meta.forceOpen || !get(state.expand, payload)}
+          expand: {
+            ...state.expand,
+            [payload]: meta.forceOpen || !get(payload, state.expand)
+          }
         }
     }
     return state
@@ -550,6 +557,18 @@ const combinedReducers = combineReducers({
         return state.slice(0, -1)
     }
 
+    return state
+  },
+
+  newNotificationCount: (state = 0, action) => {
+    const { type, error, payload } = action
+    if (error) return state
+    if (type === FETCH_ACTIVITY && action.meta.resetCount) {
+      return 0
+    }
+    if (includes([LOGIN, SIGNUP, FETCH_CURRENT_USER, FETCH_LIVE_STATUS], type)) {
+      return get('new_notification_count', payload) || state
+    }
     return state
   }
 })

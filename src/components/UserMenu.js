@@ -12,6 +12,8 @@ import { NonLinkAvatar } from './Avatar'
 import { isAdmin, hasFeature } from '../models/currentUser'
 import { DIRECT_MESSAGES } from '../config/featureFlags'
 import cx from 'classnames'
+import { connect } from 'react-redux'
+import { pick } from 'lodash'
 
 const { bool, func, object } = React.PropTypes
 
@@ -127,4 +129,5 @@ const UserMenu = ({ slug, newMessageCount, newNotificationCount }, { isMobile, d
 }
 UserMenu.contextTypes = {isMobile: bool, dispatch: func, currentUser: object}
 
-export default UserMenu
+export default connect(state =>
+  pick(state, 'newMessageCount', 'newNotificationCount'))(UserMenu)

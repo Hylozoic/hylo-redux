@@ -1,18 +1,14 @@
 import { filter, indexOf, mergeWith } from 'lodash'
-import { find, get, isNull, omitBy } from 'lodash/fp'
+import { find, isNull, isUndefined, omitBy } from 'lodash/fp'
 import { normalize } from './people'
 import {
   CREATE_COMMUNITY,
-  FETCH_ACTIVITY,
   FETCH_CURRENT_USER,
-  FETCH_LIVE_STATUS,
   JOIN_COMMUNITY_WITH_CODE,
-  INCREMENT_UNSEEN_THREADS,
   LEAVE_COMMUNITY_PENDING,
   LOGIN,
   LOGOUT,
   RESET_TOOLTIPS,
-  SET_UNSEEN_THREAD_COUNT,
   SIGNUP,
   UPDATE_USER_SETTINGS_PENDING,
   UPDATE_COMMUNITY_SETTINGS_PENDING,
@@ -20,14 +16,17 @@ import {
   USE_INVITATION
 } from '../actions'
 
+const normalizeCurrentUser = user =>
+  omitBy(x => isNull(x) || isUndefined(x), {
+    ...normalize(user),
+    new_notification_count: null,
+    new_message_count: null
+  })
+
 const updateCurrentUser = (user, params) => {
   const updated = mergeWith({...user}, params, (objV, srcV, key, obj, src) => {
     if (key === 'tags') return srcV
   })
-
-  if (get('last_viewed_messages_at', params.settings)) {
-    updated.new_message_count = 0
-  }
 
   return updated
 }
@@ -73,28 +72,13 @@ export default function (state = null, action) {
     case LOGIN:
     case SIGNUP:
     case FETCH_CURRENT_USER:
-      return payload ? normalize(payload) : null
+      return payload ? normalizeCurrentUser(payload) : null
     case CREATE_COMMUNITY:
     case JOIN_COMMUNITY_WITH_CODE:
     case USE_INVITATION:
       return {
         ...state,
         memberships: [normalizeMembership(payload), ...state.memberships]
-      }
-    case FETCH_ACTIVITY:
-      return meta.resetCount ? {...state, new_notification_count: 0} : state
-    case FETCH_LIVE_STATUS:
-      const { new_notification_count } = payload
-      return new_notification_count ? {...state, new_notification_count} : state
-    case INCREMENT_UNSEEN_THREADS:
-      return {
-        ...state,
-        new_message_count: state.new_message_count + 1
-      }
-    case SET_UNSEEN_THREAD_COUNT:
-      return {
-        ...state,
-        new_message_count: payload.count
       }
     case UPDATE_MEMBERSHIP_SETTINGS_PENDING:
       return {

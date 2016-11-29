@@ -68,7 +68,7 @@ const PageWithNav = (props, context) => {
       leftNavIsOpen={leftNavIsOpen}
       path={path}
       opened={leftNavIsOpen}
-      notificationCount={tagNotificationCount}/>
+      tagNotificationCount={tagNotificationCount}/>
 
     <VelocityComponent animation={moveWithMenu} easing={leftNavEasing}>
       <div id='main'>

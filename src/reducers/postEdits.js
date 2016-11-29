@@ -126,6 +126,8 @@ export const creatingTagAndDescription = (state = false, action) => {
 export const tagDescriptionEdits = (state = {}, action) => {
   const { type, error, payload } = action
   if (includes([CREATE_POST, UPDATE_POST, CREATE_COMMENT], type) && error) {
+    if (!payload.response) return state // e.g. network error
+
     const response = JSON.parse(payload.response.body)
     if (response.tagsMissingDescriptions) {
       return {

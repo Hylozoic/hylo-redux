@@ -37,6 +37,16 @@ export default class Thread extends React.Component {
     this.props.dispatch(onThreadPage(post.id))
     if (this.socket) {
       this.socket.post(socketUrl(`/noo/post/${post.id}/subscribe`)) // for people typing
+
+      if (this.reconnectHandler) {
+        this.socket.off('reconnect', this.reconnectHandler)
+      }
+
+      this.reconnectHandler = () => {
+        // TODO ask server for new messages
+        this.socket.post(socketUrl(`/noo/post/${post.id}/subscribe`))
+      }
+      this.socket.on('reconnect', this.reconnectHandler)
     }
     this.refs.form.getWrappedInstance().focus()
     trackEvent(VIEWED_MESSAGE_THREAD)
@@ -52,6 +62,7 @@ export default class Thread extends React.Component {
     const newId = get('post.id', nextProps)
     if (newId !== oldId) {
       if (this.socket) {
+        this.socket.off('reconnect', this.reconnectHandler)
         this.socket.post(socketUrl(`/noo/post/${oldId}/unsubscribe`))
       }
       this.setupForThread(nextProps.post)
@@ -62,6 +73,7 @@ export default class Thread extends React.Component {
     const postId = get('post.id', this.props)
     this.props.dispatch(offThreadPage())
     if (this.socket) {
+      this.socket.off('reconnect', this.reconnectHandler)
       this.socket.post(socketUrl(`/noo/post/${postId}/unsubscribe`))
     }
   }

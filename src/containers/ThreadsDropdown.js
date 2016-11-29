@@ -72,6 +72,12 @@ export default class ThreadsDropdown extends React.Component {
       this.socket.post(socketUrl('/noo/threads/subscribe'))
       this.socket.on('newThread', this.newThread)
       this.socket.on('messageAdded', this.messageAdded)
+
+      this.reconnectHandler = () => {
+        // TODO clear cache in dropdown
+        this.socket.post(socketUrl('/noo/threads/subscribe'))
+      }
+      this.socket.on('reconnect', this.reconnectHandler)
     }
   }
 
@@ -80,6 +86,7 @@ export default class ThreadsDropdown extends React.Component {
       this.socket.post(socketUrl('/noo/threads/unsubscribe'))
       this.socket.off('newThread')
       this.socket.off('messageAdded')
+      this.socket.off('reconnect', this.reconnectHandler)
     }
   }
 

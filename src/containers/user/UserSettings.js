@@ -9,9 +9,10 @@ import {
   notify,
   toggleUserSettingsSection,
   updateMembershipSettings,
-  updateUserSettings
+  updateUserSettings,
+  generateUserToken
  } from '../../actions'
-import { PAYMENT_SETTINGS } from '../../config/featureFlags'
+import { PAYMENT_SETTINGS, GENERATE_TOKEN } from '../../config/featureFlags'
 import { leaveCommunity } from '../../actions/communities'
 import { uploadImage } from '../../actions/uploadImage'
 import A from '../../components/A'
@@ -387,6 +388,18 @@ export default class UserSettings extends React.Component {
           <Item>
             <div className='full-column'>
               <p>You do not belong to any communities that require a membership fee.</p>
+            </div>
+          </Item>
+        </Section>}
+      </div>}
+      
+      {hasFeature(currentUser, GENERATE_TOKEN) && <div>
+        <SectionLabel name='developer' label='API Access' {...{dispatch, expand}}/>
+        {expand.developer && <Section className='apiAccess'>
+          <Item>
+            <div className='full-column'>
+              <p>Generate a token with which you can access the Hylo API</p>
+              <button className='button' onClick={() => dispatch(generateUserToken())}>Generate Token</button>
             </div>
           </Item>
         </Section>}

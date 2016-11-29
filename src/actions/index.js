@@ -65,6 +65,7 @@ export const FOLLOW_POST = 'FOLLOW_POST'
 export const FOLLOW_POST_PENDING = FOLLOW_POST + _PENDING
 export const FOLLOW_TAG = 'FOLLOW_TAG'
 export const FOLLOW_TAG_PENDING = FOLLOW_TAG + _PENDING
+export const GENERATE_USER_TOKEN = 'GENERATE_USER_TOKEN'
 export const HIDE_TAG_POPOVER = 'HIDE_TAG_POPOVER'
 export const INCREMENT_UNSEEN_THREADS = 'INCREMENT_UNSEEN_THREADS'
 export const JOIN_COMMUNITY_WITH_CODE = 'JOIN_COMMUNITY_WITH_CODE'
@@ -246,6 +247,13 @@ export function fetchCurrentUser (refresh) {
         communities: get('communities')
       }
     }
+  }
+}
+
+export function generateUserToken () {
+  return {
+    type: GENERATE_USER_TOKEN,
+    payload: {api: true, path: '/noo/token', method: 'post'}
   }
 }
 

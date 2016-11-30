@@ -94,9 +94,12 @@ export default class MessageSection extends React.Component {
       ref={list => this.list = list}
       onScroll={this.handleScroll}>
       <div className='messages-section-inner'>
+        {newFromOther && scrolledUp &&
+          <div className='newMessagesNotify' onClick={this.scrollToBottom}>
+            New Messages
+          </div>}
         {messages.map(m =>
           <Message ref={node => this['message' + m.id] = node} message={m} key={m.id}/>)}
-            {newFromOther && scrolledUp && <div className='newMessagesNotify' onClick={this.scrollToBottom}>New Messages</div>}
       </div>
     </div>
   }

@@ -19,20 +19,22 @@
   .header {
     width: 100%;
     background-color: @faint-gray-bg;
-    padding: 15px 15px 15px 30px;
+    vertical-align: middle;
+    padding: 0 15px 0 30px;
+    height: 60px;
+    line-height: 60px;
+    top: @top-nav-height;
     .mobile({
-      padding: 10px 15px;
+      padding: 0 15px;
+      height: 40px;
+      line-height: 40px;
+      top: @mobile-top-nav-height;
     });
     border-bottom: 1px solid @post-border;
-    flex-grow: 0;
-    flex-shrink: 0;
-    flex-basis: 0;
-
-    .title {
-      display: block;
-      .thread-title-text;
-      text-decoration: none;
-    }
+    position: fixed;
+    z-index: 1;
+    .thread-title-text;
+    text-decoration: none;
   }
 
   .messages-section {
@@ -81,7 +83,10 @@
     bottom: 0;
     width: 100%;
     max-height: 100%;
-    padding: 10px 0;
+    padding: 70px 0 10px;
+    .mobile({
+      padding-top: 50px;
+    });
   }
 
   .message {

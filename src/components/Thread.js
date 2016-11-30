@@ -2,7 +2,6 @@ import React from 'react'
 import { filter } from 'lodash'
 import { get, map, min } from 'lodash/fp'
 const { array, bool, func, object } = React.PropTypes
-import cx from 'classnames'
 import MessageSection from './MessageSection'
 import MessageForm from './MessageForm'
 import A from './A'
@@ -80,7 +79,6 @@ export default class Thread extends React.Component {
 
   render () {
     const { post, messages, pending, dispatch } = this.props
-    const classes = cx('thread')
     const loadMore = () => {
       if (pending || messages.length >= post.numComments) return
       const beforeId = min(map('id', messages))
@@ -88,7 +86,7 @@ export default class Thread extends React.Component {
       .then(() => this.refs.messageSection.scrollToMessage(beforeId))
     }
 
-    return <div className={classes}>
+    return <div className='thread'>
       <Header />
       <MessageSection {...{messages, pending}} thread={post} onScrollToTop={loadMore} ref='messageSection'/>
       <PeopleTyping showNames/>
@@ -103,11 +101,9 @@ export const Header = (props, { currentUser, post }) => {
   const { id } = currentUser
   const others = filter(followers, f => f.id !== id)
 
-  return <div className='header'>
-    <div className='title'>
-      You and <A to={`/u/${others[0].id}`}>{others[0].name}</A>
-      {others.length > 1 && <span>and ${gt2} other{gt2 === 1 ? '' : 's'}</span>}
-    </div>
+  return <div className='header title'>
+    You and <A to={`/u/${others[0].id}`}>{others[0].name}</A>
+    {others.length > 1 && <span>and ${gt2} other{gt2 === 1 ? '' : 's'}</span>}
   </div>
 }
 Header.contextTypes = {post: object, currentUser: object}

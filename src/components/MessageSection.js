@@ -42,8 +42,7 @@ export default class MessageSection extends React.Component {
   scrollToMessage (id) {
     const message = findDOMNode(this['message' + id])
     const messageTop = position(message, this.list).y -
-      document.querySelector('.thread .header').offsetHeight -
-      document.getElementById('topNav').offsetHeight - 40
+      document.querySelector('.thread .header').offsetHeight - 11
     this.list.scrollTop = messageTop
   }
 

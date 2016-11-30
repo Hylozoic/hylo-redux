@@ -10,6 +10,7 @@ import { updatePostReadTime } from '../actions/posts'
 export default class MessageSection extends React.Component {
   static propTypes = {
     messages: array,
+    onScroll: func,
     onScrollToTop: func,
     pending: bool,
     thread: object
@@ -42,11 +43,12 @@ export default class MessageSection extends React.Component {
   scrollToMessage (id) {
     const message = findDOMNode(this['message' + id])
     const messageTop = position(message, this.list).y -
+      document.querySelector('#topNav').offsetHeight -
       document.querySelector('.thread .header').offsetHeight - 11
     this.list.scrollTop = messageTop
   }
 
-  handleScroll = throttle(target => {
+  detectScrollExtremes = throttle(target => {
     const { scrolledUp } = this.state
     const { scrollTop, scrollHeight, offsetHeight } = target
     const onBottom = scrollTop > scrollHeight - offsetHeight
@@ -57,6 +59,11 @@ export default class MessageSection extends React.Component {
     }
     if (scrollTop <= 50 && this.props.onScrollToTop) this.props.onScrollToTop()
   }, 500, {trailing: true})
+
+  handleScroll = event => {
+    if (this.props.onScroll) this.props.onScroll(event)
+    this.detectScrollExtremes(event.target)
+  }
 
   scrollToBottom = () => {
     this.list.scrollTop = this.list.scrollHeight
@@ -85,7 +92,7 @@ export default class MessageSection extends React.Component {
 
     return <div className={cx('messages-section', {empty: isEmpty(messages)})}
       ref={list => this.list = list}
-      onScroll={e => this.handleScroll(e.target)}>
+      onScroll={this.handleScroll}>
       <div className='messages-section-inner'>
         {messages.map(m =>
           <Message ref={node => this['message' + m.id] = node} message={m} key={m.id}/>)}

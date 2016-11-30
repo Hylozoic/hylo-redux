@@ -9,29 +9,28 @@
   justify-content: flex-start;
   align-content: flex-start;
   align-items: flex-start;
-  padding-top: @top-nav-height;
-  margin-top: -@top-nav-height;
-  .mobile({
-    padding-top: @mobile-top-nav-height;
-    margin-top: -@mobile-top-nav-height;
-  });
+  position: absolute;
+  top: 0;
+
+  @thread-header-height: 60px;
+  @mobile-thread-header-height: 40px;
 
   .header {
     width: 100%;
     background-color: @faint-gray-bg;
     vertical-align: middle;
     padding: 0 15px 0 30px;
-    height: 60px;
-    line-height: 60px;
+    height: @thread-header-height;
+    line-height: @thread-header-height;
     top: @top-nav-height;
     .mobile({
       padding: 0 15px;
-      height: 40px;
-      line-height: 40px;
+      height: @mobile-thread-header-height;
+      line-height: @mobile-thread-header-height;
       top: @mobile-top-nav-height;
     });
     border-bottom: 1px solid @post-border;
-    position: fixed;
+    position: absolute;
     z-index: 1;
     .thread-title-text;
     text-decoration: none;
@@ -83,9 +82,10 @@
     bottom: 0;
     width: 100%;
     max-height: 100%;
-    padding: 70px 0 10px;
+    padding-bottom: 10px;
+    padding-top: @top-nav-height + @thread-header-height + 10;
     .mobile({
-      padding-top: 50px;
+      padding-top: @mobile-top-nav-height + @mobile-thread-header-height + 10;
     });
   }
 

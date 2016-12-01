@@ -9,6 +9,7 @@ import {
   LOGIN,
   LOGOUT,
   RESET_TOOLTIPS,
+  REVOKE_USER_TOKEN,
   SIGNUP,
   UPDATE_USER_SETTINGS_PENDING,
   UPDATE_COMMUNITY_SETTINGS_PENDING,
@@ -98,6 +99,11 @@ export default function (state = null, action) {
           ...state.settings,
           viewedTooltips: {}
         }
+      }
+    case REVOKE_USER_TOKEN:
+      return {
+        ...state,
+        token: false
       }
   }
 

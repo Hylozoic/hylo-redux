@@ -2,6 +2,7 @@ import validator from 'validator'
 import React from 'react'
 import { connect } from 'react-redux'
 import { prefetch } from 'react-fetcher'
+import CopyToClipboard from 'react-copy-to-clipboard'
 import cx from 'classnames'
 const { func, object, string } = React.PropTypes
 import {
@@ -10,7 +11,8 @@ import {
   toggleUserSettingsSection,
   updateMembershipSettings,
   updateUserSettings,
-  generateUserToken
+  generateUserToken,
+  revokeUserToken
  } from '../../actions'
 import { PAYMENT_SETTINGS, GENERATE_TOKEN } from '../../config/featureFlags'
 import { leaveCommunity } from '../../actions/communities'
@@ -194,10 +196,19 @@ export default class UserSettings extends React.Component {
     this.delayedUpdate(field, value)
   }
 
+  generateToken = () => {
+    const { dispatch } = this.props
+    this.setState({tokenPending: true})
+    dispatch(generateUserToken())
+    .then(action => action.error ? this.setState({tokenError: true, tokenPending: false}) : this.setState({receivedToken: action.payload.token, tokenPending: false}))    
+  }
+
+  onCopy = () => this.setState({tokenCopied: true})
+
   render () {
     const { currentUser, expand, pending, dispatch } = this.props
     const memberships = sortBy(currentUser.memberships, m => m.community.name)
-    const { editing, edited, errors } = this.state
+    const { tokenCopied, tokenPending, tokenError, receivedToken, editing, edited, errors } = this.state
     let { avatar_url, banner_url } = currentUser
     if (!banner_url) banner_url = defaultBanner
     let {
@@ -398,8 +409,19 @@ export default class UserSettings extends React.Component {
         {expand.developer && <Section className='apiAccess'>
           <Item>
             <div className='full-column'>
-              <p>Generate a token with which you can access the Hylo API</p>
-              <button className='button' onClick={() => dispatch(generateUserToken())}>Generate Token</button>
+              { !currentUser.token && !receivedToken && <p>Generate a token with which you can access the Hylo API</p>}
+              { !currentUser.token && !tokenError && !tokenPending && !receivedToken && <button className='button' onClick={this.generateToken}>Generate Token</button>}
+              { !currentUser.token && tokenPending && <p>Generating...</p>}
+              { tokenError && <p>There was an error generating your token. Please refresh and try again.</p>}
+              { currentUser.token && <div><p>You've generated a token to access the Hylo API.</p>
+                <button className='button' onClick={() => dispatch(revokeUserToken())}>Revoke</button></div>}
+              { receivedToken && <div>
+                <p>Here is your access token. Copy it somewhere safe now, this is the only time that it will be shown to you.</p>
+                <pre>{receivedToken}</pre>
+                <CopyToClipboard text={receivedToken} onCopy={this.onCopy}>
+                  <button className='button'>Copy To Clipboard</button>
+                </CopyToClipboard></div>}
+              { tokenCopied && <p>Copied.</p>}
             </div>
           </Item>
         </Section>}

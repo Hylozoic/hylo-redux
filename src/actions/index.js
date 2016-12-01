@@ -100,6 +100,7 @@ export const RESEND_ALL_COMMUNITY_INVITATIONS_PENDING = RESEND_ALL_COMMUNITY_INV
 export const RESET_COMMUNITY_VALIDATION = 'RESET_COMMUNITY_VALIDATION'
 export const RESET_ERROR = 'RESET_ERROR'
 export const RESET_NETWORK_VALIDATION = 'RESET_NETWORK_VALIDATION'
+export const REVOKE_USER_TOKEN = 'REVOKE_USER_TOKEN'
 export const SET_STATE = 'SET_STATE'
 export const SET_UNSEEN_THREAD_COUNT = 'SET_UNSEEN_THREAD_COUNT'
 export const SEARCH = 'SEARCH'
@@ -254,6 +255,13 @@ export function generateUserToken () {
   return {
     type: GENERATE_USER_TOKEN,
     payload: {api: true, path: '/noo/token', method: 'post'}
+  }
+}
+
+export function revokeUserToken () {
+  return {
+    type: REVOKE_USER_TOKEN,
+    payload: {api: true, path: '/noo/token/revoke', method: 'delete'}
   }
 }
 

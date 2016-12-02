@@ -29,7 +29,7 @@ export default class MessageForm extends React.Component {
     const { dispatch, postId, text } = this.props
     if (event) event.preventDefault()
     const cleanText = text.replace(/<p>&nbsp;<\/p>$/m, '')
-    if (!cleanText || textLength(cleanText) < 2) return false
+    if (!cleanText || textLength(cleanText) < 1) return false
 
     dispatch(createComment(postId, cleanText))
     .then(({ error }) => {

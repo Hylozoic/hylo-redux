@@ -66,7 +66,9 @@ export default class App extends React.Component {
   }
 
   componentDidMount () {
-    const { dispatch, location: { query } } = this.props
+    const { dispatch, location } = this.props
+
+    const query = get('query', location) || {}
 
     const version = Number(iOSAppVersion())
     if (version < 1.7) {

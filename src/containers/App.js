@@ -9,7 +9,7 @@ import Notifier from '../components/Notifier'
 import LiveStatusPoller from '../components/LiveStatusPoller'
 import PageTitleController from '../components/PageTitleController'
 import TagPopover from '../components/TagPopover'
-import { removeNotification, toggleLeftNav, navigate } from '../actions'
+import { removeNotification, toggleLeftNav, navigate, notify } from '../actions'
 import { iOSAppVersion, isMobile as testIsMobile, calliOSBridge } from '../client/util'
 import { ModalWrapper } from '../components/Modal'
 import { setMobileDevice } from '../actions'
@@ -66,6 +66,8 @@ export default class App extends React.Component {
   }
 
   componentDidMount () {
+    const { dispatch, location: { query } } = this.props
+
     const version = Number(iOSAppVersion())
     if (version < 1.7) {
       window.location = 'https://www.hylo.com/newapp'
@@ -78,8 +80,13 @@ export default class App extends React.Component {
     }
 
     window.addEventListener('resize', debounce(event => {
-      this.props.dispatch(setMobileDevice(testIsMobile()))
+      dispatch(setMobileDevice(testIsMobile()))
     }, 1000))
+
+    if (query.notification) {
+      const type = query.error ? 'error' : 'info'
+      dispatch(notify(query.notification, {type, maxage: null}))
+    }
   }
 
   render () {
@@ -96,7 +103,7 @@ export default class App extends React.Component {
     })
 
     const { pathname } = location || {}
-    const showIntercomButton = pathname && !location.pathname.startsWith('/t/')
+    const showIntercomButton = pathname && !pathname.startsWith('/t/')
 
     return <div className={classes}>
       {children}

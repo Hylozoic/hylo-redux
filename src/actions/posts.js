@@ -155,11 +155,12 @@ export function fetchLinkPreview (url) {
   }
 }
 
-export function completePost (id) {
+export function completePost (id, params) {
+  console.log(params)
   return {
     type: COMPLETE_POST,
     payload: {api: true, path: `/noo/post/${id}/fulfill`, method: 'POST'},
-    meta: {optimistic: true, id}
+    meta: {optimistic: true, id, params}
   }
 }
 

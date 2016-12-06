@@ -5,7 +5,7 @@ import TagInput from './TagInput'
 import { getCommunity } from '../models/community'
 var { array } = React.PropTypes
 
-@connect((state, { ids }) => ({
+@connect((state, {ids}) => ({
   communities: map(id => getCommunity(id, state), ids)
 }))
 export default class CommunityTagInput extends React.Component {

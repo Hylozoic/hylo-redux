@@ -156,11 +156,17 @@ export function fetchLinkPreview (url) {
   }
 }
 
-export function completePost (id, params) {
+export function completePost (id, contributors) {
+  const contributorIds = map(contributors, 'id')
   return {
     type: COMPLETE_POST,
-    payload: {api: true, params, path: `/noo/post/${id}/fulfill`, method: 'POST'},
-    meta: {optimistic: true, id, params}
+    payload: {
+      api: true,
+      path: `/noo/post/${id}/fulfill`,
+      method: 'POST',
+      params: {contributorIds: contributorIds}
+    },
+    meta: {optimistic: true, contributors, id}
   }
 }
 

@@ -45,8 +45,8 @@ class Post extends React.Component {
   constructor(props, context) {
     super(props, context)
     this.state = {
-      showRequestCompletePeopleSelect: false,
-      requestCompletePeople: []
+      requestCompleting: false,
+      contributors: []
     }
   }
 
@@ -70,8 +70,8 @@ class Post extends React.Component {
 
   render () {
     let  { post } = this.props
-    const { comments, expanded, onExpand, community, dispatch, requestCompletePeopleChoices } = this.props
-    const { requestCompletePeople } = this.state
+    const { comments, expanded, onExpand, community, dispatch, contributorChoices } = this.props
+    const { contributors } = this.state
     const { currentUser } = this.context
     const { communities, tag, media, linkPreview } = post
     const image = find(m => m.type === 'image', media)
@@ -81,31 +81,23 @@ class Post extends React.Component {
     const canEdit = canEditPost(currentUser, post)
 
     const isRequest = post.tag === 'request'
-    const requestCompletingToggle = () => {
-      return this.setState({showRequestCompletePeopleSelect: !this.state.showRequestCompletePeopleSelect})
+    const isCompleteRequest = isRequest && post.fulfilled_at
+    const isIncompleteRequest = isRequest && !post.fulfilled_at && canEdit
+    const toggleRequestCompleting = () => {
+      return this.setState({requestCompleting: !this.state.requestCompleting})
     }
-    const showRequestCompletedHeader = isRequest && post.fulfilled_at
-    const showRequestCompleteCheckbox = isRequest && canEdit && !post.fulfilled_at
-    const requestCompleteAddPerson = (person) => {
-      this.setState({requestCompletePeople: [...this.state.requestCompletePeople, person]})
+    const addContributor = (person) => {
+      this.setState({contributors: [...this.state.contributors, person]})
     }
-    const requestCompleteRemovePerson = (person) => {
-      this.setState({requestCompletePeople: reject(this.state.requestCompletePeople, {id: person.id})})
+    const removeContributor = (person) => {
+      this.setState({contributors: reject(this.state.contributors, {id: person.id})})
     }
-    const requestCompletePeopleOnInput = (term) => {
-      this.props.dispatch(typeahead(term, 'invite', {communityId: community.id, type: 'people'}))
+    const contributorHandleInput = (term) => {
+      dispatch(typeahead(term, 'invite', {communityId: community.id, type: 'people'}))
     }
-    const requestCompleteDone = () => {
-      if(requestCompletePeople.length > 0) {
-        this.props.dispatch(
-          completePost(
-            post.id,
-            {
-              contributors: this.state.requestCompletePeople,
-              contributorIds: map(this.state.requestCompletePeople, 'id')
-            }
-          )
-        )
+    const completeRequest = () => {
+      if(contributors.length > 0) {
+        dispatch(completePost(post.id, contributors))
       }
     }
 
@@ -123,7 +115,7 @@ class Post extends React.Component {
         <Voters/>
       </div>
       <Attachments/>
-      {showRequestCompletedHeader &&
+      {isCompleteRequest &&
         <div className='request-completed-bar'>
           <div className='request-complete-heading'>
             <input className='toggle'
@@ -135,31 +127,31 @@ class Post extends React.Component {
         </div>
       }
       <CommentSection {...{post, expanded, onExpand, comments}}/>
-      {showRequestCompleteCheckbox &&
+      {isIncompleteRequest &&
         <div className='request-completed-bar'>
           <div className='request-complete-heading'>
             <input type='checkbox'
               className='toggle'
-              checked={this.state.showRequestCompletePeopleSelect}
-              onChange={requestCompletingToggle} />
+              checked={this.state.requestCompleting}
+              onChange={toggleRequestCompleting} />
             <p className='request-complete-message'>
-              {this.state.showRequestCompletePeopleSelect ?
+              {this.state.requestCompleting ?
                 'Click the checkmark if your request has been completed!' :
                 'Awesome! Who helped you?'}
             </p>
           </div>
-          {this.state.showRequestCompletePeopleSelect &&
+          {this.state.requestCompleting &&
             <div className='buttons'>
-              <a className='cancel' onClick={requestCompletingToggle}>
+              <a className='cancel' onClick={toggleRequestCompleting}>
                 <span className='icon icon-Fail'></span>
               </a>
               <TagInput className='request-complete-people-input'
-                choices={requestCompletePeopleChoices}
-                handleInput={requestCompletePeopleOnInput}
-                onSelect={requestCompleteAddPerson}
-                onRemove={requestCompleteRemovePerson}
-                tags={requestCompletePeople} />
-              <a className='done' onClick={requestCompleteDone}>
+                choices={contributorChoices}
+                handleInput={contributorHandleInput}
+                onSelect={addContributor}
+                onRemove={removeContributor}
+                tags={contributors} />
+              <a className='done' onClick={completeRequest}>
                 Done
               </a>
             </div>
@@ -171,13 +163,14 @@ class Post extends React.Component {
 }
 export default compose(
   connect((state, {post}) => {
-    let {typeaheadMatches} = state
-    let peopleChoices = reject(typeaheadMatches['invite'], {id: post.user_id})
+    const contributorChoices = reject(
+      state.typeaheadMatches['invite'], {id: post.user_id}
+    )
     return {
       comments: getComments(post, state),
       community: getCurrentCommunity(state),
       post: denormalizedPost(post, state),
-      requestCompletePeopleChoices: peopleChoices
+      contributorChoices: contributorChoices
     }
   })
 )(Post)

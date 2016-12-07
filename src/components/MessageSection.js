@@ -36,8 +36,11 @@ export default class MessageSection extends React.Component {
   componentDidUpdate (prevProps) {
     const messagesLength = this.props.messages.length
     const oldMessagesLength = prevProps.messages.length
+    const { currentUser } = this.context
+    const latestMessage = this.props.messages[this.props.messages.length - 1]
+    const userSentLatest = latestMessage.user_id === currentUser.id 
     const { scrolledUp } = this.state
-    if (!scrolledUp && messagesLength !== oldMessagesLength) this.scrollToBottom()
+    if (messagesLength !== oldMessagesLength && (!scrolledUp || userSentLatest)) this.scrollToBottom()
   }
 
   scrollToMessage (id) {

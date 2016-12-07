@@ -3,13 +3,14 @@ import { compose } from 'redux'
 import { connect } from 'react-redux'
 import { prefetch, defer } from 'react-fetcher'
 import { commentUrl, peopleUrl } from '../../routes'
-import { FETCH_PERSON, fetchPerson, fetchThanks, navigate, showDirectMessage } from '../../actions'
+import { FETCH_PERSON, fetchPerson, fetchThanks, fetchContributions, navigate, showDirectMessage } from '../../actions'
 import { saveCurrentCommunityId } from '../../actions/util'
 import { capitalize, compact, get, some, includes } from 'lodash'
 import { isNull, isUndefined, map, omitBy, sortBy } from 'lodash/fp'
 import { STARTED_MESSAGE, VIEWED_PERSON, VIEWED_SELF, trackEvent } from '../../util/analytics'
 import { findError } from '../../actions/util'
 import PostList from '../../components/PostList'
+import Post from '../../components/Post'
 import A from '../../components/A'
 import { fetch, ConnectedPostList } from '../ConnectedPostList'
 import { refetch } from '../../util/caching'
@@ -45,10 +46,13 @@ const getFetchOpts = query => {
 }
 
 const initialFetch = (id, query) => {
-  if (query.show === 'thank') {
-    return fetchThanks(id)
-  } else {
-    return fetch(subject, id, getFetchOpts(query))
+  switch(query.show) {
+    case 'thank':
+      return fetchThanks(id)
+    case 'contribution':
+      return fetchContributions(id)
+    default:
+      return fetch(subject, id, getFetchOpts(query))
   }
 }
 
@@ -109,6 +113,17 @@ const PersonProfile = compose(
     trackEvent(STARTED_MESSAGE, {context: 'profile'})
     return dispatch(showDirectMessage(person.id, person.name))
   }
+  const ActivityItemsForCategory = ({category, person}) => {
+    switch(category) {
+      case 'thank':
+        return <Thanks person={person} />
+      case 'contribution':
+        return <Contributions person={person} />
+      default:
+        return <ConnectedPostList {...{subject, id, query: getFetchOpts(query)}}
+          hide={postsToHide} hideMobileSearch />
+    }
+  }
 
   return <CoverImagePage id='person' image={banner_url || defaultBanner}>
     <div className='opener'>
@@ -151,18 +166,14 @@ const PersonProfile = compose(
     </div>
     {!category && recentRequest && <div>
       <p className='section-label'>Recent request</p>
-      <PostList posts={[recentRequest]} hideMobileSearch/>
+      <PostList posts={[recentRequest]} hideMobileSearch />
     </div>}
     {!category && recentOffer && <div>
       <p className='section-label'>Recent offer</p>
-      <PostList posts={[recentOffer]} hideMobileSearch/>
+      <PostList posts={[recentOffer]} hideMobileSearch />
     </div>}
-    <ListLabel category={category}/>
-    {category === 'thank'
-      ? <Thanks person={person}/>
-      : <ConnectedPostList {...{subject, id, query: getFetchOpts(query)}}
-          hide={postsToHide}
-          hideMobileSearch/>}
+    <ListLabel category={category} />
+    <ActivityItemsForCategory category={category} person={person} />
   </CoverImagePage>
 })
 
@@ -224,7 +235,7 @@ const SocialMediaIcon = ({ type, value }) => {
   </a>
 }
 
-const Thanks = connect((state, { person }) => ({
+const Thanks = connect((state, {person}) => ({
   thanks: sortBy(t => -t.created_at, state.thanks[person.id])
 }))(({ thanks, person, dispatch }) => {
   const visit = comment => dispatch(navigate(commentUrl(comment)))
@@ -236,6 +247,20 @@ const Thanks = connect((state, { person }) => ({
       </span>
       <Comment comment={{...thank.comment, user: person}} truncate
         expand={() => visit(thank.comment)}/>
+    </div>)}
+  </div>
+})
+
+const Contributions = connect((state, {person}) => ({
+  contributions: sortBy(t => -t.created_at, state.contributions[person.id])
+}))(({ contributions, person, dispatch }) => {
+  return <div className='thanks'>
+    {contributions.map(thank => <div key={thank.id}>
+      <span>
+        <A to={`/u/${person.id}`}>{person.name.split(' ')[0]}</A>
+        &nbsp;helped {thank.post.user.name} complete his request.
+        <Post post={thank.post} onExpand={() => dispatch(navigate(`/p/${thank.post.id}`))}/>
+      </span>
     </div>)}
   </div>
 })

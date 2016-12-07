@@ -1,4 +1,5 @@
 import { cloneDeep, pick } from 'lodash'
+import { map } from 'lodash'
 import { get } from 'lodash/fp'
 import qs from 'querystring'
 import { cleanAndStringify } from '../util/caching'
@@ -156,10 +157,9 @@ export function fetchLinkPreview (url) {
 }
 
 export function completePost (id, params) {
-  console.log(params)
   return {
     type: COMPLETE_POST,
-    payload: {api: true, path: `/noo/post/${id}/fulfill`, method: 'POST'},
+    payload: {api: true, params, path: `/noo/post/${id}/fulfill`, method: 'POST'},
     meta: {optimistic: true, id, params}
   }
 }

@@ -96,12 +96,17 @@ class Post extends React.Component {
       this.props.dispatch(typeahead(term, 'invite', {communityId: community.id, type: 'people'}))
     }
     const requestCompleteDone = () => {
-      this.props.dispatch(
-        completePost(
-          post.id,
-          { contributorIds: map(this.state.requestCompletePeople, 'id') }
+      if(requestCompletePeople.length > 0) {
+        this.props.dispatch(
+          completePost(
+            post.id,
+            {
+              contributors: this.state.requestCompletePeople,
+              contributorIds: map(this.state.requestCompletePeople, 'id')
+            }
+          )
         )
-      )
+      }
     }
 
     return <div className={classes}>
@@ -113,43 +118,42 @@ class Post extends React.Component {
       </LazyLoader>}
       <Details {...{expanded, onExpand}}/>
       {linkPreview && <LinkPreview {...{linkPreview}}/>}
-      <div className='voting post-section'><VoteButton/><Voters/></div>
+      <div className='voting post-section'>
+        <VoteButton/>
+        <Voters/>
+      </div>
       <Attachments/>
       {showRequestCompletedHeader &&
-        <div className="request-completed-bar">
-          <div className="request-complete-heading">
-            <input type='checkbox'
-              className='toggle'
+        <div className='request-completed-bar'>
+          <div className='request-complete-heading'>
+            <input className='toggle'
+              type='checkbox'
               checked={!!post.fulfilled_at}
               readOnly={!canEdit} />
+            <Contributors />
           </div>
         </div>
       }
       <CommentSection {...{post, expanded, onExpand, comments}}/>
       {showRequestCompleteCheckbox &&
-        <div className="request-completed-bar">
-          <div className="request-complete-heading">
+        <div className='request-completed-bar'>
+          <div className='request-complete-heading'>
             <input type='checkbox'
               className='toggle'
               checked={this.state.showRequestCompletePeopleSelect}
               onChange={requestCompletingToggle} />
-            {!this.state.showRequestCompletePeopleSelect &&
-              <p className="request-complete-message">
-                Click the checkmark if your request has been completed!
-              </p>
-            }
-            {this.state.showRequestCompletePeopleSelect &&
-              <p className="request-complete-message">
-                Awesome! Who helped you?
-              </p>
-            }
+            <p className='request-complete-message'>
+              {this.state.showRequestCompletePeopleSelect ?
+                'Click the checkmark if your request has been completed!' :
+                'Awesome! Who helped you?'}
+            </p>
           </div>
           {this.state.showRequestCompletePeopleSelect &&
-            <div class="buttons">
-              <a className="cancel" onClick={requestCompletingToggle}>
-                <span className="icon icon-Fail"></span>
+            <div className='buttons'>
+              <a className='cancel' onClick={requestCompletingToggle}>
+                <span className='icon icon-Fail'></span>
               </a>
-              <TagInput className="request-complete-people-input"
+              <TagInput className='request-complete-people-input'
                 choices={requestCompletePeopleChoices}
                 handleInput={requestCompletePeopleOnInput}
                 onSelect={requestCompleteAddPerson}
@@ -168,11 +172,12 @@ class Post extends React.Component {
 export default compose(
   connect((state, {post}) => {
     let {typeaheadMatches} = state
+    let peopleChoices = reject(typeaheadMatches['invite'], {id: post.user_id})
     return {
       comments: getComments(post, state),
       community: getCurrentCommunity(state),
       post: denormalizedPost(post, state),
-      requestCompletePeopleChoices: typeaheadMatches['invite']
+      requestCompletePeopleChoices: peopleChoices
     }
   })
 )(Post)
@@ -345,3 +350,15 @@ export const Voters = (props, { post, currentUser }) => {
     : <span />
 }
 Voters.contextTypes = {post: object, currentUser: object}
+
+export const Contributors = (props, { post, currentUser }) => {
+  const contributors = post.contributors || []
+
+  let onlyAuthorIsContributing = contributors.length === 1 && same('id', first(contributors), post.user)
+  return contributors.length > 0 && !onlyAuthorIsContributing
+    ? <LinkedPersonSentence people={contributors} className='contributors'>
+        helped complete this request!
+      </LinkedPersonSentence>
+    : <span />
+}
+Contributors.contextTypes = {post: object, currentUser: object}

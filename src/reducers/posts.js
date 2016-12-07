@@ -136,7 +136,7 @@ export default function (state = {}, action) {
     case COMPLETE_POST_PENDING:
       return updatePostProps(state, id, {
         fulfilled_at: post.fulfilled_at ? null : new Date().toISOString(),
-        contributorIds: post.contributorIds
+        contributors: action.meta.params.contributors
       })
     case UPDATE_POST_READ_TIME:
       return updatePostProps(state, id, {last_read_at: new Date().toISOString()})

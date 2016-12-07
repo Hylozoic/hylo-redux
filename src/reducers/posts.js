@@ -139,7 +139,9 @@ export default function (state = {}, action) {
         contributors: action.meta.contributors
       })
     case UPDATE_POST_READ_TIME:
-      return updatePostProps(state, id, {last_read_at: new Date().toISOString()})
+      return updatePostProps(state, id, {
+        last_read_at: new Date().toISOString()
+      })
   }
   return state
 }

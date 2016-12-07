@@ -147,6 +147,7 @@ const PersonProfile = compose(
       <TabLink category='request' count={requestCount}/>
       <TabLink category='thank' count={person.thank_count}/>
       <TabLink category='event' count={person.event_count}/>
+      <TabLink category='contribution' count={person.contribution_count}/>
     </div>
     {!category && recentRequest && <div>
       <p className='section-label'>Recent request</p>

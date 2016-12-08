@@ -301,7 +301,6 @@ export function toggleUserSettingsSection (sectionName, forceOpen) {
   }
 }
 
-
 export function fetchThanks (id, offset = 0) {
   return {
     type: FETCH_THANKS,

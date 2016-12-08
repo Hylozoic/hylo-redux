@@ -41,17 +41,7 @@ const spacer = <span>&nbsp; •&nbsp; </span>
 export const presentDescription = (post, community, opts = {}) =>
   present(sanitize(post.description), {slug: get('slug', community), ...opts})
 
-@connect((state, {post}) => {
-  return {
-    comments: getComments(post, state),
-    community: getCurrentCommunity(state),
-    post: denormalizedPost(post, state),
-    contributorChoices: reject(
-      state.typeaheadMatches.invite, {id: post.user_id}
-    )
-  }
-})
-export default class Post extends React.Component {
+export class Post extends React.Component {
   constructor(props, context) {
     super(props, context)
     this.state = {
@@ -171,6 +161,17 @@ export default class Post extends React.Component {
     </div>
   }
 }
+
+export default compose(connect((state, {post}) => {
+  return {
+    comments: getComments(post, state),
+    community: getCurrentCommunity(state),
+    post: denormalizedPost(post, state),
+    contributorChoices: reject(
+      state.typeaheadMatches.invite, {id: post.user_id}
+    )
+  }
+}))(Post)
 
 export const UndecoratedPost = Post // for testing
 

@@ -62,7 +62,6 @@ export function apiMiddleware (req) {
 
     const { path, params, method } = payload
     const cookie = req && req.headers.cookie
-
     let promise = fetchJSON(path, params, {method, cookie})
 
     if (meta && meta.then) {

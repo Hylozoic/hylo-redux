@@ -44,6 +44,12 @@ const state = {
       name: 'Mr. X',
       avatar_url: '/img/mrx.png'
     }
+  },
+  typeaheadMatches: {
+    invite: [
+      {id: 'x', name: 'author of post fixture'},
+      {id: 'y', name: 'a contributing user'}
+    ]
   }
 }
 

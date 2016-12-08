@@ -213,6 +213,7 @@ const ListLabel = ({ category }) => {
     case 'offer': label = 'Offers'; break
     case 'request': label = 'Requests'; break
     case 'thank': label = 'Thanks'; break
+    case 'contribution': label = 'Contributions'; break
     case 'event': label = 'Events'; break
     default: label = 'Recent posts'
   }

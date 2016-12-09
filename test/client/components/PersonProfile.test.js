@@ -27,5 +27,8 @@ describe('PersonProfile', () => {
 
     const node = mount(<PersonProfile {...props}/>, {context: {store}})
     expect(node.find('h2').first().text()).to.equal('William Penn')
+
+    // just compare list of tab names
+    // test render of Contributions component...
   })
 })

@@ -128,7 +128,7 @@ export class Post extends React.Component {
         </div>
       }
       <CommentSection {...{post, expanded, onExpand, comments}}/>
-      {hasFeature(currentUser, CONTRIBUTORS) && isIncompleteRequest &&
+      {isIncompleteRequest &&
         <div className='request-completed-bar'>
           <div className='request-complete-heading'>
             <input type='checkbox'
@@ -136,9 +136,9 @@ export class Post extends React.Component {
               checked={this.state.requestCompleting}
               onChange={toggleRequestCompleting} />
             <p className='request-complete-message'>
-              {this.state.requestCompleting ?
-                'Click the checkmark if your request has been completed!' :
-                'Awesome! Who helped you?'}
+              { this.state.requestCompleting ?
+                  'Awesome! Who helped you?' :
+                  'Click the checkmark if your request has been completed!' }
             </p>
           </div>
           {this.state.requestCompleting &&

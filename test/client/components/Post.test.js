@@ -47,8 +47,8 @@ const state = {
   },
   typeaheadMatches: {
     invite: [
-      {id: 'x', name: 'author of post fixture'},
-      {id: 'y', name: 'a contributing user'}
+      {id: 'a', name: 'Adam'},
+      {id: 'b', name: 'Suzy'}
     ]
   }
 }
@@ -128,4 +128,93 @@ describe('Post', () => {
       name: post.name, description: post.description
     })
   })
+})
+
+
+describe('Post #request type', () => {
+  before(() => {
+    window.FEATURE_FLAGS = { CONTRIBUTORS: 'on' }
+  })
+
+  after(() => {
+    delete window.FEATURE_FLAGS
+  })
+
+  const requestPost = {
+    id: 'p',
+    name: 'Please help me.',
+    description: 'This is a request for help',
+    type: 'request',
+    tag: 'request',
+    created_at: new Date(),
+    updated_at: new Date(),
+    user_id: 'x',
+    community_ids: ['1'],
+    follower_ids: ['x', 'y']
+  }
+
+  it('can be completed with contributors', () => {
+    const store = configureStore(state).store
+    const node = mount(
+      <Post expanded post={requestPost} />, {
+      context: {
+        store,
+        dispatch: store.dispatch,
+        currentUser: state.people.current
+      },
+      childContextTypes: {
+        store: object,
+        dispatch: func,
+        currentUser: object,
+      }
+    })
+    expect(node.find('.request-complete-message').text()).to.contain('Click the checkmark')
+    node.find('.toggle').simulate('change')
+    expect(node.find('.request-complete-message').text()).to.contain('Awesome')
+    expect(node.find('.request-complete-people-input input').length).to.equal(1)
+    node.find('.request-complete-people-input a').first().simulate('click')
+    node.find('.done').simulate('click')
+    console.log(node.find('.request-complete-people-input ul li').first().html())
+
+    // let searchInput = node.find('.request-complete-people-input input')
+        // expect(searchInput.length).to.equal(2)
+    // searchInput.node.value = 'Su'
+    // searchInput.simulate('change')
+    // console.log(searchInput.node.value)
+    // console.log(node.find('.request-complete-people-input .dropdown-menu a').at(0).html())
+
+    // node.find('.request-complete-people-input input').simulate('change', node.find('.request-complete-people-input input'))
+    // //
+    // node.find('.request-complete-people-input input').simulate('change', target: { value: 'Ad' })
+    //
+    //
+    // expect(node.find('.request-complete-people-input a').length).to.equal(100)
+    //
+    // node.find('.request-complete-people-input a').simulate('click')
+    //
+
+    // 'Click the checkmark if your request has been completed!'
+
+
+
+
+    // console.log("!!!", node.find('.request-complete-people-input .dropdown-menu ul li a').first())
+
+    // node.find('.emails textarea').first().simulate('change', {
+    //   target: {value: 'nogood, bademail'}
+    // })
+    // const updatedState = store.getState()
+    // expect(updatedState.openModals[0].type).to.equal('post-editor')
+    // expect(updatedState.openModals[0].params.post).to.contain({
+    //   name: post.name, description: post.description
+    // })
+    // expect(updatedState.postEdits[post.id]).to.contain({
+    //   name: post.name, description: post.description
+    // })
+  })
+  // it('allows a request type post to be completed')
+  //   (ref enzyme mount method in * see in final test here)
+  //   instantiate Post component with #request type
+  //   click on complete checkbox
+  //   select contributors
 })

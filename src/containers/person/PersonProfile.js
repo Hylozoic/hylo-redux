@@ -24,7 +24,7 @@ import moment from 'moment'
 import { getPost } from '../../models/post'
 import { getCurrentCommunity } from '../../models/community'
 import { defaultBanner } from '../../models/person'
-import { DIRECT_MESSAGES } from '../../config/featureFlags'
+import { DIRECT_MESSAGES, CONTRIBUTORS } from '../../config/featureFlags'
 import { hasFeature } from '../../models/currentUser'
 
 const { func, object } = React.PropTypes
@@ -118,7 +118,9 @@ const PersonProfile = compose(
       case 'thank':
         return <Thanks person={person} />
       case 'contribution':
-        return <Contributions person={person} />
+        if(hasFeature(currentUser, CONTRIBUTORS)) {
+          return <Contributions person={person} />
+        }
       default:
         return <ConnectedPostList {...{subject, id, query: getFetchOpts(query)}}
           hide={postsToHide} hideMobileSearch />
@@ -157,12 +159,14 @@ const PersonProfile = compose(
         #{tag}
       </A>)}
     </div>}
-    <div className='section-links'>
+    <div className={`section-links ${hasFeature(currentUser, CONTRIBUTORS) ? 'contributions-feature' : ''}`}>
       <TabLink category='offer' count={offerCount}/>
       <TabLink category='request' count={requestCount}/>
       <TabLink category='thank' count={person.thank_count}/>
       <TabLink category='event' count={person.event_count}/>
-      <TabLink category='contribution' count={person.contribution_count}/>
+      {hasFeature(currentUser, CONTRIBUTORS) &&
+        <TabLink category='contribution' count={person.contribution_count}/>
+      }
     </div>
     {!category && recentRequest && <div>
       <p className='section-label'>Recent request</p>
@@ -196,9 +200,9 @@ const setupTabLink = (props) => {
 
   const TabLink = ({ category, count }) => {
     const isActive = category === query.show
+    let cssClassess = []
     const toggle = () =>
       dispatch(refetch({show: isActive ? null : category}, location))
-
     return <a className={isActive ? 'active' : null} onClick={toggle}>
       {count} {capitalize(category)}{Number(count) === 1 ? '' : 's'}
     </a>

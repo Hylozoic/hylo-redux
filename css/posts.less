@@ -430,6 +430,17 @@ ul.posts {
       }
     });
   }
+  .completion-toggle {
+    .round-checkbox(12.5px, 13px, #f0f0f0, @faint-gray-text, white);
+    &:checked {
+      background-color: @damian-green;
+      border-color: @damian-green;
+    }
+    position: absolute;
+    top: 48px;
+    left: 4px;
+    .post-avatar-left-margin;
+  }
 }
 
 .post.welcome {

@@ -30,7 +30,8 @@ import { typeahead } from '../actions'
 import { same } from '../models'
 import { denormalizedPost, getComments, isPinned } from '../models/post'
 import { getCurrentCommunity } from '../models/community'
-import { canEditPost, canModerate } from '../models/currentUser'
+import { canEditPost, canModerate, hasFeature } from '../models/currentUser'
+import { CONTRIBUTORS } from '../config/featureFlags'
 import { isMobile } from '../client/util'
 import decode from 'ent/decode'
 import CommentSection from './CommentSection'
@@ -115,7 +116,7 @@ export class Post extends React.Component {
         <Voters/>
       </div>
       <Attachments/>
-      {isCompleteRequest &&
+      {hasFeature(currentUser, CONTRIBUTORS) && isCompleteRequest &&
         <div className='request-completed-bar'>
           <div className='request-complete-heading'>
             <input className='toggle'
@@ -127,7 +128,7 @@ export class Post extends React.Component {
         </div>
       }
       <CommentSection {...{post, expanded, onExpand, comments}}/>
-      {isIncompleteRequest &&
+      {hasFeature(currentUser, CONTRIBUTORS) && isIncompleteRequest &&
         <div className='request-completed-bar'>
           <div className='request-complete-heading'>
             <input type='checkbox'
@@ -175,14 +176,22 @@ export default compose(connect((state, {post}) => {
 
 export const UndecoratedPost = Post // for testing
 
-export const Header = ({ communities, expanded }, { post, currentUser }) => {
-  const { tag } = post
+export const Header = ({ communities, expanded }, { post, currentUser, dispatch }) => {
+  const { tag, fulfilled_at } = post
   const person = tag === 'welcome' ? post.relatedUsers[0] : post.user
   const createdAt = new Date(post.created_at)
+  const canEdit = canEditPost(currentUser, post)
+  const showCheckbox = !hasFeature(currentUser, CONTRIBUTORS) &&
+    post.tag === 'request' && (canEdit || fulfilled_at)
 
   return <div className='header'>
     <Menu expanded={expanded}/>
     <Avatar person={person}/>
+    {showCheckbox && <input type='checkbox'
+      className='completion-toggle'
+      checked={!!post.fulfilled_at}
+      onChange={() => canEdit && dispatch(completePost(post.id))}
+      readOnly={!canEdit}/>}
     {tag === 'welcome'
       ? <WelcomePostHeader communities={communities}/>
       : <div>
@@ -197,7 +206,7 @@ export const Header = ({ communities, expanded }, { post, currentUser }) => {
         </div>}
   </div>
 }
-Header.contextTypes = {post: object}
+Header.contextTypes = {post: object, currentUser: object, dispatch: func}
 
 const Communities = ({ communities }, { community }) => {
   if (community) communities = sortBy(communities, c => c.id !== community.id)

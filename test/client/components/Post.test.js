@@ -26,7 +26,38 @@ const post = {
   follower_ids: ['x', 'y']
 }
 
+const contributor = {
+  id: 'a',
+  name: 'Adam Contributor'
+}
+
+const post2 = {
+  id: '2',
+  name: 'This post is in four different communities!',
+  description: "It's just that relevant",
+  type: 'offer',
+  tag: 'offer',
+  created_at: new Date(),
+  updated_at: new Date(),
+  user_id: 'x',
+  community_ids: ['1', '2', '3', '4']
+}
+
+const requestPost = {
+  id: 'requestPost',
+  name: 'Please help me.',
+  description: 'This is a request for help',
+  type: 'request',
+  tag: 'request',
+  created_at: new Date(),
+  updated_at: new Date(),
+  user_id: 'x',
+  community_ids: ['1'],
+  follower_ids: ['x', 'y']
+}
+
 const state = {
+  currentCommunityId: '1',
   communities: {
     foo: {id: '1', name: 'Foomunity', slug: 'foo'},
     bar: {id: '2', name: 'Barmunity', slug: 'bar'},
@@ -44,19 +75,15 @@ const state = {
       name: 'Mr. X',
       avatar_url: '/img/mrx.png'
     }
+  },
+  posts: {
+    [post.id]: post,
+    [post2.id]: post2,
+    [requestPost.id]: requestPost
+  },
+  typeaheadMatches: {
+    invite: [contributor]
   }
-}
-
-const post2 = {
-  id: '2',
-  name: 'This post is in four different communities!',
-  description: "It's just that relevant",
-  type: 'offer',
-  tag: 'offer',
-  created_at: new Date(),
-  updated_at: new Date(),
-  user_id: 'x',
-  community_ids: ['1', '2', '3', '4']
 }
 
 describe('Post', () => {
@@ -121,5 +148,41 @@ describe('Post', () => {
     expect(updatedState.postEdits[post.id]).to.contain({
       name: post.name, description: post.description
     })
+  })
+})
+
+describe('Post #request type', () => {
+  before(() => {
+    window.FEATURE_FLAGS = { CONTRIBUTORS: 'on' }
+  })
+
+  after(() => {
+    delete window.FEATURE_FLAGS
+  })
+
+  it('can be completed with contributors', () => {
+    const store = configureStore(state).store
+    const node = mount(
+      <Post expanded post={requestPost} />, {
+      context: { store, dispatch: store.dispatch, currentUser: state.people.current },
+      childContextTypes: { store: object, dispatch: func, currentUser: object }
+    })
+
+    expect(state.posts[requestPost.id].contributors).to.not.exist
+    expect(state.posts[requestPost.id].fulfilled_at).to.not.exist
+    expect(node.find('.request-complete-heading .toggle')).to.exist
+    node.find('.request-complete-heading .toggle').simulate('change')
+    expect(node.find('.request-complete-heading').text()).to.contain('Awesome')
+    expect(node.find('.request-complete-people-input')).to.exist
+    // Typeahead fixture provides a single mocked person ("Adam Contributor")
+    node.find('.request-complete-people-input a').simulate('click')
+    expect(node.find('.request-complete-people-input li.tag').text()).to.contain('Adam Contributor')
+    node.find('.done').simulate('click')
+
+    const updatedState = store.getState()
+
+    expect(updatedState.posts[requestPost.id].contributors).to.deep.equal([contributor])
+    expect(updatedState.posts[requestPost.id].fulfilled_at).to.exist
+    expect(node.find('.request-completed-bar').text()).to.contain(contributor.name)
   })
 })

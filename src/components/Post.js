@@ -1,5 +1,5 @@
 import React from 'react'
-import { difference, first, includes, map, some, sortBy } from 'lodash'
+import { difference, first, includes, map, some, sortBy, reject } from 'lodash'
 import { find, filter, get } from 'lodash/fp'
 const { array, bool, func, object, string } = React.PropTypes
 import cx from 'classnames'
@@ -26,20 +26,31 @@ import { navigate, showModal } from '../actions'
 import {
   completePost, followPost, removePost, startPostEdit, voteOnPost, pinPost
 } from '../actions/posts'
+import { typeahead } from '../actions'
 import { same } from '../models'
 import { denormalizedPost, getComments, isPinned } from '../models/post'
 import { getCurrentCommunity } from '../models/community'
-import { canEditPost, canModerate } from '../models/currentUser'
+import { canEditPost, canModerate, hasFeature } from '../models/currentUser'
+import { CONTRIBUTORS } from '../config/featureFlags'
 import { isMobile } from '../client/util'
 import decode from 'ent/decode'
 import CommentSection from './CommentSection'
+import TagInput from './TagInput'
 
 const spacer = <span>&nbsp; •&nbsp; </span>
 
 export const presentDescription = (post, community, opts = {}) =>
   present(sanitize(post.description), {slug: get('slug', community), ...opts})
 
-class Post extends React.Component {
+export class Post extends React.Component {
+  constructor(props, context) {
+    super(props, context)
+    this.state = {
+      requestCompleting: false,
+      contributors: []
+    }
+  }
+
   static propTypes = {
     post: object,
     community: object,
@@ -50,6 +61,8 @@ class Post extends React.Component {
     commentId: string
   }
 
+  static contextTypes = {currentUser: object}
+
   static childContextTypes = {post: object}
 
   getChildContext () {
@@ -57,11 +70,37 @@ class Post extends React.Component {
   }
 
   render () {
-    const { post, comments, expanded, onExpand, community } = this.props
+    let  { post } = this.props
+    const { comments, expanded, onExpand, community, dispatch, contributorChoices } = this.props
+    const { contributors } = this.state
+    const { currentUser } = this.context
     const { communities, tag, media, linkPreview } = post
     const image = find(m => m.type === 'image', media)
     const classes = cx('post', tag, {image, expanded})
     const title = linkifyHashtags(decode(sanitize(post.name || '')), get('slug', community))
+
+    const canEdit = canEditPost(currentUser, post)
+
+    const isRequest = post.tag === 'request'
+    const isCompleteRequest = isRequest && post.fulfilled_at
+    const isIncompleteRequest = isRequest && !post.fulfilled_at && canEdit
+    const toggleRequestCompleting = () => {
+      return this.setState({requestCompleting: !this.state.requestCompleting})
+    }
+    const addContributor = (person) => {
+      this.setState({contributors: [...this.state.contributors, person]})
+    }
+    const removeContributor = (person) => {
+      this.setState({contributors: reject(this.state.contributors, {id: person.id})})
+    }
+    const contributorHandleInput = (term) => {
+      dispatch(typeahead(term, 'invite', {communityId: community.id, type: 'people'}))
+    }
+    const completeRequest = () => {
+      if(contributors.length > 0) {
+        dispatch(completePost(post.id, contributors))
+      }
+    }
 
     return <div className={classes}>
       <a name={`post-${post.id}`}></a>
@@ -72,22 +111,68 @@ class Post extends React.Component {
       </LazyLoader>}
       <Details {...{expanded, onExpand}}/>
       {linkPreview && <LinkPreview {...{linkPreview}}/>}
-      <div className='voting post-section'><VoteButton/><Voters/></div>
+      <div className='voting post-section'>
+        <VoteButton/>
+        <Voters/>
+      </div>
       <Attachments/>
+      {hasFeature(currentUser, CONTRIBUTORS) && isCompleteRequest &&
+        <div className='request-completed-bar'>
+          <div className='request-complete-heading'>
+            <input className='toggle'
+              type='checkbox'
+              checked={!!post.fulfilled_at}
+              readOnly={!canEdit} />
+            <Contributors />
+          </div>
+        </div>
+      }
       <CommentSection {...{post, expanded, onExpand, comments}}/>
+      {hasFeature(currentUser, CONTRIBUTORS) && isIncompleteRequest &&
+        <div className='request-completed-bar'>
+          <div className='request-complete-heading'>
+            <input type='checkbox'
+              className='toggle'
+              checked={this.state.requestCompleting}
+              onChange={toggleRequestCompleting} />
+            <p className='request-complete-message'>
+              { this.state.requestCompleting ?
+                  'Awesome! Who helped you?' :
+                  'Click the checkmark if your request has been completed!' }
+            </p>
+          </div>
+          {this.state.requestCompleting &&
+            <div className='buttons'>
+              <a className='cancel' onClick={toggleRequestCompleting}>
+                <span className='icon icon-Fail'></span>
+              </a>
+              <TagInput className='request-complete-people-input'
+                choices={contributorChoices}
+                handleInput={contributorHandleInput}
+                onSelect={addContributor}
+                onRemove={removeContributor}
+                tags={contributors} />
+              <a className='done' onClick={completeRequest}>
+                Done
+              </a>
+            </div>
+          }
+        </div>
+      }
     </div>
   }
 }
 
-export default compose(
-  connect((state, { post }) => {
-    return {
-      comments: getComments(post, state),
-      community: getCurrentCommunity(state),
-      post: denormalizedPost(post, state)
-    }
-  })
-)(Post)
+export default compose(connect((state, {post}) => {
+  return {
+    comments: getComments(post, state),
+    community: getCurrentCommunity(state),
+    post: denormalizedPost(post, state),
+    contributorChoices: reject(
+      state.typeaheadMatches.invite, {id: post.user_id}
+    )
+  }
+}))(Post)
 
 export const UndecoratedPost = Post // for testing
 
@@ -96,7 +181,8 @@ export const Header = ({ communities, expanded }, { post, currentUser, dispatch 
   const person = tag === 'welcome' ? post.relatedUsers[0] : post.user
   const createdAt = new Date(post.created_at)
   const canEdit = canEditPost(currentUser, post)
-  const showCheckbox = post.tag === 'request' && (canEdit || fulfilled_at)
+  const showCheckbox = !hasFeature(currentUser, CONTRIBUTORS) &&
+    post.tag === 'request' && (canEdit || fulfilled_at)
 
   return <div className='header'>
     <Menu expanded={expanded}/>
@@ -264,3 +350,14 @@ export const Voters = (props, { post, currentUser }) => {
     : <span />
 }
 Voters.contextTypes = {post: object, currentUser: object}
+
+export const Contributors = (props, { post, currentUser }) => {
+  const contributors = post.contributors || []
+  const onlyAuthorIsContributing = contributors.length === 1 && same('id', first(contributors), post.user)
+  return contributors.length > 0 && !onlyAuthorIsContributing
+    ? <LinkedPersonSentence people={contributors} className='contributors'>
+        helped complete this request!
+      </LinkedPersonSentence>
+    : <div className='contributors'>Request has been completed</div>
+}
+Contributors.contextTypes = {post: object, currentUser: object}

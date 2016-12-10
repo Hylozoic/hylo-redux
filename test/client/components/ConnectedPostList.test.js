@@ -28,6 +28,12 @@ describe('ConnectedPostList', () => {
         user_id: '1',
         community_ids: [community.id]
       }},
+      typeaheadMatches: {
+        invite: [
+          {id: 'x', name: 'author of post fixture'},
+          {id: 'y', name: 'a contributing user'}
+        ]
+      },
       totalPostsByQuery: {'subject=community&id=foo': 1},
       postsByQuery: {'subject=community&id=foo': [1]},
       pending: {},

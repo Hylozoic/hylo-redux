@@ -58,6 +58,7 @@ export const FETCH_TAG = 'FETCH_TAG'
 export const FETCH_TAGS = 'FETCH_TAGS'
 export const FETCH_TAG_SUMMARY = 'FETCH_TAG_SUMMARY'
 export const FETCH_THANKS = 'FETCH_THANKS'
+export const FETCH_CONTRIBUTIONS = 'FETCH_CONTRIBUTIONS'
 export const FIND_OR_CREATE_THREAD = 'FIND_OR_CREATE_THREAD'
 export const FIND_OR_CREATE_THREAD_PENDING = FIND_OR_CREATE_THREAD + _PENDING
 export const FINISH_LOGIN = 'FINISH_LOGIN'
@@ -304,6 +305,14 @@ export function fetchThanks (id, offset = 0) {
   return {
     type: FETCH_THANKS,
     payload: {api: true, path: `/noo/user/${id}/thanks?offset=${offset}`},
+    meta: {id}
+  }
+}
+
+export function fetchContributions (id, offset = 0) {
+  return {
+    type: FETCH_CONTRIBUTIONS,
+    payload: {api: true, path: `/noo/user/${id}/contributions?offset=${offset}`},
     meta: {id}
   }
 }

@@ -23,6 +23,12 @@ const store = mocks.redux.store({
   people: {
     [user1.id]: user1,
     [user2.id]: user2
+  },
+  typeaheadMatches: {
+    invite: [
+      {id: 'x', name: 'author of post fixture'},
+      {id: 'y', name: 'a contributing user'}
+    ]
   }
 })
 

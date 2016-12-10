@@ -196,7 +196,6 @@
     background-color: white;
     text-align: center;
     padding: 15px 0;
-
     a {
       width: 25%;
       border-right: 1px solid @faint-gray-border;
@@ -206,9 +205,13 @@
       &:last-child {
         border-right: none;
       }
-
       &.active {
         .medium;
+      }
+    }
+    &.contributions-feature {
+      a {
+        width: 20%;
       }
     }
   }
@@ -246,7 +249,8 @@
     }
   }
 
-  .thanks > div {
+  .thanks > div,
+  .contributions > div {
     background-color: white;
     padding: 25px;
     margin-bottom: @p-bottom-margin;

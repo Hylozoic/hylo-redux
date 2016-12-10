@@ -165,20 +165,6 @@ export default class NetworkEditor extends React.Component {
     dispatch(typeahead(term, typeaheadId, {type: 'communities', moderated: true}))
   }
 
-  getCommunityChoices = term => {
-    if (!term) {
-      return []
-    }
-
-    let { networkEdit: { communities } } = this.props
-    const { currentUser } = this.context
-    var match = c =>
-      startsWith(c.name.toLowerCase(), term.toLowerCase()) &&
-      !contains(communities, c.id)
-
-    return filter(filter(currentUser.memberships, m => m.role === 1).map(m => m.community), match)
-  }
-
   attachImage (type) {
     let { dispatch, id } = this.props
     let network = {id: id}

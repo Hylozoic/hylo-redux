@@ -128,7 +128,7 @@ export class Post extends React.Component {
         </div>
       }
       <CommentSection {...{post, expanded, onExpand, comments}}/>
-      {isIncompleteRequest &&
+      {hasFeature(currentUser, CONTRIBUTORS) && isIncompleteRequest &&
         <div className='request-completed-bar'>
           <div className='request-complete-heading'>
             <input type='checkbox'

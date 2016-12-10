@@ -353,12 +353,11 @@ Voters.contextTypes = {post: object, currentUser: object}
 
 export const Contributors = (props, { post, currentUser }) => {
   const contributors = post.contributors || []
-
-  let onlyAuthorIsContributing = contributors.length === 1 && same('id', first(contributors), post.user)
+  const onlyAuthorIsContributing = contributors.length === 1 && same('id', first(contributors), post.user)
   return contributors.length > 0 && !onlyAuthorIsContributing
     ? <LinkedPersonSentence people={contributors} className='contributors'>
         helped complete this request!
       </LinkedPersonSentence>
-    : <span />
+    : <div className='contributors'>Request has been completed</div>
 }
 Contributors.contextTypes = {post: object, currentUser: object}

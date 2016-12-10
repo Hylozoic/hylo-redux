@@ -163,7 +163,7 @@ export function completePost (id, contributors = []) {
       path: `/noo/post/${id}/fulfill`,
       method: 'POST',
       params: {
-        contributors: map(contributors, 'id')
+        contributorIds: map(contributors, 'id')
       }
     },
     meta: {optimistic: true, contributors, id}

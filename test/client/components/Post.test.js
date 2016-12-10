@@ -26,7 +26,38 @@ const post = {
   follower_ids: ['x', 'y']
 }
 
+const contributor = {
+  id: 'a',
+  name: 'Adam Contributor'
+}
+
+const post2 = {
+  id: '2',
+  name: 'This post is in four different communities!',
+  description: "It's just that relevant",
+  type: 'offer',
+  tag: 'offer',
+  created_at: new Date(),
+  updated_at: new Date(),
+  user_id: 'x',
+  community_ids: ['1', '2', '3', '4']
+}
+
+const requestPost = {
+  id: 'requestPost',
+  name: 'Please help me.',
+  description: 'This is a request for help',
+  type: 'request',
+  tag: 'request',
+  created_at: new Date(),
+  updated_at: new Date(),
+  user_id: 'x',
+  community_ids: ['1'],
+  follower_ids: ['x', 'y']
+}
+
 const state = {
+  currentCommunityId: '1',
   communities: {
     foo: {id: '1', name: 'Foomunity', slug: 'foo'},
     bar: {id: '2', name: 'Barmunity', slug: 'bar'},
@@ -45,24 +76,14 @@ const state = {
       avatar_url: '/img/mrx.png'
     }
   },
+  posts: {
+    [post.id]: post,
+    [post2.id]: post2,
+    [requestPost.id]: requestPost
+  },
   typeaheadMatches: {
-    invite: [
-      {id: 'a', name: 'Adam'},
-      {id: 'b', name: 'Suzy'}
-    ]
+    invite: [contributor]
   }
-}
-
-const post2 = {
-  id: '2',
-  name: 'This post is in four different communities!',
-  description: "It's just that relevant",
-  type: 'offer',
-  tag: 'offer',
-  created_at: new Date(),
-  updated_at: new Date(),
-  user_id: 'x',
-  community_ids: ['1', '2', '3', '4']
 }
 
 describe('Post', () => {
@@ -130,7 +151,6 @@ describe('Post', () => {
   })
 })
 
-
 describe('Post #request type', () => {
   before(() => {
     window.FEATURE_FLAGS = { CONTRIBUTORS: 'on' }
@@ -140,81 +160,29 @@ describe('Post #request type', () => {
     delete window.FEATURE_FLAGS
   })
 
-  const requestPost = {
-    id: 'p',
-    name: 'Please help me.',
-    description: 'This is a request for help',
-    type: 'request',
-    tag: 'request',
-    created_at: new Date(),
-    updated_at: new Date(),
-    user_id: 'x',
-    community_ids: ['1'],
-    follower_ids: ['x', 'y']
-  }
-
   it('can be completed with contributors', () => {
     const store = configureStore(state).store
     const node = mount(
       <Post expanded post={requestPost} />, {
-      context: {
-        store,
-        dispatch: store.dispatch,
-        currentUser: state.people.current
-      },
-      childContextTypes: {
-        store: object,
-        dispatch: func,
-        currentUser: object,
-      }
+      context: { store, dispatch: store.dispatch, currentUser: state.people.current },
+      childContextTypes: { store: object, dispatch: func, currentUser: object }
     })
-    expect(node.find('.request-complete-message').text()).to.contain('Click the checkmark')
-    node.find('.toggle').simulate('change')
-    expect(node.find('.request-complete-message').text()).to.contain('Awesome')
-    expect(node.find('.request-complete-people-input input').length).to.equal(1)
-    node.find('.request-complete-people-input a').first().simulate('click')
+
+    expect(state.posts[requestPost.id].contributors).to.not.exist
+    expect(state.posts[requestPost.id].fulfilled_at).to.not.exist
+    expect(node.find('.request-complete-heading .toggle')).to.exist
+    node.find('.request-complete-heading .toggle').simulate('change')
+    expect(node.find('.request-complete-heading').text()).to.contain('Awesome')
+    expect(node.find('.request-complete-people-input')).to.exist
+    // Typeahead fixture provides a single mocked person ("Adam Contributor")
+    node.find('.request-complete-people-input a').simulate('click')
+    expect(node.find('.request-complete-people-input li.tag').text()).to.contain('Adam Contributor')
     node.find('.done').simulate('click')
-    console.log(node.find('.request-complete-people-input ul li').first().html())
 
-    // let searchInput = node.find('.request-complete-people-input input')
-        // expect(searchInput.length).to.equal(2)
-    // searchInput.node.value = 'Su'
-    // searchInput.simulate('change')
-    // console.log(searchInput.node.value)
-    // console.log(node.find('.request-complete-people-input .dropdown-menu a').at(0).html())
+    const updatedState = store.getState()
 
-    // node.find('.request-complete-people-input input').simulate('change', node.find('.request-complete-people-input input'))
-    // //
-    // node.find('.request-complete-people-input input').simulate('change', target: { value: 'Ad' })
-    //
-    //
-    // expect(node.find('.request-complete-people-input a').length).to.equal(100)
-    //
-    // node.find('.request-complete-people-input a').simulate('click')
-    //
-
-    // 'Click the checkmark if your request has been completed!'
-
-
-
-
-    // console.log("!!!", node.find('.request-complete-people-input .dropdown-menu ul li a').first())
-
-    // node.find('.emails textarea').first().simulate('change', {
-    //   target: {value: 'nogood, bademail'}
-    // })
-    // const updatedState = store.getState()
-    // expect(updatedState.openModals[0].type).to.equal('post-editor')
-    // expect(updatedState.openModals[0].params.post).to.contain({
-    //   name: post.name, description: post.description
-    // })
-    // expect(updatedState.postEdits[post.id]).to.contain({
-    //   name: post.name, description: post.description
-    // })
+    expect(updatedState.posts[requestPost.id].contributors).to.deep.equal([contributor])
+    expect(updatedState.posts[requestPost.id].fulfilled_at).to.exist
+    expect(node.find('.request-completed-bar').text()).to.contain(contributor.name)
   })
-  // it('allows a request type post to be completed')
-  //   (ref enzyme mount method in * see in final test here)
-  //   instantiate Post component with #request type
-  //   click on complete checkbox
-  //   select contributors
 })

@@ -1,8 +1,7 @@
 import React from 'react'
-import { filter } from 'lodash'
+import { debounce, filter } from 'lodash'
 import { get, map, min } from 'lodash/fp'
 const { array, bool, func, object } = React.PropTypes
-import cx from 'classnames'
 import MessageSection from './MessageSection'
 import MessageForm from './MessageForm'
 import A from './A'
@@ -14,6 +13,7 @@ import { onThreadPage, offThreadPage } from '../actions/threads'
 import { getComments } from '../models/post'
 import { getSocket, socketUrl } from '../client/websockets'
 import { trackEvent, VIEWED_MESSAGE_THREAD } from '../util/analytics'
+import { position, positionInViewport } from '../util/scrolling'
 
 @connect((state, { post }) => ({
   messages: getComments(post, state),
@@ -33,6 +33,8 @@ export default class Thread extends React.Component {
     return {post: this.props.post}
   }
 
+  static contextTypes = {isMobile: bool}
+
   setupForThread (post) {
     this.props.dispatch(onThreadPage(post.id))
     if (this.socket) {
@@ -48,7 +50,21 @@ export default class Thread extends React.Component {
       }
       this.socket.on('reconnect', this.reconnectHandler)
     }
-    this.refs.form.getWrappedInstance().focus()
+
+    // trying to focus the textarea on page load on mobile is problematic
+    // because the unpredictable timing of the data loading makes it hard to
+    // move the header to the correct place at the correct time. it can't happen
+    // before the keyboard appears on mobile.
+    //
+    // not to mention, the keyboard is prevented from appearing if the page is
+    // being loaded from scratch, but document.activeElement is still set to the
+    // textarea as if the focusing was successful.
+    //
+    // so for now we have a simple workaround: just skip it on mobile entirely.
+    if (!this.context.isMobile) {
+      this.refs.form.getWrappedInstance().focus()
+    }
+
     trackEvent(VIEWED_MESSAGE_THREAD)
   }
 
@@ -78,9 +94,19 @@ export default class Thread extends React.Component {
     }
   }
 
+  _moveHeader = debounce(() => {
+    const header = document.querySelector('.thread .header')
+    const pos = position(header)
+    const vpos = positionInViewport(header)
+    const targetY = this.refs.form.getWrappedInstance().isFocused() ? 0 : 60
+    if (vpos.y !== targetY) {
+      header.style.top = (pos.y + (targetY - vpos.y)) + 'px'
+    }
+  }, 50)
+
   render () {
     const { post, messages, pending, dispatch } = this.props
-    const classes = cx('thread')
+    const { isMobile } = this.context
     const loadMore = () => {
       if (pending || messages.length >= post.numComments) return
       const beforeId = min(map('id', messages))
@@ -88,11 +114,16 @@ export default class Thread extends React.Component {
       .then(() => this.refs.messageSection.scrollToMessage(beforeId))
     }
 
-    return <div className={classes}>
+    const moveHeader = isMobile ? () => setTimeout(this._moveHeader, 20) : null
+
+    return <div className='thread'>
       <Header />
-      <MessageSection {...{messages, pending}} thread={post} onScrollToTop={loadMore} ref='messageSection'/>
+      <MessageSection {...{messages, pending}} thread={post}
+        onScroll={isMobile ? this._moveHeader : null}
+        onScrollToTop={loadMore} ref='messageSection'/>
       <PeopleTyping showNames/>
-      <MessageForm postId={post.id} ref='form'/>
+      <MessageForm postId={post.id} ref='form' onFocus={moveHeader}
+        onBlur={moveHeader}/>
     </div>
   }
 }
@@ -104,10 +135,8 @@ export const Header = (props, { currentUser, post }) => {
   const others = filter(followers, f => f.id !== id)
 
   return <div className='header'>
-    <div className='title'>
-      You and <A to={`/u/${others[0].id}`}>{others[0].name}</A>
-      {others.length > 1 && <span>and ${gt2} other{gt2 === 1 ? '' : 's'}</span>}
-    </div>
+    You and <A to={`/u/${others[0].id}`}>{others[0].name}</A>
+    {others.length > 1 && <span>and ${gt2} other{gt2 === 1 ? '' : 's'}</span>}
   </div>
 }
 Header.contextTypes = {post: object, currentUser: object}

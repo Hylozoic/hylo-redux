@@ -97,10 +97,14 @@ export class Post extends React.Component {
       dispatch(typeahead(term, 'invite', {communityId: community.id, type: 'people'}))
     }
     const completeRequest = () => {
-      if(contributors.length > 0) { dispatch(completePost(post.id, contributors)) }
+      if(contributors.length > 0) {
+        toggleRequestCompleting()
+        this.setState({contributors: []})
+      }
+      dispatch(completePost(post.id, contributors))
     }
     const uncompleteRequest = () => {
-      if(window.confirm('Are you sure?')) {
+      if(window.confirm('This will mark this request as Incomplete. Are you sure?')) {
         dispatch(completePost(post.id))
       }
     }

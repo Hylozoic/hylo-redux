@@ -97,8 +97,11 @@ export class Post extends React.Component {
       dispatch(typeahead(term, 'invite', {communityId: community.id, type: 'people'}))
     }
     const completeRequest = () => {
-      if(contributors.length > 0) {
-        dispatch(completePost(post.id, contributors))
+      if(contributors.length > 0) { dispatch(completePost(post.id, contributors)) }
+    }
+    const uncompleteRequest = () => {
+      if(window.confirm('Are you sure?')) {
+        dispatch(completePost(post.id))
       }
     }
 
@@ -122,7 +125,8 @@ export class Post extends React.Component {
             <input className='toggle'
               type='checkbox'
               checked={!!post.fulfilled_at}
-              readOnly={!canEdit} />
+              readOnly={!canEdit}
+              onChange={uncompleteRequest} />
             <Contributors />
           </div>
         </div>

@@ -70,7 +70,7 @@ export class Post extends React.Component {
   }
 
   render () {
-    let  { post } = this.props
+    let { post } = this.props
     const { comments, expanded, onExpand, community, dispatch, contributorChoices } = this.props
     const { contributors } = this.state
     const { currentUser } = this.context
@@ -97,10 +97,9 @@ export class Post extends React.Component {
       dispatch(typeahead(term, 'invite', {communityId: community.id, type: 'people'}))
     }
     const completeRequest = () => {
-      if(contributors.length > 0) {
-        toggleRequestCompleting()
+      if(contributors.length > 0)
         this.setState({contributors: []})
-      }
+      toggleRequestCompleting()
       dispatch(completePost(post.id, contributors))
     }
     const uncompleteRequest = () => {
@@ -111,18 +110,18 @@ export class Post extends React.Component {
 
     return <div className={classes}>
       <a name={`post-${post.id}`}></a>
-      <Header communities={communities} expanded={expanded}/>
+      <Header communities={communities} expanded={expanded} />
       <p className='title post-section' dangerouslySetInnerHTML={{__html: title}}></p>
       {image && <LazyLoader>
-        <img src={image.url} className='post-section full-image'/>
+        <img src={image.url} className='post-section full-image' />
       </LazyLoader>}
-      <Details {...{expanded, onExpand}}/>
-      {linkPreview && <LinkPreview {...{linkPreview}}/>}
+      <Details {...{expanded, onExpand}} />
+      {linkPreview && <LinkPreview {...{linkPreview}} />}
       <div className='voting post-section'>
-        <VoteButton/>
-        <Voters/>
+        <VoteButton />
+        <Voters />
       </div>
-      <Attachments/>
+      <Attachments />
       {hasFeature(currentUser, CONTRIBUTORS) && isCompleteRequest &&
         <div className='request-completed-bar'>
           <div className='request-complete-heading'>
@@ -135,7 +134,7 @@ export class Post extends React.Component {
           </div>
         </div>
       }
-      <CommentSection {...{post, expanded, onExpand, comments}}/>
+      <CommentSection {...{post, expanded, onExpand, comments}} />
       {hasFeature(currentUser, CONTRIBUTORS) && isIncompleteRequest &&
         <div className='request-completed-bar'>
           <div className='request-complete-heading'>
@@ -146,7 +145,7 @@ export class Post extends React.Component {
             <p className='request-complete-message'>
               { this.state.requestCompleting ?
                   'Awesome! Who helped you?' :
-                  'Click the checkmark if your request has been completed!' }
+                  'Click the checkmark if this request has been completed!' }
             </p>
           </div>
           {this.state.requestCompleting &&
@@ -193,22 +192,22 @@ export const Header = ({ communities, expanded }, { post, currentUser, dispatch 
     post.tag === 'request' && (canEdit || fulfilled_at)
 
   return <div className='header'>
-    <Menu expanded={expanded}/>
-    <Avatar person={person}/>
+    <Menu expanded={expanded} />
+    <Avatar person={person} />
     {showCheckbox && <input type='checkbox'
       className='completion-toggle'
       checked={!!post.fulfilled_at}
       onChange={() => canEdit && dispatch(completePost(post.id))}
-      readOnly={!canEdit}/>}
+      readOnly={!canEdit} />}
     {tag === 'welcome'
-      ? <WelcomePostHeader communities={communities}/>
+      ? <WelcomePostHeader communities={communities} />
       : <div>
           <A className='name' to={`/u/${person.id}`}>{person.name}</A>
           <span className='meta'>
             <A to={`/p/${post.id}`} title={createdAt}>
               {nonbreaking(humanDate(createdAt))}
             </A>
-            {communities && <Communities communities={communities}/>}
+            {communities && <Communities communities={communities} />}
             {post.public && <span>{spacer}Public</span>}
           </span>
         </div>}
@@ -266,18 +265,18 @@ export const Details = ({ expanded, onExpand }, { post, community, dispatch }) =
   if (description) description = appendInP(description, '&nbsp;')
 
   return <div className='post-section details'>
-    <ClickCatchingSpan dangerouslySetInnerHTML={{__html: description}}/>
+    <ClickCatchingSpan dangerouslySetInnerHTML={{__html: description}} />
     {truncated && <span>
-      <wbr/>
+      <wbr />
       <a onClick={() => onExpand(null)} className='show-more'>Show&nbsp;more</a>
       &nbsp;
     </span>}
     {extractedTags.map(tag => <span key={tag}>
-      <wbr/>
-      <HashtagLink tag={tag} slug={slug}/>
+      <wbr />
+      <HashtagLink tag={tag} slug={slug} />
       &nbsp;
     </span>)}
-    {tag && <HashtagLink tag={tag} slug={slug}/>}
+    {tag && <HashtagLink tag={tag} slug={slug} />}
   </div>
 }
 Details.contextTypes = {post: object, community: object, dispatch: func}

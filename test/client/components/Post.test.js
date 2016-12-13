@@ -1,6 +1,6 @@
-require('../support')
+import support from '../support'
 import { mocks } from '../../support'
-import { createElement } from '../../support/helpers'
+import { createElement, wait, mockActionResponse, spyify, unspyify } from '../../support/helpers'
 import React from 'react'
 import { mount } from 'enzyme'
 import { configureStore } from '../../../src/store'
@@ -10,6 +10,8 @@ import {
   renderIntoDocument
 } from 'react-addons-test-utils'
 const { object, func } = React.PropTypes
+import { connect } from 'react-redux'
+import { completePost } from '../../../src/actions/posts'
 
 const stripComments = markup => markup.replace(/<!--[^>]*-->/g, '')
 
@@ -152,8 +154,27 @@ describe('Post', () => {
 })
 
 describe('Post #request type', () => {
+  let store, PostWrapper, node
+
   before(() => {
     window.FEATURE_FLAGS = { CONTRIBUTORS: 'on' }
+  })
+
+  beforeEach(() => {
+    store = configureStore(state).store
+
+    PostWrapper = connect(({ posts }, { id }) => ({
+      post: posts[id]
+    }))(({ post }) => {
+      return <Post post={post} />
+    })
+
+    node = mount(<PostWrapper id={requestPost.id} />, {
+      context: { store, dispatch: store.dispatch, currentUser: state.people.current },
+      childContextTypes: { store: object, dispatch: func, currentUser: object }
+    })
+
+    mockActionResponse(completePost(requestPost.id), {})
   })
 
   after(() => {
@@ -161,39 +182,40 @@ describe('Post #request type', () => {
   })
 
   it('can be completed (with contributors)', () => {
-    // TODO: test currently broken
-    //
-    // const store = configureStore(state).store
-    // const node = mount(
-    //   <Post expanded post={requestPost} />, {
-    //   context: { store, dispatch: store.dispatch, currentUser: state.people.current },
-    //   childContextTypes: { store: object, dispatch: func, currentUser: object }
-    // })
-    //
-    // expect(state.posts[requestPost.id].contributors).to.not.exist
-    // expect(state.posts[requestPost.id].fulfilled_at).to.not.exist
-    // expect(node.find('.request-complete-heading .toggle')).to.exist
-    // node.find('.request-complete-heading .toggle').simulate('change')
-    // expect(node.find('.request-complete-heading').text()).to.contain('Awesome')
-    // expect(node.find('.request-complete-people-input')).to.exist
-    // // Typeahead fixture provides a single mocked person ("Adam Contributor")
-    // node.find('.request-complete-people-input a').simulate('click')
-    // expect(node.find('.request-complete-people-input li.tag').text()).to.contain(contributor.name)
-    //
-    // expect(node.find('.done')).to.exist
-    // node.find('.done').simulate('click')
-    //
-    // const updatedState = store.getState()
-    //
-    // // expect(updatedState.posts[requestPost.id].contributors).to.deep.equal([contributor])
-    // // expect(updatedState.posts[requestPost.id].fulfilled_at).to.exist
-    // expect(node.find('.contributors')).to.exist
-    // console.log("!!!", node.text())
-    // //
-    // // expect(node.find('.contributors').text()).to.contain(contributor.name)
+    expect(node.find('.toggle')).to.be.length(1)
+    node.find('.toggle').simulate('change')
+    expect(node.find('.request-complete-heading').text()).to.contain('Awesome')
+    expect(node.find('.request-complete-people-input')).to.be.length(1)
+    // Typeahead fixture provides a single mocked person ("Adam Contributor")
+    node.find('.request-complete-people-input a').simulate('click')
+    expect(node.find('.request-complete-people-input li.tag').text()).to.contain(contributor.name)
+    expect(node.find('.done')).to.be.length(1)
+    node.find('.done').simulate('click')
+    expect(node.find('.contributors .person')).to.be.length(1)
+    expect(node.find('.contributors').text()).to.contain(contributor.name)
+  })
+
+  it('can be completed (without contributors)', () => {
+    expect(node.find('.toggle')).to.be.length(1)
+    node.find('.toggle').simulate('change')
+    expect(node.find('.done')).to.be.length(1)
+    node.find('.done').simulate('click')
+    expect(node.find('.contributors .person')).to.be.length(0)
   })
 
   it('can be uncompleted', () => {
-    // TODO
+    expect(node.find('.toggle')).to.be.length(1)
+    node.find('.toggle').simulate('change')
+    expect(node.find('.done')).to.be.length(1)
+    node.find('.done').simulate('click')
+    expect(node.find('.contributors .person')).to.be.length(0)
+    expect(node.find('.contributors').text()).to.contain('completed')
+    expect(node.find('.toggle')).to.be.length(1)
+    // LEJ: Not mocking window.confirm successfully, otherwise test passes
+    // 
+    // spyify(window, 'confirm', prompt => true)
+    // node.find('.toggle').simulate('change')
+    // // unspyify(window, 'confirm')
+    // expect(node.find('.request-complete-heading').text()).to.contain('if this request has been completed')
   })
 })

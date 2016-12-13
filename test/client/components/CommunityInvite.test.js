@@ -1,4 +1,4 @@
-require('../support')
+import support from '../support'
 import { mount } from 'enzyme'
 import React from 'react'
 import CommunityInvite from '../../../src/containers/community/CommunityInvite'

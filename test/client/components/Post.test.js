@@ -1,6 +1,6 @@
 import support from '../support'
 import { mocks } from '../../support'
-import { createElement, wait, mockActionResponse, spyify, unspyify } from '../../support/helpers'
+import { createElement, wait, mockActionResponse, mockify, spyify, unspyify } from '../../support/helpers'
 import React from 'react'
 import { mount } from 'enzyme'
 import { configureStore } from '../../../src/store'
@@ -211,11 +211,8 @@ describe('Post #request type', () => {
     expect(node.find('.contributors .person')).to.be.length(0)
     expect(node.find('.contributors').text()).to.contain('completed')
     expect(node.find('.toggle')).to.be.length(1)
-    // LEJ: Not mocking window.confirm successfully, otherwise test passes
-    // 
-    // spyify(window, 'confirm', prompt => true)
-    // node.find('.toggle').simulate('change')
-    // // unspyify(window, 'confirm')
-    // expect(node.find('.request-complete-heading').text()).to.contain('if this request has been completed')
+    mockify(window, 'confirm', prompt => true)
+    node.find('.toggle').simulate('change')
+    expect(node.find('.request-complete-heading').text()).to.contain('if this request has been completed')
   })
 })

@@ -1,6 +1,6 @@
 import support from '../support'
 import { mocks } from '../../support'
-import { createElement, wait, mockActionResponse, mockify, spyify, unspyify } from '../../support/helpers'
+import { createElement, wait, mockActionResponse, mockify } from '../../support/helpers'
 import React from 'react'
 import { mount } from 'enzyme'
 import { configureStore } from '../../../src/store'

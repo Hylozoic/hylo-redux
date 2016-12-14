@@ -1,5 +1,5 @@
 import React from 'react'
-import { throttle, isEmpty, sortBy } from 'lodash'
+import { throttle, isEmpty, sortBy, maxBy } from 'lodash'
 const { array, bool, func, object } = React.PropTypes
 import cx from 'classnames'
 import Message from './Message'
@@ -36,8 +36,11 @@ export default class MessageSection extends React.Component {
   componentDidUpdate (prevProps) {
     const messagesLength = this.props.messages.length
     const oldMessagesLength = prevProps.messages.length
+    const { currentUser } = this.context
+    const latestMessage = maxBy(this.props.messages || [], 'created_at')[0]
+    const userSentLatest = latestMessage.user_id === currentUser.id 
     const { scrolledUp } = this.state
-    if (!scrolledUp && messagesLength !== oldMessagesLength) this.scrollToBottom()
+    if (messagesLength !== oldMessagesLength && (!scrolledUp || userSentLatest)) this.scrollToBottom()
   }
 
   scrollToMessage (id) {

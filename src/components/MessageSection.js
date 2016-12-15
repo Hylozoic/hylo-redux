@@ -4,6 +4,7 @@ import { get } from 'lodash/fp'
 const { array, bool, func, object } = React.PropTypes
 import cx from 'classnames'
 import Message from './Message'
+import PeopleTyping from './PeopleTyping'
 import { position } from '../util/scrolling'
 import { findDOMNode } from 'react-dom'
 import { updatePostReadTime } from '../actions/posts'
@@ -104,6 +105,8 @@ export default class MessageSection extends React.Component {
           </div>}
         {messages.map(m =>
           <Message ref={node => this['message' + m.id] = node} message={m} key={m.id}/>)}
+        <PeopleTyping showNames/>
+        <div className='bottom-spacer'></div>
       </div>
     </div>
   }

@@ -5,7 +5,6 @@ const { array, bool, func, object } = React.PropTypes
 import MessageSection from './MessageSection'
 import MessageForm from './MessageForm'
 import A from './A'
-import PeopleTyping from './PeopleTyping'
 import { connect } from 'react-redux'
 import { FETCH_COMMENTS } from '../actions'
 import { fetchComments } from '../actions/comments'
@@ -124,7 +123,6 @@ export default class Thread extends React.Component {
       <MessageSection {...{messages, pending}} thread={post}
         onScroll={isMobile ? this._moveHeader : null}
         onScrollToTop={loadMore} ref='messageSection'/>
-      <PeopleTyping showNames/>
       <MessageForm postId={post.id} ref='form' onFocus={moveHeader}
         onBlur={moveHeader}/>
     </div>

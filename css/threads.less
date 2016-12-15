@@ -92,11 +92,6 @@
   .message {
     padding: 5px 0 5px 30px;
 
-    &:last-child {
-      // margin-bottom doesn't work as desired on mobile safari
-      padding-bottom: @message-form-height;
-    }
-
     .mobile({
       padding: 5px 15px;
     });
@@ -130,15 +125,9 @@
 
   .typing {
     width: 100%;
-    flex-grow: 0;
-    flex-shrink: 0;
-    flex-basis: 0;
     background: #FFF;
     color: @faint-gray-text;
-    padding: 10px 0 10px 30px;
-    border-top: 1px solid @post-border;
-    position: fixed;
-    bottom: @message-form-height;
+    padding: 0 0 5px 30px;
 
     > div {
       display: inline-block;
@@ -151,6 +140,11 @@
     .mobile({
       padding-left: @mobile-side-margin;
     });
+  }
+
+  .bottom-spacer {
+    // margin-bottom doesn't work as desired on mobile safari
+    height: @message-form-height;
   }
 
   .message-form {

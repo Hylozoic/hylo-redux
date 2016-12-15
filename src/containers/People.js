@@ -99,13 +99,6 @@ export default class People extends React.Component {
 
     var { popularSkills } = community
 
-    /*
-    var popularSkills = [
-      'design', 'connection-making', 'systems-thinking', 'coding', 'meditation',
-      'communication', 'software-development', 'startup-advice'
-    ]
-*/
-
     // replacing hyphens with non-breaking hyphens
     popularSkills = popularSkills.map(skill => skill.replace('-', '‑'))
 

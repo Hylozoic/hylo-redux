@@ -3,9 +3,8 @@ import nock from 'nock'
 import { inspect } from 'util'
 import { get } from 'lodash'
 import appHandler from '../../src/server/appHandler'
-import { FETCH_CURRENT_USER } from '../../src/actions'
+import { FETCH_CURRENT_USER, fetchCurrentUser } from '../../src/actions'
 import { fetchPost } from '../../src/actions/posts'
-import { fetchCurrentUser } from '../../src/actions'
 import { HOST } from '../../src/util/api'
 import cheerio from 'cheerio'
 import { mockActionResponse } from '../support/helpers'
@@ -88,7 +87,7 @@ describe('appHandler', () => {
 
   describe('with a logged-in user', () => {
     let bannerUrl = 'http://nowhere.com/house.png'
-    let community = {id: 1, name: 'House', slug: 'house', banner_url: bannerUrl, settings: {}}
+    let community = {id: 1, name: 'House', slug: 'house', banner_url: bannerUrl, settings: {}, popularSkills: []}
 
     beforeEach(() => {
       nock(HOST).get('/noo/user/me').reply(200, {id: 1, name: 'cat', settings: {}})

@@ -106,6 +106,9 @@ export default class Popover extends React.Component {
       case 'tag':
         content = <TagPopover {...params} />
         break
+      case 'person':
+        content = <PersonPopover {...params} />
+        break
     }
 
     return <div className='popover-container' style={outer}

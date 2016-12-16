@@ -60,6 +60,19 @@ const store = mocks.redux.store({
       meta: {
         reasons: ['mention']
       }
+    },
+    4: {
+      id: 4,
+      action: 'contribution',
+      actor: cat,
+      post: {
+        id: 7,
+        name: 'Baz',
+        communities: [{slug: 'barcom'}]
+      },
+      meta: {
+        reasons: ['newContribution']
+      }
     }
   }
 })

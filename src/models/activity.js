@@ -32,6 +32,8 @@ export const actionText = (action, comment, post, community, reasons) => {
     case 'mention':
       if (!comment) return `mentioned you in their post`
       return 'mentioned you in a comment on'
+    case 'contribution':
+      return 'has tagged you as a contributor to'
     case 'comment':
       return 'commented on'
     case 'followAdd':

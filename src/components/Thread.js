@@ -1,6 +1,6 @@
 import React from 'react'
 import { debounce, filter } from 'lodash'
-import { get, map, min } from 'lodash/fp'
+import { get, map, min, max } from 'lodash/fp'
 const { array, bool, func, object } = React.PropTypes
 import MessageSection from './MessageSection'
 import MessageForm from './MessageForm'
@@ -45,7 +45,10 @@ export default class Thread extends React.Component {
       }
 
       this.reconnectHandler = () => {
-        // TODO ask server for new messages
+        const { messages, dispatch } = this.props
+        const afterId = max(map('id', messages))
+        dispatch(fetchComments(post.id, {afterId, refresh: true}))
+        .then(() => this.refs.messageSection.scrollToBottom())
         this.socket.post(socketUrl(`/noo/post/${post.id}/subscribe`))
       }
       this.socket.on('reconnect', this.reconnectHandler)

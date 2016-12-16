@@ -12,35 +12,39 @@
   position: absolute;
   background-color: white;
   border: 1px solid @light-gray-border;
-  .meta-text {
-    .meta-text;
-  }
-  .tag-name {
-    .tag-header-name-text;
-    display: block;
-  }
-  .avatar {
-    float: left;
-  }
-  .name {
-    padding-left: 5px;
-  }
-  .member-post-count {
-    padding-left: 5px;
-  }
-  > div {
-    border-bottom: 1px solid @light-gray-border;
-    padding: 10px 15px;
-  }
-  > div.footer {
-    .meta-text;
-    border-bottom: 0;
-    background-color: @faint-gray-bg;
-    padding: 15px 15px;
-    a {
-      color: @damian-green;
+
+  .tag-popover {
+    .meta-text {
+      .meta-text;
+    }
+    .tag-name {
+      .tag-header-name-text;
+      display: block;
+    }
+    .avatar {
+      float: left;
+    }
+    .name {
+      padding-left: 5px;
+    }
+    .member-post-count {
+      padding-left: 5px;
+    }
+    > div {
+      border-bottom: 1px solid @light-gray-border;
+      padding: 10px 15px;
+    }
+    > div.footer {
+      .meta-text;
+      border-bottom: 0;
+      background-color: @faint-gray-bg;
+      padding: 15px 15px;
+      a {
+        color: @damian-green;
+      }
     }
   }
+
   &.below:after, &.below:before {
     bottom: 100%;
     left: 50%;

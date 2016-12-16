@@ -1,6 +1,6 @@
 import React from 'react'
 import { navigate } from '../actions'
-import { handleMouseOver } from './TagPopover'
+import { handleMouseOver } from './Popover'
 const { func } = React.PropTypes
 
 const ClickCatcher = ({ tag, ...props }, { dispatch }) => {

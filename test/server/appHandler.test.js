@@ -87,7 +87,7 @@ describe('appHandler', () => {
 
   describe('with a logged-in user', () => {
     let bannerUrl = 'http://nowhere.com/house.png'
-    let community = {id: 1, name: 'House', slug: 'house', banner_url: bannerUrl, settings: {}, popularSkills: []}
+    let community = {id: 1, name: 'House', slug: 'house', banner_url: bannerUrl, settings: {}}
 
     beforeEach(() => {
       nock(HOST).get('/noo/user/me').reply(200, {id: 1, name: 'cat', settings: {}})

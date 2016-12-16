@@ -2,6 +2,7 @@ import React from 'react'
 import { prefetch } from 'react-fetcher'
 import { connect } from 'react-redux'
 import { debounce, includes, isEmpty } from 'lodash'
+import { map } from 'lodash/fp'
 import { FETCH_PEOPLE } from '../actions'
 import { removeCommunityMember } from '../actions/communities'
 import { fetchPeople } from '../actions/fetchPeople'
@@ -97,10 +98,8 @@ export default class People extends React.Component {
     const { currentUser } = this.context
     if (error) return <AccessErrorMessage error={error} />
 
-    var { popularSkills } = community
-
     // replacing hyphens with non-breaking hyphens
-    popularSkills = popularSkills.map(skill => skill.replace('-', '‑'))
+    const popularSkills = map(skill => skill.replace('-', '‑'), community.popularSkills)
 
     const { search } = query
     const { slug } = community || {}

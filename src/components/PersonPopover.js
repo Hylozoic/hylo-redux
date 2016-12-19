@@ -1,9 +1,11 @@
 import React from 'react'
+import { Link } from 'react-router'
 import { connect } from 'react-redux'
-import A from './A'
 import Avatar from './Avatar'
+import Icon from './Icon'
 import { get } from 'lodash'
-import { navigate, fetchPerson } from '../actions'
+import { STARTED_MESSAGE, trackEvent } from '../util/analytics'
+import { showDirectMessage, fetchPerson } from '../actions'
 const { object, func, string } = React.PropTypes
 
 @connect(({ people }, { userId }) => {
@@ -23,13 +25,21 @@ export default class PersonPopover extends React.Component {
   }
 
   render () {
-    const { person } = this.props
+    const { person, dispatch } = this.props
+    const bio = (person.bio || '').substring(0, 36) + '...'
+
+    const startMessage = () => {
+      trackEvent(STARTED_MESSAGE, {context: 'popover'})
+      return dispatch(showDirectMessage(person.id, person.name))
+    }
 
     return <span className='person-popover'>
-      {person.id}
-      {person.name}
-      {person.avatar_url}
-      {person.bio}      
+      <Avatar person={person} />
+      <div className='name'><Link to={`/u/${person.id}`}>{person.name}</Link></div>
+      <div className='bio'>{bio}</div>
+      <button onClick={startMessage} className='message'>
+        <Icon name='Message-Smile' /> Message
+      </button>
     </span>
   }
 }

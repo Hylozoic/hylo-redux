@@ -1,17 +1,33 @@
-@popover-width: 280px;
+@tag-popover-width: 280px;
+@person-popover-width: 250px;
 
 .popover-container {
   position: absolute;
   z-index: 100;
   min-height: 30px;
-  width: @popover-width;
+
+  &.p-tag {
+    width: @tag-popover-width;
+  }
+
+  &.p-person {
+    width: @person-popover-width;
+  }
+
 }
 
 .popover {
-  width: @popover-width;
   position: absolute;
   background-color: white;
   border: 1px solid @light-gray-border;
+
+  &.p-tag {
+    width: @tag-popover-width;
+  }
+
+  &.p-person {
+    width: @person-popover-width;
+  }
 
   .tag-popover {
     .meta-text {
@@ -42,6 +58,39 @@
       a {
         color: @damian-green;
       }
+    }
+  }
+
+  .person-popover {
+
+    .avatar {
+      height: 66px;
+      width: 66px;
+      margin: 8px 8px 13px 10px;
+      float: left;
+      border-radius: 0;
+    }
+    .name {
+      margin-top: 4px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .bio {
+      height: 20px;
+      margin-top: 5px;
+      font-size: 9px;
+    }
+    .message {
+      .round-button;
+      .green-button;
+      padding: 0 8px;
+      height: 25px;
+      line-height: 25px;
+      .icon {
+        margin-right: 3px;
+        font-weight: 700;
+      }
+      font-size: 11px;
     }
   }
 
@@ -85,4 +134,5 @@
     border-width: 11px;
     margin-left: -11px;
   }
+
 }

@@ -81,7 +81,7 @@ export default class Popover extends React.Component {
     const pos = position(node)
     const rect = node.getBoundingClientRect()
     const popoverHeight = 380
-    const popoverWidth = 280
+    const popoverWidth = this.type === 'tag' ? 280 : 250
     const pageMargin = 20
     const maxLeft = document.documentElement.clientWidth - popoverWidth - pageMargin
     const centerOnLink = pos.x + rect.width / 2 - popoverWidth / 2
@@ -111,9 +111,11 @@ export default class Popover extends React.Component {
         break
     }
 
-    return <div className='popover-container' style={outer}
+    const typeClass = 'p-' + type
+
+    return <div className={cx('popover-container', typeClass)} style={outer}
       onMouseMove={this.cancelHide} onMouseLeave={this.hide}>
-      <div className={cx('popover', above ? 'above' : 'below')} style={inner}>
+      <div className={cx('popover', typeClass, above ? 'above' : 'below')} style={inner}>
         {content}
       </div>
     </div>

@@ -254,14 +254,14 @@ export function fetchCurrentUser (refresh) {
 export function generateUserToken () {
   return {
     type: GENERATE_USER_TOKEN,
-    payload: {api: true, path: '/noo/token', method: 'post'}
+    payload: {api: true, path: '/noo/access-token', method: 'post'}
   }
 }
 
 export function revokeUserToken () {
   return {
     type: REVOKE_USER_TOKEN,
-    payload: {api: true, path: '/noo/token/revoke', method: 'delete'}
+    payload: {api: true, path: '/noo/access-token/revoke', method: 'delete'}
   }
 }
 

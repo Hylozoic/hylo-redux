@@ -19,7 +19,7 @@ import { leaveCommunity } from '../../actions/communities'
 import { uploadImage } from '../../actions/uploadImage'
 import A from '../../components/A'
 import { formatDate } from '../../util/text'
-import { debounce, get, sortBy, throttle, set } from 'lodash'
+import { debounce, find, get, sortBy, throttle, set } from 'lodash'
 import ListItemTagInput from '../../components/ListItemTagInput'
 import { denormalizedCurrentUser, hasFeature } from '../../models/currentUser'
 import { avatarUploadSettings, bannerUploadSettings, defaultBanner } from '../../models/person'
@@ -200,7 +200,7 @@ export default class UserSettings extends React.Component {
     const { dispatch } = this.props
     this.setState({tokenPending: true})
     dispatch(generateUserToken())
-    .then(action => action.error ? this.setState({tokenError: true, tokenPending: false}) : this.setState({receivedToken: action.payload.token, tokenPending: false}))    
+    .then(action => action.error ? this.setState({tokenError: true, tokenPending: false}) : this.setState({receivedToken: action.payload.accessToken, tokenPending: false}))    
   }
 
   onCopy = () => this.setState({tokenCopied: true})
@@ -208,6 +208,7 @@ export default class UserSettings extends React.Component {
   render () {
     const { currentUser, expand, pending, dispatch } = this.props
     const memberships = sortBy(currentUser.memberships, m => m.community.name)
+    const hasToken = find(currentUser.linkedAccounts, a => a.provider_key === 'token')
     const { tokenCopied, tokenPending, tokenError, receivedToken, editing, edited, errors } = this.state
     let { avatar_url, banner_url } = currentUser
     if (!banner_url) banner_url = defaultBanner
@@ -409,11 +410,11 @@ export default class UserSettings extends React.Component {
         {expand.developer && <Section className='apiAccess'>
           <Item>
             <div className='full-column'>
-              { !currentUser.token && !receivedToken && <p>Generate a token with which you can access the Hylo API</p>}
-              { !currentUser.token && !tokenError && !tokenPending && !receivedToken && <button className='button' onClick={this.generateToken}>Generate Token</button>}
-              { !currentUser.token && tokenPending && <p>Generating...</p>}
+              { !hasToken && !receivedToken && <p>Generate a token with which you can access the Hylo API</p>}
+              { !hasToken && !tokenError && !tokenPending && !receivedToken && <button className='button' onClick={this.generateToken}>Generate Token</button>}
+              { !hasToken && tokenPending && <p>Generating...</p>}
               { tokenError && <p>There was an error generating your token. Please refresh and try again.</p>}
-              { currentUser.token && <div><p>You've generated a token to access the Hylo API.</p>
+              { hasToken && <div><p>You've generated a token to access the Hylo API.</p>
                 <button className='button' onClick={() => dispatch(revokeUserToken())}>Revoke</button></div>}
               { receivedToken && <div>
                 <p>Here is your access token. Copy it somewhere safe now, this is the only time that it will be shown to you.</p>

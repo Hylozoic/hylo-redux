@@ -4,6 +4,7 @@ import { normalize } from './people'
 import {
   CREATE_COMMUNITY,
   FETCH_CURRENT_USER,
+  GENERATE_USER_TOKEN,
   JOIN_COMMUNITY_WITH_CODE,
   LEAVE_COMMUNITY_PENDING,
   LOGIN,
@@ -100,10 +101,15 @@ export default function (state = null, action) {
           viewedTooltips: {}
         }
       }
+    case GENERATE_USER_TOKEN:
+      return {
+        ...state,
+        linkedAccounts: state.linkedAccounts.concat([{ provider_key: 'token'}])
+      }
     case REVOKE_USER_TOKEN:
       return {
         ...state,
-        token: false
+        linkedAccounts: filter(state.linkedAccounts, a => a.provider_key !== 'token')
       }
   }
 

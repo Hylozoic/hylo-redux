@@ -104,7 +104,7 @@ export default function (state = null, action) {
     case GENERATE_USER_TOKEN:
       return {
         ...state,
-        linkedAccounts: state.linkedAccounts.concat([{ provider_key: 'token'}])
+        linkedAccounts: state.linkedAccounts.concat([{provider_key: 'token'}])
       }
     case REVOKE_USER_TOKEN:
       return {

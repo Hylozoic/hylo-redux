@@ -200,7 +200,9 @@ export default class UserSettings extends React.Component {
     const { dispatch } = this.props
     this.setState({tokenPending: true})
     dispatch(generateUserToken())
-    .then(action => action.error ? this.setState({tokenError: true, tokenPending: false}) : this.setState({receivedToken: action.payload.accessToken, tokenPending: false}))    
+    .then(action => action.error
+      ? this.setState({tokenError: true, tokenPending: false})
+      : this.setState({receivedToken: action.payload.accessToken, tokenPending: false}))
   }
 
   onCopy = () => this.setState({tokenCopied: true})
@@ -410,19 +412,19 @@ export default class UserSettings extends React.Component {
         {expand.developer && <Section className='apiAccess'>
           <Item>
             <div className='full-column'>
-              { !hasToken && !receivedToken && <p>Generate a token with which you can access the Hylo API</p>}
-              { !hasToken && !tokenError && !tokenPending && !receivedToken && <button className='button' onClick={this.generateToken}>Generate Token</button>}
-              { !hasToken && tokenPending && <p>Generating...</p>}
-              { tokenError && <p>There was an error generating your token. Please refresh and try again.</p>}
-              { hasToken && !receivedToken && <div><p>You've generated a token to access the Hylo API.</p>
+              {!hasToken && !receivedToken && <p>Generate a token with which you can access the Hylo API</p>}
+              {!hasToken && !tokenError && !tokenPending && !receivedToken && <button className='button' onClick={this.generateToken}>Generate Token</button>}
+              {!hasToken && tokenPending && <p>Generating...</p>}
+              {tokenError && <p>There was an error generating your token. Please refresh and try again.</p>}
+              {hasToken && !receivedToken && <div><p>You've generated a token to access the Hylo API.</p>
                 <button className='button' onClick={() => dispatch(revokeUserToken())}>Revoke</button></div>}
-              { receivedToken && <div>
+              {receivedToken && <div>
                 <p>Here is your access token. Copy it somewhere safe now, this is the only time that it will be shown to you.</p>
                 <pre>{receivedToken}</pre>
                 <CopyToClipboard text={receivedToken} onCopy={this.onCopy}>
                   <button className='button'>Copy To Clipboard</button>
                 </CopyToClipboard></div>}
-              { tokenCopied && <p>Copied.</p>}
+              {tokenCopied && <p>Copied.</p>}
             </div>
           </Item>
         </Section>}

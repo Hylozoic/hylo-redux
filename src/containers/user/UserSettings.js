@@ -414,7 +414,7 @@ export default class UserSettings extends React.Component {
               { !hasToken && !tokenError && !tokenPending && !receivedToken && <button className='button' onClick={this.generateToken}>Generate Token</button>}
               { !hasToken && tokenPending && <p>Generating...</p>}
               { tokenError && <p>There was an error generating your token. Please refresh and try again.</p>}
-              { hasToken && <div><p>You've generated a token to access the Hylo API.</p>
+              { hasToken && !receivedToken && <div><p>You've generated a token to access the Hylo API.</p>
                 <button className='button' onClick={() => dispatch(revokeUserToken())}>Revoke</button></div>}
               { receivedToken && <div>
                 <p>Here is your access token. Copy it somewhere safe now, this is the only time that it will be shown to you.</p>

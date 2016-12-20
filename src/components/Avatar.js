@@ -1,7 +1,7 @@
 import React from 'react'
 import { Link } from 'react-router'
 import { connect } from 'react-redux'
-import { handleMouseOver } from './popover'
+import { handleMouseOver } from './Popover'
 
 export const bgStyle = url => {
   if (!url) return {}
@@ -16,11 +16,10 @@ const GenericAvatar = connect()(({ person: { id, avatar_url }, isLink, showPopov
   const props = {
     className: 'avatar',
     style: bgStyle(avatar_url),
-    to: isLink ? `/u/${id}` : null,
     onMouseOver: showPopover ? handleMouseOver(dispatch) : null
   }
 
-  return isLink ? <Link {...props} /> : <div {...props} />
+  return isLink ? <div {...props}><Link to={`/u/${id}`} >&nbsp;</Link></div> : <div {...props} />
 })
 
 const Avatar = ({ person, showPopover }) => {

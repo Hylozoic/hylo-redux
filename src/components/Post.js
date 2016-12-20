@@ -201,8 +201,8 @@ export const Header = ({ communities, expanded }, { post, currentUser, dispatch 
       readOnly={!canEdit} />}
     {tag === 'welcome'
       ? <WelcomePostHeader communities={communities} />
-      : <div>
-          <A className='name' to={`/u/${person.id}`} onMouseOver={handleMouseOver(dispatch)}>
+      : <div onMouseOver={handleMouseOver(dispatch)}>
+          <A className='name' to={`/u/${person.id}`}>
             {person.name}
           </A>
           <span className='meta'>

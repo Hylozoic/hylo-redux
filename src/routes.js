@@ -54,10 +54,8 @@ export const tagUrlComponents = url => {
 }
 
 export const userIdFromUrl = url => {
-  let match = (url || '').match(/(?:\/u\/([^\/]+))/)
+  let match = (url || '').match(/\/u\/([^\/]+)/)
   if (!match) return null
-  console.log('url', url)
-  console.log('match', match)
   return match[1]
 }
 

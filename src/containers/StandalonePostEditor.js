@@ -73,7 +73,7 @@ export default class StandalonePostEditor extends React.Component {
       <div id='mobile-top-bar'>
         {saving
           ? <a className='right'>Saving...</a>
-          : <a className='right' onClick={() => editor.saveIfValid()}>Save</a>}
+          : <a className='right' onClick={() => editor.saveIfValid()}>Create Post</a>}
 
         <a className='back' onClick={() => editor.cancel()}>
           <span className='left-angle-bracket'>&#x3008;</span>
@@ -84,7 +84,7 @@ export default class StandalonePostEditor extends React.Component {
         </div>
       </div>
       <PostEditor post={post} community={community} type={type} ref='editor'
-        onCancel={goBack}/>
+        onCancel={goBack} />
     </div>
   }
 }

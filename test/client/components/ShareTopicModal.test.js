@@ -22,7 +22,6 @@ describe('ShareTopicModal', () => {
     tagInvitationEditor: {
       recipients: []
     },
-    tagPopover: {},
     typeaheadMatches: {},
     notifierMessages: [],
     routing: {path: `/c/${slug}`},

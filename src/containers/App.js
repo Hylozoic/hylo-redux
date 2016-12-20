@@ -8,7 +8,7 @@ import { get } from 'lodash/fp'
 import Notifier from '../components/Notifier'
 import LiveStatusPoller from '../components/LiveStatusPoller'
 import PageTitleController from '../components/PageTitleController'
-import TagPopover from '../components/TagPopover'
+import Popover from '../components/Popover'
 import { removeNotification, toggleLeftNav, navigate, notify } from '../actions'
 import { iOSAppVersion, isMobile as testIsMobile, calliOSBridge } from '../client/util'
 import { ModalWrapper } from '../components/Modal'
@@ -27,7 +27,7 @@ const { array, bool, func, object } = React.PropTypes
 })
 @connect((state, { params }) => {
   return {
-    ...pick(state, 'isMobile', 'leftNavIsOpen', 'notifierMessages', 'openModals', 'tagPopover'),
+    ...pick(state, 'isMobile', 'leftNavIsOpen', 'notifierMessages', 'openModals', 'popover'),
     network: getCurrentNetwork(state),
     community: getCurrentCommunity(state),
     currentUser: denormalizedCurrentUser(state)
@@ -45,7 +45,7 @@ export default class App extends React.Component {
     isMobile: bool,
     openModals: array,
     location: object,
-    tagPopover: object
+    popover: object
   }
 
   static childContextTypes = {
@@ -94,7 +94,7 @@ export default class App extends React.Component {
   render () {
     const {
       children, community, dispatch, leftNavIsOpen, notifierMessages,
-      openModals, tagPopover, currentUser, location
+      openModals, popover, currentUser, location
     } = this.props
 
     const classes = cx({
@@ -114,7 +114,7 @@ export default class App extends React.Component {
         remove={id => dispatch(removeNotification(id))}/>
       <LiveStatusPoller community={community}/>
       <PageTitleController/>
-      {!isEmpty(tagPopover) && <TagPopover {...{tagPopover}}/>}
+      {!isEmpty(popover) && <Popover {...{popover}}/>}
       {openModals.map((modal, i) =>
         <ModalWrapper key={i}
           bottom={i === 0}

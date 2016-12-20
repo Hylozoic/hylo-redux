@@ -1,7 +1,7 @@
 import React from 'react'
 import { Link } from 'react-router'
 
-const bgStyle = url => {
+export const bgStyle = url => {
   if (!url) return {}
 
   const escaped = url.replace(/([\(\)])/g, (match, $1) => '\\' + $1)

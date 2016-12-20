@@ -1,7 +1,7 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import cx from 'classnames'
-import { tagUrlComponents } from '../routes'
+import { tagUrlComponents, userIdFromUrl } from '../routes'
 import { position } from '../util/scrolling'
 import { showPopover, hidePopover } from '../actions/index'
 import TagPopover from './TagPopover'
@@ -14,7 +14,9 @@ export const handleMouseOver = dispatch => event => {
   const node = event.target
 
   const isTag = node.getAttribute('class') === 'hashtag'
-  const userId = node.getAttribute('data-user-id')
+  const userId = node.getAttribute('data-user-id') || userIdFromUrl(node.getAttribute('href'))
+
+  console.log('Handling Mouse Over, userId', userId)
 
   if (node.nodeName.toLowerCase() === 'a' && (isTag || userId)) {
     canceledPopover = false

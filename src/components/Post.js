@@ -193,7 +193,7 @@ export const Header = ({ communities, expanded }, { post, currentUser, dispatch 
 
   return <div className='header'>
     <Menu expanded={expanded} />
-    <Avatar person={person} />
+    <Avatar person={person} showPopover />
     {showCheckbox && <input type='checkbox'
       className='completion-toggle'
       checked={!!post.fulfilled_at}
@@ -202,7 +202,9 @@ export const Header = ({ communities, expanded }, { post, currentUser, dispatch 
     {tag === 'welcome'
       ? <WelcomePostHeader communities={communities} />
       : <div>
-          <A className='name' to={`/u/${person.id}`}>{person.name}</A>
+          <A className='name' to={`/u/${person.id}`} onMouseOver={handleMouseOver(dispatch)}>
+            {person.name}
+          </A>
           <span className='meta'>
             <A to={`/p/${post.id}`} title={createdAt}>
               {nonbreaking(humanDate(createdAt))}

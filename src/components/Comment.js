@@ -69,7 +69,7 @@ class Comment extends React.Component {
           <li><a onClick={remove}>Remove</a></li>
         </Dropdown>}
       <a name={`comment-${comment.id}`}></a>
-      <Avatar person={person}/>
+      <Avatar person={person} showPopover />
       <div className='content'>
         <ClickCatchingSpan className='text' dangerouslySetInnerHTML={{__html: text}}/>
         {truncated && <span> <a onClick={expand} className='show-more'>Show&nbsp;more</a></span>}

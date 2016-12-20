@@ -1,5 +1,7 @@
 import React from 'react'
 import { Link } from 'react-router'
+import { connect } from 'react-redux'
+import { handleMouseOver } from './popover'
 
 export const bgStyle = url => {
   if (!url) return {}
@@ -8,15 +10,25 @@ export const bgStyle = url => {
   return {backgroundImage: `url(${escaped})`}
 }
 
-const Avatar = ({ person: { id, avatar_url } }) => {
-  if (!id) return <span></span>
+const GenericAvatar = connect()(({ person: { id, avatar_url }, isLink, showPopover, dispatch }) => {
+  if (!id) return <span />
 
-  return <Link to={`/u/${id}`} className='avatar' style={bgStyle(avatar_url)}/>
+  const props = {
+    className: 'avatar',
+    style: bgStyle(avatar_url),
+    to: isLink ? `/u/${id}` : null,
+    onMouseOver: showPopover ? handleMouseOver(dispatch) : null
+  }
+
+  return isLink ? <Link {...props} /> : <div {...props} />
+})
+
+const Avatar = ({ person, showPopover }) => {
+  return <GenericAvatar person={person} isLink showPopover />
 }
 
-export const NonLinkAvatar = ({ person: { id, avatar_url } }) => {
-  if (!id) return <span></span>
-  return <div className='avatar' style={bgStyle(avatar_url)}/>
+export const NonLinkAvatar = ({ person }) => {
+  return <GenericAvatar person={person} />
 }
 
 export default Avatar

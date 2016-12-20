@@ -8,6 +8,7 @@ import {
   FETCH_COMMUNITY_SETTINGS,
   FETCH_COMMUNITY_MODERATORS,
   FETCH_COMMUNITIES,
+  SEND_GRAPHQL_QUERY,
   UPDATE_COMMUNITY_SETTINGS_PENDING,
   ADD_COMMUNITY_MODERATOR_PENDING,
   REMOVE_COMMUNITY_MODERATOR_PENDING,
@@ -78,6 +79,17 @@ export default function (state = {}, action) {
       community = state[meta.slug]
       return {
         ...state, [meta.slug]: {...community, settings: payload}
+      }
+    case SEND_GRAPHQL_QUERY:
+      if (meta.subject === 'popular-skills') {
+        community = state[meta.id]
+        return {
+          ...state,
+          [meta.id]: {
+            ...community,
+            popularSkills: payload.data.community.popularSkills
+          }
+        }
       }
   }
   return state

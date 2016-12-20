@@ -15,6 +15,7 @@ import A from '../components/A'
 const { array, bool, func, number, object, string } = React.PropTypes
 import { canInvite, canModerate } from '../models/currentUser'
 import { findError } from '../actions/util'
+import { sendGraphqlQuery } from '../actions/graphql'
 import qs from 'querystring'
 import { NonLinkAvatar } from '../components/Avatar'
 import { humanDate } from '../util/text'
@@ -24,9 +25,19 @@ import { SEARCHED, trackEvent } from '../util/analytics'
 const subject = 'community'
 const fetch = fetchWithCache(fetchPeople)
 
+const fetchPopularSkills = slug =>
+  sendGraphqlQuery('popular-skills', slug, `{
+    community(slug: "${slug}") {
+      popularSkills(first: 15)
+    }
+  }`)
+
 @prefetch(({ dispatch, params: { id }, query }) => {
   if (!id) id = 'all'
-  return dispatch(fetch(subject, id, query))
+  return Promise.all([
+    dispatch(fetch(subject, id, query)),
+    id !== 'all' && dispatch(fetchPopularSkills(id))
+  ])
 })
 @connect((state, { params: { id }, location: { query } }) => {
   if (!id) id = 'all'

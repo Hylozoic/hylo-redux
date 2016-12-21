@@ -1,7 +1,7 @@
 import React from 'react'
 import { Link } from 'react-router'
-import { connect } from 'react-redux'
 import { handleMouseOver } from './Popover'
+const { func } = React.PropTypes
 
 export const bgStyle = url => {
   if (!url) return {}
@@ -10,7 +10,7 @@ export const bgStyle = url => {
   return {backgroundImage: `url(${escaped})`}
 }
 
-const GenericAvatar = connect()(({ person: { id, avatar_url }, isLink, showPopover, dispatch }) => {
+const GenericAvatar = ({ person: { id, avatar_url }, isLink, showPopover }, { dispatch }) => {
   if (!id) return <span />
 
   const props = {
@@ -20,10 +20,11 @@ const GenericAvatar = connect()(({ person: { id, avatar_url }, isLink, showPopov
   }
 
   return isLink ? <div {...props}><Link to={`/u/${id}`} >&nbsp;</Link></div> : <div {...props} />
-})
+}
+GenericAvatar.contextTypes = {dispatch: func}
 
 const Avatar = ({ person, showPopover }) => {
-  return <GenericAvatar person={person} isLink showPopover />
+  return <GenericAvatar person={person} isLink showPopover={showPopover} />
 }
 
 export const NonLinkAvatar = ({ person }) => {

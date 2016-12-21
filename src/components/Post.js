@@ -202,17 +202,17 @@ export const Header = ({ communities, expanded }, { post, currentUser, dispatch 
     {tag === 'welcome'
       ? <WelcomePostHeader communities={communities} />
       : <div onMouseOver={handleMouseOver(dispatch)}>
-        <A className='name' to={`/u/${person.id}`}>
-          {person.name}
-        </A>
-        <span className='meta'>
-          <A to={`/p/${post.id}`} title={createdAt}>
-            {nonbreaking(humanDate(createdAt))}
+          <A className='name' to={`/u/${person.id}`}>
+            {person.name}
           </A>
-          {communities && <Communities communities={communities} />}
-          {post.public && <span>{spacer}Public</span>}
-        </span>
-      </div>}
+          <span className='meta'>
+            <A to={`/p/${post.id}`} title={createdAt}>
+              {nonbreaking(humanDate(createdAt))}
+            </A>
+            {communities && <Communities communities={communities} />}
+            {post.public && <span>{spacer}Public</span>}
+          </span>
+        </div>}
   </div>
 }
 Header.contextTypes = {post: object, currentUser: object, dispatch: func}
@@ -291,15 +291,15 @@ const WelcomePostHeader = ({ communities }, { post }) => {
     <span />
     {community
       ? <span>
-        <A to={`/c/${community.slug}`}>{community.name}</A>.
-        <span />
-        <a className='open-comments'>
-          Welcome them!
-        </a>
-      </span>
+          <A to={`/c/${community.slug}`}>{community.name}</A>.
+          <span />
+          <a className='open-comments'>
+            Welcome them!
+          </a>
+        </span>
       : <span>
-        a community that is no longer active.
-      </span>}
+          a community that is no longer active.
+        </span>}
   </div>
 }
 WelcomePostHeader.contextTypes = {post: object}

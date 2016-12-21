@@ -17,7 +17,7 @@ import { ModalWrapper } from '../components/Modal'
 import { getCurrentCommunity } from '../models/community'
 import { getCurrentNetwork } from '../models/network'
 import { denormalizedCurrentUser } from '../models/currentUser'
-import { OPENED_APP, NAVIGATED_FROM_PUSH_NOTIFICATION, trackEvent } from '../util/analytics'
+import { OPENED_MOBILE_APP, NAVIGATED_FROM_PUSH_NOTIFICATION, trackEvent } from '../util/analytics'
 const { array, bool, func, object } = React.PropTypes
 
 @prefetch(({ store, dispatch, currentUser }) => {
@@ -77,9 +77,9 @@ export default class App extends React.Component {
     const androidVersion = androidAppVersion()
 
     if (iOSVersion > 0) {
-      trackEvent(OPENED_APP, {iOSVersion})
+      trackEvent(OPENED_MOBILE_APP, {iOSVersion})
     } else if (androidVersion > 0) {
-      trackEvent(OPENED_APP, {androidVersion})
+      trackEvent(OPENED_MOBILE_APP, {androidVersion})
     }
 
     if (iOSVersion < 1.7) {

@@ -21,6 +21,10 @@ export function isAndroidApp () {
   return typeof AndroidBridge !== 'undefined'
 }
 
+export function androidAppVersion () {
+  return Number(window.navigator.userAgent.split('Hylo-Android-App/')[1])
+}
+
 export function calliOSBridge (message, callback) {
   if (!isiOSApp()) return
 

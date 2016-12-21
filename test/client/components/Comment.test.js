@@ -32,7 +32,7 @@ describe('Comment', () => {
     .to.equal('jo' + String.fromCharCode(160) + 'klunk' + 'yes!')
 
     expect(node.find('.content .text').html())
-    .to.include('<strong class="name">jo&nbsp;klunk</strong>')
+    .to.include('jo&nbsp;klunk')
 
     expect(node.find('.content > div > span a').text()).to.equal('Say thanks')
 

@@ -44,13 +44,19 @@ export const tagUrl = (name, slug) => {
   return result
 }
 
-export const tagUrlComponents = (url) => {
+export const tagUrlComponents = url => {
   let match = url.match(/(?:\/c\/([^\/]+))?\/tag\/([^\/]+)/)
   if (!match) return {}
   return {
     slug: match[1],
     tagName: match[2]
   }
+}
+
+export const userIdFromUrl = url => {
+  let match = (url || '').match(/\/u\/([^\/]+)/)
+  if (!match) return null
+  return match[1]
 }
 
 export const isCommunityUrl = (path) =>

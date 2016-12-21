@@ -9,10 +9,9 @@ import Notifier from '../components/Notifier'
 import LiveStatusPoller from '../components/LiveStatusPoller'
 import PageTitleController from '../components/PageTitleController'
 import Popover from '../components/Popover'
-import { removeNotification, toggleLeftNav, navigate, notify } from '../actions'
+import { removeNotification, toggleLeftNav, navigate, notify, setMobileDevice } from '../actions'
 import { iOSAppVersion, isMobile as testIsMobile, calliOSBridge } from '../client/util'
 import { ModalWrapper } from '../components/Modal'
-import { setMobileDevice } from '../actions'
 import { getCurrentCommunity } from '../models/community'
 import { getCurrentNetwork } from '../models/network'
 import { denormalizedCurrentUser } from '../models/currentUser'
@@ -111,17 +110,17 @@ export default class App extends React.Component {
       {children}
 
       <Notifier messages={notifierMessages}
-        remove={id => dispatch(removeNotification(id))}/>
-      <LiveStatusPoller community={community}/>
-      <PageTitleController/>
-      {!isEmpty(popover) && <Popover {...{popover}}/>}
+        remove={id => dispatch(removeNotification(id))} />
+      <LiveStatusPoller community={community} />
+      <PageTitleController />
+      {!isEmpty(popover) && <Popover {...{popover}} />}
       {openModals.map((modal, i) =>
         <ModalWrapper key={i}
           bottom={i === 0}
           top={i === openModals.length - 1}
           type={modal.type}
-          params={modal.params}/>)}
-      {showIntercomButton && <IntercomButton/>}
+          params={modal.params} />)}
+      {showIntercomButton && <IntercomButton />}
     </div>
   }
 }

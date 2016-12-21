@@ -22,11 +22,10 @@ import LinkedPersonSentence from './LinkedPersonSentence'
 import LinkPreview from './LinkPreview'
 import { connect } from 'react-redux'
 import { compose } from 'redux'
-import { navigate, showModal } from '../actions'
+import { navigate, showModal, typeahead } from '../actions'
 import {
   completePost, followPost, removePost, startPostEdit, voteOnPost, pinPost
 } from '../actions/posts'
-import { typeahead } from '../actions'
 import { same } from '../models'
 import { denormalizedPost, getComments, isPinned } from '../models/post'
 import { getCurrentCommunity } from '../models/community'
@@ -43,7 +42,7 @@ export const presentDescription = (post, community, opts = {}) =>
   present(sanitize(post.description), {slug: get('slug', community), ...opts})
 
 export class Post extends React.Component {
-  constructor(props, context) {
+  constructor (props, context) {
     super(props, context)
     this.state = {
       requestCompleting: false,
@@ -97,21 +96,22 @@ export class Post extends React.Component {
       dispatch(typeahead(term, 'invite', {communityId: community.id, type: 'people'}))
     }
     const completeRequest = () => {
-      if(contributors.length > 0)
+      if (contributors.length > 0) {
         this.setState({contributors: []})
+      }
       toggleRequestCompleting()
       dispatch(completePost(post.id, contributors))
     }
     const uncompleteRequest = () => {
-      if(window.confirm('This will mark this request as Incomplete. Are you sure?')) {
+      if (window.confirm('This will mark this request as Incomplete. Are you sure?')) {
         dispatch(completePost(post.id))
       }
     }
 
     return <div className={classes}>
-      <a name={`post-${post.id}`}></a>
+      <a name={`post-${post.id}`} />
       <Header communities={communities} expanded={expanded} />
-      <p className='title post-section' dangerouslySetInnerHTML={{__html: title}}></p>
+      <p className='title post-section' dangerouslySetInnerHTML={{__html: title}} />
       {image && <LazyLoader>
         <img src={image.url} className='post-section full-image' />
       </LazyLoader>}
@@ -143,15 +143,15 @@ export class Post extends React.Component {
               checked={this.state.requestCompleting}
               onChange={toggleRequestCompleting} />
             <p className='request-complete-message'>
-              { this.state.requestCompleting ?
-                  'Awesome! Who helped you?' :
-                  'Click the checkmark if this request has been completed!' }
+              { this.state.requestCompleting
+                ? 'Awesome! Who helped you?'
+                : 'Click the checkmark if this request has been completed!' }
             </p>
           </div>
           {this.state.requestCompleting &&
             <div className='buttons'>
               <a className='cancel' onClick={toggleRequestCompleting}>
-                <span className='icon icon-Fail'></span>
+                <span className='icon icon-Fail' />
               </a>
               <TagInput className='request-complete-people-input'
                 choices={contributorChoices}
@@ -202,17 +202,17 @@ export const Header = ({ communities, expanded }, { post, currentUser, dispatch 
     {tag === 'welcome'
       ? <WelcomePostHeader communities={communities} />
       : <div onMouseOver={handleMouseOver(dispatch)}>
-          <A className='name' to={`/u/${person.id}`}>
-            {person.name}
+        <A className='name' to={`/u/${person.id}`}>
+          {person.name}
+        </A>
+        <span className='meta'>
+          <A to={`/p/${post.id}`} title={createdAt}>
+            {nonbreaking(humanDate(createdAt))}
           </A>
-          <span className='meta'>
-            <A to={`/p/${post.id}`} title={createdAt}>
-              {nonbreaking(humanDate(createdAt))}
-            </A>
-            {communities && <Communities communities={communities} />}
-            {post.public && <span>{spacer}Public</span>}
-          </span>
-        </div>}
+          {communities && <Communities communities={communities} />}
+          {post.public && <span>{spacer}Public</span>}
+        </span>
+      </div>}
   </div>
 }
 Header.contextTypes = {post: object, currentUser: object, dispatch: func}
@@ -288,18 +288,18 @@ const WelcomePostHeader = ({ communities }, { post }) => {
   let community = communities[0]
   return <div>
     <strong><A to={`/u/${person.id}`}>{person.name}</A></strong> joined
-    <span> </span>
+    <span />
     {community
       ? <span>
-          <A to={`/c/${community.slug}`}>{community.name}</A>.
-          <span> </span>
-          <a className='open-comments'>
-            Welcome them!
-          </a>
-        </span>
+        <A to={`/c/${community.slug}`}>{community.name}</A>.
+        <span />
+        <a className='open-comments'>
+          Welcome them!
+        </a>
+      </span>
       : <span>
-          a community that is no longer active.
-        </span>}
+        a community that is no longer active.
+      </span>}
   </div>
 }
 WelcomePostHeader.contextTypes = {post: object}
@@ -317,8 +317,8 @@ export const Menu = (props, { dispatch, post, currentUser, community }) => {
   const pin = () => dispatch(pinPost(get('slug', community), post.id))
 
   const toggleChildren = pinned
-    ? <span className='pinned'><span className='label'>Pinned</span><span className='icon-More'></span></span>
-    : <span className='icon-More'></span>
+    ? <span className='pinned'><span className='label'>Pinned</span><span className='icon-More' /></span>
+    : <span className='icon-More' />
 
   return <Dropdown className='post-menu' alignRight {...{toggleChildren}}>
     {canModerate(currentUser, community) && <li>

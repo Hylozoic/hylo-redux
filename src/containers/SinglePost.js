@@ -6,6 +6,7 @@ import { includes } from 'lodash'
 import { get, pick } from 'lodash/fp'
 import { FETCH_POST, navigate, notify, setMetaTags } from '../actions'
 import { fetchComments } from '../actions/comments'
+import { fetchCommunity } from '../actions/communities'
 import { fetchPost, unfollowPost } from '../actions/posts'
 import { saveCurrentCommunityId } from '../actions/util'
 import { ogMetaTags } from '../util'
@@ -142,7 +143,8 @@ const setupPage = (store, id, query, action) => {
   return Promise.all([
     communityId !== currentCommunityId &&
       saveCurrentCommunityId(dispatch, communityId, !!currentUser),
-
+    // Always load the full record for the current Community record
+    dispatch(fetchCommunity(communityId), {refresh: true}),
     // when this page is clicked into from a post list, fetchPost will cause a
     // cache hit; however, there may be more comments than the 3 that were
     // included in the list, so we have to call fetchComments to retrieve the

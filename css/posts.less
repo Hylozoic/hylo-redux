@@ -528,41 +528,43 @@ ul.posts {
 
 .post.request {
   .request-completed-bar {
-    .request-complete-heading {
-      background-color: @damian-green;
-    }
     .clearfix;
-    vertical-align: middle;
-    input.toggle {
-      .round-checkbox(12.5px, 13px, #ffffff, #ffffff, #ffffff);
-      background-color: rgba(255, 255, 255, 0.4);
-      border: solid 1px #ffffff;
-      vertical-align: middle;
-      margin: 9px 25px 9px 25px;
-      &:checked {
-        background-color: #ffffff;
+    div.request-complete-heading {
+      background-color: @damian-green;
+      padding: 9px 15px 9px 25px;
+      line-height: 0px;
+    }
+    div.request-complete-message {
+      margin-bottom: 0px;
+      color: #ffffff;
+      font-size: 14px;
+      .clearfix;
+      input.toggle[type=checkbox] {
+        float: left;
+        .round-checkbox(12.5px, 13px, #ffffff, #ffffff, #ffffff);
+        border: solid 1px #ffffff;
+        background-color: rgba(255, 255, 255, 0.4);
+        &:checked {
+          background-color: #ffffff;
+        }
+        &:checked:after {
+          color: @damian-green;
+        }
       }
-      &:checked:after {
-        color: @damian-green;
+      p, div.contributors {
+        margin: 5px 0 0 45px;
+        line-height: normal;
+        a {
+          font-weight: bold;
+          color: white;
+        }
       }
     }
-    div.contributors {
-      display: inline;
-      color: white;
-      a {
-        color: white;
-      }
-    }
-    .request-complete-people-input {
+    div.request-complete-people-input {
       width: initial;
       border-color: @damian-green;
       margin: 10px 80px 15px 75px;
       padding: 8px 8px 3px 8px;
-    }
-    p.request-complete-message {
-      display: inline;
-      vertical-align: middle;
-      color: #ffffff;
     }
     a.done {
       .round-button;

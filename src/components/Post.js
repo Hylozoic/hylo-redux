@@ -125,12 +125,14 @@ export class Post extends React.Component {
       {hasFeature(currentUser, CONTRIBUTORS) && isCompleteRequest &&
         <div className='request-completed-bar'>
           <div className='request-complete-heading'>
-            <input className='toggle'
-              type='checkbox'
-              checked={!!post.fulfilled_at}
-              readOnly={!canEdit}
-              onChange={uncompleteRequest} />
-            <Contributors />
+            <div className='request-complete-message'>
+              <input className='toggle'
+                type='checkbox'
+                checked={!!post.fulfilled_at}
+                readOnly={!canEdit}
+                onChange={uncompleteRequest} />
+              <Contributors />
+            </div>
           </div>
         </div>
       }
@@ -138,15 +140,17 @@ export class Post extends React.Component {
       {hasFeature(currentUser, CONTRIBUTORS) && isIncompleteRequest &&
         <div className='request-completed-bar'>
           <div className='request-complete-heading'>
-            <input type='checkbox'
-              className='toggle'
-              checked={this.state.requestCompleting}
-              onChange={toggleRequestCompleting} />
-            <p className='request-complete-message'>
-              { this.state.requestCompleting
-                ? 'Awesome! Who helped you?'
-                : 'Click the checkmark if this request has been completed!' }
-            </p>
+            <div className='request-complete-message'>
+              <input type='checkbox'
+                className='toggle'
+                checked={this.state.requestCompleting}
+                onChange={toggleRequestCompleting} />
+              <p>
+                {this.state.requestCompleting ?
+                  'Awesome! Who helped you?' :
+                  'Click the checkmark if this request has been completed!'}
+              </p>
+            </div>
           </div>
           {this.state.requestCompleting &&
             <div className='buttons'>

@@ -9,13 +9,15 @@ import Notifier from '../components/Notifier'
 import LiveStatusPoller from '../components/LiveStatusPoller'
 import PageTitleController from '../components/PageTitleController'
 import Popover from '../components/Popover'
-import { removeNotification, toggleLeftNav, navigate, notify } from '../actions'
-import { iOSAppVersion, isMobile as testIsMobile, calliOSBridge } from '../client/util'
+import { removeNotification, toggleLeftNav, navigate, notify, setMobileDevice } from '../actions'
+import {
+  iOSAppVersion, androidAppVersion, isMobile as testIsMobile, calliOSBridge
+} from '../client/util'
 import { ModalWrapper } from '../components/Modal'
-import { setMobileDevice } from '../actions'
 import { getCurrentCommunity } from '../models/community'
 import { getCurrentNetwork } from '../models/network'
 import { denormalizedCurrentUser } from '../models/currentUser'
+import { OPENED_MOBILE_APP, NAVIGATED_FROM_PUSH_NOTIFICATION, trackEvent } from '../util/analytics'
 const { array, bool, func, object } = React.PropTypes
 
 @prefetch(({ store, dispatch, currentUser }) => {
@@ -70,14 +72,26 @@ export default class App extends React.Component {
 
     const query = get('query', location) || {}
 
-    const version = Number(iOSAppVersion())
-    if (version < 1.7) {
+    const iOSVersion = iOSAppVersion()
+
+    const androidVersion = androidAppVersion()
+
+    if (iOSVersion > 0) {
+      trackEvent(OPENED_MOBILE_APP, {'App Version (iOS)': iOSVersion})
+    } else if (androidVersion > 0) {
+      trackEvent(OPENED_MOBILE_APP, {'App Version (Android)': androidVersion})
+    }
+
+    if (iOSVersion < 1.7) {
       window.location = 'https://www.hylo.com/newapp'
     }
 
-    if (version >= 1.9) {
+    if (iOSVersion >= 1.9) {
       calliOSBridge({type: 'loaded'}, path => {
-        if (path) this.props.dispatch(navigate(path))
+        if (path) {
+          this.props.dispatch(navigate(path))
+          trackEvent(NAVIGATED_FROM_PUSH_NOTIFICATION, {path})
+        }
       })
     }
 
@@ -111,17 +125,17 @@ export default class App extends React.Component {
       {children}
 
       <Notifier messages={notifierMessages}
-        remove={id => dispatch(removeNotification(id))}/>
-      <LiveStatusPoller community={community}/>
-      <PageTitleController/>
-      {!isEmpty(popover) && <Popover {...{popover}}/>}
+        remove={id => dispatch(removeNotification(id))} />
+      <LiveStatusPoller community={community} />
+      <PageTitleController />
+      {!isEmpty(popover) && <Popover {...{popover}} />}
       {openModals.map((modal, i) =>
         <ModalWrapper key={i}
           bottom={i === 0}
           top={i === openModals.length - 1}
           type={modal.type}
-          params={modal.params}/>)}
-      {showIntercomButton && <IntercomButton/>}
+          params={modal.params} />)}
+      {showIntercomButton && <IntercomButton />}
     </div>
   }
 }

@@ -143,8 +143,10 @@ const setupPage = (store, id, query, action) => {
   return Promise.all([
     communityId !== currentCommunityId &&
       saveCurrentCommunityId(dispatch, communityId, !!currentUser),
+
     // Always load the full record for the current Community record
-    dispatch(fetchCommunity(communityId), {refresh: true}),
+    dispatch(fetchCommunity(communityId)),
+
     // when this page is clicked into from a post list, fetchPost will cause a
     // cache hit; however, there may be more comments than the 3 that were
     // included in the list, so we have to call fetchComments to retrieve the

@@ -7,13 +7,17 @@
     "sourceMap": false,
     "instrument": false
   },
+  "config": {
+    "exec_test": "./node_modules/.bin/mocha --compilers js:babel-register"
+  },
   "scripts": {
     "start": "./node_modules/.bin/gulp",
     "es5": "node src-es5/server",
     "test": "npm run test-server && npm run test-client && npm run test-browser",
-    "test-server": "./node_modules/.bin/mocha --compilers js:babel-register",
-    "test-client": "./node_modules/.bin/mocha --compilers js:babel-register test/client/index.js",
-    "test-browser": "./node_modules/.bin/mocha --compilers js:babel-register test/browser/index.js",
+    "test-one": "$npm_package_config_exec_test",
+    "test-server": "$npm_package_config_exec_test test/index.js",
+    "test-client": "$npm_package_config_exec_test test/client/index.js",
+    "test-browser": "$npm_package_config_exec_test test/browser/index.js",
     "cover": "./cover",
     "autotest": "./node_modules/.bin/gulp autotest",
     "deploy": "./node_modules/.bin/gulp deploy"

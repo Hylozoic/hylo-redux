@@ -1,7 +1,8 @@
 import React from 'react'
 import { prefetch } from 'react-fetcher'
 import { connect } from 'react-redux'
-import { debounce, includes } from 'lodash'
+import { debounce, includes, isEmpty } from 'lodash'
+import { map } from 'lodash/fp'
 import { FETCH_PEOPLE } from '../actions'
 import { removeCommunityMember } from '../actions/communities'
 import { fetchPeople } from '../actions/fetchPeople'
@@ -95,7 +96,10 @@ export default class People extends React.Component {
       total, isMobile, dispatch, cacheId
     } = this.props
     const { currentUser } = this.context
-    if (error) return <AccessErrorMessage error={error}/>
+    if (error) return <AccessErrorMessage error={error} />
+
+    // replacing hyphens with non-breaking hyphens
+    const popularSkills = map(skill => skill.replace('-', '‑'), community.popularSkills)
 
     const { search } = query
     const { slug } = community || {}
@@ -122,13 +126,24 @@ export default class People extends React.Component {
           ref='searchInput'
           placeholder='Search'
           defaultValue={search}
-          onChange={event => this.updateQuery({search: event.target.value})}/>
+          onChange={event => this.updateQuery({search: event.target.value})} />
         {search && search.startsWith('#') &&
           <A className='show-posts button'
             to={tagUrl(search.replace(/^#/, ''), slug)}>
             Show tagged posts
           </A>}
       </div>
+      {!isEmpty(popularSkills) && <div className='popular-skills'>
+        <div className='header'>Popular skills in this community</div>
+        <div className='skills'>
+          {popularSkills.map(skill => <span key={skill}>
+            <a className='skill' onClick={() => searchTag(skill)}>
+              #{skill}
+            </a>
+            &nbsp;<wbr />
+          </span>)}
+        </div>
+      </div>}
       <div className='member-controls'>
         {total} member{total === 1 ? '' : 's'}
         {canInvite(currentUser, community) && <A to={inviteSettingsUrl(community)}>
@@ -137,9 +152,9 @@ export default class People extends React.Component {
       </div>
       {pending && <div className='loading'>Loading...</div>}
       {isMobile
-        ? people.map(person => <PersonRow person={person} key={person.id}/>)
-        : <PersonCards people={people} slug={slug} onSkillClick={searchTag} removeMember={removeMember}/>}
-      <ScrollListener onBottom={this.loadMore}/>
+        ? people.map(person => <PersonRow person={person} key={person.id} />)
+        : <PersonCards people={people} slug={slug} onSkillClick={searchTag} removeMember={removeMember} />}
+      <ScrollListener onBottom={this.loadMore} />
     </div>
   }
 }
@@ -147,7 +162,7 @@ export default class People extends React.Component {
 const PersonRow = ({ person }) => {
   const { id, name, joined_at, isModerator } = person
   return <A className='person-row' to={`/u/${id}`}>
-    <NonLinkAvatar person={person}/>
+    <NonLinkAvatar person={person} />
     <span className='name'>{name}</span>
     <span className='subtitle'>
       {isModerator ? 'Moderator' : 'Member'}

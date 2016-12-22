@@ -3,13 +3,14 @@ import { compose } from 'redux'
 import { connect } from 'react-redux'
 import { prefetch, defer } from 'react-fetcher'
 import { commentUrl, peopleUrl } from '../../routes'
-import { FETCH_PERSON, fetchPerson, fetchThanks, navigate, showDirectMessage } from '../../actions'
+import { FETCH_PERSON, fetchPerson, fetchThanks, fetchContributions, navigate, showDirectMessage } from '../../actions'
 import { saveCurrentCommunityId } from '../../actions/util'
 import { capitalize, compact, get, some, includes } from 'lodash'
 import { isNull, isUndefined, map, omitBy, sortBy } from 'lodash/fp'
 import { STARTED_MESSAGE, VIEWED_PERSON, VIEWED_SELF, trackEvent } from '../../util/analytics'
 import { findError } from '../../actions/util'
 import PostList from '../../components/PostList'
+import Post from '../../components/Post'
 import A from '../../components/A'
 import { fetch, ConnectedPostList } from '../ConnectedPostList'
 import { refetch } from '../../util/caching'
@@ -23,7 +24,7 @@ import moment from 'moment'
 import { getPost } from '../../models/post'
 import { getCurrentCommunity } from '../../models/community'
 import { defaultBanner } from '../../models/person'
-import { DIRECT_MESSAGES } from '../../config/featureFlags'
+import { DIRECT_MESSAGES, CONTRIBUTORS } from '../../config/featureFlags'
 import { hasFeature } from '../../models/currentUser'
 
 const { func, object } = React.PropTypes
@@ -45,10 +46,13 @@ const getFetchOpts = query => {
 }
 
 const initialFetch = (id, query) => {
-  if (query.show === 'thank') {
-    return fetchThanks(id)
-  } else {
-    return fetch(subject, id, getFetchOpts(query))
+  switch(query.show) {
+    case 'thank':
+      return fetchThanks(id)
+    case 'contribution':
+      return fetchContributions(id)
+    default:
+      return fetch(subject, id, getFetchOpts(query))
   }
 }
 
@@ -109,6 +113,19 @@ const PersonProfile = compose(
     trackEvent(STARTED_MESSAGE, {context: 'profile'})
     return dispatch(showDirectMessage(person.id, person.name))
   }
+  const ActivityItemsForCategory = ({category, person}) => {
+    switch(category) {
+      case 'thank':
+        return <Thanks person={person} />
+      case 'contribution':
+        if(hasFeature(currentUser, CONTRIBUTORS)) {
+          return <Contributions person={person} />
+        }
+      default:
+        return <ConnectedPostList {...{subject, id, query: getFetchOpts(query)}}
+          hide={postsToHide} hideMobileSearch />
+    }
+  }
 
   return <CoverImagePage id='person' image={banner_url || defaultBanner}>
     <div className='opener'>
@@ -142,26 +159,25 @@ const PersonProfile = compose(
         #{tag}
       </A>)}
     </div>}
-    <div className='section-links'>
+    <div className={`section-links ${hasFeature(currentUser, CONTRIBUTORS) ? 'contributions-feature' : ''}`}>
       <TabLink category='offer' count={offerCount}/>
       <TabLink category='request' count={requestCount}/>
       <TabLink category='thank' count={person.thank_count}/>
       <TabLink category='event' count={person.event_count}/>
+      {hasFeature(currentUser, CONTRIBUTORS) &&
+        <TabLink category='contribution' count={person.contribution_count}/>
+      }
     </div>
     {!category && recentRequest && <div>
       <p className='section-label'>Recent request</p>
-      <PostList posts={[recentRequest]} hideMobileSearch/>
+      <PostList posts={[recentRequest]} hideMobileSearch />
     </div>}
     {!category && recentOffer && <div>
       <p className='section-label'>Recent offer</p>
-      <PostList posts={[recentOffer]} hideMobileSearch/>
+      <PostList posts={[recentOffer]} hideMobileSearch />
     </div>}
-    <ListLabel category={category}/>
-    {category === 'thank'
-      ? <Thanks person={person}/>
-      : <ConnectedPostList {...{subject, id, query: getFetchOpts(query)}}
-          hide={postsToHide}
-          hideMobileSearch/>}
+    <ListLabel category={category} />
+    <ActivityItemsForCategory category={category} person={person} />
   </CoverImagePage>
 })
 
@@ -184,10 +200,11 @@ const setupTabLink = (props) => {
 
   const TabLink = ({ category, count }) => {
     const isActive = category === query.show
+    let cssClasses = [category]
+    if(isActive) { cssClasses.push('active') }
     const toggle = () =>
       dispatch(refetch({show: isActive ? null : category}, location))
-
-    return <a className={isActive ? 'active' : null} onClick={toggle}>
+    return <a className={cssClasses} onClick={toggle}>
       {count} {capitalize(category)}{Number(count) === 1 ? '' : 's'}
     </a>
   }
@@ -201,6 +218,7 @@ const ListLabel = ({ category }) => {
     case 'offer': label = 'Offers'; break
     case 'request': label = 'Requests'; break
     case 'thank': label = 'Thanks'; break
+    case 'contribution': label = 'Contributions'; break
     case 'event': label = 'Events'; break
     default: label = 'Recent posts'
   }
@@ -223,7 +241,7 @@ const SocialMediaIcon = ({ type, value }) => {
   </a>
 }
 
-const Thanks = connect((state, { person }) => ({
+const Thanks = connect((state, {person}) => ({
   thanks: sortBy(t => -t.created_at, state.thanks[person.id])
 }))(({ thanks, person, dispatch }) => {
   const visit = comment => dispatch(navigate(commentUrl(comment)))
@@ -235,6 +253,20 @@ const Thanks = connect((state, { person }) => ({
       </span>
       <Comment comment={{...thank.comment, user: person}} truncate
         expand={() => visit(thank.comment)}/>
+    </div>)}
+  </div>
+})
+
+const Contributions = connect((state, {person}) => ({
+  contributions: sortBy(contribution => -contribution.created_at, state.contributions[person.id])
+}))(({ contributions, person, dispatch }) => {
+  return <div className='contributions'>
+    {contributions.map(contribution => <div key={contribution.id}>
+      <span>
+        <A to={`/u/${person.id}`}>{person.name.split(' ')[0]}</A>
+        &nbsp;helped {contribution.post.user.name} complete their request.
+        <Post post={contribution.post} onExpand={() => dispatch(navigate(`/p/${contribution.post.id}`))}/>
+      </span>
     </div>)}
   </div>
 })

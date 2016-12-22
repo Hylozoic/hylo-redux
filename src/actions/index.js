@@ -58,6 +58,7 @@ export const FETCH_TAG = 'FETCH_TAG'
 export const FETCH_TAGS = 'FETCH_TAGS'
 export const FETCH_TAG_SUMMARY = 'FETCH_TAG_SUMMARY'
 export const FETCH_THANKS = 'FETCH_THANKS'
+export const FETCH_CONTRIBUTIONS = 'FETCH_CONTRIBUTIONS'
 export const FIND_OR_CREATE_THREAD = 'FIND_OR_CREATE_THREAD'
 export const FIND_OR_CREATE_THREAD_PENDING = FIND_OR_CREATE_THREAD + _PENDING
 export const FINISH_LOGIN = 'FINISH_LOGIN'
@@ -66,7 +67,7 @@ export const FOLLOW_POST_PENDING = FOLLOW_POST + _PENDING
 export const FOLLOW_TAG = 'FOLLOW_TAG'
 export const FOLLOW_TAG_PENDING = FOLLOW_TAG + _PENDING
 export const GENERATE_USER_TOKEN = 'GENERATE_USER_TOKEN'
-export const HIDE_TAG_POPOVER = 'HIDE_TAG_POPOVER'
+export const HIDE_POPOVER = 'HIDE_POPOVER'
 export const INCREMENT_UNSEEN_THREADS = 'INCREMENT_UNSEEN_THREADS'
 export const JOIN_COMMUNITY_WITH_CODE = 'JOIN_COMMUNITY_WITH_CODE'
 export const LEAVE_COMMUNITY = 'LEAVE_COMMUNITY'
@@ -118,7 +119,7 @@ export const SHOW_DIRECT_MESSAGE = 'SHOW_DIRECT_MESSAGE'
 export const SHOW_EXPANDED_POST = 'SHOW_EXPANDED_POST'
 export const SHOW_MODAL = 'SHOW_MODAL'
 export const SHOW_SHARE_TAG = 'SHOW_SHARE_TAG'
-export const SHOW_TAG_POPOVER = 'SHOW_TAG_POPOVER'
+export const SHOW_POPOVER = 'SHOW_POPOVER'
 export const SIGNUP = 'SIGNUP'
 export const START_POST_EDIT = 'START_POST_EDIT'
 export const RESET_TOOLTIPS = 'RESET_TOOLTIPS'
@@ -324,6 +325,14 @@ export function fetchThanks (id, offset = 0) {
   }
 }
 
+export function fetchContributions (id, offset = 0) {
+  return {
+    type: FETCH_CONTRIBUTIONS,
+    payload: {api: true, path: `/noo/user/${id}/contributions?offset=${offset}`},
+    meta: {id}
+  }
+}
+
 export function markActivityRead (activityId) {
   return {
     type: MARK_ACTIVITY_READ,
@@ -516,12 +525,12 @@ export function editNewTagAndDescription (tag, description, is_default) {
   return {type: EDIT_NEW_TAG_AND_DESCRIPTION, payload: {tag, description, is_default}}
 }
 
-export function showTagPopover (tagName, slug, node) {
-  return {type: SHOW_TAG_POPOVER, payload: {tagName, slug, node}}
+export function showPopover (type, params, node) {
+  return {type: SHOW_POPOVER, payload: {type, params, node}}
 }
 
-export function hideTagPopover () {
-  return {type: HIDE_TAG_POPOVER}
+export function hidePopover () {
+  return {type: HIDE_POPOVER}
 }
 
 export function closeModal () {

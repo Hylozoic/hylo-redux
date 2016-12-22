@@ -1,5 +1,6 @@
 import React from 'react'
-import { throttle, isEmpty, sortBy } from 'lodash'
+import { throttle, isEmpty, sortBy, maxBy } from 'lodash'
+import { get } from 'lodash/fp'
 const { array, bool, func, object } = React.PropTypes
 import cx from 'classnames'
 import Message from './Message'
@@ -10,6 +11,7 @@ import { updatePostReadTime } from '../actions/posts'
 export default class MessageSection extends React.Component {
   static propTypes = {
     messages: array,
+    onScroll: func,
     onScrollToTop: func,
     pending: bool,
     thread: object
@@ -35,19 +37,22 @@ export default class MessageSection extends React.Component {
   componentDidUpdate (prevProps) {
     const messagesLength = this.props.messages.length
     const oldMessagesLength = prevProps.messages.length
+    const { currentUser } = this.context
+    const latestMessage = maxBy(this.props.messages || [], 'created_at')
+    const userSentLatest = get('user_id', latestMessage) === currentUser.id
     const { scrolledUp } = this.state
-    if (!scrolledUp && messagesLength !== oldMessagesLength) this.scrollToBottom()
+    if (messagesLength !== oldMessagesLength && (!scrolledUp || userSentLatest)) this.scrollToBottom()
   }
 
   scrollToMessage (id) {
     const message = findDOMNode(this['message' + id])
     const messageTop = position(message, this.list).y -
-      document.querySelector('.thread .header').offsetHeight -
-      document.getElementById('topNav').offsetHeight - 40
+      document.querySelector('#topNav').offsetHeight -
+      document.querySelector('.thread .header').offsetHeight - 11
     this.list.scrollTop = messageTop
   }
 
-  handleScroll = throttle(target => {
+  detectScrollExtremes = throttle(target => {
     const { scrolledUp } = this.state
     const { scrollTop, scrollHeight, offsetHeight } = target
     const onBottom = scrollTop > scrollHeight - offsetHeight
@@ -58,6 +63,11 @@ export default class MessageSection extends React.Component {
     }
     if (scrollTop <= 50 && this.props.onScrollToTop) this.props.onScrollToTop()
   }, 500, {trailing: true})
+
+  handleScroll = event => {
+    if (this.props.onScroll) this.props.onScroll(event)
+    this.detectScrollExtremes(event.target)
+  }
 
   scrollToBottom = () => {
     this.list.scrollTop = this.list.scrollHeight
@@ -86,11 +96,14 @@ export default class MessageSection extends React.Component {
 
     return <div className={cx('messages-section', {empty: isEmpty(messages)})}
       ref={list => this.list = list}
-      onScroll={e => this.handleScroll(e.target)}>
+      onScroll={this.handleScroll}>
       <div className='messages-section-inner'>
+        {newFromOther && scrolledUp &&
+          <div className='newMessagesNotify' onClick={this.scrollToBottom}>
+            New Messages
+          </div>}
         {messages.map(m =>
           <Message ref={node => this['message' + m.id] = node} message={m} key={m.id}/>)}
-            {newFromOther && scrolledUp && <div className='newMessagesNotify' onClick={this.scrollToBottom}>New Messages</div>}
       </div>
     </div>
   }

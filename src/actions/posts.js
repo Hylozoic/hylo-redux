@@ -1,4 +1,4 @@
-import { cloneDeep, pick } from 'lodash'
+import { cloneDeep, pick, map } from 'lodash'
 import { get } from 'lodash/fp'
 import qs from 'querystring'
 import { cleanAndStringify } from '../util/caching'
@@ -155,11 +155,18 @@ export function fetchLinkPreview (url) {
   }
 }
 
-export function completePost (id) {
+export function completePost (id, contributors = []) {
   return {
     type: COMPLETE_POST,
-    payload: {api: true, path: `/noo/post/${id}/fulfill`, method: 'POST'},
-    meta: {optimistic: true, id}
+    payload: {
+      api: true,
+      path: `/noo/post/${id}/fulfill`,
+      method: 'POST',
+      params: {
+        contributorIds: map(contributors, 'id')
+      }
+    },
+    meta: {optimistic: true, contributors, id}
   }
 }
 

@@ -11,10 +11,10 @@ import { get } from 'lodash/fp'
 import { cleanAndStringify } from '../util/caching'
 
 export function fetchComments (postId, opts = {}) {
-  let { limit, refresh, beforeId, newest } = opts
+  let { limit, refresh, beforeId, afterId, newest } = opts
   if (!limit) limit = 1000
 
-  let querystring = cleanAndStringify({beforeId, newest, limit})
+  let querystring = cleanAndStringify({beforeId, afterId, newest, limit})
 
   return {
     type: FETCH_COMMENTS,

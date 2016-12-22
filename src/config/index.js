@@ -44,7 +44,7 @@ export const featureFlags = () => {
         return flags
       }, {}))()
   } else {
-    return window.FEATURE_FLAGS
+    return window.FEATURE_FLAGS || {}
   }
 }
 

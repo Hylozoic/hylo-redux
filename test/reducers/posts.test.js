@@ -1,6 +1,11 @@
 require('../support')
 import posts from '../../src/reducers/posts'
-import { FETCH_POSTS, FOLLOW_POST_PENDING, UPDATE_POST } from '../../src/actions'
+import {
+  FETCH_POSTS,
+  FOLLOW_POST_PENDING,
+  UPDATE_POST,
+  COMPLETE_POST_PENDING
+} from '../../src/actions'
 
 describe('posts', () => {
   describe('on FETCH_POSTS', () => {
@@ -245,5 +250,37 @@ describe('posts', () => {
       let newState = posts(state, action)
       expect(newState.a.follower_ids).to.deep.equal([cat.id, person.id])
     })
+  })
+})
+
+
+describe('on COMPLETE_POST', () => {
+  it('adds contributors', () => {
+    let contributors = [
+      {id: 1, name: 'Johnny Appleseed'},
+      {id: 2, name: 'Suzy Sparrow'}
+    ]
+    let action = {
+      type: COMPLETE_POST_PENDING,
+      meta: { id: 'a', contributors }
+    }
+    let state = {
+      a: { contributors: contributors }
+    }
+    let newState = posts(state, action)
+    expect(newState.a.contributors).to.deep.equal(contributors)
+  })
+
+  it('completes a post even if no contributors specified', () => {
+    let action = {
+      type: COMPLETE_POST_PENDING,
+      meta: {id: 'a'}
+    }
+    let state = {
+      a: {}
+    }
+    let newState = posts(state, action)
+    expect(newState.a.contributors).to.not.exist
+    expect(newState.a.fulfilled_at).to.exist
   })
 })

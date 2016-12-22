@@ -50,9 +50,10 @@ import {
   FETCH_PEOPLE,
   FETCH_POSTS,
   FETCH_THANKS,
+  FETCH_CONTRIBUTIONS,
   FIND_OR_CREATE_THREAD,
   FINISH_LOGIN,
-  HIDE_TAG_POPOVER,
+  HIDE_POPOVER,
   LOGIN,
   NAVIGATE,
   NOTIFY,
@@ -77,7 +78,7 @@ import {
   SHOW_EXPANDED_POST,
   SHOW_MODAL,
   SHOW_SHARE_TAG,
-  SHOW_TAG_POPOVER,
+  SHOW_POPOVER,
   SIGNUP,
   TOGGLE_LEFT_NAV,
   TOGGLE_USER_SETTINGS_SECTION,
@@ -229,12 +230,12 @@ const combinedReducers = combineReducers({
   routing: routerReducer,
   searchResultsByQuery: appendPayloadByPath(SEARCH, 'meta.cache.id', 'items'),
 
-  tagPopover: (state = {}, action) => {
+  popover: (state = {}, action) => {
     switch (action.type) {
-      case SHOW_TAG_POPOVER:
+      case SHOW_POPOVER:
         return action.payload
       case NAVIGATE:
-      case HIDE_TAG_POPOVER:
+      case HIDE_POPOVER:
         return {}
     }
 
@@ -246,6 +247,7 @@ const combinedReducers = combineReducers({
   tagDescriptionEdits,
   tagInvitationEditor,
   thanks: appendPayloadByPath(FETCH_THANKS, 'meta.id'),
+  contributions: appendPayloadByPath(FETCH_CONTRIBUTIONS, 'meta.id'),
   tooltips,
   totalActivities: keyedCounter(FETCH_ACTIVITY, 'total', 'meta.id'),
   totalCommunitiesByQuery: keyedCounter(FETCH_COMMUNITIES, 'communities_total'),

@@ -1,12 +1,13 @@
 import React from 'react'
-import { get, throttle } from 'lodash'
+import { get, throttle, isEmpty } from 'lodash'
 import { connect } from 'react-redux'
 import { createComment, updateCommentEditor } from '../actions/comments'
 import { SENT_MESSAGE, trackEvent } from '../util/analytics'
 import { textLength } from '../util/text'
 import { onEnterNoShift } from '../util/textInput'
 import { getSocket, socketUrl } from '../client/websockets'
-var { func, object, string } = React.PropTypes
+import cx from 'classnames'
+var { func, object, string, bool } = React.PropTypes
 
 @connect((state, { postId }) => {
   return ({
@@ -20,14 +21,20 @@ export default class MessageForm extends React.Component {
     dispatch: func,
     postId: string,
     placeholder: string,
-    text: string
+    text: string,
+    onFocus: func,
+    onBlur: func
+  }
+
+  static contextTypes = {
+    isMobile: bool
   }
 
   submit = event => {
     const { dispatch, postId, text } = this.props
     if (event) event.preventDefault()
     const cleanText = text.replace(/<p>&nbsp;<\/p>$/m, '')
-    if (!cleanText || textLength(cleanText) < 2) return false
+    if (!cleanText || textLength(cleanText) < 1) return false
 
     dispatch(createComment(postId, cleanText))
     .then(({ error }) => {
@@ -45,6 +52,10 @@ export default class MessageForm extends React.Component {
 
   focus () {
     this.refs.editor.focus()
+  }
+
+  isFocused () {
+    return this.refs.editor === document.activeElement
   }
 
   sendIsTyping (isTyping) {
@@ -68,11 +79,13 @@ export default class MessageForm extends React.Component {
   }, 5000)
 
   render () {
-    const { dispatch, postId, text } = this.props
+    const { dispatch, postId, text, onFocus, onBlur } = this.props
     const updateStore = text => dispatch(updateCommentEditor(postId, text, true))
 
     const setText = event => updateStore(event.target.value)
     const placeholder = this.props.placeholder || 'Type a message...'
+
+    const { isMobile } = this.context
 
     const handleKeyDown = e => {
       this.startTyping()
@@ -89,8 +102,12 @@ export default class MessageForm extends React.Component {
       <textarea ref='editor' name='message' value={text}
         placeholder={placeholder}
         onChange={setText}
+        onFocus={onFocus}
+        onBlur={onBlur}
         onKeyUp={this.stopTyping}
         onKeyDown={handleKeyDown}/>
+      {isMobile && <button onClick={isMobile ? this.submit : null}
+        className={cx({enabled: !isEmpty(text)})}>Send</button>}
     </form>
   }
 }

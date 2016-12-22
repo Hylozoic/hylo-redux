@@ -48,7 +48,7 @@ class Comment extends React.Component {
     const truncated = truncate && textLength(text) > truncatedLength
     if (truncated) text = truncateHtml(text, truncatedLength).html
     const name = sanitize(person.name).replace(/ /g, '&nbsp;')
-    text = prependInP(text, `<a href='/u/${person.id}'><strong class='name'>${name}</strong></a>`)
+    text = prependInP(text, `<a href='/u/${person.id}' class='name'>${name}</a>`)
 
     const remove = () => window.confirm('Delete this comment? This cannot be undone.') &&
       dispatch(removeComment(comment.id, comment.post_id))
@@ -69,7 +69,7 @@ class Comment extends React.Component {
           <li><a onClick={remove}>Remove</a></li>
         </Dropdown>}
       <a name={`comment-${comment.id}`}></a>
-      <Avatar person={person}/>
+      <Avatar person={person} showPopover />
       <div className='content'>
         <ClickCatchingSpan className='text' dangerouslySetInnerHTML={{__html: text}}/>
         {truncated && <span> <a onClick={expand} className='show-more'>Show&nbsp;more</a></span>}

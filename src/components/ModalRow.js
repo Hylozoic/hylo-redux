@@ -56,6 +56,10 @@ export class ModalInput extends React.Component {
     return this.refs.input.value
   }
 
+  blur () {
+    return this.refs.input.blur()
+  }
+
   render () {
     const {
       label, placeholder, defaultValue, value, onChange, className, prefix,

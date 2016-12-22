@@ -118,6 +118,7 @@ export default class Login extends React.Component {
         trackEvent(LOGIN_FAILED, {provider: 'password', reason})
         return
       }
+      this.refs.password.blur()
       dispatch(continueLogin(query))
       trackEvent(LOGGED_IN, {provider: 'password'})
     })

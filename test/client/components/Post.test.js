@@ -1,6 +1,6 @@
-require('../support')
+import support from '../support'
 import { mocks } from '../../support'
-import { createElement } from '../../support/helpers'
+import { createElement, wait, mockActionResponse, mockify } from '../../support/helpers'
 import React from 'react'
 import { mount } from 'enzyme'
 import { configureStore } from '../../../src/store'
@@ -10,6 +10,8 @@ import {
   renderIntoDocument
 } from 'react-addons-test-utils'
 const { object, func } = React.PropTypes
+import { connect } from 'react-redux'
+import { completePost } from '../../../src/actions/posts'
 
 const stripComments = markup => markup.replace(/<!--[^>]*-->/g, '')
 
@@ -26,7 +28,38 @@ const post = {
   follower_ids: ['x', 'y']
 }
 
+const contributor = {
+  id: 'a',
+  name: 'Adam Contributor'
+}
+
+const post2 = {
+  id: '2',
+  name: 'This post is in four different communities!',
+  description: "It's just that relevant",
+  type: 'offer',
+  tag: 'offer',
+  created_at: new Date(),
+  updated_at: new Date(),
+  user_id: 'x',
+  community_ids: ['1', '2', '3', '4']
+}
+
+const requestPost = {
+  id: 'requestPost',
+  name: 'Please help me.',
+  description: 'This is a request for help',
+  type: 'request',
+  tag: 'request',
+  created_at: new Date(),
+  updated_at: new Date(),
+  user_id: 'x',
+  community_ids: ['1'],
+  follower_ids: ['x', 'y']
+}
+
 const state = {
+  currentCommunityId: '1',
   communities: {
     foo: {id: '1', name: 'Foomunity', slug: 'foo'},
     bar: {id: '2', name: 'Barmunity', slug: 'bar'},
@@ -44,19 +77,15 @@ const state = {
       name: 'Mr. X',
       avatar_url: '/img/mrx.png'
     }
+  },
+  posts: {
+    [post.id]: post,
+    [post2.id]: post2,
+    [requestPost.id]: requestPost
+  },
+  typeaheadMatches: {
+    invite: [contributor]
   }
-}
-
-const post2 = {
-  id: '2',
-  name: 'This post is in four different communities!',
-  description: "It's just that relevant",
-  type: 'offer',
-  tag: 'offer',
-  created_at: new Date(),
-  updated_at: new Date(),
-  user_id: 'x',
-  community_ids: ['1', '2', '3', '4']
 }
 
 describe('Post', () => {
@@ -121,5 +150,69 @@ describe('Post', () => {
     expect(updatedState.postEdits[post.id]).to.contain({
       name: post.name, description: post.description
     })
+  })
+})
+
+describe('Post #request type', () => {
+  let store, PostWrapper, node
+
+  before(() => {
+    window.FEATURE_FLAGS = { CONTRIBUTORS: 'on' }
+  })
+
+  beforeEach(() => {
+    store = configureStore(state).store
+
+    PostWrapper = connect(({ posts }, { id }) => ({
+      post: posts[id]
+    }))(({ post }) => {
+      return <Post post={post} />
+    })
+
+    node = mount(<PostWrapper id={requestPost.id} />, {
+      context: { store, dispatch: store.dispatch, currentUser: state.people.current },
+      childContextTypes: { store: object, dispatch: func, currentUser: object }
+    })
+
+    mockActionResponse(completePost(requestPost.id), {})
+  })
+
+  after(() => {
+    delete window.FEATURE_FLAGS
+  })
+
+  it('can be completed (with contributors)', () => {
+    expect(node.find('.toggle')).to.be.length(1)
+    node.find('.toggle').simulate('change')
+    expect(node.find('.request-complete-heading').text()).to.contain('Awesome')
+    expect(node.find('.request-complete-people-input')).to.be.length(1)
+    // Typeahead fixture provides a single mocked person ("Adam Contributor")
+    node.find('.request-complete-people-input a').simulate('click')
+    expect(node.find('.request-complete-people-input li.tag').text()).to.contain(contributor.name)
+    expect(node.find('.done')).to.be.length(1)
+    node.find('.done').simulate('click')
+    expect(node.find('.contributors .person')).to.be.length(1)
+    expect(node.find('.contributors').text()).to.contain(contributor.name)
+  })
+
+  it('can be completed (without contributors)', () => {
+    expect(node.find('.toggle')).to.be.length(1)
+    node.find('.toggle').simulate('change')
+    expect(node.find('.done')).to.be.length(1)
+    node.find('.done').simulate('click')
+    expect(node.find('.contributors .person')).to.be.length(0)
+  })
+
+  it('can be uncompleted', () => {
+    expect(node.find('.toggle')).to.be.length(1)
+    node.find('.toggle').simulate('change')
+    expect(node.find('.done')).to.be.length(1)
+    node.find('.done').simulate('click')
+    expect(node.find('.contributors .person')).to.be.length(0)
+    expect(node.find('.contributors').text()).to.contain('completed')
+    expect(node.find('.toggle')).to.be.length(1)
+    mockify(window, 'confirm', prompt => true)
+    node.find('.toggle').simulate('change')
+    expect(node.find('.request-complete-heading').text()).to.contain('if this request has been completed')
   })
 })

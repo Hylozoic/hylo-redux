@@ -4,11 +4,13 @@ import { normalize } from './people'
 import {
   CREATE_COMMUNITY,
   FETCH_CURRENT_USER,
+  GENERATE_USER_TOKEN,
   JOIN_COMMUNITY_WITH_CODE,
   LEAVE_COMMUNITY_PENDING,
   LOGIN,
   LOGOUT,
   RESET_TOOLTIPS,
+  REVOKE_USER_TOKEN,
   SIGNUP,
   UPDATE_USER_SETTINGS_PENDING,
   UPDATE_COMMUNITY_SETTINGS_PENDING,
@@ -98,6 +100,16 @@ export default function (state = null, action) {
           ...state.settings,
           viewedTooltips: {}
         }
+      }
+    case GENERATE_USER_TOKEN:
+      return {
+        ...state,
+        linkedAccounts: state.linkedAccounts.concat([{provider_key: 'token'}])
+      }
+    case REVOKE_USER_TOKEN:
+      return {
+        ...state,
+        linkedAccounts: filter(state.linkedAccounts, a => a.provider_key !== 'token')
       }
   }
 

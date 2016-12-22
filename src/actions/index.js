@@ -66,6 +66,7 @@ export const FOLLOW_POST = 'FOLLOW_POST'
 export const FOLLOW_POST_PENDING = FOLLOW_POST + _PENDING
 export const FOLLOW_TAG = 'FOLLOW_TAG'
 export const FOLLOW_TAG_PENDING = FOLLOW_TAG + _PENDING
+export const GENERATE_USER_TOKEN = 'GENERATE_USER_TOKEN'
 export const HIDE_POPOVER = 'HIDE_POPOVER'
 export const INCREMENT_UNSEEN_THREADS = 'INCREMENT_UNSEEN_THREADS'
 export const JOIN_COMMUNITY_WITH_CODE = 'JOIN_COMMUNITY_WITH_CODE'
@@ -100,6 +101,7 @@ export const RESEND_ALL_COMMUNITY_INVITATIONS_PENDING = RESEND_ALL_COMMUNITY_INV
 export const RESET_COMMUNITY_VALIDATION = 'RESET_COMMUNITY_VALIDATION'
 export const RESET_ERROR = 'RESET_ERROR'
 export const RESET_NETWORK_VALIDATION = 'RESET_NETWORK_VALIDATION'
+export const REVOKE_USER_TOKEN = 'REVOKE_USER_TOKEN'
 export const SET_STATE = 'SET_STATE'
 export const SET_UNSEEN_THREAD_COUNT = 'SET_UNSEEN_THREAD_COUNT'
 export const SEARCH = 'SEARCH'
@@ -247,6 +249,20 @@ export function fetchCurrentUser (refresh) {
         communities: get('communities')
       }
     }
+  }
+}
+
+export function generateUserToken () {
+  return {
+    type: GENERATE_USER_TOKEN,
+    payload: {api: true, path: '/noo/access-token', method: 'post'}
+  }
+}
+
+export function revokeUserToken () {
+  return {
+    type: REVOKE_USER_TOKEN,
+    payload: {api: true, path: '/noo/access-token/revoke', method: 'delete'}
   }
 }
 

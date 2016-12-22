@@ -77,9 +77,9 @@ export default class App extends React.Component {
     const androidVersion = androidAppVersion()
 
     if (iOSVersion > 0) {
-      trackEvent(OPENED_MOBILE_APP, {iOSVersion})
+      trackEvent(OPENED_MOBILE_APP, {'App Version (iOS)': iOSVersion})
     } else if (androidVersion > 0) {
-      trackEvent(OPENED_MOBILE_APP, {androidVersion})
+      trackEvent(OPENED_MOBILE_APP, {'App Version (Android)': androidVersion})
     }
 
     if (iOSVersion < 1.7) {

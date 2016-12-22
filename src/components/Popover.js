@@ -87,12 +87,17 @@ export default class Popover extends React.Component {
     const pageMargin = 20
     const maxLeft = document.documentElement.clientWidth - popoverWidth - pageMargin
     const centerOnLink = pos.x + rect.width / 2 - popoverWidth / 2
-    const left = Math.max(pageMargin, Math.min(centerOnLink, maxLeft))
     const above = rect.top > popoverHeight + 70
+
+    let left = Math.max(pageMargin, Math.min(centerOnLink, maxLeft))
+    if (isNaN(left)) left = 0
+
+    let top = pos.y + (above ? -30 : rect.height)
+    if (isNaN(top)) top = 0
 
     return {
       above,
-      outer: {left, top: pos.y + (above ? -30 : rect.height)},
+      outer: {left, top},
       inner: {[above ? 'bottom' : 'top']: 15}
     }
   }

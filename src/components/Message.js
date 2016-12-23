@@ -18,7 +18,7 @@ class Message extends React.Component {
     const { message } = this.props
 
     const person = message.user
-    let text = present(sanitize(message.text))
+    let text = present(sanitize(message.text)).replace(/\n/, '<br/>')
 
     return <div className='message' data-message-id={message.id}>
       <a name={`message-${message.id}`}></a>

@@ -69,11 +69,11 @@ export default class BrowseTopicsModal extends React.Component {
             {tags.map(tag => {
               const followed = some(followedTags, same('name', tag))
               return <TagRow tag={tag} community={community} key={tag.id}
-                followed={followed} onboarding={onboarding}/>
+                followed={followed} onboarding={onboarding} />
             })}
             {loadMore && <li className='show-more'>
               <span className='meta'>
-                Showing {tags.length} of {total}.
+                Showing {tags.length} of {total}.&nbsp;
                 <a onClick={loadMore}>Show more</a>
               </span>
             </li>}
@@ -91,7 +91,7 @@ const TagRow = ({ tag, community, followed, onboarding }, { isMobile, dispatch }
   const membership = find(m => same('id', community), tag.memberships)
   const { description, follower_count, owner, created_at } = membership
   const close = () => dispatch(closeModal())
-  const controls = <TagRowControls {...{follower_count, slug, followed, name, onboarding}}/>
+  const controls = <TagRowControls {...{follower_count, slug, followed, name, onboarding}} />
 
   return <li key={id}>
     {!isMobile && controls}
@@ -119,7 +119,7 @@ const TagRowControls = ({ followed, follower_count, slug, name, onboarding }, { 
   }
   return <div className='right'>
     <span className='followers'>
-      <Icon name='Users'/>
+      <Icon name='Users' />
       <span className='count'>{follower_count}</span>
     </span>
     {followed

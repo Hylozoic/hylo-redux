@@ -1,24 +1,14 @@
 import React from 'react'
-import { get, throttle, isEmpty } from 'lodash'
-import { connect } from 'react-redux'
-import { createComment, updateCommentEditor } from '../actions/comments'
+import { throttle, isEmpty } from 'lodash'
+import { createComment } from '../actions/comments'
 import { SENT_MESSAGE, trackEvent } from '../util/analytics'
-import { textLength } from '../util/text'
 import { onEnterNoShift } from '../util/textInput'
 import { getSocket, socketUrl } from '../client/websockets'
 import cx from 'classnames'
 var { func, object, string, bool } = React.PropTypes
 
-@connect((state, { postId }) => {
-  return ({
-    currentUser: get(state, 'people.current'),
-    text: state.commentEdits.new[postId]
-  })
-}, null, null, {withRef: true})
 export default class MessageForm extends React.Component {
   static propTypes = {
-    currentUser: object,
-    dispatch: func,
     postId: string,
     placeholder: string,
     text: string,
@@ -27,22 +17,24 @@ export default class MessageForm extends React.Component {
   }
 
   static contextTypes = {
-    isMobile: bool
+    isMobile: bool,
+    currentUser: object,
+    dispatch: func
+  }
+
+  constructor (props) {
+    super(props)
+    this.state = {}
   }
 
   submit = event => {
-    const { dispatch, postId, text } = this.props
     if (event) event.preventDefault()
-    const cleanText = text.replace(/<p>&nbsp;<\/p>$/m, '')
-    if (!cleanText || textLength(cleanText) < 1) return false
+    if (!this.state.text) return false
 
-    dispatch(createComment(postId, cleanText))
-    .then(({ error }) => {
-      if (error) return
-      dispatch(updateCommentEditor(postId, '', true))
-      trackEvent(SENT_MESSAGE)
-    })
+    this.context.dispatch(createComment(this.props.postId, this.state.text))
+    .then(({ error }) => error || trackEvent(SENT_MESSAGE))
 
+    this.setState({text: ''})
     return false
   }
 
@@ -79,13 +71,10 @@ export default class MessageForm extends React.Component {
   }, 5000)
 
   render () {
-    const { dispatch, postId, text, onFocus, onBlur } = this.props
-    const updateStore = text => dispatch(updateCommentEditor(postId, text, true))
-
-    const setText = event => updateStore(event.target.value)
+    const { onFocus, onBlur } = this.props
     const placeholder = this.props.placeholder || 'Type a message...'
-
     const { isMobile } = this.context
+    const { text } = this.state
 
     const handleKeyDown = e => {
       this.startTyping()
@@ -94,18 +83,17 @@ export default class MessageForm extends React.Component {
         this.sendIsTyping(false)
         e.preventDefault()
         this.submit()
-        updateStore('')
       }, e)
     }
 
     return <form onSubmit={this.submit} className='message-form'>
       <textarea ref='editor' name='message' value={text}
         placeholder={placeholder}
-        onChange={setText}
         onFocus={onFocus}
+        onChange={e => this.setState({text: e.target.value})}
         onBlur={onBlur}
         onKeyUp={this.stopTyping}
-        onKeyDown={handleKeyDown}/>
+        onKeyDown={handleKeyDown} />
       {isMobile && <button onClick={isMobile ? this.submit : null}
         className={cx({enabled: !isEmpty(text)})}>Send</button>}
     </form>

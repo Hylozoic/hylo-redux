@@ -3,15 +3,13 @@ import { Link } from 'react-router'
 import { connect } from 'react-redux'
 import Avatar from './Avatar'
 import Icon from './Icon'
-import { get } from 'lodash'
 import { STARTED_MESSAGE, trackEvent } from '../util/analytics'
 import { showDirectMessage, fetchPerson } from '../actions'
+import { getPerson, sharesCommunity } from '../models/person'
+import { truncate } from '../util/text'
 const { object, func, string } = React.PropTypes
 
-@connect(({ people }, { userId }) => {
-  const person = get(people, userId)
-  return { person }
-})
+@connect((state, { userId }) => ({person: getPerson(userId, state)}))
 export default class PersonPopover extends React.Component {
   static propTypes = {
     userId: string,
@@ -26,7 +24,7 @@ export default class PersonPopover extends React.Component {
 
   render () {
     const { person, dispatch } = this.props
-    const bio = (person.bio || '').substring(0, 36) + '...'
+    const bio = person.bio ? truncate(person.bio, 36) : ''
 
     const startMessage = () => {
       trackEvent(STARTED_MESSAGE, {context: 'popover'})
@@ -37,9 +35,9 @@ export default class PersonPopover extends React.Component {
       <Avatar person={person} />
       <div className='name'><Link to={`/u/${person.id}`}>{person.name}</Link></div>
       <div className='bio'>{bio}</div>
-      <button onClick={startMessage} className='message'>
+      {sharesCommunity(person) && <button onClick={startMessage} className='message'>
         <Icon name='Message-Smile' /> Message
-      </button>
+      </button>}
     </span>
   }
 }

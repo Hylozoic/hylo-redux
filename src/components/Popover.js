@@ -16,8 +16,6 @@ export const handleMouseOver = dispatch => event => {
   const isTag = node.getAttribute('class') === 'hashtag'
   const userId = node.getAttribute('data-user-id') || userIdFromUrl(node.getAttribute('href'))
 
-  console.log('Handling Mouse Over, userId', userId)
-
   if (node.nodeName.toLowerCase() === 'a' && (isTag || userId)) {
     canceledPopover = false
 
@@ -44,13 +42,7 @@ export const handleMouseOver = dispatch => event => {
   }
 }
 
-@connect((state, { popover: { type, params, node } }) => {
-  return {
-    type,
-    params,
-    node
-  }
-})
+@connect((state, { popover: { type, params, node } }) => ({type, params, node}))
 export default class Popover extends React.Component {
   static propTypes = {
     dispatch: func,
@@ -104,11 +96,10 @@ export default class Popover extends React.Component {
 
   render () {
     const { type, params } = this.props
-
     const { above, outer, inner } = this.calculateStyle()
+    const typeClass = 'p-' + type
 
     var content
-
     switch (type) {
       case 'tag':
         content = <TagPopover {...params} />
@@ -117,8 +108,6 @@ export default class Popover extends React.Component {
         content = <PersonPopover {...params} />
         break
     }
-
-    const typeClass = 'p-' + type
 
     return <div className={cx('popover-container', typeClass)} style={outer}
       onMouseMove={this.cancelHide} onMouseLeave={this.hide}>

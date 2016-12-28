@@ -131,7 +131,7 @@ export class Post extends React.Component {
                 checked={!!post.fulfilled_at}
                 readOnly={!canEdit}
                 onChange={uncompleteRequest} />
-              <Contributors />
+              <RequestContributorsSentence post={post} />
             </div>
           </div>
         </div>
@@ -196,7 +196,7 @@ export const Header = ({ communities, expanded }, { post, currentUser, dispatch 
     post.tag === 'request' && (canEdit || fulfilled_at)
 
   return <div className='header'>
-    <Menu expanded={expanded} />
+    <PostMenu expanded={expanded} />
     <Avatar person={person} showPopover />
     {showCheckbox && <input type='checkbox'
       className='completion-toggle'
@@ -308,7 +308,7 @@ const WelcomePostHeader = ({ communities }, { post }) => {
 }
 WelcomePostHeader.contextTypes = {post: object}
 
-export const Menu = (props, { dispatch, post, currentUser, community }) => {
+export const PostMenu = (props, { dispatch, post, currentUser, community }) => {
   const canEdit = canEditPost(currentUser, post)
   const following = some(post.follower_ids, id => id === get('id', currentUser))
   const pinned = isPinned(post, community)
@@ -340,7 +340,7 @@ export const Menu = (props, { dispatch, post, currentUser, community }) => {
     </li>
   </Dropdown>
 }
-Menu.contextTypes = {post: object, currentUser: object, dispatch: func, community: object}
+PostMenu.contextTypes = {post: object, currentUser: object, dispatch: func, community: object}
 
 export const VoteButton = (props, { post, currentUser, dispatch }) => {
   let vote = () => dispatch(voteOnPost(post, currentUser))
@@ -364,7 +364,7 @@ export const Voters = (props, { post, currentUser }) => {
 }
 Voters.contextTypes = {post: object, currentUser: object}
 
-export const Contributors = (props, { post, currentUser }) => {
+export const RequestContributorsSentence = ({ post }) => {
   const contributors = post.contributors || []
   const onlyAuthorIsContributing = contributors.length === 1 && same('id', first(contributors), post.user)
   return contributors.length > 0 && !onlyAuthorIsContributing
@@ -373,4 +373,3 @@ export const Contributors = (props, { post, currentUser }) => {
       </LinkedPersonSentence>
     : <div className='contributors'>Request has been completed</div>
 }
-Contributors.contextTypes = {post: object, currentUser: object}

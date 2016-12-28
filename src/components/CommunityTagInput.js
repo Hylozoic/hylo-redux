@@ -17,6 +17,6 @@ export default class CommunityTagInput extends React.Component {
 
   render () {
     let { communities, ...otherProps } = this.props
-    return <TagInput tags={communities} placeholder='Community name...' {...otherProps}/>
+    return <TagInput tags={communities} placeholder='Community name...' {...otherProps} />
   }
 }

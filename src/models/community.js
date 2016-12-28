@@ -20,10 +20,8 @@ export const bannerUploadSettings = ({ id, slug }) => ({
   convert: {width: 1600, format: 'jpg', fit: 'max', rotate: 'exif'}
 })
 
-export const getCommunity = (idOrSlug, state) => {
-  const ret = state.communities[idOrSlug] || find(c => c.id === idOrSlug, state.communities)
-  return ret
-}
+export const getCommunity = (idOrSlug, state) =>
+  state.communities[idOrSlug] || find(c => c.id === idOrSlug, state.communities)
 
 export const getCurrentCommunity = state =>
   state.currentCommunityId ? getCommunity(state.currentCommunityId, state) : null

@@ -1,23 +1,22 @@
 import React from 'react'
-import { connect } from 'react-redux'
-import { prefetch } from 'react-fetcher'
 import {
   COMMUNITY_SETUP_CHECKLIST, REQUEST_TO_JOIN_COMMUNITY
-} from '../../config/featureFlags'
-import { fetch, ConnectedPostList } from '../ConnectedPostList'
-import PostEditor from '../../components/PostEditor'
-import { PercentBar } from '../../containers/ChecklistModal'
-import { compose } from 'redux'
-import { isMember, canModerate, hasFeature } from '../../models/currentUser'
-import { navigate, notify } from '../../actions'
-import { requestToJoinCommunity } from '../../actions/communities'
-import { getChecklist, checklistPercentage } from '../../models/community'
-import { showModal } from '../../actions'
+} from '../../../config/featureFlags'
+import ConnectedPostList from '../../ConnectedPostList'
+import PostEditor from '../../../components/PostEditor'
+import ProfileSkillsModule from '../../../components/ProfileSkillsModule'
+import ProfileBioModule from '../../../components/ProfileBioModule'
+import { PercentBar } from '../../ChecklistModal'
+import { isMember, canModerate, hasFeature, hasBio, hasSkills } from '../../../models/currentUser'
+import { navigate, notify } from '../../../actions'
+import { requestToJoinCommunity } from '../../../actions/communities'
+import { getChecklist, checklistPercentage } from '../../../models/community'
+import { showModal } from '../../../actions'
 const { func, object } = React.PropTypes
 
-const subject = 'community'
+export const subject = 'community'
 
-class CommunityPosts extends React.Component {
+export default class CommunityPosts extends React.Component {
   static propTypes = {
     dispatch: func,
     params: object,
@@ -58,12 +57,13 @@ class CommunityPosts extends React.Component {
   }
 
   render () {
-    let { community, params: { id }, location: { query } } = this.props
+    let { location: { query }, dispatch, community, params: { id } } = this.props
     const { currentUser } = this.context
 
     return <div>
       {hasFeature(currentUser, COMMUNITY_SETUP_CHECKLIST) && canModerate(currentUser, community) &&
-        <CommunitySetup community={community}/>}
+        <CommunitySetup community={community} dispatch={dispatch} />}
+      <ProfileCompletionModules person={currentUser} />
       {isMember(currentUser, community) && <PostEditor community={community}/>}
       {hasFeature(currentUser, REQUEST_TO_JOIN_COMMUNITY) && !isMember(currentUser, community) && <div className='request-to-join'>
         You are not a member of this community. <a onClick={() => this.requestToJoin()}className='button'>Request to Join</a>
@@ -76,24 +76,25 @@ class CommunityPosts extends React.Component {
   }
 }
 
-export default compose(
-  prefetch(({ dispatch, params: { id }, query, currentUser, store }) =>
-    dispatch(fetch(subject, id, query))),
-  connect((state, { params }) => ({
-    community: state.communities[params.id],
-    currentUser: state.people.current
-  }))
-)(CommunityPosts)
-
-const CommunitySetup = connect()(({ community, dispatch }) => {
+const CommunitySetup = ({ community, dispatch }) => {
   const checklist = getChecklist(community)
   const percent = checklistPercentage(checklist)
-
   if (percent === 100) return null
-
   return <div className='community-setup'
     onClick={() => dispatch(showModal('checklist'))}>
     <PercentBar percent={percent}/>
     Your community is {percent}% set up. <a>Click here</a> to continue setting it up.
   </div>
-})
+}
+
+const ProfileCompletionModules = ({ person }) => {
+  const showBio = (!hasSkills(person) && !hasBio(person)) || !hasBio(person)
+  const showSkills = !hasSkills(person) && !showBio
+  if(showBio) {
+    return <ProfileBioModule person={person} />
+  } else if(showSkills) {
+    return <ProfileSkillsModule person={person} />
+  } else {
+    return null
+  }
+}

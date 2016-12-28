@@ -8,7 +8,7 @@ class TestComponent extends React.Component {
   }
 
   componentDidMount () {
-    this.setState({message: 'I am a component, hear me roar!'})
+    this.setState({message: `I am a ${process.env.THING}, hear me roar!`})
   }
 
   render () {

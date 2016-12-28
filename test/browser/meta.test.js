@@ -17,10 +17,11 @@ describe('browser testing setup', function () {
     })
   })
 
-  describe('rendering a React component', () => {
+  describe('rendering a React component with an environment variable', () => {
     var runner
 
     before(() => {
+      process.env.THING = 'component'
       runner = new TestRunner({scaffold: 'meta'})
       return runner.start()
     })

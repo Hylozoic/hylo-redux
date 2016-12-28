@@ -146,9 +146,9 @@ export class Post extends React.Component {
                 checked={this.state.requestCompleting}
                 onChange={toggleRequestCompleting} />
               <p>
-                {this.state.requestCompleting ?
-                  'Awesome! Who helped you?' :
-                  'Click the checkmark if this request has been completed!'}
+                {this.state.requestCompleting
+                  ? 'Awesome! Who helped you?'
+                  : 'Click the checkmark if this request has been completed!'}
               </p>
             </div>
           </div>
@@ -196,7 +196,7 @@ export const Header = ({ communities, expanded }, { post, currentUser, dispatch 
     post.tag === 'request' && (canEdit || fulfilled_at)
 
   return <div className='header'>
-    <PostMenu expanded={expanded} />
+    <Menu expanded={expanded} post={post} />
     <Avatar person={person} showPopover />
     {showCheckbox && <input type='checkbox'
       className='completion-toggle'
@@ -308,14 +308,14 @@ const WelcomePostHeader = ({ communities }, { post }) => {
 }
 WelcomePostHeader.contextTypes = {post: object}
 
-export const PostMenu = (props, { dispatch, post, currentUser, community }) => {
+export const Menu = ({ expanded, post }, { dispatch, currentUser, community }) => {
   const canEdit = canEditPost(currentUser, post)
   const following = some(post.follower_ids, id => id === get('id', currentUser))
   const pinned = isPinned(post, community)
   const edit = () => isMobile()
     ? dispatch(navigate(`/p/${post.id}/edit`))
     : dispatch(startPostEdit(post)) &&
-      props.expanded && dispatch(showModal('post-editor', {post}))
+      expanded && dispatch(showModal('post-editor', {post}))
   const remove = () => window.confirm('Are you sure? This cannot be undone.') &&
     dispatch(removePost(post.id))
   const pin = () => dispatch(pinPost(get('slug', community), post.id))
@@ -335,12 +335,12 @@ export const PostMenu = (props, { dispatch, post, currentUser, community }) => {
         Turn {following ? 'off' : 'on'} notifications for this post
       </a>
     </li>
-    <li>
+    {/* <li>
       <a onClick={() => window.alert('TODO')}>Report objectionable content</a>
-    </li>
+    </li> */}
   </Dropdown>
 }
-PostMenu.contextTypes = {post: object, currentUser: object, dispatch: func, community: object}
+Menu.contextTypes = {currentUser: object, dispatch: func, community: object}
 
 export const VoteButton = (props, { post, currentUser, dispatch }) => {
   let vote = () => dispatch(voteOnPost(post, currentUser))

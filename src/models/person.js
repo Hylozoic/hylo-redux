@@ -1,4 +1,4 @@
-import { get, sortBy } from 'lodash'
+import { get, isEmpty, sortBy } from 'lodash'
 
 export const avatarUploadSettings = person => ({
   id: person.id,
@@ -22,3 +22,6 @@ export const mostRecentCommunity = person => {
 export const getPerson = (id, state) => state.people[id]
 
 export const defaultBanner = 'https://d3ngex8q79bk55.cloudfront.net/misc/default_user_banner.jpg'
+
+export const sharesCommunity = person =>
+  !isEmpty(get(person, 'shared_communities'))

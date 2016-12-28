@@ -65,7 +65,7 @@ export default class Thread extends React.Component {
     //
     // so for now we have a simple workaround: just skip it on mobile entirely.
     if (!this.context.isMobile) {
-      this.refs.form.getWrappedInstance().focus()
+      this.refs.form.focus()
     }
 
     trackEvent(VIEWED_MESSAGE_THREAD)
@@ -123,10 +123,10 @@ export default class Thread extends React.Component {
       <Header />
       <MessageSection {...{messages, pending}} thread={post}
         onScroll={isMobile ? this._moveHeader : null}
-        onScrollToTop={loadMore} ref='messageSection'/>
-      <PeopleTyping showNames/>
+        onScrollToTop={loadMore} ref='messageSection' />
+      <PeopleTyping showNames />
       <MessageForm postId={post.id} ref='form' onFocus={moveHeader}
-        onBlur={moveHeader}/>
+        onBlur={moveHeader} />
     </div>
   }
 }

@@ -6,34 +6,49 @@ import { configureStore } from '../../../src/store'
 import { showPopover } from '../../../src/actions'
 
 describe('PersonPopover', () => {
-  var store
+  var store, node, link
 
-  const user = {
+  const u1 = {
     name: 'Mr X',
     id: 'x',
-    bio: 'incognito'
+    bio: 'incognito: Lorem ipsum dolor sit amet, consectetur adipiscing elit.'
+  }
+
+  const u2 = {
+    name: 'Mr Y',
+    id: 'y',
+    bio: 'y not?',
+    shared_communities: ['z']
   }
 
   beforeEach(() => {
     store = configureStore({
       people: {
-        [user.id]: user
+        [u1.id]: u1,
+        [u2.id]: u2
       }
     }).store
-  })
 
-  it('displays when popover.type is person', function () {
-    const node = mount(<App><span className='theLink' /></App>, {
+    node = mount(<App><span className='link' /></App>, {
       context: {store}
     })
 
-    const theLink = node.find('.theLink').get(0)
+    link = node.find('.link').get(0)
+  })
 
-    store.dispatch(showPopover('person', {userId: 'x'}, theLink))
-
+  it('displays without a Message button', function () {
+    store.dispatch(showPopover('person', {userId: u1.id}, link))
     const popover = node.find('.popover .p-person')
+    expect(popover.find('.name').first().text()).to.equal(u1.name)
+    expect(popover.find('.bio').first().text()).to.equal('incognito: Lorem ipsum dolor sit …')
+    expect(popover.find('.message').length).to.equal(0)
+  })
 
-    expect(popover.find('.name').first().text()).to.equal(user.name)
-    expect(popover.find('.bio').first().text()).to.equal(user.bio + '...')
+  it('displays with a Message button', () => {
+    store.dispatch(showPopover('person', {userId: u2.id}, link))
+    const popover = node.find('.popover .p-person')
+    expect(popover.find('.name').first().text()).to.equal(u2.name)
+    expect(popover.find('.bio').first().text()).to.equal(u2.bio)
+    expect(popover.find('.message').length).to.equal(1)
   })
 })

@@ -15,7 +15,7 @@ import { same } from '../models'
 import { denormalizedPost, getComments, imageUrl } from '../models/post'
 import { getCurrentCommunity } from '../models/community'
 import { canComment } from '../models/currentUser'
-import { Header, presentDescription } from './Post'
+import { Header, Menu, presentDescription } from './Post'
 import CommentSection from './CommentSection'
 import decode from 'ent/decode'
 import cx from 'classnames'
@@ -35,8 +35,9 @@ const UndecoratedEventPostCard = ({ post, comments, community, isMobile, dispatc
   const backgroundImage = `url(${imageUrl(post)})`
 
   return <div className='post event-summary'>
+    <Menu post={post} />
     <LazyLoader className='image'>
-      <A to={url} style={{backgroundImage}}/>
+      <A to={url} style={{backgroundImage}} />
     </LazyLoader>
     <div className='meta'>
       <A className='user-name' to={`/u/${user.id}`}>{user.name}</A>
@@ -44,13 +45,13 @@ const UndecoratedEventPostCard = ({ post, comments, community, isMobile, dispatc
     </div>
     <A className='title' to={url}>{name}</A>
     {!isMobile && description && <div className='details'>
-      <ClickCatchingSpan dangerouslySetInnerHTML={{__html: description}}/>
+      <ClickCatchingSpan dangerouslySetInnerHTML={{__html: description}} />
     </div>}
-    <Attendance post={post} showButton limit={7} alignRight/>
-    <div className='comments-section-spacer'/>
+    <Attendance post={post} showButton limit={7} alignRight />
+    <div className='comments-section-spacer' />
     {canComment(currentUser, post) && <CommentSection post={post}
       comments={comments}
-      onExpand={() => dispatch(navigate(url))}/>}
+      onExpand={() => dispatch(navigate(url))} />}
   </div>
 }
 UndecoratedEventPostCard.contextTypes = {currentUser: object}
@@ -78,9 +79,9 @@ const Attendance = ({ post, limit, showButton, className, children }, { currentU
     </LinkedPersonSentence>}
     {going.length > 0 && <div className='going avatar-list'>
       {going.slice(0, limit).map(person =>
-        <Avatar person={person} key={person.id}/>)}
+        <Avatar person={person} key={person.id} />)}
     </div>}
-    {currentUser && showButton && <RSVPSelect post={post}/>}
+    {currentUser && showButton && <RSVPSelect post={post} />}
     {children}
   </div>
 }
@@ -102,7 +103,7 @@ const RSVPSelect = ({ post, alignRight }, { currentUser, dispatch }) => {
 
   return <Select className='rsvp' choices={options} selected={selected}
     alignRight={alignRight}
-    onChange={onPickResponse}/>
+    onChange={onPickResponse} />
 }
 RSVPSelect.contextTypes = {currentUser: object, dispatch: func}
 
@@ -116,33 +117,33 @@ const EventPost = (props, context) => {
   const image = imageUrl(post, false)
 
   return <div className='post event boxy-post'>
-    <Header communities={communities}/>
+    <Header communities={communities} />
     <p className='title post-section'>{title}</p>
     {shouldShowTag(tag) && <p className='hashtag'>#{tag}</p>}
 
     <div className='box'>
       {image && <div className='image'>
-        <img src={image}/>
+        <img src={image} />
       </div>}
       <Attendance post={post} limit={5} showButton
-        className={cx({'no-image': !image})}/>
+        className={cx({'no-image': !image})} />
       <div className='time'>
-        <Icon name='Calendar'/>
+        <Icon name='Calendar' />
         <span title={timeRangeFull(start, end)}>
           {timeRange(start, end)}
         </span>
       </div>
       <div className='location'>
-        <Icon name='Pin-1'/>
+        <Icon name='Pin-1' />
         <span title={location}>{location}</span>
       </div>
       {description && <div className='details'>
-        <ClickCatchingSpan dangerouslySetInnerHTML={{__html: description}}/>
+        <ClickCatchingSpan dangerouslySetInnerHTML={{__html: description}} />
       </div>}
     </div>
 
     {canComment(currentUser, post) && <CommentSection post={post}
-      comments={comments} expanded/>}
+      comments={comments} expanded />}
   </div>
 }
 EventPost.contextTypes = {

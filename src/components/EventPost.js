@@ -15,7 +15,7 @@ import { same } from '../models'
 import { denormalizedPost, getComments, imageUrl } from '../models/post'
 import { getCurrentCommunity } from '../models/community'
 import { canComment } from '../models/currentUser'
-import { Header, presentDescription } from './Post'
+import { Header, Menu, presentDescription } from './Post'
 import CommentSection from './CommentSection'
 import decode from 'ent/decode'
 import cx from 'classnames'
@@ -35,6 +35,7 @@ const UndecoratedEventPostCard = ({ post, comments, community, isMobile, dispatc
   const backgroundImage = `url(${imageUrl(post)})`
 
   return <div className='post event-summary'>
+    <Menu post={post} />
     <LazyLoader className='image'>
       <A to={url} style={{backgroundImage}} />
     </LazyLoader>

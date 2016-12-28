@@ -92,7 +92,7 @@
     "striptags": "^2.1.1",
     "trunc-html": "^1.1.2",
     "validator": "^6.1.0",
-    "velocity-react": "^1.1.5",
+    "velocity-react": "^1.1.9",
     "visibility": "^0.0.0"
   },
   "devDependencies": {

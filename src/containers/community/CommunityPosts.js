@@ -23,7 +23,7 @@ import { getChecklist, checklistPercentage } from '../../models/community'
 
 export const subject = 'community'
 
-export class CommunityPosts extends Component {
+class CommunityPosts extends Component {
   static propTypes = {
     dispatch: func,
     params: object,

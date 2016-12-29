@@ -3,7 +3,7 @@ import { connect } from 'react-redux'
 import { trackEvent, ADDED_BIO } from '../util/analytics'
 import { updateUserSettings } from '../actions'
 
-class ProfileBioModule extends Component {
+export default class ProfileBioModule extends Component {
   static propTypes = {
     person: PropTypes.object
   }
@@ -34,7 +34,7 @@ class ProfileBioModule extends Component {
 
   save = () => {
     const { text } = this.state
-    const { dispatch } = this.props
+    const { dispatch } = this.context
     trackEvent(ADDED_BIO, {context: 'onboarding'})
     return dispatch(updateUserSettings({bio: text}))
   }

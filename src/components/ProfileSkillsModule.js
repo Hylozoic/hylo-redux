@@ -3,7 +3,7 @@ import { connect } from 'react-redux'
 import { updateUserSettings } from '../actions'
 import ListItemTagInput from './ListItemTagInput'
 
-class ProfileSkillsModule extends Component {
+export default class ProfileSkillsModule extends Component {
   static propTypes = {
     person: PropTypes.object
   }
@@ -23,7 +23,7 @@ class ProfileSkillsModule extends Component {
 
   save = () => {
     const { tags } = this.state
-    const { dispatch } = this.props
+    const { dispatch } = this.context
     return dispatch(updateUserSettings({tags}))
   }
 
@@ -48,7 +48,9 @@ class ProfileSkillsModule extends Component {
       <div className='meta'>
         Press Enter (Return) after each tag. Use a dash (-) between words in a tag.
       </div>
-      <button type='button' className='btn-primary' onClick={save}>Save</button>
+      <button type='button' className='btn-primary' onClick={save}>
+        Save
+      </button>
     </div>
   }
 }

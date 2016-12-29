@@ -1,10 +1,10 @@
-import React, { PropTypes } from 'react'
+import React, { Component, PropTypes } from 'react'
 import { connect } from 'react-redux'
 import { debounce } from 'lodash'
 import { trackEvent, ADDED_BIO } from '../util/analytics'
 import { updateUserSettings } from '../actions'
 
-class ProfileBioModule extends React.Component {
+class ProfileBioModule extends Component {
   static propTypes = {
     person: PropTypes.object,
     dispatch: PropTypes.func

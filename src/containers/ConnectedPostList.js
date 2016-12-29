@@ -7,6 +7,7 @@ import { clearCache } from '../actions'
 import { connectedListProps, fetchWithCache, createCacheId } from '../util/caching'
 import { isEqual, pick, differenceBy, union } from 'lodash'
 import { find, get } from 'lodash/fp'
+import { groupUser } from 'hylo-utils'
 const { array, bool, func, number, object, string } = React.PropTypes
 
 export const fetch = fetchWithCache(fetchPosts)
@@ -34,7 +35,12 @@ export class ConnectedPostList extends React.Component {
     hide: array, // just hide posts with this id from the results
     hideMobileSearch: bool,
     expandedPostId: string,
-    noPostsMessage: string
+    noPostsMessage: string,
+    showEngagementModules: bool
+  }
+
+  static contextTypes = {
+    currentUser: object
   }
 
   loadMore = () => {
@@ -92,8 +98,10 @@ export class ConnectedPostList extends React.Component {
   render () {
     const {
       dispatch, freshCount, posts, total, pending, subject, id, query,
-      hideMobileSearch, expandedPostId, noPostsMessage
+      hideMobileSearch, expandedPostId, noPostsMessage, showEngagementModules
     } = this.props
+
+    const { currentUser } = this.context
 
     const hide = union(this.props.hide, [expandedPostId])
 
@@ -105,10 +113,23 @@ export class ConnectedPostList extends React.Component {
       }
     }
 
+    var feedItems = posts
+
+    // add this clause to the if statement below
+    // groupUser(currentUser.id, 'In-Feed Engagement Modules' === 0
+
+    if (showEngagementModules) {
+      const module = {
+        id: -1,
+        type: Math.floor(Math.random() * 2) ? 'popular-skills' : 'post-prompt'
+      }
+      feedItems.splice(2, 0, module)
+    }
+
     debug(`posts: ${posts ? posts.length : 0} / ${total || '??'}`)
-    return <PostList posts={posts || []} loadMore={this.loadMore} hide={hide}
+    return <PostList posts={feedItems || []} loadMore={this.loadMore} hide={hide}
       hideMobileSearch={hideMobileSearch}
-      {...{pending, refreshPostList, freshCount, noPostsMessage}}/>
+      {...{pending, refreshPostList, freshCount, noPostsMessage}} />
   }
 }
 

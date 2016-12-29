@@ -68,7 +68,7 @@ class CommunityPosts extends React.Component {
       {hasFeature(currentUser, REQUEST_TO_JOIN_COMMUNITY) && !isMember(currentUser, community) && <div className='request-to-join'>
         You are not a member of this community. <a onClick={() => this.requestToJoin()}className='button'>Request to Join</a>
       </div>}
-      <ConnectedPostList {...{subject, id, query}}/>
+      <ConnectedPostList {...{subject, id, query}} showEngagementModules />
       {!isMember(currentUser, community) && <div className='post-list-footer'>
         You are not a member of this community, so you are shown only posts that are marked as public.
       </div>}

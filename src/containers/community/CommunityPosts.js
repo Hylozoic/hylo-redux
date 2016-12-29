@@ -1,22 +1,29 @@
-import React from 'react'
+import React, { Component } from 'react'
+const { func, object } = React.PropTypes
+// Redux connection related
+import { compose } from 'redux'
+import { connect } from 'react-redux'
+import { prefetch } from 'react-fetcher'
+import { fetch } from '../ConnectedPostList'
+// Component releated
 import {
   COMMUNITY_SETUP_CHECKLIST, REQUEST_TO_JOIN_COMMUNITY
-} from '../../../config/featureFlags'
-import ConnectedPostList from '../../ConnectedPostList'
-import PostEditor from '../../../components/PostEditor'
-import ProfileSkillsModule from '../../../components/ProfileSkillsModule'
-import ProfileBioModule from '../../../components/ProfileBioModule'
-import { PercentBar } from '../../ChecklistModal'
-import { isMember, canModerate, hasFeature, hasBio, hasSkills } from '../../../models/currentUser'
-import { navigate, notify } from '../../../actions'
-import { requestToJoinCommunity } from '../../../actions/communities'
-import { getChecklist, checklistPercentage } from '../../../models/community'
-import { showModal } from '../../../actions'
-const { func, object } = React.PropTypes
+} from '../../config/featureFlags'
+import ConnectedPostList from '../ConnectedPostList'
+import PostEditor from '../../components/PostEditor'
+import ProfileSkillsModule from '../../components/ProfileSkillsModule'
+import ProfileBioModule from '../../components/ProfileBioModule'
+import { PercentBar } from '../ChecklistModal'
+import {
+  isMember, canModerate, hasFeature, hasBio, hasSkills
+} from '../../models/currentUser'
+import { navigate, notify, showModal } from '../../actions'
+import { requestToJoinCommunity } from '../../actions/communities'
+import { getChecklist, checklistPercentage } from '../../models/community'
 
 export const subject = 'community'
 
-export default class CommunityPosts extends React.Component {
+export class CommunityPosts extends Component {
   static propTypes = {
     dispatch: func,
     params: object,
@@ -68,7 +75,7 @@ export default class CommunityPosts extends React.Component {
       {hasFeature(currentUser, REQUEST_TO_JOIN_COMMUNITY) && !isMember(currentUser, community) && <div className='request-to-join'>
         You are not a member of this community. <a onClick={() => this.requestToJoin()}className='button'>Request to Join</a>
       </div>}
-      <ConnectedPostList {...{subject, id, query}}/>
+      <ConnectedPostList {...{subject, id, query}} />
       {!isMember(currentUser, community) && <div className='post-list-footer'>
         You are not a member of this community, so you are shown only posts that are marked as public.
       </div>}
@@ -98,3 +105,15 @@ const ProfileCompletionModules = ({ person }) => {
     return null
   }
 }
+
+// Redux connection
+const mapStateToProps = (state, { params }) => ({
+  community: state.communities[params.id],
+  currentUser: state.people.current
+})
+
+export default compose(
+  prefetch(({ dispatch, params: { id }, query, currentUser, store }) =>
+    dispatch(fetch(subject, id, query))),
+  connect(mapStateToProps)
+)(CommunityPosts)

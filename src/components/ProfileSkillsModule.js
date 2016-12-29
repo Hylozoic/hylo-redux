@@ -5,7 +5,10 @@ import ListItemTagInput from './ListItemTagInput'
 
 class ProfileSkillsModule extends Component {
   static propTypes = {
-    person: PropTypes.object,
+    person: PropTypes.object
+  }
+
+  static contextTypes = {
     dispatch: PropTypes.func
   }
 
@@ -49,5 +52,3 @@ class ProfileSkillsModule extends Component {
     </div>
   }
 }
-
-export default connect()(ProfileSkillsModule)

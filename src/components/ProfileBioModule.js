@@ -1,12 +1,14 @@
 import React, { Component, PropTypes } from 'react'
 import { connect } from 'react-redux'
-import { debounce } from 'lodash'
 import { trackEvent, ADDED_BIO } from '../util/analytics'
 import { updateUserSettings } from '../actions'
 
 class ProfileBioModule extends Component {
   static propTypes = {
-    person: PropTypes.object,
+    person: PropTypes.object
+  }
+
+  static contextTypes = {
     dispatch: PropTypes.func
   }
 
@@ -39,7 +41,7 @@ class ProfileBioModule extends Component {
 
   render () {
     const { onTyping, save } = this
-    const { maxLengthReached, length } = this.state
+    const { length, maxLength, maxLengthReached } = this.state
     const { person } = this.props
     return <div className='feed-module profile-bio full-column'>
       <h2>Welcome {person.name}, help everyone get to know you a bit!</h2>
@@ -51,10 +53,8 @@ class ProfileBioModule extends Component {
         Save
       </button>
       <div className={'text-length ' + (maxLengthReached ? 'over-max-length' : '')}>
-        {length} / 140
+        {length} / {maxLength}
       </div>
     </div>
   }
 }
-
-export default connect()(ProfileBioModule)

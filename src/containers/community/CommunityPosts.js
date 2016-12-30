@@ -70,7 +70,7 @@ class CommunityPosts extends Component {
     return <div>
       {hasFeature(currentUser, COMMUNITY_SETUP_CHECKLIST) && canModerate(currentUser, community) &&
         <CommunitySetup community={community} dispatch={dispatch} />}
-      <ProfileCompletionModules person={currentUser} />
+      {isMember(currentUser, community) && <ProfileCompletionModules person={currentUser} />}
       {isMember(currentUser, community) && <PostEditor community={community}/>}
       {hasFeature(currentUser, REQUEST_TO_JOIN_COMMUNITY) && !isMember(currentUser, community) && <div className='request-to-join'>
         You are not a member of this community. <a onClick={() => this.requestToJoin()}className='button'>Request to Join</a>

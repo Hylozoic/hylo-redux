@@ -15,6 +15,7 @@ const community = {
 
 const currentUser = {
   id: '5',
+  name: 'Honesty Counts',
   memberships: {
     [community.slug]: {
       community_id: community.id,

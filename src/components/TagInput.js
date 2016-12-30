@@ -72,12 +72,9 @@ export default class TagInput extends React.Component {
     this.refs.input.focus()
   }
 
-  handleChange = event => {
-    const { value } = event.target
-    debounce(value => {
-      this.props.handleInput(value)
-    }, 200)(value)
-  }
+  handleChange = debounce(value => {
+    this.props.handleInput(value)
+  }, 200)
 
   render () {
     let { choices, tags, placeholder, className } = this.props
@@ -94,7 +91,7 @@ export default class TagInput extends React.Component {
       </ul>
 
       <input ref='input' type='text' placeholder={placeholder} spellCheck={false}
-        onChange={this.handleChange}
+        onChange={event => this.handleChange(event.target.value)}
         onKeyDown={this.handleKeys}/>
 
       {!isEmpty(choices) && <div className='dropdown'>

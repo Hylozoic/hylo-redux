@@ -6,7 +6,7 @@ import { filter, get } from 'lodash/fp'
 import { KeyControlledItemList } from './KeyControlledList'
 const { array, func, object, string } = React.PropTypes
 
-@connect((state, props) => ({ choices: state.typeaheadMatches[props.typeaheadId] }))
+@connect((state, props) => ({ choices: state.typeaheadMatches[props.typeaheadId] }), null, null, {withRef: true})
 export default class PersonChooser extends React.Component {
 
   static propTypes = {
@@ -33,6 +33,10 @@ export default class PersonChooser extends React.Component {
 
   handleKeys = event => {
     if (this.refs.list) this.refs.list.handleKeys(event)
+  }
+  
+  focus () {
+    this.refs.input.focus()
   }
 
   select = choice => {

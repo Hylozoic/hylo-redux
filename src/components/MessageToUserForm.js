@@ -18,7 +18,7 @@ const NEW_MESSAGE_ID = 'new'
     text: state.messageEdits[userId],
     newText: state.messageEdits[NEW_MESSAGE_ID]
   })
-})
+}, null, null, {withRef: true})
 export default class MessageToUserForm extends React.Component {
   static propTypes = {
     currentUser: object,
@@ -43,6 +43,10 @@ export default class MessageToUserForm extends React.Component {
     const modifierKey = window.navigator.platform.startsWith('Mac')
       ? 'Cmd' : 'Ctrl'
     this.setState({modifierKey})
+  }
+  
+  focus () {
+    this.refs.editor.focus()
   }
 
   componentWillReceiveProps (nextProps) {

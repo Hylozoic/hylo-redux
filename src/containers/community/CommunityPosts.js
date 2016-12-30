@@ -23,7 +23,7 @@ import { getChecklist, checklistPercentage } from '../../models/community'
 
 export const subject = 'community'
 
-class CommunityPosts extends Component {
+export class CommunityPosts extends Component {
   static propTypes = {
     dispatch: func,
     params: object,
@@ -70,11 +70,14 @@ class CommunityPosts extends Component {
     return <div>
       {hasFeature(currentUser, COMMUNITY_SETUP_CHECKLIST) && canModerate(currentUser, community) &&
         <CommunitySetup community={community} dispatch={dispatch} />}
-      {isMember(currentUser, community) && <ProfileCompletionModules person={currentUser} />}
-      {isMember(currentUser, community) && <PostEditor community={community}/>}
-      {hasFeature(currentUser, REQUEST_TO_JOIN_COMMUNITY) && !isMember(currentUser, community) && <div className='request-to-join'>
-        You are not a member of this community. <a onClick={() => this.requestToJoin()}className='button'>Request to Join</a>
-      </div>}
+      {isMember(currentUser, community) &&
+        <ProfileCompletionModules person={currentUser} />}
+      {isMember(currentUser, community) &&
+        <PostEditor community={community}/>}
+      {hasFeature(currentUser, REQUEST_TO_JOIN_COMMUNITY) && !isMember(currentUser, community) &&
+        <div className='request-to-join'>
+          You are not a member of this community. <a onClick={() => this.requestToJoin()} className='button'>Request to Join</a>
+        </div>}
       <ConnectedPostList {...{subject, id, query}} />
       {!isMember(currentUser, community) && <div className='post-list-footer'>
         You are not a member of this community, so you are shown only posts that are marked as public.
@@ -95,11 +98,9 @@ const CommunitySetup = ({ community, dispatch }) => {
 }
 
 const ProfileCompletionModules = ({ person }) => {
-  const showBio = (!hasSkills(person) && !hasBio(person)) || !hasBio(person)
-  const showSkills = !hasSkills(person) && !showBio
-  if(showBio) {
+  if(!hasBio(person)) {
     return <ProfileBioModule person={person} />
-  } else if(showSkills) {
+  } else if(!hasSkills(person)) {
     return <ProfileSkillsModule person={person} />
   } else {
     return null
@@ -107,6 +108,7 @@ const ProfileCompletionModules = ({ person }) => {
 }
 
 // Redux connection
+
 const mapStateToProps = (state, { params }) => ({
   community: state.communities[params.id],
   currentUser: state.people.current

@@ -71,4 +71,10 @@ describe('CommunityPosts', () => {
     expect(node.find('.request-to-join').text())
     .to.equal('You are not a member of this community. Request to Join')
   })
+
+  describe('ProfileCompletionModules', () => {
+    // it('displays request to enter a bio if not already entered')
+    // it('displayds skills module when none entered and bio is entered')
+    // it('displays only bio module when both bio and skills are emtpy')
+  })
 })

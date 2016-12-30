@@ -17,11 +17,18 @@ export default class ProfileSkillsModule extends Component {
     const firstName = props.person.name.split(" ")[0]
     this.state = {
       tags: [],
+      valid: false,
       firstName
     }
   }
 
-  update = (type, tags) => this.setState({tags})
+  update = (type, tags) => {
+    const valid = tags.length > 0
+    return this.setState({
+      tags,
+      valid
+    })
+  }
 
   save = () => {
     const { tags } = this.state
@@ -32,7 +39,7 @@ export default class ProfileSkillsModule extends Component {
   render () {
     const { update, save } = this
     const { person } = this.props
-    const { firstName } = this.state
+    const { firstName, valid } = this.state
     return <div className="feed-module profile-skills">
       <h2>
         Welcome {firstName}! Are there any skills, passions or interests
@@ -51,7 +58,7 @@ export default class ProfileSkillsModule extends Component {
       <div className="meta">
         Press Enter (Return) after each tag. Use a dash (-) between words in a tag.
       </div>
-      <button type="button" className="btn-primary" onClick={save}>
+      <button type="button" className="btn-primary" disabled={!valid} onClick={save}>
         Save
       </button>
     </div>

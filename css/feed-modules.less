@@ -1,9 +1,9 @@
 .feed-module {
   background-color: white;
-  padding: 22px;
-  margin-bottom: 10px;
+  padding: 20px 25px 15px 25px;
+  margin-bottom: @card-bottom-margin;
   button {
-    color: #fff;
+    color: white;
     background-color: #22bf99;
     border-color: #22bf99;
     margin-right: 10px;
@@ -18,36 +18,56 @@
 }
 
 .feed-module.profile-skills {
-  h2 {}
+  h2 {
+    font-weight: normal;
+    font-size: 22px;
+    color: @off-black;
+    margin: 0;
+    margin-bottom: 25px;
+  }
   p {}
   div.tag-input {
     width: initial;
-    margin-left: -22px;
-    margin-right: -22px;
+    margin: 0 -25px 0 -25px;
+    padding-left: 25px;
+    padding-right: 25px;
     border: 0px;
-    background-color: rgb(200,200,200);
     border-radius: 0px;
-    input {
-      background-color: rgb(200,200,200);      
-    }
   }
-  .meta {}
+  div.tag-input,
+  input {
+    background-color: @faint-gray-bg;
+  }
+  .meta {
+    margin: 10px 0 10px 0;
+  }
 }
 
 .feed-module.profile-bio {
   h2 {
-    margin: 0px;
-    font-size: 20px;
-    color: #2e2e2e;
-    margin-bottom: 10px;
+    font-weight: 300;
+    font-size: 22px;
+    color: @off-black;
+    margin: 0;
+    margin-bottom: 20px;
   }
   textarea {
+    height: 80px;
+    padding: 0px;
+    box-shadow: none;
+    border: none;
     margin-bottom: 10px;
   }
   div.text-length {
     float: right;
+    margin-top: -10px;
+    color: @mid-gray-bg;
+    font-size: 12px;
+    &.acceptable-length {
+      color: @damian-green;
+    }
     &.over-max-length {
-      color: red;
+      color: @damian-red;
     }
   }
 }

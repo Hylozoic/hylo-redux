@@ -14,8 +14,10 @@ export default class ProfileSkillsModule extends Component {
 
   constructor (props) {
     super(props)
+    const firstName = props.person.name.split(" ")[0]
     this.state = {
-      tags: []
+      tags: [],
+      firstName
     }
   }
 
@@ -30,9 +32,10 @@ export default class ProfileSkillsModule extends Component {
   render () {
     const { update, save } = this
     const { person } = this.props
-    return <div className='feed-module profile-skills'>
+    const { firstName } = this.state
+    return <div className="feed-module profile-skills">
       <h2>
-        Welcome {person.name}! Are there any skills, passions or interests
+        Welcome {firstName}! Are there any skills, passions or interests
         you’d like to be known for in the community?
       </h2>
       <p>
@@ -40,15 +43,15 @@ export default class ProfileSkillsModule extends Component {
         that match your interests.
       </p>
       <ListItemTagInput
-        type='tags'
-        className='modal-input'
+        type="tags"
+        className="modal-input"
         person={person}
         update={update}
-        context='feed-module' />
-      <div className='meta'>
+        context="feed-module" />
+      <div className="meta">
         Press Enter (Return) after each tag. Use a dash (-) between words in a tag.
       </div>
-      <button type='button' className='btn-primary' onClick={save}>
+      <button type="button" className="btn-primary" onClick={save}>
         Save
       </button>
     </div>

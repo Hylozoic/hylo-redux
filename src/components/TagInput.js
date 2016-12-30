@@ -46,6 +46,7 @@ export default class TagInput extends React.Component {
       // selected yet, you can also press any key listed in creationKeyCodes to
       // create a tag based on what you've typed so far.
       if (includes(creationKeyCodes, keyCode)) {
+
         let { value } = event.target
         onSelect({id: value, name: value})
         this.resetInput()
@@ -71,9 +72,12 @@ export default class TagInput extends React.Component {
     this.refs.input.focus()
   }
 
-  handleChange = debounce(value => {
-    this.props.handleInput(value)
-  }, 200)
+  handleChange = event => {
+    const { value } = event.target
+    debounce(value => {
+      this.props.handleInput(value)
+    }, 200)(value)
+  }
 
   render () {
     let { choices, tags, placeholder, className } = this.props
@@ -90,7 +94,7 @@ export default class TagInput extends React.Component {
       </ul>
 
       <input ref='input' type='text' placeholder={placeholder} spellCheck={false}
-        onChange={event => this.handleChange(event.target.value)}
+        onChange={this.handleChange}
         onKeyDown={this.handleKeys}/>
 
       {!isEmpty(choices) && <div className='dropdown'>

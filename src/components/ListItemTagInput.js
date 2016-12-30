@@ -5,11 +5,12 @@ import TagInput from './TagInput'
 import { typeahead } from '../actions'
 import { trackEvent, ADDED_SKILL } from '../util/analytics'
 
-class ListItemTagInput extends Component {
+export class ListItemTagInput extends Component {
   static propTypes = {
     type: PropTypes.string.isRequired,
     person: PropTypes.object.isRequired,
-    update: PropTypes.func.isRequired
+    update: PropTypes.func.isRequired,
+    dispatch: PropTypes.func.isRequired
   }
 
   constructor (props) {

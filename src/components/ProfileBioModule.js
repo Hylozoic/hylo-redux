@@ -1,7 +1,7 @@
 import React, { Component, PropTypes } from 'react'
 import { connect } from 'react-redux'
-import { trackEvent, ADDED_BIO } from '../util/analytics'
 import { updateUserSettings } from '../actions'
+import { trackEvent, ADDED_BIO } from '../util/analytics'
 
 export default class ProfileBioModule extends Component {
   static propTypes = {
@@ -14,7 +14,7 @@ export default class ProfileBioModule extends Component {
 
   constructor (props) {
     super(props)
-    const firstName = props.person.name.split(" ")[0]
+    const firstName = props.person.name.split(' ')[0]
     this.state = {
       firstName,
       length: 0,
@@ -50,9 +50,9 @@ export default class ProfileBioModule extends Component {
   render () {
     const { onTyping, save } = this
     const { firstName, valid, length, maxLength, maxLengthExceeded } = this.state
-    return <div className="feed-module profile-bio full-column">
+    return <div className='feed-module profile-bio full-column'>
       <h2>Welcome {firstName}, help everyone get to know you a bit!</h2>
-      <textarea className="form-control short" onChange={onTyping}
+      <textarea className='form-control short' onChange={onTyping}
         placeholder={`How would you describe yourself in ${maxLength} characters?`}>
       </textarea>
       <div className={'text-length '
@@ -61,7 +61,7 @@ export default class ProfileBioModule extends Component {
       }>
         {length} / {maxLength}
       </div>
-      <button type="button" className="btn-primary" disabled={!valid} onClick={save}>
+      <button type='button' className='btn-primary' disabled={!valid} onClick={save}>
         Save
       </button>
     </div>

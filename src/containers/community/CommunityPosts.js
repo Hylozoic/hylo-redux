@@ -6,7 +6,9 @@ import { connect } from 'react-redux'
 import { prefetch } from 'react-fetcher'
 // Component related
 import {
-  COMMUNITY_SETUP_CHECKLIST, REQUEST_TO_JOIN_COMMUNITY
+  COMMUNITY_SETUP_CHECKLIST,
+  REQUEST_TO_JOIN_COMMUNITY,
+  IN_FEED_PROFILE_COMPLETION_MODULES
 } from '../../config/featureFlags'
 import { fetch, ConnectedPostList } from '../ConnectedPostList'
 import PostEditor from '../../components/PostEditor'
@@ -69,7 +71,7 @@ export class CommunityPosts extends Component {
     return <div>
       {hasFeature(currentUser, COMMUNITY_SETUP_CHECKLIST) && canModerate(currentUser, community) &&
         <CommunitySetup community={community} dispatch={dispatch} />}
-      {isMember(currentUser, community) &&
+      {hasFeature(currentUser, IN_FEED_PROFILE_COMPLETION_MODULES) && isMember(currentUser, community) &&
         <ProfileCompletionModules person={currentUser} />}
       {isMember(currentUser, community) &&
         <PostEditor community={community} />}

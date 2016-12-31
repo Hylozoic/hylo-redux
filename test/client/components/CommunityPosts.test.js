@@ -42,7 +42,8 @@ describe('CommunityPosts', () => {
     }).store
     window.FEATURE_FLAGS = {
       REQUEST_TO_JOIN_COMMUNITY: 'on',
-      COMMUNITY_SETUP_CHECKLIST: 'on'
+      COMMUNITY_SETUP_CHECKLIST: 'on',
+      IN_FEED_PROFILE_COMPLETION_MODULES: 'on'
     }
   })
 

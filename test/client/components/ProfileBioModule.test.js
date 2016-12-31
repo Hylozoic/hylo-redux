@@ -17,6 +17,10 @@ const store = configureStore().store
 describe('ProfileBioModule', () => {
   let node
 
+  before(() => {
+    window.FEATURE_FLAGS = { IN_FEED_PROFILE_COMPLETION_MODULES: 'on' }
+  })
+
   beforeEach(() => {
     node = mount(
       <ProfileBioModule person={currentUser} />,

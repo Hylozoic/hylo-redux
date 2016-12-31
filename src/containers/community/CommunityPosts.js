@@ -8,7 +8,7 @@ import { prefetch } from 'react-fetcher'
 import {
   COMMUNITY_SETUP_CHECKLIST, REQUEST_TO_JOIN_COMMUNITY
 } from '../../config/featureFlags'
-import ConnectedPostList, { fetch } from '../ConnectedPostList'
+import { fetch, ConnectedPostList } from '../ConnectedPostList'
 import PostEditor from '../../components/PostEditor'
 import ProfileSkillsModule from '../../components/ProfileSkillsModule'
 import ProfileBioModule from '../../components/ProfileBioModule'

@@ -11,7 +11,7 @@ import CommunityHeader from '../../components/CommunityHeader'
 import ListItemTagInput from '../../components/ListItemTagInput'
 import A from '../../components/A'
 
-const SkillsPrompt = ({ location, community, dispatch }, { currentUser }) => {
+const SkillsPrompt = ({ location, community }, { currentUser, dispatch }) => {
   community = community || find(c => c.slug === location.query.community,
     map('community', currentUser.memberships))
 
@@ -22,6 +22,7 @@ const SkillsPrompt = ({ location, community, dispatch }, { currentUser }) => {
   opportunities that match your interests.`
 
   const update = (path, value) => dispatch(updateUserSettings({[path]: value}))
+
   const nextUrl = () => nextOnboardingUrl(location)
 
   return <ModalOnlyPage id='skills-prompt' className='login-signup'>
@@ -42,6 +43,6 @@ const SkillsPrompt = ({ location, community, dispatch }, { currentUser }) => {
     </Modal>
   </ModalOnlyPage>
 }
-SkillsPrompt.contextTypes = {currentUser: object}
+SkillsPrompt.contextTypes = {currentUser: object, dispatch: func}
 
 export default connect()(SkillsPrompt)

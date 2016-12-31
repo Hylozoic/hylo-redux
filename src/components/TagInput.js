@@ -46,7 +46,6 @@ export default class TagInput extends React.Component {
       // selected yet, you can also press any key listed in creationKeyCodes to
       // create a tag based on what you've typed so far.
       if (includes(creationKeyCodes, keyCode)) {
-
         let { value } = event.target
         onSelect({id: value, name: value})
         this.resetInput()

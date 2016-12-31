@@ -1,5 +1,4 @@
 import React, { Component, PropTypes } from 'react'
-import { connect } from 'react-redux'
 import { updateUserSettings } from '../actions'
 import ListItemTagInput from './ListItemTagInput'
 

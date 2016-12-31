@@ -4,12 +4,11 @@ const { func, object } = React.PropTypes
 import { compose } from 'redux'
 import { connect } from 'react-redux'
 import { prefetch } from 'react-fetcher'
-import { fetch } from '../ConnectedPostList'
-// Component releated
+// Component related
 import {
   COMMUNITY_SETUP_CHECKLIST, REQUEST_TO_JOIN_COMMUNITY
 } from '../../config/featureFlags'
-import ConnectedPostList from '../ConnectedPostList'
+import ConnectedPostList, { fetch } from '../ConnectedPostList'
 import PostEditor from '../../components/PostEditor'
 import ProfileSkillsModule from '../../components/ProfileSkillsModule'
 import ProfileBioModule from '../../components/ProfileBioModule'
@@ -73,7 +72,7 @@ export class CommunityPosts extends Component {
       {isMember(currentUser, community) &&
         <ProfileCompletionModules person={currentUser} />}
       {isMember(currentUser, community) &&
-        <PostEditor community={community}/>}
+        <PostEditor community={community} />}
       {hasFeature(currentUser, REQUEST_TO_JOIN_COMMUNITY) && !isMember(currentUser, community) &&
         <div className='request-to-join'>
           You are not a member of this community. <a onClick={() => this.requestToJoin()} className='button'>Request to Join</a>
@@ -92,15 +91,15 @@ const CommunitySetup = ({ community, dispatch }) => {
   if (percent === 100) return null
   return <div className='community-setup'
     onClick={() => dispatch(showModal('checklist'))}>
-    <PercentBar percent={percent}/>
+    <PercentBar percent={percent} />
     Your community is {percent}% set up. <a>Click here</a> to continue setting it up.
   </div>
 }
 
 const ProfileCompletionModules = ({ person }) => {
-  if(!hasBio(person)) {
+  if (!hasBio(person)) {
     return <ProfileBioModule person={person} />
-  } else if(!hasSkills(person)) {
+  } else if (!hasSkills(person)) {
     return <ProfileSkillsModule person={person} />
   } else {
     return null

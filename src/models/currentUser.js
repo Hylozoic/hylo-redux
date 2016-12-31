@@ -4,9 +4,9 @@ import { eq, flow, get, map } from 'lodash/fp'
 import { same, truthy } from './index'
 import { featureFlags } from '../config'
 
-export const hasBio = (currentUser) => currentUser.bio
+export const hasBio = (currentUser) => currentUser.bio && currentUser.bio.length > 0
 
-export const hasSkills = (currentUser) => currentUser.tags && currentUser.tags.length > 0 
+export const hasSkills = (currentUser) => currentUser.tags && currentUser.tags.length > 0
 
 // this works if community is an object with an id, or just an id
 export const membership = curry((currentUser, community) =>

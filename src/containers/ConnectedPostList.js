@@ -7,7 +7,6 @@ import { clearCache } from '../actions'
 import { connectedListProps, fetchWithCache, createCacheId } from '../util/caching'
 import { isEqual, pick, differenceBy, union } from 'lodash'
 import { find, get } from 'lodash/fp'
-import { groupUser } from 'hylo-utils'
 const { array, bool, func, number, object, string } = React.PropTypes
 
 export const fetch = fetchWithCache(fetchPosts)
@@ -36,7 +35,7 @@ export class ConnectedPostList extends React.Component {
     hideMobileSearch: bool,
     expandedPostId: string,
     noPostsMessage: string,
-    showEngagementModules: bool
+    module: object
   }
 
   static contextTypes = {
@@ -98,10 +97,8 @@ export class ConnectedPostList extends React.Component {
   render () {
     const {
       dispatch, freshCount, posts, total, pending, subject, id, query,
-      hideMobileSearch, expandedPostId, noPostsMessage, showEngagementModules
+      hideMobileSearch, expandedPostId, noPostsMessage, module
     } = this.props
-
-    const { currentUser } = this.context
 
     const hide = union(this.props.hide, [expandedPostId])
 
@@ -115,14 +112,7 @@ export class ConnectedPostList extends React.Component {
 
     var feedItems = posts
 
-    // add this clause to the if statement below
-    // groupUser(currentUser.id, 'In-Feed Engagement Modules' === 0
-
-    if (showEngagementModules) {
-      const module = {
-        id: -1,
-        type: Math.floor(Math.random() * 2) ? 'popular-skills' : 'post-prompt'
-      }
+    if (module) {
       feedItems.splice(2, 0, module)
     }
 

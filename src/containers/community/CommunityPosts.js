@@ -6,13 +6,16 @@ import {
 } from '../../config/featureFlags'
 import { fetch, ConnectedPostList } from '../ConnectedPostList'
 import PostEditor from '../../components/PostEditor'
+import PopularSkillsModule from '../../components/PopularSkillsModule'
+import PostPromptModule from '../../components/PostPromptModule'
 import { PercentBar } from '../../containers/ChecklistModal'
 import { compose } from 'redux'
 import { isMember, canModerate, hasFeature } from '../../models/currentUser'
-import { navigate, notify } from '../../actions'
+import { navigate, notify, showModal } from '../../actions'
+import { sendGraphqlQuery } from '../../actions/graphql'
 import { requestToJoinCommunity } from '../../actions/communities'
 import { getChecklist, checklistPercentage } from '../../models/community'
-import { showModal } from '../../actions'
+import { groupUser } from 'hylo-utils'
 const { func, object } = React.PropTypes
 
 const subject = 'community'
@@ -61,14 +64,41 @@ class CommunityPosts extends React.Component {
     let { community, params: { id }, location: { query } } = this.props
     const { currentUser } = this.context
 
+    var module
+
+    // remove the 'true' clause when done testing
+    if (true || groupUser(currentUser.id, 'In-Feed Engagement Modules') === 0) {
+      const showPopularSkills = community.memberCount > 5
+      const showPostPrompt = community.postCount > 3
+
+      module = {
+        id: -1,
+        type: 'module'
+      }
+
+      if (showPopularSkills) {
+        if (showPostPrompt) {
+          module.component = Math.floor(Math.random() * 2) === 0
+          ? <PopularSkillsModule />
+          : <PostPromptModule />
+        } else {
+          module.component = <PopularSkillsModule />
+        }
+      } else if (showPostPrompt) {
+        module.component = <PostPromptModule />
+      } else {
+        module = null
+      }
+    }
+
     return <div>
       {hasFeature(currentUser, COMMUNITY_SETUP_CHECKLIST) && canModerate(currentUser, community) &&
-        <CommunitySetup community={community}/>}
-      {isMember(currentUser, community) && <PostEditor community={community}/>}
+        <CommunitySetup community={community} />}
+      {isMember(currentUser, community) && <PostEditor community={community} />}
       {hasFeature(currentUser, REQUEST_TO_JOIN_COMMUNITY) && !isMember(currentUser, community) && <div className='request-to-join'>
         You are not a member of this community. <a onClick={() => this.requestToJoin()}className='button'>Request to Join</a>
       </div>}
-      <ConnectedPostList {...{subject, id, query}} showEngagementModules />
+      <ConnectedPostList {...{subject, id, query}} module={module} />
       {!isMember(currentUser, community) && <div className='post-list-footer'>
         You are not a member of this community, so you are shown only posts that are marked as public.
       </div>}
@@ -76,9 +106,20 @@ class CommunityPosts extends React.Component {
   }
 }
 
+const fetchCommunityStats = slug =>
+  sendGraphqlQuery('community-stats', slug, `{
+    community(slug: "${slug}") {
+      memberCount
+      postCount
+    }
+  }`)
+
 export default compose(
   prefetch(({ dispatch, params: { id }, query, currentUser, store }) =>
-    dispatch(fetch(subject, id, query))),
+    Promise.all([
+      dispatch(fetch(subject, id, query)),
+      dispatch(fetchCommunityStats(id))
+    ])),
   connect((state, { params }) => ({
     community: state.communities[params.id],
     currentUser: state.people.current
@@ -93,7 +134,7 @@ const CommunitySetup = connect()(({ community, dispatch }) => {
 
   return <div className='community-setup'
     onClick={() => dispatch(showModal('checklist'))}>
-    <PercentBar percent={percent}/>
+    <PercentBar percent={percent} />
     Your community is {percent}% set up. <a>Click here</a> to continue setting it up.
   </div>
 })

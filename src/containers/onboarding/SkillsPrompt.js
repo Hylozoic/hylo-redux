@@ -1,15 +1,13 @@
 import React from 'react'
-const { func, object } = React.PropTypes
-import { connect } from 'react-redux'
-import { find, map } from 'lodash/fp'
-
 import { updateUserSettings } from '../../actions'
-import { nextOnboardingUrl } from '../../util/navigation'
 import Modal from '../../components/Modal'
 import ModalOnlyPage from '../../components/ModalOnlyPage'
-import CommunityHeader from '../../components/CommunityHeader'
 import ListItemTagInput from '../../components/ListItemTagInput'
+import CommunityHeader from '../../components/CommunityHeader'
+import { nextOnboardingUrl } from '../../util/navigation'
 import A from '../../components/A'
+import { find, map } from 'lodash/fp'
+const { func, object } = React.PropTypes
 
 const SkillsPrompt = ({ location, community }, { currentUser, dispatch }) => {
   community = community || find(c => c.slug === location.query.community,
@@ -45,4 +43,4 @@ const SkillsPrompt = ({ location, community }, { currentUser, dispatch }) => {
 }
 SkillsPrompt.contextTypes = {currentUser: object, dispatch: func}
 
-export default connect()(SkillsPrompt)
+export default SkillsPrompt

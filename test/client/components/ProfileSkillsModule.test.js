@@ -1,13 +1,10 @@
-import support from '../support'
-import { mocks } from '../../support'
-import { mockActionResponse } from '../../support/helpers'
+import '../support'
 import React, { PropTypes } from 'react'
-import { Provider } from 'react-redux'
-import { shallow, mount } from 'enzyme'
+import { mount } from 'enzyme'
 import { configureStore } from '../../../src/store'
 import ProfileSkillsModule from '../../../src/components/ProfileSkillsModule'
-import { getKeyCode, keyMap } from '../../../src/util/textInput'
-import { wait } from '../../support/helpers'
+import { wait, mockActionResponse } from '../../support/helpers'
+import { keyMap } from '../../../src/util/textInput'
 import { updateUserSettings } from '../../../src/actions'
 
 const store = configureStore().store

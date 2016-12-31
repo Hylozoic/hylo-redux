@@ -1,13 +1,9 @@
-import support from '../support'
-import { mocks } from '../../support'
-import { mockActionResponse } from '../../support/helpers'
+import '../support'
 import React, { PropTypes } from 'react'
-import { Provider } from 'react-redux'
-import { shallow, mount } from 'enzyme'
+import { mount } from 'enzyme'
 import { configureStore } from '../../../src/store'
+import { wait, mockActionResponse } from '../../support/helpers'
 import ProfileBioModule from '../../../src/components/ProfileBioModule'
-import { getKeyCode, keyMap } from '../../../src/util/textInput'
-import { wait } from '../../support/helpers'
 import { updateUserSettings } from '../../../src/actions'
 
 const currentUser = {
@@ -22,7 +18,6 @@ describe('ProfileBioModule', () => {
   let node
 
   beforeEach(() => {
-    // store.dispatch = spy(store.dispatch)
     node = mount(
       <ProfileBioModule person={currentUser} />,
       {
@@ -61,7 +56,7 @@ describe('ProfileBioModule', () => {
     enterBio('testing')
     const saveButton = node.find('button').first()
     saveButton.simulate('click')
-    return wait(600, () => {
+    return wait(300, () => {
       const storedBio = store.getState().people.current.bio
       expect(storedBio).to.equal('testing')
     })

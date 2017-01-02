@@ -92,38 +92,40 @@ export default class Signup extends React.Component {
         invitation link that you received from your community manager.`
     const { email } = query
 
+    const title = <span><div className='hylo-logo' />Create your account.</span>
+
     return <ModalOnlyPage id='signup' className='login-signup'>
-      <CommunityHeader community={community}/>
-      <Modal title='Create your account.' subtitle={subtitle} standalone>
+      <CommunityHeader community={community} />
+      <Modal title={title} subtitle={subtitle} standalone>
         <form onSubmit={this.submit}>
           {actionError && <div className='alert alert-danger'>{actionError}</div>}
           {error && <div className='alert alert-danger'>{error}</div>}
 
           <div className='oauth'>
             <label>Connect with</label>
-            <ServiceAuthButtons errorAction={setSignupError}/>
+            <ServiceAuthButtons errorAction={setSignupError} />
           </div>
 
           <h4>Or sign up with email</h4>
 
-          <ModalInput label='Full name' ref='name'/>
-          <ModalInput label='Email' ref='email' defaultValue={email}/>
-          <ModalInput label='Password' ref='password' type='password'/>
+          <ModalInput label='Full name' ref='name' />
+          <ModalInput label='Email' ref='email' defaultValue={email} />
+          <ModalInput label='Password' ref='password' type='password' />
           <div className='footer'>
-            <input type='submit' value='Sign up'/>
+            <input type='submit' value='Sign up' />
             <div className='right'>
               Or <Link to={loginUrl}>log in</Link>
             </div>
           </div>
-      </form>
+        </form>
       </Modal>
-      <PostLoginRedirector/>
+      <PostLoginRedirector />
     </ModalOnlyPage>
   }
 }
 
 export const CommunityHeader = ({ community }) =>
   !community ? null : <div className='modal-topper'>
-    <div className='medium-avatar' style={{backgroundImage: `url(${community.avatar_url})`}}/>
+    <div className='medium-avatar' style={{backgroundImage: `url(${community.avatar_url})`}} />
     <h2>Join {community.name}</h2>
   </div>

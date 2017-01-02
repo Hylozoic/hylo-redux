@@ -84,7 +84,7 @@ export const displayError = error => {
     }[option])))
     return <span>
       Your account has no password set. <a href='/set-password'>Set your password here.</a>
-    {options[0] && <span><br />Or log in with {options.join(' or ')}.</span>}
+      {options[0] && <span><br />Or log in with {options.join(' or ')}.</span>}
     </span>
   }
   return error
@@ -99,7 +99,6 @@ export default class Login extends React.Component {
     location: object,
     dispatch: func,
     community: object,
-
     // this is set when something is wrong with the data for the community, etc.
     // that should be loaded after login
     actionError: string
@@ -130,22 +129,24 @@ export default class Login extends React.Component {
     const signupUrl = makeUrl('/signup', pick(query, 'next', 'action', 'id', 'token', 'email'))
     const { email } = query
 
+    const title = <span><div className='hylo-logo' />Log in to hylo</span>
+
     return <ModalOnlyPage id='login' className='login-signup'>
       {community && <div className='modal-topper'>
-        <div className='medium-avatar' style={{backgroundImage: `url(${community.avatar_url})`}}/>
+        <div className='medium-avatar' style={{backgroundImage: `url(${community.avatar_url})`}} />
         <h2>Join {community.name}</h2>
       </div>}
-      <Modal title='Log in' standalone>
+      <Modal title={title} standalone>
         <form onSubmit={this.submit}>
           {actionError && <div className='alert alert-danger'>{actionError}</div>}
           {error && <div className='alert alert-danger'>{error}</div>}
           <div className='oauth'>
-            <ServiceAuthButtons errorAction={setLoginError}/>
+            <ServiceAuthButtons errorAction={setLoginError} />
           </div>
-          <ModalInput label='Email' ref='email' defaultValue={email}/>
-          <ModalInput label='Password' ref='password' type='password'/>
+          <ModalInput label='Email' ref='email' defaultValue={email} />
+          <ModalInput label='Password' ref='password' type='password' />
           <div className='footer'>
-            <input ref='submit' type='submit' value='Log in'/>
+            <input ref='submit' type='submit' value='Log in' />
             <div className='right'>
               <Link to={signupUrl}>Sign up</Link>
               &nbsp;&nbsp;•&nbsp;&nbsp;
@@ -154,7 +155,7 @@ export default class Login extends React.Component {
           </div>
         </form>
       </Modal>
-      <PostLoginRedirector/>
+      <PostLoginRedirector />
     </ModalOnlyPage>
   }
 }

@@ -16,6 +16,7 @@ import { sendGraphqlQuery } from '../../actions/graphql'
 import { requestToJoinCommunity } from '../../actions/communities'
 import { getChecklist, checklistPercentage } from '../../models/community'
 import { groupUser } from 'hylo-utils'
+import { coinToss } from '../../util'
 const { func, object } = React.PropTypes
 
 const subject = 'community'
@@ -78,7 +79,7 @@ class CommunityPosts extends React.Component {
 
       if (showPopularSkills) {
         if (showPostPrompt) {
-          module.component = Math.floor(Math.random() * 2) === 0
+          module.component = coinToss()
           ? <PopularSkillsModule />
           : <PostPromptModule />
         } else {
@@ -89,6 +90,13 @@ class CommunityPosts extends React.Component {
       } else {
         module = null
       }
+    }
+
+    // for dev
+    module = {
+      id: -1,
+      type: 'module',
+      component: <PostPromptModule />
     }
 
     return <div>

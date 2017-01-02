@@ -6,7 +6,7 @@ import { closeModal } from '../actions'
 import { Modal } from '../components/Modal'
 import PostEditor from '../components/PostEditor'
 import { fetchCommunity } from '../actions/communities'
-const { func, object } = React.PropTypes
+const { func, object, string } = React.PropTypes
 
 @prefetch(({ dispatch, params: { id } }) =>
   dispatch(fetchCommunity(id))
@@ -19,15 +19,16 @@ export default class PostEditorModal extends React.Component {
     dispatch: func,
     community: object,
     onCancel: func,
-    post: object
+    post: object,
+    tag: string
   }
 
   render () {
-    const { dispatch, onCancel, community, post } = this.props
+    const { dispatch, onCancel, community, post, tag } = this.props
     const close = () => dispatch(closeModal())
 
     return <Modal onCancel={onCancel}>
-      <PostEditor community={community} onCancel={close} post={post} expanded/>
+      <PostEditor community={community} onCancel={close} post={post} tag={tag} expanded/>
     </Modal>
   }
 }

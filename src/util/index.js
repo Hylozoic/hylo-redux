@@ -35,3 +35,6 @@ export const dispatchEvent = (el, etype) => {
   evObj.initEvent(etype, true, false)
   el.dispatchEvent(evObj)
 }
+
+export const coinToss = () =>
+  Math.floor(Math.random() * 2) === 0

@@ -8,14 +8,15 @@ import { position } from '../util/scrolling'
 import { findDOMNode } from 'react-dom'
 import { updatePostReadTime } from '../actions/posts'
 
-// the maximum amount of time in minutes that can pass between messages to still include them 
-// under the same avatar and timestamp
+// the maximum amount of time in minutes that can pass between messages to still
+// include them under the same avatar and timestamp
 const MAX_MINS_TO_BATCH = 5
 
-function createMessageList(messages, messageSection) {
+function createMessageList (messages, messageSection) {
   let currentHeader
   return messages.map((m, index) => {
-    let headerDate, messageDate, diff, greaterThanMax, isHeader = false
+    let headerDate, messageDate, diff, greaterThanMax
+    let isHeader = false
     if (!currentHeader) {
       isHeader = true
       currentHeader = m
@@ -27,7 +28,7 @@ function createMessageList(messages, messageSection) {
       isHeader = greaterThanMax || m.user.id !== currentHeader.user.id
       currentHeader = isHeader ? m : currentHeader
     }
-    return <Message ref={node => messageSection['message' + m.id] = node} message={m} key={m.id} isHeader={isHeader}/>
+    return <Message message={m} key={m.id} isHeader={isHeader} />
   })
 }
 
@@ -119,7 +120,7 @@ export default class MessageSection extends React.Component {
     const newFromOther = latestFromOther && thread.last_read_at && new Date(latestMessage.created_at) > new Date(thread.last_read_at)
 
     return <div className={cx('messages-section', {empty: isEmpty(messages)})}
-      ref={list => this.list = list}
+      ref={list => { this.list = list }}
       onScroll={this.handleScroll}>
       <div className='messages-section-inner'>
         {newFromOther && scrolledUp &&

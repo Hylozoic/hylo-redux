@@ -92,11 +92,10 @@ export default class Signup extends React.Component {
         invitation link that you received from your community manager.`
     const { email } = query
 
-    const title = <span><div className='hylo-logo' />Create your account.</span>
-
     return <ModalOnlyPage id='signup' className='login-signup'>
+      <div className='logo-wrapper'><div className='hylo-logo' /></div>
       <CommunityHeader community={community} />
-      <Modal title={title} subtitle={subtitle} standalone>
+      <Modal title='Create your account.' subtitle={subtitle} standalone>
         <form onSubmit={this.submit}>
           {actionError && <div className='alert alert-danger'>{actionError}</div>}
           {error && <div className='alert alert-danger'>{error}</div>}

@@ -132,6 +132,7 @@ export default class Login extends React.Component {
     const title = <span><div className='hylo-logo' />Log in to hylo</span>
 
     return <ModalOnlyPage id='login' className='login-signup'>
+      <div className='logo-wrapper'><div className='hylo-logo' /></div>
       {community && <div className='modal-topper'>
         <div className='medium-avatar' style={{backgroundImage: `url(${community.avatar_url})`}} />
         <h2>Join {community.name}</h2>

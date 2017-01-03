@@ -451,8 +451,56 @@ ul.posts {
   }
 }
 
-.post-prompt {
-  background-color: #6c83e4;
+.post {
+  &.post-prompt {
+    background-color: #6c83e4;
+  }
+}
+
+.post {
+  &.popular-skills {
+    text-align: center;
+    color: white;
+    background-image: linear-gradient(to top, #ffb63e, #ffdc72);
+
+    .title {
+      margin-bottom: 30px;
+    }
+
+    ul {
+      padding-left: 0;
+      li {
+        display: inline-block;
+        padding-right: 13px;
+      }
+    }
+
+    .people {
+      margin-bottom: 15px;
+      .avatar, .avatar > a {
+        .round-image-div(90px);
+      }
+    }
+
+    .skills {
+      margin-bottom: 35px;
+      a.hashtag {
+        padding: 5px 10px;
+        font-size: 11px;
+        color: @dark-gray-bg !important;
+        background-color: white;
+        border-radius: 90px;
+      }
+    }
+
+    .button {
+      .round-button;
+      font-size: 16px;
+      color: #ffb63e;
+      border: none;
+      margin-bottom: 30px;
+    }
+  }
 }
 
 .post-location {

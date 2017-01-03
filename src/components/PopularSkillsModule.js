@@ -3,6 +3,9 @@ import { connect } from 'react-redux'
 import { get, flow, pick, map } from 'lodash/fp'
 import { sendGraphqlQueryAddDataToStore } from '../actions/graphql'
 import { connectedListProps } from '../util/caching'
+import Avatar from './Avatar'
+import A from './A'
+import { peopleUrl } from '../routes'
 
 const { func, object, array } = React.PropTypes
 
@@ -47,15 +50,17 @@ export default class PopularSkillsModule extends React.PureComponent {
     const { community, people } = this.props
     const popularSkills = community.popularSkills || []
 
-    return <span>
-      Popular Skills
-      <ul>
-        {popularSkills.map(ps => <li key={ps}>{ps}</li>)}
+    return <div className='post popular-skills'>
+      <div className='title'>Check out popular skills in the community!</div>
+      <ul className='people'>
+        {people.slice(0, 3).map(p => <li key={p.id}><Avatar person={p} /></li>)}
       </ul>
-      Users
-      <ul>
-        {people.map(p => <li key={p.id}>{p.id}</li>)}
+      <ul className='skills'>
+        {popularSkills.map(skill => <li key={skill}>
+          <A to={peopleUrl(community, `%23${skill}`)} className='hashtag'>#{skill}</A>
+        </li>)}
       </ul>
-    </span>
+      <A to={peopleUrl(community)} className='button'>See More</A>
+    </div>
   }
 }

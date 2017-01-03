@@ -19,6 +19,8 @@ const GenericAvatar = ({ person: { id, avatar_url }, isLink, showPopover }, { di
     onMouseOver: showPopover ? handleMouseOver(dispatch) : null
   }
 
+  console.log('isLink', isLink)
+
   return isLink ? <div {...props}><Link to={`/u/${id}`} >&nbsp;</Link></div> : <div {...props} />
 }
 GenericAvatar.contextTypes = {dispatch: func}

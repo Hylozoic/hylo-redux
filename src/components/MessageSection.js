@@ -15,7 +15,7 @@ const MAX_MINS_TO_BATCH = 5
 function createMessageList(messages, messageSection) {
   let currentHeader
   return messages.map((m, index) => {
-    let headerDate, messageDate, diff, greaterThanFifteen, isHeader = false
+    let headerDate, messageDate, diff, greaterThanMax, isHeader = false
     if (!currentHeader) {
       isHeader = true
       currentHeader = m
@@ -23,8 +23,8 @@ function createMessageList(messages, messageSection) {
       headerDate = new Date(currentHeader.created_at)
       messageDate = new Date(m.created_at)
       diff = Math.abs(headerDate - messageDate)
-      greaterThanFifteen = Math.floor(diff / 60000) > MAX_MINS_TO_BATCH
-      isHeader = greaterThanFifteen || m.user.id !== currentHeader.user.id
+      greaterThanMax = Math.floor(diff / 60000) > MAX_MINS_TO_BATCH
+      isHeader = greaterThanMax || m.user.id !== currentHeader.user.id
       currentHeader = isHeader ? m : currentHeader
     }
     return <Message ref={node => messageSection['message' + m.id] = node} message={m} key={m.id} isHeader={isHeader}/>

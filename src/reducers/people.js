@@ -1,4 +1,4 @@
-import { composeReducers } from './util'
+import { composeReducers, mergeList } from './util'
 import { get } from 'lodash'
 import { isNull, isUndefined, omitBy } from 'lodash/fp'
 import { debug } from '../util/logging'
@@ -10,7 +10,6 @@ import {
   LOGIN,
   SIGNUP
 } from '../actions'
-import { mergeList } from './util'
 import currentUserReducer from './currentUser'
 
 export const normalize = person => {
@@ -22,7 +21,9 @@ export const normalize = person => {
     recent_offer_id: get(person.recent_offer, 'id'),
     left_nav_tags: null,
     people: null,
-    communities: null
+    communities: null,
+    avatar_url: get(person, 'avatar_url') || get(person, 'avatarUrl'),
+    avatarUrl: get(person, 'avatarUrl') || get(person, 'avatar_url')
   })
 }
 

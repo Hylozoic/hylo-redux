@@ -64,7 +64,7 @@ export const tagsByCommunity = (state = {}, action) => {
   if (error) return state
 
   let oldCommunityTags, oldTag
-  let { slug } = meta || {}
+  let { slug, tagName, id } = meta || {}
 
   const addCreatedTags = (state, slug, createdTags) => {
     if (isEmpty(createdTags)) return state
@@ -112,7 +112,7 @@ export const tagsByCommunity = (state = {}, action) => {
         ...state,
         [meta.id]: {
           ...oldCommunityTags,
-          [meta.tagName]: {...oldTag, ...payload}
+          [tagName]: {...oldTag, ...payload, name: tagName}
         }
       }
     case REMOVE_TAG:

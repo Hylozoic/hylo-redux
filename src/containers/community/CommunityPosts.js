@@ -80,10 +80,10 @@ class CommunityPosts extends React.Component {
       if (showPopularSkills) {
         if (showPostPrompt) {
           module.component = coinToss()
-          ? <PopularSkillsModule />
+          ? <PopularSkillsModule community={community} />
           : <PostPromptModule />
         } else {
-          module.component = <PopularSkillsModule />
+          module.component = <PopularSkillsModule community={community} />
         }
       } else if (showPostPrompt) {
         module.component = <PostPromptModule />
@@ -96,7 +96,7 @@ class CommunityPosts extends React.Component {
     module = {
       id: -1,
       type: 'module',
-      component: <PostPromptModule />
+      component: <PopularSkillsModule community={community} />
     }
 
     return <div>

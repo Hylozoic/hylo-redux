@@ -2,6 +2,9 @@ import React, { Component, PropTypes } from 'react'
 import { updateUserSettings } from '../actions'
 import { trackEvent, ADDED_BIO } from '../util/analytics'
 
+const MIN_LENGTH = 1
+const MAX_LENGTH = 140
+
 export default class ProfileBioModule extends Component {
   static propTypes = {
     person: PropTypes.object
@@ -13,12 +16,8 @@ export default class ProfileBioModule extends Component {
 
   constructor (props) {
     super(props)
-    const firstName = props.person.name.split(' ')[0]
     this.state = {
-      firstName,
       length: 0,
-      minLength: 1,
-      maxLength: 140,
       maxLengthExceeded: false,
       valid: false,
       value: ''
@@ -26,11 +25,10 @@ export default class ProfileBioModule extends Component {
   }
 
   onTyping = ({ target }) => {
-    const { maxLength, minLength } = this.state
     const { value } = target
     const { length } = value
-    const maxLengthExceeded = (length > maxLength)
-    const valid = length >= minLength && !maxLengthExceeded
+    const maxLengthExceeded = (length > MAX_LENGTH)
+    const valid = length >= MIN_LENGTH && !maxLengthExceeded
     this.setState({
       value,
       length,
@@ -48,16 +46,18 @@ export default class ProfileBioModule extends Component {
 
   render () {
     const { onTyping, save } = this
-    const { firstName, valid, length, maxLength, maxLengthExceeded } = this.state
+    const { person } = this.props
+    const { valid, length, maxLengthExceeded } = this.state
+    const firstName = person.name.split(' ')[0]
     return <div className='feed-module profile-bio full-column'>
       <h2>Welcome {firstName}, help everyone get to know you a bit!</h2>
       <textarea className='form-control short' onChange={onTyping}
-        placeholder={`How would you describe yourself in ${maxLength} characters?`} />
+        placeholder={`How would you describe yourself in ${MAX_LENGTH} characters?`} />
       <div className={'text-length ' +
         (valid ? 'acceptable-length' : '') +
         (maxLengthExceeded ? 'over-max-length' : '')
       }>
-        {length} / {maxLength}
+        {length} / {MAX_LENGTH}
       </div>
       <button type='button' className='btn-primary' disabled={!valid} onClick={save}>
         Save

@@ -25,20 +25,20 @@ export class ListItemTagInput extends Component {
     return dispatch(typeahead(value, type, {type}))
   }
 
-  add = (item) => {
+  add = item => {
     const { update, context, type } = this.props
     const { list } = this.state
     const updatedList = [...list, item.name]
     trackEvent(ADDED_SKILL, {context, tag: item.name})
-    this.setState({ list: updatedList })
+    this.setState({list: updatedList})
     return update(type, updatedList)
   }
 
-  remove = (item) => {
+  remove = item => {
     const { update, type } = this.props
     const { list } = this.state
     const updatedList = list.filter(x => x !== item.name)
-    this.setState({ list: updatedList })
+    this.setState({list: updatedList})
     return update(type, updatedList)
   }
 

@@ -21,10 +21,10 @@ const SkillsPrompt = ({ location, community }, { currentUser, dispatch }) => {
 
   const update = (path, value) => dispatch(updateUserSettings({[path]: value}))
 
-  const nextUrl = () => nextOnboardingUrl(location)
+  const nextUrl = nextOnboardingUrl(location)
 
   return <ModalOnlyPage id='skills-prompt' className='login-signup'>
-    <CommunityHeader community={community}/>
+    <CommunityHeader community={community} />
     <Modal standalone {...{title, subtitle}}>
       <ListItemTagInput
         type='tags'

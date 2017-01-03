@@ -13,11 +13,9 @@ export default class ProfileSkillsModule extends Component {
 
   constructor (props) {
     super(props)
-    const firstName = props.person.name.split(' ')[0]
     this.state = {
       tags: [],
-      valid: false,
-      firstName
+      valid: false
     }
   }
 
@@ -38,7 +36,8 @@ export default class ProfileSkillsModule extends Component {
   render () {
     const { update, save } = this
     const { person } = this.props
-    const { firstName, valid } = this.state
+    const { valid } = this.state
+    const firstName = person.name.split(' ')[0]
     return <div className='feed-module profile-skills'>
       <h2>
         Welcome {firstName}! Are there any skills, passions or interests

@@ -43,7 +43,6 @@ describe('ProfileBioModule', () => {
 
   it('renders without errors', () => {
     expect(node.find('.profile-bio').length).to.equal(1)
-    expect(node.state('firstName')).to.equal('Honesty')
     expect(node.find('h2').first().text()).to.have.string('Welcome Honesty')
   })
 

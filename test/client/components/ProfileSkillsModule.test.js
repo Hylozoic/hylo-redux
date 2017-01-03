@@ -43,7 +43,6 @@ describe('ProfileSkillsModule', () => {
   }
 
   it('renders without errors', () => {
-    expect(node.state('firstName')).to.equal('Honesty')
     expect(node.find('.profile-skills').length).to.equal(1)
     expect(node.find('h2').first().text()).to.have.string('Welcome Honesty!')
   })

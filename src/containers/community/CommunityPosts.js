@@ -116,7 +116,7 @@ const mapStateToProps = (state, { params }) => ({
 })
 
 export default compose(
-  prefetch(({ dispatch, params: { id }, query, currentUser, store }) =>
+  prefetch(({ dispatch, params: { id }, query }) =>
     dispatch(fetch(subject, id, query))),
   connect(mapStateToProps)
 )(CommunityPosts)

@@ -16,7 +16,7 @@ export default class PostPromptModule extends React.PureComponent {
 
   render () {
     var title
-    var bodyText
+    var body
 
     const { dispatch } = this.context
 
@@ -26,29 +26,33 @@ export default class PostPromptModule extends React.PureComponent {
     switch (tag) {
       case 'offer':
         title = <div className='title'>
-          Have something you want to share?
-          <br />
+          Have something you want to share?<br />
           Make an #offer!
         </div>
-        bodyText = 'An Offer is what you’d like to share with your community. It can be ideas, skills, physical goods, or anything else you can think of.'
+        body = <div className='body'>
+          An Offer is what you’d like to share with your<br />
+          community. It can be ideas, skills, physical goods,<br />
+          or anything else you can think of.
+        </div>
         break
       case 'request':
         title = <div className='title'>
-          Looking for something in particular?
-          <br />
+          Looking for something in particular?<br />
           Make an #request!
         </div>
-        bodyText = 'You can use Requests to ask your community for what you need. What are you looking for that your community might help you with? '
+        body = <div className='body'>
+          You can use Requests to ask your community for<br />
+          what you need. What are you looking for that<br />
+          your community might help you with?
+        </div>
     }
 
     const { open } = this.state
 
     return <div className='post post-prompt'>
       {title}
-      {open && <div className='body'>
-        {bodyText}
-      </div>}
-      <button onClick={openPostEditor}>Post</button>
+      {open && body}
+      <div><button onClick={openPostEditor}>Post</button></div>
       {!open && <Icon name='Chevron-Down2' onClick={() => this.setState({open: true})} />}
     </div>
   }

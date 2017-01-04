@@ -96,7 +96,7 @@ class CommunityPosts extends React.Component {
     module = {
       id: -1,
       type: 'module',
-      component: <PopularSkillsModule community={community} />
+      component: <PostPromptModule />
     }
 
     return <div>

@@ -25,10 +25,13 @@ export default class PostEditorModal extends React.Component {
 
   render () {
     const { dispatch, onCancel, community, post, tag } = this.props
-    const close = () => dispatch(closeModal())
+    const close = () => {
+      dispatch(closeModal())
+      window.scrollTo(0, 0)
+    }
 
     return <Modal onCancel={onCancel}>
-      <PostEditor community={community} onCancel={close} post={post} tag={tag} expanded/>
+      <PostEditor community={community} onCancel={close} post={post} tag={tag} expanded />
     </Modal>
   }
 }

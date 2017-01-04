@@ -29,7 +29,6 @@ const currentUser = {
   }
 }
 
-
 describe('CommunityPosts', () => {
   let store
 
@@ -84,45 +83,53 @@ describe('CommunityPosts', () => {
   })
 
   describe('ProfileCompletionModules', () => {
-    let node
-
-    beforeEach(() => {
-      const props = {
-        params: {id: community.slug},
-        location: {}
+    const setup = (user) => {
+      const props = {params: {id: community.slug}, location: {}}
+      let mergedUser = {
+        id: '5',
+        name: 'Honesty Counts',
+        bio: null,
+        memberships: {
+          [community.slug]: {
+            community_id: community.id,
+            role: MemberRole.MODERATOR
+          }
+        },
+        ...user
       }
-      node = mount(
+      mockActionResponse(updateUserSettings(), {})
+      return mount(
         <CommunityPosts {...props} />, {
-          context: {store, currentUser, dispatch: store.dispatch},
+          context: {currentUser: mergedUser, store, dispatch: store.dispatch},
           childContextTypes: {
-            currentUser: PropTypes.object,
-            dispatch: PropTypes.func
+            currentUser: PropTypes.object, dispatch: PropTypes.func
           }
         }
       )
-      mockActionResponse(updateUserSettings(), {})
-    })
+    }
 
     it('displays bio module if no bio entered', () => {
+      const node = setup(
+        {bio: ''}
+      )
       expect(node.find(ProfileBioModule).length).to.equal(1)
       expect(node.find(ProfileSkillsModule).length).to.equal(0)
     })
 
-    it('saves bio', () => {
-      const bioTextArea = node.find(ProfileBioModule).first().find('textarea').first()
-      bioTextArea.simulate('change', {target: {value: 'test bio'}})
-      const saveButton = node.find(ProfileBioModule).first().find('button').first()
-      saveButton.simulate('click')
-      expect(store.getState().people.current.bio).to.equal('test bio')
-      // LEJ: How do I get the currentUser in context updating correctly
-      //      in this set up? Prefetch?
-      //
-      // expect(node.find(ProfileBioModule).length).to.equal(0)
-      // expect(node.find(ProfileSkillsModule).length).to.equal(1)
+    it('displays skills module if bio already entered', () => {
+      const node = setup(
+        {bio: 'This is a bio'}
+      )
+      expect(node.find(ProfileBioModule).length).to.equal(0)
+      expect(node.find(ProfileSkillsModule).length).to.equal(1)
     })
 
-    // it('hides bio module when bio is present')
-    // it('displayds skills module when none entered and bio is entered')
-    // it('displays only bio module when both bio and skills are emtpy')
+    it('displays no bio or skills module if they\'re both already populated', () => {
+      const node = setup(
+        {bio: 'This is a bio', tags: ['hackysack']}
+      )
+      expect(node.find(ProfileBioModule).length).to.equal(0)
+      expect(node.find(ProfileSkillsModule).length).to.equal(0)
+    })
   })
 })

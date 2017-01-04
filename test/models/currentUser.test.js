@@ -1,5 +1,5 @@
 import {
-  canComment, canModerate, isMember, isTester, canInvite
+  canComment, canModerate, isMember, isTester, canInvite, hasBio, hasSkills
 } from '../../src/models/currentUser'
 import { MemberRole } from '../../src/models/community'
 
@@ -104,6 +104,38 @@ describe('currentUser', () => {
       const user = {id: 1, memberships: [{community_id: 2}]}
       const post = {community_ids: [5, 3], follower_ids: [3, 7]}
       expect(canComment(user, post)).to.be.false
+    })
+  })
+
+  describe('.hasBio', () => {
+    it('should be falsey when there is an undefined, null or empty bio', () => {
+      let user = {}
+      expect(hasBio(user)).to.be.falsey
+      user = {bio: null}
+      expect(hasBio(user)).to.be.falsey
+      user = {bio: ''}
+      expect(hasBio(user)).to.be.falsey
+    })
+
+    it('should be true when there is bio text', () => {
+      const user = {bio: 'bio'}
+      expect(hasBio(user)).to.be.falsey
+    })
+  })
+
+  describe('.hasSkills', () => {
+    it('should be falsey when tags (skills) are undefined, null or blank', () => {
+      let user = {}
+      expect(hasSkills(user)).to.be.falsey
+      user = {tags: null}
+      expect(hasSkills(user)).to.be.falsey
+      user = {tags: []}
+      expect(hasSkills(user)).to.be.falsey
+    })
+
+    it('should be true when are any tags (skills)', () => {
+      const user = {tags: ['hacksack']}
+      expect(hasSkills(user)).to.be.true
     })
   })
 })

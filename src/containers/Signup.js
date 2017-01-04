@@ -5,6 +5,7 @@ import { makeUrl } from '../util/navigation'
 import { Link } from 'react-router'
 import { continueLogin, signup, setSignupError, toggleLeftNav } from '../actions'
 import ServiceAuthButtons from '../components/ServiceAuthButtons'
+import CommunityHeader from '../components/CommunityHeader'
 import Modal from '../components/Modal'
 import ModalOnlyPage from '../components/ModalOnlyPage'
 import { ModalInput } from '../components/ModalRow'
@@ -122,9 +123,3 @@ export default class Signup extends React.Component {
     </ModalOnlyPage>
   }
 }
-
-export const CommunityHeader = ({ community }) =>
-  !community ? null : <div className='modal-topper'>
-    <div className='medium-avatar' style={{backgroundImage: `url(${community.avatar_url})`}} />
-    <h2>Join {community.name}</h2>
-  </div>

@@ -131,7 +131,7 @@ export class Post extends React.Component {
                 checked={!!post.fulfilled_at}
                 readOnly={!canEdit}
                 onChange={uncompleteRequest} />
-              <Contributors />
+              <RequestContributorsSentence post={post} />
             </div>
           </div>
         </div>
@@ -364,7 +364,7 @@ export const Voters = (props, { post, currentUser }) => {
 }
 Voters.contextTypes = {post: object, currentUser: object}
 
-export const Contributors = (props, { post, currentUser }) => {
+export const RequestContributorsSentence = ({ post }) => {
   const contributors = post.contributors || []
   const onlyAuthorIsContributing = contributors.length === 1 && same('id', first(contributors), post.user)
   return contributors.length > 0 && !onlyAuthorIsContributing
@@ -373,4 +373,3 @@ export const Contributors = (props, { post, currentUser }) => {
       </LinkedPersonSentence>
     : <div className='contributors'>Request has been completed</div>
 }
-Contributors.contextTypes = {post: object, currentUser: object}

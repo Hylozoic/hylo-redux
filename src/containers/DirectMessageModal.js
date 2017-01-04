@@ -9,16 +9,6 @@ import MessageToUserForm from '../components/MessageToUserForm'
 import PersonChooser from '../components/PersonChooser'
 const { func, object, string } = React.PropTypes
 
-const PersonPicker = (props) => {
-  const { onSelect, exclude } = props
-  const select = (person) => {
-    onSelect(person.id, person.name)
-  }
-  return <PersonChooser placeholder='Start typing a name...' onSelect={select}
-    typeaheadId='messageTo' exclude={exclude}/>
-}
-PersonPicker.propTypes = {onSelect: func, exclude: object}
-
 @connect((state, { userId }) => {
   return ({
     currentUser: get(state, 'people.current'),
@@ -39,18 +29,21 @@ export default class DirectMessageModal extends React.Component {
     const { dispatch } = this.context
     const { postId, userId } = this.props
     if (userId && !postId) dispatch(findOrCreateThread(userId))
+    if (!userId) this.refs.personChooser.getWrappedInstance().focus()
+    else this.refs.messageForm.getWrappedInstance().focus()
   }
 
-  onSelect (userId, userName) {
+  onSelect = (person) => {
     const { dispatch } = this.context
-    dispatch(showDirectMessage(userId, userName))
+    dispatch(showDirectMessage(person.id, person.name))
   }
 
   render () {
     const { onCancel, postId, userId, userName } = this.props
     const { dispatch, currentUser } = this.context
     const title = userId ? `You and ${userName}`
-      : <PersonPicker onSelect={this.onSelect.bind(this)} exclude={currentUser}/>
+      : <PersonChooser ref='personChooser' placeholder='Start typing a name...' onSelect={this.onSelect}
+          typeaheadId='messageTo' exclude={currentUser}/>
 
     const onComplete = () => {
       dispatch(navigate(threadUrl(postId)))
@@ -59,7 +52,7 @@ export default class DirectMessageModal extends React.Component {
     }
 
     return <Modal {...{title}} id='direct-message' onCancel={onCancel}>
-      <MessageToUserForm {...{userId, onComplete, postId}}/>
+      <MessageToUserForm ref='messageForm' {...{userId, onComplete, postId}}/>
     </Modal>
   }
 }

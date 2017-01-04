@@ -341,6 +341,12 @@ ul.tags {
   border-bottom: 1px solid @post-border;
 
   .title {
+    display: inline-block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 40%;
+
     .tag-name {
       .tag-header-name-text;
     }

@@ -23,7 +23,7 @@ export default class PostPromptModule extends React.PureComponent {
 
     const { dispatch, isMobile } = this.context
 
-    const tag = 'offer' || (coinToss() ? 'offer' : 'request')
+    const tag = coinToss() ? 'offer' : 'request'
     const openPostEditor = () => dispatch(showModal('post-editor', {tag}))
 
     switch (tag) {

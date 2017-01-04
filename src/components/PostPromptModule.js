@@ -2,11 +2,14 @@ import React from 'react'
 import { showModal } from '../actions'
 import { coinToss } from '../util'
 import Icon from './icon'
+const { func, bool } = React.PropTypes
+import cx from 'classnames'
 
 export default class PostPromptModule extends React.PureComponent {
 
   static contextTypes = {
-    dispatch: React.PropTypes.func
+    dispatch: func,
+    isMobile: bool
   }
 
   constructor (props) {
@@ -18,7 +21,7 @@ export default class PostPromptModule extends React.PureComponent {
     var title
     var body
 
-    const { dispatch } = this.context
+    const { dispatch, isMobile } = this.context
 
     const tag = 'offer' || (coinToss() ? 'offer' : 'request')
     const openPostEditor = () => dispatch(showModal('post-editor', {tag}))
@@ -29,7 +32,7 @@ export default class PostPromptModule extends React.PureComponent {
           Have something you want to share?<br />
           Make an #offer!
         </div>
-        body = <div className='body'>
+        body = <div className={cx('body', {isMobile})}>
           An Offer is what you’d like to share with your<br />
           community. It can be ideas, skills, physical goods,<br />
           or anything else you can think of.
@@ -40,7 +43,7 @@ export default class PostPromptModule extends React.PureComponent {
           Looking for something in particular?<br />
           Make an #request!
         </div>
-        body = <div className='body'>
+        body = <div className={cx('body', {isMobile})}>
           You can use Requests to ask your community for<br />
           what you need. What are you looking for that<br />
           your community might help you with?

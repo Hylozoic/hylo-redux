@@ -10,7 +10,7 @@ import {
   notify,
   toggleUserSettingsSection,
   updateMembershipSettings,
-  updateUserSettings,
+  updateCurrentUser,
   generateUserToken,
   revokeUserToken
  } from '../../actions'
@@ -138,7 +138,7 @@ export default class UserSettings extends React.Component {
 
   update = (path, value) => {
     let { dispatch } = this.props
-    dispatch(updateUserSettings(set({}, path, value)))
+    dispatch(updateCurrentUser(set({}, path, value)))
     .then(({ error, payload }) => error && dispatch(notify(payload.message, {type: 'error'})))
     this.trackEdit()
   }

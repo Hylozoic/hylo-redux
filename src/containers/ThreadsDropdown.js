@@ -10,7 +10,7 @@ import {
   setUnseenThreadCount,
   incrementUnseenThreads,
   showDirectMessage,
-  updateUserSettings
+  updateCurrentUser
 } from '../actions'
 import { appendComment } from '../actions/comments'
 import { appendThread } from '../actions/threads'
@@ -28,7 +28,7 @@ import { Modal } from '../components/Modal'
 import { trackEvent, STARTED_MESSAGE, VIEWED_MESSAGE_THREAD_LIST } from '../util/analytics'
 
 const setLastViewedToNow = () =>
-  updateUserSettings({settings: {last_viewed_messages_at: new Date().toISOString()}})
+  updateCurrentUser({settings: {last_viewed_messages_at: new Date().toISOString()}})
 
 const getThreads = state =>
   flow(

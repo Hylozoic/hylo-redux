@@ -153,8 +153,8 @@ export const UPDATE_POST_READ_TIME = 'UPDATE_POST_READ_TIME'
 export const UPDATE_POST_EDITOR = 'UPDATE_POST_EDITOR'
 export const UPDATE_COMMUNITY_TAG = 'UPDATE_COMMUNITY_TAG'
 export const UPDATE_COMMUNITY_TAG_PENDING = 'UPDATE_COMMUNITY_TAG_PENDING'
-export const UPDATE_USER_SETTINGS = 'UPDATE_USER_SETTINGS'
-export const UPDATE_USER_SETTINGS_PENDING = UPDATE_USER_SETTINGS + _PENDING
+export const UPDATE_CURRENT_USER = 'UPDATE_CURRENT_USER'
+export const UPDATE_CURRENT_USER_PENDING = UPDATE_CURRENT_USER + _PENDING
 export const UPLOAD_DOC = 'UPLOAD_DOC'
 export const UPLOAD_IMAGE = 'UPLOAD_IMAGE'
 export const UPLOAD_IMAGE_PENDING = UPLOAD_IMAGE + _PENDING
@@ -295,9 +295,9 @@ export function toggleLeftNav () {
   return {type: TOGGLE_LEFT_NAV}
 }
 
-export function updateUserSettings (params) {
+export function updateCurrentUser (params) {
   return {
-    type: UPDATE_USER_SETTINGS,
+    type: UPDATE_CURRENT_USER,
     payload: {api: true, params, path: '/noo/user/me', method: 'POST'},
     meta: {params, optimistic: true}
   }

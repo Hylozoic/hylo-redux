@@ -1,6 +1,6 @@
 import {
   LOGIN, SIGNUP, FETCH_CURRENT_USER, SET_UNSEEN_THREAD_COUNT,
-  INCREMENT_UNSEEN_THREADS, UPDATE_USER_SETTINGS_PENDING
+  INCREMENT_UNSEEN_THREADS, UPDATE_CURRENT_USER_PENDING
 } from '../actions'
 import { get } from 'lodash/fp'
 
@@ -16,7 +16,7 @@ const newMessageCount = (state = 0, action) => {
       return payload.count
     case INCREMENT_UNSEEN_THREADS:
       return state + 1
-    case UPDATE_USER_SETTINGS_PENDING:
+    case UPDATE_CURRENT_USER_PENDING:
       if (get('params.settings.last_viewed_messages_at', action.meta)) {
         return 0
       }

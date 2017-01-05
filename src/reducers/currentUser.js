@@ -12,7 +12,7 @@ import {
   RESET_TOOLTIPS,
   REVOKE_USER_TOKEN,
   SIGNUP,
-  UPDATE_USER_SETTINGS_PENDING,
+  UPDATE_CURRENT_USER_PENDING,
   UPDATE_COMMUNITY_SETTINGS_PENDING,
   UPDATE_MEMBERSHIP_SETTINGS_PENDING,
   USE_INVITATION
@@ -25,7 +25,7 @@ const normalizeCurrentUser = user =>
     new_message_count: null
   })
 
-const updateCurrentUser = (user, params) => {
+const updateUser = (user, params) => {
   const updated = mergeWith({...user}, params, (objV, srcV, key, obj, src) => {
     if (key === 'tags') return srcV
   })
@@ -91,8 +91,8 @@ export default function (state = null, action) {
           meta.params.settings
         )
       }
-    case UPDATE_USER_SETTINGS_PENDING:
-      return updateCurrentUser(state, meta.params)
+    case UPDATE_CURRENT_USER_PENDING:
+      return updateUser(state, meta.params)
     case RESET_TOOLTIPS:
       return {
         ...state,

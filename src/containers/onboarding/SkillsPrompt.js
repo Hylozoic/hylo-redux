@@ -1,5 +1,5 @@
 import React from 'react'
-import { updateUserSettings } from '../../actions'
+import { updateCurrentUser } from '../../actions'
 import Modal from '../../components/Modal'
 import ModalOnlyPage from '../../components/ModalOnlyPage'
 import ListItemTagInput from '../../components/ListItemTagInput'
@@ -19,7 +19,7 @@ const SkillsPrompt = ({ location, community }, { currentUser, dispatch }) => {
   const subtitle = `Pick "tags" to describe yourself and to find people and
   opportunities that match your interests.`
 
-  const update = (path, value) => dispatch(updateUserSettings({[path]: value}))
+  const update = (path, value) => dispatch(updateCurrentUser({[path]: value}))
 
   const nextUrl = nextOnboardingUrl(location)
 

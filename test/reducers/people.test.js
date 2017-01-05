@@ -4,7 +4,7 @@ import { filter } from 'lodash'
 import {
   FETCH_PEOPLE,
   LEAVE_COMMUNITY_PENDING,
-  UPDATE_USER_SETTINGS_PENDING
+  UPDATE_CURRENT_USER_PENDING
 } from '../../src/actions'
 
 const user1 = {
@@ -35,10 +35,10 @@ describe('people', () => {
     })
   })
 
-  describe('on UPDATE_USER_SETTINGS_PENDING', () => {
+  describe('on UPDATE_CURRENT_USER_PENDING', () => {
     it('updates the current user', () => {
       let action = {
-        type: UPDATE_USER_SETTINGS_PENDING,
+        type: UPDATE_CURRENT_USER_PENDING,
         meta: {params: {email: 'joe@bar.com'}}
       }
 
@@ -53,7 +53,7 @@ describe('people', () => {
 
     it('adds tags', () => {
       const action = {
-        type: UPDATE_USER_SETTINGS_PENDING,
+        type: UPDATE_CURRENT_USER_PENDING,
         meta: {params: {tags: ['foo', 'bar', 'baz', 'klunk']}}
       }
 
@@ -68,7 +68,7 @@ describe('people', () => {
 
     it('removes tags', () => {
       const action = {
-        type: UPDATE_USER_SETTINGS_PENDING,
+        type: UPDATE_CURRENT_USER_PENDING,
         meta: {params: {tags: ['foo', 'bar']}}
       }
 

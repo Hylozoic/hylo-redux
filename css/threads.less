@@ -93,7 +93,7 @@
 
     &:last-child {
       // margin-bottom doesn't work as desired on mobile safari
-      padding-bottom: @message-form-height + 10px;
+      padding-bottom: @message-form-height + 20px;
     }
 
     .mobile({
@@ -131,17 +131,13 @@
     width: 100%;
     background: #FFF;
     color: @faint-gray-text;
-    padding: 10px 0 10px 30px;
-    border-top: 1px solid @post-border;
+    padding-left: 30px;
+    padding-bottom: 2px;
     position: fixed;
     bottom: @message-form-height;
 
     > div {
       display: inline-block;
-    }
-
-    .chillipsis {
-      margin-right: 15px;
     }
 
     .mobile({

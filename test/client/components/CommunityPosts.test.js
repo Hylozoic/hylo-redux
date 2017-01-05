@@ -7,7 +7,7 @@ import ProfileSkillsModule from '../../../src/components/ProfileSkillsModule'
 import ProfileBioModule from '../../../src/components/ProfileBioModule'
 import { configureStore } from '../../../src/store'
 import { MemberRole } from '../../../src/models/community'
-import { updateUserSettings } from '../../../src/actions'
+import { updateCurrentUser } from '../../../src/actions'
 
 const community = {
   id: '1',
@@ -56,7 +56,7 @@ describe('CommunityPosts', () => {
       context: {store, currentUser},
       childContextTypes: {currentUser: PropTypes.object}
     })
-    mockActionResponse(updateUserSettings(), {})
+    mockActionResponse(updateCurrentUser(), {})
 
     expect(node.find('.community-setup').length).to.equal(1)
 
@@ -97,7 +97,7 @@ describe('CommunityPosts', () => {
         },
         ...user
       }
-      mockActionResponse(updateUserSettings(), {})
+      mockActionResponse(updateCurrentUser(), {})
       return mount(
         <CommunityPosts {...props} />, {
           context: {currentUser: mergedUser, store, dispatch: store.dispatch},

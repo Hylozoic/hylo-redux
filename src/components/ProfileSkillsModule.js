@@ -1,5 +1,5 @@
 import React, { Component, PropTypes } from 'react'
-import { updateUserSettings } from '../actions'
+import { updateCurrentUser } from '../actions'
 import ListItemTagInput from './ListItemTagInput'
 
 export default class ProfileSkillsModule extends Component {
@@ -30,7 +30,7 @@ export default class ProfileSkillsModule extends Component {
   save = () => {
     const { tags } = this.state
     const { dispatch } = this.context
-    return dispatch(updateUserSettings({tags}))
+    return dispatch(updateCurrentUser({tags}))
   }
 
   render () {

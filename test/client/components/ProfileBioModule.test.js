@@ -4,7 +4,7 @@ import { mount } from 'enzyme'
 import { configureStore } from '../../../src/store'
 import { wait, mockActionResponse } from '../../support/helpers'
 import ProfileBioModule from '../../../src/components/ProfileBioModule'
-import { updateUserSettings } from '../../../src/actions'
+import { updateCurrentUser } from '../../../src/actions'
 
 const currentUser = {
   id: '5',
@@ -32,7 +32,7 @@ describe('ProfileBioModule', () => {
         }
       }
     )
-    mockActionResponse(updateUserSettings(), {})
+    mockActionResponse(updateCurrentUser(), {})
   })
 
   const enterBio = (value) => {

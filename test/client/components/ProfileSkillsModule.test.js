@@ -5,7 +5,7 @@ import { configureStore } from '../../../src/store'
 import ProfileSkillsModule from '../../../src/components/ProfileSkillsModule'
 import { wait, mockActionResponse } from '../../support/helpers'
 import { keyMap } from '../../../src/util/textInput'
-import { updateUserSettings } from '../../../src/actions'
+import { updateCurrentUser } from '../../../src/actions'
 
 const store = configureStore().store
 
@@ -32,7 +32,7 @@ describe('ProfileSkillsModule', () => {
         }
       }
     )
-    mockActionResponse(updateUserSettings(), {})
+    mockActionResponse(updateCurrentUser(), {})
   })
 
   const enterSkill = (value) => {

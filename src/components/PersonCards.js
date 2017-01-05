@@ -1,6 +1,7 @@
 import React from 'react'
 import A from '../components/A'
-import Dropdown from '../components/Dropdown'
+import Dropdown from './Dropdown'
+import { handleMouseOver } from './Popover'
 import Masonry from 'react-masonry-component'
 import { humanDate } from '../util/text'
 import { isEmpty } from 'lodash'
@@ -21,7 +22,7 @@ const PersonCards = ({ people, slug, onSkillClick, removeMember }) => {
 
 export default PersonCards
 
-export const PersonCard = ({ person, slug, onSkillClick, removeMember }) => {
+export const PersonCard = ({ person, slug, onSkillClick, removeMember }, { dispatch }) => {
   const {
     id, avatar_url, name, bio, isModerator, joined_at, tags, offerCount
   } = person
@@ -37,9 +38,9 @@ export const PersonCard = ({ person, slug, onSkillClick, removeMember }) => {
       toggleChildren={<i className='icon-More'></i>}>
       {[<li key='1'><a onClick={() => removeMember(person.id)}>Remove from community</a></li>]}
     </Dropdown>}
-    <A to={`/u/${person.id}`} className='square-avatar' style={avatarStyle}/>
+    <span onMouseOver={handleMouseOver(dispatch)}><A to={`/u/${person.id}`} className='square-avatar' style={avatarStyle}/></span>
     <div className='person-body'>
-      <A className='name' to={`/u/${id}`}>{name}</A>
+      <span onMouseOver={handleMouseOver(dispatch)}><A className='name' to={`/u/${id}`}>{name}</A></span>
       <div className='role'>
         {(isModerator ? 'Moderator' : 'Member')} since {humanDate(joined_at)}
       </div>
@@ -55,3 +56,4 @@ export const PersonCard = ({ person, slug, onSkillClick, removeMember }) => {
     </div>
   </div>
 }
+PersonCard.contextTypes = {dispatch: React.PropTypes.func}

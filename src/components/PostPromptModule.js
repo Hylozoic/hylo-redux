@@ -18,10 +18,10 @@ export default class PostPromptModule extends React.PureComponent {
   }
 
   render () {
-    var title
-    var body
+    let title, body
 
     const { dispatch, isMobile } = this.context
+    const { open } = this.state
 
     const tag = coinToss() ? 'offer' : 'request'
     const openPostEditor = () => dispatch(showModal('post-editor', {tag}))
@@ -49,8 +49,6 @@ export default class PostPromptModule extends React.PureComponent {
           your community might help you with?
         </div>
     }
-
-    const { open } = this.state
 
     return <div className='post post-prompt'>
       {title}

@@ -20,6 +20,8 @@ import { coinToss } from '../../util'
 const { func, object } = React.PropTypes
 
 const subject = 'community'
+export const MIN_MEMBERS_FOR_SKILLS_MODULE = 6
+export const MIN_POSTS_FOR_POST_PROMPT_MODULE = 4
 
 class CommunityPosts extends React.Component {
   static propTypes = {
@@ -69,8 +71,8 @@ class CommunityPosts extends React.Component {
 
     // remove the 'true' clause when done testing
     if (true || groupUser(currentUser.id, 'In-Feed Engagement Modules') === 0) {
-      const showPopularSkills = community.memberCount > 5
-      const showPostPrompt = community.postCount > 3
+      const showPopularSkills = community.memberCount >= MIN_MEMBERS_FOR_SKILLS_MODULE
+      const showPostPrompt = community.postCount >= MIN_POSTS_FOR_POST_PROMPT_MODULE
 
       module = {
         id: -1,
@@ -90,13 +92,6 @@ class CommunityPosts extends React.Component {
       } else {
         module = null
       }
-    }
-
-    // for dev
-    module = {
-      id: -1,
-      type: 'module',
-      component: <PopularSkillsModule community={community} />
     }
 
     return <div>

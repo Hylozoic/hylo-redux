@@ -67,5 +67,6 @@ describe('PostList', () => {
     expect(doc('.post').length).to.equal(3)
     expect(doc('.project-summary').length).to.equal(1)
     expect(doc('.event-summary').length).to.equal(1)
+    // Add fixture and case for component type module
   })
 })

@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 import validator from 'validator'
 import React from 'react'
 import { connect } from 'react-redux'
@@ -219,7 +220,7 @@ export default class UserSettings extends React.Component {
     } = {...currentUser, ...editing}
 
     return <div id='user-settings' className='form-sections simple-page'>
-      <SectionLabel name='profile' label='Profile' {...{dispatch, expand}}/>
+      <SectionLabel name='profile' label='Profile' {...{dispatch, expand}} />
       {expand.profile && <Section className='profile'>
         <Item>
           <div className='half-column'>
@@ -234,8 +235,8 @@ export default class UserSettings extends React.Component {
               <div className={cx('form-group', {'has-error': errors.name})}>
                 <input type='text' ref='name' className='name form-control'
                   value={edited.name}
-                  onChange={this.setName}/>
-                </div>
+                  onChange={this.setName} />
+              </div>
             </form>
             <div className='buttons'>
               <button type='button' onClick={() => this.cancelEdit('name')}>Cancel</button>
@@ -248,7 +249,7 @@ export default class UserSettings extends React.Component {
             <label>Profile image</label>
           </div>
           <div className='half-column right-align'>
-            <div className='medium-avatar' style={{backgroundImage: `url(${avatar_url})`}}/>
+            <div className='medium-avatar' style={{backgroundImage: `url(${avatar_url})`}} />
             <button type='button' onClick={() => this.attachImage('avatar_url')}
               disabled={pending === 'user-avatar'}>
               {pending === 'user-avatar' ? 'Please wait...' : 'Change'}
@@ -261,20 +262,20 @@ export default class UserSettings extends React.Component {
           </div>
           <div className='third-column'>
             <h5>Facebook</h5>
-            <LinkButton disabled={!facebook_url} href={facebook_url} icon='facebook'/>
+            <LinkButton disabled={!facebook_url} href={facebook_url} icon='facebook' />
             <button onClick={() => openPopup('facebook', PROFILE_CONTEXT)}>
               {facebook_url ? 'Change' : 'Connect'}
             </button>
           </div>
           <div className='third-column'>
             <h5>Twitter</h5>
-            <LinkButton disabled={!twitter_name} href={`https://twitter.com/${twitter_name}`} icon='twitter'/>
+            <LinkButton disabled={!twitter_name} href={`https://twitter.com/${twitter_name}`} icon='twitter' />
             <input type='text' className='form-control' value={twitter_name}
-              onChange={this.updateTyped('twitter_name')}/>
+              onChange={this.updateTyped('twitter_name')} />
           </div>
           <div className='third-column'>
             <h5>LinkedIn</h5>
-            <LinkButton disabled={!linkedin_url} href={linkedin_url} icon='linkedin'/>
+            <LinkButton disabled={!linkedin_url} href={linkedin_url} icon='linkedin' />
             <button onClick={() => openPopup('linkedin', PROFILE_CONTEXT)}>
               {linkedin_url ? 'Change' : 'Connect'}
             </button>
@@ -283,7 +284,7 @@ export default class UserSettings extends React.Component {
         <Item>
           <div className='full-column'>
             <label>Banner</label>
-            <div className='banner' style={{backgroundImage: `url(${banner_url})`}}></div>
+            <div className='banner' style={{backgroundImage: `url(${banner_url})`}} />
           </div>
           <div className='full-column right-align'>
             <button type='button' onClick={() => this.attachImage('banner_url')}
@@ -296,33 +297,33 @@ export default class UserSettings extends React.Component {
           <div className='full-column'>
             <label>About me</label>
             <textarea className='form-control short' value={bio}
-              onChange={this.updateTyped('bio')}></textarea>
+              onChange={this.updateTyped('bio')} />
           </div>
         </Item>
         <Item>
           <div className='full-column'>
             <label>My skills</label>
             <ListItemTagInput type='tags' person={currentUser}
-              update={this.update} filter={preventSpaces} context='profile'/>
+              update={this.update} filter={preventSpaces} context='profile' />
           </div>
         </Item>
         <Item>
           <div className='full-column'>
             <label>My website</label>
             <input className='form-control' type='text'
-              defaultValue={url} onChange={this.updateTyped('url')}/>
+              defaultValue={url} onChange={this.updateTyped('url')} />
           </div>
         </Item>
         <Item>
           <div className='full-column'>
             <label>My geographical location</label>
             <input className='form-control' type='text'
-              defaultValue={location} onChange={this.updateTyped('location')}/>
+              defaultValue={location} onChange={this.updateTyped('location')} />
           </div>
         </Item>
       </Section>}
 
-      <SectionLabel name='account' label='Account' {...{dispatch, expand}}/>
+      <SectionLabel name='account' label='Account' {...{dispatch, expand}} />
       {expand.account && <Section className='email'>
         <Item>
           <div className='half-column'>
@@ -337,8 +338,8 @@ export default class UserSettings extends React.Component {
               <div className={cx('form-group', {'has-error': errors.email})}>
                 <input type='text' ref='email' className='email form-control'
                   value={edited.email}
-                  onChange={this.setEmail}/>
-                </div>
+                  onChange={this.setEmail} />
+              </div>
             </form>
             <div className='buttons'>
               <button type='button' onClick={() => this.cancelEdit('email')}>Cancel</button>
@@ -356,11 +357,11 @@ export default class UserSettings extends React.Component {
           {editing.password && <div className='half-column right-align'>
             <form name='passwordForm'>
               <div className={cx('form-group', {'has-error': errors.password})}>
-              <p className='help'>Enter a new password.</p>
+                <p className='help'>Enter a new password.</p>
                 <input type='password' ref='password' className='password form-control'
                   value={edited.password}
-                  onChange={this.setPassword}/>
-                </div>
+                  onChange={this.setPassword} />
+              </div>
             </form>
             <div className='buttons'>
               <button type='button' onClick={() => this.cancelEdit('password')}>Cancel</button>
@@ -383,12 +384,12 @@ export default class UserSettings extends React.Component {
         </Item>
       </Section>}
 
-      <SectionLabel name='communities' label='Communities' {...{dispatch, expand}}/>
+      <SectionLabel name='communities' label='Communities' {...{dispatch, expand}} />
       {expand.communities && <Section className='communities'>
         {memberships.map(membership => <MembershipSettings key={membership.id}
           membership={membership}
           toggle={this.membershipToggle}
-          leave={this.leaveCommunity}/>)}
+          leave={this.leaveCommunity} />)}
         {memberships.length === 0 && <Item>
           <div className='full-column'>
             <p>You do not belong to any communities yet.</p>
@@ -397,7 +398,7 @@ export default class UserSettings extends React.Component {
       </Section>}
 
       {hasFeature(currentUser, PAYMENT_SETTINGS) && <div>
-        <SectionLabel name='payment' label='Payment Details' {...{dispatch, expand}}/>
+        <SectionLabel name='payment' label='Payment Details' {...{dispatch, expand}} />
         {expand.payment && <Section className='payment'>
           <Item>
             <div className='full-column'>
@@ -406,9 +407,9 @@ export default class UserSettings extends React.Component {
           </Item>
         </Section>}
       </div>}
-      
+
       {hasFeature(currentUser, GENERATE_TOKEN) && <div>
-        <SectionLabel name='developer' label='API Access' {...{dispatch, expand}}/>
+        <SectionLabel name='developer' label='API Access' {...{dispatch, expand}} />
         {expand.developer && <Section className='apiAccess'>
           <Item>
             <div className='full-column'>
@@ -436,7 +437,7 @@ export default class UserSettings extends React.Component {
 const SectionLabel = ({ name, label, dispatch, expand }) => {
   return <div className='section-label'
     onClick={() => dispatch(toggleUserSettingsSection(name))}>
-    {label} <i className={cx({'icon-down': expand[name], 'icon-right': !expand[name]})}></i>
+    {label} <i className={cx({'icon-down': expand[name], 'icon-right': !expand[name]})} />
   </div>
 }
 
@@ -448,7 +449,7 @@ const Item = ({className, children}) =>
 
 const LinkButton = ({ href, icon, ...props }) =>
   <a {...props} className='button' href={href} target='_blank'>
-    <Icon name={icon}/>
+    <Icon name={icon} />
   </a>
 
 const MembershipSettings = ({ membership, toggle, leave }) => {
@@ -469,12 +470,12 @@ const MembershipSettings = ({ membership, toggle, leave }) => {
           <p>Receive notifications:</p>
           <label>
             <input type='checkbox' checked={get(membership, 'settings.send_email')}
-              onChange={() => toggle(membership, 'settings.send_email')}/>
+              onChange={() => toggle(membership, 'settings.send_email')} />
             Email
           </label>
           <label>
             <input type='checkbox' checked={get(membership, 'settings.send_push_notifications')}
-              onChange={() => toggle(membership, 'settings.send_push_notifications')}/>
+              onChange={() => toggle(membership, 'settings.send_push_notifications')} />
             Mobile
           </label>
         </div>

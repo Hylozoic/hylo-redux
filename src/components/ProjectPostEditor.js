@@ -3,7 +3,7 @@ import { connect } from 'react-redux'
 import Icon from './Icon'
 import DatetimePicker from 'react-datetime'
 import { sanitizeTagInput } from '../util/textInput'
-import { validateTag } from './EventPostEditor'
+import { fetchTag } from '../actions/tags'
 import { debounce } from 'lodash'
 import { get, map, pick } from 'lodash/fp'
 import { getPost, getVideo } from '../models/post'
@@ -13,6 +13,16 @@ const random = () => Math.random().toString().slice(2, 8)
 
 const getSimplePost = state => id =>
   pick(['id', 'name', 'description'], getPost(id, state))
+
+const validateTag = (tag, dispatch) => {
+  return dispatch(fetchTag(tag))
+  .then(({ payload, error, meta: { tagName } }) => {
+    if (error && get('response.status', payload) === 404) return true
+
+    window.alert(`The tag "${tagName}" is already in use.`)
+    return false
+  })
+}
 
 @connect((state, { postEdit }) => ({
   requests: postEdit.requests || map(getSimplePost(state), postEdit.children)

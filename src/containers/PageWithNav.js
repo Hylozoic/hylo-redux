@@ -4,7 +4,7 @@ import { VelocityComponent } from 'velocity-react'
 import TopNav from '../components/TopNav'
 import NetworkNav from '../components/NetworkNav'
 import { LeftNav, leftNavWidth, leftNavEasing } from '../components/LeftNav'
-import { toggleLeftNav, updateUserSettings } from '../actions'
+import { toggleLeftNav, updateCurrentUser } from '../actions'
 import { getCurrentCommunity } from '../models/community'
 import { getCurrentNetwork } from '../models/network'
 import { aggregatedTags } from '../models/hashtag'
@@ -41,7 +41,7 @@ const PageWithNav = (props, context) => {
     if (!isMobile) {
       setTimeout(() => {
         const settings = {leftNavIsOpen: open}
-        dispatch(updateUserSettings({settings}))
+        dispatch(updateCurrentUser({settings}))
       }, 5000)
     }
   }

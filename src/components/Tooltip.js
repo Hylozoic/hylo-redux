@@ -3,7 +3,7 @@ import { connect } from 'react-redux'
 import ToolTip from 'react-portal-tooltip'
 import { get, omit, sortBy, flow, toPairs, keys, isEmpty } from 'lodash/fp'
 const { string, number, bool, object, func, array, oneOfType } = React.PropTypes
-import { updateUserSettings, registerTooltip, unregisterTooltip } from '../actions'
+import { updateCurrentUser, registerTooltip, unregisterTooltip } from '../actions'
 
 export const activeTooltip = (currentUser, tooltips) => {
   const viewed = flow(
@@ -75,7 +75,7 @@ export default class Tooltip extends React.Component {
           [id]: true
         }
       }
-      dispatch(updateUserSettings({settings}))
+      dispatch(updateCurrentUser({settings}))
     }
 
     return <span id={ttid}>

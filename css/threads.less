@@ -2,15 +2,11 @@
 @scroll-button-width: 150px;
 
 .thread {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
   height: 100vh;
-  justify-content: flex-start;
-  align-content: flex-start;
-  align-items: flex-start;
-  position: absolute;
-  top: 0;
+  margin-top: -@top-nav-height;
+  .mobile({
+    margin-top: -@mobile-top-nav-height;
+  });
 
   @thread-header-height: 60px;
   @mobile-thread-header-height: 40px;
@@ -39,9 +35,7 @@
 
   .messages-section {
     width: 100%;
-    flex-grow: 1;
-    flex-shrink: 0;
-    flex-basis: 0;
+    height: 100%;
     overflow-y: scroll;
     -webkit-overflow-scrolling: touch;
     background-color: #FFF;
@@ -90,15 +84,20 @@
   }
 
   .message {
-    padding: 5px 0 5px 30px;
+    padding-left: 30px;
+    padding-right: 15px;
+
+    &.messageHeader {
+      padding-top: 10px;
+    }
 
     &:last-child {
       // margin-bottom doesn't work as desired on mobile safari
-      padding-bottom: @message-form-height;
+      padding-bottom: @message-form-height + 10px;
     }
 
     .mobile({
-      padding: 5px 15px;
+      padding-left: 15px;
     });
 
     .avatar {
@@ -130,9 +129,6 @@
 
   .typing {
     width: 100%;
-    flex-grow: 0;
-    flex-shrink: 0;
-    flex-basis: 0;
     background: #FFF;
     color: @faint-gray-text;
     padding: 10px 0 10px 30px;
@@ -154,9 +150,6 @@
   }
 
   .message-form {
-    flex-grow: 0;
-    flex-shrink: 0;
-    flex-basis: 0;
     width: 100%;
     background: #FFF;
     position: fixed;

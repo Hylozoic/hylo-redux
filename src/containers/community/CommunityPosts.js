@@ -1,29 +1,39 @@
-import React from 'react'
+import React, { Component } from 'react'
+const { func, object } = React.PropTypes
+// Redux connection related
+import { compose } from 'redux'
 import { connect } from 'react-redux'
 import { prefetch } from 'react-fetcher'
+// Component related
 import {
-  COMMUNITY_SETUP_CHECKLIST, REQUEST_TO_JOIN_COMMUNITY
+  COMMUNITY_SETUP_CHECKLIST,
+  REQUEST_TO_JOIN_COMMUNITY,
+  IN_FEED_PROFILE_COMPLETION_MODULES
 } from '../../config/featureFlags'
 import { fetch, ConnectedPostList } from '../ConnectedPostList'
+
 import PostEditor from '../../components/PostEditor'
+import ProfileSkillsModule from '../../components/ProfileSkillsModule'
+import ProfileBioModule from '../../components/ProfileBioModule'
 import PopularSkillsModule from '../../components/PopularSkillsModule'
 import PostPromptModule from '../../components/PostPromptModule'
-import { PercentBar } from '../../containers/ChecklistModal'
-import { compose } from 'redux'
-import { isMember, canModerate, hasFeature } from '../../models/currentUser'
+
+import { PercentBar } from '../ChecklistModal'
+import {
+  isMember, canModerate, hasFeature, hasBio, hasSkills
+} from '../../models/currentUser'
 import { navigate, notify, showModal } from '../../actions'
 import { sendGraphqlQuery } from '../../actions/graphql'
 import { requestToJoinCommunity } from '../../actions/communities'
 import { getChecklist, checklistPercentage } from '../../models/community'
 import { groupUser } from 'hylo-utils'
 import { coinToss } from '../../util'
-const { func, object } = React.PropTypes
 
 const subject = 'community'
 export const MIN_MEMBERS_FOR_SKILLS_MODULE = 6
 export const MIN_POSTS_FOR_POST_PROMPT_MODULE = 4
 
-class CommunityPosts extends React.Component {
+export class CommunityPosts extends Component {
   static propTypes = {
     dispatch: func,
     params: object,
@@ -64,7 +74,7 @@ class CommunityPosts extends React.Component {
   }
 
   render () {
-    let { community, params: { id }, location: { query } } = this.props
+    let { location: { query }, dispatch, community, params: { id } } = this.props
     const { currentUser } = this.context
 
     var module
@@ -96,11 +106,14 @@ class CommunityPosts extends React.Component {
 
     return <div>
       {hasFeature(currentUser, COMMUNITY_SETUP_CHECKLIST) && canModerate(currentUser, community) &&
-        <CommunitySetup community={community} />}
+        <CommunitySetup community={community} dispatch={dispatch} />}
+      {hasFeature(currentUser, IN_FEED_PROFILE_COMPLETION_MODULES) && isMember(currentUser, community) &&
+        <ProfileCompletionModules person={currentUser} />}
       {isMember(currentUser, community) && <PostEditor community={community} />}
-      {hasFeature(currentUser, REQUEST_TO_JOIN_COMMUNITY) && !isMember(currentUser, community) && <div className='request-to-join'>
-        You are not a member of this community. <a onClick={() => this.requestToJoin()}className='button'>Request to Join</a>
-      </div>}
+      {hasFeature(currentUser, REQUEST_TO_JOIN_COMMUNITY) && !isMember(currentUser, community) &&
+        <div className='request-to-join'>
+          You are not a member of this community. <a onClick={() => this.requestToJoin()} className='button'>Request to Join</a>
+        </div>}
       <ConnectedPostList {...{subject, id, query}} module={module} />
       {!isMember(currentUser, community) && <div className='post-list-footer'>
         You are not a member of this community, so you are shown only posts that are marked as public.
@@ -117,27 +130,39 @@ const fetchCommunityStats = slug =>
     }
   }`)
 
-export default compose(
-  prefetch(({ dispatch, params: { id }, query, currentUser, store }) =>
-    Promise.all([
-      dispatch(fetch(subject, id, query)),
-      dispatch(fetchCommunityStats(id))
-    ])),
-  connect((state, { params }) => ({
-    community: state.communities[params.id],
-    currentUser: state.people.current
-  }))
-)(CommunityPosts)
-
-const CommunitySetup = connect()(({ community, dispatch }) => {
+const CommunitySetup = ({ community, dispatch }) => {
   const checklist = getChecklist(community)
   const percent = checklistPercentage(checklist)
-
   if (percent === 100) return null
-
   return <div className='community-setup'
     onClick={() => dispatch(showModal('checklist'))}>
     <PercentBar percent={percent} />
     Your community is {percent}% set up. <a>Click here</a> to continue setting it up.
   </div>
+}
+
+const ProfileCompletionModules = ({ person }) => {
+  if (!hasBio(person)) {
+    return <ProfileBioModule person={person} />
+  } else if (!hasSkills(person)) {
+    return <ProfileSkillsModule person={person} />
+  } else {
+    return null
+  }
+}
+
+// Redux connection
+
+const mapStateToProps = (state, { params }) => ({
+  community: state.communities[params.id],
+  currentUser: state.people.current
 })
+
+export default compose(
+  prefetch(({ dispatch, params: { id }, query }) =>
+    Promise.all([
+      dispatch(fetch(subject, id, query)),
+      dispatch(fetchCommunityStats(id))
+    ])),
+  connect(mapStateToProps)
+)(CommunityPosts)

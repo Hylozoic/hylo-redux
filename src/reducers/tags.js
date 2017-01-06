@@ -64,7 +64,7 @@ export const tagsByCommunity = (state = {}, action) => {
   if (error) return state
 
   let oldCommunityTags, oldTag
-  let { slug } = meta || {}
+  let { slug, tagName, id } = meta || {}
 
   const addCreatedTags = (state, slug, createdTags) => {
     if (isEmpty(createdTags)) return state
@@ -75,10 +75,10 @@ export const tagsByCommunity = (state = {}, action) => {
 
   switch (type) {
     case FETCH_TAG:
-      oldCommunityTags = state[meta.id] || {}
+      oldCommunityTags = state[id] || {}
       return {
         ...state,
-        [meta.id]: {...oldCommunityTags, [meta.tagName]: payload}
+        [id]: {...oldCommunityTags, [tagName]: payload}
       }
     case FETCH_LEFT_NAV_TAGS:
       return mergeLeftNavTags(state, payload)
@@ -96,23 +96,23 @@ export const tagsByCommunity = (state = {}, action) => {
       let tags = [{...meta.tag, followed: true}]
       return {...state, [slug]: mergeList(state[slug], tags, 'name')}
     case FOLLOW_TAG_PENDING:
-      oldCommunityTags = state[meta.id] || {}
-      oldTag = oldCommunityTags[meta.tagName]
+      oldCommunityTags = state[id] || {}
+      oldTag = oldCommunityTags[tagName]
       return {
         ...state,
-        [meta.id]: {
+        [id]: {
           ...oldCommunityTags,
-          [meta.tagName]: {...oldTag, followed: !oldTag.followed}
+          [tagName]: {...oldTag, followed: !oldTag.followed}
         }
       }
     case FETCH_TAG_SUMMARY:
-      oldCommunityTags = state[meta.id] || {}
-      oldTag = oldCommunityTags[meta.tagName]
+      oldCommunityTags = state[id] || {}
+      oldTag = oldCommunityTags[tagName]
       return {
         ...state,
-        [meta.id]: {
+        [id]: {
           ...oldCommunityTags,
-          [meta.tagName]: {...oldTag, ...payload}
+          [tagName]: {...oldTag, ...payload, name: tagName}
         }
       }
     case REMOVE_TAG:

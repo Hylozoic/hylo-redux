@@ -8,6 +8,30 @@ import { position } from '../util/scrolling'
 import { findDOMNode } from 'react-dom'
 import { updatePostReadTime } from '../actions/posts'
 
+// the maximum amount of time in minutes that can pass between messages to still
+// include them under the same avatar and timestamp
+const MAX_MINS_TO_BATCH = 5
+
+function createMessageList (messages, messageSection) {
+  let currentHeader
+  return messages.map((m, index) => {
+    let headerDate, messageDate, diff, greaterThanMax
+    let isHeader = false
+    if (!currentHeader) {
+      isHeader = true
+      currentHeader = m
+    } else {
+      headerDate = new Date(currentHeader.created_at)
+      messageDate = new Date(m.created_at)
+      diff = Math.abs(headerDate - messageDate)
+      greaterThanMax = Math.floor(diff / 60000) > MAX_MINS_TO_BATCH
+      isHeader = greaterThanMax || m.user.id !== currentHeader.user.id
+      currentHeader = isHeader ? m : currentHeader
+    }
+    return <Message message={m} key={m.id} isHeader={isHeader} />
+  })
+}
+
 export default class MessageSection extends React.Component {
   static propTypes = {
     messages: array,
@@ -89,21 +113,21 @@ export default class MessageSection extends React.Component {
     const messages = sortBy(this.props.messages || [], 'created_at')
     const { currentUser } = this.context
     const { scrolledUp } = this.state
+    const messageList = createMessageList(messages, this)
 
     const latestMessage = messages.length && messages[messages.length - 1]
     const latestFromOther = latestMessage && latestMessage.user_id !== currentUser.id
     const newFromOther = latestFromOther && thread.last_read_at && new Date(latestMessage.created_at) > new Date(thread.last_read_at)
 
     return <div className={cx('messages-section', {empty: isEmpty(messages)})}
-      ref={list => this.list = list}
+      ref={list => { this.list = list }}
       onScroll={this.handleScroll}>
       <div className='messages-section-inner'>
         {newFromOther && scrolledUp &&
           <div className='newMessagesNotify' onClick={this.scrollToBottom}>
             New Messages
           </div>}
-        {messages.map(m =>
-          <Message ref={node => this['message' + m.id] = node} message={m} key={m.id}/>)}
+        {messageList}
       </div>
     </div>
   }

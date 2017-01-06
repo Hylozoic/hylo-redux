@@ -1,0 +1,72 @@
+.feed-module {
+  background-color: white;
+  padding: 20px 25px 15px 25px;
+  margin-bottom: @card-bottom-margin;
+  button {
+    color: white;
+    background-color: #22bf99;
+    border-color: #22bf99;
+    margin-right: 10px;
+    height: 40px;
+    border-radius: 40px;
+    line-height: 38px;
+    text-align: center;
+    padding: 0 32px;
+    display: inline-block;
+    text-decoration: none;
+  }
+}
+
+.feed-module.profile-skills {
+  h2 {
+    font-weight: normal;
+    font-size: 22px;
+    color: @off-black;
+    margin: 0;
+    margin-bottom: 25px;
+  }
+  div.tag-input {
+    width: initial;
+    margin: 0 -25px 0 -25px;
+    padding-left: 25px;
+    padding-right: 25px;
+    border: 0px;
+    border-radius: 0px;
+  }
+  div.tag-input,
+  input {
+    background-color: @faint-gray-bg;
+  }
+  .meta {
+    margin: 10px 0 10px 0;
+  }
+}
+
+.feed-module.profile-bio {
+  h2 {
+    font-weight: 300;
+    font-size: 22px;
+    color: @off-black;
+    margin: 0;
+    margin-bottom: 20px;
+  }
+  textarea {
+    height: 80px;
+    padding: 0px;
+    box-shadow: none;
+    border: none;
+    margin-bottom: 10px;
+  }
+  div.text-length {
+    float: right;
+    margin-top: -10px;
+    color: @mid-gray-bg;
+    font-size: 12px;
+    &.acceptable-length {
+      color: @damian-green;
+    }
+    &.over-max-length {
+      color: @damian-red;
+    }
+  }
+}

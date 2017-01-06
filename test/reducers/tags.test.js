@@ -1,8 +1,14 @@
 require('../support')
 import { tagsByCommunity, tagsByQuery, totalTagsByQuery } from '../../src/reducers/tags'
 import {
-  FETCH_LEFT_NAV_TAGS, FETCH_TAGS, REMOVE_TAG, CREATE_POST, UPDATE_POST, CREATE_TAG_IN_COMMUNITY,
-  FETCH_COMMUNITY
+  CREATE_POST,
+  CREATE_TAG_IN_COMMUNITY,
+  FETCH_COMMUNITY,
+  FETCH_LEFT_NAV_TAGS,
+  FETCH_TAGS,
+  FETCH_TAG_SUMMARY,
+  REMOVE_TAG,
+  UPDATE_POST
 } from '../../src/actions'
 
 const fetchAction = {
@@ -103,6 +109,39 @@ describe('totalTagsByQuery', () => {
 })
 
 describe('tagsByCommunity', () => {
+  it('handles FETCH_TAG_SUMMARY', () => {
+    const state = {
+      commu: {
+        wow: {
+          name: 'wow'
+        }
+      }
+    }
+
+    const action = {
+      type: FETCH_TAG_SUMMARY,
+      meta: {
+        id: 'commu',
+        tagName: 'amaze'
+      },
+      payload: {
+        description: 'a special word'
+      }
+    }
+
+    expect(tagsByCommunity(state, action)).to.deep.equal({
+      commu: {
+        wow: {
+          name: 'wow'
+        },
+        amaze: {
+          name: 'amaze',
+          description: 'a special word'
+        }
+      }
+    })
+  })
+
   it('removes a tag on REMOVE_TAG', () => {
     const state = {
       whee: {

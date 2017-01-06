@@ -2,15 +2,15 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { prefetch } from 'react-fetcher'
 import { compose } from 'redux'
+import CommunityHeader from '../../components/CommunityHeader'
 import Modal from '../../components/Modal'
 import ModalOnlyPage from '../../components/ModalOnlyPage'
 import { ModalInput } from '../../components/ModalRow'
-import { updateUserSettings } from '../../actions'
+import { updateCurrentUser } from '../../actions'
 import { fetchTags } from '../../actions/tags'
 import A from '../../components/A'
 import { debounce } from 'lodash'
 import { find, filter, isEmpty } from 'lodash/fp'
-import { CommunityHeader } from '../Signup'
 import { nextOnboardingUrl } from '../../util/navigation'
 import { getCommunity } from '../../models/community'
 import { connectedListProps } from '../../util/caching'
@@ -24,7 +24,7 @@ const trackBioUpdate = debounce(() => trackEvent(ADDED_BIO, {context: 'onboardin
 const BioPrompt = ({ location, community, skipTopics }, { currentUser, dispatch }) => {
   const update = debounce(bio => {
     trackBioUpdate()
-    return dispatch(updateUserSettings({bio}))
+    return dispatch(updateCurrentUser({bio}))
   }, 500)
 
   return <ModalOnlyPage id='bio-prompt' className='login-signup'>

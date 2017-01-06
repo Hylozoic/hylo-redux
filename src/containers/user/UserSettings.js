@@ -20,7 +20,8 @@ import { leaveCommunity } from '../../actions/communities'
 import { uploadImage } from '../../actions/uploadImage'
 import A from '../../components/A'
 import { formatDate } from '../../util/text'
-import { debounce, find, get, sortBy, throttle, set } from 'lodash'
+import { debounce, find, sortBy, throttle, set } from 'lodash'
+import { get } from 'lodash/fp'
 import ListItemTagInput from '../../components/ListItemTagInput'
 import { denormalizedCurrentUser, hasFeature } from '../../models/currentUser'
 import { avatarUploadSettings, bannerUploadSettings, defaultBanner } from '../../models/person'
@@ -28,22 +29,35 @@ import { openPopup, setupPopupCallback, PROFILE_CONTEXT } from '../../util/auth'
 import { EDITED_USER_SETTINGS, trackEvent } from '../../util/analytics'
 import { preventSpaces } from '../../util/textInput'
 import Icon from '../../components/Icon'
+import { sendGraphqlQueryAddDataToStore } from '../../actions/graphql'
+
+const fetchUserHasDevice = () =>
+  sendGraphqlQueryAddDataToStore('current', `{
+    me {
+      hasDevice
+    }
+  }`, {
+    currentUser: get('me')
+  })
 
 @prefetch(({ dispatch, params: { id }, query }) => {
   switch (query.expand) {
     case 'password':
       dispatch(toggleUserSettingsSection('account', true))
-      return dispatch(toggleUserSettingsSection('password', true))
+      dispatch(toggleUserSettingsSection('password', true))
+      break
     case 'prompts':
-      return dispatch(toggleUserSettingsSection('account', true))
+      dispatch(toggleUserSettingsSection('account', true))
+      break
     case undefined:
       break
     default:
-      return dispatch(toggleUserSettingsSection(query.expand, true))
+      dispatch(toggleUserSettingsSection(query.expand, true))
   }
+  return dispatch(fetchUserHasDevice())
 })
 @connect(state => ({
-  pending: get(state.pending, `${UPLOAD_IMAGE}.subject`),
+  pending: get(`${UPLOAD_IMAGE}.subject`, state.pending),
   expand: {},
   ...state.userSettingsEditor,
   currentUser: denormalizedCurrentUser(state)
@@ -152,7 +166,7 @@ export default class UserSettings extends React.Component {
 
   toggle (path) {
     let { currentUser } = this.props
-    this.update(path, !get(currentUser, path))
+    this.update(path, !get(path, currentUser))
   }
 
   updateMembership = (membership, path, value) => {
@@ -163,7 +177,7 @@ export default class UserSettings extends React.Component {
   }
 
   membershipToggle = (membership, path) => {
-    this.updateMembership(membership, path, !get(membership, path))
+    this.updateMembership(membership, path, !get(path, membership))
   }
 
   leaveCommunity = (communityId, name) => {
@@ -213,7 +227,7 @@ export default class UserSettings extends React.Component {
     const memberships = sortBy(currentUser.memberships, m => m.community.name)
     const hasToken = find(currentUser.linkedAccounts, a => a.provider_key === 'token')
     const { tokenCopied, tokenPending, tokenError, receivedToken, editing, edited, errors } = this.state
-    let { avatar_url, banner_url } = currentUser
+    let { avatar_url, banner_url, hasDevice } = currentUser
     if (!banner_url) banner_url = defaultBanner
     let {
       bio, location, url, facebook_url, twitter_name, linkedin_url
@@ -369,9 +383,13 @@ export default class UserSettings extends React.Component {
             </div>
           </div>}
         </Item>
+      </Section>}
+
+      <SectionLabel name='notifications' label='Notifications' {...{dispatch, expand}} />
+      {expand.notifications && <Section className='notifications'>
         <Item>
           <div className='half-column'>
-            <label>Receive email digests?</label>
+            <label>Receive email digests for new posts in your communities?</label>
             <div className='summary'>Choose how frequently you would like to receive email about new activity in your communities.</div>
           </div>
           <div className='half-column right-align'>
@@ -380,6 +398,26 @@ export default class UserSettings extends React.Component {
               <option value='weekly'>Weekly</option>
               <option value='never'>Never</option>
             </select>
+          </div>
+        </Item>
+        <Item>
+          <div className='half-column'>
+            <label>Receive notifications about new direct messages?</label>
+            <div className='summary'>Choose how you would like to be notified when someone messages you personally.</div>
+          </div>
+          <div className='half-column right-align'>
+            <select value={currentUser.settings.dm_notifications} onChange={event => this.update('settings.dm_notifications', event.target.value)} >
+              {hasDevice && <option value='push'>Push Notification</option>}
+              <option value='email'>Email</option>
+              {hasDevice && <option value='both'>Both</option>}
+              <option value='none'>None</option>
+              {!hasDevice && <option disabled>Install the Hylo mobile app to get push notifications</option>}
+            </select>
+          </div>
+        </Item>
+        <Item>
+          <div className='half-column'>
+            <div className='summary'>See the <a href='?expand=communities'>"Communities"</a> section to change notifications for an individual community.</div>
           </div>
         </Item>
       </Section>}
@@ -469,12 +507,12 @@ const MembershipSettings = ({ membership, toggle, leave }) => {
         <div className='notification-settings'>
           <p>Receive notifications:</p>
           <label>
-            <input type='checkbox' checked={get(membership, 'settings.send_email')}
+            <input type='checkbox' checked={get('settings.send_email', membership)}
               onChange={() => toggle(membership, 'settings.send_email')} />
             Email
           </label>
           <label>
-            <input type='checkbox' checked={get(membership, 'settings.send_push_notifications')}
+            <input type='checkbox' checked={get('settings.send_push_notifications', membership)}
               onChange={() => toggle(membership, 'settings.send_push_notifications')} />
             Mobile
           </label>

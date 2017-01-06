@@ -21,8 +21,6 @@ import decode from 'ent/decode'
 import cx from 'classnames'
 const { array, func, object } = React.PropTypes
 
-const shouldShowTag = tag => tag && tag !== 'event'
-
 const UndecoratedEventPostCard = ({ post, comments, community, isMobile, dispatch }, { currentUser }) => {
   const { starts_at, ends_at, user, id, name } = post
   const start = new Date(starts_at)
@@ -109,7 +107,7 @@ RSVPSelect.contextTypes = {currentUser: object, dispatch: func}
 
 const EventPost = (props, context) => {
   const { post, community, communities, comments, currentUser } = context
-  const { name, starts_at, ends_at, location, tag } = post
+  const { name, starts_at, ends_at, location } = post
   const description = presentDescription(post, community)
   const title = decode(name || '')
   const start = new Date(starts_at)
@@ -119,7 +117,6 @@ const EventPost = (props, context) => {
   return <div className='post event boxy-post'>
     <Header communities={communities} />
     <p className='title post-section'>{title}</p>
-    {shouldShowTag(tag) && <p className='hashtag'>#{tag}</p>}
 
     <div className='box'>
       {image && <div className='image'>

@@ -1,6 +1,6 @@
 import React from 'react'
 import { connect } from 'react-redux'
-import ToolTip from 'react-portal-tooltip'
+import PortalToolTip from 'react-portal-tooltip'
 import { get, omit, sortBy, flow, toPairs, keys, isEmpty } from 'lodash/fp'
 const { string, number, bool, object, func, array, oneOfType } = React.PropTypes
 import { updateCurrentUser, registerTooltip, unregisterTooltip } from '../actions'
@@ -10,21 +10,18 @@ export const activeTooltip = (currentUser, tooltips) => {
     get('settings.viewedTooltips'),
     keys
   )(currentUser)
+
   return flow(
     omit(viewed),
     toPairs,
-    sortBy(tt => tt[1]),
+    sortBy(get('1')),
     get('0.0')
   )(tooltips)
 }
 
-@connect(({ people, tooltips }, { id }) => {
-  const currentUser = get('current', people)
-  return {
-    active: activeTooltip(currentUser, tooltips) === id,
-    currentUser
-  }
-})
+@connect(({ people, tooltips }, { id }) => ({
+  active: activeTooltip(get('current', people), tooltips) === id
+}))
 export default class Tooltip extends React.Component {
   static propTypes = {
     id: string.isRequired,
@@ -35,7 +32,6 @@ export default class Tooltip extends React.Component {
     active: bool,
     position: string,
     arrow: string,
-    currentUser: object,
     dispatch: func
   }
 
@@ -56,7 +52,7 @@ export default class Tooltip extends React.Component {
 
   render () {
     const {
-      id, active, title, children, position, arrow, dispatch, currentUser, parentId
+      id, active, title, children, position, arrow, dispatch, parentId
     } = this.props
 
     const ttid = `tooltip-id-${id}`
@@ -69,17 +65,11 @@ export default class Tooltip extends React.Component {
     }
 
     const close = () => {
-      const settings = {
-        viewedTooltips: {
-          ...get('settings.viewedTooltips', currentUser),
-          [id]: true
-        }
-      }
-      dispatch(updateCurrentUser({settings}))
+      dispatch(updateCurrentUser({settings: {viewedTooltips: {[id]: true}}}))
     }
 
     return <span id={ttid}>
-      <ToolTip
+      <PortalToolTip
         active={active}
         parent={`#${parentId || ttid}`}
         position={position}
@@ -95,7 +85,7 @@ export default class Tooltip extends React.Component {
             <a onClick={() => close()}>Got it</a>
           </div>
         </div>}
-      </ToolTip>
+      </PortalToolTip>
     </span>
   }
 }

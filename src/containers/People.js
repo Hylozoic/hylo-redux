@@ -2,7 +2,7 @@ import React from 'react'
 import { prefetch } from 'react-fetcher'
 import { connect } from 'react-redux'
 import { debounce, includes, isEmpty } from 'lodash'
-import { map } from 'lodash/fp'
+import { get, replace, map } from 'lodash/fp'
 import { FETCH_PEOPLE } from '../actions'
 import { removeCommunityMember } from '../actions/communities'
 import { fetchPeople } from '../actions/fetchPeople'
@@ -26,11 +26,9 @@ const subject = 'community'
 const fetch = fetchWithCache(fetchPeople)
 
 const fetchPopularSkills = slug =>
-  sendGraphqlQuery('popular-skills', slug, `{
-    community(slug: "${slug}") {
-      popularSkills(first: 15)
-    }
-  }`)
+  sendGraphqlQuery('popular-skills', slug, `query ($slug: String) {
+    community(slug: $slug) { popularSkills(first: 15) }
+  }`, {slug})
 
 @prefetch(({ dispatch, params: { id }, query }) => {
   if (!id) id = 'all'
@@ -110,7 +108,7 @@ export default class People extends React.Component {
     if (error) return <AccessErrorMessage error={error} />
 
     // replacing hyphens with non-breaking hyphens
-    const popularSkills = map(skill => skill.replace('-', '‑'), community.popularSkills)
+    const popularSkills = map(replace('-', '‑'), get('popularSkills', community))
 
     const { search } = query
     const { slug } = community || {}

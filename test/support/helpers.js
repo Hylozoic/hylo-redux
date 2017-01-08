@@ -39,7 +39,7 @@ export const wait = (millis, cb) =>
 
 const isSpy = (func) => !!func.__spy
 
-export const spyify = (object, methodName, func) => {
+export const spyify = (object, methodName, func = () => {}) => {
   if (!isSpy(object[methodName])) object['_original' + methodName] = object[methodName]
 
   object[methodName] = spy((...args) => {

@@ -1,10 +1,10 @@
 import '../support'
-import React, { PropTypes } from 'react'
 import { mount } from 'enzyme'
 import { configureStore } from '../../../src/store'
+import React, { PropTypes } from 'react'
 import { reduce } from 'lodash'
-import ConnectedPostList from '../../../src/containers/ConnectedPostList'
 import PostPromptModule from '../../../src/components/PostPromptModule'
+import ConnectedPostList from '../../../src/containers/ConnectedPostList'
 
 let community = {
   id: '1',

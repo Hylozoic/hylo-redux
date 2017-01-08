@@ -1,17 +1,17 @@
 import '../support'
 import { mockify, unspyify, mockActionResponse } from '../../support/helpers'
 import { mount } from 'enzyme'
-import React from 'react'
+import React, { PropTypes } from 'react'
+import { configureStore } from '../../../src/store'
+
+import * as util from '../../../src/util'
+import { MemberRole } from '../../../src/models/community'
+import { updateCurrentUser } from '../../../src/actions'
+import ProfileSkillsModule from '../../../src/components/ProfileSkillsModule'
+import ProfileBioModule from '../../../src/components/ProfileBioModule'
 import CommunityPosts, {
   MIN_MEMBERS_FOR_SKILLS_MODULE, MIN_POSTS_FOR_POST_PROMPT_MODULE
 } from '../../../src/containers/community/CommunityPosts'
-import ProfileSkillsModule from '../../../src/components/ProfileSkillsModule'
-import ProfileBioModule from '../../../src/components/ProfileBioModule'
-import { configureStore } from '../../../src/store'
-import { MemberRole } from '../../../src/models/community'
-import { updateCurrentUser } from '../../../src/actions'
-
-import * as util from '../../../src/util'
 
 const community = {
   id: '1',
@@ -52,7 +52,7 @@ describe('CommunityPosts', () => {
     }
     return mount(<CommunityPosts {...props} />, {
       context: {store, currentUser: setupCurrentUser},
-      childContextTypes: {currentUser: React.PropTypes.object}
+      childContextTypes: {currentUser: PropTypes.object}
     })
   }
 

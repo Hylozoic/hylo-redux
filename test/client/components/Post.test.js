@@ -1,17 +1,18 @@
 import support from '../support'
 import { mocks } from '../../support'
 import { createElement, wait, mockActionResponse, mockify } from '../../support/helpers'
-import React from 'react'
-import { mount } from 'enzyme'
-import { configureStore } from '../../../src/store'
-import Post from '../../../src/components/Post'
 import {
   findRenderedDOMComponentWithClass,
   renderIntoDocument
 } from 'react-addons-test-utils'
-const { object, func } = React.PropTypes
+import { mount } from 'enzyme'
+import React from 'react'
 import { connect } from 'react-redux'
+import { configureStore } from '../../../src/store'
 import { completePost } from '../../../src/actions/posts'
+import Post from '../../../src/components/Post'
+
+const { object, func } = React.PropTypes
 
 const stripComments = markup => markup.replace(/<!--[^>]*-->/g, '')
 

@@ -40,7 +40,7 @@ describe('ProfileBioModule', () => {
     spyify(actions, 'updateCurrentUser')
     const saveButton = node.find('button').first()
     saveButton.simulate('click')
-    expect(actions.updateCurrentUser).to.have.been.called.with({ bio })
+    expect(actions.updateCurrentUser).to.have.been.called.with({bio})
   })
 
   const enterBio = (value) => {

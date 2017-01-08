@@ -10,10 +10,8 @@ describe('ProfileBioModule', () => {
 
   before(() => {
     window.FEATURE_FLAGS = { IN_FEED_PROFILE_COMPLETION_MODULES: 'on' }
-    const currentUser = {
-      id: '5', name: 'Honesty Counts', bio: null
-    }
-    const dispatch = spy()
+    const currentUser = { id: '5', name: 'Honesty Counts', bio: null }
+    let dispatch = spy()
     node = mount(<ProfileBioModule person={currentUser} />, {
       context: { dispatch },
       childContextTypes: { dispatch: PropTypes.func }

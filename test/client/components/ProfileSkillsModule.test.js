@@ -14,7 +14,7 @@ describe('ProfileSkillsModule', () => {
     window.FEATURE_FLAGS = { IN_FEED_PROFILE_COMPLETION_MODULES: 'on' }
     const currentUser = { id: '5', name: 'Honesty Counts', bio: null }
     const store = configureStore().store
-    const dispatch = spy()
+    let dispatch = spy()
     node = mount(<ProfileSkillsModule person={currentUser} />, {
       context: { store, dispatch },
       childContextTypes: { store: PropTypes.object, dispatch: PropTypes.func }

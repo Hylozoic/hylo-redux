@@ -77,10 +77,9 @@ export class CommunityPosts extends Component {
     let { location: { query }, dispatch, community, params: { id } } = this.props
     const { currentUser } = this.context
 
-    var module
+    let module
 
-    // remove the 'true' clause when done testing
-    if (true || groupUser(currentUser.id, 'In-Feed Engagement Modules') === 0) {
+    if (groupUser(currentUser.id, 'In-Feed Engagement Modules') === 0) {
       const showPopularSkills = community.memberCount >= MIN_MEMBERS_FOR_SKILLS_MODULE
       const showPostPrompt = community.postCount >= MIN_POSTS_FOR_POST_PROMPT_MODULE
 

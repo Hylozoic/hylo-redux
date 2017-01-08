@@ -1,7 +1,7 @@
 import React from 'react'
 import { showModal } from '../actions'
 import { coinToss } from '../util'
-import Icon from './icon'
+import Icon from './Icon'
 const { func, bool } = React.PropTypes
 import cx from 'classnames'
 

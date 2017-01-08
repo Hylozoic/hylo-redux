@@ -1,7 +1,7 @@
 import '../support'
-import { mockActionResponse } from '../../support/helpers'
+import { mockify, unspyify, mockActionResponse } from '../../support/helpers'
 import { mount } from 'enzyme'
-import React, { PropTypes } from 'react'
+import React from 'react'
 import CommunityPosts, {
   MIN_MEMBERS_FOR_SKILLS_MODULE, MIN_POSTS_FOR_POST_PROMPT_MODULE
 } from '../../../src/containers/community/CommunityPosts'
@@ -10,6 +10,8 @@ import ProfileBioModule from '../../../src/components/ProfileBioModule'
 import { configureStore } from '../../../src/store'
 import { MemberRole } from '../../../src/models/community'
 import { updateCurrentUser } from '../../../src/actions'
+
+import * as util from '../../../src/util'
 
 const community = {
   id: '1',
@@ -69,57 +71,48 @@ describe('CommunityPosts', () => {
     .to.equal('You are not a member of this community. Request to Join')
   })
 
-  it('displays the expected engagement modules', () => {
-    // Doesn't show any modules
-    let node = setupNode({
-      ...community,
-      memberCount: MIN_MEMBERS_FOR_SKILLS_MODULE - 1,
-      postCount: MIN_POSTS_FOR_POST_PROMPT_MODULE - 1
+  describe('EngagementModules', () => {
+    it('displays the correct engagement modules according to rules', () => {
+      let node = setupNode({...community,
+        memberCount: MIN_MEMBERS_FOR_SKILLS_MODULE - 1,
+        postCount: MIN_POSTS_FOR_POST_PROMPT_MODULE - 1
+      })
+      expect(node.find('.popular-skills').length).to.equal(0)
+      expect(node.find('.post-prompt').length).to.equal(0)
+
+      // Shows Popular Skills prompt
+      node = setupNode({...community,
+        memberCount: MIN_MEMBERS_FOR_SKILLS_MODULE,
+        postCount: MIN_POSTS_FOR_POST_PROMPT_MODULE - 1
+      })
+      expect(node.find('.popular-skills').length).to.equal(1)
+      expect(node.find('.post-prompt').length).to.equal(0)
+
+      // Shows Post Prompt
+      node = setupNode({...community,
+        memberCount: MIN_MEMBERS_FOR_SKILLS_MODULE - 1,
+        postCount: MIN_POSTS_FOR_POST_PROMPT_MODULE})
+      expect(node.find('.popular-skills').length).to.equal(0)
+      expect(node.find('.post-prompt').length).to.equal(1)
+
+      // Shows either module when minimums are met
+      mockify(util, 'coinToss', () => true)
+      node = setupNode({...community,
+        memberCount: MIN_MEMBERS_FOR_SKILLS_MODULE,
+        postCount: MIN_POSTS_FOR_POST_PROMPT_MODULE
+      })
+      expect(node.find('.popular-skills').length).to.equal(1)
+      expect(node.find('.post-prompt').length).to.equal(0)
+      unspyify(util, 'coinToss')
+      mockify(util, 'coinToss', () => false)
+      node = setupNode({...community,
+        memberCount: MIN_MEMBERS_FOR_SKILLS_MODULE,
+        postCount: MIN_POSTS_FOR_POST_PROMPT_MODULE
+      })
+      expect(node.find('.popular-skills').length).to.equal(0)
+      expect(node.find('.post-prompt').length).to.equal(1)
+      unspyify(util, 'coinToss')
     })
-    expect(node.find('.popular-skills').length).to.equal(0)
-    expect(node.find('.post-prompt').length).to.equal(0)
-
-    // Shows Popular Skills prompt
-    node = setupNode({
-      ...community,
-      memberCount: MIN_MEMBERS_FOR_SKILLS_MODULE,
-      postCount: MIN_POSTS_FOR_POST_PROMPT_MODULE - 1
-    })
-    expect(node.find('.popular-skills').length).to.equal(1)
-    expect(node.find('.post-prompt').length).to.equal(0)
-
-    // Shows Post Prompt
-    node = setupNode({
-      ...community,
-      memberCount: MIN_MEMBERS_FOR_SKILLS_MODULE - 1,
-      postCount: MIN_POSTS_FOR_POST_PROMPT_MODULE
-    })
-    expect(node.find('.popular-skills').length).to.equal(0)
-    expect(node.find('.post-prompt').length).to.equal(1)
-
-    // Shows at least one prompt randomly whene enough posts and memberships
-
-    // TODO: Need proper mocking setup (sinon?) to handle
-    //       mocking of cointoss
-
-    // mockify(CommunityPosts, 'coinToss', () => true)
-    // node = setupNode({
-    //   ...community,
-    //   memberCount: MIN_MEMBERS_FOR_SKILLS_MODULE,
-    //   postCount: MIN_POSTS_FOR_POST_PROMPT_MODULE
-    // })
-    // expect(node.find('.popular-skills').length).to.equal(1)
-    // expect(node.find('.post-prompt').length).to.equal(0)
-    // unspyify(CommunityPosts, 'coinToss')
-    // mockify(CommunityPosts, 'coinToss', () => false)
-    // node = setupNode({
-    //   ...community,
-    //   memberCount: MIN_MEMBERS_FOR_SKILLS_MODULE,
-    //   postCount: MIN_POSTS_FOR_POST_PROMPT_MODULE
-    // })
-    // expect(node.find('.popular-skills').length).to.equal(0)
-    // expect(node.find('.post-prompt').length).to.equal(1)
-    // unspyify(CommunityPosts, 'coinToss')
   })
 
   describe('ProfileCompletionModules', () => {

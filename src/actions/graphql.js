@@ -17,4 +17,4 @@ export function sendGraphqlQuery (subject, id, query, opts) {
 
 export const sendGraphqlQueryAddDataToStore = (id, query, addDataToStore) =>
   sendGraphqlQuery('add-data-to-store', id, query,
-    mapValues(fn => flow(get('data'), fn), {addDataToStore}))
+    {addDataToStore: mapValues(fn => flow(get('data'), fn), addDataToStore)})

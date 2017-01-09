@@ -42,6 +42,9 @@ const fetchUserHasDevice = () =>
     }
   })
 
+const iOSAppURL = 'https://itunes.apple.com/app/appName/id1002185140'
+const androidAppURL = 'https://play.google.com/store/apps/details?id=com.hylo.hyloandroid'
+
 @prefetch(({ dispatch, params: { id }, query }) => {
   switch (query.expand) {
     case 'password':
@@ -420,6 +423,13 @@ export default class UserSettings extends React.Component {
               <option value='none'>None</option>
               {!hasDevice && <option disabled>Install the Hylo mobile app to get push notifications</option>}
             </select>
+          </div>
+        </Item>
+        <Item>
+          <div className='half-column'>
+            <div className='summary'>
+              Download our <a href={iOSAppURL} target='_blank'>iOS</a> or <a href={androidAppURL} target='_blank'>Android</a> app to receive push notifications.
+            </div>
           </div>
         </Item>
         <Item>

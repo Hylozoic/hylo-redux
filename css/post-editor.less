@@ -263,6 +263,17 @@
     .post-left-padding(@mobile-side-margin);
     .make-row;
 
+    &.events-editor {
+      > div {
+        .make-sm-column(4);
+
+        .icon {
+          padding-right: 5px;
+          margin-right: 5px;
+        }
+      }
+    }
+
     > div {
       .make-sm-column(6);
       line-height: 29px;
@@ -305,6 +316,7 @@
       width: auto;
       input[type='text'] {
         padding-left: 0;
+        padding-right: 0;
         box-shadow: none;
         height: auto;
       }

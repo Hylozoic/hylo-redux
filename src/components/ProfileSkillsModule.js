@@ -1,5 +1,5 @@
 import React, { Component, PropTypes } from 'react'
-import { updateCurrentUser } from '../actions'
+import { updateCurrentUser, notify } from '../actions'
 import ListItemTagInput from './ListItemTagInput'
 
 export default class ProfileSkillsModule extends Component {
@@ -30,7 +30,10 @@ export default class ProfileSkillsModule extends Component {
   save = () => {
     const { tags } = this.state
     const { dispatch } = this.context
-    return dispatch(updateCurrentUser({tags}))
+    return Promise.all([
+      dispatch(updateCurrentUser({tags})),
+      dispatch(notify('You\'ve got skills!', {type: 'info'}))
+    ])
   }
 
   render () {

@@ -26,7 +26,7 @@ export default class EventPostEditor extends React.Component {
       if (time._isAMomentObject) update({[name]: time.toISOString()})
     }
 
-    return <div className='more-fields'>
+    return <div className='more-fields events-editor'>
       <div className='start-time'>
         <Icon name='Calendar'/>
         <DatetimePicker inputProps={{placeholder: 'start time'}}

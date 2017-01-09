@@ -29,32 +29,31 @@ import { openPopup, setupPopupCallback, PROFILE_CONTEXT } from '../../util/auth'
 import { EDITED_USER_SETTINGS, trackEvent } from '../../util/analytics'
 import { preventSpaces } from '../../util/textInput'
 import Icon from '../../components/Icon'
-import { sendGraphqlQueryAddDataToStore } from '../../actions/graphql'
+import { sendGraphqlQuery } from '../../actions/graphql'
 
 const fetchUserHasDevice = () =>
-  sendGraphqlQueryAddDataToStore('current', `{
+  sendGraphqlQuery(`{
     me {
       hasDevice
     }
   }`, {
-    currentUser: get('me')
+    addDataToStore: {
+      currentUser: get('data.me')
+    }
   })
 
 @prefetch(({ dispatch, params: { id }, query }) => {
   switch (query.expand) {
     case 'password':
       dispatch(toggleUserSettingsSection('account', true))
-      dispatch(toggleUserSettingsSection('password', true))
-      break
+      return dispatch(toggleUserSettingsSection('password', true))
     case 'prompts':
-      dispatch(toggleUserSettingsSection('account', true))
-      break
+      return dispatch(toggleUserSettingsSection('account', true))
     case undefined:
       break
     default:
-      dispatch(toggleUserSettingsSection(query.expand, true))
+      return dispatch(toggleUserSettingsSection(query.expand, true))
   }
-  return dispatch(fetchUserHasDevice())
 })
 @connect(state => ({
   pending: get(`${UPLOAD_IMAGE}.subject`, state.pending),
@@ -83,6 +82,14 @@ export default class UserSettings extends React.Component {
         ...this.state.editing,
         password: true
       }})
+    }
+  }
+
+  componentWillReceiveProps (nextProps) {
+    const { expand, dispatch } = this.props
+    if (expand.notifications) return
+    if (nextProps.expand.notifications) {
+      dispatch(fetchUserHasDevice())
     }
   }
 

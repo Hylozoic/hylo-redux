@@ -32,7 +32,7 @@ export default class ProfileSkillsModule extends Component {
     const { dispatch } = this.context
     return Promise.all([
       dispatch(updateCurrentUser({tags})),
-      dispatch(notify('You\'ve got skills!', {type: 'info'}))
+      dispatch(notify('Skills added successfully.', {type: 'info'}))
     ])
   }
 

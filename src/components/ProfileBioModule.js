@@ -43,7 +43,7 @@ export default class ProfileBioModule extends Component {
     trackEvent(ADDED_BIO, {context: 'onboarding'})
     return Promise.all([
       dispatch(updateCurrentUser({bio: value})),
-      dispatch(notify('Thanks for sharing!', {type: 'info'}))
+      dispatch(notify('Bio updated successfully.', {type: 'info'}))
     ])
   }
 

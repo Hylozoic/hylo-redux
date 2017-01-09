@@ -62,7 +62,7 @@ export class Post extends React.Component {
 
   static contextTypes = {currentUser: object}
 
-  static childContextTypes = {post: object, dispatch: func, currentUser: object}
+  static childContextTypes = {post: object}
 
   getChildContext () {
     return {post: this.props.post}

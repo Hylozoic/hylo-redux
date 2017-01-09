@@ -218,7 +218,7 @@ describe('Post', () => {
       .to.contain('if this request has been completed')
     })
 
-    it('requests contributors from all community associated to the post', () => {
+    it('requests contributors from all communities associated with a post', () => {
       node.find('.toggle').simulate('change')
       actions.typeahead = spy(actions.typeahead)
       node.find('.request-complete-people-input input').simulate('change', {

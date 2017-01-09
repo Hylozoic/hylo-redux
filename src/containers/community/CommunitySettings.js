@@ -164,14 +164,10 @@ export default class CommunitySettings extends React.Component {
   toggleSection = (section, open) => {
     const { dispatch, community: { slug } } = this.props
     let { expand } = this.state
-    if (section === 'join_requests') {
-      section = 'access'
-    }
     if (open || !expand[section]) {
       switch (section) {
         case 'access':
           dispatch(fetchInvitations(slug))
-          dispatch(fetchJoinRequests(slug))
           break
         case 'moderators':
           dispatch(fetchCommunityModerators(slug))

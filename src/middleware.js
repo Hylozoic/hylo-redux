@@ -2,7 +2,7 @@ import { inspect } from 'util'
 import { fetchJSON } from './util/api'
 import { debug } from './util/logging'
 import { blue } from 'chalk'
-import { find, forEach, values, get, has, omit } from 'lodash'
+import { find, forIn, values, get, has, omit } from 'lodash'
 import { _PENDING, SET_STATE, addDataToStore } from './actions'
 
 // TODO cache expiration
@@ -46,7 +46,7 @@ export const addDataToStoreMiddleware = store => next => action => {
   if (type.endsWith(_PENDING) || isPromise(payload)) return next(action)
 
   if (!error && meta && meta.addDataToStore) {
-    forEach(meta.addDataToStore, (fn, bucket) => {
+    forIn(meta.addDataToStore, (fn, bucket) => {
       const data = fn(payload)
       if (data) store.dispatch(addDataToStore(bucket, data, type))
     })

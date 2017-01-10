@@ -23,9 +23,9 @@ describe('UserSettings', () => {
     }).store
     const props = {query: {expand: 'communities'}}
 
-    const node = mount(<UserSettings {...props}/>, {context: {store}})
+    const node = mount(<UserSettings {...props} />, {context: {store}})
     expect(node.find('.section-label').map(n => n.text().trim()))
-    .to.deep.equal(['Profile', 'Account', 'Communities'])
+    .to.deep.equal(['Profile', 'Account', 'Notifications', 'Communities'])
 
     store.dispatch(toggleUserSettingsSection('communities', true))
 

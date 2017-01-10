@@ -26,7 +26,7 @@ const { array, bool, object, string, func } = React.PropTypes
 const subject = 'community'
 
 const showTaggedPosts = post =>
-  post.tag && post.tag !== 'event' && includes(['event', 'project'], post.type)
+  post.tag && post.type === 'project'
 
 @prefetch(({ store, dispatch, params: { id }, query }) =>
   dispatch(fetchPost(id))
@@ -155,7 +155,7 @@ const setupPage = (store, id, query, action) => {
     cacheHit && post.numComments > 3 &&
       dispatch(fetchComments(id, {refresh: true})).then(scroll),
 
-    // if this is an event or project, fetch the first page of results for
+    // if this is a project, fetch the first page of results for
     // tagged posts.
     showTaggedPosts(post) && dispatch(fetch(subject, communityId,
       {...query, tag: post.tag, omit: post.id})),

@@ -35,6 +35,11 @@ const peopleReducer = (state = {}, action) => {
     case ADD_DATA_TO_STORE:
       if (meta.bucket === 'people') {
         return mergeList(state, payload.map(normalize), 'id')
+      } else if (meta.bucket === 'currentUser') {
+        return {
+          ...state,
+          current: {...state.current, ...normalize(payload)}
+        }
       }
       break
     case FETCH_PERSON:

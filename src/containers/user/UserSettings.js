@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 import validator from 'validator'
 import React from 'react'
 import { connect } from 'react-redux'
@@ -19,7 +20,8 @@ import { leaveCommunity } from '../../actions/communities'
 import { uploadImage } from '../../actions/uploadImage'
 import A from '../../components/A'
 import { formatDate } from '../../util/text'
-import { debounce, find, get, sortBy, throttle, set } from 'lodash'
+import { debounce, find, sortBy, throttle, set } from 'lodash'
+import { get } from 'lodash/fp'
 import ListItemTagInput from '../../components/ListItemTagInput'
 import { denormalizedCurrentUser, hasFeature } from '../../models/currentUser'
 import { avatarUploadSettings, bannerUploadSettings, defaultBanner } from '../../models/person'
@@ -27,6 +29,21 @@ import { openPopup, setupPopupCallback, PROFILE_CONTEXT } from '../../util/auth'
 import { EDITED_USER_SETTINGS, trackEvent } from '../../util/analytics'
 import { preventSpaces } from '../../util/textInput'
 import Icon from '../../components/Icon'
+import { sendGraphqlQuery } from '../../actions/graphql'
+
+const fetchUserHasDevice = () =>
+  sendGraphqlQuery(`{
+    me {
+      hasDevice
+    }
+  }`, {
+    addDataToStore: {
+      currentUser: get('data.me')
+    }
+  })
+
+const iOSAppURL = 'https://itunes.apple.com/app/appName/id1002185140'
+const androidAppURL = 'https://play.google.com/store/apps/details?id=com.hylo.hyloandroid'
 
 @prefetch(({ dispatch, params: { id }, query }) => {
   switch (query.expand) {
@@ -42,7 +59,7 @@ import Icon from '../../components/Icon'
   }
 })
 @connect(state => ({
-  pending: get(state.pending, `${UPLOAD_IMAGE}.subject`),
+  pending: get(`${UPLOAD_IMAGE}.subject`, state.pending),
   expand: {},
   ...state.userSettingsEditor,
   currentUser: denormalizedCurrentUser(state)
@@ -68,6 +85,14 @@ export default class UserSettings extends React.Component {
         ...this.state.editing,
         password: true
       }})
+    }
+  }
+
+  componentWillReceiveProps (nextProps) {
+    const { expand, dispatch } = this.props
+    if (expand.notifications) return
+    if (nextProps.expand.notifications) {
+      dispatch(fetchUserHasDevice())
     }
   }
 
@@ -151,7 +176,7 @@ export default class UserSettings extends React.Component {
 
   toggle (path) {
     let { currentUser } = this.props
-    this.update(path, !get(currentUser, path))
+    this.update(path, !get(path, currentUser))
   }
 
   updateMembership = (membership, path, value) => {
@@ -162,7 +187,7 @@ export default class UserSettings extends React.Component {
   }
 
   membershipToggle = (membership, path) => {
-    this.updateMembership(membership, path, !get(membership, path))
+    this.updateMembership(membership, path, !get(path, membership))
   }
 
   leaveCommunity = (communityId, name) => {
@@ -212,14 +237,14 @@ export default class UserSettings extends React.Component {
     const memberships = sortBy(currentUser.memberships, m => m.community.name)
     const hasToken = find(currentUser.linkedAccounts, a => a.provider_key === 'token')
     const { tokenCopied, tokenPending, tokenError, receivedToken, editing, edited, errors } = this.state
-    let { avatar_url, banner_url } = currentUser
+    let { avatar_url, banner_url, hasDevice } = currentUser
     if (!banner_url) banner_url = defaultBanner
     let {
       bio, location, url, facebook_url, twitter_name, linkedin_url
     } = {...currentUser, ...editing}
 
     return <div id='user-settings' className='form-sections simple-page'>
-      <SectionLabel name='profile' label='Profile' {...{dispatch, expand}}/>
+      <SectionLabel name='profile' label='Profile' {...{dispatch, expand}} />
       {expand.profile && <Section className='profile'>
         <Item>
           <div className='half-column'>
@@ -234,8 +259,8 @@ export default class UserSettings extends React.Component {
               <div className={cx('form-group', {'has-error': errors.name})}>
                 <input type='text' ref='name' className='name form-control'
                   value={edited.name}
-                  onChange={this.setName}/>
-                </div>
+                  onChange={this.setName} />
+              </div>
             </form>
             <div className='buttons'>
               <button type='button' onClick={() => this.cancelEdit('name')}>Cancel</button>
@@ -248,7 +273,7 @@ export default class UserSettings extends React.Component {
             <label>Profile image</label>
           </div>
           <div className='half-column right-align'>
-            <div className='medium-avatar' style={{backgroundImage: `url(${avatar_url})`}}/>
+            <div className='medium-avatar' style={{backgroundImage: `url(${avatar_url})`}} />
             <button type='button' onClick={() => this.attachImage('avatar_url')}
               disabled={pending === 'user-avatar'}>
               {pending === 'user-avatar' ? 'Please wait...' : 'Change'}
@@ -261,20 +286,20 @@ export default class UserSettings extends React.Component {
           </div>
           <div className='third-column'>
             <h5>Facebook</h5>
-            <LinkButton disabled={!facebook_url} href={facebook_url} icon='facebook'/>
+            <LinkButton disabled={!facebook_url} href={facebook_url} icon='facebook' />
             <button onClick={() => openPopup('facebook', PROFILE_CONTEXT)}>
               {facebook_url ? 'Change' : 'Connect'}
             </button>
           </div>
           <div className='third-column'>
             <h5>Twitter</h5>
-            <LinkButton disabled={!twitter_name} href={`https://twitter.com/${twitter_name}`} icon='twitter'/>
+            <LinkButton disabled={!twitter_name} href={`https://twitter.com/${twitter_name}`} icon='twitter' />
             <input type='text' className='form-control' value={twitter_name}
-              onChange={this.updateTyped('twitter_name')}/>
+              onChange={this.updateTyped('twitter_name')} />
           </div>
           <div className='third-column'>
             <h5>LinkedIn</h5>
-            <LinkButton disabled={!linkedin_url} href={linkedin_url} icon='linkedin'/>
+            <LinkButton disabled={!linkedin_url} href={linkedin_url} icon='linkedin' />
             <button onClick={() => openPopup('linkedin', PROFILE_CONTEXT)}>
               {linkedin_url ? 'Change' : 'Connect'}
             </button>
@@ -283,7 +308,7 @@ export default class UserSettings extends React.Component {
         <Item>
           <div className='full-column'>
             <label>Banner</label>
-            <div className='banner' style={{backgroundImage: `url(${banner_url})`}}></div>
+            <div className='banner' style={{backgroundImage: `url(${banner_url})`}} />
           </div>
           <div className='full-column right-align'>
             <button type='button' onClick={() => this.attachImage('banner_url')}
@@ -296,33 +321,33 @@ export default class UserSettings extends React.Component {
           <div className='full-column'>
             <label>About me</label>
             <textarea className='form-control short' value={bio}
-              onChange={this.updateTyped('bio')}></textarea>
+              onChange={this.updateTyped('bio')} />
           </div>
         </Item>
         <Item>
           <div className='full-column'>
             <label>My skills</label>
             <ListItemTagInput type='tags' person={currentUser}
-              update={this.update} filter={preventSpaces} context='profile'/>
+              update={this.update} filter={preventSpaces} context='profile' />
           </div>
         </Item>
         <Item>
           <div className='full-column'>
             <label>My website</label>
             <input className='form-control' type='text'
-              defaultValue={url} onChange={this.updateTyped('url')}/>
+              defaultValue={url} onChange={this.updateTyped('url')} />
           </div>
         </Item>
         <Item>
           <div className='full-column'>
             <label>My geographical location</label>
             <input className='form-control' type='text'
-              defaultValue={location} onChange={this.updateTyped('location')}/>
+              defaultValue={location} onChange={this.updateTyped('location')} />
           </div>
         </Item>
       </Section>}
 
-      <SectionLabel name='account' label='Account' {...{dispatch, expand}}/>
+      <SectionLabel name='account' label='Account' {...{dispatch, expand}} />
       {expand.account && <Section className='email'>
         <Item>
           <div className='half-column'>
@@ -337,8 +362,8 @@ export default class UserSettings extends React.Component {
               <div className={cx('form-group', {'has-error': errors.email})}>
                 <input type='text' ref='email' className='email form-control'
                   value={edited.email}
-                  onChange={this.setEmail}/>
-                </div>
+                  onChange={this.setEmail} />
+              </div>
             </form>
             <div className='buttons'>
               <button type='button' onClick={() => this.cancelEdit('email')}>Cancel</button>
@@ -356,11 +381,11 @@ export default class UserSettings extends React.Component {
           {editing.password && <div className='half-column right-align'>
             <form name='passwordForm'>
               <div className={cx('form-group', {'has-error': errors.password})}>
-              <p className='help'>Enter a new password.</p>
+                <p className='help'>Enter a new password.</p>
                 <input type='password' ref='password' className='password form-control'
                   value={edited.password}
-                  onChange={this.setPassword}/>
-                </div>
+                  onChange={this.setPassword} />
+              </div>
             </form>
             <div className='buttons'>
               <button type='button' onClick={() => this.cancelEdit('password')}>Cancel</button>
@@ -368,9 +393,13 @@ export default class UserSettings extends React.Component {
             </div>
           </div>}
         </Item>
+      </Section>}
+
+      <SectionLabel name='notifications' label='Notifications' {...{dispatch, expand}} />
+      {expand.notifications && <Section className='notifications'>
         <Item>
           <div className='half-column'>
-            <label>Receive email digests?</label>
+            <label>Receive email digests for new posts in your communities?</label>
             <div className='summary'>Choose how frequently you would like to receive email about new activity in your communities.</div>
           </div>
           <div className='half-column right-align'>
@@ -381,14 +410,41 @@ export default class UserSettings extends React.Component {
             </select>
           </div>
         </Item>
+        <Item>
+          <div className='half-column'>
+            <label>Receive notifications about new direct messages?</label>
+            <div className='summary'>Choose how you would like to be notified when someone messages you personally.</div>
+          </div>
+          <div className='half-column right-align'>
+            <select value={currentUser.settings.dm_notifications} onChange={event => this.update('settings.dm_notifications', event.target.value)} >
+              {hasDevice && <option value='push'>Push Notification</option>}
+              <option value='email'>Email</option>
+              {hasDevice && <option value='both'>Both</option>}
+              <option value='none'>None</option>
+              {!hasDevice && <option disabled>Install the Hylo mobile app to get push notifications</option>}
+            </select>
+          </div>
+        </Item>
+        <Item>
+          <div className='half-column'>
+            <div className='summary'>
+              Download our <a href={iOSAppURL} target='_blank'>iOS</a> or <a href={androidAppURL} target='_blank'>Android</a> app to receive push notifications.
+            </div>
+          </div>
+        </Item>
+        <Item>
+          <div className='half-column'>
+            <div className='summary'>See the <a href='?expand=communities'>"Communities"</a> section to change notifications for an individual community.</div>
+          </div>
+        </Item>
       </Section>}
 
-      <SectionLabel name='communities' label='Communities' {...{dispatch, expand}}/>
+      <SectionLabel name='communities' label='Communities' {...{dispatch, expand}} />
       {expand.communities && <Section className='communities'>
         {memberships.map(membership => <MembershipSettings key={membership.id}
           membership={membership}
           toggle={this.membershipToggle}
-          leave={this.leaveCommunity}/>)}
+          leave={this.leaveCommunity} />)}
         {memberships.length === 0 && <Item>
           <div className='full-column'>
             <p>You do not belong to any communities yet.</p>
@@ -397,7 +453,7 @@ export default class UserSettings extends React.Component {
       </Section>}
 
       {hasFeature(currentUser, PAYMENT_SETTINGS) && <div>
-        <SectionLabel name='payment' label='Payment Details' {...{dispatch, expand}}/>
+        <SectionLabel name='payment' label='Payment Details' {...{dispatch, expand}} />
         {expand.payment && <Section className='payment'>
           <Item>
             <div className='full-column'>
@@ -406,9 +462,9 @@ export default class UserSettings extends React.Component {
           </Item>
         </Section>}
       </div>}
-      
+
       {hasFeature(currentUser, GENERATE_TOKEN) && <div>
-        <SectionLabel name='developer' label='API Access' {...{dispatch, expand}}/>
+        <SectionLabel name='developer' label='API Access' {...{dispatch, expand}} />
         {expand.developer && <Section className='apiAccess'>
           <Item>
             <div className='full-column'>
@@ -436,7 +492,7 @@ export default class UserSettings extends React.Component {
 const SectionLabel = ({ name, label, dispatch, expand }) => {
   return <div className='section-label'
     onClick={() => dispatch(toggleUserSettingsSection(name))}>
-    {label} <i className={cx({'icon-down': expand[name], 'icon-right': !expand[name]})}></i>
+    {label} <i className={cx({'icon-down': expand[name], 'icon-right': !expand[name]})} />
   </div>
 }
 
@@ -448,7 +504,7 @@ const Item = ({className, children}) =>
 
 const LinkButton = ({ href, icon, ...props }) =>
   <a {...props} className='button' href={href} target='_blank'>
-    <Icon name={icon}/>
+    <Icon name={icon} />
   </a>
 
 const MembershipSettings = ({ membership, toggle, leave }) => {
@@ -468,13 +524,13 @@ const MembershipSettings = ({ membership, toggle, leave }) => {
         <div className='notification-settings'>
           <p>Receive notifications:</p>
           <label>
-            <input type='checkbox' checked={get(membership, 'settings.send_email')}
-              onChange={() => toggle(membership, 'settings.send_email')}/>
+            <input type='checkbox' checked={get('settings.send_email', membership)}
+              onChange={() => toggle(membership, 'settings.send_email')} />
             Email
           </label>
           <label>
-            <input type='checkbox' checked={get(membership, 'settings.send_push_notifications')}
-              onChange={() => toggle(membership, 'settings.send_push_notifications')}/>
+            <input type='checkbox' checked={get('settings.send_push_notifications', membership)}
+              onChange={() => toggle(membership, 'settings.send_push_notifications')} />
             Mobile
           </label>
         </div>

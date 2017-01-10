@@ -48,7 +48,7 @@ const withSuggestedTag = (payload, state, id) => {
   const postEdit = state[id] || {}
   if (postEdit.id ||
     postEdit.tagEdited ||
-    !includes(['event', 'project'], postEdit.type)) return payload
+    postEdit.type !== 'project') return payload
 
   return {
     tag: suggestedTag(payload.name || postEdit.name),

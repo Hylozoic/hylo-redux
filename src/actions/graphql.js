@@ -1,8 +1,7 @@
-import { mapValues, get, flow } from 'lodash/fp'
 import { SEND_GRAPHQL_QUERY } from './index'
 
-export function sendGraphqlQuery (subject, id, query, opts) {
-  const { variables, addDataToStore } = opts
+export function sendGraphqlQuery (query, opts) {
+  const { variables, addDataToStore, subject, id } = opts
   return {
     type: SEND_GRAPHQL_QUERY,
     payload: {
@@ -14,7 +13,3 @@ export function sendGraphqlQuery (subject, id, query, opts) {
     meta: {subject, id, addDataToStore} // these are provided so reducers know what to do
   }
 }
-
-export const sendGraphqlQueryAddDataToStore = (id, query, addDataToStore) =>
-  sendGraphqlQuery('add-data-to-store', id, query,
-    {addDataToStore: mapValues(fn => flow(get('data'), fn), addDataToStore)})

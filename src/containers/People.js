@@ -26,9 +26,13 @@ const subject = 'community'
 const fetch = fetchWithCache(fetchPeople)
 
 const fetchPopularSkills = slug =>
-  sendGraphqlQuery('popular-skills', slug, `query ($slug: String) {
+  sendGraphqlQuery(`query ($slug: String) {
     community(slug: $slug) { popularSkills(first: 15) }
-  }`, {slug})
+  }`, {
+    subject: 'popular-skills',
+    id: slug,
+    variables: {slug}
+  })
 
 @prefetch(({ dispatch, params: { id }, query }) => {
   if (!id) id = 'all'

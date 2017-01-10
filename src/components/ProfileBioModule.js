@@ -1,5 +1,5 @@
 import React, { Component, PropTypes } from 'react'
-import { updateCurrentUser } from '../actions'
+import { updateCurrentUser, notify } from '../actions'
 import { trackEvent, ADDED_BIO } from '../util/analytics'
 
 const MIN_LENGTH = 1
@@ -41,7 +41,10 @@ export default class ProfileBioModule extends Component {
     const { value } = this.state
     const { dispatch } = this.context
     trackEvent(ADDED_BIO, {context: 'onboarding'})
-    return dispatch(updateCurrentUser({bio: value}))
+    return Promise.all([
+      dispatch(updateCurrentUser({bio: value})),
+      dispatch(notify('Bio updated successfully.', {type: 'info'}))
+    ])
   }
 
   render () {

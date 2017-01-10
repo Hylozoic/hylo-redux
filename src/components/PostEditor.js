@@ -82,7 +82,6 @@ export class PostEditor extends React.PureComponent {
     onCancel: func,
     imagePending: bool,
     type: string,
-    tag: string,
     currentCommunitySlug: string,
     editingTagDescriptions: bool,
     creatingTagAndDescription: bool,
@@ -103,9 +102,8 @@ export class PostEditor extends React.PureComponent {
 
   componentDidMount () {
     // initialize the communities list when opening the editor in a community
-    const { community, postEdit: { communities }, tag } = this.props
+    const { community, postEdit: { communities } } = this.props
     if (community && isEmpty(communities)) this.addCommunity(community)
-    if (tag) this.updateStore({tag})
     this.refs.title.focus()
   }
 
@@ -140,7 +138,7 @@ export class PostEditor extends React.PureComponent {
 
   validate () {
     let { postEdit } = this.props
-    const { title, subeditor } = this.refs
+    const { title } = this.refs
 
     if (!postEdit.name) {
       window.alert('The title of a post cannot be blank.')
@@ -151,11 +149,6 @@ export class PostEditor extends React.PureComponent {
     if (isEmpty(postEdit.community_ids)) {
       window.alert('Please pick at least one community.')
       return Promise.resolve(false)
-    }
-
-    if (subeditor) {
-      const subvalidate = subeditor.validate || subeditor.getWrappedInstance().validate
-      return Promise.resolve(subvalidate())
     }
 
     return Promise.resolve(true)

@@ -520,7 +520,7 @@ ul.posts {
       display: block !important;
     }
 
-    .avatar-list, .rsvp, .hashtag-segment {
+    .avatar-list, .rsvp {
       display: none !important;
     }
   });
@@ -694,12 +694,6 @@ ul.posts {
 }
 
 .post.boxy-post {
-  > .hashtag {
-    margin-top: -@p-bottom-margin;
-    .post-left-margin;
-    color: @damian-green;
-  }
-
   .box {
     .non-mobile({
       border: 1px solid @post-border;
@@ -1166,13 +1160,6 @@ ul.posts {
   .help-text {
     font-size: 12px;
   }
-}
-
-.other-posts-label {
-  .mobile({
-    margin-left: @mobile-side-margin;
-    margin-right: @mobile-side-margin;
-  });
 }
 
 .show-more {

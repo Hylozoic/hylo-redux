@@ -25,9 +25,6 @@ const { array, bool, object, string, func } = React.PropTypes
 
 const subject = 'community'
 
-const showTaggedPosts = post =>
-  post.tag && post.type === 'project'
-
 @prefetch(({ store, dispatch, params: { id }, query }) =>
   dispatch(fetchPost(id))
   .then(action =>
@@ -84,15 +81,11 @@ export default class SinglePost extends React.Component {
       <CoverImagePage id='single-post' image={get('banner_url', community)}>
         {editing ? <PostEditor post={post} expanded/> : showPost(post)}
 
-        {showTaggedPosts(post) && <div>
-          {currentUser && <PostEditor community={community} tag={post.tag}/>}
-          <p className='meta other-posts-label'>
-            Other posts for&nbsp;
-            <span className='hashtag'>#{post.tag}</span>
-          </p>
+        {post.type === 'project' && <div>
+          {currentUser && <PostEditor community={community}/>}
           {community && <ConnectedPostList subject={subject} id={community.id}
-            omit={post.id}
-            query={{...query, tag: post.tag}}/>}
+            query={{...query, parent_post_id: post.id}}
+            noPostsMessage=''/>}
         </div>}
       </CoverImagePage>
     </div>
@@ -155,10 +148,9 @@ const setupPage = (store, id, query, action) => {
     cacheHit && post.numComments > 3 &&
       dispatch(fetchComments(id, {refresh: true})).then(scroll),
 
-    // if this is a project, fetch the first page of results for
-    // tagged posts.
-    showTaggedPosts(post) && dispatch(fetch(subject, communityId,
-      {...query, tag: post.tag, omit: post.id})),
+    // if this is a project, fetch the first page of results for child posts.
+    post.type === 'project' && dispatch(fetch(subject, communityId,
+      {...query, parent_post_id: post.id})),
 
     get('action', query) === 'unfollow' && currentUser &&
       dispatch(unfollowPost(post.id, currentUser.id)).then(({ error }) => !error &&

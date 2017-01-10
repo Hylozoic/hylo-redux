@@ -14,16 +14,16 @@ export default class PostPromptModule extends React.PureComponent {
 
   constructor (props) {
     super(props)
-    this.state = {open: false}
+    // store tag here so it doesn't change every time the component is rendered
+    this.state = {open: false, tag: coinToss() ? 'offer' : 'request'}
   }
 
   render () {
     let title, body
 
     const { dispatch, isMobile } = this.context
-    const { open } = this.state
+    const { open, tag } = this.state
 
-    const tag = coinToss() ? 'offer' : 'request'
     const openPostEditor = () => dispatch(showModal('post-editor', {tag}))
 
     switch (tag) {

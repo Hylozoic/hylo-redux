@@ -1,7 +1,7 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { get, flow, pick, map } from 'lodash/fp'
-import { sendGraphqlQueryAddDataToStore } from '../actions/graphql'
+import { sendGraphqlQuery } from '../actions/graphql'
 import { connectedListProps } from '../util/caching'
 import Avatar from './Avatar'
 import A from './A'
@@ -10,8 +10,8 @@ import { peopleUrl } from '../routes'
 const { func, object, array } = React.PropTypes
 
 const fetchPopularSkills = slug =>
-  sendGraphqlQueryAddDataToStore(slug, `{
-    community(slug: "${slug}") {
+  sendGraphqlQuery(`query ($slug: String) {
+    community(slug: $slug) {
       slug
       popularSkills(first: 4)
       members(first: 3) {
@@ -20,17 +20,21 @@ const fetchPopularSkills = slug =>
       }
     }
   }`, {
-    communities: flow(get('community'), pick(['slug', 'popularSkills']), c => [c]),
-    people: get('community.members'),
-    peopleByQuery: flow(
-      get('community.members'),
-      map('id'),
-      ids => ({[`subject=community&id=${slug}`]: ids}))
+    id: slug,
+    variables: {slug},
+    addDataToStore: {
+      communities: flow(get('data.community'), pick(['slug', 'popularSkills']), c => [c]),
+      people: get('data.community.members'),
+      peopleByQuery: flow(
+        get('data.community.members'),
+        map('id'),
+        ids => ({[`subject=community&id=${slug}`]: ids}))
+    }
   })
 
 @connect((state, { community }) =>
   connectedListProps(state, {subject: 'community', id: community.slug}, 'people'))
-export default class PopularSkillsModule extends React.PureComponent {
+export default class PopularSkillsModule extends React.Component {
 
   static propTypes = {
     people: array,

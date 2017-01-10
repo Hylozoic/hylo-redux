@@ -48,6 +48,12 @@ export class CommunityPosts extends Component {
     return {community}
   }
 
+  constructor (props) {
+    super(props)
+    // store this here so it doesn't change every time the component is rendered
+    this.state = {moduleChoice: coinToss()}
+  }
+
   requestToJoin (opts) {
     const { community, dispatch } = this.props
     const { currentUser } = this.context
@@ -83,6 +89,8 @@ export class CommunityPosts extends Component {
       const showPopularSkills = community.memberCount >= MIN_MEMBERS_FOR_SKILLS_MODULE
       const showPostPrompt = community.postCount >= MIN_POSTS_FOR_POST_PROMPT_MODULE
 
+      const { moduleChoice } = this.state
+
       module = {
         id: -1,
         type: 'module'
@@ -90,7 +98,7 @@ export class CommunityPosts extends Component {
 
       if (showPopularSkills) {
         if (showPostPrompt) {
-          module.component = coinToss()
+          module.component = moduleChoice
           ? <PopularSkillsModule community={community} />
           : <PostPromptModule />
         } else {
@@ -122,12 +130,16 @@ export class CommunityPosts extends Component {
 }
 
 const fetchCommunityStats = slug =>
-  sendGraphqlQuery('community-stats', slug, `{
-    community(slug: "${slug}") {
+  sendGraphqlQuery(`query ($slug: String) {
+    community(slug: $slug) {
       memberCount
       postCount
     }
-  }`)
+  }`, {
+    subject: 'community-stats',
+    id: slug,
+    variables: {slug}
+  })
 
 const CommunitySetup = ({ community, dispatch }) => {
   const checklist = getChecklist(community)

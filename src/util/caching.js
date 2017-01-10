@@ -27,8 +27,8 @@ export const cleanAndStringify = (opts, defaults) =>
   qs.stringify(omitBy(opts, blankOrDefault(defaults)))
 
 export const createCacheId = (subject, id, query = {}) => {
-  const { type, tag, sort, search, filter, q } = query
-  return cleanAndStringify({subject, id, type, tag, sort, search, filter, q})
+  const { type, tag, sort, search, filter, q, parent_post_id } = query
+  return cleanAndStringify({subject, id, type, tag, sort, search, filter, q, parent_post_id})
 }
 
 export const connectedListProps = (state, props, itemType) => {

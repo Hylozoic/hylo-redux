@@ -45,7 +45,6 @@ const ProjectPost = (props, context) => {
   return <div className='post project boxy-post'>
     <Header communities={communities} />
     <p className='title post-section'>{title}</p>
-    {tag && <p className='hashtag'>#{tag}</p>}
     <div className='box'>
       {video
         ? <div className='video-wrapper'><Video url={video.url} /></div>
@@ -194,7 +193,7 @@ class ProjectRequest extends React.Component {
 const spacer = <span>&nbsp; •&nbsp; </span>
 
 const UndecoratedProjectPostCard = ({ post, community, comments, dispatch, isMobile }, { currentUser }) => {
-  const { name, user, tag, ends_at, id } = post
+  const { name, user, ends_at, id } = post
   const url = `/p/${post.id}`
   const backgroundImage = `url(${imageUrl(post)})`
 
@@ -211,10 +210,6 @@ const UndecoratedProjectPostCard = ({ post, community, comments, dispatch, isMob
     <div className='meta'>
       {ends_at && <span>
         <Deadline time={ends_at} />
-        {spacer}
-      </span>}
-      {tag && <span className='hashtag-segment'>
-        <A className='hashtag' to={url}>#{tag}</A>
         {spacer}
       </span>}
       <A to={`/u/${user.id}`}>{user.name}</A>

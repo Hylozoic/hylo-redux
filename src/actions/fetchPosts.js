@@ -4,11 +4,11 @@ import { get } from 'lodash/fp'
 
 export function fetchPosts (opts) {
   const {
-    subject, id, limit, type, tag, sort, search, filter, cacheId, omit
+    subject, id, limit, type, tag, sort, search, filter, cacheId, omit, parent_post_id
   } = opts
   const offset = opts.offset || 0
   const queryParams = {
-    offset, limit, type, tag, sort, search, filter, omit,
+    offset, limit, type, tag, sort, search, filter, omit, parent_post_id,
     comments: true, votes: true
   }
   let path

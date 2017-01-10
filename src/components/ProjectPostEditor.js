@@ -3,7 +3,6 @@ import { connect } from 'react-redux'
 import Icon from './Icon'
 import DatetimePicker from 'react-datetime'
 import { sanitizeTagInput } from '../util/textInput'
-import { fetchTag } from '../actions/tags'
 import { debounce } from 'lodash'
 import { get, map, pick } from 'lodash/fp'
 import { getPost, getVideo } from '../models/post'
@@ -13,16 +12,6 @@ const random = () => Math.random().toString().slice(2, 8)
 
 const getSimplePost = state => id =>
   pick(['id', 'name', 'description'], getPost(id, state))
-
-const validateTag = (tag, dispatch) => {
-  return dispatch(fetchTag(tag))
-  .then(({ payload, error, meta: { tagName } }) => {
-    if (error && get('response.status', payload) === 404) return true
-
-    window.alert(`The tag "${tagName}" is already in use.`)
-    return false
-  })
-}
 
 @connect((state, { postEdit }) => ({
   requests: postEdit.requests || map(getSimplePost(state), postEdit.children)
@@ -43,12 +32,6 @@ export default class ProjectPostEditor extends React.Component {
     // didn't change them and then saved the post, they would be removed.
     const { update, requests } = this.props
     update({requests})
-  }
-
-  validate = () => {
-    const { postEdit: { tag }, post } = this.props
-    return tag === get('tag', post) ? true
-      : validateTag(tag, this.context.dispatch)
   }
 
   addRequest = () => {
@@ -99,12 +82,6 @@ export default class ProjectPostEditor extends React.Component {
           <input type='text' placeholder='location'
             defaultValue={postEdit.location}
             onChange={event => update({location: event.target.value})}/>
-        </div>
-        <div className='hashtag'>
-          <Icon name='Tag' />
-          <input type='text' placeholder='hashtag' value={tag}
-            onKeyPress={sanitizeTagInput}
-            onChange={event => updateTag(event.target.value)}/>
         </div>
       </div>
     </div>

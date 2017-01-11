@@ -31,6 +31,7 @@ export default class CommentSection extends React.Component {
     if (expanded) {
       this.socket = getSocket()
       this.socket.post(socketUrl(`/noo/post/${id}/subscribe`))
+      console.log('adding dispatch listener for', id)
       this.socket.on('commentAdded', c => dispatch(appendComment(id, c)))
     }
   }
@@ -63,10 +64,10 @@ export default class CommentSection extends React.Component {
         expand={() => onExpand(c.id)}
         community={community}
         expanded={expanded}
-        key={c.id}/>)}
-      <PeopleTyping showNames={false}/>
+        key={c.id} />)}
+      <PeopleTyping showNames={false} />
       {(canComment(currentUser, post) || isProjectRequest) &&
-        <CommentForm postId={post.id} {...{placeholder}}/>}
+        <CommentForm postId={post.id} {...{placeholder}} />}
     </div>
   }
 }

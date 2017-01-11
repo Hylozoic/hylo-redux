@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 import React from 'react'
 import { isEmpty } from 'lodash'
 import { sortBy } from 'lodash/fp'
@@ -26,13 +27,15 @@ export default class CommentSection extends React.Component {
   }
 
   componentDidMount () {
-    const { post: { id }, expanded } = this.props
+    const { post, post: { id }, expanded } = this.props
     const { dispatch } = this.context
     if (expanded) {
       this.socket = getSocket()
       this.socket.post(socketUrl(`/noo/post/${id}/subscribe`))
-      console.log('adding dispatch listener for', id)
-      this.socket.on('commentAdded', c => dispatch(appendComment(id, c)))
+      this.socket.on('commentAdded', ({ parent_post_id, comment }) => {
+        if (parent_post_id !== post.parent_post_id) return
+        dispatch(appendComment(id, comment))
+      })
     }
   }
 

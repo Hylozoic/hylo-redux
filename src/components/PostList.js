@@ -70,22 +70,22 @@ class PostList extends React.Component {
 
     const showPost = post => {
       if (includes(post.id, editingPostIds)) {
-        return <PostEditor post={post} expanded/>
+        return <PostEditor post={post} expanded />
       }
 
       switch (post.type) {
         case 'event':
-          return <EventPostCard post={post}/>
+          return <EventPostCard post={post} />
         case 'project':
-          return <ProjectPostCard post={post}/>
+          return <ProjectPostCard post={post} />
       }
 
-      return <Post post={post} onExpand={commentId => this.expand(post.id, commentId)}/>
+      return <Post post={post} onExpand={commentId => this.expand(post.id, commentId)} />
     }
 
     return <div className='post-list-wrapper'>
-      {isMobile && !hideMobileSearch && <MobileSearch search={doSearch}/>}
-      <RefreshButton refresh={refreshPostList} count={freshCount}/>
+      {isMobile && !hideMobileSearch && <MobileSearch search={doSearch} />}
+      <RefreshButton refresh={refreshPostList} count={freshCount} />
       <ul className='posts'>
         {pending && isEmpty(posts) && <li className='loading'>Loading...</li>}
         {posts.map(p => <li key={p.id} ref={p.id}>
@@ -93,7 +93,7 @@ class PostList extends React.Component {
         </li>)}
       </ul>
       {pending && !isEmpty(posts) && <div className='paginating'>Loading more...</div>}
-      {loadMore && <ScrollListener onBottom={loadMore} padding={5}/>}
+      {loadMore && <ScrollListener onBottom={loadMore} padding={5} />}
     </div>
   }
 }
@@ -113,8 +113,8 @@ class MobileSearch extends React.Component {
   render () {
     const { search } = this.props
     return <div className='mobile-search hidden' ref='mobileSearch'>
-      <Icon name='Loupe'/>
-      <SearchInput onChange={search}/>
+      <Icon name='Loupe' />
+      <SearchInput onChange={search} />
     </div>
   }
 }

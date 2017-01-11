@@ -8,6 +8,7 @@ import { filter, includes, isEmpty } from 'lodash/fp'
 import PostEditor from './PostEditor'
 import { EventPostCard } from './EventPost'
 import { ProjectPostCard } from './ProjectPost'
+import ProjectActivityCard from './ProjectActivityCard'
 import { getEditingPostIds } from '../models/post'
 import { makeUrl } from '../util/navigation'
 import { navigate, showExpandedPost } from '../actions'
@@ -77,7 +78,12 @@ class PostList extends React.Component {
         case 'event':
           return <EventPostCard post={post} />
         case 'project':
-          return <ProjectPostCard post={post} />
+          if (post.newActivity) {
+            return <ProjectActivityCard post={post} onExpand={commentId => this.expand(post.id, commentId)} />
+          } else {
+            return <ProjectPostCard post={post} />
+          }
+
       }
 
       return <Post post={post} onExpand={commentId => this.expand(post.id, commentId)} />

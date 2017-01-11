@@ -74,7 +74,7 @@ const mockState = {
     description: '<p>Everything you want to know</p>',
     created_at: '2017-01-11T00:27:30.522Z',
     updated_at: '2017-01-11T02:52:03.036Z',
-    numComments: 1,
+    numComments: 0,
     tag: 'ThisTagWillSoonBeGone',
     type: 'project',
     community_ids: [

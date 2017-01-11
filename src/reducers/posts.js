@@ -109,7 +109,6 @@ export default function (state = {}, action) {
     case CREATE_COMMENT:
       return updatePostProps(state, id, {
         follower_ids: uniq((post.follower_ids || []).concat(payload.user_id)),
-        numComments: (post.numComments || 0) + 1,
         updated_at: new Date().toISOString(),
         last_read_at: new Date().toISOString()
       })

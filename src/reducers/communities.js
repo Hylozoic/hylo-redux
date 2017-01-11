@@ -88,7 +88,7 @@ export default function (state = {}, action) {
             ...state,
             [meta.id]: {
               ...community,
-              popularSkills: payload.data.community.popularSkills
+              popularSkills: payload.community.popularSkills
             }
           }
         case 'community-stats':
@@ -97,7 +97,7 @@ export default function (state = {}, action) {
             ...state,
             [meta.id]: {
               ...community,
-              ...payload.data.community
+              ...payload.community
             }
           }
         default:

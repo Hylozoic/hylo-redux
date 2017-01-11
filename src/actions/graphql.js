@@ -10,6 +10,12 @@ export function sendGraphqlQuery (query, opts) {
       params: {query, variables},
       method: 'POST'
     },
-    meta: {subject, id, addDataToStore} // these are provided so reducers know what to do
+    // subject and id are provided so reducers know what to do
+    meta: {
+      subject,
+      id,
+      addDataToStore,
+      then: resp => resp.data
+    }
   }
 }

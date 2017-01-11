@@ -28,12 +28,14 @@ export default class CommentSection extends React.Component {
 
   componentDidMount () {
     const { post, post: { id }, expanded } = this.props
+    const { currentUser } = this.context
     const { dispatch } = this.context
     if (expanded) {
       this.socket = getSocket()
       this.socket.post(socketUrl(`/noo/post/${id}/subscribe`))
       this.socket.on('commentAdded', ({ parent_post_id, comment }) => {
         if (parent_post_id !== post.parent_post_id) return
+        if (comment.user_id === currentUser.id) return
         dispatch(appendComment(id, comment))
       })
     }

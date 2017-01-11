@@ -82,7 +82,7 @@ export default class SinglePost extends React.Component {
         {editing ? <PostEditor post={post} expanded/> : showPost(post)}
 
         {post.type === 'project' && <div>
-          {currentUser && <PostEditor community={community}/>}
+          {currentUser && <PostEditor community={community} parentPostId={post.id}/>}
           {community && <ConnectedPostList subject={subject} id={community.id}
             query={{...query, parent_post_id: post.id}}
             noPostsMessage=''/>}

@@ -85,6 +85,7 @@ export class PostEditor extends React.PureComponent {
     currentCommunitySlug: string,
     editingTagDescriptions: bool,
     creatingTagAndDescription: bool,
+    parentPostId: string,
     postCommunities: array,
     defaultTags: array,
     placeholder: string,
@@ -173,13 +174,14 @@ export class PostEditor extends React.PureComponent {
 
   save () {
     const {
-      dispatch, post, postEdit, id, postCommunities, currentCommunitySlug, onSave
+      dispatch, post, postEdit, id, postCommunities, currentCommunitySlug, onSave, parentPostId
     } = this.props
     const params = {
       type: this.editorType(),
       ...postEdit,
       ...attachmentParams(post && post.media, postEdit.media)
     }
+    if (parentPostId) params.parent_post_id = parentPostId
 
     return dispatch((post ? updatePost : createPost)(id, params, currentCommunitySlug))
     .then(action => {

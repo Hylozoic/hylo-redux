@@ -67,7 +67,58 @@ const updatePostProps = (state, postId, props) => {
   }
 }
 
-export default function (state = {}, action) {
+const mockState = {
+  '123': {
+    id: '123',
+    name: 'The recently updated project',
+    description: '<p>Everything you want to know</p>',
+    created_at: '2017-01-11T00:27:30.522Z',
+    updated_at: '2017-01-11T02:52:03.036Z',
+    numComments: 1,
+    tag: 'ThisTagWillSoonBeGone',
+    type: 'project',
+    community_ids: [
+      '29'
+    ],
+    voter_ids: [],
+    follower_ids: [
+      '11204'
+    ],
+    user_id: '11204',
+    newActivity: {
+      post: {
+        id: '20382',
+        name: 'What about food?',
+        description: '<p>Need hampers</p>',
+        created_at: '2017-01-03T23:04:28.503Z',
+        updated_at: '2017-01-03T23:04:28.503Z',
+        numComments: 3,
+        tag: 'request',
+        community_ids: [
+          '29'
+        ],
+        voter_ids: [],
+        follower_ids: [
+          '11204'
+        ],
+        user: {
+          id: '21',
+          name: 'Edward West',
+          avatar_url: 'https://d3ngex8q79bk55.cloudfront.net/user/21/avatar/1466554313506_EdwardHeadshot2016Square.jpg'
+        },
+        comment: {
+          user: {
+            id: '982',
+            name: 'Connor Turland',
+            avatar_url: 'https://lh6.googleusercontent.com/-Yykp9BrS5pM/AAAAAAAAAAI/AAAAAAAAGFQ/45VGI9GhQCQ/photo.jpg'
+          }
+        }
+      }
+    }
+  }
+}
+
+export default function (state = mockState, action) {
   const { error, type, payload, meta } = action
   if (error) return state
 

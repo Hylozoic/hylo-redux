@@ -19,13 +19,7 @@ const keyMatchesPost = (key, post, tags) => {
     (!key.tag || includes([post.tag].concat(tags), key.tag))
 }
 
-const mockState = {
-  'subject=community&id=hylo': [
-    '123'
-  ]
-}
-
-export default function (state = mockState, action) {
+export default function (state = {}, action) {
   if (action.error) return state
 
   let { type, payload, meta } = action

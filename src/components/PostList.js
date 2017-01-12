@@ -74,19 +74,18 @@ class PostList extends React.Component {
         return <PostEditor post={post} expanded />
       }
 
+      const onExpand = commentId => this.expand(post.id, commentId)
+
       switch (post.type) {
         case 'event':
           return <EventPostCard post={post} />
         case 'project':
-          if (post.newActivity) {
-            return <ProjectActivityCard post={post} onExpand={commentId => this.expand(post.id, commentId)} />
-          } else {
-            return <ProjectPostCard post={post} />
-          }
-
+          return <ProjectPostCard post={post} />
+        case 'project-activity':
+          return <ProjectActivityCard post={post} onExpand={onExpand} />
       }
 
-      return <Post post={post} onExpand={commentId => this.expand(post.id, commentId)} />
+      return <Post post={post} onExpand={onExpand} />
     }
 
     return <div className='post-list-wrapper'>

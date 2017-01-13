@@ -73,7 +73,7 @@ export class Post extends React.Component {
     const { comments, expanded, onExpand, community, dispatch, contributorChoices } = this.props
     const { contributors } = this.state
     const { currentUser } = this.context
-    const { communities, tag, media, linkPreview } = post
+    const { communities, tag, media, linkPreview, project } = post
     const image = find(m => m.type === 'image', media)
     const classes = cx('post', tag, {image, expanded})
     const title = linkifyHashtags(decode(sanitize(post.name || '')), get('slug', community))
@@ -110,7 +110,7 @@ export class Post extends React.Component {
 
     return <div className={classes}>
       <a name={`post-${post.id}`} />
-      <Header communities={communities} expanded={expanded} />
+      <Header communities={communities} project={project} expanded={expanded} />
       <p className='title post-section' dangerouslySetInnerHTML={{__html: title}} />
       {image && <LazyLoader>
         <img src={image.url} className='post-section full-image' />
@@ -187,7 +187,7 @@ export default compose(connect((state, {post}) => {
 
 export const UndecoratedPost = Post // for testing
 
-export const Header = ({ communities, expanded }, { post, currentUser, dispatch }) => {
+export const Header = ({ communities, project, expanded }, { post, currentUser, dispatch }) => {
   const { tag, fulfilled_at } = post
   const person = tag === 'welcome' ? post.relatedUsers[0] : post.user
   const createdAt = new Date(post.created_at)
@@ -213,7 +213,7 @@ export const Header = ({ communities, expanded }, { post, currentUser, dispatch 
             <A to={`/p/${post.id}`} title={createdAt}>
               {nonbreaking(humanDate(createdAt))}
             </A>
-            {communities && <Communities communities={communities} />}
+            {communities && <Communities communities={communities} project={project}/>}
             {post.public && <span>{spacer}Public</span>}
           </span>
         </div>}
@@ -221,14 +221,21 @@ export const Header = ({ communities, expanded }, { post, currentUser, dispatch 
 }
 Header.contextTypes = {post: object, currentUser: object, dispatch: func}
 
-const Communities = ({ communities }, { community }) => {
+const Communities = ({ communities, project }, { community }) => {
   if (community) communities = sortBy(communities, c => c.id !== community.id)
   const { length } = communities
   if (communities.length === 0) return null
 
   const communityLink = community => <A to={`/c/${community.slug}`}>{community.name}</A>
+  const projectLink = project => <span>
+    &nbsp;<A to={`/p/${project.id}`} className='project-link'>{project.name}</A>
+    {spacer}
+  </span>
+
   return <span className='communities'>
-    &nbsp;in {communityLink(communities[0])}
+    &nbsp;in
+    {project && projectLink(project)}
+    {communityLink(communities[0])}
     {length > 1 && <span> + </span>}
     {length > 1 && <Dropdown className='post-communities-dropdown'
       toggleChildren={<span>{length - 1} other{length > 2 ? 's' : ''}</span>}>

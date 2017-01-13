@@ -97,15 +97,21 @@ export class InviteForm extends React.Component {
   }
 
   componentDidMount () {
-    const { dispatch, community, invitationEditor } = this.props
-    const { subject, message } = invitationEditor
+    this.resetInvitationText()
+  }
 
-    if (subject === undefined) {
-      dispatch(updateInvitationEditor('subject', defaultInvitationSubject(community.name)))
+  componentWillReceiveProps (nextProps) {
+    const oldId = get('community.id', this.props)
+    const newId = get('community.id', nextProps)
+    if (newId !== oldId) {
+      this.resetInvitationText()
     }
-    if (message === undefined) {
-      dispatch(updateInvitationEditor('message', defaultInvitationMessage(community.name)))
-    }
+  }
+
+  resetInvitationText () {
+    const { dispatch, community } = this.props
+    dispatch(updateInvitationEditor('subject', defaultInvitationSubject(community.name)))
+    dispatch(updateInvitationEditor('message', defaultInvitationMessage(community.name)))
   }
 
   render () {

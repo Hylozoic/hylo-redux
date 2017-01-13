@@ -71,7 +71,7 @@ describe('CommunityPosts', () => {
     .to.equal('You are not a member of this community. Request to Join')
   })
 
-  describe('EngagementModules', () => {
+  describe('Engagement Modules', () => {
     it('displays the correct engagement modules according to rules', () => {
       let node = setupNode({...community,
         memberCount: MIN_MEMBERS_FOR_SKILLS_MODULE - 1,

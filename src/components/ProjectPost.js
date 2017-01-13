@@ -1,17 +1,17 @@
+/* eslint-disable camelcase */
 import React from 'react'
 import { connect } from 'react-redux'
-import { Header, presentDescription } from './Post'
+import Post, { Header, presentDescription } from './Post'
 import CommentSection from './CommentSection'
 import decode from 'ent/decode'
 import { textLength, truncate } from '../util/text'
-import { isEmpty, map, filter } from 'lodash'
-import { find, some } from 'lodash/fp'
+import { isEmpty } from 'lodash'
+import { find, some, filter, map } from 'lodash/fp'
 import { same } from '../models'
 import { denormalizedPost, getComments, getPost, imageUrl } from '../models/post'
 import { getCurrentCommunity } from '../models/community'
 import { canComment } from '../models/currentUser'
 import Icon from './Icon'
-import Post from './Post'
 import Video from './Video'
 import LazyLoader from './LazyLoader'
 import Avatar from './Avatar'
@@ -34,7 +34,7 @@ const Deadline = ({ time }) => {
 }
 
 @connect((state, { post }) => ({
-  children: map(post.children || [], id => denormalizedPost(getPost(id, state), state))
+  children: map(id => denormalizedPost(getPost(id, state), state), post.children || [])
 }))
 export default class ProjectPost extends React.Component {
 
@@ -52,41 +52,41 @@ export default class ProjectPost extends React.Component {
 
   render () {
     const { children, post } = this.props
-    const requests = filter(children, p => p.is_project_request)
+    const requests = filter(p => p.is_project_request, children)
     const { community, comments, communities, currentUser } = this.context
-    const { tag, media, location, user } = post
+    const { media, location, user } = post
     const title = decode(post.name || '')
     const video = find(m => m.type === 'video', media)
     const image = find(m => m.type === 'image', media)
     const description = presentDescription(post, community)
 
     return <div className='post project boxy-post'>
-      <Header communities={communities}/>
+      <Header communities={communities} />
       <p className='title post-section'>{title}</p>
       <div className='box'>
         {video
-          ? <div className='video-wrapper'><Video url={video.url}/></div>
-          : image && <div className='image'><img src={image.url}/></div>}
+          ? <div className='video-wrapper'><Video url={video.url} /></div>
+          : image && <div className='image'><img src={image.url} /></div>}
         <div className='row'>
           <div className='main-col'>
             {location && <div className='meta location'>
-              <Icon name='Pin-1'/>
+              <Icon name='Pin-1' />
               <span title={location}>{location}</span>
             </div>}
             {description && <div className='details'>
               <h3>Description</h3>
-              <ClickCatchingSpan dangerouslySetInnerHTML={{__html: description}}/>
+              <ClickCatchingSpan dangerouslySetInnerHTML={{__html: description}} />
             </div>}
             <div className='leads'>
               <h3>Project leads</h3>
-              <Avatar person={user}/>
+              <Avatar person={user} />
               <div className='person-info'>
                 <A className='name' to={`/u/${user.id}`}>{user.name}</A>
                 <p>{user.bio}</p>
               </div>
             </div>
           </div>
-          <Supporters post={post}/>
+          <Supporters post={post} />
         </div>
       </div>
       {requests.length > 0 && <div className='requests'>
@@ -94,10 +94,10 @@ export default class ProjectPost extends React.Component {
           {requests.length} request{requests.length === 1 ? '' : 's'}&nbsp;
           <span className='soft'>to make this happen</span>
         </h3>
-        {requests.map(post => <ProjectRequest key={post.id} {...{post, community}}/>)}
+        {requests.map(post => <ProjectRequest key={post.id} {...{post, community}} />)}
       </div>}
       {canComment(currentUser, post) && <CommentSection post={post}
-        comments={comments} expanded/>}
+        comments={comments} expanded />}
     </div>
   }
 }
@@ -112,17 +112,17 @@ const Supporters = ({ post, simple }, { currentUser, dispatch }) => {
       <h3>
         {followers.length} supporter{followers.length === 1 ? '' : 's'}
       </h3>
-      {ends_at && <Deadline time={ends_at}/>}
+      {ends_at && <Deadline time={ends_at} />}
     </div>}
     {!isEmpty(followers) && <LinkedPersonSentence people={followers} className='blurb meta'>
       support{followers.length > 1 || some(same('id', currentUser), followers) ? '' : 's'}
       <span>&nbsp;this.</span>
     </LinkedPersonSentence>}
     <div className='avatar-list'>
-      {followers.map(person => <Avatar person={person} key={person.id}/>)}
+      {followers.map(person => <Avatar person={person} key={person.id} />)}
     </div>
     {!simple && <a className='support button has-icon' onClick={follow}>
-      <Icon name={isFollowing ? 'ok-sign' : 'plus-sign'} glyphicon/>
+      <Icon name={isFollowing ? 'ok-sign' : 'plus-sign'} glyphicon />
       {isFollowing ? 'Supporting' : 'Support this'}
     </a>}
   </div>
@@ -175,18 +175,18 @@ class ProjectRequest extends React.Component {
 
     return <div className='nested-request'>
       {this.state.zoomed && <div className='zoomed'>
-        <div className='backdrop' onClick={unzoom}/>
-        {post.user && <Post post={post} expanded/>}
+        <div className='backdrop' onClick={unzoom} />
+        {post.user && <Post post={post} expanded />}
       </div>}
       <p className='title'>{name}</p>
       {description && <ClickCatchingSpan className='details'
-        dangerouslySetInnerHTML={{__html: description}}/>}
+        dangerouslySetInnerHTML={{__html: description}} />}
       {truncated && <span>
         <A to={`/p/${id}`} className='show-more'>Show&nbsp;more</A>
       </span>}
       <div className='meta'>
         <a className='help button has-icon' onClick={zoom}>
-          <Icon name='plus-sign' glyphicon/>
+          <Icon name='plus-sign' glyphicon />
           Offer to help
         </a>
         {numComments > 0 && <a onClick={zoom}>
@@ -212,11 +212,11 @@ const UndecoratedProjectPostCard = ({ post, community, comments, dispatch, isMob
 
   return <div className='post project-summary'>
     <LazyLoader className='image'>
-      <A to={url} style={{backgroundImage}}/>
+      <A to={url} style={{backgroundImage}} />
     </LazyLoader>
     <div className='meta'>
       {ends_at && <span>
-        <Deadline time={ends_at}/>
+        <Deadline time={ends_at} />
         {spacer}
       </span>}
       <A to={`/u/${user.id}`}>{user.name}</A>
@@ -224,16 +224,16 @@ const UndecoratedProjectPostCard = ({ post, community, comments, dispatch, isMob
     <A className='title' to={url}>{name}</A>
     {!isMobile && description && <div className='details-row'>
       <ClickCatchingSpan className='details'
-        dangerouslySetInnerHTML={{__html: description}}/>
+        dangerouslySetInnerHTML={{__html: description}} />
       {truncated && <span>
         <A to={`/p/${id}`} className='show-more'>Show&nbsp;more</A>
       </span>}
     </div>}
-    <Supporters post={post} simple/>
-    <div className='comments-section-spacer'/>
+    <Supporters post={post} simple />
+    <div className='comments-section-spacer' />
     {canComment(currentUser, post) && <CommentSection post={post}
       comments={comments}
-      onExpand={() => dispatch(navigate(url))}/>}
+      onExpand={() => dispatch(navigate(url))} />}
   </div>
 }
 UndecoratedProjectPostCard.contextTypes = {currentUser: object}

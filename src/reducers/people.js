@@ -1,4 +1,4 @@
-import { composeReducers } from './util'
+import { composeReducers, mergeList } from './util'
 import { get } from 'lodash'
 import { isNull, isUndefined, omitBy } from 'lodash/fp'
 import { debug } from '../util/logging'
@@ -10,7 +10,6 @@ import {
   LOGIN,
   SIGNUP
 } from '../actions'
-import { mergeList } from './util'
 import currentUserReducer from './currentUser'
 
 export const normalize = person => {
@@ -34,6 +33,11 @@ const peopleReducer = (state = {}, action) => {
     case ADD_DATA_TO_STORE:
       if (meta.bucket === 'people') {
         return mergeList(state, payload.map(normalize), 'id')
+      } else if (meta.bucket === 'currentUser') {
+        return {
+          ...state,
+          current: {...state.current, ...normalize(payload)}
+        }
       }
       break
     case FETCH_PERSON:

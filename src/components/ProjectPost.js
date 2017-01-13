@@ -94,7 +94,7 @@ export default class ProjectPost extends React.Component {
           {requests.length} request{requests.length === 1 ? '' : 's'}&nbsp;
           <span className='soft'>to make this happen</span>
         </h3>
-        {requests.map(id => <ProjectRequest key={post.id} {...{post, community}} />)}
+        {requests.map(post => <ProjectRequest key={post.id} {...{post, community}} />)}
       </div>}
       {canComment(currentUser, post) && <CommentSection post={post}
         comments={comments} expanded />}

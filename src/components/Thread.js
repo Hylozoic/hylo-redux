@@ -140,7 +140,7 @@ export default class Thread extends React.Component {
         onHitBottom={() => this.setState({scrolledUp: false})}
         onScroll={isMobile ? this._moveHeader : null}
         onScrollToTop={loadMore} ref='messageSection' />
-      <PeopleTyping showNames />
+      <PeopleTyping showNames showBorder={scrolledUp} />
       {newFromOther && scrolledUp &&
         <div className='newMessagesNotify' onClick={this.refs.messageSection.scrollToBottom}>
           New Messages

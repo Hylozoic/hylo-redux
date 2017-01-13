@@ -228,12 +228,12 @@ const Communities = ({ communities, project }, { community }) => {
 
   const communityLink = community => <A to={`/c/${community.slug}`}>{community.name}</A>
   const projectLink = project => <span>
-    &nbsp;<A to={`/p/${project.id}`} className='project-link'>{project.name}</A>
+    <A to={`/p/${project.id}`} className='project-link'>{project.name}</A>
     {spacer}
   </span>
 
   return <span className='communities'>
-    &nbsp;in
+    &nbsp;in&nbsp;
     {project && projectLink(project)}
     {communityLink(communities[0])}
     {length > 1 && <span> + </span>}

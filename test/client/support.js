@@ -24,6 +24,8 @@ for (let key in window) {
 
 import chai from 'chai'
 chai.use(require('chai-spies'))
+chai.use(require('chai-enzyme')())
+
 window.analytics = {
   track: chai.spy(() => {}),
   alias: chai.spy(() => {})

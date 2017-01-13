@@ -1,45 +1,22 @@
 import '../support'
-import React, { PropTypes } from 'react'
+import { spyify } from '../../support/helpers'
 import { mount } from 'enzyme'
-import { configureStore } from '../../../src/store'
-import { wait, mockActionResponse } from '../../support/helpers'
+import React, { PropTypes } from 'react'
+import * as actions from '../../../src/actions'
 import ProfileBioModule from '../../../src/components/ProfileBioModule'
-import { updateCurrentUser } from '../../../src/actions'
-
-const currentUser = {
-  id: '5',
-  name: 'Honesty Counts',
-  bio: ''
-}
-
-const store = configureStore().store
 
 describe('ProfileBioModule', () => {
   let node
 
   before(() => {
     window.FEATURE_FLAGS = { IN_FEED_PROFILE_COMPLETION_MODULES: 'on' }
+    const currentUser = { id: '5', name: 'Honesty Counts', bio: null }
+    let dispatch = spy()
+    node = mount(<ProfileBioModule person={currentUser} />, {
+      context: { dispatch },
+      childContextTypes: { dispatch: PropTypes.func }
+    })
   })
-
-  beforeEach(() => {
-    node = mount(
-      <ProfileBioModule person={currentUser} />,
-      {
-        context: { store, dispatch: store.dispatch },
-        childContextTypes: {
-          store: PropTypes.object,
-          dispatch: PropTypes.func
-        }
-      }
-    )
-    mockActionResponse(updateCurrentUser(), {})
-  })
-
-  const enterBio = (value) => {
-    return node.find('textarea').first().simulate(
-      'change', {target: {value}}
-    )
-  }
 
   it('renders without errors', () => {
     expect(node.find('.profile-bio').length).to.equal(1)
@@ -47,21 +24,24 @@ describe('ProfileBioModule', () => {
   })
 
   it('is invalid when no bio is entered', () => {
-    expect(node.state('valid')).to.be.false
+    expect(node.find('button')).to.have.attr('disabled')
   })
 
   it('is valid when a bio is entered', () => {
     enterBio('test')
-    expect(node.state('valid')).to.be.true
+    expect(node.find('button')).to.not.have.attr('disabled')
   })
 
   it('should save bio', () => {
-    enterBio('testing')
+    const bio = 'testing'
+    enterBio(bio)
+    spyify(actions, 'updateCurrentUser')
     const saveButton = node.find('button').first()
     saveButton.simulate('click')
-    return wait(300, () => {
-      const storedBio = store.getState().people.current.bio
-      expect(storedBio).to.equal('testing')
-    })
+    expect(actions.updateCurrentUser).to.have.been.called.with({bio})
   })
+
+  const enterBio = (value) => {
+    return node.find('textarea').first().simulate('change', {target: {value}})
+  }
 })

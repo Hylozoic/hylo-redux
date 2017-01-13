@@ -1,6 +1,6 @@
-import support from '../support'
+import '../support'
 import { mocks } from '../../support'
-import { createElement, wait, mockActionResponse, mockify } from '../../support/helpers'
+import { createElement, mockify } from '../../support/helpers'
 import React from 'react'
 import { mount } from 'enzyme'
 import { configureStore } from '../../../src/store'
@@ -11,7 +11,6 @@ import {
 } from 'react-addons-test-utils'
 const { object, func } = React.PropTypes
 import { connect } from 'react-redux'
-import { completePost } from '../../../src/actions/posts'
 
 const stripComments = markup => markup.replace(/<!--[^>]*-->/g, '')
 
@@ -84,7 +83,7 @@ const state = {
     [requestPost.id]: requestPost
   },
   typeaheadMatches: {
-    invite: [contributor]
+    contributors: [contributor]
   }
 }
 
@@ -136,7 +135,7 @@ describe('Post', () => {
 
   it('opens PostEditorModal on edit when expanded', () => {
     const store = configureStore(state).store
-    const node = mount(<Post expanded post={post}/>, {
+    const node = mount(<Post expanded post={post} />, {
       context: {store, dispatch: store.dispatch, currentUser: state.people.current},
       childContextTypes: {store: object, dispatch: func, currentUser: object}
     })
@@ -153,28 +152,22 @@ describe('Post', () => {
   })
 })
 
-describe('Post #request type', () => {
-  let store, PostWrapper, node
-
-  before(() => {
-    window.FEATURE_FLAGS = { CONTRIBUTORS: 'on' }
-  })
+describe('#request type', () => {
+  let node
 
   beforeEach(() => {
-    store = configureStore(state).store
-
-    PostWrapper = connect(({ posts }, { id }) => ({
+    window.FEATURE_FLAGS = { CONTRIBUTORS: 'on' }
+    const store = configureStore(state).store
+    const PostWrapper = connect(({ posts }, { id }) => ({
       post: posts[id]
     }))(({ post }) => {
       return <Post post={post} />
     })
-
+    let dispatch = spy((params) => console.log(params))
     node = mount(<PostWrapper id={requestPost.id} />, {
-      context: { store, dispatch: store.dispatch, currentUser: state.people.current },
+      context: { store, dispatch, currentUser: state.people.current },
       childContextTypes: { store: object, dispatch: func, currentUser: object }
     })
-
-    mockActionResponse(completePost(requestPost.id), {})
   })
 
   after(() => {
@@ -186,9 +179,9 @@ describe('Post #request type', () => {
     node.find('.toggle').simulate('change')
     expect(node.find('.request-complete-heading').text()).to.contain('Awesome')
     expect(node.find('.request-complete-people-input')).to.be.length(1)
-    // Typeahead fixture provides a single mocked person ("Adam Contributor")
     node.find('.request-complete-people-input a').simulate('click')
-    expect(node.find('.request-complete-people-input li.tag').text()).to.contain(contributor.name)
+    expect(node.find('.request-complete-people-input li.tag').text())
+    .to.contain(contributor.name)
     expect(node.find('.done')).to.be.length(1)
     node.find('.done').simulate('click')
     expect(node.find('.contributors .person')).to.be.length(1)
@@ -213,6 +206,7 @@ describe('Post #request type', () => {
     expect(node.find('.toggle')).to.be.length(1)
     mockify(window, 'confirm', prompt => true)
     node.find('.toggle').simulate('change')
-    expect(node.find('.request-complete-heading').text()).to.contain('if this request has been completed')
+    expect(node.find('.request-complete-heading').text())
+    .to.contain('if this request has been completed')
   })
 })

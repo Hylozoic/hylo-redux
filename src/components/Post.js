@@ -93,7 +93,7 @@ export class Post extends React.Component {
       this.setState({contributors: reject(this.state.contributors, {id: person.id})})
     }
     const contributorHandleInput = (term) => {
-      dispatch(typeahead(term, 'invite', {communityId: community.id, type: 'people'}))
+      dispatch(typeahead(term, 'contributors', {communityId: community.id, type: 'people'}))
     }
     const completeRequest = () => {
       if (contributors.length > 0) {
@@ -180,7 +180,7 @@ export default compose(connect((state, {post}) => {
     community: getCurrentCommunity(state),
     post: denormalizedPost(post, state),
     contributorChoices: reject(
-      state.typeaheadMatches.invite, {id: post.user_id}
+      state.typeaheadMatches.contributors, {id: post.user_id}
     )
   }
 }))(Post)

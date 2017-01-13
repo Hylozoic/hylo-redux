@@ -94,6 +94,10 @@ export default class People extends React.Component {
     this.trackSearch()
   }
 
+  componentDidUpdate (prevProps) {
+    this.trackSearch(prevProps)
+  }
+
   updateQuery = debounce(opts => {
     let { dispatch, location } = this.props
     dispatch(refetch(opts, location))

@@ -39,7 +39,7 @@ export const dispatchEvent = (el, etype) => {
 export const coinToss = () =>
   Math.floor(Math.random() * 2) === 0
 
-export const flowLog = message => d => {
+export const tapLog = message => d => {
   console.log(message, d)
   return d
 }

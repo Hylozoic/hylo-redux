@@ -33,6 +33,33 @@ const subject = 'community'
 export const MIN_MEMBERS_FOR_SKILLS_MODULE = 6
 export const MIN_POSTS_FOR_POST_PROMPT_MODULE = 4
 
+const getFeedModule = (community, currentUser, moduleChoice) => {
+  let module
+
+  if (groupUser(currentUser.id, 'In-Feed Engagement Modules') === 0) {
+    const showPopularSkills = community.memberCount >= MIN_MEMBERS_FOR_SKILLS_MODULE
+    const showPostPrompt = community.postCount >= MIN_POSTS_FOR_POST_PROMPT_MODULE
+
+    module = {
+      id: -1,
+      type: 'module'
+    }
+
+    if (showPopularSkills && showPostPrompt) {
+      module.component = moduleChoice
+      ? <PopularSkillsModule community={community} />
+      : <PostPromptModule />
+    } else if (showPopularSkills) {
+      module.component = <PopularSkillsModule community={community} />
+    } else if (showPostPrompt) {
+      module.component = <PostPromptModule />
+    } else {
+      module = null
+    }
+  }
+  return module
+}
+
 export class CommunityPosts extends Component {
   static propTypes = {
     dispatch: func,
@@ -83,33 +110,7 @@ export class CommunityPosts extends Component {
     let { location: { query }, dispatch, community, params: { id } } = this.props
     const { currentUser } = this.context
 
-    let module
-
-    if (groupUser(currentUser.id, 'In-Feed Engagement Modules') === 0) {
-      const showPopularSkills = community.memberCount >= MIN_MEMBERS_FOR_SKILLS_MODULE
-      const showPostPrompt = community.postCount >= MIN_POSTS_FOR_POST_PROMPT_MODULE
-
-      const { moduleChoice } = this.state
-
-      module = {
-        id: -1,
-        type: 'module'
-      }
-
-      if (showPopularSkills) {
-        if (showPostPrompt) {
-          module.component = moduleChoice
-          ? <PopularSkillsModule community={community} />
-          : <PostPromptModule />
-        } else {
-          module.component = <PopularSkillsModule community={community} />
-        }
-      } else if (showPostPrompt) {
-        module.component = <PostPromptModule />
-      } else {
-        module = null
-      }
-    }
+    const module = getFeedModule(community, currentUser, this.state.moduleChoice)
 
     return <div>
       {hasFeature(currentUser, COMMUNITY_SETUP_CHECKLIST) && canModerate(currentUser, community) &&

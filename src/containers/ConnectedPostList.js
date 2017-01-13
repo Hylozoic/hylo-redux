@@ -110,7 +110,7 @@ export class ConnectedPostList extends React.Component {
       }
     }
 
-    var feedItems = posts
+    const feedItems = posts
 
     if (module) {
       feedItems.splice(2, 0, module)

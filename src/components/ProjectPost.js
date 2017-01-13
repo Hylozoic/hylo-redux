@@ -5,8 +5,8 @@ import Post, { Header, presentDescription } from './Post'
 import CommentSection from './CommentSection'
 import decode from 'ent/decode'
 import { textLength, truncate } from '../util/text'
-import { isEmpty, map, filter } from 'lodash'
-import { find, some } from 'lodash/fp'
+import { isEmpty } from 'lodash'
+import { find, some, filter, map } from 'lodash/fp'
 import { same } from '../models'
 import { denormalizedPost, getComments, getPost, imageUrl } from '../models/post'
 import { getCurrentCommunity } from '../models/community'
@@ -34,7 +34,7 @@ const Deadline = ({ time }) => {
 }
 
 @connect((state, { post }) => ({
-  children: map(post.children || [], id => denormalizedPost(getPost(id, state), state))
+  children: map(id => denormalizedPost(getPost(id, state), state), post.children || [])
 }))
 export default class ProjectPost extends React.Component {
 
@@ -52,7 +52,7 @@ export default class ProjectPost extends React.Component {
 
   render () {
     const { children, post } = this.props
-    const requests = filter(children, p => p.is_project_request)
+    const requests = filter(p => p.is_project_request, children)
     const { community, comments, communities, currentUser } = this.context
     const { tag, media, location, user } = post
     const title = decode(post.name || '')

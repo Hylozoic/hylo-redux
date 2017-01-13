@@ -4,18 +4,21 @@ import Icon from './Icon'
 import DatetimePicker from 'react-datetime'
 import { sanitizeTagInput } from '../util/textInput'
 import { debounce } from 'lodash'
-import { get, map, pick } from 'lodash/fp'
+import { get, map, pick, filter } from 'lodash/fp'
 import { getPost, getVideo } from '../models/post'
 const { array, func, object } = React.PropTypes
 
 const random = () => Math.random().toString().slice(2, 8)
 
 const getSimplePost = state => id =>
-  pick(['id', 'name', 'description'], getPost(id, state))
+  pick(['id', 'name', 'description', 'is_project_request'], getPost(id, state))
 
-@connect((state, { postEdit }) => ({
-  requests: postEdit.requests || map(getSimplePost(state), postEdit.children)
-}), null, null, {withRef: true})
+@connect((state, { postEdit }) => {
+  if (postEdit.requests) return {requests: postEdit.requests}
+  const children = map(getSimplePost(state), postEdit.children)
+  const requests = filter(p => p.is_project_request, children)
+  return {requests}
+}, null, null, {withRef: true})
 export default class ProjectPostEditor extends React.Component {
   static propTypes = {
     postEdit: object,

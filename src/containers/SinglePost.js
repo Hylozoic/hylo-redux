@@ -90,7 +90,7 @@ export default class SinglePost extends React.Component {
             <ConnectedPostList
               subject={subject}
               id={post.id}
-              query={{...query, parent_post_id: post.id}}
+              query={{...query}}
               noPostsMessage='' />
           }
         </div>}

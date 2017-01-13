@@ -127,7 +127,10 @@ export default class Login extends React.Component {
     const { actionError, location: { query }, community } = this.props
     const error = displayError(this.props.error)
     const signupUrl = makeUrl('/signup', pick(query, 'next', 'action', 'id', 'token', 'email'))
-    const { email } = query
+    const { email, next } = query
+    const willCreateJoinRequest = next && 
+      (next.indexOf('join=true') > -1 || next.indexOf('join%3Dtrue') > -1)
+    const subtitle = willCreateJoinRequest ? 'Once you log in, a request to join the community will be sent.' : ''
 
     const title = <span><div className='hylo-logo' />Log in to hylo</span>
 
@@ -137,7 +140,7 @@ export default class Login extends React.Component {
         <div className='medium-avatar' style={{backgroundImage: `url(${community.avatar_url})`}} />
         <h2>Join {community.name}</h2>
       </div>}
-      <Modal title={title} standalone>
+      <Modal title={title} subtitle={subtitle} standalone>
         <form onSubmit={this.submit}>
           {actionError && <div className='alert alert-danger'>{actionError}</div>}
           {error && <div className='alert alert-danger'>{error}</div>}

@@ -27,7 +27,49 @@ const post = {
   updated_at: new Date(),
   user_id: 'x',
   community_ids: ['1'],
-  follower_ids: ['x', 'y']
+  follower_ids: ['x', 'y'],
+  parent_post_id: 'parentPost1'
+}
+
+const childPost = {
+  id: 'childPost',
+  name: 'I am a project posting, but not a special request',
+  description: 'it is very special.',
+  created_at: new Date(),
+  updated_at: new Date(),
+  user_id: 'x',
+  community_ids: ['1'],
+  follower_ids: ['x', 'y'],
+  parent_post_id: 'parentPost1'
+}
+
+const projectSpecialRequestPost = {
+  id: 'projectSpecialRequestPost',
+  name: 'I am a project special request project posting',
+  description: 'it is very special.',
+  type: 'request',
+  tag: 'request',
+  created_at: new Date(),
+  updated_at: new Date(),
+  user_id: 'x',
+  community_ids: ['1'],
+  follower_ids: ['x', 'y'],
+  parent_post_id: 'parentPost1'
+}
+
+
+const parentPost1 = {
+  id: 'parentPost1',
+  name: 'Project otherwise known as a parentPost',
+  description: 'it is very special.',
+  type: 'project',
+  tag: 'project',
+  created_at: new Date(),
+  updated_at: new Date(),
+  user_id: 'x',
+  community_ids: ['2'],
+  follower_ids: ['x', 'y'],
+  parent_post_id: null
 }
 
 const contributor = {

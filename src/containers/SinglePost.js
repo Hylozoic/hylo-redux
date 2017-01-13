@@ -23,7 +23,7 @@ import { denormalizedPost, getComments, getPost, isMessageThread } from '../mode
 import { fetch, ConnectedPostList } from './ConnectedPostList'
 const { array, bool, object, string, func } = React.PropTypes
 
-const subject = 'community'
+const subject = 'post'
 
 @prefetch(({ store, dispatch, params: { id }, query }) =>
   dispatch(fetchPost(id))
@@ -79,13 +79,20 @@ export default class SinglePost extends React.Component {
         </A>
       </div>}
       <CoverImagePage id='single-post' image={get('banner_url', community)}>
-        {editing ? <PostEditor post={post} expanded/> : showPost(post)}
-
+        {editing ?
+          <PostEditor post={post} expanded /> : showPost(post)
+        }
         {post.type === 'project' && <div>
-          {currentUser && <PostEditor community={community} parentPostId={post.id}/>}
-          {community && <ConnectedPostList subject={subject} id={community.id}
-            query={{...query, parent_post_id: post.id}}
-            noPostsMessage=''/>}
+          {currentUser &&
+            <PostEditor community={community} parentPostId={post.id} />
+          }
+          {community &&
+            <ConnectedPostList
+              subject={subject}
+              id={post.id}
+              query={{...query, parent_post_id: post.id}}
+              noPostsMessage='' />
+          }
         </div>}
       </CoverImagePage>
     </div>
@@ -149,8 +156,7 @@ const setupPage = (store, id, query, action) => {
       dispatch(fetchComments(id, {refresh: true})).then(scroll),
 
     // if this is a project, fetch the first page of results for child posts.
-    post.type === 'project' && dispatch(fetch(subject, communityId,
-      {...query, parent_post_id: post.id})),
+    post.type === 'project' && dispatch(fetch(subject, id, {...query})),
 
     get('action', query) === 'unfollow' && currentUser &&
       dispatch(unfollowPost(post.id, currentUser.id)).then(({ error }) => !error &&

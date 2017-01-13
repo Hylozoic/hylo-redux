@@ -60,17 +60,25 @@ export class Post extends React.Component {
     commentId: string
   }
 
-  static contextTypes = {currentUser: object}
+  static contextTypes = {
+    currentUser: object,
+    post: object
+  }
 
-  static childContextTypes = {post: object}
+  static childContextTypes = {
+    post: object,
+    parentPost: object
+  }
 
   getChildContext () {
-    return {post: this.props.post}
+    return {
+      post: this.props.post,
+      parentPost: this.context.post
+    }
   }
 
   render () {
-    let { post } = this.props
-    const { comments, expanded, onExpand, community, dispatch, contributorChoices } = this.props
+    const { post, comments, expanded, onExpand, community, dispatch, contributorChoices } = this.props
     const { contributors, requestCompleting } = this.state
     const { currentUser } = this.context
     const { communities, tag, media, linkPreview } = post
@@ -78,7 +86,7 @@ export class Post extends React.Component {
     const classes = cx('post', tag, {image, expanded})
     const title = linkifyHashtags(decode(sanitize(post.name || '')), get('slug', community))
 
-    const canEdit = canEditPost(currentUser, post)
+    const canEdit = canEditPost(currentUser, post, this.context.post)
 
     const isRequest = tag === 'request'
     const isCompleteRequest = isRequest && post.fulfilled_at
@@ -186,16 +194,16 @@ export default compose(connect((state, {post}) => {
 
 export const UndecoratedPost = Post // for testing
 
-export const Header = ({ communities, expanded }, { post, currentUser, dispatch }) => {
+export const Header = ({ communities, expanded }, { post, parentPost, currentUser, dispatch }) => {
   const { tag, fulfilled_at } = post
   const person = tag === 'welcome' ? post.relatedUsers[0] : post.user
   const createdAt = new Date(post.created_at)
-  const canEdit = canEditPost(currentUser, post)
+  const canEdit = canEditPost(currentUser, post, parentPost)
   const showCheckbox = !hasFeature(currentUser, CONTRIBUTORS) &&
     post.tag === 'request' && (canEdit || fulfilled_at)
 
   return <div className='header'>
-    <Menu expanded={expanded} post={post} />
+    <Menu expanded={expanded} post={post} parentPost={parentPost} />
     <Avatar person={person} showPopover />
     {showCheckbox && <input type='checkbox'
       className='completion-toggle'
@@ -218,7 +226,7 @@ export const Header = ({ communities, expanded }, { post, currentUser, dispatch 
         </div>}
   </div>
 }
-Header.contextTypes = {post: object, currentUser: object, dispatch: func}
+Header.contextTypes = {post: object, parentPost: object, currentUser: object, dispatch: func}
 
 const Communities = ({ communities }, { community }) => {
   if (community) communities = sortBy(communities, c => c.id !== community.id)
@@ -307,8 +315,8 @@ const WelcomePostHeader = ({ communities }, { post }) => {
 }
 WelcomePostHeader.contextTypes = {post: object}
 
-export const Menu = ({ expanded, post }, { dispatch, currentUser, community }) => {
-  const canEdit = canEditPost(currentUser, post)
+export const Menu = ({ expanded, post, parentPost }, { dispatch, currentUser, community }) => {
+  const canEdit = canEditPost(currentUser, post, parentPost)
   const following = some(post.follower_ids, id => id === get('id', currentUser))
   const pinned = isPinned(post, community)
   const edit = () => isMobile()

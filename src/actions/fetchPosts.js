@@ -35,6 +35,9 @@ export function fetchPosts (opts) {
     case 'followed-posts':
       path = `/noo/user/${id}/followed-posts`
       break
+    case 'post':
+      path = `/noo/post/${id}/posts`
+      break
     case 'project':
     case 'network':
       path = `/noo/${subject}/${id}/posts`

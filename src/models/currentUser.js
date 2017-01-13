@@ -36,9 +36,10 @@ export const isTester = user =>
     {id: '1972', slug: 'testmetalab'}
   ], membership(user))
 
-export const canEditPost = (currentUser, post) => {
-  return same('id', currentUser, post.user) ||
-    some(post.communities.map(c => c.id ? c.id : c), canModerate(currentUser)) ||
+export const canEditPost = (currentUser, post, parentPost) => {
+  const permissionsPost = parentPost || post
+  return same('id', currentUser, permissionsPost.user) ||
+    some(permissionsPost.communities.map(c => c.id ? c.id : c), canModerate(currentUser)) ||
     isAdmin(currentUser)
 }
 

@@ -15,7 +15,8 @@ const ProjectActivityCard = ({ onExpand, post }, context) => {
   return <div className='project-activity-card'>
     <div className='project-banner'>
       <A className='image' to={url} style={{backgroundImage}} />
-      <span className='name'>{project.name}{spacer}</span>
+      <span className='name'>{project.name}</span>
+      <span className='spacer'>{spacer}</span>
       <span className='date'>{humanDate(project.created_at)}</span>
     </div>
     <Post post={post} onExpand={onExpand} />

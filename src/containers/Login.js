@@ -130,7 +130,10 @@ export default class Login extends React.Component {
     const { email, next } = query
     const willCreateJoinRequest = next && 
       (next.indexOf('join=true') > -1 || next.indexOf('join%3Dtrue') > -1)
-    const subtitle = willCreateJoinRequest ? 'Once you log in, a request to join the community will be sent.' : ''
+    let subtitle = ''
+    if (willCreateJoinRequest) {
+      subtitle = 'Once you log in, a request to join the community will be sent.'
+    }
 
     const title = <span><div className='hylo-logo' />Log in to hylo</span>
 

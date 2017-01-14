@@ -91,9 +91,13 @@ export default class Signup extends React.Component {
     const { email, next } = query
     const willCreateJoinRequest = next && 
       (next.indexOf('join=true') > -1 || next.indexOf('join%3Dtrue') > -1)
-    let subtitle = willCreateJoinRequest ? 'Once you sign up, a request to join the community will be sent.' : ''
-    subtitle = !community && !willCreateJoinRequest ? `If you're trying to join an existing community, please use the special
-        invitation link that you received from your community manager.` : subtitle
+    let subtitle = `If you're trying to join an existing community, please use the special
+        invitation link that you received from your community manager.`
+    if (willCreateJoinRequest) {
+      subtitle = 'Once you sign up, a request to join the community will be sent.'
+    } else if (community) {
+      subtitle = ''
+    }
         
     return <ModalOnlyPage id='signup' className='login-signup'>
       <div className='logo-wrapper'><div className='hylo-logo' /></div>

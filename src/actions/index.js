@@ -305,22 +305,6 @@ export function toggleUserSettingsSection (sectionName, forceOpen) {
   }
 }
 
-export function fetchThanks (id, offset = 0) {
-  return {
-    type: FETCH_THANKS,
-    payload: {api: true, path: `/noo/user/${id}/thanks?offset=${offset}`},
-    meta: {id}
-  }
-}
-
-export function fetchContributions (id, offset = 0) {
-  return {
-    type: FETCH_CONTRIBUTIONS,
-    payload: {api: true, path: `/noo/user/${id}/contributions?offset=${offset}`},
-    meta: {id}
-  }
-}
-
 export function markActivityRead (activityId) {
   return {
     type: MARK_ACTIVITY_READ,

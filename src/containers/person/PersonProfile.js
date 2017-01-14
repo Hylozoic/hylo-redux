@@ -4,8 +4,8 @@ import { compose } from 'redux'
 import { connect } from 'react-redux'
 import { prefetch, defer } from 'react-fetcher'
 import { commentUrl, peopleUrl } from '../../routes'
-import { FETCH_PERSON, fetchThanks, fetchContributions, navigate, showDirectMessage } from '../../actions'
-import { fetchPerson } from '../../actions/people'
+import { FETCH_PERSON, navigate, showDirectMessage } from '../../actions'
+import { fetchContributions, fetchPerson, fetchThanks } from '../../actions/people'
 import { findError, saveCurrentCommunityId } from '../../actions/util'
 import { capitalize, compact, get, some, includes } from 'lodash'
 import { isNull, isUndefined, map, omitBy, sortBy } from 'lodash/fp'
@@ -33,25 +33,32 @@ const { func, object } = React.PropTypes
 const spacer = <span>&nbsp;&nbsp;•&nbsp;&nbsp;</span>
 const subject = 'person'
 
-const getFetchOpts = query => {
+const getFetchOpts = (query, fetchingPosts = true) => {
+  const defaults = {tag: null, type: null}
+  if (query['check-join-requests']) {
+    defaults['check-join-requests'] = 1
+  }
+
+  if (!fetchingPosts) return defaults
+
   switch (query.show) {
     case 'request':
-      return {tag: 'request', type: null}
+      return {...defaults, tag: 'request'}
     case 'offer':
-      return {tag: 'offer', type: null}
+      return {...defaults, tag: 'offer'}
     case 'event':
-      return {tag: null, type: 'event'}
+      return {...defaults, type: 'event'}
     default:
-      return {tag: null, type: null}
+      return defaults
   }
 }
 
 const initialFetch = (id, query) => {
   switch (query.show) {
     case 'thank':
-      return fetchThanks(id)
+      return fetchThanks(id, getFetchOpts(query, false))
     case 'contribution':
-      return fetchContributions(id)
+      return fetchContributions(id, getFetchOpts(query, false))
     default:
       return fetch(subject, id, getFetchOpts(query))
   }
@@ -60,7 +67,7 @@ const initialFetch = (id, query) => {
 const PersonProfile = compose(
   prefetch(({ store, dispatch, params: { id }, query }) =>
   Promise.all([
-    dispatch(fetchPerson(id))
+    dispatch(fetchPerson(id, query))
     .then(({ payload: { shared_communities }, error }) => {
       if (error || !shared_communities) return
       let { currentCommunityId } = store.getState()

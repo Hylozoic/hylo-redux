@@ -103,8 +103,8 @@ export class PostEditor extends React.PureComponent {
 
   componentDidMount () {
     // initialize the communities list when opening the editor in a community
-    const { community, postEdit: { communities } } = this.props
-    if (community && isEmpty(communities)) this.addCommunity(community)
+    const { parentPostId, community, postEdit: { communities } } = this.props
+    if (!parentPostId && community && isEmpty(communities)) this.addCommunity(community)
     this.refs.title.focus()
   }
 
@@ -138,7 +138,7 @@ export class PostEditor extends React.PureComponent {
   }
 
   validate () {
-    let { postEdit } = this.props
+    let { parentPostId, postEdit } = this.props
     const { title } = this.refs
 
     if (!postEdit.name) {
@@ -147,7 +147,7 @@ export class PostEditor extends React.PureComponent {
       return Promise.resolve(false)
     }
 
-    if (isEmpty(postEdit.community_ids)) {
+    if (!parentPostId && isEmpty(postEdit.community_ids)) {
       window.alert('Please pick at least one community.')
       return Promise.resolve(false)
     }
@@ -182,7 +182,6 @@ export class PostEditor extends React.PureComponent {
       ...attachmentParams(post && post.media, postEdit.media)
     }
     if (parentPostId) params.parent_post_id = parentPostId
-
     return dispatch((post ? updatePost : createPost)(id, params, currentCommunitySlug))
     .then(action => {
       if (responseMissingTagDescriptions(action)) {
@@ -266,7 +265,7 @@ export class PostEditor extends React.PureComponent {
 
   render () {
     const {
-      post, postEdit, dispatch, imagePending, saving, id, defaultTags, placeholder
+      parentPostId, post, postEdit, dispatch, imagePending, saving, id, defaultTags, placeholder
     } = this.props
     const { currentUser } = this.context
     const { description, community_ids, tag, linkPreview } = postEdit
@@ -334,18 +333,18 @@ export class PostEditor extends React.PureComponent {
       {Subeditor && <Subeditor ref='subeditor'
         {...{post, postEdit, update: this.updateStore}}/>}
 
-      <div className='communities'>
+      {!parentPostId && <div className='communities'>
         <span>in&nbsp;</span>
         <CommunitySelector ids={community_ids}
           onSelect={this.addCommunity}
           onRemove={this.removeCommunity}/>
-      </div>
+      </div>}
 
       <div className='buttons'>
 
-        <VisibilityDropdown
+        {!parentPostId && <VisibilityDropdown
           isPublic={postEdit.public || false}
-          setPublic={isPublic => this.updateStore({public: isPublic})}/>
+          setPublic={isPublic => this.updateStore({public: isPublic})}/>}
 
         <AttachmentsDropdown id={this.props.id}
           media={postEdit.media}

@@ -77,19 +77,22 @@ export class CommunityPosts extends Component {
 
   constructor (props) {
     super(props)
-    // store this here so it doesn't change every time the component is rendered
-    this.state = {moduleChoice: coinToss()}
+    this.state = {
+      optimisticSent: false,
+      joinRequestError: false,
+      moduleChoice: coinToss()
+    }
   }
 
   requestToJoin (opts) {
     const { community, dispatch } = this.props
     const { currentUser } = this.context
-
     if (!currentUser) return dispatch(navigate(`/signup?next=/c/${community.slug}?join=true`))
+    this.setState({optimisticSent: true})
     return dispatch(requestToJoinCommunity(community.slug))
     .then(({ error }) => error
-      ? dispatch(notify('There was a problem saving your request; please try again later.', {...opts, type: 'error'}))
-      : dispatch(notify('Your request to join has been sent to the community moderators.', opts)))
+      ? this.setState({joinRequestError: true})
+      : null)
   }
 
   componentDidMount () {
@@ -109,6 +112,7 @@ export class CommunityPosts extends Component {
   render () {
     let { location: { query }, dispatch, community, params: { id } } = this.props
     const { currentUser } = this.context
+    const { optimisticSent, joinRequestError } = this.state
 
     const module = getFeedModule(community, currentUser, this.state.moduleChoice)
 
@@ -120,7 +124,15 @@ export class CommunityPosts extends Component {
       {isMember(currentUser, community) && <PostEditor community={community} />}
       {hasFeature(currentUser, REQUEST_TO_JOIN_COMMUNITY) && !isMember(currentUser, community) &&
         <div className='request-to-join'>
-          You are not a member of this community. <a onClick={() => this.requestToJoin()} className='button'>Request to Join</a>
+          {!optimisticSent && !joinRequestError && <span>
+            You are not a member of this community. <a onClick={() => this.requestToJoin()} className='button'>Request to Join</a>
+          </span>}
+          {optimisticSent && !joinRequestError && <span>
+            Your request to join has been sent to the community moderators.
+          </span>}
+          {joinRequestError && <span>
+            There was an error creating your join request. Please try again later.
+          </span>}
         </div>}
       <ConnectedPostList {...{subject, id, query}} module={module} />
       {!isMember(currentUser, community) && <div className='post-list-footer'>

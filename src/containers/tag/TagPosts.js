@@ -22,9 +22,7 @@ function reloadTag (dispatch, name, id, query) {
   // that didn't yet exist, and then created a first post with that tag
   dispatch(resetError(FETCH_TAG))
   return dispatch(fetchTag(name, id))
-  .then(({ payload }) => payload.post
-    ? dispatch(navigate(`/p/${payload.post.id}`))
-    : dispatch(fetch(subject, id || 'all', {...query, tag: name})))
+  .then(() => dispatch(fetch(subject, id || 'all', {...query, tag: name})))
 }
 
 @prefetch(({ dispatch, params: { tagName, id }, query }) =>
@@ -34,7 +32,6 @@ function reloadTag (dispatch, name, id, query) {
   return {
     isMobile: state.isMobile,
     tag,
-    redirecting: !!get('post.id', tag),
     community: get(['communities', id], state),
     tagError: get(FETCH_TAG, state.errors)
   }
@@ -46,7 +43,6 @@ export default class TagPosts extends React.Component {
     location: object,
     tag: object,
     community: object,
-    redirecting: bool,
     tagError: object,
     isMobile: bool
   }
@@ -61,7 +57,7 @@ export default class TagPosts extends React.Component {
 
   render () {
     const {
-      params: { tagName, id }, location: { query }, dispatch, redirecting,
+      params: { tagName, id }, location: { query }, dispatch,
       community, tagError, isMobile
     } = this.props
     const { currentUser } = this.context
@@ -79,7 +75,7 @@ export default class TagPosts extends React.Component {
 
     // we check tag.id here because tag will be non-null if we're clicking a
     // link in the left nav, but it won't have an id until fetchTag returns
-    if (!tag || !tag.id || redirecting) {
+    if (!tag || !tag.id) {
       return <div className='loading'>Please wait...</div>
     }
 

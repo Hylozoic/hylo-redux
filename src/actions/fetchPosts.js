@@ -8,8 +8,9 @@ export function fetchPosts (opts) {
   } = opts
   const offset = opts.offset || 0
   const queryParams = {
-    offset, limit, type, tag, sort, search, filter, omit, parent_post_id,
-    comments: true, votes: true
+    offset, limit, type, tag, sort, search, filter, omit, parent_post_id, // eslint-disable-line object-property-newline
+    comments: true,
+    votes: true
   }
   let path
 
@@ -28,6 +29,9 @@ export function fetchPosts (opts) {
       break
     case 'person':
       path = `/noo/user/${id}/posts`
+      if (opts['check-join-requests']) {
+        queryParams['check-join-requests'] = 1
+      }
       break
     case 'all-posts':
       path = `/noo/user/${id}/all-community-posts`

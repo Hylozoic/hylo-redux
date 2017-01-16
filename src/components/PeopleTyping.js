@@ -1,5 +1,6 @@
 import React from 'react'
 import { values } from 'lodash'
+import cx from 'classnames'
 import { getSocket } from '../client/websockets'
 const { bool } = React.PropTypes
 
@@ -13,11 +14,12 @@ export default class PeopleTyping extends React.Component {
   }
 
   static propTypes = {
-    showNames: bool
+    showNames: bool,
+    showBorder: bool
   }
 
   componentDidMount () {
-    this.socket = getSocket() 
+    this.socket = getSocket()
     this.socket.on('userTyping', this.userTyping.bind(this))
   }
 
@@ -36,14 +38,15 @@ export default class PeopleTyping extends React.Component {
   }
 
   render () {
-    const { showNames } = this.props
+    const { showNames, showBorder } = this.props
     const names = values(this.state.peopleTyping)
-    return names.length ? <div className='typing'>
-      <Chillipsis/>
+    return names.length ? <div className={cx('typing', {showBorder})}>
       {names.length === 1 && <div>
-        {showNames ? names[0] : 'Someone'} is typing...
+        {showNames ? names[0] : 'Someone'} is typing
       </div>}
-      {names.length > 1 && <div>Multiple people are typing...</div>}
+      {names.length > 1 && <div>Multiple people are typing</div>}
+      &nbsp;
+      <Chillipsis/>
     </div> : null
   }
 }

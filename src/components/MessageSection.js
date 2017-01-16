@@ -1,5 +1,5 @@
 import React from 'react'
-import { throttle, isEmpty, sortBy, maxBy } from 'lodash'
+import { throttle, isEmpty, maxBy } from 'lodash'
 import { get } from 'lodash/fp'
 const { array, bool, func, object } = React.PropTypes
 import cx from 'classnames'
@@ -37,6 +37,8 @@ export default class MessageSection extends React.Component {
     messages: array,
     onScroll: func,
     onScrollToTop: func,
+    onHitBottom: func,
+    onLeftBottom: func,
     pending: bool,
     thread: object
   }
@@ -77,13 +79,17 @@ export default class MessageSection extends React.Component {
   }
 
   detectScrollExtremes = throttle(target => {
+    const { onLeftBottom, onHitBottom } = this.props
     const { scrolledUp } = this.state
     const { scrollTop, scrollHeight, offsetHeight } = target
     const onBottom = scrollTop > scrollHeight - offsetHeight
-    if (!onBottom && !scrolledUp) this.setState({ scrolledUp: true })
-    else if (onBottom && scrolledUp) {
+    if (!onBottom && !scrolledUp) {
+      this.setState({ scrolledUp: true })
+      onLeftBottom()
+    } else if (onBottom && scrolledUp) {
       this.setState({ scrolledUp: false })
       this.markAsRead()
+      onHitBottom()
     }
     if (scrollTop <= 50 && this.props.onScrollToTop) this.props.onScrollToTop()
   }, 500, {trailing: true})
@@ -100,6 +106,7 @@ export default class MessageSection extends React.Component {
     } else {
       this.visibility.once('show', this.markAsRead)
     }
+    this.props.onHitBottom()
   }
 
   markAsRead = () => {
@@ -109,24 +116,13 @@ export default class MessageSection extends React.Component {
   }
 
   render () {
-    const { thread } = this.props
-    const messages = sortBy(this.props.messages || [], 'created_at')
-    const { currentUser } = this.context
-    const { scrolledUp } = this.state
+    const { messages } = this.props
     const messageList = createMessageList(messages, this)
-
-    const latestMessage = messages.length && messages[messages.length - 1]
-    const latestFromOther = latestMessage && latestMessage.user_id !== currentUser.id
-    const newFromOther = latestFromOther && thread.last_read_at && new Date(latestMessage.created_at) > new Date(thread.last_read_at)
 
     return <div className={cx('messages-section', {empty: isEmpty(messages)})}
       ref={list => { this.list = list }}
       onScroll={this.handleScroll}>
       <div className='messages-section-inner'>
-        {newFromOther && scrolledUp &&
-          <div className='newMessagesNotify' onClick={this.scrollToBottom}>
-            New Messages
-          </div>}
         {messageList}
       </div>
     </div>

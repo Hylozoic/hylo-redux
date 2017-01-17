@@ -104,12 +104,12 @@ export class InviteForm extends React.Component {
     const oldId = get('community.id', this.props)
     const newId = get('community.id', nextProps)
     if (newId !== oldId) {
-      this.resetInvitationText()
+      this.resetInvitationText(nextProps)
     }
   }
 
-  resetInvitationText () {
-    const { dispatch, community } = this.props
+  resetInvitationText (nextProps) {
+    const { dispatch, community } = nextProps || this.props
     dispatch(updateInvitationEditor('subject', defaultInvitationSubject(community.name)))
     dispatch(updateInvitationEditor('message', defaultInvitationMessage(community.name)))
   }

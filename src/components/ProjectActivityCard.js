@@ -1,7 +1,6 @@
 import React from 'react'
 import Post from './Post'
 import A from './A'
-import LazyLoader from './LazyLoader'
 import { imageUrl } from '../models/post'
 import { humanDate } from '../util/text'
 
@@ -18,6 +17,7 @@ const ProjectActivityCard = ({ onExpand, post }, context) => {
       <span className='name'>{project.name}</span>
       <span className='spacer'>{spacer}</span>
       <span className='date'>{humanDate(project.created_at)}</span>
+      <A className='orange-button' to={url}>See all requests</A>
     </div>
     <Post post={post} onExpand={onExpand} />
   </div>

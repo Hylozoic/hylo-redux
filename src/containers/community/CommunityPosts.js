@@ -8,7 +8,8 @@ import { prefetch } from 'react-fetcher'
 import {
   COMMUNITY_SETUP_CHECKLIST,
   REQUEST_TO_JOIN_COMMUNITY,
-  IN_FEED_PROFILE_COMPLETION_MODULES
+  IN_FEED_PROFILE_COMPLETION_MODULES,
+  IN_FEED_ENGAGEMENT_MODULES
 } from '../../config/featureFlags'
 import { fetch, ConnectedPostList } from '../ConnectedPostList'
 
@@ -110,7 +111,11 @@ export class CommunityPosts extends Component {
     let { location: { query }, dispatch, community, params: { id } } = this.props
     const { currentUser } = this.context
 
-    const module = getFeedModule(community, currentUser, this.state.moduleChoice)
+    var module
+
+    if (hasFeature(currentUser, IN_FEED_ENGAGEMENT_MODULES)) {
+      module = getFeedModule(community, currentUser, this.state.moduleChoice)
+    }
 
     return <div>
       {hasFeature(currentUser, COMMUNITY_SETUP_CHECKLIST) && canModerate(currentUser, community) &&

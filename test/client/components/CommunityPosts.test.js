@@ -38,7 +38,8 @@ describe('CommunityPosts', () => {
     window.FEATURE_FLAGS = {
       REQUEST_TO_JOIN_COMMUNITY: 'on',
       COMMUNITY_SETUP_CHECKLIST: 'on',
-      IN_FEED_PROFILE_COMPLETION_MODULES: 'on'
+      IN_FEED_PROFILE_COMPLETION_MODULES: 'on',
+      IN_FEED_ENGAGEMENT_MODULES: 'on'
     }
   })
 
@@ -71,7 +72,7 @@ describe('CommunityPosts', () => {
     .to.equal('You are not a member of this community. Request to Join')
   })
 
-  describe('EngagementModules', () => {
+  describe('Engagement Modules', () => {
     it('displays the correct engagement modules according to rules', () => {
       let node = setupNode({...community,
         memberCount: MIN_MEMBERS_FOR_SKILLS_MODULE - 1,

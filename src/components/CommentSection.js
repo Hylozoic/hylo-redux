@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 import React from 'react'
 import { isEmpty } from 'lodash'
 import { sortBy } from 'lodash/fp'
@@ -26,12 +27,17 @@ export default class CommentSection extends React.Component {
   }
 
   componentDidMount () {
-    const { post: { id }, expanded } = this.props
+    const { post, post: { id }, expanded } = this.props
+    const { currentUser } = this.context
     const { dispatch } = this.context
     if (expanded) {
       this.socket = getSocket()
       this.socket.post(socketUrl(`/noo/post/${id}/subscribe`))
-      this.socket.on('commentAdded', c => dispatch(appendComment(id, c)))
+      this.socket.on('commentAdded', ({ parent_post_id, comment }) => {
+        if (parent_post_id !== post.parent_post_id) return
+        if (comment.user_id === currentUser.id) return
+        dispatch(appendComment(id, comment))
+      })
     }
   }
 
@@ -63,10 +69,10 @@ export default class CommentSection extends React.Component {
         expand={() => onExpand(c.id)}
         community={community}
         expanded={expanded}
-        key={c.id}/>)}
-      <PeopleTyping showNames={false}/>
+        key={c.id} />)}
+      <PeopleTyping showNames={false} />
       {(canComment(currentUser, post) || isProjectRequest) &&
-        <CommentForm postId={post.id} {...{placeholder}}/>}
+        <CommentForm postId={post.id} {...{placeholder}} />}
     </div>
   }
 }

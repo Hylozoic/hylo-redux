@@ -218,10 +218,6 @@ assignment@2.2.0:
   version "2.2.0"
   resolved "https://registry.yarnpkg.com/assignment/-/assignment-2.2.0.tgz#f5b5bc2d160d69986e8700cd38f567c0aabe101e"
 
-ast-types@0.8.15:
-  version "0.8.15"
-  resolved "https://registry.yarnpkg.com/ast-types/-/ast-types-0.8.15.tgz#8eef0827f04dff0ec8857ba925abe3fea6194e52"
-
 astw@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/astw/-/astw-2.0.0.tgz#08121ac8288d35611c0ceec663f6cd545604897d"
@@ -1055,10 +1051,6 @@ balanced-match@^0.4.1:
   version "0.4.2"
   resolved "https://registry.yarnpkg.com/balanced-match/-/balanced-match-0.4.2.tgz#cb3f3e3c732dc0f01ee70b403f302e61d7709838"
 
-base62@^1.1.0:
-  version "1.1.1"
-  resolved "https://registry.yarnpkg.com/base62/-/base62-1.1.1.tgz#974e82c11bd5e00816b508a7ed9c7b9086c9db6b"
-
 base64-arraybuffer@0.1.5:
   version "0.1.5"
   resolved "https://registry.yarnpkg.com/base64-arraybuffer/-/base64-arraybuffer-0.1.5.tgz#73926771923b5a19747ad666aa5cd4bf9c6e9ce8"
@@ -1128,9 +1120,9 @@ block-stream@*:
   dependencies:
     inherits "~2.0.0"
 
-bluebird@^3.0.5:
-  version "3.4.6"
-  resolved "https://registry.yarnpkg.com/bluebird/-/bluebird-3.4.6.tgz#01da8d821d87813d158967e743d5fe6c62cf8c0f"
+bluebird@^3.4.7:
+  version "3.4.7"
+  resolved "https://registry.yarnpkg.com/bluebird/-/bluebird-3.4.7.tgz#f72d760be09b7f76d08ed8fae98b289a8d05fab3"
 
 bn.js@^4.0.0, bn.js@^4.1.0, bn.js@^4.1.1, bn.js@^4.4.0:
   version "4.11.6"
@@ -1607,7 +1599,7 @@ commander@2.8.x:
   dependencies:
     graceful-readlink ">= 1.0.0"
 
-commander@2.9.0, commander@^2.5.0, commander@^2.8.1, commander@^2.9.0:
+commander@2.9.0, commander@^2.8.1, commander@^2.9.0:
   version "2.9.0"
   resolved "https://registry.yarnpkg.com/commander/-/commander-2.9.0.tgz#9c99094176e12240cb22d6c5146098400fe0f7d4"
   dependencies:
@@ -1616,20 +1608,6 @@ commander@2.9.0, commander@^2.5.0, commander@^2.8.1, commander@^2.9.0:
 commondir@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/commondir/-/commondir-1.0.1.tgz#ddd800da0c66127393cca5950ea968a3aaf1253b"
-
-commoner@^0.10.1:
-  version "0.10.4"
-  resolved "https://registry.yarnpkg.com/commoner/-/commoner-0.10.4.tgz#98f3333dd3ad399596bb2d384a783bb7213d68f8"
-  dependencies:
-    commander "^2.5.0"
-    detective "^4.3.1"
-    glob "^5.0.15"
-    graceful-fs "^4.1.2"
-    iconv-lite "^0.4.5"
-    mkdirp "^0.5.0"
-    private "^0.1.6"
-    q "^1.1.2"
-    recast "^0.10.0"
 
 component-bind@1.0.0:
   version "1.0.0"
@@ -2035,7 +2013,7 @@ detect-newline@2.X:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/detect-newline/-/detect-newline-2.1.0.tgz#f41f1c10be4b00e87b5f13da680759f2c5bfd3e2"
 
-detective@^4.0.0, detective@^4.3.1:
+detective@^4.0.0:
   version "4.3.1"
   resolved "https://registry.yarnpkg.com/detective/-/detective-4.3.1.tgz#9fb06dd1ee8f0ea4dbcc607cda39d9ce1d4f726f"
   dependencies:
@@ -2223,11 +2201,11 @@ entities@^1.1.1, entities@~1.1.1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/entities/-/entities-1.1.1.tgz#6e5c2d0a5621b5dadaecef80b90edfb5cd7772f0"
 
-envify@^3.4.0:
-  version "3.4.1"
-  resolved "https://registry.yarnpkg.com/envify/-/envify-3.4.1.tgz#d7122329e8df1688ba771b12501917c9ce5cbce8"
+envify@^4.0.0:
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/envify/-/envify-4.0.0.tgz#f791343e3d11cc29cce41150300a8af61c66cab0"
   dependencies:
-    jstransform "^11.0.3"
+    esprima "~3.1.0"
     through "~2.3.4"
 
 enzyme@^2.4.1:
@@ -2343,17 +2321,13 @@ escodegen@^1.6.1:
   optionalDependencies:
     source-map "~0.2.0"
 
-esprima-fb@^15001.1.0-dev-harmony-fb:
-  version "15001.1.0-dev-harmony-fb"
-  resolved "https://registry.yarnpkg.com/esprima-fb/-/esprima-fb-15001.1.0-dev-harmony-fb.tgz#30a947303c6b8d5e955bee2b99b1d233206a6901"
-
-esprima-fb@~15001.1001.0-dev-harmony-fb:
-  version "15001.1001.0-dev-harmony-fb"
-  resolved "https://registry.yarnpkg.com/esprima-fb/-/esprima-fb-15001.1001.0-dev-harmony-fb.tgz#43beb57ec26e8cf237d3dd8b33e42533577f2659"
-
 esprima@^2.7.1, esprima@~2.7.0:
   version "2.7.3"
   resolved "https://registry.yarnpkg.com/esprima/-/esprima-2.7.3.tgz#96e3b70d5779f6ad49cd032673d1c312767ba581"
+
+esprima@~3.1.0:
+  version "3.1.3"
+  resolved "https://registry.yarnpkg.com/esprima/-/esprima-3.1.3.tgz#fdca51cee6133895e3c88d535ce49dbff62a4633"
 
 estraverse@^1.9.1:
   version "1.9.3"
@@ -3309,7 +3283,14 @@ hylo-utils@Hylozoic/hylo-utils:
     insane "^2.6.1"
     marked "^0.3.5"
 
-iconv-lite@0.4.13, iconv-lite@^0.4.13, iconv-lite@^0.4.5, iconv-lite@~0.4.13:
+"hylo-utils@https://github.com/Hylozoic/hylo-utils.git":
+  version "1.0.1"
+  resolved "https://github.com/Hylozoic/hylo-utils.git#bc287c1de046e284abc585d7ec0dabc3cf5e0bc7"
+  dependencies:
+    insane "^2.6.1"
+    marked "^0.3.5"
+
+iconv-lite@0.4.13, iconv-lite@^0.4.13, iconv-lite@~0.4.13:
   version "0.4.13"
   resolved "https://registry.yarnpkg.com/iconv-lite/-/iconv-lite-0.4.13.tgz#1f88aba4ab0b1508e8312acc39345f36e992e2f2"
 
@@ -3789,16 +3770,6 @@ jsprim@^1.2.2:
     extsprintf "1.0.2"
     json-schema "0.2.3"
     verror "1.3.6"
-
-jstransform@^11.0.3:
-  version "11.0.3"
-  resolved "https://registry.yarnpkg.com/jstransform/-/jstransform-11.0.3.tgz#09a78993e0ae4d4ef4487f6155a91f6190cb4223"
-  dependencies:
-    base62 "^1.1.0"
-    commoner "^0.10.1"
-    esprima-fb "^15001.1.0-dev-harmony-fb"
-    object-assign "^2.0.0"
-    source-map "^0.4.2"
 
 keypress@0.1.x:
   version "0.1.0"
@@ -4744,10 +4715,6 @@ object-assign@4.1.0, object-assign@^4.0.0, object-assign@^4.0.1, object-assign@^
   version "4.1.0"
   resolved "https://registry.yarnpkg.com/object-assign/-/object-assign-4.1.0.tgz#7a3b3d0e98063d43f4c03f2e8ae6cd51a86883a0"
 
-object-assign@^2.0.0:
-  version "2.1.1"
-  resolved "https://registry.yarnpkg.com/object-assign/-/object-assign-2.1.1.tgz#43c36e5d569ff8e4816c4efa8be02d26967c18aa"
-
 object-assign@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/object-assign/-/object-assign-3.0.0.tgz#9bedd5ca0897949bca47e7ff408062d549f587f2"
@@ -5163,7 +5130,7 @@ punycode@^1.3.2:
   version "1.4.1"
   resolved "https://registry.yarnpkg.com/punycode/-/punycode-1.4.1.tgz#c0d5a63b2718800ad8e1eb0fa5269c84dd41845e"
 
-q@^1.1.2, q@^1.2.0:
+q@^1.2.0:
   version "1.4.1"
   resolved "https://registry.yarnpkg.com/q/-/q-1.4.1.tgz#55705bcd93c5f3673530c2c2cbc0c2b3addc286e"
 
@@ -5419,15 +5386,6 @@ readdirp@^2.0.0:
     minimatch "^3.0.2"
     readable-stream "^2.0.2"
     set-immediate-shim "^1.0.1"
-
-recast@^0.10.0:
-  version "0.10.43"
-  resolved "https://registry.yarnpkg.com/recast/-/recast-0.10.43.tgz#b95d50f6d60761a5f6252e15d80678168491ce7f"
-  dependencies:
-    ast-types "0.8.15"
-    esprima-fb "~15001.1001.0-dev-harmony-fb"
-    private "~0.1.5"
-    source-map "~0.5.0"
 
 rechoir@^0.6.2:
   version "0.6.2"
@@ -5858,13 +5816,13 @@ source-map-url@~0.3.0:
   version "0.3.0"
   resolved "https://registry.yarnpkg.com/source-map-url/-/source-map-url-0.3.0.tgz#7ecaf13b57bcd09da8a40c5d269db33799d4aaf9"
 
-source-map@0.4.x, source-map@^0.4.2, source-map@^0.4.4:
+source-map@0.4.x, source-map@^0.4.4:
   version "0.4.4"
   resolved "https://registry.yarnpkg.com/source-map/-/source-map-0.4.4.tgz#eba4f5da9c0dc999de68032d8b4f76173652036b"
   dependencies:
     amdefine ">=0.0.4"
 
-source-map@0.X, source-map@^0.5.0, source-map@^0.5.1, source-map@^0.5.3, source-map@~0.5.0, source-map@~0.5.1, source-map@~0.5.3:
+source-map@0.X, source-map@^0.5.0, source-map@^0.5.1, source-map@^0.5.3, source-map@~0.5.1, source-map@~0.5.3:
   version "0.5.6"
   resolved "https://registry.yarnpkg.com/source-map/-/source-map-0.5.6.tgz#75ce38f52bf0733c5a7f0c118d81334a2bb5f412"
 

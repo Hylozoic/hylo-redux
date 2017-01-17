@@ -75,11 +75,11 @@ export default class CommunityInvite extends React.Component {
         </div>
       </div>
       <div>
-        <InviteForm community={community} allowModerators/>
+        <InviteForm community={community} allowModerators />
       </div>
       {hasFeature(currentUser, REQUEST_TO_JOIN_COMMUNITY) && !isEmpty(joinRequests) &&
         <JoinRequestList id={community.slug}/>}
-      {!isEmpty(invitations) && <InvitationList id={community.slug}/>}
+      {!isEmpty(invitations) && <InvitationList id={community.slug} />}
     </div>
   }
 }

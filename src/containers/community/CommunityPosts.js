@@ -8,21 +8,58 @@ import { prefetch } from 'react-fetcher'
 import {
   COMMUNITY_SETUP_CHECKLIST,
   REQUEST_TO_JOIN_COMMUNITY,
-  IN_FEED_PROFILE_COMPLETION_MODULES
+  IN_FEED_PROFILE_COMPLETION_MODULES,
+  IN_FEED_ENGAGEMENT_MODULES
 } from '../../config/featureFlags'
 import { fetch, ConnectedPostList } from '../ConnectedPostList'
+
 import PostEditor from '../../components/PostEditor'
 import ProfileSkillsModule from '../../components/ProfileSkillsModule'
 import ProfileBioModule from '../../components/ProfileBioModule'
+import PopularSkillsModule from '../../components/PopularSkillsModule'
+import PostPromptModule from '../../components/PostPromptModule'
+
 import { PercentBar } from '../ChecklistModal'
 import {
   isMember, canModerate, hasFeature, hasBio, hasSkills
 } from '../../models/currentUser'
 import { navigate, notify, showModal } from '../../actions'
+import { sendGraphqlQuery } from '../../actions/graphql'
 import { requestToJoinCommunity } from '../../actions/communities'
 import { getChecklist, checklistPercentage } from '../../models/community'
+import { groupUser } from 'hylo-utils'
+import { coinToss } from '../../util'
 
-export const subject = 'community'
+const subject = 'community'
+export const MIN_MEMBERS_FOR_SKILLS_MODULE = 6
+export const MIN_POSTS_FOR_POST_PROMPT_MODULE = 4
+
+const getFeedModule = (community, currentUser, moduleChoice) => {
+  let module
+
+  if (groupUser(currentUser.id, 'In-Feed Engagement Modules') === 0) {
+    const showPopularSkills = community.memberCount >= MIN_MEMBERS_FOR_SKILLS_MODULE
+    const showPostPrompt = community.postCount >= MIN_POSTS_FOR_POST_PROMPT_MODULE
+
+    module = {
+      id: -1,
+      type: 'module'
+    }
+
+    if (showPopularSkills && showPostPrompt) {
+      module.component = moduleChoice
+      ? <PopularSkillsModule community={community} />
+      : <PostPromptModule />
+    } else if (showPopularSkills) {
+      module.component = <PopularSkillsModule community={community} />
+    } else if (showPostPrompt) {
+      module.component = <PostPromptModule />
+    } else {
+      module = null
+    }
+  }
+  return module
+}
 
 export class CommunityPosts extends Component {
   static propTypes = {
@@ -43,7 +80,8 @@ export class CommunityPosts extends Component {
     super(props)
     this.state = {
       optimisticSent: false,
-      joinRequestError: false
+      joinRequestError: false,
+      moduleChoice: coinToss()
     }
   }
 
@@ -77,13 +115,18 @@ export class CommunityPosts extends Component {
     const { currentUser } = this.context
     const { optimisticSent, joinRequestError } = this.state
 
+    var module
+
+    if (hasFeature(currentUser, IN_FEED_ENGAGEMENT_MODULES)) {
+      module = getFeedModule(community, currentUser, this.state.moduleChoice)
+    }
+
     return <div>
       {hasFeature(currentUser, COMMUNITY_SETUP_CHECKLIST) && canModerate(currentUser, community) &&
         <CommunitySetup community={community} dispatch={dispatch} />}
       {hasFeature(currentUser, IN_FEED_PROFILE_COMPLETION_MODULES) && isMember(currentUser, community) &&
         <ProfileCompletionModules person={currentUser} />}
-      {isMember(currentUser, community) &&
-        <PostEditor community={community} />}
+      {isMember(currentUser, community) && <PostEditor community={community} />}
       {hasFeature(currentUser, REQUEST_TO_JOIN_COMMUNITY) && !isMember(currentUser, community) &&
         <div className='request-to-join'>
           {!optimisticSent && !joinRequestError && <span>
@@ -96,13 +139,25 @@ export class CommunityPosts extends Component {
             There was an error creating your join request. Please try again later.
           </span>}
         </div>}
-      <ConnectedPostList {...{subject, id, query}} />
+      <ConnectedPostList {...{subject, id, query}} module={module} />
       {!isMember(currentUser, community) && <div className='post-list-footer'>
         You are not a member of this community, so you are shown only posts that are marked as public.
       </div>}
     </div>
   }
 }
+
+const fetchCommunityStats = slug =>
+  sendGraphqlQuery(`query ($slug: String) {
+    community(slug: $slug) {
+      memberCount
+      postCount
+    }
+  }`, {
+    subject: 'community-stats',
+    id: slug,
+    variables: {slug}
+  })
 
 const CommunitySetup = ({ community, dispatch }) => {
   const checklist = getChecklist(community)
@@ -134,6 +189,9 @@ const mapStateToProps = (state, { params }) => ({
 
 export default compose(
   prefetch(({ dispatch, params: { id }, query }) =>
-    dispatch(fetch(subject, id, query))),
+    Promise.all([
+      dispatch(fetch(subject, id, query)),
+      dispatch(fetchCommunityStats(id))
+    ])),
   connect(mapStateToProps)
 )(CommunityPosts)

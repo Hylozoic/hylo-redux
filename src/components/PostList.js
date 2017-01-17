@@ -59,6 +59,7 @@ class PostList extends React.Component {
       dispatch, hideMobileSearch, noPostsMessage
     } = this.props
     const { isMobile } = this.context
+
     const posts = filter(p => !includes(p.id, hide), this.props.posts)
     const doSearch = text => dispatch(navigate(makeUrl('/search', {q: text})))
 
@@ -78,6 +79,8 @@ class PostList extends React.Component {
           return <EventPostCard post={post}/>
         case 'project':
           return <ProjectPostCard post={post}/>
+        case 'module':
+          return post.component
       }
 
       return <Post post={post} onExpand={commentId => this.expand(post.id, commentId)}/>

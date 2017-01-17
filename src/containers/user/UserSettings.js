@@ -38,7 +38,7 @@ const fetchUserHasDevice = () =>
     }
   }`, {
     addDataToStore: {
-      currentUser: get('data.me')
+      currentUser: get('me')
     }
   })
 

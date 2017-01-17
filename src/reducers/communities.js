@@ -81,15 +81,27 @@ export default function (state = {}, action) {
         ...state, [meta.slug]: {...community, settings: payload}
       }
     case SEND_GRAPHQL_QUERY:
-      if (meta.subject === 'popular-skills') {
-        community = state[meta.id]
-        return {
-          ...state,
-          [meta.id]: {
-            ...community,
-            popularSkills: payload.data.community.popularSkills
+      switch (meta.subject) {
+        case 'popular-skills':
+          community = state[meta.id]
+          return {
+            ...state,
+            [meta.id]: {
+              ...community,
+              popularSkills: payload.community.popularSkills
+            }
           }
-        }
+        case 'community-stats':
+          community = state[meta.id]
+          return {
+            ...state,
+            [meta.id]: {
+              ...community,
+              ...payload.community
+            }
+          }
+        default:
+          return state
       }
   }
   return state

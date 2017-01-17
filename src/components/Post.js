@@ -4,37 +4,37 @@ import { find, filter, get } from 'lodash/fp'
 const { array, bool, func, object, string } = React.PropTypes
 import cx from 'classnames'
 import cheerio from 'cheerio'
+import decode from 'ent/decode'
 import {
   humanDate, nonbreaking, present, textLength, truncate, appendInP
 } from '../util/text'
 import { sanitize } from 'hylo-utils/text'
 import { linkifyHashtags } from '../util/linkify'
 import { tagUrl } from '../routes'
-import A from './A'
-import Avatar from './Avatar'
-import Dropdown from './Dropdown'
-import Attachments from './Attachments'
-import { ClickCatchingSpan } from './ClickCatcher'
-import { handleMouseOver } from './Popover'
-import LazyLoader from './LazyLoader'
-import Icon from './Icon'
-import LinkedPersonSentence from './LinkedPersonSentence'
-import LinkPreview from './LinkPreview'
 import { connect } from 'react-redux'
 import { compose } from 'redux'
+import { isMobile } from '../client/util'
+import { same } from '../models'
+import { denormalizedPost, getComments, isPinned } from '../models/post'
+import { canEditPost, canModerate, hasFeature } from '../models/currentUser'
+import { getCurrentCommunity } from '../models/community'
 import { navigate, showModal, typeahead } from '../actions'
 import {
   completePost, followPost, removePost, startPostEdit, voteOnPost, pinPost
 } from '../actions/posts'
-import { same } from '../models'
-import { denormalizedPost, getComments, isPinned } from '../models/post'
-import { getCurrentCommunity } from '../models/community'
-import { canEditPost, canModerate, hasFeature } from '../models/currentUser'
 import { CONTRIBUTORS } from '../config/featureFlags'
-import { isMobile } from '../client/util'
-import decode from 'ent/decode'
 import CommentSection from './CommentSection'
 import TagInput from './TagInput'
+import LinkedPersonSentence from './LinkedPersonSentence'
+import LinkPreview from './LinkPreview'
+import A from './A'
+import Avatar from './Avatar'
+import Dropdown from './Dropdown'
+import Attachments from './Attachments'
+import LazyLoader from './LazyLoader'
+import Icon from './Icon'
+import { ClickCatchingSpan } from './ClickCatcher'
+import { handleMouseOver } from './Popover'
 
 const spacer = <span>&nbsp; •&nbsp; </span>
 
@@ -71,7 +71,7 @@ export class Post extends React.Component {
   render () {
     let { post } = this.props
     const { comments, expanded, onExpand, community, dispatch, contributorChoices } = this.props
-    const { contributors } = this.state
+    const { contributors, requestCompleting } = this.state
     const { currentUser } = this.context
     const { communities, tag, media, linkPreview, project } = post
     const image = find(m => m.type === 'image', media)
@@ -80,31 +80,30 @@ export class Post extends React.Component {
 
     const canEdit = canEditPost(currentUser, post)
 
-    const isRequest = post.tag === 'request'
+    const isRequest = tag === 'request'
     const isCompleteRequest = isRequest && post.fulfilled_at
     const isIncompleteRequest = isRequest && !post.fulfilled_at && canEdit
-    const toggleRequestCompleting = () => {
-      return this.setState({requestCompleting: !this.state.requestCompleting})
-    }
     const addContributor = (person) => {
-      this.setState({contributors: [...this.state.contributors, person]})
+      this.setState({contributors: [...contributors, person]})
     }
     const removeContributor = (person) => {
-      this.setState({contributors: reject(this.state.contributors, {id: person.id})})
+      this.setState({contributors: reject(contributors, {id: person.id})})
     }
-    const contributorHandleInput = (term) => {
-      dispatch(typeahead(term, 'invite', {communityId: community.id, type: 'people'}))
+    const handleContributorInput = (term) => {
+      dispatch(typeahead(term, 'contributors', {
+        type: 'people', communityIds: post.community_ids }
+      ))
     }
-    const completeRequest = () => {
-      if (contributors.length > 0) {
-        this.setState({contributors: []})
-      }
-      toggleRequestCompleting()
-      dispatch(completePost(post.id, contributors))
-    }
-    const uncompleteRequest = () => {
-      if (window.confirm('This will mark this request as Incomplete. Are you sure?')) {
-        dispatch(completePost(post.id))
+    const toggleRequestCompleting = () => this.setState({requestCompleting: !requestCompleting})
+    const toggleRequestComplete = () => {
+      if (isCompleteRequest) {
+        if (window.confirm('This will mark this request as Incomplete. Are you sure?')) {
+          dispatch(completePost(post.id))
+        }
+      } else {
+        if (contributors.length > 0) this.setState({contributors: []})
+        toggleRequestCompleting()
+        dispatch(completePost(post.id, contributors))
       }
     }
 
@@ -130,7 +129,7 @@ export class Post extends React.Component {
                 type='checkbox'
                 checked={!!post.fulfilled_at}
                 readOnly={!canEdit}
-                onChange={uncompleteRequest} />
+                onChange={toggleRequestComplete} />
               <RequestContributorsSentence post={post} />
             </div>
           </div>
@@ -143,27 +142,27 @@ export class Post extends React.Component {
             <div className='request-complete-message'>
               <input type='checkbox'
                 className='toggle'
-                checked={this.state.requestCompleting}
+                checked={requestCompleting}
                 onChange={toggleRequestCompleting} />
               <p>
-                {this.state.requestCompleting
+                {requestCompleting
                   ? 'Awesome! Who helped you?'
                   : 'Click the checkmark if this request has been completed!'}
               </p>
             </div>
           </div>
-          {this.state.requestCompleting &&
+          {requestCompleting &&
             <div className='buttons'>
               <a className='cancel' onClick={toggleRequestCompleting}>
                 <span className='icon icon-Fail' />
               </a>
               <TagInput className='request-complete-people-input'
                 choices={contributorChoices}
-                handleInput={contributorHandleInput}
+                handleInput={handleContributorInput}
                 onSelect={addContributor}
                 onRemove={removeContributor}
                 tags={contributors} />
-              <a className='done' onClick={completeRequest}>
+              <a className='done' onClick={toggleRequestComplete}>
                 Done
               </a>
             </div>

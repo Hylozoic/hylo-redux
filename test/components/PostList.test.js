@@ -1,6 +1,7 @@
 import { mocks } from '../support'
 import { sample, times } from 'lodash'
 import { renderToString } from 'react-dom/server'
+import React from 'react'
 import PostList from '../../src/components/PostList'
 import cheerio from 'cheerio'
 import { createElement } from '../support/helpers'
@@ -57,6 +58,11 @@ const posts = [
     followers: [],
     user_id: user1.id,
     community_ids: [2]
+  },
+  {
+    id: -1,
+    type: 'module',
+    component: <div className='my-module'>my module</div>
   }
 ]
 
@@ -67,5 +73,6 @@ describe('PostList', () => {
     expect(doc('.post').length).to.equal(3)
     expect(doc('.project-summary').length).to.equal(1)
     expect(doc('.event-summary').length).to.equal(1)
+    expect(doc('.my-module').length).to.equal(1)
   })
 })

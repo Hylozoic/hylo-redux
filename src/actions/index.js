@@ -224,20 +224,6 @@ export function setPassword (email) {
   }
 }
 
-export function fetchPerson (id) {
-  return {
-    type: FETCH_PERSON,
-    payload: {api: true, path: `/noo/user/${id}`},
-    meta: {
-      cache: {bucket: 'people', id, requiredProp: 'grouped_post_count'},
-      addDataToStore: {
-        people: get('people'),
-        communities: get('communities')
-      }
-    }
-  }
-}
-
 export function fetchCurrentUser (refresh) {
   return {
     type: FETCH_CURRENT_USER,
@@ -316,22 +302,6 @@ export function toggleUserSettingsSection (sectionName, forceOpen) {
     type: TOGGLE_USER_SETTINGS_SECTION,
     payload: sectionName,
     meta: {forceOpen}
-  }
-}
-
-export function fetchThanks (id, offset = 0) {
-  return {
-    type: FETCH_THANKS,
-    payload: {api: true, path: `/noo/user/${id}/thanks?offset=${offset}`},
-    meta: {id}
-  }
-}
-
-export function fetchContributions (id, offset = 0) {
-  return {
-    type: FETCH_CONTRIBUTIONS,
-    payload: {api: true, path: `/noo/user/${id}/contributions?offset=${offset}`},
-    meta: {id}
   }
 }
 

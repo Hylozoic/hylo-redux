@@ -41,35 +41,6 @@
     background-color: #FFF;
     border-bottom: 1px solid @post-border;
     position: relative;
-
-    .newMessagesNotify {
-      position: fixed;
-      background-color: @damian-red;
-      color: #FFF;
-      border-radius: 5px;
-      bottom: 65px;
-      left: 50%;
-      margin-left: -@scroll-button-width/2;
-      cursor: pointer;
-      line-height: @scroll-button-height;
-      border-radius: @scroll-button-height;
-      width: @scroll-button-width;
-      text-align: center;
-
-      &:after {
-        top: 100%;
-        left: 50%;
-        border: solid transparent;
-        content: " ";
-        height: 0;
-        width: 0;
-        position: absolute;
-        pointer-events: none;
-        border-top-color: @damian-red;
-        border-width: 7px;
-        margin-left: -7px;
-      }
-    }
   }
 
   .messages-section-inner {
@@ -93,7 +64,7 @@
 
     &:last-child {
       // margin-bottom doesn't work as desired on mobile safari
-      padding-bottom: @message-form-height + 10px;
+      padding-bottom: @message-form-height + 20px;
     }
 
     .mobile({
@@ -131,22 +102,51 @@
     width: 100%;
     background: #FFF;
     color: @faint-gray-text;
-    padding: 10px 0 10px 30px;
-    border-top: 1px solid @post-border;
+    padding-left: 30px;
+    padding-bottom: 2px;
     position: fixed;
     bottom: @message-form-height;
+    
+    &.showBorder {
+      border-top: 1px solid @post-border;
+    }
 
     > div {
       display: inline-block;
     }
 
-    .chillipsis {
-      margin-right: 15px;
-    }
-
     .mobile({
       padding-left: @mobile-side-margin;
     });
+  }
+
+  .newMessagesNotify {
+    position: fixed;
+    background-color: @damian-red;
+    color: #FFF;
+    border-radius: 5px;
+    bottom: 65px;
+    left: 50%;
+    margin-left: -@scroll-button-width/2;
+    cursor: pointer;
+    line-height: @scroll-button-height;
+    border-radius: @scroll-button-height;
+    width: @scroll-button-width;
+    text-align: center;
+
+    &:after {
+      top: 100%;
+      left: 50%;
+      border: solid transparent;
+      content: " ";
+      height: 0;
+      width: 0;
+      position: absolute;
+      pointer-events: none;
+      border-top-color: @damian-red;
+      border-width: 7px;
+      margin-left: -7px;
+    }
   }
 
   .message-form {

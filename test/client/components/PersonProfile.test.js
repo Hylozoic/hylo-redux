@@ -1,5 +1,5 @@
 require('../support')
-import { mount, shallow } from 'enzyme'
+import { mount } from 'enzyme'
 import React from 'react'
 import PersonProfile from '../../../src/containers/person/PersonProfile'
 import { configureStore } from '../../../src/store'
@@ -26,7 +26,7 @@ const person = {
     contribution: 1
   },
   facebook_url: 'http://myspace.com/lol',
-  twitter_name: 'levity',
+  twitter_name: 'levity'
 }
 
 const contribution = {
@@ -56,17 +56,17 @@ const props = {
 
 describe('PersonProfile', () => {
   it('renders without errors', () => {
-    const node = mount(<PersonProfile {...props}/>, {context: {store}})
+    const node = mount(<PersonProfile {...props} />, {context: {store}})
     expect(node.find('h2').first().text()).to.equal('William Penn')
     expect(node.find('a.contribution')).to.be.lengthOf(0)
   })
 
   describe('with CONTRIBUTORS', () => {
-    before(() => {window.FEATURE_FLAGS = {CONTRIBUTORS: 'on'}})
-    after(() => {window.FEATURE_FLAGS = {}})
+    before(() => { window.FEATURE_FLAGS = {CONTRIBUTORS: 'on'} })
+    after(() => { window.FEATURE_FLAGS = {} })
 
     it('renders contributions', () => {
-      const node = mount(<PersonProfile {...props}/>, {context: {store}})
+      const node = mount(<PersonProfile {...props} />, {context: {store}})
       expect(node.find('a.contribution')).to.be.lengthOf(1)
       // LEJ: Test breaking here, click on TabLink element doesn't seem to
       //      propagate through from PersonProfile. Probably enzyme setup
@@ -78,5 +78,4 @@ describe('PersonProfile', () => {
       // expect(node.find('div.contributions .title').text()).to.contain(requestPost.name)
     })
   })
-
 })

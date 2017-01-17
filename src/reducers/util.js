@@ -1,6 +1,6 @@
 import {
   cloneDeep, filter, get, includes, isArray, isEqual, mergeWith, omit, set, some,
-  transform, uniqBy, without
+  transform, uniqBy, without, uniq
 } from 'lodash'
 import { CLEAR_CACHE, SET_STATE } from '../actions'
 
@@ -55,6 +55,13 @@ export const mergeList = (state, items, key, opts = {}) => {
 
   return {...state, ...mergedItems}
 }
+
+// takes two objects containing arrays, and concats them by key, removing dupes
+// concatKeyedArrays({a: [1, 2], b: [98, 99]}, {a: [3, 4], c: [50, 60]}) ->
+// {a: [1, 2, 3, 4], b: [98, 99], c: [50, 60]}
+export const concatKeyedArrays = (state, items) => mergeWith(state, items, (objValue, srcValue, k) => {
+  if (isArray(objValue) && isArray(srcValue)) return uniq(objValue.concat(srcValue))
+})
 
 export const cloneSet = (state, path, value) => {
   let newState = cloneDeep(state)

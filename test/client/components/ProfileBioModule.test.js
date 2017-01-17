@@ -1,10 +1,10 @@
 import '../support'
-import React, { PropTypes } from 'react'
+import { wait, mockActionResponse } from '../../support/helpers'
 import { mount } from 'enzyme'
 import { configureStore } from '../../../src/store'
-import { wait, mockActionResponse } from '../../support/helpers'
-import ProfileBioModule from '../../../src/components/ProfileBioModule'
+import React, { PropTypes } from 'react'
 import { updateCurrentUser } from '../../../src/actions'
+import ProfileBioModule from '../../../src/components/ProfileBioModule'
 
 const currentUser = {
   id: '5',

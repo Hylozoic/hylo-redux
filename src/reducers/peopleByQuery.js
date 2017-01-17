@@ -1,7 +1,9 @@
 import {
+  ADD_DATA_TO_STORE,
   FETCH_PEOPLE,
   REMOVE_COMMUNITY_MEMBER_PENDING
 } from '../actions'
+import { concatKeyedArrays } from './util'
 import { filter, uniq } from 'lodash'
 import qs from 'querystring'
 
@@ -35,6 +37,11 @@ export default function (state = {}, action) {
   let { type, payload, meta } = action
 
   switch (type) {
+    case ADD_DATA_TO_STORE:
+      if (meta.bucket === 'peopleByQuery') {
+        return concatKeyedArrays(state, payload)
+      }
+      break
     case FETCH_PEOPLE:
       let { cache } = meta
       return handlePeople(state, cache.id, payload.items)

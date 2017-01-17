@@ -140,20 +140,33 @@ export class ModalWrapper extends React.Component {
   }
 }
 
-export const ModalContainer = (props, { isMobile }) => {
-  const { id, className, children, standalone } = props
-  return <div id={id} className={cx(className, 'modal')}
-    style={standalone ? {} : modalStyle(isMobile)}>
-    {children}
-  </div>
+export class ModalContainer extends React.Component {
+  static propTypes = {
+    id: string,
+    children: oneOfType([array, object]),
+    className: string,
+    standalone: bool
+  }
+
+  static contextTypes = {
+    isMobile: bool
+  }
+
+  componentDidMount () {
+    this.refs.container.focus()
+  }
+
+  render () {
+    const { id, className, children, standalone } = this.props
+    const { isMobile } = this.context
+    return <div id={id} className={cx(className, 'modal')}
+      ref='container'
+      tabIndex='0'
+      style={standalone ? {} : modalStyle(isMobile)}>
+      {children}
+    </div>
+  }
 }
-ModalContainer.propTypes = {
-  id: string,
-  children: oneOfType([array, object]),
-  className: string,
-  standalone: bool
-}
-ModalContainer.contextTypes = {isMobile: bool}
 
 export const Modal = (props, { isMobile }) => {
   const { children, title, subtitle, onCancel, standalone } = props

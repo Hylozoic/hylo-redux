@@ -1,15 +1,16 @@
-import support from '../support'
+import '../support'
 import { mocks } from '../../support'
-import { createElement, wait, mockActionResponse, mockify } from '../../support/helpers'
+import { mockActionResponse, createElement, wait } from '../../support/helpers'
 import {
   findRenderedDOMComponentWithClass,
   renderIntoDocument
 } from 'react-addons-test-utils'
-import { mount } from 'enzyme'
 import React from 'react'
+import { mount } from 'enzyme'
 import { connect } from 'react-redux'
 import { configureStore } from '../../../src/store'
-import { completePost } from '../../../src/actions/posts'
+import * as actions from '../../../src/actions'
+import * as postActions from '../../../src/actions/posts'
 import Post from '../../../src/components/Post'
 
 const { object, func } = React.PropTypes
@@ -31,7 +32,7 @@ const post = {
 
 const contributor = {
   id: 'a',
-  name: 'Adam Contributor'
+  name: 'Adam'
 }
 
 const post2 = {
@@ -55,7 +56,7 @@ const requestPost = {
   created_at: new Date(),
   updated_at: new Date(),
   user_id: 'x',
-  community_ids: ['1'],
+  community_ids: ['1', '2'],
   follower_ids: ['x', 'y']
 }
 
@@ -137,7 +138,7 @@ describe('Post', () => {
 
   it('opens PostEditorModal on edit when expanded', () => {
     const store = configureStore(state).store
-    const node = mount(<Post expanded post={post}/>, {
+    const node = mount(<Post expanded post={post} />, {
       context: {store, dispatch: store.dispatch, currentUser: state.people.current},
       childContextTypes: {store: object, dispatch: func, currentUser: object}
     })
@@ -152,68 +153,80 @@ describe('Post', () => {
       name: post.name, description: post.description
     })
   })
-})
 
-describe('Post #request type', () => {
-  let store, PostWrapper, node
+  describe('#request type', () => {
+    let node
 
-  before(() => {
-    window.FEATURE_FLAGS = { CONTRIBUTORS: 'on' }
-  })
-
-  beforeEach(() => {
-    store = configureStore(state).store
-
-    PostWrapper = connect(({ posts }, { id }) => ({
-      post: posts[id]
-    }))(({ post }) => {
-      return <Post post={post} />
+    beforeEach(() => {
+      window.FEATURE_FLAGS = { CONTRIBUTORS: 'on' }
+      const store = configureStore(state).store
+      const PostWrapper = connect(({ posts }, { id }) => ({
+        post: posts[id]
+      }))(({ post }) => {
+        return <Post post={post} />
+      })
+      node = mount(<PostWrapper id={requestPost.id} dispatch={store.dispatch} />, {
+        context: { store, dispatch: store.dispatch, currentUser: state.people.current },
+        childContextTypes: {store: object, dispatch: func, currentUser: object}
+      })
+      mockActionResponse(postActions.completePost(requestPost.id), {})
+      mockActionResponse(actions.typeahead(contributor.name), {})
     })
 
-    node = mount(<PostWrapper id={requestPost.id} />, {
-      context: { store, dispatch: store.dispatch, currentUser: state.people.current },
-      childContextTypes: { store: object, dispatch: func, currentUser: object }
+    it('can be completed (with contributors)', () => {
+      expect(node.find('.toggle')).to.be.length(1)
+      node.find('.toggle').simulate('change')
+      expect(node.find('.request-complete-heading').text()).to.contain('Awesome')
+      expect(node.find('.request-complete-people-input')).to.be.length(1)
+      node.find('.request-complete-people-input a').simulate('click')
+      expect(node.find('.request-complete-people-input li.tag').text())
+      .to.contain(contributor.name)
+      expect(node.find('.done')).to.be.length(1)
+      postActions.completePost = spy(postActions.completePost)
+      node.find('.done').simulate('click')
+      expect(postActions.completePost).to.have.been.called.once.with([contributor])
+      expect(node.find('.contributors .person')).to.be.length(1)
+      expect(node.find('.contributors').text()).to.contain(contributor.name)
     })
 
-    mockActionResponse(completePost(requestPost.id), {})
-  })
+    it('can be completed (without contributors)', () => {
+      expect(node.find('.toggle')).to.be.length(1)
+      node.find('.toggle').simulate('change')
+      expect(node.find('.done')).to.be.length(1)
+      postActions.completePost = spy(postActions.completePost)
+      node.find('.done').simulate('click')
+      expect(postActions.completePost).to.have.been.called.once.with(requestPost.id, [])
+      expect(node.find('.contributors .person')).to.be.length(0)
+    })
 
-  after(() => {
-    delete window.FEATURE_FLAGS
-  })
+    it('can be uncompleted', () => {
+      expect(node.find('.toggle')).to.be.length(1)
+      node.find('.toggle').simulate('change')
+      expect(node.find('.done')).to.be.length(1)
+      postActions.completePost = spy(postActions.completePost)
+      node.find('.done').simulate('click')
+      expect(postActions.completePost).to.have.been.called.once.with(requestPost.id, [])
+      expect(node.find('.contributors .person')).to.be.length(0)
+      expect(node.find('.contributors').text()).to.contain('completed')
+      expect(node.find('.toggle')).to.be.length(1)
+      postActions.completePost = spy(postActions.completePost)
+      window.confirm = spy(() => true)
+      node.find('.toggle').simulate('change')
+      expect(window.confirm).to.have.been.called.once()
+      expect(postActions.completePost).to.have.been.called.once.with(requestPost.id)
+      expect(node.find('.request-complete-heading').text())
+      .to.contain('if this request has been completed')
+    })
 
-  it('can be completed (with contributors)', () => {
-    expect(node.find('.toggle')).to.be.length(1)
-    node.find('.toggle').simulate('change')
-    expect(node.find('.request-complete-heading').text()).to.contain('Awesome')
-    expect(node.find('.request-complete-people-input')).to.be.length(1)
-    // Typeahead fixture provides a single mocked person ("Adam Contributor")
-    node.find('.request-complete-people-input a').simulate('click')
-    expect(node.find('.request-complete-people-input li.tag').text()).to.contain(contributor.name)
-    expect(node.find('.done')).to.be.length(1)
-    node.find('.done').simulate('click')
-    expect(node.find('.contributors .person')).to.be.length(1)
-    expect(node.find('.contributors').text()).to.contain(contributor.name)
-  })
-
-  it('can be completed (without contributors)', () => {
-    expect(node.find('.toggle')).to.be.length(1)
-    node.find('.toggle').simulate('change')
-    expect(node.find('.done')).to.be.length(1)
-    node.find('.done').simulate('click')
-    expect(node.find('.contributors .person')).to.be.length(0)
-  })
-
-  it('can be uncompleted', () => {
-    expect(node.find('.toggle')).to.be.length(1)
-    node.find('.toggle').simulate('change')
-    expect(node.find('.done')).to.be.length(1)
-    node.find('.done').simulate('click')
-    expect(node.find('.contributors .person')).to.be.length(0)
-    expect(node.find('.contributors').text()).to.contain('completed')
-    expect(node.find('.toggle')).to.be.length(1)
-    mockify(window, 'confirm', prompt => true)
-    node.find('.toggle').simulate('change')
-    expect(node.find('.request-complete-heading').text()).to.contain('if this request has been completed')
+    it('requests contributors from all communities associated with a post', () => {
+      node.find('.toggle').simulate('change')
+      actions.typeahead = spy(actions.typeahead)
+      node.find('.request-complete-people-input input').simulate('change', {
+        target: {value: contributor.name}, keyCode: 13
+      })
+      return wait(300, () =>
+        expect(actions.typeahead).to.have.been.called.with(
+          {type: 'people', communityIds: requestPost.community_ids}))
+    })
   })
 })

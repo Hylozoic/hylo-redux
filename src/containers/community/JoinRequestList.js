@@ -57,7 +57,7 @@ const JoinRequestList = connect((state, { id }) => ({
             return <tr key={joinRequest.id} className={cx({even: index % 2 === 0})}>
               <td className='person'>
                 <Avatar person={person}/>
-                <A to={`/u/${person.id}`}>{person.name}</A>
+                <A to={`/u/${person.id}?check-join-requests=1`}>{person.name}</A>
               </td>
               <td>{humanDate(joinRequest.updated_at || joinRequest.created_at)}</td>
               <td><a className='table-button' onClick={() => approve(person.id)}>Approve</a></td>

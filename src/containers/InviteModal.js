@@ -7,13 +7,13 @@ import {
   getCurrentCommunity, defaultInvitationSubject, defaultInvitationMessage
 } from '../models/community'
 import { canInvite, canModerate } from '../models/currentUser'
-import { closeModal } from '../actions'
 import A from '../components/A'
 import AccessErrorMessage from '../components/AccessErrorMessage'
 import Icon from '../components/Icon'
 import { Modal } from '../components/Modal'
 import { ModalInput } from '../components/ModalRow'
 import {
+  closeModal,
   updateInvitationEditor,
   sendCommunityInvitation,
   clearInvitationEditor,
@@ -50,7 +50,7 @@ export default class InviteModal extends React.Component {
     return <Modal title='Invite people to join you.'
       standalone={standalone}
       onCancel={close}>
-      <InviteForm onClose={close} community={community} standalone={standalone}/>
+      <InviteForm onClose={close} community={community} standalone={standalone} />
     </Modal>
   }
 }
@@ -97,15 +97,21 @@ export class InviteForm extends React.Component {
   }
 
   componentDidMount () {
-    const { dispatch, community, invitationEditor } = this.props
-    const { subject, message } = invitationEditor
+    this.resetInvitationText()
+  }
 
-    if (subject === undefined) {
-      dispatch(updateInvitationEditor('subject', defaultInvitationSubject(community.name)))
+  componentWillReceiveProps (nextProps) {
+    const oldId = get('community.id', this.props)
+    const newId = get('community.id', nextProps)
+    if (newId !== oldId) {
+      this.resetInvitationText()
     }
-    if (message === undefined) {
-      dispatch(updateInvitationEditor('message', defaultInvitationMessage(community.name)))
-    }
+  }
+
+  resetInvitationText () {
+    const { dispatch, community } = this.props
+    dispatch(updateInvitationEditor('subject', defaultInvitationSubject(community.name)))
+    dispatch(updateInvitationEditor('message', defaultInvitationMessage(community.name)))
   }
 
   render () {
@@ -116,7 +122,7 @@ export class InviteForm extends React.Component {
     const { currentUser } = this.context
 
     if (!canInvite(currentUser, community)) {
-      return <AccessErrorMessage error={{status: 403}}/>
+      return <AccessErrorMessage error={{status: 403}} />
     }
 
     let { subject, message, moderator, recipients, error } = invitationEditor
@@ -164,7 +170,7 @@ export class InviteForm extends React.Component {
     return <span id='community-invite-form'>
       <div className='modal-input csv-upload'>
         <label className='custom-file-upload'>
-          <input type='file' onChange={() => this.processCSV()} ref='fileInput'/>
+          <input type='file' onChange={() => this.processCSV()} ref='fileInput' />
           Upload CSV
         </label>
         <label className='normal-label'>Import CSV File (optional)</label>
@@ -177,31 +183,31 @@ export class InviteForm extends React.Component {
         value={recipients}
         onChange={update('recipients')}
         prefix='To'
-        placeholder='Emails (use commas to separate)'/>
-        <div className='toggle-section'>
-          <a onClick={() => this.setState({expanded: !expanded})}>
-            Customize Message
-            <Icon name={expanded ? 'Chevron-Up2' : 'Chevron-Down2'} />
-          </a>
-        </div>
+        placeholder='Emails (use commas to separate)' />
+      <div className='toggle-section'>
+        <a onClick={() => this.setState({expanded: !expanded})}>
+          Customize Message
+          <Icon name={expanded ? 'Chevron-Up2' : 'Chevron-Down2'} />
+        </a>
+      </div>
 
       {expanded && <ModalInput
         label='Subject'
         ref='subject'
         value={subject}
-        onChange={update('subject')}/>}
+        onChange={update('subject')} />}
       {expanded && <ModalInput
         label='Message'
         ref='message'
         type='textarea'
         value={message}
-        onChange={update('message')}/>}
+        onChange={update('message')} />}
       {error && <div className='alert alert-danger'>{error}</div>}
       <div className='footer'>
         <a className='button ok' onClick={submit}>Invite</a>
         {standalone && <A to={checklistUrl(community)} onClick={clearEditor} className='skip'>Skip</A>}
         {allowModerators && canModerate(currentUser, community) && <span className='moderator'>
-          <input type='checkbox' checked={moderator} onChange={update('moderator', true)}/>
+          <input type='checkbox' checked={moderator} onChange={update('moderator', true)} />
           <span className='meta'>Check to invite these people to be moderators of the community.</span>
         </span>}
       </div>

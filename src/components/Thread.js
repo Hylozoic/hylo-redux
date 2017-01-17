@@ -1,5 +1,5 @@
 import React from 'react'
-import { debounce, filter } from 'lodash'
+import { debounce, filter, sortBy } from 'lodash'
 import { get, map, min, max } from 'lodash/fp'
 const { array, bool, func, object } = React.PropTypes
 import MessageSection from './MessageSection'
@@ -29,11 +29,21 @@ export default class Thread extends React.Component {
 
   static childContextTypes = {post: object}
 
+  constructor (props) {
+    super(props)
+    this.state = {
+      scrolledUp: false
+    }
+  }
+
   getChildContext () {
     return {post: this.props.post}
   }
 
-  static contextTypes = {isMobile: bool}
+  static contextTypes = {
+    isMobile: bool,
+    currentUser: object
+  }
 
   setupForThread (post) {
     this.props.dispatch(onThreadPage(post.id))
@@ -108,23 +118,33 @@ export default class Thread extends React.Component {
   }, 50)
 
   render () {
-    const { post, messages, pending, dispatch } = this.props
-    const { isMobile } = this.context
+    const { post, pending, dispatch } = this.props
+    const { currentUser, isMobile } = this.context
+    const { scrolledUp } = this.state
     const loadMore = () => {
       if (pending || messages.length >= post.numComments) return
       const beforeId = min(map('id', messages))
       dispatch(fetchComments(post.id, {refresh: true, newest: true, limit: 20, beforeId}))
       .then(() => this.refs.messageSection.scrollToMessage(beforeId))
     }
-
     const moveHeader = isMobile ? () => setTimeout(this._moveHeader, 20) : null
+    const messages = sortBy(this.props.messages || [], 'created_at')
+    const latestMessage = messages.length && messages[messages.length - 1]
+    const latestFromOther = latestMessage && latestMessage.user_id !== currentUser.id
+    const newFromOther = latestFromOther && post.last_read_at && new Date(latestMessage.created_at) > new Date(post.last_read_at)
 
     return <div className='thread'>
       <Header />
       <MessageSection {...{messages, pending}} thread={post}
+        onLeftBottom={() => this.setState({scrolledUp: true})}
+        onHitBottom={() => this.setState({scrolledUp: false})}
         onScroll={isMobile ? this._moveHeader : null}
         onScrollToTop={loadMore} ref='messageSection' />
-      <PeopleTyping showNames />
+      <PeopleTyping showNames showBorder={scrolledUp} />
+      {newFromOther && scrolledUp &&
+        <div className='newMessagesNotify' onClick={this.refs.messageSection.scrollToBottom}>
+          New Messages
+        </div>}
       <MessageForm postId={post.id} ref='form' onFocus={moveHeader}
         onBlur={moveHeader} />
     </div>

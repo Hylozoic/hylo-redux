@@ -6,7 +6,7 @@ import { humanDate } from '../util/text'
 
 const spacer = <span>&nbsp;&nbsp;•&nbsp;&nbsp;</span>
 
-const ProjectActivityCard = ({ onExpand, post }, context) => {
+const ProjectActivityCard = ({ onExpand, post }, { isMobile }) => {
   const { project } = post
   const backgroundImage = `url(${imageUrl(project)})`
   const url = `/p/${project.id}`
@@ -17,10 +17,11 @@ const ProjectActivityCard = ({ onExpand, post }, context) => {
       <span className='name'>{project.name}</span>
       <span className='spacer'>{spacer}</span>
       <span className='date'>{humanDate(project.created_at)}</span>
-      <A className='orange-button' to={url}>See all requests</A>
+      {!isMobile && <A className='orange-button' to={url}>See all requests</A>}
     </div>
     <Post post={post} onExpand={onExpand} />
   </div>
 }
+ProjectActivityCard.contextTypes = {isMobile: React.PropTypes.bool}
 
 export default ProjectActivityCard

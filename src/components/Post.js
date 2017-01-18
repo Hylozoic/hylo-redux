@@ -57,7 +57,6 @@ export class Post extends React.Component {
     comments: array,
     dispatch: func,
     expanded: bool,
-    showOneComment: bool,
     onExpand: func,
     commentId: string
   }
@@ -72,9 +71,9 @@ export class Post extends React.Component {
 
   render () {
     let { post } = this.props
-    const { expanded, onExpand, community, dispatch, contributorChoices, showOneComment } = this.props
+    const { expanded, onExpand, community, dispatch, contributorChoices } = this.props
     var comments = this.props.comments
-    if (showOneComment) {
+    if (post.project) {
       comments = comments.slice(-1)
     }
     const { contributors, requestCompleting } = this.state

@@ -35,10 +35,10 @@ export const PersonCard = ({ person, slug, onSkillClick, removeMember }, { dispa
 
   return <div className='person-card'>
     {removeMember && <Dropdown className='person-menu' alignRight
-      toggleChildren={<i className='icon-More'></i>}>
+      toggleChildren={<i className='icon-More' />}>
       {[<li key='1'><a onClick={() => removeMember(person.id)}>Remove from community</a></li>]}
     </Dropdown>}
-    <span onMouseOver={handleMouseOver(dispatch)}><A to={`/u/${person.id}`} className='square-avatar' style={avatarStyle}/></span>
+    <span><A to={`/u/${person.id}`} className='square-avatar' style={avatarStyle} /></span>
     <div className='person-body'>
       <span onMouseOver={handleMouseOver(dispatch)}><A className='name' to={`/u/${id}`}>{name}</A></span>
       <div className='role'>
@@ -51,7 +51,7 @@ export const PersonCard = ({ person, slug, onSkillClick, removeMember }, { dispa
           <a className='hashtag' onClick={() => onSkillClick(tag)}>
             #{tag}
           </a>
-          &nbsp;<wbr/>
+          &nbsp;<wbr />
         </span>)}
     </div>
   </div>

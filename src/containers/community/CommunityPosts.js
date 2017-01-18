@@ -23,7 +23,7 @@ import { PercentBar } from '../ChecklistModal'
 import {
   isMember, canModerate, hasFeature, hasBio, hasSkills
 } from '../../models/currentUser'
-import { navigate, notify, showModal } from '../../actions'
+import { navigate, showModal } from '../../actions'
 import { sendGraphqlQuery } from '../../actions/graphql'
 import { requestToJoinCommunity } from '../../actions/communities'
 import { getChecklist, checklistPercentage } from '../../models/community'

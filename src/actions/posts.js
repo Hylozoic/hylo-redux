@@ -33,7 +33,8 @@ export function createPost (id, params, slug) {
       tags: tagsInText(params.description),
       createdTags: params.tagDescriptions,
       optimistic: true,
-      slug
+      slug,
+      timeout: 5000
     }
   }
 }
@@ -80,7 +81,7 @@ export function updatePost (id, params, slug) {
   return {
     type: UPDATE_POST,
     payload: {api: true, params, path: `/noo/post/${id}`, method: 'POST'},
-    meta: {id, params, optimistic: true, slug}
+    meta: {id, params, optimistic: true, slug, timeout: 5000}
   }
 }
 

@@ -36,7 +36,7 @@ import { findUrls } from '../util/linkify'
 import { isKey, onEnter } from '../util/textInput'
 import { responseMissingTagDescriptions } from '../util/api'
 import {
-  showModal, CREATE_POST, FETCH_LINK_PREVIEW, UPDATE_POST, UPLOAD_IMAGE
+  notify, showModal, CREATE_POST, FETCH_LINK_PREVIEW, UPDATE_POST, UPLOAD_IMAGE
 } from '../actions'
 import { updateCommunityChecklist } from '../actions/communities'
 import { ADDED_POST, EDITED_POST, OPENED_POST_EDITOR, trackEvent } from '../util/analytics'
@@ -196,6 +196,11 @@ export class PostEditor extends React.PureComponent {
           saveParent: this.saveWithTagDescriptions
         }))
       }
+
+      if (action.error) {
+        return dispatch(notify('There was a problem saving your post. Please try again in a moment', {type: 'error'}))
+      }
+
       trackEvent(post ? EDITED_POST : ADDED_POST, {
         tag: postEdit.tag,
         community: {name: get(postCommunities[0], 'name')}

@@ -19,7 +19,7 @@ const ProjectActivityCard = ({ onExpand, post }, { isMobile }) => {
       <span className='date'>{humanDate(project.created_at)}</span>
       {!isMobile && <A className='orange-button' to={url}>See all requests</A>}
     </div>
-    <Post post={post} onExpand={onExpand} />
+    <Post post={post} onExpand={onExpand} showOneComment />
   </div>
 }
 ProjectActivityCard.contextTypes = {isMobile: React.PropTypes.bool}

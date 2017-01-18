@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 import React from 'react'
 import { difference, first, includes, map, some, sortBy, reject } from 'lodash'
 import { find, filter, get } from 'lodash/fp'
@@ -56,6 +57,7 @@ export class Post extends React.Component {
     comments: array,
     dispatch: func,
     expanded: bool,
+    showOneComment: bool,
     onExpand: func,
     commentId: string
   }
@@ -70,7 +72,11 @@ export class Post extends React.Component {
 
   render () {
     let { post } = this.props
-    const { comments, expanded, onExpand, community, dispatch, contributorChoices } = this.props
+    const { expanded, onExpand, community, dispatch, contributorChoices, showOneComment } = this.props
+    var comments = this.props.comments
+    if (showOneComment) {
+      comments = comments.slice(-1)
+    }
     const { contributors, requestCompleting } = this.state
     const { currentUser } = this.context
     const { communities, tag, media, linkPreview, project } = post
@@ -212,7 +218,7 @@ export const Header = ({ communities, project, expanded }, { post, currentUser, 
             <A to={`/p/${post.id}`} title={createdAt}>
               {nonbreaking(humanDate(createdAt))}
             </A>
-            {communities && <Communities communities={communities} project={project}/>}
+            {communities && <Communities communities={communities} project={project} />}
             {post.public && <span>{spacer}Public</span>}
           </span>
         </div>}

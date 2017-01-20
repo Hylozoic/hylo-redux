@@ -4,7 +4,6 @@ import {
   CREATE_POST,
   CREATE_TAG_IN_COMMUNITY,
   FETCH_COMMUNITY,
-  FETCH_LEFT_NAV_TAGS,
   FETCH_TAGS,
   FETCH_TAG_SUMMARY,
   REMOVE_TAG,
@@ -186,59 +185,6 @@ describe('tagsByCommunity', () => {
     }
 
     expect(tagsByCommunity(state, fetchAction)).to.deep.equal(expected)
-  })
-
-  it('merges content and removes tags on FETCH_LEFT_NAV_TAGS', () => {
-    const state = {
-      hum: {
-        foo: {name: 'foo', otherStuff: {foo: 'bar'}, followed: true}
-      },
-      wow: {
-        foo: {id: 7, name: 'foo', followed: true},
-        bar: {id: 8, name: 'bar', followed: true},
-        bip: {name: 'bip'}
-      },
-      zoop: {
-        bop: {name: 'bop'}
-      }
-    }
-
-    const expected = {
-      hum: {
-        foo: {name: 'foo', otherStuff: {foo: 'bar'}, followed: true, new_post_count: 7},
-        bar: {name: 'bar', new_post_count: 12, followed: true}
-      },
-      wow: {
-        foo: {id: 7, name: 'foo', otherStuff: {yep: 'that'}, followed: true},
-        zap: {name: 'zap', new_post_count: 11, followed: true},
-        bip: {name: 'bip'} // this one isn't removed because it's not followed
-      },
-      zoop: {
-        bop: {name: 'bop'}
-      },
-      zang: {
-        bar: {name: 'bar', followed: true}
-      }
-    }
-
-    const action = {
-      type: FETCH_LEFT_NAV_TAGS,
-      payload: {
-        hum: [
-          {name: 'foo', new_post_count: 7},
-          {name: 'bar', new_post_count: 12}
-        ],
-        wow: [
-          {name: 'foo', otherStuff: {yep: 'that'}},
-          {name: 'zap', new_post_count: 11}
-        ],
-        zang: [
-          {name: 'bar'}
-        ]
-      }
-    }
-
-    expect(tagsByCommunity(state, action)).to.deep.equal(expected)
   })
 
   it('adds a new tag on CREATE_POST', () => {

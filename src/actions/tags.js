@@ -1,6 +1,5 @@
 import { cleanAndStringify, createCacheId } from '../util/caching'
 import {
-  FETCH_LEFT_NAV_TAGS,
   FETCH_TAG,
   FETCH_TAG_SUMMARY,
   FETCH_TAGS,
@@ -84,14 +83,6 @@ export function showAllTags (slug) {
 
 export function showShareTag (tagName, slug) {
   return {type: SHOW_SHARE_TAG, payload: {tagName, slug}}
-}
-
-export function fetchLeftNavTags (id, refresh) {
-  return {
-    type: FETCH_LEFT_NAV_TAGS,
-    payload: {api: true, path: `/noo/community/${id}/tags/followed`},
-    meta: {id, cache: {id, bucket: 'tagsByCommunity', refresh}}
-  }
 }
 
 export function updateCommunityTag (tag, community, params) {

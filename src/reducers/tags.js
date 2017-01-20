@@ -2,7 +2,7 @@ import {
   appendPayloadByPath, composeReducers, keyedCounter, mergeList
 } from './util'
 import {
-  CREATE_COMMUNITY, FETCH_CURRENT_USER, FETCH_LEFT_NAV_TAGS, FETCH_LIVE_STATUS,
+  CREATE_COMMUNITY, FETCH_CURRENT_USER, FETCH_LIVE_STATUS,
   FETCH_TAG, FETCH_TAGS, FETCH_TAG_SUMMARY, FOLLOW_TAG_PENDING, REMOVE_TAG,
   CREATE_POST, UPDATE_POST, CREATE_TAG_IN_COMMUNITY, FETCH_COMMUNITY
 } from '../actions'
@@ -80,8 +80,6 @@ export const tagsByCommunity = (state = {}, action) => {
         ...state,
         [id]: {...oldCommunityTags, [tagName]: payload}
       }
-    case FETCH_LEFT_NAV_TAGS:
-      return mergeLeftNavTags(state, payload)
     case FETCH_LIVE_STATUS:
     case FETCH_CURRENT_USER:
     case CREATE_COMMUNITY:

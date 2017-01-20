@@ -23,7 +23,8 @@ export default class CommentSection extends React.Component {
     community: object,
     currentUser: object,
     isProjectRequest: bool,
-    dispatch: func
+    dispatch: func,
+    parentPost: object
   }
 
   componentDidMount () {
@@ -52,7 +53,7 @@ export default class CommentSection extends React.Component {
   render () {
     let { post, comments, onExpand, expanded } = this.props
     const truncate = !expanded
-    const { currentUser, isProjectRequest } = this.context
+    const { currentUser, isProjectRequest, parentPost } = this.context
     const placeholder = isProjectRequest ? 'How can you help?' : null
     const community = this.context.community || post.communities[0]
 
@@ -71,7 +72,7 @@ export default class CommentSection extends React.Component {
         expanded={expanded}
         key={c.id} />)}
       <PeopleTyping showNames={false} />
-      {(canComment(currentUser, post) || isProjectRequest) &&
+      {(canComment(currentUser, post, parentPost) || isProjectRequest) &&
         <CommentForm postId={post.id} {...{placeholder}} />}
     </div>
   }

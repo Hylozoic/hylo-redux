@@ -43,11 +43,13 @@ export const canEditPost = (currentUser, post, parentPost) => {
     isAdmin(currentUser)
 }
 
-export const canComment = (currentUser, post) =>
-  currentUser && includes(post.follower_ids, currentUser.id) ||
+export const canComment = (currentUser, post, parentPost) => {
+  const permissionsPost = parentPost || post
+  return currentUser && includes(permissionsPost.follower_ids, currentUser.id) ||
     !isEmpty(intersection(
       map('community_id', get('memberships', currentUser)),
-      post.community_ids))
+      permissionsPost.community_ids))
+}
 
 export const canEditComment = (currentUser, comment, community) =>
   canModerate(currentUser, community) || same('id', currentUser, comment.user)

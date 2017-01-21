@@ -4,7 +4,8 @@ import Icon from './Icon'
 import Dropdown from './Dropdown'
 import { filter } from 'lodash/fp'
 import { throttle, times } from 'lodash'
-import { MenuButton, leftNavWidth, leftNavEasing, menuButtonWidth } from './LeftNav'
+import { leftNavWidth, leftNavEasing, menuButtonWidth } from './LeftNav'
+import NavMenuButton from './NavMenuButton'
 import { editorUrl } from '../containers/StandalonePostEditor'
 const { array, object, func, string, bool, number } = React.PropTypes
 import { viewportTop } from '../util/scrolling'
@@ -26,7 +27,7 @@ const getLabel = path => {
   if (path.endsWith('people')) return 'Members'
   if (path.endsWith('about')) return 'About'
   if (path.endsWith('invite')) return 'Invite'
-  if (path === '/app' || path.match(/^\/c\/[^\/]+$/)) return 'Conversations'
+  if (path === '/app' || path.match(/^\/c\/[^/]+$/)) return 'Conversations'
   return 'Menu'
 }
 
@@ -102,23 +103,23 @@ export default class TopNav extends React.Component {
     return <VelocityComponent animation={moveWithMenu} easing={leftNavEasing}>
       <nav id='topNav' className={cx('clearfix', {scrolling: this.state.isScrolling})}>
         {currentUser && (isMobile
-          ? <MenuButton onClick={openLeftNav} label={label} notificationCount={tagNotificationCount}/>
+          ? <NavMenuButton onClick={openLeftNav} label={label} notificationCount={tagNotificationCount} />
           : <VelocityComponent animation={widenMenuButton} easing={leftNavEasing}>
-              <MenuButton onClick={openLeftNav} notificationCount={tagNotificationCount}/>
+              <NavMenuButton onClick={openLeftNav} notificationCount={tagNotificationCount} />
             </VelocityComponent>)}
 
         {currentUser
-          ? <UserMenu slug={slug}/>
+          ? <UserMenu slug={slug} />
           : <ul className='right'>
               {!isCommunityUrl(path) && <li><A to={makeUrl('/signup', {next: returnPath})}>Sign up</A></li>}
               <li><A to={makeUrl('/login', {next: returnPath})}>Log in</A></li>
             </ul>}
 
-        <CommunityMenu {...{community, network}}/>
-        {currentUser && !network && <TopMainMenu {...{links, leftNavIsOpen}}/>}
+        <CommunityMenu {...{community, network}} />
+        {currentUser && !network && <TopMainMenu {...{links, leftNavIsOpen}} />}
         {currentUser &&
           <A to={editorUrl(slug, getPostType(path))} className='compose'>
-            <Icon name='Compose'/>
+            <Icon name='Compose' />
           </A>}
       </nav>
     </VelocityComponent>
@@ -182,12 +183,12 @@ class TopMainMenu extends React.Component {
 
     return <div className='main-menu'>
       {topLinks.slice(1, topLinks.length - hiddenCount).map((link, i) =>
-        <LinkItem link={link} key={link.label}/>)}
+        <LinkItem link={link} key={link.label} />)}
       {hiddenCount > 0 && <Dropdown triangle className='overflow-menu'
-        toggleChildren={<Icon name='More'/>}>
+        toggleChildren={<Icon name='More' />}>
         {topLinks.slice(-hiddenCount).map((link, i) =>
           <li key={link.label} className={`li-${i}`}>
-            <LinkItem link={link}/>
+            <LinkItem link={link} />
           </li>)}
       </Dropdown>}
     </div>

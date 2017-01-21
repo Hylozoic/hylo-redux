@@ -1,6 +1,7 @@
 import React from 'react'
 import { A, IndexA } from './A'
 import Icon from './Icon'
+import NavMenuButton from './NavMenuButton'
 import Tooltip from './Tooltip'
 import { VelocityTransitionGroup } from 'velocity-react'
 import { isEmpty } from 'lodash'
@@ -26,21 +27,7 @@ const animations = {
   }
 }
 
-export const MenuButton = ({ onClick, label, showClose, notificationCount }) =>
-  <a className='menu-button' onClick={onClick}>
-    {!showClose &&
-      (notificationCount && notificationCount > 0
-        ? <div className='topic-notification'>{notificationCount}</div>
-        : <div className='hamburger'>
-            <div className='bar' />
-            <div className='bar' />
-            <div className='bar' />
-          </div>)}
-    {label && <span>{label}</span>}
-    {showClose && <span className='close'>&times;</span>}
-  </a>
-
-export const TopicList = ({ tags, slug }, { dispatch }) => {
+const TopicList = ({ tags, slug }, { dispatch }) => {
   const followed = filter('followed', tags)
   const TagLink = ({ name, highlight }) => {
     var allTopics = name === 'all-topics'
@@ -111,7 +98,7 @@ export const LeftNav = ({ opened, community, network, tags, close, links }, { is
   return <span>
     <VelocityTransitionGroup {...animations}>
       {opened && <nav id='leftNav' onClick={() => isMobile && close()}>
-        <MenuButton onClick={onMenuClick} label={isMobile ? 'Menu' : 'Topics'} showClose />
+        <NavMenuButton onClick={onMenuClick} label={isMobile ? 'Menu' : 'Topics'} showClose />
         {network
           ? <NetworkNav network={network} />
           : <CommunityNav links={links} />}

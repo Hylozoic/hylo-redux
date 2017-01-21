@@ -5,7 +5,7 @@ import NavMenuButton from './NavMenuButton'
 import Tooltip from './Tooltip'
 import { VelocityTransitionGroup } from 'velocity-react'
 import { isEmpty } from 'lodash'
-import { filter, get } from 'lodash/fp'
+import { filter, get, sortBy } from 'lodash/fp'
 import { tagUrl } from '../routes'
 import { showAllTags } from '../actions/tags'
 import cx from 'classnames'
@@ -28,7 +28,17 @@ const animations = {
 }
 
 const TopicList = ({ tags, slug }, { dispatch }) => {
-  const followed = filter('followed', tags)
+  const followed = sortBy(t => {
+    switch (t.name) {
+      case 'offer': return 'a'
+      case 'request': return 'b'
+      case 'intention': return 'c'
+      default:
+        if (t.is_default) return 'd' + t.name
+        return 'e' + t.name
+    }
+  }, filter('followed', tags))
+
   const TagLink = ({ name, highlight }) => {
     var allTopics = name === 'all-topics'
     var AComponent = allTopics ? IndexA : A

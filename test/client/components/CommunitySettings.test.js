@@ -1,8 +1,8 @@
 require('../support')
 import { mount } from 'enzyme'
-import React from 'react'
-import CommunitySettings from '../../../src/containers/community/CommunitySettings'
 import { configureStore } from '../../../src/store'
+import React, { PropTypes } from 'react'
+import CommunitySettings from '../../../src/containers/community/CommunitySettings'
 
 const community = {
   id: '1',
@@ -36,7 +36,7 @@ describe('CommunitySettings', () => {
 
     const node = mount(<CommunitySettings {...props}/>, {
       context: {store, currentUser},
-      childContextTypes: {currentUser: React.PropTypes.object}
+      childContextTypes: {currentUser: PropTypes.object}
     })
 
     expect(node.find('.section-label').map(n => n.text().trim()))
@@ -57,7 +57,7 @@ describe('CommunitySettings', () => {
 
     const node = mount(<CommunitySettings {...props}/>, {
       context: {store, currentUser},
-      childContextTypes: {currentUser: React.PropTypes.object}
+      childContextTypes: {currentUser: PropTypes.object}
     })
 
     expect(node.find('.advanced .alert').first().text())
@@ -72,7 +72,7 @@ describe('CommunitySettings', () => {
 
     const node = mount(<CommunitySettings {...props}/>, {
       context: {store, currentUser},
-      childContextTypes: {currentUser: React.PropTypes.object}
+      childContextTypes: {currentUser: PropTypes.object}
     })
 
     node.find('.section-label').first().simulate('click')

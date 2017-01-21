@@ -451,6 +451,90 @@ ul.posts {
   }
 }
 
+.post {
+  &.post-prompt {
+    text-align: center;
+    color: white;
+    background-color: #6c83e4;
+
+    .title {
+      margin-bottom: 30px;
+    }
+
+    .body {
+      &.isMobile {
+        font-size: 14px;
+      }
+      font-size: 18px;
+      font-weight: 100;
+      padding: 0 25px;
+      margin-bottom: 50px;
+    }
+
+    button {
+      .round-button;
+      padding: 0 45px;
+      display: inline-block;
+      font-size: 16px;
+      font-weight: 500;
+      color: @dark-gray-bg;
+      margin-bottom: 30px;
+    }
+
+    .icon {
+      font-size: 50px;
+      padding-right: 0;
+      cursor: pointer;
+    }
+  }
+}
+
+.post {
+  &.popular-skills {
+    text-align: center;
+    color: white;
+    background-image: linear-gradient(to top, #ffb63e, #ffdc72);
+
+    .title {
+      margin-bottom: 30px;
+    }
+
+    ul {
+      padding-left: 0;
+      li {
+        display: inline-block;
+        padding-right: 13px;
+      }
+    }
+
+    .people {
+      margin-bottom: 15px;
+      .avatar, .avatar > a {
+        .round-image-div(90px);
+      }
+    }
+
+    .skills {
+      margin-bottom: 35px;
+      a.hashtag {
+        padding: 5px 10px;
+        font-size: 11px;
+        color: @dark-gray-bg !important;
+        background-color: white;
+        border-radius: 90px;
+      }
+    }
+
+    .button {
+      .round-button;
+      font-size: 16px;
+      color: #ffb63e;
+      border: none;
+      margin-bottom: 30px;
+    }
+  }
+}
+
 .post-location {
   i {
     margin-right: 5px;

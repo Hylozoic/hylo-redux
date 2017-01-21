@@ -49,15 +49,15 @@ export default class SinglePost extends React.Component {
     location: object
   }
 
+  static contextTypes = {
+    isMobile: bool,
+    currentUser: object
+  }
+
   static childContextTypes = {
     community: object,
     post: object,
     comments: array
-  }
-
-  static contextTypes = {
-    isMobile: bool,
-    currentUser: object
   }
 
   getChildContext () {

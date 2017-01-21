@@ -29,7 +29,7 @@ const JoinRequestList = connect((state, { id }) => ({
     dispatch(approveAllJoinRequests(id))
     .then(({ error }) => {
       if (error) {
-        dispatch(notify('There was a approving these requests; please try again later.', {type: 'error'}))
+        dispatch(notify('There was a problem approving these requests; please try again later.', {type: 'error'}))
       } else {
         dispatch(notify('All requests approved'))
       }

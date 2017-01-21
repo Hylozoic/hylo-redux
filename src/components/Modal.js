@@ -84,51 +84,54 @@ export class ModalWrapper extends React.Component {
     const close = () => dispatch(closeModal())
     switch (type) {
       case 'tags':
-        modal = <BrowseTopicsModal onCancel={close}/>
+        modal = <BrowseTopicsModal onCancel={close} />
         clickToClose = true
         break
       case 'share-tag':
         modal = <ShareTopicModal tagName={params.tagName} slug={params.slug}
-          onCancel={close}/>
+          onCancel={close} />
         clickToClose = true
         break
       case 'expanded-post':
-        modal = <ExpandedPostModal id={params.id} commentId={params.commentId}/>
+        modal = <ExpandedPostModal id={params.id} commentId={params.commentId} />
         clickToClose = true
         break
       case 'direct-message':
-        modal = <DirectMessageModal userId={params.userId} userName={params.userName} onCancel={close}/>
+        modal = <DirectMessageModal userId={params.userId} userName={params.userName} onCancel={close} />
         clickToClose = true
         break
       case 'notifications':
-        modal = <NotificationsModal onCancel={close}/>
+        modal = <NotificationsModal onCancel={close} />
         clickToClose = true
         break
       case 'checklist':
-        modal = <ChecklistModal onCancel={close}/>
+        modal = <ChecklistModal onCancel={close} />
         clickToClose = true
         break
       case 'tag-editor':
         modal = <TagEditorModal onCancel={close}
           saveParent={params.saveParent}
           useCreatedTag={params.useCreatedTag}
-          creating={params.creating}/>
+          creating={params.creating} />
         clickToClose = true
         break
       case 'add-logo':
-        modal = <AddLogoModal onCancel={close}/>
+        modal = <AddLogoModal onCancel={close} />
         clickToClose = true
         break
       case 'invite':
-        modal = <InviteModal onCancel={close}/>
+        modal = <InviteModal onCancel={close} />
         clickToClose = true
         break
       case 'post-editor':
-        modal = <PostEditorModal post={get('post', params)} onCancel={close}/>
+        modal = <PostEditorModal
+          post={get('post', params)}
+          tag={get('tag', params)}
+          onCancel={close} />
         clickToClose = true
         break
       case 'threads':
-        modal = <ThreadsModal onCancel={close}/>
+        modal = <ThreadsModal onCancel={close} />
     }
 
     return <BareModalWrapper top={top} onClick={() => clickToClose && close()}>
@@ -172,7 +175,7 @@ export const Modal = (props, { isMobile }) => {
       <h2>
         {title}
         {!standalone && <a className='close' onClick={onCancel}>
-          <Icon name='Fail'/>
+          <Icon name='Fail' />
         </a>}
       </h2>
       {subtitle && <div className='subtitle'>

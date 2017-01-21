@@ -187,7 +187,7 @@ export default compose(connect((state, {post}) => {
     community: getCurrentCommunity(state),
     post: denormalizedPost(post, state),
     contributorChoices: reject(
-      state.typeaheadMatches.invite, {id: post.user_id}
+      state.typeaheadMatches.contributors, {id: post.user_id}
     )
   }
 }))(Post)

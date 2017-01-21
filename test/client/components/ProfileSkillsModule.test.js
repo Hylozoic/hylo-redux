@@ -1,11 +1,11 @@
 import '../support'
-import React, { PropTypes } from 'react'
+import { wait, mockActionResponse } from '../../support/helpers'
 import { mount } from 'enzyme'
 import { configureStore } from '../../../src/store'
-import ProfileSkillsModule from '../../../src/components/ProfileSkillsModule'
-import { wait, mockActionResponse } from '../../support/helpers'
+import React, { PropTypes } from 'react'
 import { keyMap } from '../../../src/util/textInput'
 import { updateCurrentUser } from '../../../src/actions'
+import ProfileSkillsModule from '../../../src/components/ProfileSkillsModule'
 
 const store = configureStore().store
 

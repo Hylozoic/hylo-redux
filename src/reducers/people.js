@@ -21,7 +21,9 @@ export const normalize = person => {
     recent_offer_id: get(person.recent_offer, 'id'),
     left_nav_tags: null,
     people: null,
-    communities: null
+    communities: null,
+    avatar_url: get(person, 'avatar_url') || get(person, 'avatarUrl'),
+    avatarUrl: get(person, 'avatarUrl') || get(person, 'avatar_url')
   })
 }
 

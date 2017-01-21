@@ -34,7 +34,12 @@ export class ConnectedPostList extends React.Component {
     hide: array, // just hide posts with this id from the results
     hideMobileSearch: bool,
     expandedPostId: string,
-    noPostsMessage: string
+    noPostsMessage: string,
+    module: object
+  }
+
+  static contextTypes = {
+    currentUser: object
   }
 
   loadMore = () => {
@@ -92,7 +97,7 @@ export class ConnectedPostList extends React.Component {
   render () {
     const {
       dispatch, freshCount, posts, total, pending, subject, id, query,
-      hideMobileSearch, expandedPostId, noPostsMessage
+      hideMobileSearch, expandedPostId, noPostsMessage, module
     } = this.props
     const projectPostParentId = subject === 'post' ? id : null
 
@@ -106,10 +111,16 @@ export class ConnectedPostList extends React.Component {
       }
     }
 
+    const feedItems = posts
+
+    if (module) {
+      feedItems.splice(2, 0, module)
+    }
+
     debug(`posts: ${posts ? posts.length : 0} / ${total || '??'}`)
-    return <PostList posts={posts || []} loadMore={this.loadMore} hide={hide}
+    return <PostList posts={feedItems || []} loadMore={this.loadMore} hide={hide}
       hideMobileSearch={hideMobileSearch}
-      {...{pending, refreshPostList, freshCount, noPostsMessage, projectPostParentId}}/>
+      {...{pending, refreshPostList, freshCount, noPostsMessage, projectPostParentId}} />
   }
 }
 

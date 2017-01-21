@@ -65,8 +65,8 @@ export const isCommunityUrl = (path) =>
 export const isSearchUrl = (path) =>
   path.split('?')[0] === '/search'
 
-export const peopleUrl = community =>
-  `${community ? '/c/' + community.slug : ''}/people`
+export const peopleUrl = (community, search) =>
+  `${community ? '/c/' + community.slug : ''}/people${search ? `?search=${search}` : ''}`
 
 export const checklistUrl = community =>
   `/c/${community.slug}?checklist=true`

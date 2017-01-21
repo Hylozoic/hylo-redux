@@ -128,7 +128,7 @@ const state = {
     [requestPost.id]: requestPost
   },
   typeaheadMatches: {
-    invite: [contributor]
+    contributors: [contributor]
   }
 }
 

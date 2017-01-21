@@ -332,7 +332,7 @@ export const Menu = ({ expanded, post, parentPost }, { dispatch, currentUser, co
     : <span className='icon-More' />
 
   return <Dropdown className='post-menu' alignRight {...{toggleChildren}}>
-    {canModerate(currentUser, community) && <li>
+    {canModerate(currentUser, community) && !parentPost && <li>
       <a onClick={pin}>{pinned ? 'Unpin post' : 'Pin post'}</a>
     </li>}
     {canEdit && <li><a className='edit' onClick={edit}>Edit</a></li>}

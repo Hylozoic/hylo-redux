@@ -86,13 +86,11 @@ export default class SinglePost extends React.Component {
           {currentUser &&
             <PostEditor community={community} parentPostId={post.id} />
           }
-          {community &&
-            <ConnectedPostList
-              subject={subject}
-              id={post.id}
-              query={{...query}}
-              noPostsMessage='' />
-          }
+          <ConnectedPostList
+            subject={subject}
+            id={post.id}
+            query={{...query}}
+            noPostsMessage='There are no other project related conversations to show.'/>
         </div>}
       </CoverImagePage>
     </div>

@@ -94,6 +94,7 @@ export class ConnectedPostList extends React.Component {
       dispatch, freshCount, posts, total, pending, subject, id, query,
       hideMobileSearch, expandedPostId, noPostsMessage
     } = this.props
+    const projectPostParentId = subject === 'post' ? id : null
 
     const hide = union(this.props.hide, [expandedPostId])
 
@@ -108,7 +109,7 @@ export class ConnectedPostList extends React.Component {
     debug(`posts: ${posts ? posts.length : 0} / ${total || '??'}`)
     return <PostList posts={posts || []} loadMore={this.loadMore} hide={hide}
       hideMobileSearch={hideMobileSearch}
-      {...{pending, refreshPostList, freshCount, noPostsMessage}}/>
+      {...{pending, refreshPostList, freshCount, noPostsMessage, projectPostParentId}}/>
   }
 }
 

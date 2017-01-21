@@ -30,7 +30,8 @@ class PostList extends React.Component {
     dispatch: func,
     hideMobileSearch: bool,
     isMobile: bool,
-    noPostsMessage: string
+    noPostsMessage: string,
+    projectPostParentId: string
   }
 
   static contextTypes = {
@@ -56,7 +57,7 @@ class PostList extends React.Component {
   render () {
     const {
       hide, editingPostIds, pending, loadMore, refreshPostList, freshCount,
-      dispatch, hideMobileSearch, noPostsMessage
+      dispatch, hideMobileSearch, noPostsMessage, projectPostParentId
     } = this.props
     const { isMobile } = this.context
     const posts = filter(p => !includes(p.id, hide), this.props.posts)
@@ -70,7 +71,9 @@ class PostList extends React.Component {
 
     const showPost = post => {
       if (includes(post.id, editingPostIds)) {
-        return <PostEditor post={post} expanded/>
+        return projectPostParentId ?
+          <PostEditor post={post} parentPostId={projectPostParentId} expanded/>
+          : <PostEditor post={post} expanded/>
       }
 
       switch (post.type) {

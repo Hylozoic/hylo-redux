@@ -272,7 +272,7 @@ export class PostEditor extends React.PureComponent {
     const selectableTags = uniq(compact([this.props.tag, tag].concat(defaultTags)))
     const { name, showDetails } = this.state
     const editorType = this.editorType()
-    const shouldSelectTag = editorType !== 'project'
+    const shouldSelectTag = !includes(['project', 'event'], editorType)
     const selectTag = tag => this.updateStore({tag})
     const createTag = () => dispatch(showModal('tag-editor', {
       useCreatedTag: this.updatePostTagAndDescription,

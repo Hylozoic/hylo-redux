@@ -38,24 +38,6 @@ const stateWithoutDoc = (state, id, doc) => {
   }
 }
 
-const suggestedTag = text => {
-  if (!text) return
-  return startCase(text).split(' ').slice(0, 4).join('')
-  .replace(invalidCharacterRegex, '')
-}
-
-const withSuggestedTag = (payload, state, id) => {
-  const postEdit = state[id] || {}
-  if (postEdit.id ||
-    postEdit.tagEdited ||
-    postEdit.type !== 'project') return payload
-
-  return {
-    tag: suggestedTag(payload.name || postEdit.name),
-    ...payload
-  }
-}
-
 export default function (state = {}, action) {
   const { type, payload, meta, error } = action
   if (error) return state
@@ -71,7 +53,7 @@ export default function (state = {}, action) {
       }
       return {
         ...state,
-        [id]: {...state[id], ...withSuggestedTag(payload, state, id)}
+        [id]: {...state[id], ...payload}
       }
     case CREATE_POST:
     case UPDATE_POST:

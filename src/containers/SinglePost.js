@@ -8,12 +8,11 @@ import { FETCH_POST, navigate, notify, setMetaTags } from '../actions'
 import { fetchComments } from '../actions/comments'
 import { fetchCommunity } from '../actions/communities'
 import { fetchPost, unfollowPost } from '../actions/posts'
-import { saveCurrentCommunityId } from '../actions/util'
+import { saveCurrentCommunityId, findError } from '../actions/util'
 import { ogMetaTags } from '../util'
 import A from '../components/A'
 import PostEditor from '../components/PostEditor'
 import { scrollToComment } from '../util/scrolling'
-import { findError } from '../actions/util'
 import AccessErrorMessage from '../components/AccessErrorMessage'
 import CoverImagePage from '../components/CoverImagePage'
 import EventPost from '../components/EventPost'
@@ -55,19 +54,21 @@ export default class SinglePost extends React.Component {
   }
 
   static childContextTypes = {
-    community: object,
-    post: object,
-    comments: array
+    parentPost: object,
+    community: object
   }
 
   getChildContext () {
-    return pick(['community', 'post', 'comments'], this.props)
+    return {
+      parentPost: this.props.post,
+      community: this.props.community
+    }
   }
 
   render () {
-    const { post, community, editing, error, location: { query } } = this.props
+    const { post, comments, community, editing, error, location: { query } } = this.props
     const { currentUser, isMobile } = this.context
-    if (error) return <AccessErrorMessage error={error}/>
+    if (error) return <AccessErrorMessage error={error} />
     if (!post || !post.user) return <div className='loading'>Loading...</div>
     const isChild = !!post.parent_post_id
 
@@ -79,8 +80,9 @@ export default class SinglePost extends React.Component {
         </A>
       </div>}
       <CoverImagePage id='single-post' image={get('banner_url', community)}>
-        {editing ?
-          <PostEditor post={post} expanded /> : showPost(post)
+        {editing
+          ? <PostEditor post={post} expanded />
+          : <ShowPost post={post} comments={comments} />
         }
         {post.type === 'project' && <div>
           {currentUser &&
@@ -90,19 +92,22 @@ export default class SinglePost extends React.Component {
             subject={subject}
             id={post.id}
             query={{...query}}
-            noPostsMessage='There are no other project related conversations to show.'/>
+            noPostsMessage='There are no other project related conversations to show.' />
         </div>}
       </CoverImagePage>
     </div>
   }
 }
 
-const showPost = (post) => {
+const ShowPost = ({ post, comments }) => {
   switch (post.type) {
-    case 'event': return <EventPost post={post}/>
-    case 'project': return <ProjectPost post={post}/>
+    case 'event':
+      return <EventPost post={post} comments={comments} />
+    case 'project':
+      return <ProjectPost post={post} comments={comments} />
+    default:
+      return <Post post={post} expanded />
   }
-  return <Post post={post} expanded/>
 }
 
 const redirect = (store, id) => {

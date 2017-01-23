@@ -15,8 +15,8 @@ import { connect } from 'react-redux'
 import { compose } from 'redux'
 import { isMobile } from '../client/util'
 import { same } from '../models'
-import { denormalizedPost, getComments, isPinned } from '../models/post'
-import { canEditPost, canModerate, hasFeature } from '../models/currentUser'
+import { denormalizedPost, getComments, isPinned, isChildPost } from '../models/post'
+import { canEditPost, canModerate, canCommentOnPost, hasFeature } from '../models/currentUser'
 import { getCurrentCommunity } from '../models/community'
 import { navigate, showModal, typeahead } from '../actions'
 import {
@@ -61,32 +61,22 @@ export class Post extends React.Component {
   }
 
   static contextTypes = {
-    currentUser: object,
-    post: object
-  }
-
-  static childContextTypes = {
     post: object,
-    parentPost: object
-  }
-
-  getChildContext () {
-    return {
-      post: this.props.post,
-      parentPost: this.context.post
-    }
+    parentPost: object,
+    currentUser: object
   }
 
   render () {
     const { post, comments, expanded, onExpand, community, dispatch, contributorChoices } = this.props
     const { contributors, requestCompleting } = this.state
-    const { currentUser } = this.context
+    const { currentUser, parentPost } = this.context
     const { communities, tag, media, linkPreview } = post
     const image = find(m => m.type === 'image', media)
     const classes = cx('post', tag, {image, expanded})
     const title = linkifyHashtags(decode(sanitize(post.name || '')), get('slug', community))
 
-    const canEdit = canEditPost(currentUser, post, this.context.post)
+    const canEdit = canEditPost(currentUser, post)
+    const canComment = canCommentOnPost(currentUser, parentPost || post)
 
     const isRequest = tag === 'request'
     const isCompleteRequest = isRequest && post.fulfilled_at
@@ -117,18 +107,18 @@ export class Post extends React.Component {
 
     return <div className={classes}>
       <a name={`post-${post.id}`} />
-      <Header communities={communities} expanded={expanded} />
+      <Header post={post} communities={communities} expanded={expanded} />
       <p className='title post-section' dangerouslySetInnerHTML={{__html: title}} />
       {image && <LazyLoader>
         <img src={image.url} className='post-section full-image' />
       </LazyLoader>}
-      <Details {...{expanded, onExpand}} />
+      <Details {...{post, expanded, onExpand}} />
       {linkPreview && <LinkPreview {...{linkPreview}} />}
       <div className='voting post-section'>
-        <VoteButton />
-        <Voters />
+        <VoteButton post={post} />
+        <Voters post={post} />
       </div>
-      <Attachments />
+      <Attachments post={post} />
       {hasFeature(currentUser, CONTRIBUTORS) && isCompleteRequest &&
         <div className='request-completed-bar'>
           <div className='request-complete-heading'>
@@ -136,14 +126,14 @@ export class Post extends React.Component {
               <input className='toggle'
                 type='checkbox'
                 checked={!!post.fulfilled_at}
-                readOnly={!canEdit}
+                disabled={!canEdit}
                 onChange={toggleRequestComplete} />
               <RequestContributorsSentence post={post} />
             </div>
           </div>
         </div>
       }
-      <CommentSection {...{post, expanded, onExpand, comments}} />
+      <CommentSection {...{post, expanded, onExpand, comments, canComment}} />
       {hasFeature(currentUser, CONTRIBUTORS) && isIncompleteRequest &&
         <div className='request-completed-bar'>
           <div className='request-complete-heading'>
@@ -192,18 +182,17 @@ export default compose(connect((state, {post}) => {
   }
 }))(Post)
 
-export const UndecoratedPost = Post // for testing
-
-export const Header = ({ communities, expanded }, { post, parentPost, currentUser, dispatch }) => {
+export const Header = ({ communities, expanded, post }, { currentUser, dispatch }) => {
   const { tag, fulfilled_at } = post
   const person = tag === 'welcome' ? post.relatedUsers[0] : post.user
   const createdAt = new Date(post.created_at)
-  const canEdit = canEditPost(currentUser, post, parentPost)
+  const isChild = isChildPost(post)
+  const canEdit = canEditPost(currentUser, post)
   const showCheckbox = !hasFeature(currentUser, CONTRIBUTORS) &&
     post.tag === 'request' && (canEdit || fulfilled_at)
 
   return <div className='header'>
-    <Menu expanded={expanded} post={post} parentPost={parentPost} />
+    <Menu expanded={expanded} post={post} hidePinning={isChild} />
     <Avatar person={person} showPopover />
     {showCheckbox && <input type='checkbox'
       className='completion-toggle'
@@ -211,23 +200,23 @@ export const Header = ({ communities, expanded }, { post, parentPost, currentUse
       onChange={() => canEdit && dispatch(completePost(post.id))}
       readOnly={!canEdit} />}
     {tag === 'welcome'
-      ? <WelcomePostHeader communities={communities} />
+      ? <WelcomePostHeader post={post} communities={communities} />
       : <div onMouseOver={handleMouseOver(dispatch)}>
           <A className='name' to={`/u/${person.id}`}>
             {person.name}
           </A>
           <span className='meta'>
-            {!parentPost && <A to={`/p/${post.id}`} title={createdAt}>
+            {isChild && <A to={`/p/${post.id}`} title={createdAt}>
               {nonbreaking(humanDate(createdAt))}
             </A>}
-            {parentPost && nonbreaking(humanDate(createdAt))}
+            {!isChild && nonbreaking(humanDate(createdAt))}
             {communities && <Communities communities={communities} />}
             {post.public && <span>{spacer}Public</span>}
           </span>
         </div>}
   </div>
 }
-Header.contextTypes = {post: object, parentPost: object, currentUser: object, dispatch: func}
+Header.contextTypes = {currentUser: object, dispatch: func}
 
 const Communities = ({ communities }, { community }) => {
   if (community) communities = sortBy(communities, c => c.id !== community.id)
@@ -263,7 +252,7 @@ const HashtagLink = ({ tag, slug }, { dispatch }) => {
 }
 HashtagLink.contextTypes = {dispatch: func}
 
-export const Details = ({ expanded, onExpand }, { post, community, dispatch }) => {
+export const Details = ({ post, expanded, onExpand }, { community, dispatch }) => {
   const truncatedSize = 300
   const { tag } = post
   if (!community) community = post.communities[0]
@@ -293,9 +282,9 @@ export const Details = ({ expanded, onExpand }, { post, community, dispatch }) =
     {tag && <HashtagLink tag={tag} slug={slug} />}
   </div>
 }
-Details.contextTypes = {post: object, community: object, dispatch: func}
+Details.contextTypes = {dispatch: func, community: object}
 
-const WelcomePostHeader = ({ communities }, { post }) => {
+const WelcomePostHeader = ({ post, communities }) => {
   let person = post.relatedUsers[0]
   let community = communities[0]
   return <div>
@@ -314,10 +303,9 @@ const WelcomePostHeader = ({ communities }, { post }) => {
         </span>}
   </div>
 }
-WelcomePostHeader.contextTypes = {post: object}
 
-export const Menu = ({ expanded, post, parentPost }, { dispatch, currentUser, community }) => {
-  const canEdit = canEditPost(currentUser, post, parentPost)
+export const Menu = ({ post, expanded, hidePinning }, { dispatch, currentUser, community }) => {
+  const canEdit = canEditPost(currentUser, post)
   const following = some(post.follower_ids, id => id === get('id', currentUser))
   const pinned = isPinned(post, community)
   const edit = () => isMobile()
@@ -333,7 +321,7 @@ export const Menu = ({ expanded, post, parentPost }, { dispatch, currentUser, co
     : <span className='icon-More' />
 
   return <Dropdown className='post-menu' alignRight {...{toggleChildren}}>
-    {canModerate(currentUser, community) && !parentPost && <li>
+    {canModerate(currentUser, community) && !hidePinning && <li>
       <a onClick={pin}>{pinned ? 'Unpin post' : 'Pin post'}</a>
     </li>}
     {canEdit && <li><a className='edit' onClick={edit}>Edit</a></li>}
@@ -350,7 +338,7 @@ export const Menu = ({ expanded, post, parentPost }, { dispatch, currentUser, co
 }
 Menu.contextTypes = {currentUser: object, dispatch: func, community: object}
 
-export const VoteButton = (props, { post, currentUser, dispatch }) => {
+export const VoteButton = ({ post }, { currentUser, dispatch }) => {
   let vote = () => dispatch(voteOnPost(post, currentUser))
   let myVote = includes(map(post.voters, 'id'), (currentUser || {}).id)
   return <a className='vote-button' onClick={vote}>
@@ -358,11 +346,10 @@ export const VoteButton = (props, { post, currentUser, dispatch }) => {
     {myVote ? 'Liked' : 'Like'}
   </a>
 }
-VoteButton.contextTypes = {post: object, currentUser: object, dispatch: func}
+VoteButton.contextTypes = {currentUser: object, dispatch: func}
 
-export const Voters = (props, { post, currentUser }) => {
+export const Voters = ({ post }) => {
   const voters = post.voters || []
-
   let onlyAuthorIsVoting = voters.length === 1 && same('id', first(voters), post.user)
   return voters.length > 0 && !onlyAuthorIsVoting
     ? <LinkedPersonSentence people={voters} className='voters meta'>
@@ -370,7 +357,6 @@ export const Voters = (props, { post, currentUser }) => {
       </LinkedPersonSentence>
     : <span />
 }
-Voters.contextTypes = {post: object, currentUser: object}
 
 export const RequestContributorsSentence = ({ post }) => {
   const contributors = post.contributors || []

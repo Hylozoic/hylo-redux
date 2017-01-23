@@ -50,3 +50,5 @@ export const denormalizedPost = (post, state) => ({
 })
 
 export const isMessageThread = post => get('type', post) === 'thread'
+
+export const isChildPost = post => get('parent_post_id', post)

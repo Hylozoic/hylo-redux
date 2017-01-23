@@ -29,25 +29,16 @@ export default class ThreadPage extends React.Component {
     dispatch: func
   }
 
-  static childContextTypes = {
-    post: object,
-    comments: array
-  }
-
   static contextTypes = {
     isMobile: bool,
     currentUser: object
   }
 
-  getChildContext () {
-    return pick(['post', 'comments'], this.props)
-  }
-
   render () {
-    const { post, error } = this.props
-    if (error) return <AccessErrorMessage error={error}/>
+    const { post, comments, error } = this.props
+    if (error) return <AccessErrorMessage error={error} />
     if (!post || !post.user) return <div className='loading'>Loading...</div>
 
-    return <Thread post={post} />
+    return <Thread post={post} comments={comments} />
   }
 }

@@ -10,7 +10,7 @@ import { find, some, filter, map } from 'lodash/fp'
 import { same } from '../models'
 import { denormalizedPost, getComments, getPost, imageUrl } from '../models/post'
 import { getCurrentCommunity } from '../models/community'
-import { canComment } from '../models/currentUser'
+import { canCommentOnPost } from '../models/currentUser'
 import Icon from './Icon'
 import Video from './Video'
 import LazyLoader from './LazyLoader'
@@ -37,7 +37,6 @@ const Deadline = ({ time }) => {
   children: map(id => denormalizedPost(getPost(id, state), state), post.children || [])
 }))
 export default class ProjectPost extends React.Component {
-
   static propTypes = {
     post: object,
     children: array
@@ -46,14 +45,13 @@ export default class ProjectPost extends React.Component {
   static contextTypes = {
     community: object,
     communities: array,
-    comments: array,
     currentUser: object
   }
 
   render () {
-    const { children, post } = this.props
+    const { children, post, comments } = this.props
     const requests = filter(p => p.is_project_request, children)
-    const { community, comments, communities, currentUser } = this.context
+    const { community, communities, currentUser } = this.context
     const { media, location, user } = post
     const title = decode(post.name || '')
     const video = find(m => m.type === 'video', media)
@@ -61,7 +59,7 @@ export default class ProjectPost extends React.Component {
     const description = presentDescription(post, community)
 
     return <div className='post project boxy-post'>
-      <Header communities={communities} />
+      <Header post={post} communities={communities} />
       <p className='title post-section'>{title}</p>
       <div className='box'>
         {video
@@ -96,8 +94,12 @@ export default class ProjectPost extends React.Component {
         </h3>
         {requests.map(post => <ProjectRequest key={post.id} {...{post, community}} />)}
       </div>}
-      {canComment(currentUser, post) && <CommentSection post={post}
-        comments={comments} expanded />}
+      <CommentSection
+        post={post}
+        canComment={canCommentOnPost(currentUser, post)}
+        comments={comments}
+        expanded
+      />
     </div>
   }
 }
@@ -199,16 +201,15 @@ class ProjectRequest extends React.Component {
 
 const spacer = <span>&nbsp; •&nbsp; </span>
 
-const UndecoratedProjectPostCard = ({ post, community, comments, dispatch, isMobile }, { currentUser }) => {
+const UndecoratedProjectPostCard = ({ post, community, comments, dispatch, isMobile }, { currentUser, parentPost }) => {
   const { name, user, ends_at, id } = post
   const url = `/p/${post.id}`
   const backgroundImage = `url(${imageUrl(post)})`
+  const canComment = canCommentOnPost(currentUser, parentPost)
 
   let description = presentDescription(post, community)
   const truncated = textLength(description) > 140
-  if (truncated) {
-    description = truncate(description, 140)
-  }
+  if (truncated) description = truncate(description, 140)
 
   return <div className='post project-summary'>
     <LazyLoader className='image'>
@@ -231,12 +232,13 @@ const UndecoratedProjectPostCard = ({ post, community, comments, dispatch, isMob
     </div>}
     <Supporters post={post} simple />
     <div className='comments-section-spacer' />
-    {canComment(currentUser, post) && <CommentSection post={post}
-      comments={comments}
-      onExpand={() => dispatch(navigate(url))} />}
+    <CommentSection {...{post, canComment, comments}} onExpand={() => dispatch(navigate(url))} />
   </div>
 }
-UndecoratedProjectPostCard.contextTypes = {currentUser: object}
+UndecoratedProjectPostCard.contextTypes = {
+  currentUser: object,
+  parentPost: object
+}
 
 export const ProjectPostCard = connect(
   (state, { post }) => ({

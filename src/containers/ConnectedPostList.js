@@ -118,9 +118,13 @@ export class ConnectedPostList extends React.Component {
     }
 
     debug(`posts: ${posts ? posts.length : 0} / ${total || '??'}`)
-    return <PostList posts={feedItems || []} loadMore={this.loadMore} hide={hide}
+    return <PostList
+      posts={feedItems || []}
+      loadMore={this.loadMore}
+      hide={hide}
       hideMobileSearch={hideMobileSearch}
-      {...{pending, refreshPostList, freshCount, noPostsMessage, projectPostParentId}} />
+      {...{pending, refreshPostList, freshCount, noPostsMessage, projectPostParentId}}
+    />
   }
 }
 

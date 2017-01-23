@@ -1,26 +1,24 @@
 import React from 'react'
+const { array, bool, func, number, string } = React.PropTypes
 import { connect } from 'react-redux'
-import Post from './Post'
-import ScrollListener from './ScrollListener'
-import RefreshButton from './RefreshButton'
 import { changeViewportTop } from '../util/scrolling'
 import { filter, includes, isEmpty } from 'lodash/fp'
+import { navigate, showExpandedPost } from '../actions'
+import { getEditingPostIds } from '../models/post'
+import { makeUrl } from '../util/navigation'
+import Post from './Post'
 import PostEditor from './PostEditor'
 import { EventPostCard } from './EventPost'
 import { ProjectPostCard } from './ProjectPost'
-import { getEditingPostIds } from '../models/post'
-import { makeUrl } from '../util/navigation'
-import { navigate, showExpandedPost } from '../actions'
+import ScrollListener from './ScrollListener'
+import RefreshButton from './RefreshButton'
 import SearchInput from './SearchInput'
 import Icon from './Icon'
-const { array, bool, func, number, string } = React.PropTypes
 
-@connect((state, { posts }) => ({
-  editingPostIds: state.isMobile ? [] : getEditingPostIds(posts, state)
-}))
-class PostList extends React.Component {
+export class PostList extends React.Component {
   static propTypes = {
     posts: array,
+    projectPostParentId: string,
     loadMore: func,
     refreshPostList: func,
     freshCount: number,
@@ -30,8 +28,7 @@ class PostList extends React.Component {
     dispatch: func,
     hideMobileSearch: bool,
     isMobile: bool,
-    noPostsMessage: string,
-    projectPostParentId: string
+    noPostsMessage: string
   }
 
   static contextTypes = {
@@ -70,41 +67,42 @@ class PostList extends React.Component {
       </span>
     }
 
-    const showPost = post => {
-      if (includes(post.id, editingPostIds)) {
-        return projectPostParentId ?
-          <PostEditor post={post} parentPostId={projectPostParentId} expanded />
-          : <PostEditor post={post} expanded/>
-      }
-
-      switch (post.type) {
-        case 'event':
-          return <EventPostCard post={post}/>
-        case 'project':
-          return <ProjectPostCard post={post}/>
-        case 'module':
-          return post.component
-      }
-
-      return <Post post={post} onExpand={commentId => this.expand(post.id, commentId)}/>
-    }
-
     return <div className='post-list-wrapper'>
-      {isMobile && !hideMobileSearch && <MobileSearch search={doSearch}/>}
-      <RefreshButton refresh={refreshPostList} count={freshCount}/>
+      {isMobile && !hideMobileSearch && <MobileSearch search={doSearch} />}
+      <RefreshButton refresh={refreshPostList} count={freshCount} />
       <ul className='posts'>
         {pending && isEmpty(posts) && <li className='loading'>Loading...</li>}
-        {posts.map(p => <li key={p.id} ref={p.id}>
-          {showPost(p)}
-        </li>)}
+        {posts.map(p =>
+          <li key={p.id} ref={p.id}>
+            <ShowPost post={p} projectPostParentId={projectPostParentId} editingPostIds={editingPostIds} />
+          </li>
+        )}
       </ul>
       {pending && !isEmpty(posts) && <div className='paginating'>Loading more...</div>}
-      {loadMore && <ScrollListener onBottom={loadMore} padding={5}/>}
+      {loadMore && <ScrollListener onBottom={loadMore} padding={5} />}
     </div>
   }
 }
 
-export default PostList
+export default connect((state, { posts }) => ({
+  editingPostIds: state.isMobile ? [] : getEditingPostIds(posts, state)
+}))(PostList)
+
+const ShowPost = ({ post, projectPostParentId, editingPostIds }) => {
+  if (includes(post.id, editingPostIds)) {
+    return <PostEditor post={post} parentPostId={projectPostParentId} expanded />
+  }
+  switch (post.type) {
+    case 'event':
+      return <EventPostCard post={post} />
+    case 'project':
+      return <ProjectPostCard post={post} />
+    case 'module':
+      return post.component
+  }
+
+  return <Post post={post} onExpand={commentId => this.expand(post.id, commentId)} />
+}
 
 class MobileSearch extends React.Component {
   static propTypes = {
@@ -119,8 +117,8 @@ class MobileSearch extends React.Component {
   render () {
     const { search } = this.props
     return <div className='mobile-search hidden' ref='mobileSearch'>
-      <Icon name='Loupe'/>
-      <SearchInput onChange={search}/>
+      <Icon name='Loupe' />
+      <SearchInput onChange={search} />
     </div>
   }
 }

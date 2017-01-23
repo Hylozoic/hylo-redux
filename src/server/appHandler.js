@@ -76,7 +76,6 @@ export default function (req, res) {
 
     return prefetch(props, store).then(() => {
       const state = store.getState()
-
       // redirect if the navigate action was dispatched during prefetching
       const { pathname, query } = state.routing.locationBeforeTransitions || {}
       if (pathname && props.location.pathname !== pathname) {

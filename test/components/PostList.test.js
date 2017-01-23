@@ -10,6 +10,15 @@ const { user } = mocks.models
 const user1 = user()
 const user2 = user()
 
+const parentPost = {
+  id: 'parentPost',
+  type: 'project',
+  name: 'i am a project',
+  followers: times(3, () => user()),
+  user_id: user1.id,
+  community_ids: [1,2]
+}
+
 const store = mocks.redux.store({
   communities: {
     foo: {
@@ -20,6 +29,9 @@ const store = mocks.redux.store({
       id: 2,
       name: 'bar'
     }
+  },
+  posts: {
+    [parentPost.id]: parentPost
   },
   people: {
     [user1.id]: user1,
@@ -68,7 +80,7 @@ const posts = [
 
 describe('PostList', () => {
   it('renders a mixed group of posts', () => {
-    const component = createElement(PostList, {posts}, {store})
+    const component = createElement(PostList, {posts}, {store, parentPost})
     const doc = cheerio.load(renderToString(component))
     expect(doc('.post').length).to.equal(3)
     expect(doc('.project-summary').length).to.equal(1)

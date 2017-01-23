@@ -27,14 +27,14 @@ export const getCharacter = event => String.fromCharCode(getKeyCode(event))
 export const sanitizeTagInput = event =>
   getCharacter(event).match(hashtagCharacterRegex) || event.preventDefault()
 
-// use like: <input type='text' onKeyDown={onKeyCode(keyMap.ENTER, callback)}/>
+// use like: <input type='text' onKeyDown={onKeyCode(keyMap.ENTER, callback)} />
 const onKeyCode = curry((modifier, keyCode, callback, event) =>
   getKeyCode(event) === keyCode && (!modifier || event[modifier]) && callback(event))
 
 const onKeyCodeWithoutMod = curry((modifier, keyCode, callback, event) =>
   getKeyCode(event) === keyCode && !event[modifier] && callback(event))
 
-// use like: <input type='text' onKeyDown={onEnter(callback)}/>
+// use like: <input type='text' onKeyDown={onEnter(callback)} />
 export const onEnter = onKeyCode(null, keyMap.ENTER)
 export const onEnterNoShift = onKeyCodeWithoutMod('shiftKey', keyMap.ENTER)
 export const onCmdEnter = onKeyCode('metaKey', keyMap.ENTER)

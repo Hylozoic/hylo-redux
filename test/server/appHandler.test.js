@@ -95,7 +95,6 @@ describe('appHandler', () => {
       nock(HOST).get('/noo/community/house/posts?offset=0&limit=20').reply(200, {
         posts: [], posts_total: 0
       })
-      nock(HOST).get('/noo/community/house/tags/followed').reply(200, [])
       nock(HOST).get('/noo/community/house/members?limit=10&offset=0').reply(200, {
         items: [], total: 0
       })

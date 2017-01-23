@@ -44,14 +44,14 @@ const CommunityMenu = ({ network, community }, { isMobile, dispatch, currentUser
     : '/app'
 
   const toggle = isMobile
-    ? <img src={currentItem.avatar_url}/>
-    : <span className='caret'/>
+    ? <img src={currentItem.avatar_url} />
+    : <span className='caret' />
 
   const visitCommunity = () => dispatch(navigate(`/c/${community.slug}`))
 
   return <div id='community-menu'>
     <IndexA to={conversationsUrl}>
-      <img src={currentItem.avatar_url}/>
+      <img src={currentItem.avatar_url} />
       <span className={cx('name', {network: isNetwork})}>
         {currentItem.name}
       </span>
@@ -62,13 +62,13 @@ const CommunityMenu = ({ network, community }, { isMobile, dispatch, currentUser
         <ul className='inner-list dropdown-menu'>
           {menuItems.length > 2 && <li>
             <A to={url()}>
-              <img src={allCommunities().avatar_url}/> All Communities
+              <img src={allCommunities().avatar_url} /> All Communities
             </A>
           </li>}
           {menuItems.slice(1).map(community => <li key={community.id}>
             <A to={url(community)} title={community.name}>
               <LazyLoader>
-                <img src={community.avatar_url}/>
+                <img src={community.avatar_url} />
               </LazyLoader>
               {community.name}
             </A>

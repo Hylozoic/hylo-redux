@@ -45,7 +45,7 @@ class CommunityProfile extends React.Component {
     const { community, children, error } = this.props
 
     if (error) {
-      return <AccessErrorMessage error={error}/>
+      return <AccessErrorMessage error={error} />
     }
 
     // we might have partial data for a community already; if this component

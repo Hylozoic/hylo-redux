@@ -78,33 +78,33 @@ export default class ProjectPostEditor extends React.Component {
       </h3>
       <div className='requests'>
         {requests.map((p, i) => <ProjectRequestEditor post={p} key={p.id}
-          update={this.updateRequest(i)}/>)}
+          update={this.updateRequest(i)} />)}
         <a className='add-request' onClick={this.addRequest}>+ Add request</a>
       </div>
       <div className='more-fields'>
         <div className='video'>
-          <Icon name='VideoCamera'/>
+          <Icon name='VideoCamera' />
           <input type='text' placeholder='youtube or vimeo url'
             value={videoUrl}
-            onChange={event => update({video: event.target.value})}/>
+            onChange={event => update({video: event.target.value})} />
         </div>
         <div className='deadline'>
-          <Icon name='Calendar'/>
+          <Icon name='Calendar' />
           <DatetimePicker inputProps={{placeholder: 'deadline'}}
             value={endsAt}
-            onChange={m => update({ends_at: m.toISOString()})}/>
+            onChange={m => update({ends_at: m.toISOString()})} />
         </div>
         <div className='location'>
-          <Icon name='Pin-1'/>
+          <Icon name='Pin-1' />
           <input type='text' placeholder='location'
             defaultValue={postEdit.location}
-            onChange={event => update({location: event.target.value})}/>
+            onChange={event => update({location: event.target.value})} />
         </div>
         <div className='hashtag'>
           <Icon name='Tag' />
           <input type='text' placeholder='hashtag' value={tag}
             onKeyPress={sanitizeTagInput}
-            onChange={event => updateTag(event.target.value)}/>
+            onChange={event => updateTag(event.target.value)} />
         </div>
       </div>
     </div>
@@ -152,13 +152,13 @@ class ProjectRequestEditor extends React.Component {
         <AutosizingTextarea type='text' ref='title' className='title'
           value={name}
           placeholder='What do you need help with?'
-          onChange={handleChange('name')}/>
+          onChange={handleChange('name')} />
       </div>
 
       <RichTextEditor className={editorClass} ref='details' name={`post-${id}`}
         content={description}
         onChange={handleChange('description')}
-        onBlur={() => this.setState({showDetails: false})}/>
+        onBlur={() => this.setState({showDetails: false})} />
       {!showDetails &&
         <div className='details-placeholder' onClick={this.goToDetails}>
           More details

@@ -58,7 +58,7 @@ const PageWithNav = (props, context) => {
       community={community}
       network={network}
       tags={tags}
-      close={closeLeftNav}/>}
+      close={closeLeftNav} />}
 
     <TopNav currentUser={currentUser}
       links={links}
@@ -68,13 +68,13 @@ const PageWithNav = (props, context) => {
       leftNavIsOpen={leftNavIsOpen}
       path={path}
       opened={leftNavIsOpen}
-      tagNotificationCount={tagNotificationCount}/>
+      tagNotificationCount={tagNotificationCount} />
 
     <VelocityComponent animation={moveWithMenu} easing={leftNavEasing}>
       <div id='main'>
         {showNetworkNav && <NetworkNav
           communities={networkCommunities}
-          network={network || community.network}/>}
+          network={network || community.network} />}
         {children}
       </div>
     </VelocityComponent>

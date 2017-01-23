@@ -14,7 +14,7 @@ const ImageAttachmentButton = props => {
 
   return <Dropdown className='button image-attachment-button' toggleChildren={
     <span>
-      <img src={image.url} className='image-thumbnail'/>
+      <img src={image.url} className='image-thumbnail' />
       Change Image <span className='caret'></span>
     </span>
   }>

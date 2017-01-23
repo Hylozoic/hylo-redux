@@ -26,13 +26,13 @@ const PostListControls = props => {
   return <div className='list-controls'>
     <input type='text' className='form-control search'
       placeholder='Search' defaultValue={search}
-      onChange={event => changeSearch(event.target.value)}/>
+      onChange={event => changeSearch(event.target.value)} />
 
     <Select className='type' choices={types} selected={selectedType}
-      onChange={t => onChange({type: t.id})} alignRight={true}/>
+      onChange={t => onChange({type: t.id})} alignRight={true} />
 
     <Select choices={sorts} selected={selectedSort}
-      onChange={s => onChange({sort: s.id})} alignRight={true}/>
+      onChange={s => onChange({sort: s.id})} alignRight={true} />
   </div>
 }
 

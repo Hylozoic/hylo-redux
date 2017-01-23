@@ -64,8 +64,8 @@ export default class IconTest extends React.Component {
 
   render () {
     return <div id='icon-test'>
-      {names.map(name => <span key={name}><Icon name={name}/> {name}</span>)}
-      <span><IconGoogleDrive/> Google Drive</span>
+      {names.map(name => <span key={name}><Icon name={name} /> {name}</span>)}
+      <span><IconGoogleDrive /> Google Drive</span>
       <p>{names.length} icons</p>
     </div>
   }

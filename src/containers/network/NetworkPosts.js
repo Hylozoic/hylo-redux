@@ -11,7 +11,7 @@ const NetworkPosts = props => {
   let { params: { id }, location: { query } } = props
 
   return <div>
-    <ConnectedPostList {...{subject, id, query}}/>
+    <ConnectedPostList {...{subject, id, query}} />
   </div>
 }
 

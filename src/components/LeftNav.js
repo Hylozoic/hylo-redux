@@ -1,10 +1,11 @@
 import React from 'react'
 import { A, IndexA } from './A'
 import Icon from './Icon'
+import NavMenuButton from './NavMenuButton'
 import Tooltip from './Tooltip'
 import { VelocityTransitionGroup } from 'velocity-react'
 import { isEmpty } from 'lodash'
-import { filter, get } from 'lodash/fp'
+import { filter, get, sortBy } from 'lodash/fp'
 import { tagUrl } from '../routes'
 import { showAllTags } from '../actions/tags'
 import cx from 'classnames'
@@ -26,22 +27,18 @@ const animations = {
   }
 }
 
-export const MenuButton = ({ onClick, label, showClose, notificationCount }) =>
-  <a className='menu-button' onClick={onClick}>
-    {!showClose &&
-      (notificationCount && notificationCount > 0
-        ? <div className='topic-notification'>{notificationCount}</div>
-        : <div className='hamburger'>
-            <div className='bar' />
-            <div className='bar' />
-            <div className='bar' />
-          </div>)}
-    {label && <span>{label}</span>}
-    {showClose && <span className='close'>&times;</span>}
-  </a>
+const TopicList = ({ tags, slug }, { dispatch }) => {
+  const followed = sortBy(t => {
+    switch (t.name) {
+      case 'offer': return 'a'
+      case 'request': return 'b'
+      case 'intention': return 'c'
+      default:
+        if (t.is_default) return 'd' + t.name
+        return 'e' + t.name
+    }
+  }, filter('followed', tags))
 
-export const TopicList = ({ tags, slug }, { dispatch }) => {
-  const followed = filter('followed', tags)
   const TagLink = ({ name, highlight }) => {
     var allTopics = name === 'all-topics'
     var AComponent = allTopics ? IndexA : A
@@ -111,7 +108,7 @@ export const LeftNav = ({ opened, community, network, tags, close, links }, { is
   return <span>
     <VelocityTransitionGroup {...animations}>
       {opened && <nav id='leftNav' onClick={() => isMobile && close()}>
-        <MenuButton onClick={onMenuClick} label={isMobile ? 'Menu' : 'Topics'} showClose />
+        <NavMenuButton onClick={onMenuClick} label={isMobile ? 'Menu' : 'Topics'} showClose />
         {network
           ? <NetworkNav network={network} />
           : <CommunityNav links={links} />}

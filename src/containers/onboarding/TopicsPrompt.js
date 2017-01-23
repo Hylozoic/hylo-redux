@@ -11,9 +11,9 @@ const TopicsPrompt = ({ location }, { currentUser, dispatch }) => {
     map('community', currentUser.memberships))
 
   return <ModalOnlyPage id='topics-prompt' className='login-signup'>
-    <CommunityHeader community={community}/>
+    <CommunityHeader community={community} />
     <BrowseTopicsModal community={community} onboarding
-      nextUrl={nextOnboardingUrl(location)}/>
+      nextUrl={nextOnboardingUrl(location)} />
   </ModalOnlyPage>
 }
 TopicsPrompt.contextTypes = {currentUser: object, dispatch: func}

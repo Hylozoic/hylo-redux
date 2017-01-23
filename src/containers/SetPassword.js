@@ -39,10 +39,10 @@ export default class SetPassword extends React.Component {
         {message && <div className='alert alert-success'>{message}</div>}
         <p className='help'>Enter your email address to receive a link to set your password.</p>
         <div className='form-group'>
-          <input type='text' id='email' ref='email' className='form-control' placeholder='Email address'/>
+          <input type='text' id='email' ref='email' className='form-control' placeholder='Email address' />
         </div>
         <div className='form-group'>
-          <input type='submit' value='Go'/>
+          <input type='submit' value='Go' />
         </div>
         <div>
           <Link to='/signup'>Sign up</Link>

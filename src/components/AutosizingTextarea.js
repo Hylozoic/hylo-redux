@@ -38,6 +38,6 @@ export default class AutosizingTextarea extends React.Component {
     return <textarea ref={c => this.textarea = c}
       onKeyUp={wrapHandler(onKeyUp)}
       onInput={wrapHandler(onInput)}
-      {...props}/>
+      {...props} />
   }
 }

@@ -14,7 +14,7 @@ const LinkPreview = ({ linkPreview, onClose }) => {
     <a className='link-preview' href={url} target='_blank'>
       {onClose && <div className='close' onClick={close}>&times;</div>}
       {image_url && <LazyLoader>
-        <img src={image_url} className={imageClassName}/>
+        <img src={image_url} className={imageClassName} />
       </LazyLoader>}
       <span className='link-preview-title'>{title}</span>
       {description && <span className='link-preview-description'>{truncate(description, 300)}</span>}

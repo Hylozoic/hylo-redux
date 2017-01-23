@@ -85,13 +85,13 @@ export default class TagEditorModal extends React.Component {
           <div key={creating ? 'key' : tag} className={cx('tag-group', {creating})}>
             {creating
               ? <ModalInput label='Topic name' defaultValue={tag}
-              onChange={event => edit(event.target.value, description, is_default)}/>
+              onChange={event => edit(event.target.value, description, is_default)} />
               : <div className='topic'>
                   <label>Topic name</label>
                   <span>#{tag}</span>
                 </div>}
             <ModalInput label='Description' defaultValue={description} type='textarea'
-              onChange={event => edit(tag, event.target.value, is_default)} maxLength={140}/>
+              onChange={event => edit(tag, event.target.value, is_default)} maxLength={140} />
             {canModerate(currentUser, community) && <ModalRow
               ref='default'>
               <label>Make default</label>
@@ -100,7 +100,7 @@ export default class TagEditorModal extends React.Component {
                 defaultChecked={is_default}
                 onChange={event => edit(tag, description, !is_default)}
                 onFocus={() => this.refs.default.focus()}
-                onBlur={() => this.refs.default.blur()}/>
+                onBlur={() => this.refs.default.blur()} />
               Make this a default topic for your community.
               <p className='meta help-text'>When a topic is set as default, it shows up in the topic dropdown menu for new posts, and all new members start out following that topic.</p>
             </ModalRow>}

@@ -8,12 +8,11 @@ import { FETCH_POST, navigate, notify, setMetaTags } from '../actions'
 import { fetchComments } from '../actions/comments'
 import { fetchCommunity } from '../actions/communities'
 import { fetchPost, unfollowPost } from '../actions/posts'
-import { saveCurrentCommunityId } from '../actions/util'
+import { findError, saveCurrentCommunityId } from '../actions/util'
 import { ogMetaTags } from '../util'
 import A from '../components/A'
 import PostEditor from '../components/PostEditor'
 import { scrollToComment } from '../util/scrolling'
-import { findError } from '../actions/util'
 import AccessErrorMessage from '../components/AccessErrorMessage'
 import CoverImagePage from '../components/CoverImagePage'
 import EventPost from '../components/EventPost'
@@ -70,7 +69,7 @@ export default class SinglePost extends React.Component {
   render () {
     const { post, community, editing, error, location: { query } } = this.props
     const { currentUser, isMobile } = this.context
-    if (error) return <AccessErrorMessage error={error}/>
+    if (error) return <AccessErrorMessage error={error} />
     if (!post || !post.user) return <div className='loading'>Loading...</div>
     const isChild = !!post.parent_post_id
 
@@ -82,17 +81,17 @@ export default class SinglePost extends React.Component {
         </A>
       </div>}
       <CoverImagePage id='single-post' image={get('banner_url', community)}>
-        {editing ? <PostEditor post={post} expanded/> : showPost(post)}
+        {editing ? <PostEditor post={post} expanded /> : showPost(post)}
 
         {showTaggedPosts(post) && <div>
-          {currentUser && <PostEditor community={community} tag={post.tag}/>}
+          {currentUser && <PostEditor community={community} tag={post.tag} />}
           <p className='meta other-posts-label'>
             Other posts for&nbsp;
             <span className='hashtag'>#{post.tag}</span>
           </p>
           {community && <ConnectedPostList subject={subject} id={community.id}
             omit={post.id}
-            query={{...query, tag: post.tag}}/>}
+            query={{...query, tag: post.tag}} />}
         </div>}
       </CoverImagePage>
     </div>
@@ -101,10 +100,10 @@ export default class SinglePost extends React.Component {
 
 const showPost = (post) => {
   switch (post.type) {
-    case 'event': return <EventPost post={post}/>
-    case 'project': return <ProjectPost/>
+    case 'event': return <EventPost post={post} />
+    case 'project': return <ProjectPost />
   }
-  return <Post post={post} expanded/>
+  return <Post post={post} expanded />
 }
 
 const redirect = (store, id) => {

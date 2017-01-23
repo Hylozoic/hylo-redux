@@ -45,9 +45,9 @@ class SearchMenuItem extends React.Component {
     return <li className='search-container'>
       <div className={cx('search', {expanded})} onClick={open}>
         <div className='search-border'>
-          <Icon name='Loupe'/>
-          {expanded && <SearchInput onChange={search} ref='input'/>}
-          {expanded && <Icon onClick={close} name='Fail'/>}
+          <Icon name='Loupe' />
+          {expanded && <SearchInput onChange={search} ref='input' />}
+          {expanded && <Icon onClick={close} name='Fail' />}
         </div>
       </div>
     </li>
@@ -66,61 +66,61 @@ const UserMenu = ({ slug, newMessageCount, newNotificationCount }, { isMobile, d
   const showDotBadge = newNotificationCount > 0 || newMessageCount > 0
 
   return <ul className='right'>
-    <SearchMenuItem/>
+    <SearchMenuItem />
 
     {hasFeature(currentUser, DIRECT_MESSAGES) &&
       <li className='nav-notify-dropdown'>
-        <ThreadsDropdown lastViewed={last_viewed_messages_at} newCount={newMessageCount}/>
+        <ThreadsDropdown lastViewed={last_viewed_messages_at} newCount={newMessageCount} />
       </li>}
 
     <li className='nav-notify-dropdown'>
-      <NotificationsDropdown newCount={newNotificationCount}/>
+      <NotificationsDropdown newCount={newNotificationCount} />
     </li>
 
     <li>
       <Dropdown className='user-menu' alignRight triangle={isMobile}
         rivalrous='nav' backdrop={isMobile} toggleChildren={
           <div>
-            <NonLinkAvatar person={currentUser}/>
-            {showDotBadge && <div className='dot-badge'/>}
+            <NonLinkAvatar person={currentUser} />
+            {showDotBadge && <div className='dot-badge' />}
           </div>
         }>
         <li>
           <A to={`/u/${currentUser.id}`}>
-            <Icon name='User'/> My profile
+            <Icon name='User' /> My profile
           </A>
         </li>
         <li className='dropdown-notifications'>
           <a onClick={() => dispatch(showModal('notifications'))}>
-            <Icon name='Bell'/> Notifications
+            <Icon name='Bell' /> Notifications
             {newNotificationCount > 0 && <span className='badge'>{newNotificationCount}</span>}
           </a>
         </li>
         {hasFeature(currentUser, DIRECT_MESSAGES) &&
           <li className='dropdown-threads'>
             <a onClick={() => dispatch(showModal('threads'))}>
-              <Icon name='Message-Smile'/> Messages
+              <Icon name='Message-Smile' /> Messages
               {newMessageCount > 0 && <span className='badge'>{newMessageCount}</span>}
             </a>
           </li>}
         <li>
           <A to={'/settings'}>
-            <Icon name='Settings'/> Settings
+            <Icon name='Settings' /> Settings
           </A>
         </li>
         <li>
           <a onClick={() => dispatch(resetTooltips(id))}>
-            <Icon name='ProjectorScreen'/> Start tour
+            <Icon name='ProjectorScreen' /> Start tour
           </a>
         </li>
         {isAdmin(currentUser) && <li>
           <A to={'/admin'}>
-            <Icon name='Keypad'/> Admin
+            <Icon name='Keypad' /> Admin
           </A>
         </li>}
         <li>
           <a onClick={doLogout}>
-            <Icon name='Fail'/> Log out
+            <Icon name='Fail' /> Log out
           </a>
         </li>
       </Dropdown>

@@ -153,7 +153,7 @@ export default class Admin extends React.Component {
           <input type='text' value={loginAs}
             placeholder='User ID or email'
             onChange={e => this.setState({loginAs: e.target.value})}
-            onKeyDown={onEnter(go)}/>
+            onKeyDown={onEnter(go)} />
         </li>
         <li><a href='/admin/kue'>Kue</a></li>
         <li><a href='/noo/admin/logout'>Log out</a></li>

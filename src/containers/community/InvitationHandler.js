@@ -43,14 +43,14 @@ export default class InvitationHandler extends React.Component {
 
     if (tokenError) {
       return <ModalOnlyPage id='invitation-error' className='login-signup'>
-        <CommunityHeader community={mockCommunity}/>
+        <CommunityHeader community={mockCommunity} />
         <Modal standalone>
             <div className='alert alert-danger'>{errorMessage}</div>
             <div className='modal-input'><A to='/app'>Click here</A> to view your communities</div>
         </Modal>
       </ModalOnlyPage>
     } else {
-      return <SkillsPrompt location={mockLocation} community={mockCommunity}/>
+      return <SkillsPrompt location={mockLocation} community={mockCommunity} />
     }
   }
 }

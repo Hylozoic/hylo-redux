@@ -83,7 +83,7 @@ export default class TagInput extends React.Component {
     return <div className={cx('tag-input', className)} onClick={this.focus}>
       <ul>
         {uniqBy('id', tags).map(t => <li key={t.id} className='tag'>
-          {t.avatar_url && <NonLinkAvatar person={t}/>}
+          {t.avatar_url && <NonLinkAvatar person={t} />}
           {t.label || t.name}
           <a onClick={this.remove(t)} className='remove'>&times;</a>
         </li>)}
@@ -91,11 +91,11 @@ export default class TagInput extends React.Component {
 
       <input ref='input' type='text' placeholder={placeholder} spellCheck={false}
         onChange={event => this.handleChange(event.target.value)}
-        onKeyDown={this.handleKeys}/>
+        onKeyDown={this.handleKeys} />
 
       {!isEmpty(choices) && <div className='dropdown'>
         <KeyControlledItemList className='dropdown-menu' ref='list'
-          items={choices} onChange={this.select}/>
+          items={choices} onChange={this.select} />
       </div>}
     </div>
   }

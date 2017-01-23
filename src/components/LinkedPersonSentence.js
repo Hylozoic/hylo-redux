@@ -33,7 +33,7 @@ const LinkedPersonSentence = ({ people, children, className }, { currentUser }) 
         {num - numShown} other{num - numShown > 1 ? 's' : ''}
       </span>}>
       {others.slice(numShown).map(p =>
-        <PersonDropdownItem key={p.id} person={p}/>)}
+        <PersonDropdownItem key={p.id} person={p} />)}
     </Dropdown>} {children}
   </div>
 }

@@ -90,12 +90,33 @@ function isPromise (value) {
   return value && typeof value.then === 'function'
 }
 
-export function pendingPromiseMiddleware (store) {
+export function pendingMiddleware (store) {
   return next => action => {
-    let { type, payload } = action
+    const { type, payload } = action
     if (isPromise(payload)) {
       store.dispatch({...action, type: type + _PENDING, payload: null})
     }
+    return next(action)
+  }
+}
+
+export function timeoutMiddleware (store) {
+  return next => action => {
+    const { payload, meta } = action
+    if (isPromise(payload) && get(meta, 'timeout')) {
+      action.payload = new Promise((resolve, reject) => {
+        const fail = setTimeout(() =>
+          reject(new Error('timeout')), meta.timeout)
+
+        const clearAndDo = action => result => {
+          clearTimeout(fail)
+          action(result)
+        }
+
+        payload.then(clearAndDo(resolve), clearAndDo(reject))
+      })
+    }
+
     return next(action)
   }
 }

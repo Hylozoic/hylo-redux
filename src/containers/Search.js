@@ -102,13 +102,13 @@ export default class Search extends React.Component {
       <div className='list-controls'>
         <input type='text' className='form-control search'
           value={this.state.textInput}
-          onChange={event => updateTextInput(event.target.value)}/>
+          onChange={event => updateTextInput(event.target.value)} />
         <Select className='type' choices={types} selected={selectedType}
-          onChange={t => this.updateSearch({type: t.id})} alignRight/>
+          onChange={t => this.updateSearch({type: t.id})} alignRight />
       </div>
       <Results results={searchResults}
         onTagClick={tag => updateTextInput(tag)}
-        loadMore={loadMore}/>
+        loadMore={loadMore} />
       {pending
         ? <div className='message'>Loading...</div>
         : isEmpty(searchResults) && (q
@@ -122,25 +122,25 @@ const Results = ({ results, onTagClick, loadMore }) => {
   return <div className='results'>
     {results.map(({ type, data }) => <div key={`${type}${data.id}`}>
       {type === 'post'
-        ? <PostResult post={data}/>
+        ? <PostResult post={data} />
         : type === 'person'
-          ? <PersonResult person={data} onTagClick={onTagClick}/>
-          : <CommentResult comment={data}/>}
+          ? <PersonResult person={data} onTagClick={onTagClick} />
+          : <CommentResult comment={data} />}
     </div>)}
-    <ScrollListener onBottom={loadMore}/>
+    <ScrollListener onBottom={loadMore} />
   </div>
 }
 
 const PostResult = ({ post }, { dispatch }) =>
-  <Post post={post} onExpand={() => dispatch(navigate(`/p/${post.id}`))}/>
+  <Post post={post} onExpand={() => dispatch(navigate(`/p/${post.id}`))} />
 PostResult.contextTypes = {dispatch: func}
 
 const PersonResult = ({ person, onTagClick }) => {
   let { bio, tags } = person
   return <div className='person-result'>
     <div className='hello'>
-      <Avatar person={person}/>
-      <br/>
+      <Avatar person={person} />
+      <br />
       <strong><A to={`/u/${person.id}`}>{person.name}</A></strong>
     </div>
     <div className='content'>
@@ -150,7 +150,7 @@ const PersonResult = ({ person, onTagClick }) => {
           <A className='hashtag' to={makeUrl('/people', {search: '#' + tag})}>
             #{tag}
           </A>
-          &nbsp;<wbr/>
+          &nbsp;<wbr />
         </span>)}
     </div>
   </div>
@@ -173,6 +173,6 @@ const CommentResult = connect((state, { comment }) => ({
           : `"${decode(post.name)}"`}
       </A>
     </strong>
-    <Comment comment={comment} truncate expand={visit}/>
+    <Comment comment={comment} truncate expand={visit} />
   </div>
 })

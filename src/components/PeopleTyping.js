@@ -46,7 +46,7 @@ export default class PeopleTyping extends React.Component {
       </div>}
       {names.length > 1 && <div>Multiple people are typing</div>}
       &nbsp;
-      <Chillipsis/>
+      <Chillipsis />
     </div> : null
   }
 }

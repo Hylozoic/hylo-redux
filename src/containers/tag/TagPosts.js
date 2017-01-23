@@ -17,14 +17,14 @@ const { bool, func, object } = React.PropTypes
 
 const subject = 'community'
 
-function reloadTag (dispatch, name, id, query) {
+function reloadTag (dispatch, name, communityId, query) {
   // resetError needs to be dispatched here in case we loaded the page for a tag
   // that didn't yet exist, and then created a first post with that tag
   dispatch(resetError(FETCH_TAG))
-  return dispatch(fetchTag(name, id))
+  return dispatch(fetchTag(name, communityId))
   .then(({ payload }) => payload.post
     ? dispatch(navigate(`/p/${payload.post.id}`))
-    : dispatch(fetch(subject, id || 'all', {...query, tag: name})))
+    : dispatch(fetch(subject, communityId || 'all', {...query, tag: name})))
 }
 
 @prefetch(({ dispatch, params: { tagName, id }, query }) =>
@@ -73,7 +73,7 @@ export default class TagPosts extends React.Component {
         tagExists = false
         tag = {name: tagName, id: 'nonexistent'}
       } else {
-        return <AccessErrorMessage error={tagError}/>
+        return <AccessErrorMessage error={tagError} />
       }
     }
 
@@ -93,8 +93,8 @@ export default class TagPosts extends React.Component {
           {!isMobile && owner && <span className='byline'>by {owner.name}</span>}
         </span>
         {!isMobile && followers &&
-          <Followers followers={sortBy(followers, f => f.id !== owner.id)}
-            followerCount={followerCount}/>}
+          <Followers followers={sortBy(followers, f => f.id !== get('id', owner))}
+            followerCount={followerCount} />}
         {tagExists && canInvite(currentUser, community) &&
           <button className='invite' onClick={() => dispatch(showShareTag(tagName, id))}>+</button>}
         {tagExists && id && <span className='buttons'>
@@ -116,8 +116,8 @@ export default class TagPosts extends React.Component {
       </div>
       {currentUser && <PostEditor community={community} tag={tagName}
         placeholder='Start a conversation on this topic'
-        onSave={() => reloadTag(dispatch, tagName, id, query)}/>}
-      {tagExists && <ConnectedPostList {...{subject, id: id || 'all', query: {...query, tag: tagName}}}/>}
+        onSave={() => reloadTag(dispatch, tagName, id, query)} />}
+      {tagExists && <ConnectedPostList {...{subject, id: id || 'all', query: {...query, tag: tagName}}} />}
     </div>
   }
 }
@@ -141,7 +141,7 @@ const Followers = ({followers, followerCount}) => {
         <span className='content'>{displayedCount}</span>
       </span>}>
       {followers.slice(3).map(follower =>
-        <PersonDropdownItem key={follower.id} person={follower}/>)}
+        <PersonDropdownItem key={follower.id} person={follower} />)}
     </Dropdown>}
   </div>
 }

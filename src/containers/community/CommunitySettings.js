@@ -243,7 +243,7 @@ export default class CommunitySettings extends React.Component {
                   <div className={cx('form-group', {'has-error': errors.name})}>
                     <input type='text' ref='name' className='name form-control'
                       value={edited.name}
-                      onChange={this.setField('name', true)}/>
+                      onChange={this.setField('name', true)} />
                     </div>
                 </form>
                 <div className='buttons'>
@@ -267,7 +267,7 @@ export default class CommunitySettings extends React.Component {
                   <div className={cx('form-group', {'has-error': !isEmpty(errors.slug)})}>
                     <input type='text' ref='slug' className='slug form-control'
                       value={edited.slug}
-                      onChange={this.setSlug}/>
+                      onChange={this.setSlug} />
                     </div>
                 </form>
                 <p className='meta'>Warning: any links that refer to the old slug will no longer work.</p>
@@ -293,7 +293,7 @@ export default class CommunitySettings extends React.Component {
                   <div className={cx('form-group', {'has-error': errors.description})}>
                     <textarea className='form-control description'
                       value={edited.description}
-                      onChange={this.setField('description')}/>
+                      onChange={this.setField('description')} />
                     </div>
                 </form>
                 <div className='buttons'>
@@ -313,7 +313,7 @@ export default class CommunitySettings extends React.Component {
             <p className='summary'>This image appears next to your community&rsquo;s name. (Tip: Try a transparent PNG image.)</p>
           </div>
           <div className='half-column right-align'>
-            <div className='medium-logo' style={{backgroundImage: `url(${avatar_url})`}}/>
+            <div className='medium-logo' style={{backgroundImage: `url(${avatar_url})`}} />
             <button type='button' onClick={() => this.attachImage('avatar_url')}>Change</button>
           </div>
         </div>
@@ -347,7 +347,7 @@ export default class CommunitySettings extends React.Component {
                 <PersonChooser
                   onSelect={this.changeLeader}
                   communityId={community.id}
-                  typeaheadId='leader'/>
+                  typeaheadId='leader' />
                 <div className='buttons'>
                   <button type='button' onClick={() => this.cancelEdit('welcome_message', 'leader')}>Cancel</button>
                   <button type='button' onClick={() => this.save('welcome_message', 'leader')}>Save</button>
@@ -374,7 +374,7 @@ export default class CommunitySettings extends React.Component {
                   <div className={cx('form-group', {'has-error': errors.location})}>
                     <input type='text' ref='location' className='location form-control'
                       value={edited.location}
-                      onChange={this.setField('location')}/>
+                      onChange={this.setField('location')} />
                     </div>
                 </form>
                 <div className='buttons'>
@@ -396,7 +396,7 @@ export default class CommunitySettings extends React.Component {
             <p className='summary'>If this is disabled, only moderators may send invitations to new members.</p>
           </div>
           <div className='half-column right-align'>
-            <input type='checkbox' checked={community.settings.all_can_invite} onChange={() => this.toggle('settings.all_can_invite')}/>
+            <input type='checkbox' checked={community.settings.all_can_invite} onChange={() => this.toggle('settings.all_can_invite')} />
           </div>
         </div>
       </div>}
@@ -422,7 +422,7 @@ export default class CommunitySettings extends React.Component {
             <PersonChooser
               onSelect={this.addModerator}
               communityId={community.id}
-              typeaheadId='moderator'/>
+              typeaheadId='moderator' />
           </div>
         </div>
         <div className='section-item'>
@@ -449,7 +449,7 @@ export default class CommunitySettings extends React.Component {
               <a href={`https://slack.com/oauth/authorize?scope=incoming-webhook&client_id=${slackClientId}&redirect_uri=${addSlackUrl}`}>
                 <img alt='Add to Slack' height='40' width='139'
                   src='https://platform.slack-edge.com/img/add_to_slack.png'
-                  srcSet='https://platform.slack-edge.com/img/add_to_slack.png 1x, https://platform.slack-edge.com/img/add_to_slack@2x.png 2x'/>
+                  srcSet='https://platform.slack-edge.com/img/add_to_slack.png 1x, https://platform.slack-edge.com/img/add_to_slack@2x.png 2x' />
               </a>
             </div>}
             {community.slack_hook_url && <div>
@@ -467,7 +467,7 @@ export default class CommunitySettings extends React.Component {
           </div>
           <div className='half-column right-align'>
             <input type='checkbox' checked={!!get('events.enabled', community.settings)}
-              onChange={() => this.toggle('settings.events.enabled')}/>
+              onChange={() => this.toggle('settings.events.enabled')} />
           </div>
         </div>
         <div className='section-item'>
@@ -479,7 +479,7 @@ export default class CommunitySettings extends React.Component {
           </div>
           <div className='half-column right-align'>
             <input type='checkbox' checked={!!get('projects.enabled', community.settings)}
-              onChange={() => this.toggle('settings.projects.enabled')}/>
+              onChange={() => this.toggle('settings.projects.enabled')} />
           </div>
         </div>
         <div className='section-item'>

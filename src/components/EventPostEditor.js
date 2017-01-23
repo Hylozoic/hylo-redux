@@ -28,22 +28,22 @@ export default class EventPostEditor extends React.Component {
 
     return <div className='more-fields events-editor'>
       <div className='start-time'>
-        <Icon name='Calendar'/>
+        <Icon name='Calendar' />
         <DatetimePicker inputProps={{placeholder: 'start time'}}
           defaultValue={startsAt}
-          onBlur={updateTime('starts_at')}/>
+          onBlur={updateTime('starts_at')} />
       </div>
       <div className='end-time'>
-        <Icon name='Calendar'/>
+        <Icon name='Calendar' />
         <DatetimePicker inputProps={{placeholder: 'end time'}}
           defaultValue={endsAt}
-          onBlur={updateTime('ends_at')}/>
+          onBlur={updateTime('ends_at')} />
       </div>
       <div className='location'>
-        <Icon name='Pin-1'/>
+        <Icon name='Pin-1' />
         <input type='text' placeholder='location'
           defaultValue={postEdit.location}
-          onChange={event => update({location: event.target.value})}/>
+          onChange={event => update({location: event.target.value})} />
       </div>
     </div>
   }

@@ -207,14 +207,14 @@ export default class RichTextEditor extends React.PureComponent {
       {loadedTinyMCE && <TinyMCE config={editorConfig} id={this._self()._editorId}
         onChange={this._handleChange}
         onSetContent={this._handleChange}
-        content={content}/>}
+        content={content} />}
 
       {!isEmpty(typeaheadOptions) && this.tagger && this.tagger.isInTag() &&
         <div className='dropdown active' style={{left, top}}>
           <KeyControlledItemList className='dropdown-menu'
             ref='list'
             items={typeaheadOptions}
-            onChange={selectTypeahead}/>
+            onChange={selectTypeahead} />
         </div>}
     </div>
   }

@@ -36,7 +36,7 @@ import { findUrls } from '../util/linkify'
 import { isKey, onEnter } from '../util/textInput'
 import { responseMissingTagDescriptions } from '../util/api'
 import {
-  showModal, CREATE_POST, FETCH_LINK_PREVIEW, UPDATE_POST, UPLOAD_IMAGE
+  notify, showModal, CREATE_POST, FETCH_LINK_PREVIEW, UPDATE_POST, UPLOAD_IMAGE
 } from '../actions'
 import { updateCommunityChecklist } from '../actions/communities'
 import { ADDED_POST, EDITED_POST, OPENED_POST_EDITOR, trackEvent } from '../util/analytics'
@@ -196,6 +196,11 @@ export class PostEditor extends React.PureComponent {
           saveParent: this.saveWithTagDescriptions
         }))
       }
+
+      if (action.error) {
+        return dispatch(notify('There was a problem saving your post. Please try again in a moment', {type: 'error'}))
+      }
+
       trackEvent(post ? EDITED_POST : ADDED_POST, {
         tag: postEdit.tag,
         community: {name: get(postCommunities[0], 'name')}
@@ -289,7 +294,7 @@ export class PostEditor extends React.PureComponent {
     const removeLinkPreview = () => this.updateStore({linkPreview: null})
 
     return <div className='post-editor clearfix'>
-      <PostEditorHeader person={currentUser}/>
+      <PostEditorHeader person={currentUser} />
 
       <div className='title-wrapper'>
         <AutosizingTextarea type='text' ref='title' className='title'
@@ -297,14 +302,14 @@ export class PostEditor extends React.PureComponent {
           maxLength={120}
           placeholder={placeholder || placeholderText(this.editorType())}
           onKeyDown={onEnter(this.goToDetails)}
-          onChange={event => this.updateTitle(event)}/>
+          onChange={event => this.updateTitle(event)} />
       </div>
 
       {shouldSelectTag && <Dropdown className='hashtag-selector' keyControlled
         onChange={this.goToDetails}
         toggleChildren={<button ref='tagSelector' id='tag-selector' onKeyDown={this.tabToDetails}>
           #{tag || 'all-topics'}&nbsp;
-          <span className='caret'></span>
+          <span className='caret' />
         </button>}>
         {selectableTags.map(t => <li key={t}>
           <a onClick={() => selectTag(t)}>#{t}</a>
@@ -328,38 +333,38 @@ export class PostEditor extends React.PureComponent {
         content={description}
         onChange={ev => this.updateDescription(ev.target.value)}
         onAddTag={this.handleAddTag}
-        onBlur={() => this.setState({showDetails: false})}/>
+        onBlur={() => this.setState({showDetails: false})} />
       {!description && !showDetails &&
         <div className='details-placeholder' onClick={this.goToDetails}>
           More details
         </div>}
 
-      {linkPreview && <LinkPreview {...{linkPreview}} onClose={removeLinkPreview}/>}
+      {linkPreview && <LinkPreview {...{linkPreview}} onClose={removeLinkPreview} />}
 
       {Subeditor && <Subeditor ref='subeditor'
-        {...{post, postEdit, update: this.updateStore}}/>}
+        {...{post, postEdit, update: this.updateStore}} />}
 
       <div className='communities'>
         <span>in&nbsp;</span>
         <CommunitySelector ids={community_ids}
           onSelect={this.addCommunity}
-          onRemove={this.removeCommunity}/>
+          onRemove={this.removeCommunity} />
       </div>
 
       <div className='buttons'>
 
         <VisibilityDropdown
           isPublic={postEdit.public || false}
-          setPublic={isPublic => this.updateStore({public: isPublic})}/>
+          setPublic={isPublic => this.updateStore({public: isPublic})} />
 
         <AttachmentsDropdown id={this.props.id}
           media={postEdit.media}
           path={`user/${currentUser.id}/seeds`}
-          imagePending={imagePending}/>
+          imagePending={imagePending} />
 
         <div className='right'>
           <a className='cancel' onClick={() => this.cancel()}>
-            <Icon name='Fail'/>
+            <Icon name='Fail' />
           </a>
         </div>
 
@@ -375,16 +380,16 @@ export class PostEditor extends React.PureComponent {
 
 const VisibilityDropdown = ({ isPublic, setPublic }, { dispatch }) => {
   const toggle = isPublic
-    ? <button><Icon name='World'/>Public <span className='caret'/></button>
-    : <button><Icon name='Users'/>Only Communities <span className='caret'/></button>
+    ? <button><Icon name='World' />Public <span className='caret' /></button>
+    : <button><Icon name='Users' />Only Communities <span className='caret' /></button>
 
   const communityOption = <li key='community'><a onClick={() => setPublic(false)}><div>
-    <span className='option-title'> <Icon name='Users'/>Only Communities</span>
+    <span className='option-title'> <Icon name='Users' />Only Communities</span>
     <span className='description'>Allow communities and people who are tagged to see this post.</span>
   </div></a></li>
 
   const publicOption = <li key='public'><a onClick={() => setPublic(true)}><div>
-    <span className='option-title'><Icon name='World'/>Public</span>
+    <span className='option-title'><Icon name='World' />Public</span>
     <span className='description'>Allow anyone on the internet to see this post.</span>
   </div></a></li>
 
@@ -406,7 +411,9 @@ const AttachmentsDropdown = (props, { dispatch }) => {
   const attachDoc = () => dispatch(uploadDoc(id))
   const attachImage = () => {
     dispatch(uploadImage({
-      id, path, subject: 'post',
+      id,
+      path,
+      subject: 'post',
       convert: {width: 800, format: 'jpg', fit: 'max', rotate: 'exif'}
     }))
   }
@@ -438,19 +445,19 @@ const AttachmentsDropdown = (props, { dispatch }) => {
         <div className='description'>
           Attach documents, images or videos from Google Drive.
         </div>
-        </a>
+      </a>
     </li>
-    {(image || some(docs)) && <li role='separator' className='divider'></li>}
+    {(image || some(docs)) && <li role='separator' className='divider' />}
     {image && <li className='image'>
       <a className='remove' onClick={() => dispatch(removeImage('post', id))}>
         &times;
       </a>
-      <img src={image.url}/>
+      <img src={image.url} />
     </li>}
-    {image && some(docs) && <li role='separator' className='divider'></li>}
+    {image && some(docs) && <li role='separator' className='divider' />}
     {docs.map(doc => <li key={doc.url} className='doc'>
       <a target='_blank' href={doc.url}>
-        <img src={doc.thumbnail_url}/>
+        <img src={doc.thumbnail_url} />
         {doc.name}
       </a>
       <a className='remove' onClick={() => dispatch(removeDoc(doc, id))}>&times;</a>
@@ -493,13 +500,13 @@ class CommunitySelector extends React.Component {
       handleInput={term => this.setState({term})}
       choices={choices}
       onSelect={onSelect}
-      onRemove={onRemove}/>
+      onRemove={onRemove} />
   }
 }
 
 const PostEditorHeader = ({ person }) =>
   <div className='header'>
-    <NonLinkAvatar person={person}/>
+    <NonLinkAvatar person={person} />
     <div>
       <span className='name'>{person.name}</span>
     </div>
@@ -545,14 +552,14 @@ export default class PostEditorWrapper extends React.Component {
       if (!currentUser) return null
 
       return <div className='post-editor post-editor-wrapper' onClick={this.toggle}>
-        <PostEditorHeader person={currentUser}/>
+        <PostEditorHeader person={currentUser} />
         <div className='prompt'>
           {otherProps.placeholder || placeholderText(type)}
         </div>
       </div>
     }
 
-    return <PostEditor {...{onCancel, type, ...otherProps}}/>
+    return <PostEditor {...{onCancel, type, ...otherProps}} />
   }
 }
 

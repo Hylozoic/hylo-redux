@@ -139,17 +139,17 @@ export default class ThreadsDropdown extends React.Component {
       onOpen={onOpen}
       onClose={onClose}
       toggleChildren={<span>
-        <Icon name='Message-Smile'/>
+        <Icon name='Message-Smile' />
         {newCount > 0 && <div className='badge'>{newCount}</div>}
       </span>}>
       {!pending && <li className='top'>
         <div className='newMessage' onClick={startMessage}>
-          <Icon name='Compose'/><span className='button-text'>New Message</span>
+          <Icon name='Compose' /><span className='button-text'>New Message</span>
         </div>
       </li>}
       {pending && <li className='loading'>Loading...</li>}
       {threads.map(thread => <li key={thread.id}>
-        <ThreadListItem thread={thread}/>
+        <ThreadListItem thread={thread} />
       </li>)}
     </Dropdown>
   }
@@ -163,8 +163,8 @@ const ThreadListItem = ({ thread }, { currentUser, dispatch }) => {
   if (!comment || !follower) return null
 
   return <A to={threadUrl(thread.id)} className={cx({unread})}>
-    {unread && <div className='dot-badge'/>}
-    <NonLinkAvatar person={follower}/>
+    {unread && <div className='dot-badge' />}
+    <NonLinkAvatar person={follower} />
     <span>
       <strong>{follower.name}</strong>&nbsp;
       {comment.user_id === currentUser.id ? 'You: ' : ''}
@@ -204,12 +204,12 @@ export class ThreadsModal extends React.Component {
       <ul onClick={onCancel} className='thread-list'>
         {!pending && <li className='top'>
           <div className='newMessage' onClick={startNewMessage}>
-            <Icon name='Compose'/><span className='button-text'>New Message</span>
+            <Icon name='Compose' /><span className='button-text'>New Message</span>
           </div>
         </li>}
         {pending && <li className='loading'>Loading...</li>}
         {threads.map(thread => <li key={thread.id}>
-          <ThreadListItem thread={thread}/>
+          <ThreadListItem thread={thread} />
         </li>)}
       </ul>
     </Modal>

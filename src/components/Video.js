@@ -42,7 +42,7 @@ const Video = props => {
     width={width} height={height}
     src={convert(url)}
     allowFullScreen
-    frameBorder='0'/>
+    frameBorder='0' />
 }
 
 export default Video

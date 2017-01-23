@@ -52,8 +52,8 @@ export class AllPosts extends React.Component {
     const { currentUser: { id } } = this.context
 
     return <div>
-      <PostEditor/>
-      <ConnectedPostList {...{subject, id, query}}/>
+      <PostEditor />
+      <ConnectedPostList {...{subject, id, query}} />
     </div>
   }
 }

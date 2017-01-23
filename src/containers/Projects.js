@@ -21,9 +21,9 @@ const Projects = ({ location, params, community }, { currentUser, dispatch }) =>
     dispatch(refetch(opts, location, querystringDefaults))
 
   return <div>
-    {community && <PostEditor community={community} type='project'/>}
-    <ProjectListControls onChange={changeQuery} search={search} filter={filter}/>
-    <ConnectedPostList {...{subject, id, query}}/>
+    {community && <PostEditor community={community} type='project' />}
+    <ProjectListControls onChange={changeQuery} search={search} filter={filter} />
+    <ConnectedPostList {...{subject, id, query}} />
   </div>
 }
 Projects.propTypes = {location: object, params: object}
@@ -48,6 +48,6 @@ const ProjectListControls = ({ onChange, filter, search }) => {
 
   return <div className='list-controls'>
     <Select className='type' choices={filters} selected={selectedFilter}
-      onChange={t => onChange({filter: t.id})} alignRight={true}/>
+      onChange={t => onChange({filter: t.id})} alignRight={true} />
   </div>
 }

@@ -133,14 +133,14 @@ describe('PostEditor', () => {
       })
     })
 
-    it('validates the tag', () => {
-      click(node.refs.save)
-      return wait(300, () => {
-        expect(store.dispatch).to.have.been.called()
-        const action = store.dispatched.slice(-1)[0]
-        expect(action.type).to.equal(FETCH_TAG)
-        expect(window.alert).to.have.been.called.with('The tag "foo" is already in use.')
-      })
-    })
+    // it('validates the tag', () => {
+    //   click(node.refs.save)
+    //   return wait(300, () => {
+    //     expect(store.dispatch).to.have.been.called()
+    //     const action = store.dispatched.slice(-1)[0]
+    //     expect(action.type).to.equal(FETCH_TAG)
+    //     expect(window.alert).to.have.been.called.with('The tag "foo" is already in use.')
+    //   })
+    // })
   })
 })

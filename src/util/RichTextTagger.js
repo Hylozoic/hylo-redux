@@ -97,7 +97,7 @@ export class RichTextTagger {
 
     // sort of a dumb heuristic: users have avatar_urls and tags don't
     if (choice.avatar_url) {
-      replaceNodeWithJSX(<Mention person={choice}/>, this.editor)
+      replaceNodeWithJSX(<Mention person={choice} />, this.editor)
     } else {
       // for hashtags, we just update the text in the tag instead of replacing
       // anything, so it can always be edited, autocompleted, or saved as a new

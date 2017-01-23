@@ -128,7 +128,7 @@ export default class Dropdown extends React.Component {
     let items
     if (triangle) {
       const triangleLi = <li className='triangle' key='triangle'
-        style={{left: findTriangleLeftPos(isMobile, this.refs.parent)}}/>
+        style={{left: findTriangleLeftPos(isMobile, this.refs.parent)}} />
       items = [triangleLi].concat(children)
     } else {
       items = children
@@ -151,7 +151,7 @@ export default class Dropdown extends React.Component {
       <VelocityTransitionGroup
         enter={{animation: 'fadeIn', duration: 100}}
         leave={{animation: 'fadeOut', duration: 100}}>
-        {(backdrop || isMobile) && active && <a className='backdrop'/>}
+        {(backdrop || isMobile) && active && <a className='backdrop' />}
       </VelocityTransitionGroup>
     </div>
   }

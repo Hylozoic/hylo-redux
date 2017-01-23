@@ -12,6 +12,6 @@ export default class AboutCommunity extends React.Component {
   render () {
     let { community } = this.props
     return <div id='about-community' className='markdown'
-      dangerouslySetInnerHTML={{__html: markdown(community.description)}}/>
+      dangerouslySetInnerHTML={{__html: markdown(community.description)}} />
   }
 }

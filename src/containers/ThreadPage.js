@@ -1,7 +1,6 @@
 import React from 'react'
 import { prefetch } from 'react-fetcher'
 import { connect } from 'react-redux'
-import { pick } from 'lodash/fp'
 import { FETCH_POST } from '../actions'
 import { fetchComments } from '../actions/comments'
 import { fetchPost } from '../actions/posts'
@@ -25,6 +24,7 @@ const { array, bool, func, object } = React.PropTypes
 export default class ThreadPage extends React.Component {
   static propTypes = {
     post: object,
+    comments: array,
     error: object,
     dispatch: func
   }

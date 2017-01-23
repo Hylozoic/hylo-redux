@@ -2,7 +2,6 @@ import React from 'react'
 import { connect } from 'react-redux'
 import Icon from './Icon'
 import DatetimePicker from 'react-datetime'
-import { sanitizeTagInput } from '../util/textInput'
 import { debounce } from 'lodash'
 import { get, map, pick, filter } from 'lodash/fp'
 import { getPost, getVideo } from '../models/post'
@@ -51,9 +50,8 @@ export default class ProjectPostEditor extends React.Component {
 
   render () {
     const { postEdit, update, requests } = this.props
-    const { ends_at, tag, type } = postEdit
+    const { ends_at, type } = postEdit
     const endsAt = ends_at ? new Date(ends_at) : null
-    const updateTag = tag => update({tag, tagEdited: true})
     const videoUrl = get('url', getVideo(postEdit)) || ''
     if (type !== 'project') setTimeout(() => update({type: 'project'}))
 
@@ -64,27 +62,27 @@ export default class ProjectPostEditor extends React.Component {
       </h3>
       <div className='requests'>
         {requests.map((p, i) => <ProjectRequestEditor post={p} key={p.id}
-          update={this.updateRequest(i)}/>)}
+          update={this.updateRequest(i)} />)}
         <a className='add-request' onClick={this.addRequest}>+ Add request</a>
       </div>
       <div className='more-fields'>
         <div className='video'>
-          <Icon name='VideoCamera'/>
+          <Icon name='VideoCamera' />
           <input type='text' placeholder='youtube or vimeo url'
             value={videoUrl}
-            onChange={event => update({video: event.target.value})}/>
+            onChange={event => update({video: event.target.value})} />
         </div>
         <div className='deadline'>
-          <Icon name='Calendar'/>
+          <Icon name='Calendar' />
           <DatetimePicker inputProps={{placeholder: 'deadline'}}
             value={endsAt}
-            onChange={m => update({ends_at: m.toISOString()})}/>
+            onChange={m => update({ends_at: m.toISOString()})} />
         </div>
         <div className='location'>
-          <Icon name='Pin-1'/>
+          <Icon name='Pin-1' />
           <input type='text' placeholder='location'
             defaultValue={postEdit.location}
-            onChange={event => update({location: event.target.value})}/>
+            onChange={event => update({location: event.target.value})} />
         </div>
       </div>
     </div>
@@ -132,13 +130,13 @@ class ProjectRequestEditor extends React.Component {
         <AutosizingTextarea type='text' ref='title' className='title'
           value={name}
           placeholder='What do you need help with?'
-          onChange={handleChange('name')}/>
+          onChange={handleChange('name')} />
       </div>
 
       <RichTextEditor className={editorClass} ref='details' name={`post-${id}`}
         content={description}
         onChange={handleChange('description')}
-        onBlur={() => this.setState({showDetails: false})}/>
+        onBlur={() => this.setState({showDetails: false})} />
       {!showDetails &&
         <div className='details-placeholder' onClick={this.goToDetails}>
           More details

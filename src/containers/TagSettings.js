@@ -87,25 +87,25 @@ export default class TagSettings extends React.Component {
             </td>
             <td className='small-column'>
               <A to={`/c/${slug}/tag/${tag.name}`}>
-                <Icon name='View'/>
+                <Icon name='View' />
               </A>
             </td>
             <td className='small-column'>
               {canDelete(tag) && <a onClick={() => remove(tag)}>
-                <Icon name='Trash'/>
+                <Icon name='Trash' />
               </a>}
             </td>
             <td className='small-column'>
               <input type='checkbox'
                 defaultChecked={tag.is_default}
-                onChange={() => updateDefault(tag, !tag.is_default)}/>
+                onChange={() => updateDefault(tag, !tag.is_default)} />
             </td>
           </tr>)}
         </tbody>
       </table>
       <div className='add-button-row'>
       </div>
-      <ScrollListener onBottom={loadMore}/>
+      <ScrollListener onBottom={loadMore} />
     </div>
   }
 }

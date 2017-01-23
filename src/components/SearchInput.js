@@ -25,6 +25,6 @@ export default class SearchInput extends React.Component {
     const handleKeyUp = onEnter(() => this.props.onChange(this.state.value))
 
     return <input type='text' placeholder='Search' ref='input'
-      onKeyUp={handleKeyUp} onChange={handleChange}/>
+      onKeyUp={handleKeyUp} onChange={handleChange} />
   }
 }

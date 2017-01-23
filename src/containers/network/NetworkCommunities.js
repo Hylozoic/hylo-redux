@@ -34,8 +34,8 @@ var NetworkCommunities = compose(
 
   return <div className='communities'>
     {pending && <div className='loading'>Loading...</div>}
-    <CommunityCards communities={communities}/>
-    <ScrollListener onBottom={loadMore}/>
+    <CommunityCards communities={communities} />
+    <ScrollListener onBottom={loadMore} />
   </div>
 })
 

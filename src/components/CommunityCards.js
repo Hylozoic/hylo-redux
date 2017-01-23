@@ -24,7 +24,7 @@ const CommunityCard = ({ community }) => {
         </div>
       </div>
       <div className='middle-content'>
-        <div className='logo' style={{backgroundImage: `url(${avatar_url})`}}/>
+        <div className='logo' style={{backgroundImage: `url(${avatar_url})`}} />
         <div className='name'>{name}</div>
         {memberCount} member{memberCount === 1 ? '' : 's'}
       </div>

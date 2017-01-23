@@ -20,9 +20,9 @@ const Events = ({ location, params, community }, { currentUser }) => {
   const { subject, id } = paramsForFetch(location, params, currentUser)
   const query = setDefaults(location.query)
   return <div>
-    {community && <PostEditor community={community} type='event'/>}
-    <EventListControls query={query} location={location}/>
-    <ConnectedPostList {...{subject, id, query}}/>
+    {community && <PostEditor community={community} type='event' />}
+    <EventListControls query={query} location={location} />
+    <ConnectedPostList {...{subject, id, query}} />
     {community && !isMember(currentUser, community) && <div className='post-list-footer'>
       You are not a member of this community, so you are shown only posts that are marked as public.
     </div>}

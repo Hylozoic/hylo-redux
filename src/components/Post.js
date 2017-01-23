@@ -70,9 +70,8 @@ export class Post extends React.Component {
   }
 
   render () {
-    let { post } = this.props
+    let { post, comments } = this.props
     const { expanded, onExpand, community, dispatch, contributorChoices } = this.props
-    var comments = this.props.comments
     if (post.project) {
       comments = comments.slice(-1)
     }

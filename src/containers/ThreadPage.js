@@ -45,7 +45,7 @@ export default class ThreadPage extends React.Component {
 
   render () {
     const { post, error } = this.props
-    if (error) return <AccessErrorMessage error={error}/>
+    if (error) return <AccessErrorMessage error={error} />
     if (!post || !post.user) return <div className='loading'>Loading...</div>
 
     return <Thread post={post} />

@@ -25,7 +25,7 @@ history.listen(updateLocation({store, routes, history}))
 
 const component = (
   <Provider store={store}>
-    <Router routes={routes} history={history}/>
+    <Router routes={routes} history={history} />
   </Provider>
 )
 

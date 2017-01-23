@@ -221,7 +221,7 @@ export default class NetworkEditor extends React.Component {
             <label>Network name</label>
           </div>
           <div className='main-column'>
-            <input type='text' ref='name' className='form-control' value={name} onChange={this.setName}/>
+            <input type='text' ref='name' className='form-control' value={name} onChange={this.setName} />
             {errors.nameBlank && <p className='help error'>Please fill in this field.</p>}
             {errors.nameUsed && <p className='help error'>This name is already in use.</p>}
           </div>
@@ -244,7 +244,7 @@ export default class NetworkEditor extends React.Component {
           <div className='main-column'>
             <div className='input-group'>
               <div className='input-group-addon'>www.hylo.com/n/</div>
-              <input ref='slug' className='form-control' value={slug} onChange={this.setSlug}/>
+              <input ref='slug' className='form-control' value={slug} onChange={this.setSlug} />
             </div>
             {!creating && is_admin && <p className='meta'>Warning: changing slug will break links to this network.</p>}
             {errors.slugBlank && <p className='help error'>Please fill in this field.</p>}
@@ -292,7 +292,7 @@ export default class NetworkEditor extends React.Component {
               handleInput={this.updateCommunityChoiceTerm}
               choices={communityChoices}
               onSelect={this.addCommunity}
-              onRemove={this.removeCommunity}/>
+              onRemove={this.removeCommunity} />
           </div>
         </div>
       </div>

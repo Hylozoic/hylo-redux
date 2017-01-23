@@ -15,7 +15,7 @@ export default class TestBench extends React.Component {
   render () {
     return <div style={{padding: 30, minHeight: '100vh'}}>
       <h2 style={{marginTop: 0}}>Test bench</h2>
-      <RichTextEditor name='test' onChange={this.handleChange}/>
+      <RichTextEditor name='test' onChange={this.handleChange} />
       <pre style={{marginTop: 10}}>{this.state.editorText}</pre>
     </div>
   }

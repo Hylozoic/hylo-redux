@@ -49,7 +49,7 @@ const prefetch = (props, store) =>
 
 const renderComponent = (props, store) =>
   renderToString(<Provider store={store}>
-    <RouterContext location='history' {...props}/>
+    <RouterContext location='history' {...props} />
   </Provider>)
 
 const createElement = state => markup =>

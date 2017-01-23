@@ -30,7 +30,7 @@ export default class ExpandedPostModal extends React.Component {
     const { dispatch, post, commentId } = this.props
     const onCancel = () => dispatch(closeModal())
     return <ModalContainer className='modal' id='expanded-post-modal'>
-      <Post expanded {...{post, commentId, onCancel}}/>
+      <Post expanded {...{post, commentId, onCancel}} />
     </ModalContainer>
   }
 }

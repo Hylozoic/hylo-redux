@@ -21,9 +21,9 @@ const ClickCatcher = ({ tag, ...props }, { dispatch }) => {
 
   switch (tag) {
     case 'div':
-      return <div {...props} onClick={handleClick} onMouseOver={handleMouseOver(dispatch)}/>
+      return <div {...props} onClick={handleClick} onMouseOver={handleMouseOver(dispatch)} />
     case 'span':
-      return <span {...props} onClick={handleClick} onMouseOver={handleMouseOver(dispatch)}/>
+      return <span {...props} onClick={handleClick} onMouseOver={handleMouseOver(dispatch)} />
   }
 }
 
@@ -31,4 +31,4 @@ ClickCatcher.contextTypes = {
   dispatch: func.isRequired
 }
 
-export const ClickCatchingSpan = props => <ClickCatcher tag='span' {...props}/>
+export const ClickCatchingSpan = props => <ClickCatcher tag='span' {...props} />

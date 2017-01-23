@@ -43,7 +43,7 @@ export default class DirectMessageModal extends React.Component {
     const { dispatch, currentUser } = this.context
     const title = userId ? `You and ${userName}`
       : <PersonChooser ref='personChooser' placeholder='Start typing a name...' onSelect={this.onSelect}
-          typeaheadId='messageTo' exclude={currentUser}/>
+          typeaheadId='messageTo' exclude={currentUser} />
 
     const onComplete = () => {
       dispatch(navigate(threadUrl(postId)))
@@ -52,7 +52,7 @@ export default class DirectMessageModal extends React.Component {
     }
 
     return <Modal {...{title}} id='direct-message' onCancel={onCancel}>
-      <MessageToUserForm ref='messageForm' {...{userId, onComplete, postId}}/>
+      <MessageToUserForm ref='messageForm' {...{userId, onComplete, postId}} />
     </Modal>
   }
 }

@@ -57,8 +57,8 @@ const Notifications = compose(
     </div>
     <div className='activities'>
       {activities.map(activity =>
-        <Activity key={activity.id} activity={activity}/>)}
-      <ScrollListener onBottom={loadMore}/>
+        <Activity key={activity.id} activity={activity} />)}
+      <ScrollListener onBottom={loadMore} />
     </div>
   </div>
 })
@@ -91,7 +91,7 @@ const Activity = ({ activity }, { dispatch }) => {
   }
 
   return <div key={activity.id} className={cx('activity', {unread})}>
-    <Avatar person={actor}/>
+    <Avatar person={actor} />
     <div className='content'>
       <div className='title'>
         {actor.name}
@@ -99,7 +99,7 @@ const Activity = ({ activity }, { dispatch }) => {
         {postName && <a onClick={visit}>{postName}</a>}
       </div>
 
-      {text && <div className='body-text' dangerouslySetInnerHTML={{__html: text}}/>}
+      {text && <div className='body-text' dangerouslySetInnerHTML={{__html: text}} />}
 
       <div className='controls meta'>
         {humanDate(created_at)}
@@ -150,10 +150,10 @@ export class NotificationsModal extends React.Component {
       <ul className='notifications-list' onClick={onCancel}>
         {activities.map(activity => <li key={activity.id}>
           <NotificationsDropdownItem activity={activity}
-            comment={comments[activity.comment_id]}/>
+            comment={comments[activity.comment_id]} />
         </li>)}
       </ul>
-      <ScrollListener {...scrollListenerProps}/>
+      <ScrollListener {...scrollListenerProps} />
     </Modal>
   }
 }
@@ -165,13 +165,13 @@ export const NotificationsDropdown = connect(
   return <Dropdown alignRight rivalrous='nav' className='notifications-list'
     onFirstOpen={() => dispatch(fetchActivity(0, true))}
     toggleChildren={<span>
-      <Icon name='Bell'/>
+      <Icon name='Bell' />
       {newCount > 0 && <div className='badge'>{newCount}</div>}
     </span>}>
     {pending && <li className='loading'>Loading...</li>}
     {activities.slice(0, 20).map(activity => <li key={activity.id}>
       <NotificationsDropdownItem activity={activity}
-        comment={comments[activity.comment_id]}/>
+        comment={comments[activity.comment_id]} />
     </li>)}
     {!pending && <li className='bottom'>
       <a onClick={() => dispatch(showModal('notifications'))}>See all</a>
@@ -189,8 +189,8 @@ const NotificationsDropdownItem = ({ activity, comment }, { dispatch }) => {
   }
   return <A to={destination(activity)} className={cx({unread})}
     onClick={onClick}>
-    {unread && <div className='dot-badge'/>}
-    <NonLinkAvatar person={actor}/>
+    {unread && <div className='dot-badge' />}
+    <NonLinkAvatar person={actor} />
     <span>
       <strong>{actor.name}</strong>&nbsp;
       {actionText(action, comment, post, community, reasons)} {postName}

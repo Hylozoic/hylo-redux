@@ -17,9 +17,9 @@ const Html = props => {
     <head>
       {initNewRelic && rawScript(initNewRelic)}
       <title>{pageTitle}</title>
-      <link rel='stylesheet' type='text/css' href={assetUrl('/index.css')}/>
-      <link rel='shortcut icon' id='favicon' href={assetUrl(`/img/favicon${isProd ? '' : 'Dev'}.png?v=2`)}/>
-      <meta name='viewport' content='width=device-width, initial-scale=1.0, user-scalable=no'/>
+      <link rel='stylesheet' type='text/css' href={assetUrl('/index.css')} />
+      <link rel='shortcut icon' id='favicon' href={assetUrl(`/img/favicon${isProd ? '' : 'Dev'}.png?v=2`)} />
+      <meta name='viewport' content='width=device-width, initial-scale=1.0, user-scalable=no' />
       {map(metaTags, (val, key) => <meta property={key} content={val} key={key} />)}
       <script type='text/javascript' src='https://use.typekit.net/npw4ouq.js'></script>
       <script type='text/javascript'>{`try{Typekit.load({async:true});}catch(e){}`}</script>

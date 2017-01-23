@@ -57,7 +57,7 @@ export default class Select extends React.Component {
       </button>
       {active && <KeyControlledItemList ref='list' items={choices}
         className={cx('dropdown-menu', {'dropdown-menu-right': alignRight})}
-        onChange={this.change} selected={selected}/>}
+        onChange={this.change} selected={selected} />}
     </div>
   }
 }

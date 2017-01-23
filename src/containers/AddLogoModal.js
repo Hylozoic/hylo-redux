@@ -60,7 +60,7 @@ export default class ChecklistModal extends React.Component {
           <p className='summary'>This image appears next to your community&rsquo;s name. (Tip: Try a transparent PNG image.)</p>
         </div>
         <div className='half-column right-align'>
-          <div className='medium-logo' style={{backgroundImage: `url(${avatar_url})`}}/>
+          <div className='medium-logo' style={{backgroundImage: `url(${avatar_url})`}} />
           <button type='button' onClick={() => this.attachImage('avatar_url')}>Change</button>
         </div>
       </div>

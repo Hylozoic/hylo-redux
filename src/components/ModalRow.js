@@ -75,8 +75,8 @@ export class ModalInput extends React.Component {
     }
 
     const input = type === 'textarea'
-      ? <textarea ref='input' {...inputProps}/>
-      : <input type={type} ref='input' {...inputProps}/>
+      ? <textarea ref='input' {...inputProps} />
+      : <input type={type} ref='input' {...inputProps} />
 
     return <ModalRow className={className} field={this.refs.input} ref='row'>
       <label>{label}</label>

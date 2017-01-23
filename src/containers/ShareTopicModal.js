@@ -188,7 +188,7 @@ class HybridInviteInput extends React.Component {
     const Recipient = ({ recipient }) => {
       if (recipient.id) {
         return <span className='recipient'>
-          <Avatar person={recipient}/>
+          <Avatar person={recipient} />
           {recipient.name} <a className='remove'
             onClick={() => removeRecipient(recipient)}>&times;</a>
         </span>
@@ -208,7 +208,7 @@ class HybridInviteInput extends React.Component {
     const onBlur = () => this.refs.row.blur()
     return <ModalRow className='recipient-input' ref='row' field={this.refs.input}>
       <span className='recipients'>
-        {recipients.map(r => <Recipient recipient={r} key={r.id || r}/>)}
+        {recipients.map(r => <Recipient recipient={r} key={r.id || r} />)}
       </span>
       <input type='text'
         className={cx({full: isEmpty(recipients)})}
@@ -220,7 +220,7 @@ class HybridInviteInput extends React.Component {
         onKeyDown={this.handleKeys}
         />
       {!isEmpty(newChoices) && <div className='dropdown active'>
-        <KeyControlledItemList className='dropdown-menu' ref='list' items={newChoices} onChange={this.select}/>
+        <KeyControlledItemList className='dropdown-menu' ref='list' items={newChoices} onChange={this.select} />
       </div>}
     </ModalRow>
   }

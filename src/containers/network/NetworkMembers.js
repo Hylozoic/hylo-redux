@@ -32,8 +32,8 @@ const NetworkMembers = compose(
 
   return <div className='members'>
     {pending && <div className='loading'>Loading...</div>}
-    <PersonCards people={people}/>
-    <ScrollListener onBottom={loadMore}/>
+    <PersonCards people={people} />
+    <ScrollListener onBottom={loadMore} />
   </div>
 })
 

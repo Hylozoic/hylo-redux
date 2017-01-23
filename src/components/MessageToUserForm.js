@@ -96,7 +96,7 @@ export default class MessageToUserForm extends React.Component {
         value={userId ? text : newText}
         placeholder='Type a message...'
         onChange={setText}
-        onKeyDown={handleKeyDown}/>
+        onKeyDown={handleKeyDown} />
       <input type='submit' value='Send' ref='button' className={ cx({ enabled: !!userId && (text || newText) }) } />
       {!isMobile && modifierKey && <span className='meta help-text'>
           or press {modifierKey}-Enter

@@ -20,7 +20,7 @@ class Message extends React.Component {
     const { message, isHeader } = this.props
 
     const person = message.user
-    let text = sanitize(message.text).replace(/\n/g, '<br/>')
+    let text = sanitize(message.text).replace(/\n/g, '<br />')
 
     return <div className={cx('message', {messageHeader: isHeader})}
       data-message-id={message.id}>

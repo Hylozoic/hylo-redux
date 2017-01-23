@@ -36,7 +36,7 @@ const JoinRequestList = connect((state, { id }) => ({
     })
 
   return <div className='join-requests'>
-    <a name='join_requests'/>
+    <a name='join_requests' />
     <div className='join-requests-header'>
       <label>Requests<span className='count'>{total}</span></label>
       <p className='summary'>These are people who have asked to join.</p>
@@ -56,7 +56,7 @@ const JoinRequestList = connect((state, { id }) => ({
             let person = joinRequest.user
             return <tr key={joinRequest.id} className={cx({even: index % 2 === 0})}>
               <td className='person'>
-                <Avatar person={person}/>
+                <Avatar person={person} />
                 <A to={`/u/${person.id}?check-join-requests=1`}>{person.name}</A>
               </td>
               <td>{humanDate(joinRequest.updated_at || joinRequest.created_at)}</td>

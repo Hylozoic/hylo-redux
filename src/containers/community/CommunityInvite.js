@@ -68,7 +68,7 @@ export default class CommunityInvite extends React.Component {
 
     return <div className='form-sections' id='community-invite-settings'>
       <div className='modal-input invitation-link'>
-        <Icon name='Link'/>Anyone with this link can join the community <br /><a href={joinUrl}>{joinUrl}</a>
+        <Icon name='Link' />Anyone with this link can join the community <br /><a href={joinUrl}>{joinUrl}</a>
         <div className='copy-link-wrapper'>
           {copied && <span className='copied'>(copied) </span>}
           <a className='copy-link' onClick={copyLink}>Copy Link</a>
@@ -78,7 +78,7 @@ export default class CommunityInvite extends React.Component {
         <InviteForm community={community} allowModerators />
       </div>
       {hasFeature(currentUser, REQUEST_TO_JOIN_COMMUNITY) && !isEmpty(joinRequests) &&
-        <JoinRequestList id={community.slug}/>}
+        <JoinRequestList id={community.slug} />}
       {!isEmpty(invitations) && <InvitationList id={community.slug} />}
     </div>
   }

@@ -61,7 +61,7 @@ export const Topper = ({ community }) => {
   const logoUrl = avatar_url || merkabaUrl
 
   return <div className='modal-topper'>
-    <div className='medium-avatar' style={{backgroundImage: `url(${logoUrl})`}}/>
+    <div className='medium-avatar' style={{backgroundImage: `url(${logoUrl})`}} />
     <h2>{name || 'Your New Community'}</h2>
   </div>
 }
@@ -216,7 +216,7 @@ export class CreateCommunity extends React.Component {
     const { expanded } = this.state
 
     return <ModalOnlyPage className='create-community'>
-      <Topper community={community}/>
+      <Topper community={community} />
       <Modal title='Create your community.'
         id='new-community-form'
         subtitle="Let's get started unlocking the creative potential of your community with Hylo."
@@ -226,7 +226,7 @@ export class CreateCommunity extends React.Component {
             {errors.nameBlank && <p className='help error'>Please fill in this field.</p>}
             {errors.nameUsed && <p className='help error'>This name is already in use.</p>}
           </div>}
-          maxLength={80}/>
+          maxLength={80} />
         <ModalInput label='URL' ref='url' prefix='https://hylo.com/c/'
           onChange={this.set('slug')}
           value={community.slug}
@@ -235,14 +235,14 @@ export class CreateCommunity extends React.Component {
               {errors.slugBlank && <p className='help error'>Please fill in this field.</p>}
               {errors.slugInvalid && <p className='help error'>Use lowercase letters, numbers, and hyphens only.</p>}
               {errors.slugUsed && <p className='help error'>This URL is already in use.</p>}
-            </div>}/>
+            </div>} />
         <ModalInput label='About your community' ref='description'
           type='textarea'
           onChange={this.set('description')}
           errors={
             <div className='errors'>
               {errors.descriptionBlank && <p className='help error'>Please fill in this field.</p>}
-            </div>}/>
+            </div>} />
         <div className='toggle-section'>
           <a onClick={() => this.setState({expanded: !expanded})}>
             More Options
@@ -255,7 +255,7 @@ export class CreateCommunity extends React.Component {
             {label}
           </option>)}
         </ModalSelect>}
-        {expanded && <ModalInput label='Location' onChange={this.set('location')}/>}
+        {expanded && <ModalInput label='Location' onChange={this.set('location')} />}
         {expanded && <div className='modal-input'>
           <label>Logo</label>
           <div className='small-logo' style={{backgroundImage: `url(${community.avatar_url})`}}></div>
@@ -293,8 +293,8 @@ export class CreateCommunityInvite extends React.Component {
     const onClose = () => dispatch(navigate(checklistUrl(community)))
 
     return <ModalOnlyPage className='create-community'>
-      <Topper community={community}/>
-      <InviteModal onClose={onClose} community={community} standalone/>
+      <Topper community={community} />
+      <InviteModal onClose={onClose} community={community} standalone />
     </ModalOnlyPage>
   }
 }

@@ -60,7 +60,7 @@ class Comment extends React.Component {
       this.setState({editing: false})
     }
 
-    if (editing) return <CommentForm commentId={comment.id} close={closeEdit}/>
+    if (editing) return <CommentForm commentId={comment.id} close={closeEdit} />
 
     return <div className='comment' data-comment-id={comment.id}>
       {canEditComment(currentUser, comment, community) &&
@@ -71,7 +71,7 @@ class Comment extends React.Component {
       <a name={`comment-${comment.id}`}></a>
       <Avatar person={person} showPopover />
       <div className='content'>
-        <ClickCatchingSpan className='text' dangerouslySetInnerHTML={{__html: text}}/>
+        <ClickCatchingSpan className='text' dangerouslySetInnerHTML={{__html: text}} />
         {truncated && <span> <a onClick={expand} className='show-more'>Show&nbsp;more</a></span>}
         <div>
           {currentUser && <span>

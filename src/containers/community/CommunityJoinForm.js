@@ -59,7 +59,7 @@ export default class CommunityJoinForm extends React.Component {
       <h2>Join a community</h2>
       <p>Enter the code that was given to you by your community manager.</p>
       {error && <div className='alert alert-danger'>{error}</div>}
-      <input type='text' ref='code' className='form-control' onChange={this.codeChanged}/>
+      <input type='text' ref='code' className='form-control' onChange={this.codeChanged} />
       <button className={cx({'disabled': codeInvalid})} onClick={this.submit}>Join</button>
     </div>
   }

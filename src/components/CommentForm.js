@@ -131,7 +131,7 @@ export default class CommentForm extends React.PureComponent {
     const { enabled, modifierKey } = this.state
 
     return <form onSubmit={this.submit} className='comment-form'>
-      <Avatar person={currentUser}/>
+      <Avatar person={currentUser} />
       {editing
         ? <div className='content'>
             <RichTextEditor ref='editor' name='comment' startFocused
@@ -139,9 +139,9 @@ export default class CommentForm extends React.PureComponent {
               onBlur={() => this.setText(this.refs.editor.getContent())}
               onChange={ev => this.delaySetText(ev.target.value)}
               onKeyUp={stopTyping}
-              onKeyDown={handleKeyDown}/>
+              onKeyDown={handleKeyDown} />
             <input type='submit' value='Post' ref='button'
-              className={cx({enabled: enabled && !pending})}/>
+              className={cx({enabled: enabled && !pending})} />
             {close && <button onClick={close}>Cancel</button>}
             {!isMobile && modifierKey && <span className='meta help-text'>
               or press {modifierKey}-Enter

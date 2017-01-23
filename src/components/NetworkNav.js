@@ -9,7 +9,7 @@ const NetworkNav = ({ communities, network }, { isMobile }) => {
   const removeImpactHub = name => name.replace(/^Impact Hub /, '')
   return <div id='networkNav'>
     <Dropdown className='all-communities' alignRight={true}
-      toggleChildren={<Icon name='More'/>}>
+      toggleChildren={<Icon name='More' />}>
       {sortBy('name', communities).map(community =>
         <li key={community.slug}>
           <A to={communityUrl(community)}>

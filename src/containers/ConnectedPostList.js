@@ -53,10 +53,17 @@ export class ConnectedPostList extends React.Component {
   checkForUpdates = currentPosts => {
     const { dispatch, subject, id, query, omit } = this.props
 
+    const freshnessIds = p => {
+      if (p.type === 'project-activity') {
+        p = p.project
+      }
+      return pick(p, ['id', 'updated_at'])
+    }
+
     this.visibility.visible() && dispatch(checkFreshness(
       subject,
       id,
-      (currentPosts || this.props.posts).map(p => pick(p, ['id', 'updated_at'])),
+      (currentPosts || this.props.posts).map(freshnessIds),
       {limit: 5, offset: 0, omit, ...query}
     ))
 

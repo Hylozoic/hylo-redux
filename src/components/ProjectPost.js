@@ -43,19 +43,20 @@ export default class ProjectPost extends React.Component {
   }
 
   static contextTypes = {
+    currentUser: object,
     community: object,
-    communities: array,
-    currentUser: object
+    communities: array
   }
 
   render () {
     const { children, post, comments } = this.props
     const requests = filter(p => p.is_project_request, children)
-    const { community, communities, currentUser } = this.context
+    const { currentUser, community, communities } = this.context
     const { media, location, user } = post
     const title = decode(post.name || '')
     const video = find(m => m.type === 'video', media)
     const image = find(m => m.type === 'image', media)
+    const canComment = canCommentOnPost(currentUser, post)
     const description = presentDescription(post, community)
 
     return <div className='post project boxy-post'>
@@ -94,12 +95,7 @@ export default class ProjectPost extends React.Component {
         </h3>
         {requests.map(post => <ProjectRequest key={post.id} {...{post, community}} />)}
       </div>}
-      <CommentSection
-        post={post}
-        canComment={canCommentOnPost(currentUser, post)}
-        comments={comments}
-        expanded
-      />
+      <CommentSection {...{post, comments, canComment}} expanded />
     </div>
   }
 }
@@ -140,14 +136,6 @@ class ProjectRequest extends React.Component {
   static contextTypes = {
     dispatch: func,
     isMobile: bool
-  }
-
-  static childContextTypes = {
-    isProjectRequest: bool
-  }
-
-  getChildContext () {
-    return {isProjectRequest: true}
   }
 
   constructor (props) {
@@ -201,7 +189,7 @@ class ProjectRequest extends React.Component {
 
 const spacer = <span>&nbsp; •&nbsp; </span>
 
-const UndecoratedProjectPostCard = ({ post, community, comments, dispatch, isMobile }, { currentUser, parentPost }) => {
+const UndecoratedProjectPostCard = ({ post, parentPost, community, comments, dispatch, isMobile }, { currentUser }) => {
   const { name, user, ends_at, id } = post
   const url = `/p/${post.id}`
   const backgroundImage = `url(${imageUrl(post)})`
@@ -232,19 +220,21 @@ const UndecoratedProjectPostCard = ({ post, community, comments, dispatch, isMob
     </div>}
     <Supporters post={post} simple />
     <div className='comments-section-spacer' />
-    <CommentSection {...{post, canComment, comments}} onExpand={() => dispatch(navigate(url))} />
+    <CommentSection
+      onExpand={() => dispatch(navigate(url))}
+      isProjectRequest
+      {...{post, canComment, comments}}
+    />
   </div>
 }
-UndecoratedProjectPostCard.contextTypes = {
-  currentUser: object,
-  parentPost: object
-}
+UndecoratedProjectPostCard.contextTypes = { currentUser: object }
 
 export const ProjectPostCard = connect(
-  (state, { post }) => ({
+  (state, { post, parentPost }) => ({
     comments: getComments(post, state),
     community: getCurrentCommunity(state),
     isMobile: state.isMobile,
-    post: denormalizedPost(post, state)
+    post: denormalizedPost(post, state),
+    parentPost
   })
 )(UndecoratedProjectPostCard)

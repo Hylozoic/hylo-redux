@@ -1,3 +1,4 @@
+import '../support'
 import {
   canCommentOnPost, canModerate, isMember, isTester, canInvite, hasBio, hasSkills
 } from '../../src/models/currentUser'
@@ -91,13 +92,18 @@ describe('currentUser', () => {
       expect(canCommentOnPost({id: 1}, {follower_ids: [1, 8]})).to.be.true
     })
 
-    it("is true if the user is in one of the post's communities", () => {
+    it('is true if the user is in one of the post\'s communities', () => {
       const user = {id: 1, memberships: [{community_id: 2}]}
       expect(canCommentOnPost(user, {community_ids: [5, 2]})).to.be.true
     })
 
-    it('is false if there is no user', () => {
-      expect(canCommentOnPost(null, {follower_ids: [4]})).to.be.false
+    it('is falsey if no post is provided', () => {
+      const user = {id: 1, memberships: [{community_id: 2}]}
+      expect(canCommentOnPost(user, null)).to.be.falsey
+    })
+
+    it('is falsey if no user is provided', () => {
+      expect(canCommentOnPost(null, {follower_ids: [4]})).to.be.falsey
     })
 
     it('is false otherwise', () => {

@@ -16,13 +16,13 @@ export default class CommentSection extends React.Component {
     comments: array,
     canComment: bool,
     onExpand: func,
-    expanded: bool
+    expanded: bool,
+    isProjectRequest: bool
   }
 
   static contextTypes = {
-    community: object,
     currentUser: object,
-    isProjectRequest: bool,
+    community: object,
     dispatch: func
   }
 
@@ -50,12 +50,12 @@ export default class CommentSection extends React.Component {
   }
 
   render () {
-    let { post, canComment, comments, onExpand, expanded } = this.props
+    const { post, canComment, onExpand, expanded, isProjectRequest } = this.props
     const truncate = !expanded
-    const { currentUser, isProjectRequest } = this.context
     const placeholder = isProjectRequest ? 'How can you help?' : null
     const community = this.context.community || post.communities[0]
 
+    let { comments } = this.props
     if (!comments) comments = []
     comments = sortBy('created_at', comments)
     if (truncate) comments = comments.slice(-3)

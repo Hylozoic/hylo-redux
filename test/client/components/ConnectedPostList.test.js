@@ -62,7 +62,7 @@ let state = {
     ]
   },
   totalPostsByQuery: {'subject=community&id=foo': 3},
-  postsByQuery: {'subject=community&id=foo': [1,2,3]},
+  postsByQuery: {'subject=community&id=foo': [1, 2, 3]},
   pending: {},
   countFreshPostsByQuery: {'subject=community&id=foo': 3}
 }

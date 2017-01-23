@@ -53,16 +53,10 @@ export default class SinglePost extends React.Component {
     currentUser: object
   }
 
-  static childContextTypes = {
-    parentPost: object,
-    community: object
-  }
+  static childContextTypes = { community: object }
 
   getChildContext () {
-    return {
-      parentPost: this.props.post,
-      community: this.props.community
-    }
+    return { community: this.props.community }
   }
 
   render () {
@@ -86,11 +80,12 @@ export default class SinglePost extends React.Component {
         }
         {post.type === 'project' && <div>
           {currentUser &&
-            <PostEditor community={community} parentPostId={post.id} />
+            <PostEditor community={community} parentPost={post} />
           }
           <ConnectedPostList
             subject={subject}
             id={post.id}
+            parentPost={post}
             query={{...query}}
             noPostsMessage='There are no other project related conversations to show.' />
         </div>}

@@ -25,6 +25,7 @@ export class ConnectedPostList extends React.Component {
     subject: string.isRequired,
     id: string.isRequired,
     posts: array,
+    parentPost: object,
     freshCount: number,
     dispatch: func,
     total: number,
@@ -96,10 +97,9 @@ export class ConnectedPostList extends React.Component {
 
   render () {
     const {
-      dispatch, freshCount, posts, total, pending, subject, id, query,
+      dispatch, freshCount, posts, parentPost, total, pending, subject, id, query,
       hideMobileSearch, expandedPostId, noPostsMessage, module
     } = this.props
-    const projectPostParentId = subject === 'post' ? id : null
 
     const hide = union(this.props.hide, [expandedPostId])
 
@@ -121,10 +121,15 @@ export class ConnectedPostList extends React.Component {
     return <PostList
       posts={feedItems || []}
       loadMore={this.loadMore}
-      hide={hide}
-      hideMobileSearch={hideMobileSearch}
-      {...{pending, refreshPostList, freshCount, noPostsMessage, projectPostParentId}}
-    />
+      {...{
+        hide,
+        hideMobileSearch,
+        pending,
+        refreshPostList,
+        freshCount,
+        noPostsMessage,
+        parentPost
+      }} />
   }
 }
 

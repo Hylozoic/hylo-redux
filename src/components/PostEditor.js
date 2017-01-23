@@ -45,7 +45,7 @@ const { array, bool, func, object, string } = React.PropTypes
 
 export const newPostId = 'new-post'
 
-@autoproxy(connect((state, { community, post, project, type, tag }) => {
+@autoproxy(connect((state, { community, post, parentPost, project, type, tag }) => {
   const id = post ? post.id
     : type === 'project' ? 'new-project'
     : type === 'event' ? 'new-event' : newPostId
@@ -59,6 +59,7 @@ export const newPostId = 'new-post'
   return {
     id,
     postEdit,
+    parentPost,
     mentionOptions: state.typeaheadMatches.post,
     saving: pending[CREATE_POST] || pending[UPDATE_POST],
     imagePending: pending[UPLOAD_IMAGE],
@@ -77,6 +78,7 @@ export class PostEditor extends React.PureComponent {
     post: object,
     id: string.isRequired,
     postEdit: object,
+    parentPost: object,
     community: object,
     saving: bool,
     onCancel: func,
@@ -85,7 +87,6 @@ export class PostEditor extends React.PureComponent {
     currentCommunitySlug: string,
     editingTagDescriptions: bool,
     creatingTagAndDescription: bool,
-    parentPostId: string,
     postCommunities: array,
     defaultTags: array,
     placeholder: string,
@@ -103,8 +104,8 @@ export class PostEditor extends React.PureComponent {
 
   componentDidMount () {
     // initialize the communities list when opening the editor in a community
-    const { parentPostId, community, postEdit: { communities } } = this.props
-    if (!parentPostId && community && isEmpty(communities)) this.addCommunity(community)
+    const { parentPost, community, postEdit: { communities } } = this.props
+    if (!parentPost && community && isEmpty(communities)) this.addCommunity(community)
     this.refs.title.focus()
   }
 
@@ -138,7 +139,7 @@ export class PostEditor extends React.PureComponent {
   }
 
   validate () {
-    let { parentPostId, postEdit } = this.props
+    let { parentPost, postEdit } = this.props
     const { title } = this.refs
 
     if (!postEdit.name) {
@@ -147,7 +148,7 @@ export class PostEditor extends React.PureComponent {
       return Promise.resolve(false)
     }
 
-    if (!parentPostId && isEmpty(postEdit.community_ids)) {
+    if (!parentPost && isEmpty(postEdit.community_ids)) {
       window.alert('Please pick at least one community.')
       return Promise.resolve(false)
     }
@@ -174,14 +175,14 @@ export class PostEditor extends React.PureComponent {
 
   save () {
     const {
-      dispatch, post, postEdit, id, postCommunities, currentCommunitySlug, onSave, parentPostId
+      dispatch, post, postEdit, id, postCommunities, currentCommunitySlug, onSave, parentPost
     } = this.props
     const params = {
       type: this.editorType(),
       ...postEdit,
       ...attachmentParams(post && post.media, postEdit.media)
     }
-    if (parentPostId) params.parent_post_id = parentPostId
+    if (parentPost) params.parent_post_id = parentPost.id
     return dispatch((post ? updatePost : createPost)(id, params, currentCommunitySlug))
     .then(action => {
       if (responseMissingTagDescriptions(action)) {
@@ -270,7 +271,7 @@ export class PostEditor extends React.PureComponent {
 
   render () {
     const {
-      parentPostId, post, postEdit, dispatch, imagePending, saving, id, defaultTags, placeholder
+      parentPost, post, postEdit, dispatch, imagePending, saving, id, defaultTags, placeholder
     } = this.props
     const { currentUser } = this.context
     const { description, community_ids, tag, linkPreview } = postEdit
@@ -338,7 +339,7 @@ export class PostEditor extends React.PureComponent {
       {Subeditor && <Subeditor ref='subeditor'
         {...{post, postEdit, update: this.updateStore}} />}
 
-      {!parentPostId && <div className='communities'>
+      {!parentPost && <div className='communities'>
         <span>in&nbsp;</span>
         <CommunitySelector ids={community_ids}
           onSelect={this.addCommunity}
@@ -346,7 +347,7 @@ export class PostEditor extends React.PureComponent {
       </div>}
 
       <div className='buttons'>
-        {!parentPostId && <VisibilityDropdown
+        {!parentPost && <VisibilityDropdown
           isPublic={postEdit.public || false}
           setPublic={isPublic => this.updateStore({public: isPublic})} />}
 
@@ -508,6 +509,7 @@ const PostEditorHeader = ({ person }) =>
 export default class PostEditorWrapper extends React.Component {
   static propTypes = {
     post: object,
+    parentPost: object,
     community: object,
     type: string,
     expanded: bool,

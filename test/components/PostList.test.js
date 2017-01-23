@@ -16,7 +16,7 @@ const parentPost = {
   name: 'i am a project',
   followers: times(3, () => user()),
   user_id: user1.id,
-  community_ids: [1,2]
+  community_ids: [1, 2]
 }
 
 const store = mocks.redux.store({
@@ -80,7 +80,7 @@ const posts = [
 
 describe('PostList', () => {
   it('renders a mixed group of posts', () => {
-    const component = createElement(PostList, {posts}, {store, parentPost})
+    const component = createElement(PostList, {posts}, {store})
     const doc = cheerio.load(renderToString(component))
     expect(doc('.post').length).to.equal(3)
     expect(doc('.project-summary').length).to.equal(1)

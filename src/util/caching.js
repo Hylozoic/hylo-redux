@@ -58,7 +58,7 @@ export const connectedListProps = (state, props, itemType) => {
       throw new Error(`unknown item type: ${itemType}`)
   }
 
-  let { subject, id, query } = props
+  let { subject, id, query, parentPost } = props
   let cacheId = createCacheId(subject, id, query)
   let itemKey = `${itemType}ByQuery`
   let itemCountKey = `total${upperFirst(itemType)}ByQuery`
@@ -71,7 +71,8 @@ export const connectedListProps = (state, props, itemType) => {
     [itemType]: compact(itemIds.map(getItem)),
     total: state[itemCountKey][cacheId],
     pending: state.pending[actionType],
-    freshCount: countFreshItems
+    freshCount: countFreshItems,
+    parentPost
   }
 }
 

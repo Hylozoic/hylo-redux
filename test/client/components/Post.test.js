@@ -57,7 +57,6 @@ const projectSpecialRequestPost = {
   parent_post_id: 'parentPost1'
 }
 
-
 const parentPost1 = {
   id: 'parentPost1',
   name: 'Project otherwise known as a parentPost',

@@ -1,5 +1,5 @@
 import React from 'react'
-const { array, bool, func, number, string } = React.PropTypes
+const { array, bool, func, object, number, string } = React.PropTypes
 import { connect } from 'react-redux'
 import { changeViewportTop } from '../util/scrolling'
 import { filter, includes, isEmpty } from 'lodash/fp'
@@ -18,7 +18,7 @@ import Icon from './Icon'
 export class PostList extends React.Component {
   static propTypes = {
     posts: array,
-    projectPostParentId: string,
+    parentPost: object,
     loadMore: func,
     refreshPostList: func,
     freshCount: number,
@@ -54,7 +54,7 @@ export class PostList extends React.Component {
   render () {
     const {
       hide, editingPostIds, pending, loadMore, refreshPostList, freshCount,
-      dispatch, hideMobileSearch, noPostsMessage, projectPostParentId
+      dispatch, hideMobileSearch, noPostsMessage, parentPost
     } = this.props
     const { isMobile } = this.context
 
@@ -72,9 +72,9 @@ export class PostList extends React.Component {
       <RefreshButton refresh={refreshPostList} count={freshCount} />
       <ul className='posts'>
         {pending && isEmpty(posts) && <li className='loading'>Loading...</li>}
-        {posts.map(p =>
-          <li key={p.id} ref={p.id}>
-            <ShowPost post={p} projectPostParentId={projectPostParentId} editingPostIds={editingPostIds} />
+        {posts.map(post =>
+          <li key={post.id} ref={post.id}>
+            <ShowPost {...{post, parentPost, editingPostIds}} />
           </li>
         )}
       </ul>
@@ -88,20 +88,20 @@ export default connect((state, { posts }) => ({
   editingPostIds: state.isMobile ? [] : getEditingPostIds(posts, state)
 }))(PostList)
 
-const ShowPost = ({ post, projectPostParentId, editingPostIds }) => {
+const ShowPost = ({ post, parentPost, editingPostIds }) => {
   if (includes(post.id, editingPostIds)) {
-    return <PostEditor post={post} parentPostId={projectPostParentId} expanded />
+    return <PostEditor {...{post, parentPost}} expanded />
   }
   switch (post.type) {
     case 'event':
-      return <EventPostCard post={post} />
+      return <EventPostCard {...{post, parentPost}} />
     case 'project':
-      return <ProjectPostCard post={post} />
+      return <ProjectPostCard {...{post, parentPost}} />
     case 'module':
       return post.component
   }
 
-  return <Post post={post} onExpand={commentId => this.expand(post.id, commentId)} />
+  return <Post {...{post, parentPost}} onExpand={commentId => this.expand(post.id, commentId)} />
 }
 
 class MobileSearch extends React.Component {

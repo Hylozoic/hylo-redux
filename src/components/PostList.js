@@ -8,6 +8,7 @@ import { filter, includes, isEmpty } from 'lodash/fp'
 import PostEditor from './PostEditor'
 import { EventPostCard } from './EventPost'
 import { ProjectPostCard } from './ProjectPost'
+import ProjectActivityCard from './ProjectActivityCard'
 import { getEditingPostIds } from '../models/post'
 import { makeUrl } from '../util/navigation'
 import { navigate, showExpandedPost } from '../actions'
@@ -74,16 +75,20 @@ class PostList extends React.Component {
         return <PostEditor post={post} expanded />
       }
 
+      const onExpand = commentId => this.expand(post.id, commentId)
+
       switch (post.type) {
         case 'event':
           return <EventPostCard post={post} />
         case 'project':
           return <ProjectPostCard post={post} />
+        case 'project-activity':
+          return <ProjectActivityCard post={post} onExpand={onExpand} />
         case 'module':
           return post.component
       }
 
-      return <Post post={post} onExpand={commentId => this.expand(post.id, commentId)} />
+      return <Post post={post} onExpand={onExpand} />
     }
 
     return <div className='post-list-wrapper'>

@@ -12,6 +12,7 @@ import { EventPostCard } from './EventPost'
 import { ProjectPostCard } from './ProjectPost'
 import ScrollListener from './ScrollListener'
 import RefreshButton from './RefreshButton'
+import ProjectActivityCard from './ProjectActivityCard'
 import SearchInput from './SearchInput'
 import Icon from './Icon'
 
@@ -89,6 +90,7 @@ export default connect((state, { posts }) => ({
 }))(PostList)
 
 const ShowPost = ({ post, parentPost, editingPostIds }) => {
+  const onExpand = commentId => this.expand(post.id, commentId)
   if (includes(post.id, editingPostIds)) {
     return <PostEditor {...{post, parentPost}} expanded />
   }
@@ -97,11 +99,12 @@ const ShowPost = ({ post, parentPost, editingPostIds }) => {
       return <EventPostCard {...{post, parentPost}} />
     case 'project':
       return <ProjectPostCard {...{post, parentPost}} />
+    case 'project-activity':
+      return <ProjectActivityCard post={post} onExpand={onExpand} />
     case 'module':
       return post.component
   }
-
-  return <Post {...{post, parentPost}} onExpand={commentId => this.expand(post.id, commentId)} />
+  return <Post {...{post, parentPost, onExpand}} />
 }
 
 class MobileSearch extends React.Component {

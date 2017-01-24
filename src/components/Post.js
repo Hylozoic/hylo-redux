@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 import React from 'react'
 import { difference, first, includes, map, some, sortBy } from 'lodash'
 import { find, filter, get } from 'lodash/fp'
@@ -64,10 +65,12 @@ export class Post extends React.Component {
 
   render () {
     const {
-      post, parentPost, comments, expanded, onExpand, community, dispatch
+      post, parentPost, expanded, onExpand, community, dispatch
     } = this.props
+    let { comments } = this.props
+    if (post.project) comments = comments.slice(-1)
     const { currentUser } = this.context
-    const { communities, tag, media, linkPreview } = post
+    const { communities, tag, media, linkPreview, project } = post
     const image = find(m => m.type === 'image', media)
     const classes = cx('post', tag, {image, expanded})
     const title = linkifyHashtags(decode(sanitize(post.name || '')), get('slug', community))
@@ -79,7 +82,7 @@ export class Post extends React.Component {
 
     return <div className={classes}>
       <a name={`post-${post.id}`} />
-      <Header post={post} communities={communities} expanded={expanded} />
+      <Header post={post} project={project} communities={communities} expanded={expanded} />
       <p className='title post-section' dangerouslySetInnerHTML={{__html: title}} />
       {image && <LazyLoader>
         <img src={image.url} className='post-section full-image' />
@@ -108,17 +111,17 @@ export default compose(connect((state, {post}) => {
   }
 }))(Post)
 
-export const Header = ({ communities, expanded, post }, { currentUser, dispatch }) => {
+export const Header = ({ post, project, communities, expanded }, { currentUser, dispatch }) => {
   const { tag } = post
   const person = tag === 'welcome' ? post.relatedUsers[0] : post.user
   const createdAt = new Date(post.created_at)
   const isChild = isChildPost(post)
-  const LeadPost = () => {
-    const isWelcomePost = tag === 'welcome'
-    if (isWelcomePost) {
-      return <WelcomePostHeader post={post} communities={communities} />
-    } else {
-      return <div onMouseOver={handleMouseOver(dispatch)}>
+  return <div className='header'>
+    <Menu expanded={expanded} post={post} hidePinning={isChild} />
+    <Avatar person={person} showPopover />
+    {tag === 'welcome'
+      ? <WelcomePostHeader post={post} communities={communities} />
+      : <div onMouseOver={handleMouseOver(dispatch)}>
         <A className='name' to={`/u/${person.id}`}>
           {person.name}
         </A>
@@ -127,27 +130,28 @@ export const Header = ({ communities, expanded, post }, { currentUser, dispatch 
             {nonbreaking(humanDate(createdAt))}
           </A>}
           {!isChild && nonbreaking(humanDate(createdAt))}
-          {communities && <Communities communities={communities} />}
+          {communities && <Communities communities={communities} project={project} />}
           {post.public && <span>{spacer}Public</span>}
         </span>
-      </div>
-    }
-  }
-  return <div className='header'>
-    <Menu expanded={expanded} post={post} hidePinning={isChild} />
-    <Avatar person={person} showPopover />
-    <LeadPost />
+      </div>}
   </div>
 }
 Header.contextTypes = {currentUser: object, dispatch: func}
 
-const Communities = ({ communities }, { community }) => {
+const Communities = ({ communities, project }, { community }) => {
   if (community) communities = sortBy(communities, c => c.id !== community.id)
   const { length } = communities
   if (communities.length === 0) return null
   const communityLink = community => <A to={`/c/${community.slug}`}>{community.name}</A>
+  const projectLink = project => <span>
+    <A to={`/p/${project.id}`} className='project-link'>{project.name}</A>
+    {spacer}
+  </span>
+
   return <span className='communities'>
-    &nbsp;in {communityLink(communities[0])}
+    &nbsp;in&nbsp;
+    {project && projectLink(project)}
+    {communityLink(communities[0])}
     {length > 1 && <span> + </span>}
     {length > 1 && <Dropdown className='post-communities-dropdown'
       toggleChildren={<span>{length - 1} other{length > 2 ? 's' : ''}</span>}>
@@ -212,18 +216,16 @@ const WelcomePostHeader = ({ post, communities }) => {
   return <div>
     <strong><A to={`/u/${person.id}`}>{person.name}</A></strong> joined
     <span />
-    {
-      community ? <span>
-        <A to={`/c/${community.slug}`}>{community.name}</A>.
-        <span />
-        <a className='open-comments'>
-          Welcome them!
-        </a>
-      </span>
-      : <span>
-          a community that is no longer active.
-        </span>
-    }
+    {community ? <span>
+      <A to={`/c/${community.slug}`}>{community.name}</A>.
+      <span />
+      <a className='open-comments'>
+        Welcome them!
+      </a>
+    </span>
+    : <span>
+        a community that is no longer active.
+      </span>}
   </div>
 }
 

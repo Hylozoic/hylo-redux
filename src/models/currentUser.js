@@ -3,6 +3,7 @@ import { curry, find, includes, intersection, isEmpty, maxBy, some } from 'lodas
 import { eq, flow, get, map } from 'lodash/fp'
 import { same, truthy } from './index'
 import { featureFlags } from '../config'
+import { groupUser } from 'hylo-utils'
 
 export const hasBio = (currentUser) => currentUser.bio && currentUser.bio.length > 0
 
@@ -57,7 +58,16 @@ export const newestMembership = currentUser =>
 export const hasFeature = (currentUser, key) => {
   if (!key) throw new Error("Can't call hasFeature without a key")
   const flag = featureFlags()[key]
-  return flag === 'on' || isTester(currentUser) && flag === 'testing'
+  switch (flag) {
+    case 'on':
+      return true
+    case 'testing':
+      return isTester(currentUser)
+    case 'ab':
+      return groupUser(currentUser.id, key) === 0
+    default:
+      return false
+  }
 }
 
 export const denormalizedCurrentUser = state => {

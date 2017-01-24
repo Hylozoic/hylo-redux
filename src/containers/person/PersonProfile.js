@@ -102,6 +102,8 @@ const PersonProfile = compose(
   if (error) return <AccessErrorMessage error={error} />
   if (!person || !person.grouped_post_count) return <div>Loading...</div>
 
+  const isSelf = person.id === currentUser.id
+
   const {
     params: { id }, location: { query }, recentRequest, recentOffer, community
   } = props
@@ -136,9 +138,9 @@ const PersonProfile = compose(
     }
   }
 
-  return <CoverImagePage id='person' image={banner_url || defaultBanner}>
+  return <CoverImagePage id='person' image={banner_url || defaultBanner} showEdit={isSelf}>
     <div className='opener'>
-      <NonLinkAvatar person={person} />
+      <NonLinkAvatar person={person} showEdit={isSelf} />
       <h2>
         {person.name}
         <div className='social-media'>
@@ -156,7 +158,7 @@ const PersonProfile = compose(
         Joined {joinDate}
       </p>
       <p className='bio'>{bio}</p>
-      {currentUser && person.id !== currentUser.id &&
+      {currentUser && !isSelf &&
         hasFeature(currentUser, DIRECT_MESSAGES) &&
         <button onClick={startMessage} className='dm-user'>
           <Icon name='Message-Smile' /> Message

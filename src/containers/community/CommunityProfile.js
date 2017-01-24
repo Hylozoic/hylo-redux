@@ -9,6 +9,7 @@ import { saveCurrentCommunityId } from '../../actions/util'
 import { VIEWED_COMMUNITY, trackEvent } from '../../util/analytics'
 import CoverImagePage from '../../components/CoverImagePage'
 import AccessErrorMessage from '../../components/AccessErrorMessage'
+import { canModerate } from '../../models/currentUser'
 const { func, object } = React.PropTypes
 
 class CommunityProfile extends React.Component {
@@ -43,6 +44,7 @@ class CommunityProfile extends React.Component {
 
   render () {
     const { community, children, error } = this.props
+    const { currentUser } = this.context
 
     if (error) {
       return <AccessErrorMessage error={error} />
@@ -54,7 +56,7 @@ class CommunityProfile extends React.Component {
       return <div className='loading'>Loading...</div>
     }
 
-    return <CoverImagePage id='community' image={community.banner_url}>
+    return <CoverImagePage id='community' image={community.banner_url} showEdit={canModerate(currentUser, community)}>
       {children}
     </CoverImagePage>
   }

@@ -101,7 +101,7 @@
     "babel-plugin-react-transform": "^2.0.0",
     "babel-polyfill": "^6.9.1",
     "babelify": "^7.3.0",
-    "browserify": "^13.1.0",
+    "browserify": "^14.0.0",
     "chai": "^3.4.1",
     "chai-spies": "^0.7.1",
     "envify": "^4.0.0",

@@ -4,6 +4,7 @@ import { updateCurrentUser, UPLOAD_IMAGE } from '../actions'
 import { uploadImage } from '../actions/uploadImage'
 import { updateCommunitySettings } from '../actions/communities'
 import { get, set } from 'lodash/fp'
+import Icon from './Icon'
 import {
   avatarUploadSettings as personAvatarUploadSettings, bannerUploadSettings as personBannerUploadSettings
 } from '../models/person'
@@ -54,7 +55,9 @@ const ChangeImageButton = ({ person, community, type, dispatch, pending }) => {
       update(payload)
     })
 
-  return <a className='edit-link' onClick={onClick}>{loading ? 'Loading...' : 'Change'}</a>
+  return <a className='edit-link' onClick={onClick}>
+    {loading ? <Icon name='Clock' /> : <Icon name='Cloud-Upload' />}
+  </a>
 }
 
 export default connect((state, props) => ({

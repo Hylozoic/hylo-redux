@@ -27,7 +27,6 @@ import { navigate, showModal } from '../../actions'
 import { sendGraphqlQuery } from '../../actions/graphql'
 import { requestToJoinCommunity } from '../../actions/communities'
 import { getChecklist, checklistPercentage } from '../../models/community'
-import { groupUser } from 'hylo-utils'
 import { coinToss } from '../../util'
 
 const subject = 'community'
@@ -37,26 +36,24 @@ export const MIN_POSTS_FOR_POST_PROMPT_MODULE = 4
 const getFeedModule = (community, currentUser, moduleChoice) => {
   let module
 
-  if (groupUser(currentUser.id, 'In-Feed Engagement Modules') === 0) {
-    const showPopularSkills = community.memberCount >= MIN_MEMBERS_FOR_SKILLS_MODULE
-    const showPostPrompt = community.postCount >= MIN_POSTS_FOR_POST_PROMPT_MODULE
+  const showPopularSkills = community.memberCount >= MIN_MEMBERS_FOR_SKILLS_MODULE
+  const showPostPrompt = community.postCount >= MIN_POSTS_FOR_POST_PROMPT_MODULE
 
-    module = {
-      id: -1,
-      type: 'module'
-    }
+  module = {
+    id: -1,
+    type: 'module'
+  }
 
-    if (showPopularSkills && showPostPrompt) {
-      module.component = moduleChoice
-      ? <PopularSkillsModule community={community} />
-      : <PostPromptModule />
-    } else if (showPopularSkills) {
-      module.component = <PopularSkillsModule community={community} />
-    } else if (showPostPrompt) {
-      module.component = <PostPromptModule />
-    } else {
-      module = null
-    }
+  if (showPopularSkills && showPostPrompt) {
+    module.component = moduleChoice
+    ? <PopularSkillsModule community={community} />
+    : <PostPromptModule />
+  } else if (showPopularSkills) {
+    module.component = <PopularSkillsModule community={community} />
+  } else if (showPostPrompt) {
+    module.component = <PostPromptModule />
+  } else {
+    module = null
   }
   return module
 }

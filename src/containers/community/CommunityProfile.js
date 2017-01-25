@@ -56,7 +56,11 @@ class CommunityProfile extends React.Component {
       return <div className='loading'>Loading...</div>
     }
 
-    return <CoverImagePage id='community' image={community.banner_url} showEdit={canModerate(currentUser, community)}>
+    const isModerator = canModerate(currentUser, community)
+
+    return <CoverImagePage id='community'
+      image={community.banner_url}
+      community={isModerator ? community : null}>
       {children}
     </CoverImagePage>
   }

@@ -1,6 +1,7 @@
 import React from 'react'
 import { Link } from 'react-router'
 import { handleMouseOver } from './Popover'
+import ChangeImageButton from './ChangeImageButton'
 const { func } = React.PropTypes
 
 export const bgStyle = url => {
@@ -10,7 +11,7 @@ export const bgStyle = url => {
   return {backgroundImage: `url(${escaped})`}
 }
 
-const GenericAvatar = ({ person: { id, avatar_url }, isLink, showPopover, showEdit }, { dispatch }) => {
+const GenericAvatar = ({ person, person: { id, avatar_url }, isLink, showPopover, showEdit }, { dispatch }) => {
   if (!id) return <span />
 
   const props = {
@@ -19,10 +20,8 @@ const GenericAvatar = ({ person: { id, avatar_url }, isLink, showPopover, showEd
     onMouseOver: showPopover ? handleMouseOver(dispatch) : null
   }
 
-  const edit = () => console.log('edit clicked on user id', id)
-
   return <div {...props}>
-    {showEdit && <a className='edit-link' onClick={edit}>Change</a>}
+    {showEdit && <ChangeImageButton person={person} type='avatar_url' />}
     {isLink && <Link to={`/u/${id}`} >&nbsp;</Link>}
   </div>
 }

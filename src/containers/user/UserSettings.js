@@ -413,28 +413,44 @@ export default class UserSettings extends React.Component {
         <Item>
           <div className='half-column'>
             <label>Receive notifications about new direct messages?</label>
-            <div className='summary'>Choose how you would like to be notified when someone messages you personally.</div>
           </div>
           <div className='half-column right-align'>
             <select value={currentUser.settings.dm_notifications} onChange={event => this.update('settings.dm_notifications', event.target.value)} >
+              <option value='none'>None</option>
               {hasDevice && <option value='push'>Push Notification</option>}
               <option value='email'>Email</option>
               {hasDevice && <option value='both'>Both</option>}
-              <option value='none'>None</option>
               {!hasDevice && <option disabled>Install the Hylo mobile app to get push notifications</option>}
             </select>
           </div>
         </Item>
         <Item>
           <div className='half-column'>
-            <div className='summary'>
-              Download our <a href={iOSAppURL} target='_blank'>iOS</a> or <a href={androidAppURL} target='_blank'>Android</a> app to receive push notifications.
-            </div>
+            <label>Receive notifications about new comments on posts you're following?</label>
+          </div>
+          <div className='half-column right-align'>
+            <select value={currentUser.settings.comment_notifications} onChange={event => this.update('settings.comment_notifications', event.target.value)} >
+              <option value='none'>None</option>
+              {hasDevice && <option value='push'>Push Notification</option>}
+              <option value='email'>Email</option>
+              {hasDevice && <option value='both'>Both</option>}
+              {!hasDevice && <option disabled>Install the Hylo mobile app to get push notifications</option>}
+            </select>
           </div>
         </Item>
         <Item>
-          <div className='half-column'>
-            <div className='summary'>See the <a href='?expand=communities'>"Communities"</a> section to change notifications for an individual community.</div>
+          <div className='full-column'>
+            <div className='summary'>
+              <p>
+                Download our <a href={iOSAppURL} target='_blank'>iOS</a>&nbsp;
+                or <a href={androidAppURL} target='_blank'>Android</a> app to
+                receive push notifications.
+              </p>
+              <p>
+                See the <a href='?expand=communities'>"Communities"</a> section
+                to change notifications for an individual community.
+              </p>
+            </div>
           </div>
         </Item>
       </Section>}

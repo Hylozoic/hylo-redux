@@ -7,8 +7,8 @@ import { commentUrl, peopleUrl } from '../../routes'
 import { FETCH_PERSON, navigate, showDirectMessage } from '../../actions'
 import { fetchContributions, fetchPerson, fetchThanks } from '../../actions/people'
 import { findError, saveCurrentCommunityId } from '../../actions/util'
-import { capitalize, compact, get, some, includes } from 'lodash'
-import { isNull, isUndefined, map, omitBy, sortBy } from 'lodash/fp'
+import { capitalize, compact, some, includes } from 'lodash'
+import { isNull, isUndefined, map, omitBy, sortBy, get } from 'lodash/fp'
 import { STARTED_MESSAGE, VIEWED_PERSON, VIEWED_SELF, trackEvent } from '../../util/analytics'
 import PostList from '../../components/PostList'
 import Post from '../../components/Post'
@@ -80,7 +80,7 @@ const PersonProfile = compose(
     let state = store.getState()
     let person = state.people[id]
     if (!person) return
-    if (get(currentUser, 'id') === person.id) {
+    if (get('id', currentUser) === person.id) {
       return trackEvent(VIEWED_SELF)
     } else {
       return trackEvent(VIEWED_PERSON, {person})
@@ -93,8 +93,8 @@ const PersonProfile = compose(
       currentUser: state.people.current,
       community: getCurrentCommunity(state),
       error: findError(state.errors, FETCH_PERSON, 'people', id),
-      recentRequest: getPost(get(person, 'recent_request_id'), state),
-      recentOffer: getPost(get(person, 'recent_offer_id'), state)
+      recentRequest: getPost(get('recent_request_id', person), state),
+      recentOffer: getPost(get('recent_offer_id', person), state)
     })
   })
 )(props => {
@@ -102,7 +102,7 @@ const PersonProfile = compose(
   if (error) return <AccessErrorMessage error={error} />
   if (!person || !person.grouped_post_count) return <div>Loading...</div>
 
-  const isSelf = person.id === currentUser.id
+  const isSelf = person.id === get('id', currentUser)
 
   const {
     params: { id }, location: { query }, recentRequest, recentOffer, community

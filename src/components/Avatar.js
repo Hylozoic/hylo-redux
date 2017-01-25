@@ -11,8 +11,9 @@ export const bgStyle = url => {
   return {backgroundImage: `url(${escaped})`}
 }
 
-const GenericAvatar = ({ person, person: { id, avatar_url }, isLink, showPopover, showEdit }, { dispatch }) => {
-  if (!id) return <span />
+const GenericAvatar = ({ person, isLink, showPopover, showEdit }, { dispatch }) => {
+  if (!person) return <span />
+  const { id, avatar_url } = person
 
   const props = {
     className: 'avatar',

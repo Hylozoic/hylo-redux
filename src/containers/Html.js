@@ -3,11 +3,12 @@ import { assetUrl } from '../util/assets'
 import { map } from 'lodash'
 import { environment } from '../config'
 var { string, object } = React.PropTypes
+import pingdom from '../server/pingdom'
 
 const isProd = environment === 'production'
 
 const rawScript = contents =>
-  <script type='text/javascript' dangerouslySetInnerHTML={{__html: contents}}></script>
+  <script type='text/javascript' dangerouslySetInnerHTML={{__html: contents}} />
 
 const Html = props => {
   const {
@@ -16,21 +17,22 @@ const Html = props => {
   return <html>
     <head>
       {initNewRelic && rawScript(initNewRelic)}
+      {isProd && rawScript(pingdom.snippet)}
       <title>{pageTitle}</title>
       <link rel='stylesheet' type='text/css' href={assetUrl('/index.css')} />
       <link rel='shortcut icon' id='favicon' href={assetUrl(`/img/favicon${isProd ? '' : 'Dev'}.png?v=2`)} />
       <meta name='viewport' content='width=device-width, initial-scale=1.0, user-scalable=no' />
       {map(metaTags, (val, key) => <meta property={key} content={val} key={key} />)}
-      <script type='text/javascript' src='https://use.typekit.net/npw4ouq.js'></script>
+      <script type='text/javascript' src='https://use.typekit.net/npw4ouq.js' />
       <script type='text/javascript'>{`try{Typekit.load({async:true});}catch(e){}`}</script>
-      {isProd && <script src='//cdn.optimizely.com/js/2520710496.js'></script>}
+      {isProd && <script src='//cdn.optimizely.com/js/2520710496.js' />}
     </head>
     <body>
-      <div id='app' dangerouslySetInnerHTML={{__html: markup}}></div>
+      <div id='app' dangerouslySetInnerHTML={{__html: markup}} />
       {rawScript(state)}
       {rawScript(assetManifest)}
       {rawScript(featureFlags)}
-      <script src={assetUrl('/index.js')} defer></script>
+      <script src={assetUrl('/index.js')} defer />
     </body>
   </html>
 }

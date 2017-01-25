@@ -67,12 +67,15 @@ export default class CommunityInvite extends React.Component {
     const copyLink = () => copy(joinUrl) && this.setState({copied: true})
 
     return <div className='form-sections' id='community-invite-settings'>
-      <div className='modal-input invitation-link'>
-        <Icon name='Link' />Anyone with this link can join the community <br /><a href={joinUrl}>{joinUrl}</a>
+      <div className='modal-input invitation-link-section'>
         <div className='copy-link-wrapper'>
           {copied && <span className='copied'>(copied) </span>}
           <a className='copy-link' onClick={copyLink}>Copy Link</a>
         </div>
+        <Icon name='Link' />
+        Anyone with this link can join the community
+        <br />
+        <a className='invitation-link' href={joinUrl}>{joinUrl}</a>
       </div>
       <div>
         <InviteForm community={community} allowModerators />

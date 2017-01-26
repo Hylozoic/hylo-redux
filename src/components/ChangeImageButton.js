@@ -56,7 +56,7 @@ const ChangeImageButton = ({ person, community, type, dispatch, pending }) => {
     })
 
   return <a className='edit-link' onClick={onClick}>
-    {loading ? <Icon name='Clock' /> : <Icon name='Cloud-Upload' />}
+    {loading ? <Icon name='Clock' /> : <Icon name='Camera' />}
   </a>
 }
 

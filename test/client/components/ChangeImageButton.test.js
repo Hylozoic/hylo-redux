@@ -14,7 +14,7 @@ describe('ChangeImageButton', () => {
       context: { dispatch: () => {}, store },
       childContextTypes: {dispatch: React.PropTypes.func}
     })
-    expect(node.find('.icon-Cloud-Upload').length).to.equal(1)
+    expect(node.find('.icon-Camera').length).to.equal(1)
   })
 
   it('renders correctly when loading', () => {

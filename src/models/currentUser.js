@@ -64,7 +64,7 @@ export const hasFeature = (currentUser, key) => {
     case 'testing':
       return isTester(currentUser)
     case 'ab':
-      return groupUser(currentUser.id, key) === 0
+      return currentUser ? groupUser(currentUser.id, key) === 0 : false
     default:
       return false
   }

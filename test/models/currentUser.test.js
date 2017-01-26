@@ -1,5 +1,13 @@
+import '../support'
 import {
-  canComment, canModerate, isMember, isTester, canInvite, hasBio, hasSkills
+  canComment,
+  canModerate,
+  isMember,
+  isTester,
+  canInvite,
+  hasBio,
+  hasSkills,
+  hasFeature
 } from '../../src/models/currentUser'
 import { MemberRole } from '../../src/models/community'
 
@@ -136,6 +144,39 @@ describe('currentUser', () => {
     it('should be true when are any tags (skills)', () => {
       const user = {tags: ['hacksack']}
       expect(hasSkills(user)).to.be.true
+    })
+  })
+
+  describe('.hasFeature', () => {
+    describe('with a feature flag set to "on"', () => {
+      before(() => { process.env.FEATURE_FLAG_FOO = 'on' })
+      after(() => delete process.env.FEATURE_FLAG_FOO)
+
+      it('returns true', () => {
+        expect(hasFeature({id: 8}, 'FOO')).to.be.true
+        expect(hasFeature(null, 'FOO')).to.be.true
+      })
+    })
+
+    describe('with a feature flag not set', () => {
+      it('returns false', () => {
+        expect(hasFeature({id: 8}, 'FOO')).to.be.false
+        expect(hasFeature(null, 'FOO')).to.be.false
+      })
+    })
+
+    describe('with a feature flag in AB testing', () => {
+      before(() => { process.env.FEATURE_FLAG_FOO = 'ab' })
+      after(() => delete process.env.FEATURE_FLAG_FOO)
+
+      it('works with a logged-out user', () => {
+        expect(hasFeature(null, 'FOO')).to.be.false
+      })
+
+      it("returns true or false depending on the user's id", () => {
+        expect(hasFeature({id: 11}, 'FOO')).to.be.true
+        expect(hasFeature({id: 12}, 'FOO')).to.be.false
+      })
     })
   })
 })

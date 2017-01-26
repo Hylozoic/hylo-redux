@@ -11,7 +11,8 @@ import { connect } from 'react-redux'
 import { configureStore } from '../../../src/store'
 import * as actions from '../../../src/actions'
 import * as postActions from '../../../src/actions/posts'
-import Post from '../../../src/components/Post'
+import ConnectedPost, { Post } from '../../../src/components/Post'
+import A from '../../../src/components/A'
 
 const { object, func } = React.PropTypes
 
@@ -27,53 +28,7 @@ const post = {
   updated_at: new Date(),
   user_id: 'x',
   community_ids: ['1'],
-  follower_ids: ['x', 'y'],
-  parent_post_id: 'parentPost1'
-}
-
-const childPost = {
-  id: 'childPost',
-  name: 'I am a project posting, but not a special request',
-  description: 'it is very special.',
-  created_at: new Date(),
-  updated_at: new Date(),
-  user_id: 'x',
-  community_ids: ['1'],
-  follower_ids: ['x', 'y'],
-  parent_post_id: 'parentPost1'
-}
-
-const projectSpecialRequestPost = {
-  id: 'projectSpecialRequestPost',
-  name: 'I am a project special request project posting',
-  description: 'it is very special.',
-  type: 'request',
-  tag: 'request',
-  created_at: new Date(),
-  updated_at: new Date(),
-  user_id: 'x',
-  community_ids: ['1'],
-  follower_ids: ['x', 'y'],
-  parent_post_id: 'parentPost1'
-}
-
-const parentPost1 = {
-  id: 'parentPost1',
-  name: 'Project otherwise known as a parentPost',
-  description: 'it is very special.',
-  type: 'project',
-  tag: 'project',
-  created_at: new Date(),
-  updated_at: new Date(),
-  user_id: 'x',
-  community_ids: ['2'],
-  follower_ids: ['x', 'y'],
-  parent_post_id: null
-}
-
-const contributor = {
-  id: 'a',
-  name: 'Adam'
+  follower_ids: ['x', 'y']
 }
 
 const post2 = {
@@ -88,17 +43,23 @@ const post2 = {
   community_ids: ['1', '2', '3', '4']
 }
 
-const requestPost = {
-  id: 'requestPost',
-  name: 'Please help me.',
-  description: 'This is a request for help',
+const projectSpecialRequestPost = {
+  id: 'projectSpecialRequestPost',
+  name: 'I am a project special request posting',
+  description: 'it is very special.',
   type: 'request',
   tag: 'request',
   created_at: new Date(),
   updated_at: new Date(),
   user_id: 'x',
-  community_ids: ['1', '2'],
-  follower_ids: ['x', 'y']
+  community_ids: ['1'],
+  follower_ids: ['x', 'y'],
+  is_project_request: true
+}
+
+const contributor = {
+  id: 'a',
+  name: 'Adam'
 }
 
 const state = {
@@ -123,12 +84,42 @@ const state = {
   },
   posts: {
     [post.id]: post,
-    [post2.id]: post2,
-    [requestPost.id]: requestPost
+    [post2.id]: post2
   },
   typeaheadMatches: {
     contributors: [contributor]
-  }
+  },
+  commentEdits: {
+    new: {},
+    edit: {}
+  },
+  pending: {}
+}
+
+const normalizedParentPost = {
+  id: 'parentPost',
+  name: 'Project otherwise known as a parentPost',
+  description: 'it is very special.',
+  type: 'project',
+  tag: 'project',
+  created_at: new Date(),
+  updated_at: new Date(),
+  user: state.people.x,
+  communities: [state.communities.foo],
+  parent_post_id: null,
+  project: {}
+}
+
+const normalizedChildPost = {
+  id: 'childPost',
+  parent_post_id: 'parentPost',
+  name: 'I am a project posting, but not a special request',
+  description: 'it is very special.',
+  created_at: new Date(),
+  updated_at: new Date(),
+  user: state.people.x,
+  communities: [state.communities.foo],
+  project: {}
 }
 
 describe('Post', () => {
@@ -136,7 +127,7 @@ describe('Post', () => {
     const props = {post, expanded: true}
     const store = mocks.redux.store(state)
     const context = {store, dispatch: store.dispatch}
-    let component = createElement(Post, props, context)
+    let component = createElement(ConnectedPost, props, context)
     let node = renderIntoDocument(component)
     findRenderedDOMComponentWithClass(node, 'post')
     let details = findRenderedDOMComponentWithClass(node, 'details')
@@ -156,7 +147,7 @@ describe('Post', () => {
       }
     })
     const context = {store, dispatch: store.dispatch}
-    let component = createElement(Post, props, context)
+    let component = createElement(ConnectedPost, props, context)
     let node = renderIntoDocument(component)
     findRenderedDOMComponentWithClass(node, 'post')
     let details = findRenderedDOMComponentWithClass(node, 'details')
@@ -170,7 +161,7 @@ describe('Post', () => {
     const props = {post: post2}
     const store = mocks.redux.store(state)
     const context = {store, dispatch: store.dispatch}
-    let component = createElement(Post, props, context)
+    let component = createElement(ConnectedPost, props, context)
     let node = renderIntoDocument(component)
     let communities = findRenderedDOMComponentWithClass(node, 'communities')
     let expected = '&nbsp;in&nbsp;<a>Foomunity</a><span> + </span><div class="dropdown post-communities-dropdown" tabindex="99"><a class="dropdown-toggle"><span>3 others</span></a><ul class="dropdown-menu"></ul><span></span></div>'
@@ -179,7 +170,7 @@ describe('Post', () => {
 
   it('opens PostEditorModal on edit when expanded', () => {
     const store = configureStore(state).store
-    const node = mount(<Post expanded post={post} />, {
+    const node = mount(<ConnectedPost expanded post={post} />, {
       context: {store, dispatch: store.dispatch, currentUser: state.people.current},
       childContextTypes: {store: object, dispatch: func, currentUser: object}
     })
@@ -195,79 +186,26 @@ describe('Post', () => {
     })
   })
 
-  describe('#request type', () => {
-    let node
-
-    beforeEach(() => {
-      window.FEATURE_FLAGS = { CONTRIBUTORS: 'on' }
-      const store = configureStore(state).store
-      const PostWrapper = connect(({ posts }, { id }) => ({
-        post: posts[id]
-      }))(({ post }) => {
-        return <Post post={post} />
+  describe('Post with a Parent', () => {
+    it('should show link to parent post', () => {
+      const props = {
+        post: normalizedChildPost,
+        parentPost: normalizedParentPost,
+        community: state.communities.foo,
+        comments: [],
+        dispatch: () => {}
+      }
+      const node = mount(<Post {...props} />, {
+        context: {
+          currentUser: state.people.current,
+          dispatch: () => {}
+        },
+        childContextTypes: {
+          dispatch: func,
+          currentUser: object
+        }
       })
-      node = mount(<PostWrapper id={requestPost.id} dispatch={store.dispatch} />, {
-        context: { store, dispatch: store.dispatch, currentUser: state.people.current },
-        childContextTypes: {store: object, dispatch: func, currentUser: object}
-      })
-      mockActionResponse(postActions.completePost(requestPost.id), {})
-      mockActionResponse(actions.typeahead(contributor.name), {})
-    })
-
-    it('can be completed (with contributors)', () => {
-      expect(node.find('.toggle')).to.be.length(1)
-      node.find('.toggle').simulate('change')
-      expect(node.find('.request-complete-heading').text()).to.contain('Awesome')
-      expect(node.find('.request-complete-people-input')).to.be.length(1)
-      node.find('.request-complete-people-input a').simulate('click')
-      expect(node.find('.request-complete-people-input li.tag').text())
-      .to.contain(contributor.name)
-      expect(node.find('.done')).to.be.length(1)
-      postActions.completePost = spy(postActions.completePost)
-      node.find('.done').simulate('click')
-      expect(postActions.completePost).to.have.been.called.once.with([contributor])
-      expect(node.find('.contributors .person')).to.be.length(1)
-      expect(node.find('.contributors').text()).to.contain(contributor.name)
-    })
-
-    it('can be completed (without contributors)', () => {
-      expect(node.find('.toggle')).to.be.length(1)
-      node.find('.toggle').simulate('change')
-      expect(node.find('.done')).to.be.length(1)
-      postActions.completePost = spy(postActions.completePost)
-      node.find('.done').simulate('click')
-      expect(postActions.completePost).to.have.been.called.once.with(requestPost.id, [])
-      expect(node.find('.contributors .person')).to.be.length(0)
-    })
-
-    it('can be uncompleted', () => {
-      expect(node.find('.toggle')).to.be.length(1)
-      node.find('.toggle').simulate('change')
-      expect(node.find('.done')).to.be.length(1)
-      postActions.completePost = spy(postActions.completePost)
-      node.find('.done').simulate('click')
-      expect(postActions.completePost).to.have.been.called.once.with(requestPost.id, [])
-      expect(node.find('.contributors .person')).to.be.length(0)
-      expect(node.find('.contributors').text()).to.contain('completed')
-      expect(node.find('.toggle')).to.be.length(1)
-      postActions.completePost = spy(postActions.completePost)
-      window.confirm = spy(() => true)
-      node.find('.toggle').simulate('change')
-      expect(window.confirm).to.have.been.called.once()
-      expect(postActions.completePost).to.have.been.called.once.with(requestPost.id)
-      expect(node.find('.request-complete-heading').text())
-      .to.contain('if this request has been completed')
-    })
-
-    it('requests contributors from all communities associated with a post', () => {
-      node.find('.toggle').simulate('change')
-      actions.typeahead = spy(actions.typeahead)
-      node.find('.request-complete-people-input input').simulate('change', {
-        target: {value: contributor.name}, keyCode: 13
-      })
-      return wait(300, () =>
-        expect(actions.typeahead).to.have.been.called.with(
-          {type: 'people', communityIds: requestPost.community_ids}))
+      expect(node.find('.parent-post-link').length).to.equal(1)
     })
   })
 })

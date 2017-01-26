@@ -8,7 +8,6 @@ describe('currentUser', () => {
   describe('.isMember', () => {
     it('returns true if the user has a membership', () => {
       let community = {id: 'bar'}
-
       let user = {
         memberships: [
           {community_id: 'foo'},
@@ -23,7 +22,6 @@ describe('currentUser', () => {
   describe('.canInvite', () => {
     it('is true if the user is a moderator', () => {
       let community = {id: 'bar'}
-
       let user = {
         memberships: [
           {community_id: 'foo'},

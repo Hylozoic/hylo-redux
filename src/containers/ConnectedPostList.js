@@ -18,14 +18,14 @@ const findExpandedPostId = state => {
 
 @connect((state, props) => ({
   ...connectedListProps(state, props, 'posts'),
-  expandedPostId: findExpandedPostId(state)
+  expandedPostId: findExpandedPostId(state),
+  parentPost: props.parentPost
 }), null, null, {withRef: true})
 export class ConnectedPostList extends React.Component {
   static propTypes = {
     subject: string.isRequired,
     id: string.isRequired,
     posts: array,
-    parentPost: object,
     freshCount: number,
     dispatch: func,
     total: number,
@@ -35,6 +35,7 @@ export class ConnectedPostList extends React.Component {
     hide: array, // just hide posts with this id from the results
     hideMobileSearch: bool,
     expandedPostId: string,
+    parentPost: object,
     noPostsMessage: string,
     module: object
   }

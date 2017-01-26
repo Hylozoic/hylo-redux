@@ -44,7 +44,7 @@ export const canEditPost = (currentUser, permissionsPost) => {
   }
 }
 
-export const canCommentOnPost = (currentUser, permissionsPost = null) => {
+export const canCommentOnPost = (currentUser, permissionsPost) => {
   if (currentUser && permissionsPost) {
     return includes(permissionsPost.follower_ids, currentUser.id) ||
       !isEmpty(intersection(

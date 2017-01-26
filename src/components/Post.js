@@ -78,7 +78,7 @@ export class Post extends React.Component {
     const isRequest = post.tag === 'request'
     const isComplete = isCompleteRequest(post)
     const canEdit = canEditPost(currentUser, post)
-    const canComment = canCommentOnPost(currentUser, parentPost || post)
+    const canComment = canCommentOnPost(currentUser, isChildPost(post) ? parentPost : post)
 
     return <div className={classes}>
       <a name={`post-${post.id}`} />
@@ -126,7 +126,7 @@ export const Header = ({ post, project, communities, expanded }, { currentUser, 
           {person.name}
         </A>
         <span className='meta'>
-          {isChild && <A to={`/p/${post.id}`} title={createdAt}>
+          {isChild && <A to={`/p/${post.id}`} title={createdAt} className='parent-post-link'>
             {nonbreaking(humanDate(createdAt))}
           </A>}
           {!isChild && nonbreaking(humanDate(createdAt))}

@@ -193,7 +193,7 @@ const UndecoratedProjectPostCard = ({ post, parentPost, community, comments, dis
   const { name, user, ends_at, id } = post
   const url = `/p/${post.id}`
   const backgroundImage = `url(${imageUrl(post)})`
-  const canComment = canCommentOnPost(currentUser, parentPost)
+  const canComment = canCommentOnPost(currentUser, post)
 
   let description = presentDescription(post, community)
   const truncated = textLength(description) > 140

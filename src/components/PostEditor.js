@@ -205,7 +205,8 @@ export class PostEditor extends React.PureComponent {
         tag: postEdit.tag,
         community: {name: get(postCommunities[0], 'name')}
       })
-      dispatch(updateCommunityChecklist(currentCommunitySlug))
+      const community = postCommunities[0]
+      if (community) dispatch(updateCommunityChecklist(community.slug))
       this.cancel()
       if (onSave) return onSave()
     })

@@ -10,7 +10,8 @@ import {
   CREATE_COMMENT,
   UPDATE_COMMENT_PENDING,
   REMOVE_COMMENT,
-  THANK_PENDING
+  THANK_PENDING,
+  UPLOAD_IMAGE
 } from '../actions'
 
 export default function (state = {}, action) {
@@ -48,6 +49,12 @@ export default function (state = {}, action) {
       return {...state, ...hashBy(payload.comments, 'id')}
     case REMOVE_COMMENT:
       return {...state, [meta.id]: null}
+    case UPLOAD_IMAGE:
+      if (meta.subject !== 'comment-image') break
+      return {
+        ...state,
+        community: {...state.community, avatar_url: payload}
+      }
   }
 
   return state

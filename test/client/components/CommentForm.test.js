@@ -24,7 +24,9 @@ describe('CommentForm', () => {
     },
     posts: {
       '1': {
-        id: '1', name: 'post', type: 'offer',
+        id: '1',
+        name: 'post',
+        type: 'offer',
         user_id: 'x',
         communities: [community.id],
         description: '<p>.</p>'
@@ -47,7 +49,7 @@ describe('CommentForm', () => {
       }
       return this.oldDispatch(action)
     }.bind(store)
-    const node = mount(<CommentForm postId={'1'}/>, {
+    const node = mount(<CommentForm postId={'1'} />, {
       context: {store, dispatch: store.dispatch, currentUser: state.people.current},
       childContextTypes: {store: object, currentUser: object, dispatch: func}
     })
@@ -61,7 +63,8 @@ describe('CommentForm', () => {
       text: 'some generic comment',
       tagDescriptions: {
         thenewtag: {description: 'something', is_default: false}
-      }
+      },
+      imageUrl: undefined
     })
   })
 })

@@ -44,7 +44,7 @@ export default class MessageToUserForm extends React.Component {
       ? 'Cmd' : 'Ctrl'
     this.setState({modifierKey})
   }
-  
+
   focus () {
     this.refs.editor.focus()
   }
@@ -67,7 +67,7 @@ export default class MessageToUserForm extends React.Component {
     const cleanText = text.replace(/<p>&nbsp;<\/p>$/m, '')
     if (!cleanText || textLength(cleanText) < 2) return false
 
-    dispatch(createComment(postId, text)).then(({ error }) => {
+    dispatch(createComment({postId, text})).then(({ error }) => {
       if (error) return
       onComplete()
       trackEvent(SENT_MESSAGE)

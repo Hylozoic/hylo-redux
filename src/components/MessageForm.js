@@ -31,7 +31,10 @@ export default class MessageForm extends React.Component {
     if (event) event.preventDefault()
     if (!this.state.text) return false
 
-    this.context.dispatch(createComment(this.props.postId, this.state.text))
+    const { postId } = this.props
+    const { text } = this.state
+
+    this.context.dispatch(createComment({postId, text}))
     .then(({ error }) => error || trackEvent(SENT_MESSAGE))
 
     this.setState({text: ''})

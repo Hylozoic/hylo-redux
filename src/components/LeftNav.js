@@ -34,8 +34,8 @@ const TopicList = ({ tags, slug }, { dispatch }) => {
       case 'request': return 'b'
       case 'intention': return 'c'
       default:
-        if (t.is_default) return 'd' + t.name
-        return 'e' + t.name
+        if (t.is_default) return 'd' + t.name.toLowerCase()
+        return 'e' + t.name.toLowerCase()
     }
   }, filter('followed', tags))
 

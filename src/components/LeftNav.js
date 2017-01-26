@@ -112,7 +112,7 @@ export const LeftNav = ({ opened, community, network, tags, close, links }, { is
         {network
           ? <NetworkNav network={network} />
           : <CommunityNav links={links} />}
-        {!isEmpty(tags) && <TopicList tags={tags} slug={get('slug', community)} />}
+        <TopicList tags={tags} slug={get('slug', community)} />
       </nav>}
       {opened && <div id='leftNavBackdrop' onClick={close} />}
     </VelocityTransitionGroup>

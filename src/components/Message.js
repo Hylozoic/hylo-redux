@@ -17,7 +17,7 @@ class Message extends React.Component {
   }
 
   render () {
-    const { message, isHeader } = this.props
+    const { message, message: { image }, isHeader } = this.props
 
     const person = message.user
     let text = sanitize(message.text).replace(/\n/g, '<br />')
@@ -30,9 +30,11 @@ class Message extends React.Component {
           <strong className='name'>{sanitize(person.name)}</strong>
           <span className='date'>{humanDate(message.created_at)}</span>
         </div>}
-        <div className='text'>
+        {image
+        ? <img className='thumbnail' src={image.thumbnail_url} />
+        : <div className='text'>
           <span dangerouslySetInnerHTML={{__html: text}} />
-        </div>
+        </div>}
       </div>
     </div>
   }

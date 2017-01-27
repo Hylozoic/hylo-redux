@@ -1,5 +1,6 @@
 import React from 'react'
 import { throttle, isEmpty } from 'lodash'
+import CommentImageButton from './CommentImageButton'
 import { createComment } from '../actions/comments'
 import { SENT_MESSAGE, trackEvent } from '../util/analytics'
 import { onEnterNoShift } from '../util/textInput'
@@ -74,7 +75,7 @@ export default class MessageForm extends React.Component {
   }, 5000)
 
   render () {
-    const { onFocus, onBlur } = this.props
+    const { onFocus, onBlur, postId } = this.props
     const placeholder = this.props.placeholder || 'Type a message...'
     const { isMobile } = this.context
     const { text } = this.state
@@ -90,6 +91,7 @@ export default class MessageForm extends React.Component {
     }
 
     return <form onSubmit={this.submit} className='message-form'>
+      <CommentImageButton postId={postId} />
       <textarea ref='editor' name='message' value={text}
         placeholder={placeholder}
         onFocus={onFocus}

@@ -2,12 +2,10 @@ import React from 'react'
 import { debounce, throttle } from 'lodash'
 import { connect } from 'react-redux'
 import Avatar from './Avatar'
-import Icon from './Icon'
+import CommentImageButton from './CommentImageButton'
 import RichTextEditor from './RichTextEditor'
-import { CREATE_COMMENT, showModal, notify } from '../actions'
+import { CREATE_COMMENT, showModal } from '../actions'
 import { createComment, updateCommentEditor, updateComment } from '../actions/comments'
-import { uploadImage } from '../actions/uploadImage'
-import { imageUploadSettings } from '../models/comment'
 import { ADDED_COMMENT, trackEvent } from '../util/analytics'
 import { textLength } from '../util/text'
 import { onCmdOrCtrlEnter } from '../util/textInput'
@@ -104,7 +102,7 @@ export default class CommentForm extends React.PureComponent {
   delaySetText = debounce(text => this.setText(text), 50)
 
   render () {
-    const { dispatch, postId, text, newComment, close, pending } = this.props
+    const { postId, text, newComment, close, pending } = this.props
     const { currentUser, isMobile } = this.context
     const editing = text !== undefined
     const edit = () => this.setText('')
@@ -133,14 +131,6 @@ export default class CommentForm extends React.PureComponent {
 
     const { enabled, modifierKey } = this.state
 
-    const sendImage = () =>
-      dispatch(uploadImage(imageUploadSettings(currentUser.id, postId)))
-      .then(({ payload, error }) => {
-        if (error) return dispatch(notify('There was a problem sending your image. Please try again in a moment', {type: 'error'}))
-        console.log('payload', payload)
-        return dispatch(createComment({postId, imageUrl: payload}))
-      })
-
     return <form onSubmit={this.submit} className='comment-form'>
       <Avatar person={currentUser} />
       {editing
@@ -151,7 +141,7 @@ export default class CommentForm extends React.PureComponent {
               onChange={ev => this.delaySetText(ev.target.value)}
               onKeyUp={stopTyping}
               onKeyDown={handleKeyDown} />
-            <a className='send-image' onClick={sendImage}><Icon name='Camera' /></a>
+            <CommentImageButton postId={postId}/>
             <input type='submit' value='Post' ref='button'
               className={cx({enabled: enabled && !pending})} />
             {close && <button onClick={close}>Cancel</button>}

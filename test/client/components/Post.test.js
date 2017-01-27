@@ -1,18 +1,14 @@
 import '../support'
 import { mocks } from '../../support'
-import { mockActionResponse, createElement, wait } from '../../support/helpers'
+import { mockActionResponse, createElement } from '../../support/helpers'
 import {
   findRenderedDOMComponentWithClass,
   renderIntoDocument
 } from 'react-addons-test-utils'
 import React from 'react'
 import { mount } from 'enzyme'
-import { connect } from 'react-redux'
 import { configureStore } from '../../../src/store'
-import * as actions from '../../../src/actions'
-import * as postActions from '../../../src/actions/posts'
 import ConnectedPost, { Post } from '../../../src/components/Post'
-import A from '../../../src/components/A'
 
 const { object, func } = React.PropTypes
 

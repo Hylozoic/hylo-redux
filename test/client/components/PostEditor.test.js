@@ -1,18 +1,15 @@
-require('../support')
+import '../support'
 import { mocks } from '../../support'
+import React, { PropTypes } from 'react'
+import { mount } from 'enzyme'
 import { cloneDeep, set } from 'lodash'
+import * as postActions from '../../../src/actions/posts'
+import RichTextEditor from '../../../src/components/RichTextEditor'
 import { PostEditor } from '../../../src/components/PostEditor'
-import { FETCH_TAG } from '../../../src/actions'
-import {
-  findRenderedDOMComponentWithClass,
-  renderIntoDocument,
-  Simulate
-} from 'react-addons-test-utils'
-const { click } = Simulate
-import { createElement, wait } from '../../support/helpers'
 
 const currentUser = {id: 'person'}
 const post = {id: 'foo'}
+const parentPost = {id: 'parentFoo'}
 const community = {
   id: 'f',
   slug: 'f',
@@ -37,14 +34,20 @@ const state = {
   tagsByCommunity: {}
 }
 
-let component, node, store
+let node, store
 
-const render = (state, post, storeSetupCallback) => {
+const render = (state, post, storeSetupCallback, otherProps = {}) => {
   store = mocks.redux.store(state)
   if (storeSetupCallback) storeSetupCallback(store)
   const context = {store, dispatch: store.dispatch, currentUser}
-  component = createElement(PostEditor, {post, community}, context)
-  node = renderIntoDocument(component).getWrappedInstance()
+  const props = Object.assign({}, {post, community}, otherProps)
+  node = mount(<PostEditor {...props} />, {
+    context,
+    childContextTypes: {
+      dispatch: PropTypes.func,
+      currentUser: PropTypes.object
+    }
+  })
 }
 
 describe('PostEditor', () => {
@@ -62,28 +65,19 @@ describe('PostEditor', () => {
     })
 
     it('renders', () => {
-      let outerDiv = findRenderedDOMComponentWithClass(node, 'post-editor')
-      expect(outerDiv.className).to.equal('post-editor clearfix')
-
-      let title = findRenderedDOMComponentWithClass(node, 'title')
-      expect(title.value).to.equal('hello!')
-
-      let tag = findRenderedDOMComponentWithClass(node, 'tag')
-      expect(tag.innerHTML).to.match(/Foo Community/)
+      expect(node.find('.post-editor')).to.have.prop('className', 'post-editor clearfix')
+      expect(node.find('.title')).to.be.text('hello!')
+      expect(node.find('.tag')).to.contain.text('Foo Community')
     })
 
     it('has a details field', () => {
-      // we just test a few important methods here -- tinymce won't load without
-      // a proper browser environment
-      node.refs.details.componentDidMount()
-      node.goToDetails()
+      expect(node.find(RichTextEditor).length).to.equal(1)
     })
 
     it('displays tag description editor for creating new tag', () => {
-      click(node.refs.tagSelector)
-      let createLink = findRenderedDOMComponentWithClass(node, 'create')
-      click(createLink)
-      findRenderedDOMComponentWithClass(node, 'tag-input')
+      node.find('#tag-selector').simulate('click') //, {target: { value: ''}}
+      node.find('.create a').simulate('click')
+      expect(node.find('.tag-input').length).to.equal(1)
     })
   })
 
@@ -93,7 +87,7 @@ describe('PostEditor', () => {
     })
 
     it('fails validation', () => {
-      click(node.refs.save)
+      node.find('.save').simulate('click')
       expect(window.alert).to.have.been.called.with('The title of a post cannot be blank.')
     })
   })
@@ -104,7 +98,7 @@ describe('PostEditor', () => {
     })
 
     it('fails validation', () => {
-      click(node.refs.save)
+      node.find('.save').simulate('click')
       expect(window.alert).to.have.been.called.with('Please pick at least one community.')
     })
   })
@@ -117,30 +111,47 @@ describe('PostEditor', () => {
     })
   })
 
-  describe('with a project post', () => {
+  describe('with a parent post (project)', () => {
     beforeEach(() => {
       const newState = cloneDeep(state)
-      set(newState, 'postEdits.foo.type', 'project')
+      set(newState, 'postEdits.', 'project')
       set(newState, 'postEdits.foo.tag', 'foo')
-
-      render(newState, post, store => {
-        store.transformAction(FETCH_TAG, action => {
-          return Promise.resolve({
-            ...action,
-            payload: {name: 'foo'}
-          })
-        })
-      })
+      render(newState, post, null, { parentPost })
     })
 
-    // it('validates the tag', () => {
-    //   click(node.refs.save)
-    //   return wait(300, () => {
-    //     expect(store.dispatch).to.have.been.called()
-    //     const action = store.dispatched.slice(-1)[0]
-    //     expect(action.type).to.equal(FETCH_TAG)
-    //     expect(window.alert).to.have.been.called.with('The tag "foo" is already in use.')
-    //   })
+    it('should not have community selector', () => {
+      expect(node.find('.communities').length).to.equal(0)
+    })
+
+    it('should not have a visibility selector', () => {
+      expect(node.find('.visibility').length).to.equal(0)
+    })
+
+    // LEJ: For unknown reasons I haven't been able to mock the
+    //      class methods nor post actions successfully in this context
+    //
+    // it('should not send community ids on save (set on the parent post only)', () => {
+    //   postActions.updatePost = spy(postActions.updatePost)
+    //   node.find('.save').simulate('click')
+    //   expect(postActions.updatePost).to.have.been.called.once.with(post.id)
+    //   // .with(post.id, {
+    //   //   type: null,
+    //   //   expanded: true,
+    //   //   name: 'hello!',
+    //   //   description: 'and welcome',
+    //   //   community_ids: [ 'f' ],
+    //   //   tag: 'foo',
+    //   //   docs: [],
+    //   //   removedDocs: [],
+    //   //   parent_post_id: parentPost.id
+    //   // }, 'f')
+    // })
+    //
+    // it('should send the id of the parent post on save', () => {
     // })
   })
 })
+
+// 'should send id of the parent post on save'
+// in #save: !params.include_key(:community_ids) #(dispatch((post ? updatePost : createPost)(id, params, currentCommunitySlug)))
+// dispatch(updatePostEditor(data, id)) where data= {community_ids=...}

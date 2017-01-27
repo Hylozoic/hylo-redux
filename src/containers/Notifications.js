@@ -21,7 +21,6 @@ import {
 } from '../models/activity'
 import { Modal } from '../components/Modal'
 import A from '../components/A'
-import { NonLinkAvatar } from '../components/Avatar'
 import Dropdown from '../components/Dropdown'
 import Icon from '../components/Icon'
 import { modalWrapperCSSId } from '../components/Modal'

@@ -11,6 +11,7 @@ import TagEditorModal from '../containers/TagEditorModal'
 import AddLogoModal from '../containers/AddLogoModal'
 import InviteModal from '../containers/InviteModal'
 import PostEditorModal from '../containers/PostEditorModal'
+import ImageModal from '../containers/ImageModal'
 import { NotificationsModal } from '../containers/Notifications'
 import { ThreadsModal } from '../containers/ThreadsDropdown'
 import cx from 'classnames'
@@ -25,7 +26,7 @@ const mainColumnWidth = 688 // defined in CSS
 //  - desktop, left nav closed
 //  - mobile
 //
-const modalStyle = isMobile => {
+export const modalStyle = isMobile => {
   if (typeof window === 'undefined') return {}
   const main = document.getElementById('main')
   if (!main) return {} // this should be the case only during tests
@@ -132,6 +133,10 @@ export class ModalWrapper extends React.Component {
         break
       case 'threads':
         modal = <ThreadsModal onCancel={close} />
+        break
+      case 'image':
+        modal = <ImageModal {...params} onCancel={close} />
+        clickToClose = true
     }
 
     return <BareModalWrapper top={top} onClick={() => clickToClose && close()}>
@@ -145,7 +150,8 @@ export class ModalContainer extends React.Component {
     id: string,
     children: oneOfType([array, object]),
     className: string,
-    standalone: bool
+    standalone: bool,
+    style: object
   }
 
   static contextTypes = {
@@ -157,12 +163,12 @@ export class ModalContainer extends React.Component {
   }
 
   render () {
-    const { id, className, children, standalone } = this.props
+    const { id, className, children, standalone, style } = this.props
     const { isMobile } = this.context
     return <div id={id} className={cx(className, 'modal')}
       ref='container'
       tabIndex='0'
-      style={standalone ? {} : modalStyle(isMobile)}>
+      style={style || (standalone ? {} : modalStyle(isMobile))}>
       {children}
     </div>
   }

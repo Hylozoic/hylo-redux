@@ -7,6 +7,7 @@ import { get } from 'lodash/fp'
 import { humanDate, prependInP, present, textLength } from '../util/text'
 import { sanitize } from 'hylo-utils/text'
 import { commentUrl } from '../routes'
+import { showModal } from '../actions'
 import { removeComment, thank, updateCommentEditor } from '../actions/comments'
 import truncateHtml from 'trunc-html'
 import { ClickCatchingSpan } from './ClickCatcher'
@@ -75,7 +76,9 @@ class Comment extends React.Component {
       <Avatar person={person} showPopover />
       <div className='content'>
         {image && <div className='text'><a href={`/u/${person.id}`} className='name'>{person.name}</a></div>}
-        {image && <img className='thumbnail' src={image.thumbnail_url} />}
+        {image && <a onClick={() => dispatch(showModal('image', {url: image.thumbnail_url}))}>
+          <img className='thumbnail' src={image.thumbnail_url} />
+        </a>}
         {!image && <ClickCatchingSpan className='text' dangerouslySetInnerHTML={{__html: text}} />}
         {!image && truncated && <span> <a onClick={expand} className='show-more'>Show&nbsp;more</a></span>}
         <div>

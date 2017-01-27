@@ -487,8 +487,10 @@ export default class CommunitySettings extends React.Component {
             <label>Delete this community</label>
             <p className='summary'>
               This will delete the community, preventing users from joining,
-              browsing or posting in this community. Existing posts will still
-              be viewable on the "All Posts" page.
+              browsing or posting in this community. Existing posts will not be
+              removed, and they will still be accessible at their individual
+              web addresses, but they will no longer be associated with this
+              community.
             </p>
           </div>
           <div className='half-column right-align'>

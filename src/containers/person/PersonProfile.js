@@ -140,7 +140,7 @@ const PersonProfile = compose(
 
   return <CoverImagePage id='person' image={banner_url || defaultBanner} person={isSelf ? currentUser : null}>
     <div className='opener'>
-      <NonLinkAvatar person={person} showEdit={isSelf} />
+      <NonLinkAvatar person={isSelf ? currentUser : person} showEdit={isSelf} />
       <h2>
         {person.name}
         <div className='social-media'>

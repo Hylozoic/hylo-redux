@@ -3,9 +3,10 @@ import { compose } from 'redux'
 import { connect } from 'react-redux'
 import { prefetch, defer } from 'react-fetcher'
 import { get } from 'lodash'
-import { FETCH_COMMUNITY } from '../../actions'
-import { fetchCommunity, fetchCommunitiesForNetworkNav } from '../../actions/communities'
-import { saveCurrentCommunityId } from '../../actions/util'
+import { FETCH_COMMUNITY } from '../../constants'
+import {
+  fetchCommunity, fetchCommunitiesForNetworkNav, saveCurrentCommunityId
+} from '../../actions'
 import { VIEWED_COMMUNITY, trackEvent } from '../../util/analytics'
 import CoverImagePage from '../../components/CoverImagePage'
 import AccessErrorMessage from '../../components/AccessErrorMessage'

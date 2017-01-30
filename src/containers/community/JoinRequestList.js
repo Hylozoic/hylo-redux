@@ -3,8 +3,9 @@ import { humanDate } from '../../util/text'
 import A from '../../components/A'
 import Avatar from '../../components/Avatar'
 import {
-  FETCH_JOIN_REQUESTS, approveJoinRequest, approveAllJoinRequests, notify
+  approveJoinRequest, approveAllJoinRequests, notify
 } from '../../actions'
+import { FETCH_JOIN_REQUESTS } from '../../constants'
 import cx from 'classnames'
 import { connect } from 'react-redux'
 

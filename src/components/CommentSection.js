@@ -7,7 +7,7 @@ import cx from 'classnames'
 import CommentForm from './CommentForm'
 import PeopleTyping from './PeopleTyping'
 import Comment from './Comment'
-import { appendComment } from '../actions/comments'
+import { appendComment } from '../actions'
 import { getSocket, socketUrl } from '../client/websockets'
 import { canComment } from '../models/currentUser'
 

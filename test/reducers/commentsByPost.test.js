@@ -4,7 +4,7 @@ import {
   FETCH_COMMENTS,
   FETCH_POSTS,
   CREATE_COMMENT
-} from '../../src/actions'
+} from '../../src/constants'
 
 describe('commentsByPost', () => {
   describe('on FETCH_COMMENTS', () => {

@@ -9,7 +9,7 @@ import React from 'react'
 import { mount } from 'enzyme'
 import { connect } from 'react-redux'
 import { configureStore } from '../../../src/store'
-import * as actions from '../../../src/actions'
+import * as typeaheadActions from '../../../src/actions/typeahead'
 import * as postActions from '../../../src/actions/posts'
 import Post from '../../../src/components/Post'
 
@@ -170,7 +170,7 @@ describe('Post', () => {
         childContextTypes: {store: object, dispatch: func, currentUser: object}
       })
       mockActionResponse(postActions.completePost(requestPost.id), {})
-      mockActionResponse(actions.typeahead(contributor.name), {})
+      mockActionResponse(typeaheadActions.typeahead(contributor.name), {})
     })
 
     it('can be completed (with contributors)', () => {
@@ -220,12 +220,12 @@ describe('Post', () => {
 
     it('requests contributors from all communities associated with a post', () => {
       node.find('.toggle').simulate('change')
-      actions.typeahead = spy(actions.typeahead)
+      typeaheadActions.typeahead = spy(typeaheadActions.typeahead)
       node.find('.request-complete-people-input input').simulate('change', {
         target: {value: contributor.name}, keyCode: 13
       })
       return wait(300, () =>
-        expect(actions.typeahead).to.have.been.called.with(
+        expect(typeaheadActions.typeahead).to.have.been.called.with(
           {type: 'people', communityIds: requestPost.community_ids}))
     })
   })

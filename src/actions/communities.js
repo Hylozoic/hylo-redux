@@ -19,7 +19,7 @@ import {
   UPDATE_COMMUNITY_SETTINGS,
   VALIDATE_COMMUNITY_ATTRIBUTE,
   REQUEST_TO_JOIN_COMMUNITY
-} from './index'
+} from '../constants'
 
 export function fetchCommunities (opts) {
   let { subject, id, limit, offset, search, cacheId } = opts

@@ -3,9 +3,6 @@ import { prefetch } from 'react-fetcher'
 import { connect } from 'react-redux'
 import { debounce, includes, isEmpty } from 'lodash'
 import { get, replace, map } from 'lodash/fp'
-import { FETCH_PEOPLE } from '../actions'
-import { removeCommunityMember } from '../actions/communities'
-import { fetchPeople } from '../actions/fetchPeople'
 import { createCacheId, connectedListProps, fetchWithCache, refetch } from '../util/caching'
 import Icon from '../components/Icon'
 import ScrollListener from '../components/ScrollListener'
@@ -14,8 +11,13 @@ import AccessErrorMessage from '../components/AccessErrorMessage'
 import A from '../components/A'
 const { array, bool, func, number, object, string } = React.PropTypes
 import { canInvite, canModerate } from '../models/currentUser'
-import { findError } from '../actions/util'
-import { sendGraphqlQuery } from '../actions/graphql'
+import { FETCH_PEOPLE } from '../constants'
+import {
+  removeCommunityMember,
+  fetchPeople,
+  findError,
+  sendGraphqlQuery
+} from '../actions'
 import qs from 'querystring'
 import { NonLinkAvatar } from '../components/Avatar'
 import { humanDate } from '../util/text'

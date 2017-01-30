@@ -3,7 +3,7 @@ import { connect } from 'react-redux'
 import cx from 'classnames'
 import { tagUrlComponents, userIdFromUrl } from '../routes'
 import { position } from '../util/scrolling'
-import { showPopover, hidePopover } from '../actions/index'
+import { showPopover, hidePopover } from '../actions'
 import TagPopover from './TagPopover'
 import PersonPopover from './PersonPopover'
 const { string, object, func } = React.PropTypes

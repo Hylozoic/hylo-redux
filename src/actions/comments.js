@@ -6,7 +6,7 @@ import {
   THANK,
   UPDATE_COMMENT,
   UPDATE_COMMENT_EDITOR
-} from './index'
+} from '../constants'
 import { get } from 'lodash/fp'
 import { cleanAndStringify } from '../util/caching'
 

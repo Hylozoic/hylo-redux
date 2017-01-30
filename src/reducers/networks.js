@@ -5,7 +5,7 @@ import {
   FETCH_NETWORK,
   FETCH_COMMUNITIES,
   UPDATE_NETWORK_PENDING
-} from '../actions'
+} from '../constants'
 
 export default function (state = {}, action) {
   let { error, type, payload, meta } = action

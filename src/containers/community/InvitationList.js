@@ -3,9 +3,10 @@ import { humanDate } from '../../util/text'
 import A from '../../components/A'
 import Avatar from '../../components/Avatar'
 import {
-  FETCH_INVITATIONS, fetchInvitations, sendCommunityInvitation, notify,
+  fetchInvitations, sendCommunityInvitation, notify,
   resendAllCommunityInvitations
 } from '../../actions'
+import { FETCH_INVITATIONS } from '../../constants'
 import cx from 'classnames'
 import { get, uniqBy } from 'lodash/fp'
 import { connect } from 'react-redux'

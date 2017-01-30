@@ -9,7 +9,7 @@ import {
   CLEAR_CACHE,
   FETCH_POSTS,
   FIND_OR_CREATE_THREAD
-} from '../actions'
+} from '../constants'
 
 const keyMatchesPost = (key, post, tags) => {
   const communityIds = map(post.communities, 'slug').concat(map(post.communities, 'id'))

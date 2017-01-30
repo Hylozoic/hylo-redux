@@ -3,7 +3,6 @@ import { mockify, unspyify, mockActionResponse } from '../../support/helpers'
 import { mount } from 'enzyme'
 import React, { PropTypes } from 'react'
 import { configureStore } from '../../../src/store'
-
 import * as util from '../../../src/util'
 import { MemberRole } from '../../../src/models/community'
 import { updateCurrentUser } from '../../../src/actions'

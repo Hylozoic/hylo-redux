@@ -4,7 +4,7 @@ import { mount } from 'enzyme'
 import { configureStore } from '../../../src/store'
 import { InviteForm } from '../../../src/containers/InviteModal'
 import { MemberRole, defaultInvitationSubject, defaultInvitationMessage } from '../../../src/models/community'
-import { SEND_COMMUNITY_INVITATION } from '../../../src/actions'
+import { SEND_COMMUNITY_INVITATION } from '../../../src/constants'
 
 describe('InviteForm', () => {
   var node, mountOpts, store, sendInvitationParams

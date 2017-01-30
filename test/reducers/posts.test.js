@@ -5,7 +5,7 @@ import {
   FOLLOW_POST_PENDING,
   UPDATE_POST,
   COMPLETE_POST_PENDING
-} from '../../src/actions'
+} from '../../src/constants'
 
 describe('posts', () => {
   describe('on FETCH_POSTS', () => {

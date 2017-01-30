@@ -1,6 +1,6 @@
 import React from 'react'
 import { throttle, isEmpty } from 'lodash'
-import { createComment } from '../actions/comments'
+import { createComment } from '../actions'
 import { SENT_MESSAGE, trackEvent } from '../util/analytics'
 import { onEnterNoShift } from '../util/textInput'
 import { getSocket, socketUrl } from '../client/websockets'

@@ -1,8 +1,9 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { get } from 'lodash'
-import { closeModal, navigate, showDirectMessage } from '../actions'
-import { findOrCreateThread } from '../actions/threads'
+import {
+  closeModal, navigate, showDirectMessage, findOrCreateThread
+} from '../actions'
 import { threadUrl } from '../routes'
 import { Modal } from '../components/Modal'
 import MessageToUserForm from '../components/MessageToUserForm'

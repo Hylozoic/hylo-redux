@@ -2,7 +2,7 @@ require('../support')
 import { mocks } from '../../support'
 import { cloneDeep, set } from 'lodash'
 import { PostEditor } from '../../../src/components/PostEditor'
-import { FETCH_TAG } from '../../../src/actions'
+import { FETCH_TAG } from '../../../src/constants'
 import {
   findRenderedDOMComponentWithClass,
   renderIntoDocument,

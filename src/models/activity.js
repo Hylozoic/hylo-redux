@@ -1,6 +1,7 @@
 import { compact, find, flow, get, map, reduce } from 'lodash/fp'
 import { includes } from 'lodash'
-import { FETCH_ACTIVITY, fetchCurrentUser } from '../actions'
+import { fetchCurrentUser } from '../actions'
+import { FETCH_ACTIVITY } from '../constants'
 import { present } from '../util/text'
 import { postUrl, communityUrl, communityJoinRequestsUrl } from '../routes'
 

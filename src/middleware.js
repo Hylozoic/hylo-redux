@@ -3,7 +3,11 @@ import { fetchJSON } from './util/api'
 import { debug } from './util/logging'
 import { blue } from 'chalk'
 import { find, forIn, values, get, has, omit } from 'lodash'
-import { _PENDING, SET_STATE, addDataToStore } from './actions'
+import { addDataToStore } from './actions'
+import {
+  _PENDING,
+  SET_STATE
+} from './constants'
 
 // TODO cache expiration
 export function cacheMiddleware (store) {

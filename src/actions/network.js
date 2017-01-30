@@ -1,3 +1,4 @@
+import { cleanAndStringify } from '../util/caching'
 import {
   CREATE_NETWORK,
   FETCH_NETWORK,
@@ -5,8 +6,7 @@ import {
   UPDATE_NETWORK_EDITOR,
   VALIDATE_NETWORK_ATTRIBUTE,
   RESET_NETWORK_VALIDATION
-} from './index'
-import { cleanAndStringify } from '../util/caching'
+} from '../constants'
 
 export function createNetwork (params) {
   return {

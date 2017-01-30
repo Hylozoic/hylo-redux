@@ -2,10 +2,13 @@ import React from 'react'
 import { connect } from 'react-redux'
 import validator from 'validator'
 import {
-  closeModal, updateTagInvitationEditor, sendCommunityTagInvitation,
-  SEND_COMMUNITY_TAG_INVITATION
+  closeModal,
+  updateTagInvitationEditor,
+  sendCommunityTagInvitation,
+  fetchCommunitySettings,
+  typeahead
 } from '../actions'
-import { fetchCommunitySettings } from '../actions/communities'
+import { SEND_COMMUNITY_TAG_INVITATION } from '../constants'
 import { Modal } from '../components/Modal'
 import ModalRow from '../components/ModalRow'
 import Avatar from '../components/Avatar'
@@ -14,7 +17,6 @@ import { communityTagJoinUrl } from '../routes'
 import { getKeyCode, keyMap } from '../util/textInput'
 import { compact, get, isEmpty, some } from 'lodash'
 import { filter, includes, map, flow, curry } from 'lodash/fp'
-import { typeahead } from '../actions'
 import cx from 'classnames'
 import copy from 'copy-to-clipboard'
 

@@ -2,7 +2,7 @@ import {
   ADD_DATA_TO_STORE,
   FETCH_PEOPLE,
   REMOVE_COMMUNITY_MEMBER_PENDING
-} from '../actions'
+} from '../constants'
 import { concatKeyedArrays } from './util'
 import { filter, uniq } from 'lodash'
 import qs from 'querystring'

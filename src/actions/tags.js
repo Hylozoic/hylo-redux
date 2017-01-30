@@ -8,8 +8,12 @@ import {
   CREATE_TAG_IN_COMMUNITY,
   SHOW_ALL_TAGS,
   SHOW_SHARE_TAG,
-  UPDATE_COMMUNITY_TAG
-} from './index'
+  UPDATE_COMMUNITY_TAG,
+  EDIT_TAG_DESCRIPTION,
+  CANCEL_TAG_DESCRIPTION_EDIT,
+  EDIT_NEW_TAG_AND_DESCRIPTION,
+  SET_META_TAGS
+} from '../constants'
 
 export function fetchTag (tagName, communityId) {
   const path = communityId
@@ -92,8 +96,30 @@ export function updateCommunityTag (tag, community, params) {
     type: UPDATE_COMMUNITY_TAG,
     payload: {api: true, path: `/noo/community/${slug}/tag/${id}`, params, method: 'POST'},
     meta: {
-      name, params, optimistic: true,
-      slug, communityId: community.id
+      name,
+      params,
+      optimistic: true,
+      slug,
+      communityId: community.id
     }
+  }
+}
+
+export function editTagDescription (tag, description, isDefault) {
+  return {type: EDIT_TAG_DESCRIPTION, payload: {tag, description, is_default: isDefault}}
+}
+
+export function cancelTagDescriptionEdit () {
+  return {type: CANCEL_TAG_DESCRIPTION_EDIT}
+}
+
+export function editNewTagAndDescription (tag, description, idDefault) {
+  return {type: EDIT_NEW_TAG_AND_DESCRIPTION, payload: {tag, description, is_default: idDefault}}
+}
+
+export function setMetaTags (metaTags) {
+  return {
+    type: SET_META_TAGS,
+    payload: metaTags
   }
 }

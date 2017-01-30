@@ -1,14 +1,14 @@
 import qs from 'querystring'
 import { isInCommunity } from './index'
 import { compact, includes, omitBy, upperFirst } from 'lodash'
+import { navigate } from '../actions'
 import {
-  navigate,
   FETCH_COMMUNITIES,
   FETCH_POSTS,
   FETCH_PEOPLE,
   FETCH_TAGS,
   SEARCH
-} from '../actions'
+} from '../constants'
 
 const commonDefaults = {
   type: ['all+welcome', 'all'],

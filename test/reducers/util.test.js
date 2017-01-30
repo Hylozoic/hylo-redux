@@ -3,7 +3,7 @@ import { combineReducers, createStore } from 'redux'
 import {
   toggleIncludes, handleSetState, composeReducers, mergeList
 } from '../../src/reducers/util'
-import { SET_STATE } from '../../src/actions'
+import { SET_STATE } from '../../src/constants'
 
 describe('toggleIncludes', () => {
   it('adds an element', () => {

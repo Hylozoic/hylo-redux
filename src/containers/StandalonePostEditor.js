@@ -2,9 +2,13 @@ import React from 'react'
 import { prefetch } from 'react-fetcher'
 import { connect } from 'react-redux'
 import { capitalize } from 'lodash'
-import { navigate, CREATE_POST, UPDATE_POST } from '../actions'
-import { fetchCommunity } from '../actions/communities'
-import { fetchPost, startPostEdit } from '../actions/posts'
+import {
+  navigate, fetchCommunity, fetchPost, startPostEdit
+} from '../actions'
+import {
+  CREATE_POST,
+  UPDATE_POST
+} from '../constants'
 import { getCommunities, getPost } from '../models/post'
 import { getCommunity } from '../models/community'
 import { PostEditor, newPostId } from '../components/PostEditor'

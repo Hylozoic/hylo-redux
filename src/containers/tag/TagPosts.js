@@ -2,8 +2,14 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { prefetch } from 'react-fetcher'
 import { fetch, ConnectedPostList } from '../ConnectedPostList'
-import { FETCH_TAG, navigate, resetError } from '../../actions'
-import { fetchTag, followTag, showShareTag } from '../../actions/tags'
+import {
+  navigate,
+  resetError,
+  fetchTag,
+  followTag,
+  showShareTag
+} from '../../actions'
+import { FETCH_TAG } from '../../constants'
 import { sortBy } from 'lodash'
 import { get } from 'lodash/fp'
 import PostEditor from '../../components/PostEditor'

@@ -1,7 +1,5 @@
 import { } from 'lodash'
-import {
-  UPDATE_MESSAGE_EDITOR
-} from '../actions'
+import { UPDATE_MESSAGE_EDITOR } from '../constants'
 
 export default function (state = {}, action) {
   const { type, payload, error } = action

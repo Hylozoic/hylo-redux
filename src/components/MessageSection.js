@@ -6,7 +6,7 @@ import cx from 'classnames'
 import Message from './Message'
 import { position } from '../util/scrolling'
 import { findDOMNode } from 'react-dom'
-import { updatePostReadTime } from '../actions/posts'
+import { updatePostReadTime } from '../actions'
 
 // the maximum amount of time in minutes that can pass between messages to still
 // include them under the same avatar and timestamp

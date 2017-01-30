@@ -5,7 +5,8 @@ import { configureStore } from '../../../src/store'
 import { getUrlFromLocation } from '../../../src/util/navigation'
 import { mount } from 'enzyme'
 import { spyify, mockActionResponse, wait } from '../../support/helpers'
-import { CONTINUE_LOGIN, login } from '../../../src/actions'
+import { login } from '../../../src/actions'
+import { CONTINUE_LOGIN } from '../../../src/constants'
 import React from 'react'
 
 const redirectUrl = store => {

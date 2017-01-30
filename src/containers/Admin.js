@@ -4,7 +4,7 @@ import { filter, flatten, flow, get, map, maxBy, minBy } from 'lodash/fp'
 import { connect } from 'react-redux'
 import { loadScript, loadStylesheet } from '../client/util'
 import { onEnter } from '../util/textInput'
-import { fetchRawMetrics } from '../actions/admin'
+import { fetchRawMetrics } from '../actions'
 import moment from 'moment'
 const { func, object } = React.PropTypes
 

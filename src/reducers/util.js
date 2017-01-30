@@ -2,7 +2,10 @@ import {
   cloneDeep, filter, get, includes, isArray, isEqual, mergeWith, omit, set, some,
   transform, uniqBy, without, uniq
 } from 'lodash'
-import { CLEAR_CACHE, SET_STATE } from '../actions'
+import {
+  CLEAR_CACHE,
+  SET_STATE
+} from '../constants'
 
 export const appendUniq = (state, key, values, uniqTest) =>
   concatUniq(state, key, state[key] || [], values, uniqTest)

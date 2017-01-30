@@ -3,8 +3,12 @@ import { debounce, throttle } from 'lodash'
 import { connect } from 'react-redux'
 import Avatar from './Avatar'
 import RichTextEditor from './RichTextEditor'
-import { CREATE_COMMENT, showModal } from '../actions'
-import { createComment, updateCommentEditor, updateComment } from '../actions/comments'
+import {
+  showModal, createComment, updateCommentEditor, updateComment
+} from '../actions'
+import {
+  CREATE_COMMENT
+} from '../constants'
 import { ADDED_COMMENT, trackEvent } from '../util/analytics'
 import { textLength } from '../util/text'
 import { onCmdOrCtrlEnter } from '../util/textInput'

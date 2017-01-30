@@ -2,10 +2,19 @@ import {
   appendPayloadByPath, composeReducers, keyedCounter, mergeList
 } from './util'
 import {
-  CREATE_COMMUNITY, FETCH_CURRENT_USER, FETCH_LIVE_STATUS,
-  FETCH_TAG, FETCH_TAGS, FETCH_TAG_SUMMARY, FOLLOW_TAG_PENDING, REMOVE_TAG,
-  CREATE_POST, UPDATE_POST, CREATE_TAG_IN_COMMUNITY, FETCH_COMMUNITY
-} from '../actions'
+  CREATE_COMMUNITY,
+  FETCH_CURRENT_USER,
+  FETCH_LIVE_STATUS,
+  FETCH_TAG,
+  FETCH_TAGS,
+  FETCH_TAG_SUMMARY,
+  FOLLOW_TAG_PENDING,
+  REMOVE_TAG,
+  CREATE_POST,
+  UPDATE_POST,
+  CREATE_TAG_IN_COMMUNITY,
+  FETCH_COMMUNITY
+} from '../constants'
 import { filter, fromPairs, merge, omitBy, toPairs, isEmpty } from 'lodash'
 import { get, pickBy, some, includes, mapValues } from 'lodash/fp'
 import qs from 'querystring'

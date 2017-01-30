@@ -17,7 +17,7 @@ import {
   UPDATE_POST,
   UPDATE_POST_READ_TIME,
   VOTE_ON_POST_PENDING
-} from '../actions'
+} from '../constants'
 import { compact, omit, find, some, without, map, uniq } from 'lodash'
 import { get, isNull, isUndefined, omitBy } from 'lodash/fp'
 import { addOrRemovePersonId, mergeList } from './util'

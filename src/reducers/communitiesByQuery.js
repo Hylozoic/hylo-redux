@@ -1,4 +1,4 @@
-import { FETCH_COMMUNITIES } from '../actions'
+import { FETCH_COMMUNITIES } from '../constants'
 import { appendUniq } from './util'
 import { map } from 'lodash'
 

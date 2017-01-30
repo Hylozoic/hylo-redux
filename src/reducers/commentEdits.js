@@ -3,7 +3,7 @@ import {
   UPDATE_COMMENT_EDITOR,
   CREATE_COMMENT,
   UPDATE_COMMENT
-} from '../actions'
+} from '../constants'
 
 export default function (state = {new: {}, edit: {}}, action) {
   const { type, payload, error, meta } = action

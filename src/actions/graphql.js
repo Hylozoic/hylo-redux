@@ -1,4 +1,4 @@
-import { SEND_GRAPHQL_QUERY } from './index'
+import { SEND_GRAPHQL_QUERY } from '../constants'
 
 export function sendGraphqlQuery (query, opts) {
   const { variables, addDataToStore, subject, id } = opts

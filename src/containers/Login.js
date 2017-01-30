@@ -4,16 +4,19 @@ import { get, isEmpty, pick, uniq } from 'lodash'
 import { makeUrl } from '../util/navigation'
 import { connect } from 'react-redux'
 import {
-  FETCH_COMMUNITY_FOR_INVITATION,
-  FETCH_POST,
   continueLogin,
   finishLogin,
   login,
   navigate,
   resetError,
-  setLoginError
+  setLoginError,
+  fetchCommunity,
+  fetchCommunityForInvitation
 } from '../actions'
-import { fetchCommunity, fetchCommunityForInvitation } from '../actions/communities'
+import {
+  FETCH_COMMUNITY_FOR_INVITATION,
+  FETCH_POST
+} from '../constants'
 import {
   LOGGED_IN, STARTED_LOGIN, LOGIN_ATTEMPTED, LOGIN_FAILED, alias, trackEvent
 } from '../util/analytics'
@@ -128,7 +131,7 @@ export default class Login extends React.Component {
     const error = displayError(this.props.error)
     const signupUrl = makeUrl('/signup', pick(query, 'next', 'action', 'id', 'token', 'email'))
     const { email, next } = query
-    const willCreateJoinRequest = next && 
+    const willCreateJoinRequest = next &&
       (next.indexOf('join=true') > -1 || next.indexOf('join%3Dtrue') > -1)
     let subtitle = ''
     if (willCreateJoinRequest) {

@@ -17,9 +17,10 @@ import {
   updateInvitationEditor,
   sendCommunityInvitation,
   clearInvitationEditor,
-  notify
+  notify,
+  fetchCommunity,
+  updateCommunityChecklist
 } from '../actions'
-import { fetchCommunity, updateCommunityChecklist } from '../actions/communities'
 import { INVITED_COMMUNITY_MEMBERS, trackEvent } from '../util/analytics'
 import { parseEmailString, emailsFromCSVFile } from '../util/text'
 import { checklistUrl } from '../routes'

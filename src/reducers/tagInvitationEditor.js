@@ -1,4 +1,8 @@
-import { UPDATE_TAG_INVITATION_EDITOR, CLOSE_MODAL, SEND_COMMUNITY_TAG_INVITATION } from '../actions'
+import {
+  UPDATE_TAG_INVITATION_EDITOR,
+  CLOSE_MODAL,
+  SEND_COMMUNITY_TAG_INVITATION
+} from '../constants'
 import { partition, some } from 'lodash'
 
 const defaultState = {

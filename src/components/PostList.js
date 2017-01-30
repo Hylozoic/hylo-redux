@@ -41,12 +41,12 @@ export class PostList extends React.Component {
     this.state = {}
   }
 
-  expand = (id, commentId) => {
+  expand = (id, commentId, parentPostId) => {
     const { dispatch } = this.props
     const { isMobile } = this.context
 
-    if (isMobile) {
-      dispatch(navigate(`/p/${id}` + (commentId ? `#comment-${commentId}` : '')))
+    if (isMobile || parentPostId) {
+      dispatch(navigate(`/p/${parentPostId || id}` + (commentId ? `#comment-${commentId}` : '')))
     } else {
       dispatch(showExpandedPost(id, commentId))
     }
@@ -58,6 +58,7 @@ export class PostList extends React.Component {
       dispatch, hideMobileSearch, noPostsMessage, parentPost
     } = this.props
     const { isMobile } = this.context
+    const expand = this.expand
 
     const posts = filter(p => !includes(p.id, hide), this.props.posts)
     const doSearch = text => dispatch(navigate(makeUrl('/search', {q: text})))
@@ -75,7 +76,7 @@ export class PostList extends React.Component {
         {pending && isEmpty(posts) && <li className='loading'>Loading...</li>}
         {posts.map(post =>
           <li key={post.id} ref={post.id}>
-            <ShowPost {...{post, parentPost, editingPostIds}} />
+            <ShowPost {...{post, parentPost, editingPostIds, expand}} />
           </li>
         )}
       </ul>
@@ -89,8 +90,8 @@ export default connect((state, { posts }) => ({
   editingPostIds: state.isMobile ? [] : getEditingPostIds(posts, state)
 }))(PostList)
 
-const ShowPost = ({ post, parentPost, editingPostIds }) => {
-  const onExpand = commentId => this.expand(post.id, commentId)
+const ShowPost = ({ post, parentPost, editingPostIds, expand }) => {
+  const onExpand = commentId => expand(post.id, commentId, post.parent_post_id)
   if (includes(post.id, editingPostIds)) {
     return <PostEditor {...{post, parentPost}} expanded />
   }

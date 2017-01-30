@@ -68,9 +68,11 @@ export class Post extends React.Component {
       post, parentPost, expanded, onExpand, community, dispatch
     } = this.props
     let { comments } = this.props
-    if (post.project) comments = comments.slice(-1)
+    if (post.project && !expanded) comments = comments.slice(-1)
     const { currentUser } = this.context
-    const { communities, tag, media, linkPreview, project } = post
+    const { tag, media, linkPreview } = post
+    const project = parentPost || post.project
+    const communities = project ? project.communities : post.communities
     const image = find(m => m.type === 'image', media)
     const classes = cx('post', tag, {image, expanded})
     const title = linkifyHashtags(decode(sanitize(post.name || '')), get('slug', community))
@@ -126,10 +128,9 @@ export const Header = ({ post, project, communities, expanded }, { currentUser, 
           {person.name}
         </A>
         <span className='meta'>
-          {!isChild && <A to={`/p/${post.id}`} title={createdAt}>
+          <A to={`/p/${post.id}`} title={createdAt}>
             {nonbreaking(humanDate(createdAt))}
-          </A>}
-          {isChild && nonbreaking(humanDate(createdAt))}
+          </A>
           {communities && <Communities communities={communities} project={project} />}
           {post.public && <span>{spacer}Public</span>}
         </span>
@@ -141,17 +142,17 @@ Header.contextTypes = {currentUser: object, dispatch: func}
 const Communities = ({ communities, project }, { community }) => {
   if (community) communities = sortBy(communities, c => c.id !== community.id)
   const { length } = communities
-  if (communities.length === 0) return null
+  if (length === 0 && !project) return null
   const communityLink = community => <A to={`/c/${community.slug}`}>{community.name}</A>
   const projectLink = project => <span>
     <A to={`/p/${project.id}`} className='project-link'>{project.name}</A>
-    {spacer}
+    {length > 0 && spacer}
   </span>
 
   return <span className='communities'>
     &nbsp;in&nbsp;
     {project && projectLink(project)}
-    {communityLink(communities[0])}
+    {length > 0 && communityLink(communities[0])}
     {length > 1 && <span> + </span>}
     {length > 1 && <Dropdown className='post-communities-dropdown'
       toggleChildren={<span>{length - 1} other{length > 2 ? 's' : ''}</span>}>

@@ -44,15 +44,14 @@ export default class ProjectPost extends React.Component {
 
   static contextTypes = {
     currentUser: object,
-    community: object,
-    communities: array
+    community: object
   }
 
   render () {
     const { children, post, comments } = this.props
     const requests = filter(p => p.is_project_request, children)
-    const { currentUser, community, communities } = this.context
-    const { media, location, user } = post
+    const { currentUser, community } = this.context
+    const { communities, media, location, user } = post
     const title = decode(post.name || '')
     const video = find(m => m.type === 'video', media)
     const image = find(m => m.type === 'image', media)
@@ -93,7 +92,12 @@ export default class ProjectPost extends React.Component {
           {requests.length} request{requests.length === 1 ? '' : 's'}&nbsp;
           <span className='soft'>to make this happen</span>
         </h3>
-        {requests.map(post => <ProjectRequest key={post.id} {...{post, community}} />)}
+        {requests.map(request => {
+          return <ProjectRequest key={request.id}
+                                 post={request}
+                                 parentPost={post}
+                                 community={community} />
+        })}
       </div>}
       <CommentSection {...{post, comments, canComment}} expanded />
     </div>
@@ -130,6 +134,7 @@ Supporters.contextTypes = {currentUser: object, dispatch: func}
 class ProjectRequest extends React.Component {
   static propTypes = {
     post: object.isRequired,
+    parentPost: object.isRequired,
     community: object
   }
 
@@ -145,7 +150,7 @@ class ProjectRequest extends React.Component {
 
   render () {
     const { dispatch, isMobile } = this.context
-    const { post, community } = this.props
+    const { post, parentPost, community } = this.props
     const { name, id, numComments } = post
     let description = presentDescription(post, community)
     const truncated = textLength(description) > 200
@@ -166,7 +171,7 @@ class ProjectRequest extends React.Component {
     return <div className='nested-request'>
       {this.state.zoomed && <div className='zoomed'>
         <div className='backdrop' onClick={unzoom} />
-        {post.user && <Post post={post} expanded />}
+        {post.user && <Post post={post} parentPost={parentPost} expanded />}
       </div>}
       <p className='title'>{name}</p>
       {description && <ClickCatchingSpan className='details'

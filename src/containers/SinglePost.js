@@ -26,12 +26,22 @@ const subject = 'post'
 
 @prefetch(({ store, dispatch, params: { id }, query }) =>
   dispatch(fetchPost(id))
+  .then(action => {
+    if (action.payload.parent_post_id) {
+      return dispatch(fetchPost(action.payload.parent_post_id))
+        .then(() => Promise.resolve(action))
+    } else {
+      return Promise.resolve(action)
+    }
+  })
   .then(action =>
     redirect(store, id) || setupPage(store, id, query, action)))
 @connect((state, { params: { id } }) => {
   const post = getPost(id, state)
+  const parentPost = post ? getPost(post.parent_post_id, state) : null
   return {
     post: post ? denormalizedPost(post, state) : null,
+    parentPost: parentPost ? denormalizedPost(parentPost, state) : null,
     community: getCurrentCommunity(state),
     comments: getComments(post, state),
     editing: !!state.postEdits[id],
@@ -41,6 +51,7 @@ const subject = 'post'
 export default class SinglePost extends React.Component {
   static propTypes = {
     post: object,
+    parentPost: object,
     community: object,
     editing: bool,
     error: string,
@@ -60,7 +71,7 @@ export default class SinglePost extends React.Component {
   }
 
   render () {
-    const { post, comments, community, editing, error, location: { query } } = this.props
+    const { post, parentPost, comments, community, editing, error, location: { query } } = this.props
     const { currentUser, isMobile } = this.context
     if (error) return <AccessErrorMessage error={error} />
     if (!post || !post.user) return <div className='loading'>Loading...</div>
@@ -76,7 +87,7 @@ export default class SinglePost extends React.Component {
       <CoverImagePage id='single-post' image={get('banner_url', community)}>
         {editing
           ? <PostEditor post={post} expanded />
-          : <ShowPost post={post} comments={comments} />
+          : <ShowPost post={post} parentPost={parentPost} comments={comments} />
         }
         {post.type === 'project' && <div>
           {currentUser &&
@@ -87,31 +98,27 @@ export default class SinglePost extends React.Component {
             id={post.id}
             parentPost={post}
             query={{...query}}
-            noPostsMessage='There are no other project related conversations to show.' />
+            noPostsMessage='There are no project related conversations to show.' />
         </div>}
       </CoverImagePage>
     </div>
   }
 }
 
-const ShowPost = ({ post, comments }) => {
+const ShowPost = ({ post, parentPost, comments }) => {
   switch (post.type) {
     case 'event':
       return <EventPost post={post} comments={comments} />
     case 'project':
       return <ProjectPost post={post} comments={comments} />
     default:
-      return <Post post={post} expanded />
+      return <Post post={post} parentPost={parentPost} expanded />
   }
 }
 
 const redirect = (store, id) => {
   const state = store.getState()
   const post = state.posts[id]
-  if (!state.isMobile && get('parent_post_id', post)) {
-    store.dispatch(navigate(`/p/${post.parent_post_id}`))
-    return true
-  }
   if (isMessageThread(post)) {
     store.dispatch(navigate(`/t/${post.id}`))
     return true

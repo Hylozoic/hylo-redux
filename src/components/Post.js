@@ -131,7 +131,7 @@ export const Header = ({ post, project, communities, expanded }, { currentUser, 
           <A to={`/p/${post.id}`} title={createdAt}>
             {nonbreaking(humanDate(createdAt))}
           </A>
-          {communities && <Communities communities={communities} project={project} />}
+          {(communities || project) && <Communities communities={communities} project={project} />}
           {post.public && <span>{spacer}Public</span>}
         </span>
       </div>}

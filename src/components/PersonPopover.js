@@ -10,7 +10,9 @@ import { getPerson, sharesCommunity } from '../models/person'
 import { truncate } from '../util/text'
 const { object, func, string } = React.PropTypes
 
-@connect((state, { userId }) => ({person: getPerson(userId, state)}))
+@connect((state, { userId }) => ({
+  person: getPerson(userId, state)
+}))
 export default class PersonPopover extends React.Component {
   static propTypes = {
     userId: string,
@@ -25,6 +27,9 @@ export default class PersonPopover extends React.Component {
 
   render () {
     const { person, dispatch } = this.props
+
+    if (!person) return null
+
     const bio = person.bio ? truncate(person.bio, 36) : ''
 
     const startMessage = () => {

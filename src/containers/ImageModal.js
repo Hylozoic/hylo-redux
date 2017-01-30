@@ -1,5 +1,6 @@
 import React from 'react'
 import { Modal } from '../components/Modal'
+import Icon from '../components/Icon'
 const { func, string, bool } = React.PropTypes
 
 export const leftOffset = () => {
@@ -29,8 +30,14 @@ export default class ImageModal extends React.Component {
     const modalStyle = {marginLeft, width: maxWidth}
     const imgStyle = {maxWidth}
 
-    return <Modal className='modal' id='image-modal' style={modalStyle} onCancel={onCancel}>
-      <img src={url} style={imgStyle} />
+    return <Modal className='modal' id='image-modal' title='' style={modalStyle} onCancel={onCancel}>
+      <div className='image-wrapper'>
+        <img src={url} style={imgStyle}>
+        </img>
+        <a className='close' onClick={onCancel}>
+          <Icon name='Fail' />
+        </a>
+      </div>
     </Modal>
   }
 }

@@ -126,10 +126,10 @@ export const Header = ({ post, project, communities, expanded }, { currentUser, 
           {person.name}
         </A>
         <span className='meta'>
-          {isChild && <A to={`/p/${post.id}`} title={createdAt} className='parent-post-link'>
+          {!isChild && <A to={`/p/${post.id}`} title={createdAt}>
             {nonbreaking(humanDate(createdAt))}
           </A>}
-          {!isChild && nonbreaking(humanDate(createdAt))}
+          {isChild && nonbreaking(humanDate(createdAt))}
           {communities && <Communities communities={communities} project={project} />}
           {post.public && <span>{spacer}Public</span>}
         </span>

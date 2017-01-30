@@ -181,27 +181,4 @@ describe('Post', () => {
       name: post.name, description: post.description
     })
   })
-
-  describe('Post with a Parent', () => {
-    it('should show link to parent post', () => {
-      const props = {
-        post: normalizedChildPost,
-        parentPost: normalizedParentPost,
-        community: state.communities.foo,
-        comments: [],
-        dispatch: () => {}
-      }
-      const node = mount(<Post {...props} />, {
-        context: {
-          currentUser: state.people.current,
-          dispatch: () => {}
-        },
-        childContextTypes: {
-          dispatch: func,
-          currentUser: object
-        }
-      })
-      expect(node.find('.parent-post-link').length).to.equal(1)
-    })
-  })
 })

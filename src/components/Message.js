@@ -33,7 +33,7 @@ class Message extends React.Component {
           <span className='date'>{humanDate(message.created_at)}</span>
         </div>}
         {image
-        ? <a onClick={() => dispatch(showModal('image', {url: image.thumbnail_url}))}>
+        ? <a onClick={() => dispatch(showModal('image', {url: image.url}))}>
           <img className='thumbnail' src={image.thumbnail_url} />
         </a>
         : <div className='text'>

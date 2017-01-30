@@ -76,7 +76,7 @@ class Comment extends React.Component {
       <Avatar person={person} showPopover />
       <div className='content'>
         {image && <div className='text'><a href={`/u/${person.id}`} className='name'>{person.name}</a></div>}
-        {image && <a onClick={() => dispatch(showModal('image', {url: image.thumbnail_url}))}>
+        {image && <a onClick={() => dispatch(showModal('image', {url: image.url}))}>
           <img className='thumbnail' src={image.thumbnail_url} />
         </a>}
         {!image && <ClickCatchingSpan className='text' dangerouslySetInnerHTML={{__html: text}} />}

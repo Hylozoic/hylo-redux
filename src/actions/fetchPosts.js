@@ -4,11 +4,11 @@ import { get } from 'lodash/fp'
 
 export function fetchPosts (opts) {
   const {
-    subject, id, limit, type, tag, sort, search, filter, cacheId, omit, parent_post_id
+    subject, id, limit, type, tag, sort, search, filter, cacheId, omit
   } = opts
   const offset = opts.offset || 0
   const queryParams = {
-    offset, limit, type, tag, sort, search, filter, omit, parent_post_id, // eslint-disable-line object-property-newline
+    offset, limit, type, tag, sort, search, filter, omit, // eslint-disable-line object-property-newline
     comments: true,
     votes: true
   }

@@ -23,7 +23,7 @@ const GenericAvatar = ({ person, isLink, showPopover, showEdit }, { dispatch }) 
 
   return <div {...props}>
     {showEdit && <ChangeImageButton person={person} type='avatar_url' />}
-    {isLink && <Link to={`/u/${id}`} >&nbsp;</Link>}
+    {isLink && <Link to={`/u/${id}`}>&nbsp;</Link>}
   </div>
 }
 GenericAvatar.contextTypes = {dispatch: func}

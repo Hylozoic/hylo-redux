@@ -1,6 +1,7 @@
 import React from 'react'
 import { Link } from 'react-router'
 import { handleMouseOver } from './Popover'
+import ChangeImageButton from './ChangeImageButton'
 const { func } = React.PropTypes
 
 export const bgStyle = url => {
@@ -10,8 +11,9 @@ export const bgStyle = url => {
   return {backgroundImage: `url(${escaped})`}
 }
 
-const GenericAvatar = ({ person: { id, avatar_url }, isLink, showPopover }, { dispatch }) => {
-  if (!id) return <span />
+const GenericAvatar = ({ person, isLink, showPopover, showEdit }, { dispatch }) => {
+  if (!person) return <span />
+  const { id, avatar_url } = person
 
   const props = {
     className: 'avatar',
@@ -19,16 +21,19 @@ const GenericAvatar = ({ person: { id, avatar_url }, isLink, showPopover }, { di
     onMouseOver: showPopover ? handleMouseOver(dispatch) : null
   }
 
-  return isLink ? <div {...props}><Link to={`/u/${id}`} >&nbsp;</Link></div> : <div {...props} />
+  return <div {...props}>
+    {showEdit && <ChangeImageButton person={person} type='avatar_url' />}
+    {isLink && <Link to={`/u/${id}`} >&nbsp;</Link>}
+  </div>
 }
 GenericAvatar.contextTypes = {dispatch: func}
 
-const Avatar = ({ person, showPopover }) => {
-  return <GenericAvatar person={person} isLink showPopover={showPopover} />
+const Avatar = ({ person, showPopover, showEdit }) => {
+  return <GenericAvatar person={person} isLink showPopover={showPopover} showEdit={showEdit} />
 }
 
-export const NonLinkAvatar = ({ person }) => {
-  return <GenericAvatar person={person} />
+export const NonLinkAvatar = ({ person, showEdit }) => {
+  return <GenericAvatar person={person} showEdit={showEdit} />
 }
 
 export default Avatar

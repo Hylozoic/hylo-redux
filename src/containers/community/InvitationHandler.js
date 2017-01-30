@@ -14,8 +14,8 @@ const { func, object, string } = React.PropTypes
 
 @prefetch(({ path, query: { token }, store, dispatch }) =>
   dispatch(useInvitation(token))
-  .then(({ error, payload: { community } }) =>
-    error || dispatch(navigateAfterJoin(community))))
+  .then(({ error, payload: { community, tagName, preexisting } }) =>
+    error || dispatch(navigateAfterJoin(community, tagName, preexisting))))
 @connect(({ errors, people, communities }, { location: { query: { token } } }) => ({
   tokenError: get(errors[USE_INVITATION], 'payload.response.body')
 }))
@@ -45,8 +45,8 @@ export default class InvitationHandler extends React.Component {
       return <ModalOnlyPage id='invitation-error' className='login-signup'>
         <CommunityHeader community={mockCommunity} />
         <Modal standalone>
-            <div className='alert alert-danger'>{errorMessage}</div>
-            <div className='modal-input'><A to='/app'>Click here</A> to view your communities</div>
+          <div className='alert alert-danger'>{errorMessage}</div>
+          <div className='modal-input'><A to='/app'>Click here</A> to view your communities</div>
         </Modal>
       </ModalOnlyPage>
     } else {

@@ -18,6 +18,9 @@ import { flow, get, map } from 'lodash/fp'
 import { parse } from 'url'
 import MobileDetect from 'mobile-detect'
 import { featureFlags } from '../config'
+import rollbar from 'rollbar'
+
+rollbar.init(process.env.ROLLBAR_SERVER_TOKEN)
 
 const checkAPIErrors = (res, errors) => {
   if (!isEmpty(errors)) res.errors = errors
@@ -94,6 +97,7 @@ export default function (req, res) {
     })
   })
   .catch(err => {
+    rollbar.handleError(err, req)
     res.errors = [err]
     res.setHeader('Content-Type', 'text/plain')
     const state = parse(req.originalUrl, true).query.verboseErrorPage

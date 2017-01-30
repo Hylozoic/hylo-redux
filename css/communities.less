@@ -190,7 +190,7 @@
     .modal-input-row;
   }
 
-  .invitation-link {
+  .invitation-link-section {
     padding-top: 25px;
     background-color: white;
     .icon {
@@ -206,12 +206,17 @@
       padding-left: 6px;
       padding-top: 6px;
     }
-    a {
+
+    a.invitation-link {
       color: @damian-green;
+      display: inline-block;
+      max-width: 65%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
+
     .copy-link-wrapper {
-      position: relative;
-      top: -30px;
       float: right;
       .copy-link {
         .round-button;

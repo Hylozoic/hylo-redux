@@ -1,6 +1,9 @@
 import { herokuConfig } from './util'
 import { extend, pick } from 'lodash'
 
+// If you want to use an env var in code that is included in the front-end
+// bundle, and you want to use the value for that env var set in Heroku, it must
+// be in this list.
 const keys = [
   'ASSET_HOST',
   'ASSET_PATH',
@@ -16,6 +19,7 @@ const keys = [
   'INTERCOM_APP_ID',
   'LOG_LEVEL',
   'NODE_ENV',
+  'PINGDOM_APP_ID',
   'SEGMENT_KEY',
   'SLACK_APP_CLIENT_ID',
   'SOCKET_HOST',

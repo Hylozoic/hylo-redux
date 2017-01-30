@@ -37,7 +37,8 @@ export class ConnectedPostList extends React.Component {
     expandedPostId: string,
     parentPost: object,
     noPostsMessage: string,
-    module: object
+    module: object,
+    showProjectActivity: bool
   }
 
   static contextTypes = {
@@ -106,7 +107,7 @@ export class ConnectedPostList extends React.Component {
   render () {
     const {
       dispatch, freshCount, posts, parentPost, total, pending, subject, id, query,
-      hideMobileSearch, expandedPostId, noPostsMessage, module
+      hideMobileSearch, expandedPostId, noPostsMessage, module, showProjectActivity
     } = this.props
 
     const hide = union(this.props.hide, [expandedPostId])
@@ -136,7 +137,8 @@ export class ConnectedPostList extends React.Component {
         refreshPostList,
         freshCount,
         noPostsMessage,
-        parentPost
+        parentPost,
+        showProjectActivity
       }} />
   }
 }

@@ -40,7 +40,10 @@ export default function (state = {}, action) {
     case CREATE_COMMENT:
       return {...state, [payload.id]: omit('people', payload)}
     case FETCH_POSTS:
-      comments = payload.posts.reduce((acc, post) => acc.concat(post.comments || []), [])
+      comments = payload.posts.reduce((acc, post) => {
+        // the post.child is for the sake of project activity cards
+        return acc.concat(post.comments || []).concat(post.child ? post.child.comments : [])
+      },[])
       return {...state, ...hashBy(comments, 'id')}
     case APPEND_THREAD:
     case FETCH_COMMENTS:

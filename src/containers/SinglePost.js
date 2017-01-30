@@ -17,6 +17,7 @@ import AccessErrorMessage from '../components/AccessErrorMessage'
 import CoverImagePage from '../components/CoverImagePage'
 import EventPost from '../components/EventPost'
 import ProjectPost from '../components/ProjectPost'
+import ProjectActivityCard from '../components/ProjectActivityCard'
 import { getCurrentCommunity } from '../models/community'
 import { denormalizedPost, getComments, getPost, isMessageThread } from '../models/post'
 import { fetch, ConnectedPostList } from './ConnectedPostList'
@@ -106,13 +107,16 @@ export default class SinglePost extends React.Component {
 }
 
 const ShowPost = ({ post, parentPost, comments }) => {
+  if (parentPost) {
+    return <ProjectActivityCard {...{post, parentPost}} expanded />
+  }
   switch (post.type) {
     case 'event':
       return <EventPost post={post} comments={comments} />
     case 'project':
       return <ProjectPost post={post} comments={comments} />
     default:
-      return <Post post={post} parentPost={parentPost} expanded />
+      return <Post {...{post, parentPost}} expanded />
   }
 }
 

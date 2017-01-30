@@ -136,7 +136,7 @@ export class CommunityPosts extends Component {
             There was an error creating your join request. Please try again later.
           </span>}
         </div>}
-      <ConnectedPostList {...{subject, id, query}} module={module} />
+      <ConnectedPostList {...{subject, id, query}} module={module} showProjectActivity />
       {!isMember(currentUser, community) && <div className='post-list-footer'>
         You are not a member of this community, so you are shown only posts that are marked as public.
       </div>}

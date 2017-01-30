@@ -29,7 +29,8 @@ export class PostList extends React.Component {
     dispatch: func,
     hideMobileSearch: bool,
     isMobile: bool,
-    noPostsMessage: string
+    noPostsMessage: string,
+    showProjectActivity: bool
   }
 
   static contextTypes = {
@@ -46,7 +47,7 @@ export class PostList extends React.Component {
     const { isMobile } = this.context
 
     if (isMobile || parentPostId) {
-      dispatch(navigate(`/p/${parentPostId || id}` + (commentId ? `#comment-${commentId}` : '')))
+      dispatch(navigate(`/p/${id}` + (commentId ? `#comment-${commentId}` : '')))
     } else {
       dispatch(showExpandedPost(id, commentId))
     }
@@ -55,7 +56,7 @@ export class PostList extends React.Component {
   render () {
     const {
       hide, editingPostIds, pending, loadMore, refreshPostList, freshCount,
-      dispatch, hideMobileSearch, noPostsMessage, parentPost
+      dispatch, hideMobileSearch, noPostsMessage, parentPost, showProjectActivity
     } = this.props
     const { isMobile } = this.context
     const expand = this.expand
@@ -76,7 +77,7 @@ export class PostList extends React.Component {
         {pending && isEmpty(posts) && <li className='loading'>Loading...</li>}
         {posts.map(post =>
           <li key={post.id} ref={post.id}>
-            <ShowPost {...{post, parentPost, editingPostIds, expand}} />
+            <ShowPost {...{post, parentPost, editingPostIds, expand, showProjectActivity}} />
           </li>
         )}
       </ul>
@@ -90,22 +91,25 @@ export default connect((state, { posts }) => ({
   editingPostIds: state.isMobile ? [] : getEditingPostIds(posts, state)
 }))(PostList)
 
-const ShowPost = ({ post, parentPost, editingPostIds, expand }) => {
-  const onExpand = commentId => expand(post.id, commentId, post.parent_post_id)
+const ShowPost = ({ showProjectActivity, post, parentPost, editingPostIds, expand }) => {
+  let onExpand = commentId => expand(post.id, commentId, post.parent_post_id)
   if (includes(post.id, editingPostIds)) {
-    return <PostEditor {...{post, parentPost}} expanded />
+    return  <PostEditor {...{post, parentPost}} expanded />
+  }
+  else if (showProjectActivity && post.type === 'project' && post.child) {
+    onExpand = commentId => expand(post.child.id, commentId, post.id)
+    return <ProjectActivityCard post={post.child} parentPost={post} onExpand={onExpand} />
   }
   switch (post.type) {
     case 'event':
       return <EventPostCard {...{post, parentPost}} />
     case 'project':
       return <ProjectPostCard {...{post, parentPost}} />
-    case 'project-activity':
-      return <ProjectActivityCard post={post} onExpand={onExpand} />
     case 'module':
       return post.component
+    default:
+      return <Post {...{post, parentPost, onExpand}} />
   }
-  return <Post {...{post, parentPost, onExpand}} />
 }
 
 class MobileSearch extends React.Component {

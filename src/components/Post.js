@@ -56,7 +56,8 @@ export class Post extends React.Component {
     dispatch: func,
     expanded: bool,
     onExpand: func,
-    commentId: string
+    commentId: string,
+    inActivityCard: bool
   }
 
   static contextTypes = {
@@ -65,14 +66,13 @@ export class Post extends React.Component {
 
   render () {
     const {
-      post, parentPost, expanded, onExpand, community, dispatch
+      inActivityCard, post, parentPost, expanded, onExpand, community, dispatch
     } = this.props
     let { comments } = this.props
-    if (post.project && !expanded) comments = comments.slice(-1)
+    if (inActivityCard && !expanded) comments = comments.slice(-1)
     const { currentUser } = this.context
     const { tag, media, linkPreview } = post
-    const project = parentPost || post.project
-    const communities = project ? project.communities : post.communities
+    const communities = parentPost ? parentPost.communities : post.communities
     const image = find(m => m.type === 'image', media)
     const classes = cx('post', tag, {image, expanded})
     const title = linkifyHashtags(decode(sanitize(post.name || '')), get('slug', community))
@@ -84,7 +84,7 @@ export class Post extends React.Component {
 
     return <div className={classes}>
       <a name={`post-${post.id}`} />
-      <Header post={post} project={project} communities={communities} expanded={expanded} />
+      <Header post={post} parentPost={parentPost} communities={communities} expanded={expanded} />
       <p className='title post-section' dangerouslySetInnerHTML={{__html: title}} />
       {image && <LazyLoader>
         <img src={image.url} className='post-section full-image' />
@@ -113,7 +113,7 @@ export default compose(connect((state, {post}) => {
   }
 }))(Post)
 
-export const Header = ({ post, project, communities, expanded }, { currentUser, dispatch }) => {
+export const Header = ({ post, parentPost, communities, expanded }, { currentUser, dispatch }) => {
   const { tag } = post
   const person = tag === 'welcome' ? post.relatedUsers[0] : post.user
   const createdAt = new Date(post.created_at)
@@ -131,7 +131,7 @@ export const Header = ({ post, project, communities, expanded }, { currentUser, 
           <A to={`/p/${post.id}`} title={createdAt}>
             {nonbreaking(humanDate(createdAt))}
           </A>
-          {(communities || project) && <Communities communities={communities} project={project} />}
+          {(communities || parentPost) && <AppearsIn communities={communities} parentPost={parentPost} />}
           {post.public && <span>{spacer}Public</span>}
         </span>
       </div>}
@@ -139,19 +139,20 @@ export const Header = ({ post, project, communities, expanded }, { currentUser, 
 }
 Header.contextTypes = {currentUser: object, dispatch: func}
 
-const Communities = ({ communities, project }, { community }) => {
+const AppearsIn = ({ communities, parentPost }, { community }) => {
+  communities = communities || []
   if (community) communities = sortBy(communities, c => c.id !== community.id)
   const { length } = communities
-  if (length === 0 && !project) return null
+  if (length === 0 && !parentPost) return null
   const communityLink = community => <A to={`/c/${community.slug}`}>{community.name}</A>
-  const projectLink = project => <span>
-    <A to={`/p/${project.id}`} className='project-link'>{project.name}</A>
+  const parentPostLink = parentPost => <span>
+    <A to={`/p/${parentPost.id}`} className='project-link'>{parentPost.name}</A>
     {length > 0 && spacer}
   </span>
 
   return <span className='communities'>
     &nbsp;in&nbsp;
-    {project && projectLink(project)}
+    {parentPost && parentPostLink(parentPost)}
     {length > 0 && communityLink(communities[0])}
     {length > 1 && <span> + </span>}
     {length > 1 && <Dropdown className='post-communities-dropdown'
@@ -160,7 +161,7 @@ const Communities = ({ communities, project }, { community }) => {
     </Dropdown>}
   </span>
 }
-Communities.contextTypes = {community: object}
+AppearsIn.contextTypes = {community: object}
 
 const getTags = text =>
   cheerio.load(text)('.hashtag').toArray().map(tag =>

@@ -87,7 +87,7 @@ export default class SinglePost extends React.Component {
       </div>}
       <CoverImagePage id='single-post' image={get('banner_url', community)}>
         {editing
-          ? <PostEditor post={post} expanded />
+          ? <PostEditor post={post} parentPost={parentPost} expanded />
           : <ShowPost post={post} parentPost={parentPost} comments={comments} />
         }
         {post.type === 'project' && <div>

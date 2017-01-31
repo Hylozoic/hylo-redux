@@ -3,9 +3,8 @@ import { connect } from 'react-redux'
 import { prefetch } from 'react-fetcher'
 import { filter } from 'lodash/fp'
 import { getCurrentCommunity, getChecklist } from '../models/community'
-import { closeModal } from '../actions'
 import { Modal } from '../components/Modal'
-import { fetchCommunity, updateCommunityChecklist } from '../actions/communities'
+import { fetchCommunity, updateCommunityChecklist, closeModal } from '../actions'
 const { func, object } = React.PropTypes
 
 @prefetch(({ dispatch, params: { id } }) =>

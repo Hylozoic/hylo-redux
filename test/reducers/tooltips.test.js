@@ -1,6 +1,9 @@
 require('../support')
 import tooltips from '../../src/reducers/tooltips'
-import { REGISTER_TOOLTIP, UNREGISTER_TOOLTIP } from '../../src/actions'
+import {
+  REGISTER_TOOLTIP,
+  UNREGISTER_TOOLTIP
+} from '../../src/actions/constants'
 
 const state = {
   first: 1,

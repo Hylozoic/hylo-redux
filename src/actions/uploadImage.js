@@ -1,5 +1,7 @@
 import { upload } from '../client/filepicker'
-import { UPLOAD_IMAGE } from './index'
+import {
+  UPLOAD_IMAGE
+} from './constants'
 
 export function uploadImage (opts) {
   let { subject, id, path, convert } = opts

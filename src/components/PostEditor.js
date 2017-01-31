@@ -26,19 +26,26 @@ import LinkPreview from './LinkPreview'
 import Tooltip from './Tooltip'
 import { connect } from 'react-redux'
 import {
-  createPost, cancelPostEdit, fetchLinkPreview, removeImage, removeDoc,
-  updatePost, updatePostEditor
-} from '../actions/posts'
-import { uploadImage } from '../actions/uploadImage'
-import { uploadDoc } from '../actions/uploadDoc'
+  createPost,
+  cancelPostEdit,
+  fetchLinkPreview,
+  removeImage,
+  removeDoc,
+  updatePost,
+  updatePostEditor,
+  uploadImage,
+  uploadDoc,
+  notify,
+  showModal,
+  updateCommunityChecklist
+} from '../actions'
 import { attachmentParams } from '../util/shims'
 import { findUrls } from '../util/linkify'
 import { isKey, onEnter } from '../util/textInput'
 import { responseMissingTagDescriptions } from '../util/api'
 import {
-  notify, showModal, CREATE_POST, FETCH_LINK_PREVIEW, UPDATE_POST, UPLOAD_IMAGE
-} from '../actions'
-import { updateCommunityChecklist } from '../actions/communities'
+  CREATE_POST, FETCH_LINK_PREVIEW, UPDATE_POST, UPLOAD_IMAGE
+} from '../actions/constants'
 import { ADDED_POST, EDITED_POST, OPENED_POST_EDITOR, trackEvent } from '../util/analytics'
 import { getCommunity, getCurrentCommunity, getDefaultTags } from '../models/community'
 const { array, bool, func, object, string } = React.PropTypes
@@ -198,7 +205,8 @@ export class PostEditor extends React.PureComponent {
       }
 
       if (action.error) {
-        return dispatch(notify('There was a problem saving your post. Please try again in a moment', {type: 'error'}))
+        const message = 'There was a problem saving your post. Please try again in a moment.'
+        return dispatch(notify(message, {type: 'error', maxage: null}))
       }
 
       trackEvent(post ? EDITED_POST : ADDED_POST, {

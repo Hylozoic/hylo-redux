@@ -1,6 +1,8 @@
 import support from '../support' // eslint-disable-line no-unused-vars
 import React from 'react'
 import { mount } from 'enzyme'
+import { mockActionResponse } from '../../support/helpers'
+import { fetchPerson } from '../../../src/actions/people'
 import App from '../../../src/containers/App'
 import { configureStore } from '../../../src/store'
 import { showPopover } from '../../../src/actions'
@@ -35,6 +37,20 @@ describe('PersonPopover', () => {
 
     link = node.find('.link').get(0)
   })
+
+  // it('displays without a Message button', function () {
+  //   const fetchedUser = {
+  //     id: '1',
+  //     bio: 'my life',
+  //     name: 'Cran Berry'
+  //   }
+  //   mockActionResponse(fetchPerson('1'), fetchedUser)
+  //   store.dispatch(showPopover('person', {userId: fetchedUser.id}, link))
+  //   const popover = node.find('.popover .p-person')
+  //   expect(popover.find('.name').first().text()).to.equal(fetchedUser.name)
+  //   expect(popover.find('.bio').first().text()).to.equal(fetchedUser.bio)
+  //   expect(popover.find('.message').length).to.equal(0)
+  // })
 
   it('displays without a Message button', function () {
     store.dispatch(showPopover('person', {userId: u1.id}, link))

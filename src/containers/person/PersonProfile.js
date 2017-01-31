@@ -4,9 +4,16 @@ import { compose } from 'redux'
 import { connect } from 'react-redux'
 import { prefetch, defer } from 'react-fetcher'
 import { commentUrl, peopleUrl } from '../../routes'
-import { FETCH_PERSON, navigate, showDirectMessage } from '../../actions'
-import { fetchContributions, fetchPerson, fetchThanks } from '../../actions/people'
-import { findError, saveCurrentCommunityId } from '../../actions/util'
+import { FETCH_PERSON } from '../../actions/constants'
+import {
+  navigate,
+  showDirectMessage,
+  fetchContributions,
+  fetchPerson,
+  fetchThanks,
+  saveCurrentCommunityId,
+  findError
+} from '../../actions'
 import { capitalize, compact, some, includes } from 'lodash'
 import { isNull, isUndefined, map, omitBy, sortBy, get } from 'lodash/fp'
 import { STARTED_MESSAGE, VIEWED_PERSON, VIEWED_SELF, trackEvent } from '../../util/analytics'
@@ -140,7 +147,7 @@ const PersonProfile = compose(
 
   return <CoverImagePage id='person' image={banner_url || defaultBanner} person={isSelf ? currentUser : null}>
     <div className='opener'>
-      <NonLinkAvatar person={currentUser} showEdit={isSelf} />
+      <NonLinkAvatar person={isSelf ? currentUser : person} showEdit={isSelf} />
       <h2>
         {person.name}
         <div className='social-media'>

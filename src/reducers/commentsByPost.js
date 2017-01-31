@@ -7,7 +7,7 @@ import {
   FETCH_POST,
   FETCH_POSTS,
   CREATE_COMMENT
-} from '../actions'
+} from '../actions/constants'
 
 export default function (state = {}, action) {
   const { type, error, payload, meta } = action

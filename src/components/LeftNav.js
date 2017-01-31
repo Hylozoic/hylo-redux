@@ -7,7 +7,7 @@ import { VelocityTransitionGroup } from 'velocity-react'
 import { isEmpty } from 'lodash'
 import { filter, get, sortBy } from 'lodash/fp'
 import { tagUrl } from '../routes'
-import { showAllTags } from '../actions/tags'
+import { showAllTags } from '../actions'
 import cx from 'classnames'
 const { bool, func } = React.PropTypes
 
@@ -34,8 +34,8 @@ const TopicList = ({ tags, slug }, { dispatch }) => {
       case 'request': return 'b'
       case 'intention': return 'c'
       default:
-        if (t.is_default) return 'd' + t.name
-        return 'e' + t.name
+        if (t.is_default) return 'd' + t.name.toLowerCase()
+        return 'e' + t.name.toLowerCase()
     }
   }, filter('followed', tags))
 
@@ -112,7 +112,7 @@ export const LeftNav = ({ opened, community, network, tags, close, links }, { is
         {network
           ? <NetworkNav network={network} />
           : <CommunityNav links={links} />}
-        {!isEmpty(tags) && <TopicList tags={tags} slug={get('slug', community)} />}
+        <TopicList tags={tags} slug={get('slug', community)} />
       </nav>}
       {opened && <div id='leftNavBackdrop' onClick={close} />}
     </VelocityTransitionGroup>

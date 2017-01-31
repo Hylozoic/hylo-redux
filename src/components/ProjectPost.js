@@ -18,8 +18,7 @@ import Avatar from './Avatar'
 import LinkedPersonSentence from './LinkedPersonSentence'
 import A from './A'
 import { ClickCatchingSpan } from './ClickCatcher'
-import { navigate } from '../actions'
-import { fetchPost, followPost } from '../actions/posts'
+import { fetchPost, followPost, navigate } from '../actions'
 import moment from 'moment'
 const { array, bool, func, object } = React.PropTypes
 

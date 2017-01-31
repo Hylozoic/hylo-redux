@@ -40,7 +40,9 @@ export const PersonCard = ({ person, slug, onSkillClick, removeMember }, { dispa
     </Dropdown>}
     <span><A to={`/u/${person.id}`} className='square-avatar' style={avatarStyle} /></span>
     <div className='person-body'>
-      <span onMouseOver={handleMouseOver(dispatch)}><A className='name' to={`/u/${id}`}>{name}</A></span>
+      <span onMouseOver={handleMouseOver(dispatch)}>
+        <A className='name' to={`/u/${id}`}>{name}</A>
+      </span>
       <div className='role'>
         {(isModerator ? 'Moderator' : 'Member')} since {humanDate(joined_at)}
       </div>

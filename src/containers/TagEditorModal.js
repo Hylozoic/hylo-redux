@@ -1,10 +1,13 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { debounce, keys, isEmpty, map } from 'lodash'
-import { closeModal } from '../actions'
-import { editTagDescription, editNewTagAndDescription } from '../actions'
-import { createTagInCommunity } from '../actions/tags'
-import { updateCommunityChecklist } from '../actions/communities'
+import {
+  closeModal,
+  editTagDescription,
+  editNewTagAndDescription,
+  createTagInCommunity,
+  updateCommunityChecklist
+} from '../actions'
 import { Modal } from '../components/Modal'
 import ModalRow, { ModalInput } from '../components/ModalRow'
 import { getCurrentCommunity } from '../models/community'

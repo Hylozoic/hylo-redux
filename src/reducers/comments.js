@@ -12,7 +12,7 @@ import {
   REMOVE_COMMENT,
   THANK_PENDING,
   UPLOAD_IMAGE
-} from '../actions'
+} from '../actions/constants'
 
 export default function (state = {}, action) {
   let { type, error, payload, meta } = action

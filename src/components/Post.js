@@ -19,10 +19,17 @@ import { same } from '../models'
 import { denormalizedPost, getComments, isPinned } from '../models/post'
 import { canEditPost, canModerate, hasFeature } from '../models/currentUser'
 import { getCurrentCommunity } from '../models/community'
-import { navigate, showModal, typeahead } from '../actions'
 import {
-  completePost, followPost, removePost, startPostEdit, voteOnPost, pinPost
-} from '../actions/posts'
+  typeahead,
+  showModal,
+  navigate,
+  completePost,
+  followPost,
+  removePost,
+  startPostEdit,
+  voteOnPost,
+  pinPost
+} from '../actions'
 import { CONTRIBUTORS } from '../config/featureFlags'
 import CommentSection from './CommentSection'
 import TagInput from './TagInput'
@@ -102,6 +109,7 @@ export class Post extends React.Component {
     const toggleRequestComplete = () => {
       if (isCompleteRequest) {
         if (window.confirm('This will mark this request as Incomplete. Are you sure?')) {
+          console.log('!!!')
           dispatch(completePost(post.id))
         }
       } else {
@@ -378,7 +386,7 @@ export const RequestContributorsSentence = ({ post }) => {
   const contributors = post.contributors || []
   const onlyAuthorIsContributing = contributors.length === 1 && same('id', first(contributors), post.user)
   return contributors.length > 0 && !onlyAuthorIsContributing
-    ? <LinkedPersonSentence people={contributors} className='contributors'>
+    ? <LinkedPersonSentence people={contributors} className='contributors' showPopover>
         helped complete this request!
       </LinkedPersonSentence>
     : <div className='contributors'>Request has been completed</div>

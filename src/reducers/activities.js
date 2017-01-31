@@ -2,7 +2,7 @@ import {
   FETCH_ACTIVITY,
   MARK_ACTIVITY_READ,
   MARK_ALL_ACTIVITIES_READ_PENDING
-} from '../actions'
+} from '../actions/constants'
 import { includes, omit, map, transform } from 'lodash'
 import { mergeList } from './util'
 

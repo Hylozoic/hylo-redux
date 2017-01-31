@@ -2,7 +2,7 @@ import React from 'react'
 import { prefetch } from 'react-fetcher'
 import CoverImagePage from '../components/CoverImagePage'
 import { navigate } from '../actions'
-import { saveCurrentCommunityId } from '../actions/util'
+import { saveCurrentCommunityId } from '../actions'
 import { fetch, ConnectedPostList } from './ConnectedPostList'
 import PostEditor from '../components/PostEditor'
 import { getCommunity } from '../models/community'
@@ -21,6 +21,7 @@ export default prefetch(setCommunityAndFetchTags)(AllCommunities)
 const subject = 'all-posts'
 
 export const allPostsPrefetch = ({ store, dispatch, currentUser, query }) => {
+  if (!currentUser) return dispatch(navigate('/login'))
   const { id, settings: { currentCommunityId }, memberships } = currentUser
 
   if (memberships.length === 1) {

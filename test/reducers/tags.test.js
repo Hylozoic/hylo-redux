@@ -8,7 +8,7 @@ import {
   FETCH_TAG_SUMMARY,
   REMOVE_TAG,
   UPDATE_POST
-} from '../../src/actions'
+} from '../../src/actions/constants'
 
 const fetchAction = {
   type: FETCH_TAGS,

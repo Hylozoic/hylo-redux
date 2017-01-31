@@ -28,6 +28,12 @@ describe('linkify', () => {
     expect(linkify(source)).to.equal(expected)
   })
 
+  it('wraps unlinked hashtags with underscores', () => {
+    let source = '<p>and #foo_bar</p>'
+    let expected = '<p>and <a href="/tag/foo_bar" class="hashtag" data-search="#foo_bar">#foo_bar</a></p>'
+    expect(linkify(source)).to.equal(expected)
+  })
+
   it('adds community slug when wrapping unlinked hashtags', () => {
     let source = '<p>and #foo</p>'
     let slug = 'bar'

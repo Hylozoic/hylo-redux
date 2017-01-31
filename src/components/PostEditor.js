@@ -205,7 +205,8 @@ export class PostEditor extends React.PureComponent {
       }
 
       if (action.error) {
-        return dispatch(notify('There was a problem saving your post. Please try again in a moment', {type: 'error'}))
+        const message = 'There was a problem saving your post. Please try again in a moment.'
+        return dispatch(notify(message, {type: 'error', maxage: null}))
       }
 
       trackEvent(post ? EDITED_POST : ADDED_POST, {

@@ -139,7 +139,12 @@ const setupPage = (store, id, query, action) => {
   if (!post) return
 
   const currentUser = people.current
-  const { community_ids } = post
+  let community_ids
+  if (post.parent_post_id) {
+    community_ids = posts[post.parent_post_id].community_ids
+  } else {
+    community_ids = post.community_ids
+  }
   const communityId = includes(community_ids, currentCommunityId)
     ? currentCommunityId
     : (get('0', community_ids) || 'all')

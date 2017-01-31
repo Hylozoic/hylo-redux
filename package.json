@@ -59,7 +59,7 @@
     "hylo-utils": "https://github.com/Hylozoic/hylo-utils.git",
     "imagesloaded": "^4.1.0",
     "isomorphic-fetch": "^2.2.0",
-    "linkifyjs": "https://github.com/Hylozoic/linkifyjs.git",
+    "linkifyjs": "Hylozoic/linkifyjs#allow-underscores",
     "lodash": "^4.16",
     "lru-cache": "^4.0.1",
     "masonry-layout": "^4.1.0",

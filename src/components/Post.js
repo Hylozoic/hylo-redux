@@ -119,7 +119,7 @@ export const Header = ({ post, parentPost, communities, expanded }, { currentUse
   const createdAt = new Date(post.created_at)
   const isChild = isChildPost(post)
   return <div className='header'>
-    <Menu expanded={expanded} post={post} hidePinning={isChild} />
+    <Menu expanded={expanded} post={post} isChild={isChild} />
     <Avatar person={person} showPopover />
     {tag === 'welcome'
       ? <WelcomePostHeader post={post} communities={communities} />
@@ -231,14 +231,14 @@ const WelcomePostHeader = ({ post, communities }) => {
   </div>
 }
 
-export const Menu = ({ post, expanded, hidePinning }, { dispatch, currentUser, community }) => {
+export const Menu = ({ post, expanded, isChild }, { dispatch, currentUser, community }) => {
   const canEdit = canEditPost(currentUser, post)
   const following = some(post.follower_ids, id => id === get('id', currentUser))
   const pinned = isPinned(post, community)
   const edit = () => isMobile()
     ? dispatch(navigate(`/p/${post.id}/edit`))
     : dispatch(startPostEdit(post)) &&
-      expanded && dispatch(showModal('post-editor', {post}))
+      expanded && !isChild && dispatch(showModal('post-editor', {post}))
   const remove = () => window.confirm('Are you sure? This cannot be undone.') &&
     dispatch(removePost(post.id))
   const pin = () => dispatch(pinPost(get('slug', community), post.id))
@@ -248,7 +248,7 @@ export const Menu = ({ post, expanded, hidePinning }, { dispatch, currentUser, c
     : <span className='icon-More' />
 
   return <Dropdown className='post-menu' alignRight {...{toggleChildren}}>
-    {canModerate(currentUser, community) && !hidePinning && <li>
+    {canModerate(currentUser, community) && !isChild && <li>
       <a onClick={pin}>{pinned ? 'Unpin post' : 'Pin post'}</a>
     </li>}
     {canEdit && <li><a className='edit' onClick={edit}>Edit</a></li>}

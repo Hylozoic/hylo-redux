@@ -370,7 +370,7 @@ export const VoteButton = (props, { post, currentUser, dispatch }) => {
 }
 VoteButton.contextTypes = {post: object, currentUser: object, dispatch: func}
 
-export const Voters = (props, { post, currentUser }) => {
+export const Voters = (props, {post}) => {
   const voters = post.voters || []
 
   let onlyAuthorIsVoting = voters.length === 1 && same('id', first(voters), post.user)
@@ -380,7 +380,7 @@ export const Voters = (props, { post, currentUser }) => {
       </LinkedPersonSentence>
     : <span />
 }
-Voters.contextTypes = {post: object, currentUser: object}
+Voters.contextTypes = {post: object}
 
 export const RequestContributorsSentence = ({ post }) => {
   const contributors = post.contributors || []

@@ -1,7 +1,8 @@
 import { omit } from 'lodash/fp'
 import {
-  REGISTER_TOOLTIP, UNREGISTER_TOOLTIP
-} from '../actions'
+  REGISTER_TOOLTIP,
+  UNREGISTER_TOOLTIP
+} from '../actions/constants'
 
 export default function (state = {}, action) {
   const { type, error, payload } = action

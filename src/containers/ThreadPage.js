@@ -1,10 +1,11 @@
 import React from 'react'
 import { prefetch } from 'react-fetcher'
 import { connect } from 'react-redux'
-import { FETCH_POST } from '../actions'
-import { fetchComments } from '../actions/comments'
-import { fetchPost } from '../actions/posts'
-import { findError } from '../actions/util'
+import { pick } from 'lodash/fp'
+import {
+  fetchPost, fetchComments, findError
+} from '../actions'
+import { FETCH_POST } from '../actions/constants'
 import AccessErrorMessage from '../components/AccessErrorMessage'
 import Thread from '../components/Thread'
 import { denormalizedPost, getComments, getPost } from '../models/post'

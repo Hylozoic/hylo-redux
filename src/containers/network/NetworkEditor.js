@@ -1,26 +1,26 @@
 import React from 'react'
 import { prefetch } from 'react-fetcher'
 import { connect } from 'react-redux'
-import { get, some, omit, filter, startsWith, contains } from 'lodash'
+import { get, some, omit, filter } from 'lodash'
 import { fetchWithCache } from '../../util/caching'
 import { scrollToBottom } from '../../util/scrolling'
-import { fetchCommunities } from '../../actions/communities'
-import { uploadImage } from '../../actions/uploadImage'
 import { avatarUploadSettings, bannerUploadSettings } from '../../models/network'
 import {
-  CREATE_NETWORK,
-  UPLOAD_IMAGE,
+  fetchCommunities,
+  uploadImage,
   navigate,
-  typeahead
-} from '../../actions'
-import {
+  typeahead,
   createNetwork,
   resetNetworkValidation,
   updateNetworkEditor,
   validateNetworkAttribute,
   fetchNetwork,
   updateNetwork
-} from '../../actions/network'
+} from '../../actions'
+import {
+  CREATE_NETWORK,
+  UPLOAD_IMAGE
+} from '../../actions/constants'
 import CommunityTagInput from '../../components/CommunityTagInput'
 const { array, bool, func, object, string } = React.PropTypes
 

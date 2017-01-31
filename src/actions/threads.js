@@ -1,11 +1,14 @@
 import { get } from 'lodash/fp'
-import { 
+
+import {
   APPEND_THREAD,
   FIND_OR_CREATE_THREAD,
   ON_THREAD_PAGE,
   OFF_THREAD_PAGE,
-  UPDATE_MESSAGE_EDITOR
-} from './index'
+  UPDATE_MESSAGE_EDITOR,
+  INCREMENT_UNSEEN_THREADS,
+  SET_UNSEEN_THREAD_COUNT
+} from './constants'
 
 export function appendThread (thread) {
   return {
@@ -50,5 +53,18 @@ export function updateMessageEditor (id, text) {
   return {
     type: UPDATE_MESSAGE_EDITOR,
     payload: {id, text}
+  }
+}
+
+export function incrementUnseenThreads () {
+  return {
+    type: INCREMENT_UNSEEN_THREADS
+  }
+}
+
+export function setUnseenThreadCount (count) {
+  return {
+    type: SET_UNSEEN_THREAD_COUNT,
+    payload: { count }
   }
 }

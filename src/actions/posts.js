@@ -1,7 +1,7 @@
 import { cloneDeep, pick, map } from 'lodash'
 import { get } from 'lodash/fp'
 import qs from 'querystring'
-import { cleanAndStringify } from '../util/caching'
+import { cleanAndStringify, createCacheId } from '../util/caching'
 import { tagsInText } from '../models/hashtag'
 import {
   CANCEL_POST_EDIT,
@@ -20,8 +20,10 @@ import {
   UPDATE_POST,
   UPDATE_POST_EDITOR,
   UPDATE_POST_READ_TIME,
-  VOTE_ON_POST
-} from './index'
+  VOTE_ON_POST,
+  FETCH_POSTS,
+  CHECK_FRESHNESS_POSTS
+} from './constants'
 
 // id refers to the id of the editing context, e.g. 'new-event'
 export function createPost (id, params, slug) {
@@ -176,5 +178,86 @@ export function updatePostReadTime (id) {
     type: UPDATE_POST_READ_TIME,
     payload: {api: true, path: `/noo/post/${id}/update-last-read`, method: 'POST'},
     meta: {id}
+  }
+}
+
+export function fetchPosts (opts) {
+  const {
+    subject, id, limit, type, tag, sort, search, filter, cacheId, omit
+  } = opts
+  const offset = opts.offset || 0
+  const queryParams = {
+    offset, limit, type, tag, sort, search, filter, omit, // eslint-disable-line object-property-newline
+    comments: true,
+    votes: true
+  }
+  let path
+
+  switch (subject) {
+    case 'threads':
+      path = '/noo/threads'
+      Object.assign(queryParams, {votes: false, reads: true})
+      break
+    case 'community':
+      if (id === 'all' && tag) {
+        path = `/noo/tag/${tag}/posts`
+        queryParams.tag = null
+      } else {
+        path = `/noo/community/${id}/posts`
+      }
+      break
+    case 'person':
+      path = `/noo/user/${id}/posts`
+      if (opts['check-join-requests']) {
+        queryParams['check-join-requests'] = 1
+      }
+      break
+    case 'all-posts':
+      path = `/noo/user/${id}/all-community-posts`
+      break
+    case 'followed-posts':
+      path = `/noo/user/${id}/followed-posts`
+      break
+    case 'post':
+      path = `/noo/post/${id}/posts`
+      break
+    case 'project':
+    case 'network':
+      path = `/noo/${subject}/${id}/posts`
+      break
+  }
+  path += '?' + cleanAndStringify(queryParams)
+
+  return {
+    type: FETCH_POSTS,
+    payload: {api: true, path},
+    meta: {
+      cache: {id: cacheId, bucket: 'postsByQuery', limit, offset, array: true},
+      addDataToStore: {
+        people: get('people'),
+        communities: get('communities')
+      }
+    }
+  }
+}
+
+export function checkFreshness (subject, id, posts, query = {}) {
+  const { limit, type, sort, search, filter, tag, omit } = query
+  const offset = query.offset || 0
+  const queryParams = {offset, limit, type, sort, search, filter, tag, omit}
+
+  let path
+  if (subject === 'community' && id === 'all' && tag) {
+    path = `/noo/freshness/posts/tag/${tag}`
+    queryParams.tag = null
+  } else {
+    path = `/noo/freshness/posts/${subject}/${id}`
+  }
+  path += '?' + cleanAndStringify(queryParams)
+
+  return {
+    type: CHECK_FRESHNESS_POSTS,
+    payload: {api: true, params: {posts}, path, method: 'POST'},
+    meta: {cacheId: createCacheId(subject, id, query)}
   }
 }

@@ -15,7 +15,7 @@ import {
   SEND_COMMUNITY_TAG_INVITATION,
   UPDATE_POST,
   UPLOAD_IMAGE
-} from '../actions'
+} from '../actions/constants'
 
 export default function pending (state = {}, action) {
   const { type, meta } = action

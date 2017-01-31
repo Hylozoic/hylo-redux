@@ -3,9 +3,8 @@ import { compose } from 'redux'
 import { connect } from 'react-redux'
 import { defer, prefetch } from 'react-fetcher'
 import {
-  markActivityRead, markAllActivitiesRead, navigate, showModal
+  markActivityRead, markAllActivitiesRead, navigate, showModal, fetchActivity
 } from '../actions'
-import { fetchActivity } from '../actions/activity'
 import { get, map, isEmpty } from 'lodash/fp'
 import cx from 'classnames'
 import ScrollListener from '../components/ScrollListener'

@@ -23,10 +23,17 @@ import {
   canEditPost, canModerate, canCommentOnPost, hasFeature
 } from '../models/currentUser'
 import { getCurrentCommunity } from '../models/community'
-import { navigate, showModal } from '../actions'
 import {
-  followPost, removePost, startPostEdit, voteOnPost, pinPost
-} from '../actions/posts'
+  typeahead,
+  showModal,
+  navigate,
+  completePost,
+  followPost,
+  removePost,
+  startPostEdit,
+  voteOnPost,
+  pinPost
+} from '../actions'
 import { CONTRIBUTORS } from '../config/featureFlags'
 import CompleteRequest from './CompleteRequest'
 import RequestCompleteHeader from './RequestCompleteHeader'

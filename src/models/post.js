@@ -7,7 +7,7 @@ import { getCommunity } from './community'
 
 const fallbackImageUrl = () => assetUrl('/img/axolotl.jpg')
 
-const media = curry((type, post) => find(m => m.type === type, post.media))
+const media = curry((type, post) => find(m => m.type === type, get('media', post)))
 export const getVideo = media('video')
 export const getImage = media('image')
 

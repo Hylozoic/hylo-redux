@@ -1,8 +1,9 @@
 import React from 'react'
 import { prefetch } from 'react-fetcher'
 import { connect } from 'react-redux'
-import { fetchTags, removeTagFromCommunity, updateCommunityTag } from '../actions/tags'
-import { showModal } from '../actions'
+import {
+  fetchTags, removeTagFromCommunity, updateCommunityTag, showModal
+} from '../actions'
 import { getCurrentCommunity } from '../models/community'
 import A from '../components/A'
 import Icon from '../components/Icon'

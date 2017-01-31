@@ -3,7 +3,7 @@ import { connect } from 'react-redux'
 import cx from 'classnames'
 import { tagUrlComponents, userIdFromUrl } from '../routes'
 import { position } from '../util/scrolling'
-import { showPopover, hidePopover } from '../actions/index'
+import { showPopover, hidePopover } from '../actions'
 import TagPopover from './TagPopover'
 import PersonPopover from './PersonPopover'
 const { string, object, func } = React.PropTypes
@@ -12,7 +12,6 @@ let canceledPopover
 
 export const handleMouseOver = dispatch => event => {
   const node = event.target
-
   const isTag = node.getAttribute('class') === 'hashtag'
   const userId = node.getAttribute('data-user-id') || userIdFromUrl(node.getAttribute('href'))
 
@@ -99,7 +98,7 @@ export default class Popover extends React.Component {
     const { above, outer, inner } = this.calculateStyle()
     const typeClass = 'p-' + type
 
-    var content
+    let content
     switch (type) {
       case 'tag':
         content = <TagPopover {...params} />

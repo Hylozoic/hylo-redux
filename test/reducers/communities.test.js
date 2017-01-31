@@ -1,12 +1,12 @@
 require('../support')
 import communities from '../../src/reducers/communities'
+import { fetchCurrentUser } from '../../src/actions'
 import {
   ADD_COMMUNITY_MODERATOR_PENDING,
   REMOVE_COMMUNITY_MODERATOR_PENDING,
   UPDATE_COMMUNITY_SETTINGS_PENDING,
-  USE_INVITATION,
-  fetchCurrentUser
-} from '../../src/actions'
+  USE_INVITATION
+} from '../../src/actions/constants'
 import { configureStore } from '../../src/store'
 import { mockActionResponse } from '../support/helpers'
 

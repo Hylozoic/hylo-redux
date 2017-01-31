@@ -5,16 +5,16 @@ import { compact, flow, last, map, sortBy } from 'lodash/fp'
 import cx from 'classnames'
 import { threadUrl } from '../routes'
 import {
-  FETCH_POSTS,
   closeModal,
   setUnseenThreadCount,
   incrementUnseenThreads,
   showDirectMessage,
-  updateCurrentUser
+  updateCurrentUser,
+  appendComment,
+  appendThread,
+  fetchPosts
 } from '../actions'
-import { appendComment } from '../actions/comments'
-import { appendThread } from '../actions/threads'
-import { fetchPosts } from '../actions/fetchPosts'
+import { FETCH_POSTS } from '../actions/constants'
 import { unseenThreadCount } from '../util/threads'
 import { getComments, getPost, denormalizedPost } from '../models/post'
 const { number, bool, string, array, func, object } = React.PropTypes

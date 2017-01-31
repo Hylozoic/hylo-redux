@@ -2,12 +2,17 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { prefetch } from 'react-fetcher'
 import { set } from 'lodash'
-import { getCurrentCommunity, avatarUploadSettings, bannerUploadSettings } from '../models/community'
-import { closeModal } from '../actions'
-import { uploadImage } from '../actions/uploadImage'
+import {
+  getCurrentCommunity, avatarUploadSettings, bannerUploadSettings
+} from '../models/community'
+import {
+  closeModal,
+  uploadImage,
+  fetchCommunity,
+  updateCommunityChecklist,
+  updateCommunitySettings
+} from '../actions'
 import { Modal } from '../components/Modal'
-import { fetchCommunity, updateCommunityChecklist } from '../actions/communities'
-import { updateCommunitySettings } from '../actions/communities'
 const { func, object } = React.PropTypes
 
 @prefetch(({ dispatch, params: { id } }) =>

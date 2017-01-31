@@ -4,11 +4,18 @@ import { prefetch } from 'react-fetcher'
 import { connect } from 'react-redux'
 import { includes } from 'lodash'
 import { get, pick } from 'lodash/fp'
-import { FETCH_POST, navigate, notify, setMetaTags } from '../actions'
-import { fetchComments } from '../actions/comments'
-import { fetchCommunity } from '../actions/communities'
-import { fetchPost, unfollowPost } from '../actions/posts'
-import { saveCurrentCommunityId, findError } from '../actions/util'
+import {
+  navigate,
+  notify,
+  setMetaTags,
+  fetchComments,
+  fetchCommunity,
+  fetchPost,
+  unfollowPost,
+  saveCurrentCommunityId,
+  findError
+} from '../actions'
+import { FETCH_POST } from '../actions/constants'
 import { ogMetaTags } from '../util'
 import A from '../components/A'
 import PostEditor from '../components/PostEditor'

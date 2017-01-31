@@ -1,7 +1,7 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { get, flow, pick, map } from 'lodash/fp'
-import { sendGraphqlQuery } from '../actions/graphql'
+import { sendGraphqlQuery } from '../actions'
 import { connectedListProps } from '../util/caching'
 import Avatar from './Avatar'
 import A from './A'

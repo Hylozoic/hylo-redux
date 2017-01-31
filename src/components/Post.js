@@ -74,7 +74,7 @@ export class Post extends React.Component {
     const { tag, media, linkPreview } = post
     const communities = parentPost ? parentPost.communities : post.communities
     const image = find(m => m.type === 'image', media)
-    const classes = cx('post', tag, {image, expanded})
+    const classes = cx('post', tag, {image, expanded: expanded && !inActivityCard})
     const title = linkifyHashtags(decode(sanitize(post.name || '')), get('slug', community))
 
     const isRequest = post.tag === 'request'

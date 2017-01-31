@@ -12,7 +12,6 @@ let canceledPopover
 
 export const handleMouseOver = dispatch => event => {
   const node = event.target
-
   const isTag = node.getAttribute('class') === 'hashtag'
   const userId = node.getAttribute('data-user-id') || userIdFromUrl(node.getAttribute('href'))
 
@@ -99,7 +98,7 @@ export default class Popover extends React.Component {
     const { above, outer, inner } = this.calculateStyle()
     const typeClass = 'p-' + type
 
-    var content
+    let content
     switch (type) {
       case 'tag':
         content = <TagPopover {...params} />

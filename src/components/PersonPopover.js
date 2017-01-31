@@ -24,8 +24,8 @@ export default class PersonPopover extends React.Component {
 
   render () {
     const { person, dispatch } = this.props
+    if (!person) return null
     const bio = person.bio ? truncate(person.bio, 36) : ''
-
     const startMessage = () => {
       trackEvent(STARTED_MESSAGE, {context: 'popover'})
       return dispatch(showDirectMessage(person.id, person.name))

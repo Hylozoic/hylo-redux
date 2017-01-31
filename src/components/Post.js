@@ -386,7 +386,7 @@ export const RequestContributorsSentence = ({ post }) => {
   const contributors = post.contributors || []
   const onlyAuthorIsContributing = contributors.length === 1 && same('id', first(contributors), post.user)
   return contributors.length > 0 && !onlyAuthorIsContributing
-    ? <LinkedPersonSentence people={contributors} className='contributors'>
+    ? <LinkedPersonSentence people={contributors} className='contributors' showPopover>
         helped complete this request!
       </LinkedPersonSentence>
     : <div className='contributors'>Request has been completed</div>

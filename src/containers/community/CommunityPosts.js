@@ -1,33 +1,29 @@
 import React, { Component } from 'react'
 const { func, object } = React.PropTypes
-// Redux connection related
 import { compose } from 'redux'
 import { connect } from 'react-redux'
 import { prefetch } from 'react-fetcher'
-// Component related
 import {
   COMMUNITY_SETUP_CHECKLIST,
   REQUEST_TO_JOIN_COMMUNITY,
   IN_FEED_PROFILE_COMPLETION_MODULES,
   IN_FEED_ENGAGEMENT_MODULES
 } from '../../config/featureFlags'
+import {
+  isMember, canModerate, hasFeature, hasBio, hasSkills
+} from '../../models/currentUser'
+import {
+  navigate, showModal, sendGraphqlQuery, requestToJoinCommunity
+} from '../../actions'
+import { getChecklist, checklistPercentage } from '../../models/community'
+import { coinToss } from '../../util'
 import { fetch, ConnectedPostList } from '../ConnectedPostList'
-
 import PostEditor from '../../components/PostEditor'
 import ProfileSkillsModule from '../../components/ProfileSkillsModule'
 import ProfileBioModule from '../../components/ProfileBioModule'
 import PopularSkillsModule from '../../components/PopularSkillsModule'
 import PostPromptModule from '../../components/PostPromptModule'
-
 import { PercentBar } from '../ChecklistModal'
-import {
-  isMember, canModerate, hasFeature, hasBio, hasSkills
-} from '../../models/currentUser'
-import { navigate, showModal } from '../../actions'
-import { sendGraphqlQuery } from '../../actions/graphql'
-import { requestToJoinCommunity } from '../../actions/communities'
-import { getChecklist, checklistPercentage } from '../../models/community'
-import { coinToss } from '../../util'
 
 const subject = 'community'
 export const MIN_MEMBERS_FOR_SKILLS_MODULE = 6

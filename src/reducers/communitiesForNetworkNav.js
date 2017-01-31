@@ -1,4 +1,4 @@
-import { FETCH_COMMUNITIES_FOR_NETWORK_NAV } from '../actions'
+import { FETCH_COMMUNITIES_FOR_NETWORK_NAV } from '../actions/constants'
 
 export default function (state = {}, action) {
   if (action.error) return state

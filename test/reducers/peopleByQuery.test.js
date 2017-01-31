@@ -1,6 +1,9 @@
 require('../support')
 import peopleByQuery from '../../src/reducers/peopleByQuery'
-import { FETCH_PEOPLE, REMOVE_COMMUNITY_MEMBER, REMOVE_COMMUNITY_MEMBER_PENDING } from '../../src/actions'
+import {
+  FETCH_PEOPLE,
+  REMOVE_COMMUNITY_MEMBER_PENDING
+} from '../../src/actions/constants'
 
 describe('peopleByQuery', () => {
   it('stores the community moderators when fetching people for a community', () => {

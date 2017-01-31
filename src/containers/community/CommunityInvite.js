@@ -4,11 +4,12 @@ import { prefetch } from 'react-fetcher'
 const { object, func, array } = React.PropTypes
 import { isEmpty, set } from 'lodash'
 import { get } from 'lodash/fp'
-import { fetchInvitations, fetchJoinRequests } from '../../actions'
 import {
+  fetchInvitations,
+  fetchJoinRequests,
   fetchCommunitySettings,
   updateCommunitySettings
-} from '../../actions/communities'
+} from '../../actions'
 import { hasFeature } from '../../models/currentUser'
 import { REQUEST_TO_JOIN_COMMUNITY } from '../../config/featureFlags'
 import { communityJoinUrl } from '../../routes'

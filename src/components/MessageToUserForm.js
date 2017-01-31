@@ -1,8 +1,7 @@
 import React from 'react'
 import { get } from 'lodash'
 import { connect } from 'react-redux'
-import { createComment } from '../actions/comments'
-import { updateMessageEditor } from '../actions/threads'
+import { createComment, updateMessageEditor } from '../actions'
 import { textLength } from '../util/text'
 import { onCmdOrCtrlEnter } from '../util/textInput'
 import AutosizingTextarea from './AutosizingTextarea'
@@ -44,7 +43,7 @@ export default class MessageToUserForm extends React.Component {
       ? 'Cmd' : 'Ctrl'
     this.setState({modifierKey})
   }
-  
+
   focus () {
     this.refs.editor.focus()
   }

@@ -7,17 +7,18 @@ import CopyToClipboard from 'react-copy-to-clipboard'
 import cx from 'classnames'
 const { func, object, string } = React.PropTypes
 import {
-  UPLOAD_IMAGE,
   notify,
   toggleUserSettingsSection,
   updateMembershipSettings,
   updateCurrentUser,
   generateUserToken,
-  revokeUserToken
- } from '../../actions'
+  revokeUserToken,
+  leaveCommunity,
+  uploadImage,
+  sendGraphqlQuery
+} from '../../actions'
+import { UPLOAD_IMAGE } from '../../actions/constants'
 import { PAYMENT_SETTINGS, GENERATE_TOKEN } from '../../config/featureFlags'
-import { leaveCommunity } from '../../actions/communities'
-import { uploadImage } from '../../actions/uploadImage'
 import A from '../../components/A'
 import { formatDate } from '../../util/text'
 import { debounce, find, sortBy, throttle, set } from 'lodash'
@@ -29,7 +30,6 @@ import { openPopup, setupPopupCallback, PROFILE_CONTEXT } from '../../util/auth'
 import { EDITED_USER_SETTINGS, trackEvent } from '../../util/analytics'
 import { preventSpaces } from '../../util/textInput'
 import Icon from '../../components/Icon'
-import { sendGraphqlQuery } from '../../actions/graphql'
 
 const fetchUserHasDevice = () =>
   sendGraphqlQuery(`{

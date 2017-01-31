@@ -1,8 +1,9 @@
 import React from 'react'
 import { connect } from 'react-redux'
-import { updateCurrentUser, UPLOAD_IMAGE } from '../actions'
-import { uploadImage } from '../actions/uploadImage'
-import { updateCommunitySettings } from '../actions/communities'
+import {
+  updateCurrentUser, updateCommunitySettings, uploadImage
+} from '../actions'
+import { UPLOAD_IMAGE } from '../actions/constants'
 import { get, set } from 'lodash/fp'
 import Icon from './Icon'
 import {

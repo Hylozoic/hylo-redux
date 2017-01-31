@@ -91,7 +91,7 @@ import {
   VALIDATE_COMMUNITY_ATTRIBUTE_PENDING,
   VALIDATE_NETWORK_ATTRIBUTE,
   VALIDATE_NETWORK_ATTRIBUTE_PENDING
-} from '../actions'
+} from '../actions/constants'
 
 const combinedReducers = combineReducers({
   isMobile: (state = false, action) => {

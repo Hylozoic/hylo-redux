@@ -1,6 +1,9 @@
 require('../support')
 import postsByQuery from '../../src/reducers/postsByQuery'
-import { CREATE_POST, FETCH_POSTS } from '../../src/actions'
+import {
+  CREATE_POST,
+  FETCH_POSTS
+} from '../../src/actions/constants'
 
 describe('postsByQuery', () => {
   describe('on FETCH_POSTS', () => {

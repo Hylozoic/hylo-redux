@@ -6,22 +6,23 @@ const { object, func, array } = React.PropTypes
 import { find, isEmpty, reduce, set } from 'lodash'
 import { get } from 'lodash/fp'
 import { markdown, sanitize } from 'hylo-utils/text'
-import { navigate, fetchInvitations, fetchJoinRequests } from '../../actions'
 import {
+  navigate,
+  fetchInvitations,
   addCommunityModerator,
   fetchCommunitySettings,
   fetchCommunityModerators,
   removeCommunityModerator,
   resetCommunityValidation,
   updateCommunitySettings,
-  validateCommunityAttribute
-} from '../../actions/communities'
+  validateCommunityAttribute,
+  uploadImage
+} from '../../actions'
 import config from '../../config'
 const { host } = config
 const slackClientId = config.slack.clientId
 import { avatarUploadSettings, bannerUploadSettings } from '../../models/community'
 import A from '../../components/A'
-import { uploadImage } from '../../actions/uploadImage'
 import PersonChooser from '../../components/PersonChooser'
 import { makeUrl } from '../../util/navigation'
 

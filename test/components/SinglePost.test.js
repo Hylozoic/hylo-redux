@@ -1,6 +1,6 @@
 require('../support')
 import SinglePost from '../../src/containers/SinglePost'
-import { fetchPost, unfollowPost } from '../../src/actions/posts'
+import { fetchPost, unfollowPost } from '../../src/actions'
 import { configureStore } from '../../src/store'
 import { getPrefetchedData } from 'react-fetcher'
 import { mockActionResponse } from '../support/helpers'

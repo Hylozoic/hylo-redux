@@ -1,8 +1,12 @@
-import {
-  LOGIN, SIGNUP, FETCH_CURRENT_USER, SET_UNSEEN_THREAD_COUNT,
-  INCREMENT_UNSEEN_THREADS, UPDATE_CURRENT_USER_PENDING
-} from '../actions'
 import { get } from 'lodash/fp'
+import {
+  LOGIN,
+  SIGNUP,
+  FETCH_CURRENT_USER,
+  SET_UNSEEN_THREAD_COUNT,
+  INCREMENT_UNSEEN_THREADS,
+  UPDATE_CURRENT_USER_PENDING
+} from '../actions/constants'
 
 const newMessageCount = (state = 0, action) => {
   const { type, error, payload } = action

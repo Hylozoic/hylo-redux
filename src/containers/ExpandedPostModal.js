@@ -1,7 +1,6 @@
 import React from 'react'
 import { connect } from 'react-redux'
-import { closeModal } from '../actions'
-import { fetchComments } from '../actions/comments'
+import { closeModal, fetchComments } from '../actions'
 import { scrollToComment } from '../util/scrolling'
 import { modalWrapperCSSId, ModalContainer } from '../components/Modal'
 const { func, object, string } = React.PropTypes

@@ -8,19 +8,16 @@ import { ModalInput, ModalSelect } from '../components/ModalRow'
 import Modal from '../components/Modal'
 import Icon from '../components/Icon'
 import InviteModal from './InviteModal'
-import { uploadImage } from '../actions/uploadImage'
 import {
-  CREATE_COMMUNITY,
-  UPLOAD_IMAGE,
+  uploadImage,
   fetchInvitations,
-  navigate
-} from '../actions'
-import {
+  navigate,
   createCommunity,
   resetCommunityValidation,
   updateCommunityEditor,
-  validateCommunityAttribute
-} from '../actions/communities'
+  validateCommunityAttribute,
+  saveCurrentCommunityId
+} from '../actions'
 import {
   avatarUploadSettings,
   bannerUploadSettings,
@@ -29,9 +26,12 @@ import {
   defaultBanner,
   getCurrentCommunity
 } from '../models/community'
+import {
+  CREATE_COMMUNITY,
+  UPLOAD_IMAGE
+} from '../actions/constants'
 import { scrollToBottom } from '../util/scrolling'
 import { ADDED_COMMUNITY, trackEvent } from '../util/analytics'
-import { saveCurrentCommunityId } from '../actions/util'
 import { checklistUrl } from '../routes'
 
 const merkabaUrl = 'https://www.hylo.com/img/hylo-merkaba-300x300.png'

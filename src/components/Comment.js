@@ -7,7 +7,7 @@ import { get } from 'lodash/fp'
 import { humanDate, prependInP, present, textLength } from '../util/text'
 import { sanitize } from 'hylo-utils/text'
 import { commentUrl } from '../routes'
-import { showModal } from '../actions'
+import { showModal, navigate } from '../actions'
 import { removeComment, thank, updateCommentEditor } from '../actions/comments'
 import truncateHtml from 'trunc-html'
 import { ClickCatchingSpan } from './ClickCatcher'
@@ -29,7 +29,9 @@ class Comment extends React.Component {
 
   static contextTypes = {
     dispatch: func.isRequired,
-    currentUser: object
+    currentUser: object,
+    isMobile: bool,
+    location: object
   }
 
   constructor (props) {
@@ -39,7 +41,7 @@ class Comment extends React.Component {
 
   render () {
     const { comment, truncate, expand, community } = this.props
-    const { dispatch, currentUser } = this.context
+    const { dispatch, currentUser, isMobile, location } = this.context
     const { editing } = this.state
 
     const person = comment.user
@@ -66,6 +68,12 @@ class Comment extends React.Component {
 
     const { image } = comment
 
+    const encodeUrl = url => url.replace(/\//g, '%2F')
+
+    const showImage = isMobile
+      ? () => dispatch(navigate(`/image/${encodeUrl(image.url)}/${encodeUrl(location.pathname)}`))
+      : () => dispatch(showModal('image', {url: image.url}))
+
     return <div className='comment' data-comment-id={comment.id}>
       {canEditComment(currentUser, comment, community) &&
         <Dropdown alignRight toggleChildren={<Icon name='More' />}>
@@ -76,7 +84,7 @@ class Comment extends React.Component {
       <Avatar person={person} showPopover />
       <div className='content'>
         {image && <div className='text'><a href={`/u/${person.id}`} className='name'>{person.name}</a></div>}
-        {image && <a onClick={() => dispatch(showModal('image', {url: image.url}))}>
+        {image && <a onClick={showImage}>
           <img className='thumbnail' src={image.thumbnail_url} />
         </a>}
         {!image && <ClickCatchingSpan className='text' dangerouslySetInnerHTML={{__html: text}} />}

@@ -1,7 +1,7 @@
 import {
   NOTIFY,
   REMOVE_NOTIFICATION
-} from '../constants'
+} from './constants'
 
 export function notify (text, opts) {
   return {

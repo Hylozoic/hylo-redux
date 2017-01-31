@@ -4,7 +4,7 @@ import {
   UPDATE_COMMENT_EDITOR,
   CREATE_COMMENT,
   UPDATE_COMMENT
-} from '../../src/constants'
+} from '../../src/actions/constants'
 
 describe('commentEdits', () => {
   describe('on UPDATE_COMMENT_EDITOR', () => {

@@ -3,7 +3,7 @@ import { mount } from 'enzyme'
 import React from 'react'
 import { configureStore } from '../../../src/store'
 import ChangeImageButton from '../../../src/components/ChangeImageButton'
-import { UPLOAD_IMAGE } from '../../../src/constants'
+import { UPLOAD_IMAGE } from '../../../src/actions/constants'
 
 describe('ChangeImageButton', () => {
   const person = {id: 1, avatar_url: 'http://foo.com/bar (1).png'}

@@ -5,7 +5,7 @@ import { debounce, get, isEmpty } from 'lodash'
 import { navigateAfterJoin } from '../../util/navigation'
 import {
   JOIN_COMMUNITY_WITH_CODE
-} from '../../constants'
+} from '../../actions/constants'
 import {
   joinCommunityWithCode, resetCommunityValidation, validateCommunityAttribute, resetError
 } from '../../actions'

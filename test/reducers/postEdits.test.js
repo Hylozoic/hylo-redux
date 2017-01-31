@@ -7,7 +7,7 @@ import {
   CREATE_POST,
   EDIT_TAG_DESCRIPTION,
   EDIT_NEW_TAG_AND_DESCRIPTION
-} from '../../src/constants'
+} from '../../src/actions/constants'
 
 describe('postEdits', () => {
   describe('on START_POST_EDIT', () => {

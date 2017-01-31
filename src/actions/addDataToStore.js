@@ -1,6 +1,6 @@
 import {
   ADD_DATA_TO_STORE
-} from '../constants'
+} from './constants'
 
 export function addDataToStore (bucket, payload, fromType) {
   return {

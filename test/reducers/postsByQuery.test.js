@@ -3,7 +3,7 @@ import postsByQuery from '../../src/reducers/postsByQuery'
 import {
   CREATE_POST,
   FETCH_POSTS
-} from '../../src/constants'
+} from '../../src/actions/constants'
 
 describe('postsByQuery', () => {
   describe('on FETCH_POSTS', () => {

@@ -5,7 +5,7 @@ import {
 import {
   CLEAR_CACHE,
   SET_STATE
-} from '../constants'
+} from '../actions/constants'
 
 export const appendUniq = (state, key, values, uniqTest) =>
   concatUniq(state, key, state[key] || [], values, uniqTest)

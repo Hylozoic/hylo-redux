@@ -11,7 +11,7 @@ import {
   UPDATE_COMMENT_PENDING,
   REMOVE_COMMENT,
   THANK_PENDING
-} from '../constants'
+} from '../actions/constants'
 
 export default function (state = {}, action) {
   let { type, error, payload, meta } = action

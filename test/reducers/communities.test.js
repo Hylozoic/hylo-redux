@@ -6,7 +6,7 @@ import {
   REMOVE_COMMUNITY_MODERATOR_PENDING,
   UPDATE_COMMUNITY_SETTINGS_PENDING,
   USE_INVITATION
-} from '../../src/constants'
+} from '../../src/actions/constants'
 import { configureStore } from '../../src/store'
 import { mockActionResponse } from '../support/helpers'
 

@@ -17,7 +17,7 @@ import {
   uploadImage,
   sendGraphqlQuery
 } from '../../actions'
-import { UPLOAD_IMAGE } from '../../constants'
+import { UPLOAD_IMAGE } from '../../actions/constants'
 import { PAYMENT_SETTINGS, GENERATE_TOKEN } from '../../config/featureFlags'
 import A from '../../components/A'
 import { formatDate } from '../../util/text'

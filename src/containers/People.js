@@ -11,7 +11,7 @@ import AccessErrorMessage from '../components/AccessErrorMessage'
 import A from '../components/A'
 const { array, bool, func, number, object, string } = React.PropTypes
 import { canInvite, canModerate } from '../models/currentUser'
-import { FETCH_PEOPLE } from '../constants'
+import { FETCH_PEOPLE } from '../actions/constants'
 import {
   removeCommunityMember,
   fetchPeople,

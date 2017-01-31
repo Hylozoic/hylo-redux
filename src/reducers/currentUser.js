@@ -16,7 +16,7 @@ import {
   UPDATE_COMMUNITY_SETTINGS_PENDING,
   UPDATE_MEMBERSHIP_SETTINGS_PENDING,
   USE_INVITATION
-} from '../constants'
+} from '../actions/constants'
 
 const normalizeCurrentUser = user =>
   omitBy(x => isNull(x) || isUndefined(x), {

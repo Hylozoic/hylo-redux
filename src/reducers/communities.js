@@ -15,7 +15,7 @@ import {
   TYPEAHEAD,
   UPDATE_COMMUNITY_CHECKLIST,
   USE_INVITATION
-} from '../constants'
+} from '../actions/constants'
 import { mergeList } from './util'
 
 export default function (state = {}, action) {

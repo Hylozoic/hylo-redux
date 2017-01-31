@@ -5,7 +5,7 @@ import Avatar from '../../components/Avatar'
 import {
   approveJoinRequest, approveAllJoinRequests, notify
 } from '../../actions'
-import { FETCH_JOIN_REQUESTS } from '../../constants'
+import { FETCH_JOIN_REQUESTS } from '../../actions/constants'
 import cx from 'classnames'
 import { connect } from 'react-redux'
 

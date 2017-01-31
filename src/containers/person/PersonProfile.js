@@ -4,7 +4,7 @@ import { compose } from 'redux'
 import { connect } from 'react-redux'
 import { prefetch, defer } from 'react-fetcher'
 import { commentUrl, peopleUrl } from '../../routes'
-import { FETCH_PERSON } from '../../constants'
+import { FETCH_PERSON } from '../../actions/constants'
 import {
   navigate,
   showDirectMessage,

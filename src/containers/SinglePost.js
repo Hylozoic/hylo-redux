@@ -15,7 +15,7 @@ import {
   saveCurrentCommunityId,
   findError
 } from '../actions'
-import { FETCH_POST } from '../constants'
+import { FETCH_POST } from '../actions/constants'
 import { ogMetaTags } from '../util'
 import A from '../components/A'
 import PostEditor from '../components/PostEditor'

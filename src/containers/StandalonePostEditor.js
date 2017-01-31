@@ -8,7 +8,7 @@ import {
 import {
   CREATE_POST,
   UPDATE_POST
-} from '../constants'
+} from '../actions/constants'
 import { getCommunities, getPost } from '../models/post'
 import { getCommunity } from '../models/community'
 import { PostEditor, newPostId } from '../components/PostEditor'

@@ -15,7 +15,7 @@ import {
   UPDATE_POST,
   UPLOAD_DOC,
   UPLOAD_IMAGE
-} from '../constants'
+} from '../actions/constants'
 import { updateMedia } from './util'
 import { prepareHashtagsForEditing } from '../util/linkify'
 import { invalidCharacterRegex } from '../models/hashtag'

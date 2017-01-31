@@ -8,7 +8,7 @@ import {
   FETCH_PEOPLE,
   FETCH_TAGS,
   SEARCH
-} from '../constants'
+} from '../actions/constants'
 
 const commonDefaults = {
   type: ['all+welcome', 'all'],

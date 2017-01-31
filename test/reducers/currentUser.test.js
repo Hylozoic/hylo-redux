@@ -1,4 +1,4 @@
-import { UPDATE_CURRENT_USER_PENDING } from '../../src/constants'
+import { UPDATE_CURRENT_USER_PENDING } from '../../src/actions/constants'
 import currentUser from '../../src/reducers/currentUser'
 
 describe('currentUser', () => {

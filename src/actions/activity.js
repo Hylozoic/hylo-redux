@@ -4,7 +4,7 @@ import {
   FETCH_ACTIVITY,
   MARK_ACTIVITY_READ,
   MARK_ALL_ACTIVITIES_READ
-} from '../constants'
+} from './constants'
 
 export function fetchActivity (offset = 0, resetCount, id = 'all') {
   const limit = 20

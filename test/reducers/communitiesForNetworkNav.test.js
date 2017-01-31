@@ -1,6 +1,6 @@
 require('../support')
 import communitiesForNetworkNav from '../../src/reducers/communitiesForNetworkNav'
-import { FETCH_COMMUNITIES_FOR_NETWORK_NAV } from '../../src/constants'
+import { FETCH_COMMUNITIES_FOR_NETWORK_NAV } from '../../src/actions/constants'
 
 const fetchAction = {
   type: FETCH_COMMUNITIES_FOR_NETWORK_NAV,

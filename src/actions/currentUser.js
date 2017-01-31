@@ -14,7 +14,7 @@ import {
   UPDATE_CURRENT_USER,
   FETCH_CURRENT_USER,
   SET_PASSWORD
-} from '../constants'
+} from './constants'
 
 import { setCurrentCommunityId } from './ui'
 

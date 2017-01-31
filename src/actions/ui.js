@@ -7,7 +7,7 @@ import {
   SET_MOBILE_DEVICE,
   SHOW_EXPANDED_POST,
   SHOW_DIRECT_MESSAGE
-} from '../constants'
+} from './constants'
 
 export function navigate (path) {
   return push(path)

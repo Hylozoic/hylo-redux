@@ -6,7 +6,7 @@ import {
   SET_UNSEEN_THREAD_COUNT,
   INCREMENT_UNSEEN_THREADS,
   UPDATE_CURRENT_USER_PENDING
-} from '../constants'
+} from '../actions/constants'
 
 const newMessageCount = (state = 0, action) => {
   const { type, error, payload } = action

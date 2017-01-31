@@ -1,6 +1,6 @@
 require('../support')
 import { connectedListProps, fetchWithCache } from '../../src/util/caching'
-import { FETCH_POSTS } from '../../src/constants'
+import { FETCH_POSTS } from '../../src/actions/constants'
 
 describe('connectedListProps', () => {
   it('assembles props from store', () => {

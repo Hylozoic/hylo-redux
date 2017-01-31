@@ -29,7 +29,7 @@ import {
 import {
   CREATE_COMMUNITY,
   UPLOAD_IMAGE
-} from '../constants'
+} from '../actions/constants'
 import { scrollToBottom } from '../util/scrolling'
 import { ADDED_COMMUNITY, trackEvent } from '../util/analytics'
 import { checklistUrl } from '../routes'

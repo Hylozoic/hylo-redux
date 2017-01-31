@@ -20,7 +20,7 @@ import {
 import {
   CREATE_NETWORK,
   UPLOAD_IMAGE
-} from '../../constants'
+} from '../../actions/constants'
 import CommunityTagInput from '../../components/CommunityTagInput'
 const { array, bool, func, object, string } = React.PropTypes
 

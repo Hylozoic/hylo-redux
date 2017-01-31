@@ -1,4 +1,4 @@
-import { CLEAR_CACHE } from '../constants'
+import { CLEAR_CACHE } from './constants'
 
 export function clearCache (bucket, id) {
   return {

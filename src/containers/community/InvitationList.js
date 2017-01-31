@@ -6,7 +6,7 @@ import {
   fetchInvitations, sendCommunityInvitation, notify,
   resendAllCommunityInvitations
 } from '../../actions'
-import { FETCH_INVITATIONS } from '../../constants'
+import { FETCH_INVITATIONS } from '../../actions/constants'
 import cx from 'classnames'
 import { get, uniqBy } from 'lodash/fp'
 import { connect } from 'react-redux'

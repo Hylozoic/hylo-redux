@@ -1,7 +1,7 @@
 import {
   SHOW_MODAL,
   CLOSE_MODAL
-} from '../constants'
+} from './constants'
 
 export function showModal (name, payload) {
   return {type: SHOW_MODAL, payload, meta: {name}}

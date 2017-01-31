@@ -45,7 +45,7 @@ import { isKey, onEnter } from '../util/textInput'
 import { responseMissingTagDescriptions } from '../util/api'
 import {
   CREATE_POST, FETCH_LINK_PREVIEW, UPDATE_POST, UPLOAD_IMAGE
-} from '../constants'
+} from '../actions/constants'
 import { ADDED_POST, EDITED_POST, OPENED_POST_EDITOR, trackEvent } from '../util/analytics'
 import { getCommunity, getCurrentCommunity, getDefaultTags } from '../models/community'
 const { array, bool, func, object, string } = React.PropTypes

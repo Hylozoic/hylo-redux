@@ -1,4 +1,4 @@
-import { FETCH_RAW_ADMIN_METRICS } from '../constants'
+import { FETCH_RAW_ADMIN_METRICS } from '../actions/constants'
 
 export function admin (state = {}, action) {
   const { type, payload, error } = action

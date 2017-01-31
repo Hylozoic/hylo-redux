@@ -2,7 +2,7 @@ import { get } from 'lodash/fp'
 import { cleanAndStringify } from '../util/caching'
 import {
   SEARCH
-} from '../constants'
+} from './constants'
 
 export function search (opts) {
   let { limit, offset, type, q, cacheId } = opts

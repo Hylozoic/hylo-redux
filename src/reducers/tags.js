@@ -14,7 +14,7 @@ import {
   UPDATE_POST,
   CREATE_TAG_IN_COMMUNITY,
   FETCH_COMMUNITY
-} from '../constants'
+} from '../actions/constants'
 import { filter, fromPairs, merge, omitBy, toPairs, isEmpty } from 'lodash'
 import { get, pickBy, some, includes, mapValues } from 'lodash/fp'
 import qs from 'querystring'

@@ -1,7 +1,7 @@
 require('../support')
 import { mocks } from '../support'
 import { optimisticMiddleware } from '../../src/middleware'
-import { SET_STATE } from '../../src/constants'
+import { SET_STATE } from '../../src/actions/constants'
 
 describe('optimisticMiddleware', () => {
   let next, initialState, store, middleware

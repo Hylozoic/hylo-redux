@@ -2,7 +2,7 @@ import { cleanAndStringify } from '../util/caching'
 import {
   CANCEL_TYPEAHEAD,
   TYPEAHEAD
-} from '../constants'
+} from './constants'
 
 export function typeahead (text, id, params) {
   if (!text) return {type: CANCEL_TYPEAHEAD, meta: {id}}

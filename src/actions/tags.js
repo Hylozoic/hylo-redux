@@ -13,7 +13,7 @@ import {
   CANCEL_TAG_DESCRIPTION_EDIT,
   EDIT_NEW_TAG_AND_DESCRIPTION,
   SET_META_TAGS
-} from '../constants'
+} from './constants'
 
 export function fetchTag (tagName, communityId) {
   const path = communityId

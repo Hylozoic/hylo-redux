@@ -6,7 +6,7 @@ import {
   FETCH_PEOPLE,
   FETCH_PERSON,
   FETCH_THANKS
-} from '../constants'
+} from './constants'
 
 export function fetchPeople (opts) {
   let { subject, id, limit, offset, search, cacheId } = opts

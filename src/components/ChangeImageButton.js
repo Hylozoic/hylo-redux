@@ -3,7 +3,7 @@ import { connect } from 'react-redux'
 import {
   updateCurrentUser, updateCommunitySettings, uploadImage
 } from '../actions'
-import { UPLOAD_IMAGE } from '../constants'
+import { UPLOAD_IMAGE } from '../actions/constants'
 import { get, set } from 'lodash/fp'
 import Icon from './Icon'
 import {

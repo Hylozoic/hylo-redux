@@ -7,7 +7,7 @@ import { addDataToStore } from './actions'
 import {
   _PENDING,
   SET_STATE
-} from './constants'
+} from './actions/constants'
 
 // TODO cache expiration
 export function cacheMiddleware (store) {

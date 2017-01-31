@@ -5,7 +5,7 @@ import {
   FETCH_PEOPLE,
   LEAVE_COMMUNITY_PENDING,
   UPDATE_CURRENT_USER_PENDING
-} from '../../src/constants'
+} from '../../src/actions/constants'
 
 const user1 = {
   id: 'j',

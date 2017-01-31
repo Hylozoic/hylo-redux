@@ -9,7 +9,7 @@ import {
   FETCH_PERSON,
   SIGNUP,
   LOGIN
-} from '../constants'
+} from '../actions/constants'
 import currentUserReducer from './currentUser'
 
 export const normalize = person => {

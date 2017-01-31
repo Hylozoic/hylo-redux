@@ -1,4 +1,4 @@
-import { FETCH_RAW_ADMIN_METRICS } from '../constants'
+import { FETCH_RAW_ADMIN_METRICS } from './constants'
 
 export function fetchRawMetrics () {
   return {

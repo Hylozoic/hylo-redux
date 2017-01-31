@@ -8,7 +8,7 @@ import {
 } from '../actions'
 import {
   CREATE_COMMENT
-} from '../constants'
+} from '../actions/constants'
 import { ADDED_COMMENT, trackEvent } from '../util/analytics'
 import { textLength } from '../util/text'
 import { onCmdOrCtrlEnter } from '../util/textInput'

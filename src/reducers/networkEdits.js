@@ -3,7 +3,7 @@ import {
   UPDATE_NETWORK,
   UPDATE_NETWORK_EDITOR,
   UPLOAD_IMAGE
-} from '../constants'
+} from '../actions/constants'
 
 export default function (state = {}, action) {
   if (action.error) return state

@@ -2,7 +2,7 @@ require('../support')
 import { mount } from 'enzyme'
 import React from 'react'
 import CommentForm from '../../../src/components/CommentForm'
-import { CREATE_COMMENT } from '../../../src/constants'
+import { CREATE_COMMENT } from '../../../src/actions/constants'
 import { configureStore } from '../../../src/store'
 const { object, func } = React.PropTypes
 

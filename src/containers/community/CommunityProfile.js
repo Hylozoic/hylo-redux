@@ -3,7 +3,7 @@ import { compose } from 'redux'
 import { connect } from 'react-redux'
 import { prefetch, defer } from 'react-fetcher'
 import { get } from 'lodash'
-import { FETCH_COMMUNITY } from '../../constants'
+import { FETCH_COMMUNITY } from '../../actions/constants'
 import {
   fetchCommunity, fetchCommunitiesForNetworkNav, saveCurrentCommunityId
 } from '../../actions'

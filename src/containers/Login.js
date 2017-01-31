@@ -16,7 +16,7 @@ import {
 import {
   FETCH_COMMUNITY_FOR_INVITATION,
   FETCH_POST
-} from '../constants'
+} from '../actions/constants'
 import {
   LOGGED_IN, STARTED_LOGIN, LOGIN_ATTEMPTED, LOGIN_FAILED, alias, trackEvent
 } from '../util/analytics'

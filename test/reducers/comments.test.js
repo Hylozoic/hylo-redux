@@ -4,7 +4,7 @@ import {
   FETCH_COMMENTS,
   CREATE_COMMENT,
   THANK_PENDING
-} from '../../src/constants'
+} from '../../src/actions/constants'
 import { fetchActivity } from '../../src/actions'
 import { configureStore } from '../../src/store'
 import { mockActionResponse } from '../support/helpers'

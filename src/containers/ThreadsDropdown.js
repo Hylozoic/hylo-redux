@@ -14,7 +14,7 @@ import {
   appendThread,
   fetchPosts
 } from '../actions'
-import { FETCH_POSTS } from '../constants'
+import { FETCH_POSTS } from '../actions/constants'
 import { unseenThreadCount } from '../util/threads'
 import { getComments, getPost, denormalizedPost } from '../models/post'
 const { number, bool, string, array, func, object } = React.PropTypes

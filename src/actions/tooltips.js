@@ -2,7 +2,7 @@ import {
   REGISTER_TOOLTIP,
   UNREGISTER_TOOLTIP,
   RESET_TOOLTIPS
-} from '../constants'
+} from './constants'
 
 export function registerTooltip (id, index) {
   return {type: REGISTER_TOOLTIP, payload: {id, index}}

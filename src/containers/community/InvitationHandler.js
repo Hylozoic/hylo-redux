@@ -8,7 +8,7 @@ import Modal from '../../components/Modal'
 import A from '../../components/A'
 import ModalOnlyPage from '../../components/ModalOnlyPage'
 import { useInvitation } from '../../actions'
-import { USE_INVITATION } from '../../constants'
+import { USE_INVITATION } from '../../actions/constants'
 import { defaultAvatar } from '../../models/community'
 import { navigateAfterJoin } from '../../util/navigation'
 const { func, object, string } = React.PropTypes

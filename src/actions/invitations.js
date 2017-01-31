@@ -10,7 +10,7 @@ import {
   CLEAR_INVITATION_EDITOR,
   UPDATE_TAG_INVITATION_EDITOR,
   SEND_COMMUNITY_TAG_INVITATION
-} from '../constants'
+} from './constants'
 
 export function useInvitation (token) {
   return {

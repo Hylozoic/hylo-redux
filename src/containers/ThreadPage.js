@@ -5,7 +5,7 @@ import { pick } from 'lodash/fp'
 import {
   fetchPost, fetchComments, findError
 } from '../actions'
-import { FETCH_POST } from '../constants'
+import { FETCH_POST } from '../actions/constants'
 import AccessErrorMessage from '../components/AccessErrorMessage'
 import Thread from '../components/Thread'
 import { denormalizedPost, getComments, getPost } from '../models/post'

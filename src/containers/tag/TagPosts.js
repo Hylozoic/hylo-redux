@@ -9,7 +9,7 @@ import {
   followTag,
   showShareTag
 } from '../../actions'
-import { FETCH_TAG } from '../../constants'
+import { FETCH_TAG } from '../../actions/constants'
 import { sortBy } from 'lodash'
 import { get } from 'lodash/fp'
 import PostEditor from '../../components/PostEditor'

@@ -8,7 +8,7 @@ import {
   UPDATE_MESSAGE_EDITOR,
   INCREMENT_UNSEEN_THREADS,
   SET_UNSEEN_THREAD_COUNT
-} from '../constants'
+} from './constants'
 
 export function appendThread (thread) {
   return {

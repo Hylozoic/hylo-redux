@@ -6,7 +6,7 @@ import {
   UPDATE_NETWORK_EDITOR,
   VALIDATE_NETWORK_ATTRIBUTE,
   RESET_NETWORK_VALIDATION
-} from '../constants'
+} from './constants'
 
 export function createNetwork (params) {
   return {

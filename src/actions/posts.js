@@ -23,7 +23,7 @@ import {
   VOTE_ON_POST,
   FETCH_POSTS,
   CHECK_FRESHNESS_POSTS
-} from '../constants'
+} from './constants'
 
 // id refers to the id of the editing context, e.g. 'new-event'
 export function createPost (id, params, slug) {

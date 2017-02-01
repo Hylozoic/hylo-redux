@@ -535,6 +535,11 @@ const combinedReducers = combineReducers({
     if (error) return state
     switch (type) {
       case NOTIFY:
+        if (payload.singleton) {
+          if (state.find(n => n.singleton && n.text === payload.text)) {
+            return state
+          }
+        }
         return [payload, ...state]
       case REMOVE_NOTIFICATION:
         return state.filter(n => n.id !== payload)

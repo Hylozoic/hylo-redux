@@ -127,7 +127,7 @@ export default class Thread extends React.Component {
     const newFromOther = latestFromOther && post.last_read_at && new Date(latestMessage.created_at) > new Date(post.last_read_at)
 
     return <div className='thread'>
-      <Header />
+      <Header post={post} />
       <MessageSection {...{messages, pending}} thread={post}
         onLeftBottom={() => this.setState({scrolledUp: true})}
         onHitBottom={() => this.setState({scrolledUp: false})}
@@ -144,7 +144,7 @@ export default class Thread extends React.Component {
   }
 }
 
-export const Header = (props, { currentUser, post }) => {
+export const Header = ({ post }, { currentUser }) => {
   const followers = post.followers
   const gt2 = followers.length - 2
   const { id } = currentUser
@@ -155,4 +155,4 @@ export const Header = (props, { currentUser, post }) => {
     {others.length > 1 && <span>and ${gt2} other{gt2 === 1 ? '' : 's'}</span>}
   </div>
 }
-Header.contextTypes = {post: object, currentUser: object}
+Header.contextTypes = {currentUser: object}

@@ -30,6 +30,7 @@ import {
 import { admin } from './admin'
 
 import {
+  ADD_DATA_TO_STORE,
   APPEND_THREAD,
   APPROVE_JOIN_REQUEST_PENDING,
   APPROVE_ALL_JOIN_REQUESTS_PENDING,
@@ -257,9 +258,17 @@ const combinedReducers = combineReducers({
 
   totalPeopleByQuery: composeReducers(
     keyedCounter(FETCH_PEOPLE, 'total'),
-    (state, { type, meta }) => {
-      if (type !== REMOVE_COMMUNITY_MEMBER_PENDING) return state
-      return {...state, [meta.cacheId]: state[meta.cacheId] - 1}
+    (state, { type, meta, payload }) => {
+      switch (type) {
+        case ADD_DATA_TO_STORE:
+          if (meta.bucket === 'totalPeopleByQuery') {
+            return {...state, ...payload}
+          }
+          break
+        case REMOVE_COMMUNITY_MEMBER_PENDING:
+          return {...state, [meta.cacheId]: state[meta.cacheId] - 1}
+      }
+      return state
     }
   ),
 

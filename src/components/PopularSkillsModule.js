@@ -18,6 +18,7 @@ const fetchPopularSkills = slug =>
         id
         avatarUrl
       }
+      memberCount
     }
   }`, {
     variables: {slug},
@@ -27,7 +28,10 @@ const fetchPopularSkills = slug =>
       peopleByQuery: flow(
         get('community.members'),
         map('id'),
-        ids => ({[`subject=community&id=${slug}`]: ids}))
+        ids => ({[`subject=community&id=${slug}`]: ids})),
+      totalPeopleByQuery: flow(
+        get('community.memberCount'),
+        t => ({[`subject=community&id=${slug}`]: t}))
     }
   })
 

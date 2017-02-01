@@ -55,6 +55,13 @@ export default class CommentForm extends React.PureComponent {
     this.state = {}
   }
 
+  componentDidMount () {
+    const modifierKey = window.navigator.platform.startsWith('Mac')
+      ? 'Cmd' : 'Ctrl'
+    this.setState({modifierKey})
+    this.socket = getSocket()
+  }
+
   submit = (event, newTagDescriptions) => {
     const { dispatch, postId, commentId, newComment, close, pending } = this.props
     if (event) event.preventDefault()
@@ -89,13 +96,6 @@ export default class CommentForm extends React.PureComponent {
     this.submit(null, tagDescriptions)
   }
 
-  componentDidMount () {
-    const modifierKey = window.navigator.platform.startsWith('Mac')
-      ? 'Cmd' : 'Ctrl'
-    this.setState({modifierKey})
-    this.socket = getSocket()
-  }
-
   setText (text) {
     const { dispatch, commentId, postId, newComment } = this.props
     const storeId = newComment ? postId : commentId
@@ -124,16 +124,16 @@ export default class CommentForm extends React.PureComponent {
     if (this.socket) this.socket.post(socketUrl(`/noo/post/${postId}/typing`), { isTyping: false })
   }
 
-  stopTyping = debounce(this.stoppedTyping, STOPPED_TYPING_WAIT_TIME)
-
-  delaySetText = (text) => {
-    this.setEnabled(text)
-    return debounce(text => this.setText(text), 50)
-  }
-
   setEnabled = (text) => {
     this.setState({enabled: text.length > 0})
   }
+
+  stopTyping = debounce(this.stoppedTyping, STOPPED_TYPING_WAIT_TIME)
+
+  delaySetText = debounce(text => {
+    this.setEnabled(text)
+    this.setText(text)
+  }, 50)
 
   render () {
     const { text, close, pending } = this.props

@@ -36,9 +36,9 @@ const className = messageType => {
   return messageType
 }
 
-const Message = ({ message, remove }) => {
-  return <div className={`alert alert-${className(message.type)}`}>
-    <a className='close' onClick={() => remove(message.id)}>&times;</a>
-    <div>{message.text}</div>
+const Message = ({ message: { type, id, text, noClose }, remove }) => {
+  return <div className={`alert alert-${className(type)}`}>
+    {!noClose && <a className='close' onClick={() => remove(id)}>&times;</a>}
+    <div>{text}</div>
   </div>
 }

@@ -35,7 +35,7 @@ const subject = 'post'
 @prefetch(({ store, dispatch, params: { id }, query }) =>
   dispatch(fetchPost(id))
   .then(action => {
-    if (action.error) return
+    if (action.error) return action
     if (action.payload.parent_post_id) {
       return dispatch(fetchPost(action.payload.parent_post_id))
         .then(() => action)
@@ -43,8 +43,7 @@ const subject = 'post'
       return action
     }
   })
-  .then(action =>
-    redirect(store, id) || setupPage(store, id, query, action)))
+  .then(action => redirect(store, id) || setupPage(store, id, query, action)))
 @connect((state, { params: { id } }) => {
   const post = getPost(id, state)
   const parentPost = post ? getPost(post.parent_post_id, state) : null

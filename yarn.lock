@@ -3863,9 +3863,9 @@ liftoff@^2.1.0:
     rechoir "^0.6.2"
     resolve "^1.1.7"
 
-"linkifyjs@https://github.com/Hylozoic/linkifyjs.git":
+linkifyjs@Hylozoic/linkifyjs#allow-underscores:
   version "2.1.4"
-  resolved "https://github.com/Hylozoic/linkifyjs.git#70bf24655d35516fb08e4fae5cb25d62f8451b5b"
+  resolved "https://codeload.github.com/Hylozoic/linkifyjs/tar.gz/ede14b0f4bf09c675f74e707ab5a173041685dc8"
   optionalDependencies:
     jquery ">=1.9.0"
     react ">=0.14.0"

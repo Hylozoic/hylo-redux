@@ -18,6 +18,7 @@ import Dropdown from '../../components/Dropdown'
 import PersonDropdownItem from '../../components/PersonDropdownItem'
 import AccessErrorMessage from '../../components/AccessErrorMessage'
 import { canInvite } from '../../models/currentUser'
+import { getTagForCommunity } from '../../models/hashtag'
 import Tooltip from '../../components/Tooltip'
 const { bool, func, object } = React.PropTypes
 
@@ -36,7 +37,7 @@ function reloadTag (dispatch, name, communityId, query) {
 @prefetch(({ dispatch, params: { tagName, id }, query }) =>
   reloadTag(dispatch, tagName, id, query))
 @connect((state, { params: { tagName, id } }) => {
-  const tag = get(['tagsByCommunity', id || 'all', tagName], state)
+  const tag = getTagForCommunity(tagName, id, state)
   return {
     isMobile: state.isMobile,
     tag,

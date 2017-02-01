@@ -76,14 +76,18 @@ export function apiMiddleware (req) {
   }
 }
 
+const inspectAction = (action, mergeAttrs) =>
+  inspect({...mergeAttrs, ...omit(action, 'payload')})
+  .replace(/type: '([\w@/_]+)'/, (match, $1) => `type: '${blue($1)}'`)
+
 export function serverLogger (store) {
   return next => action => {
     let { payload } = action
 
     if (!payload || !payload.api) {
-      debug(blue('action:'), inspect(omit(action, 'payload')))
+      debug(inspectAction(action))
     } else {
-      debug(blue('action:'), inspect({api: true, ...omit(action, 'payload')}))
+      debug(inspectAction(action, {api: true}))
     }
 
     return next(action)

@@ -1,4 +1,8 @@
 /* eslint-disable camelcase */
+// LEJ: This is all the react component business
+//      everything comes in through a prop and
+//      using dispatch in this file should be considered
+//      a code smell.
 import React from 'react'
 import { difference, first, includes, map, some, sortBy, reject } from 'lodash'
 import { find, filter, get } from 'lodash/fp'
@@ -8,48 +12,33 @@ import cheerio from 'cheerio'
 import decode from 'ent/decode'
 import {
   humanDate, nonbreaking, present, textLength, truncate, appendInP
-} from '../util/text'
+} from '../../util/text'
 import { sanitize } from 'hylo-utils/text'
-import { linkifyHashtags } from '../util/linkify'
-import { tagUrl } from '../routes'
-import { connect } from 'react-redux'
-import { compose } from 'redux'
-import { isMobile } from '../client/util'
-import { same } from '../models'
-import { denormalizedPost, getComments, isPinned } from '../models/post'
-import { canEditPost, canModerate, hasFeature } from '../models/currentUser'
-import { getCurrentCommunity } from '../models/community'
-import {
-  typeahead,
-  showModal,
-  navigate,
-  completePost,
-  followPost,
-  removePost,
-  startPostEdit,
-  voteOnPost,
-  pinPost
-} from '../actions'
-import { CONTRIBUTORS } from '../config/featureFlags'
-import CommentSection from './CommentSection'
-import TagInput from './TagInput'
-import LinkedPersonSentence from './LinkedPersonSentence'
-import LinkPreview from './LinkPreview'
-import A from './A'
-import Avatar from './Avatar'
-import Dropdown from './Dropdown'
-import Attachments from './Attachments'
-import LazyLoader from './LazyLoader'
-import Icon from './Icon'
-import { ClickCatchingSpan } from './ClickCatcher'
-import { handleMouseOver } from './Popover'
+import { linkifyHashtags } from '../../util/linkify'
+import { tagUrl } from '../../routes'
+import { isMobile } from '../../client/util'
+import { same } from '../../models'
+import { isPinned } from '../../models/post'
+import { canEditPost, canModerate, hasFeature } from '../../models/currentUser'
+import { CONTRIBUTORS } from '../../config/featureFlags'
+import CommentSection from '../CommentSection'
+import TagInput from '../TagInput'
+import LinkedPersonSentence from '../LinkedPersonSentence'
+import LinkPreview from '../LinkPreview'
+import A from '../A'
+import Avatar from '../Avatar'
+import Dropdown from '../Dropdown'
+import Attachments from '../Attachments'
+import LazyLoader from '../LazyLoader'
+import Icon from '../Icon'
+import { ClickCatchingSpan } from '../ClickCatcher'
 
 const spacer = <span>&nbsp; •&nbsp; </span>
 
 export const presentDescription = (post, community, opts = {}) =>
   present(sanitize(post.description), {slug: get('slug', community), ...opts})
 
-export class Post extends React.Component {
+export default class Post extends React.Component {
   constructor (props, context) {
     super(props, context)
     this.state = {
@@ -60,9 +49,9 @@ export class Post extends React.Component {
 
   static propTypes = {
     post: object,
+    actions: object,
     community: object,
     comments: array,
-    dispatch: func,
     expanded: bool,
     onExpand: func,
     commentId: string
@@ -70,7 +59,7 @@ export class Post extends React.Component {
 
   static contextTypes = {currentUser: object}
 
-  static childContextTypes = {post: object}
+  static childContextTypes = { post: object }
 
   getChildContext () {
     return {post: this.props.post}
@@ -78,7 +67,10 @@ export class Post extends React.Component {
 
   render () {
     let { post, comments } = this.props
-    const { expanded, onExpand, community, dispatch, contributorChoices } = this.props
+    const {
+      actions, expanded, onExpand, community,
+      contributorChoices, personPopoverOnMouseOver
+    } = this.props
     if (post.project) {
       comments = comments.slice(-1)
     }
@@ -101,36 +93,35 @@ export class Post extends React.Component {
       this.setState({contributors: reject(contributors, {id: person.id})})
     }
     const handleContributorInput = (term) => {
-      dispatch(typeahead(term, 'contributors', {
+      actions.typeahead(term, 'contributors', {
         type: 'people', communityIds: post.community_ids }
-      ))
+      )
     }
     const toggleRequestCompleting = () => this.setState({requestCompleting: !requestCompleting})
     const toggleRequestComplete = () => {
       if (isCompleteRequest) {
         if (window.confirm('This will mark this request as Incomplete. Are you sure?')) {
-          console.log('!!!')
-          dispatch(completePost(post.id))
+          actions.completePost(post.id)
         }
       } else {
         if (contributors.length > 0) this.setState({contributors: []})
         toggleRequestCompleting()
-        dispatch(completePost(post.id, contributors))
+        actions.completePost(post.id, contributors)
       }
     }
 
     return <div className={classes}>
       <a name={`post-${post.id}`} />
-      <Header communities={communities} project={project} expanded={expanded} />
+      <Header {...{ post, communities, project, expanded, actions, personPopoverOnMouseOver }} />
       <p className='title post-section' dangerouslySetInnerHTML={{__html: title}} />
       {image && <LazyLoader>
         <img src={image.url} className='post-section full-image' />
       </LazyLoader>}
-      <Details {...{expanded, onExpand}} />
+      <Details {...{post, expanded, onExpand, personPopoverOnMouseOver}} />
       {linkPreview && <LinkPreview {...{linkPreview}} />}
       <div className='voting post-section'>
-        <VoteButton />
-        <Voters />
+        <VoteButton post={post} actions={actions} />
+        <Voters post={post} />
       </div>
       <Attachments />
       {hasFeature(currentUser, CONTRIBUTORS) && isCompleteRequest &&
@@ -185,52 +176,30 @@ export class Post extends React.Component {
   }
 }
 
-export default compose(connect((state, {post}) => {
-  return {
-    comments: getComments(post, state),
-    community: getCurrentCommunity(state),
-    post: denormalizedPost(post, state),
-    contributorChoices: reject(
-      state.typeaheadMatches.contributors, {id: post.user_id}
-    )
-  }
-}))(Post)
-
-export const UndecoratedPost = Post // for testing
-
-export const Header = ({ communities, project, expanded }, { post, currentUser, dispatch }) => {
-  const { tag, fulfilled_at } = post
+export const Header = ({ post, project, communities, expanded, actions, personPopoverOnMouseOver }) => {
+  const { tag } = post
   const person = tag === 'welcome' ? post.relatedUsers[0] : post.user
   const createdAt = new Date(post.created_at)
-  const canEdit = canEditPost(currentUser, post)
-  const showCheckbox = !hasFeature(currentUser, CONTRIBUTORS) &&
-    post.tag === 'request' && (canEdit || fulfilled_at)
 
   return <div className='header'>
-    <Menu expanded={expanded} post={post} />
+    <Menu expanded={expanded} post={post} actions={actions} />
     <Avatar person={person} showPopover />
-    {showCheckbox && <input type='checkbox'
-      className='completion-toggle'
-      checked={!!post.fulfilled_at}
-      onChange={() => canEdit && dispatch(completePost(post.id))}
-      readOnly={!canEdit} />}
     {tag === 'welcome'
-      ? <WelcomePostHeader communities={communities} />
-      : <div onMouseOver={handleMouseOver(dispatch)}>
-          <A className='name' to={`/u/${person.id}`}>
-            {person.name}
+      ? <WelcomePostHeader post={post} communities={communities} />
+      : <div onMouseOver={personPopoverOnMouseOver}>
+        <A className='name' to={`/u/${person.id}`}>
+          {person.name}
+        </A>
+        <span className='meta'>
+          <A to={`/p/${post.id}`} title={createdAt}>
+            {nonbreaking(humanDate(createdAt))}
           </A>
-          <span className='meta'>
-            <A to={`/p/${post.id}`} title={createdAt}>
-              {nonbreaking(humanDate(createdAt))}
-            </A>
-            {communities && <Communities communities={communities} project={project} />}
-            {post.public && <span>{spacer}Public</span>}
-          </span>
-        </div>}
+          {communities && <Communities communities={communities} project={project} />}
+          {post.public && <span>{spacer}Public</span>}
+        </span>
+      </div>}
   </div>
 }
-Header.contextTypes = {post: object, currentUser: object, dispatch: func}
 
 const Communities = ({ communities, project }, { community }) => {
   if (community) communities = sortBy(communities, c => c.id !== community.id)
@@ -265,15 +234,14 @@ const extractTags = (shortDesc, fullDesc, omitTag) => {
   return tags.length === 0 ? [] : difference(tags, getTags(shortDesc))
 }
 
-const HashtagLink = ({ tag, slug }, { dispatch }) => {
-  const onMouseOver = handleMouseOver(dispatch)
+const HashtagLink = ({ tag, slug, personPopoverOnMouseOver }) => {
+  const onMouseOver = personPopoverOnMouseOver
   return <a className='hashtag' href={tagUrl(tag, slug)} {...{onMouseOver}}>
     {`#${tag}`}
   </a>
 }
-HashtagLink.contextTypes = {dispatch: func}
 
-export const Details = ({ expanded, onExpand }, { post, community, dispatch }) => {
+export const Details = ({ post, expanded, onExpand, personPopoverOnMouseOver }, { community }) => {
   const truncatedSize = 300
   const { tag } = post
   if (!community) community = post.communities[0]
@@ -297,15 +265,15 @@ export const Details = ({ expanded, onExpand }, { post, community, dispatch }) =
     </span>}
     {extractedTags.map(tag => <span key={tag}>
       <wbr />
-      <HashtagLink tag={tag} slug={slug} />
+      <HashtagLink {...{ tag, slug, personPopoverOnMouseOver }} />
       &nbsp;
     </span>)}
     {tag && <HashtagLink tag={tag} slug={slug} />}
   </div>
 }
-Details.contextTypes = {post: object, community: object, dispatch: func}
+Details.contextTypes = {community: object}
 
-const WelcomePostHeader = ({ communities }, { post }) => {
+const WelcomePostHeader = ({ post, communities }) => {
   let person = post.relatedUsers[0]
   let community = communities[0]
   return <div>
@@ -313,30 +281,29 @@ const WelcomePostHeader = ({ communities }, { post }) => {
     <span />
     {community
       ? <span>
-          <A to={`/c/${community.slug}`}>{community.name}</A>.
-          <span />
-          <a className='open-comments'>
-            Welcome them!
-          </a>
-        </span>
-      : <span>
-          a community that is no longer active.
-        </span>}
+        <A to={`/c/${community.slug}`}>{community.name}</A>.
+        <span />
+        <a className='open-comments'>
+          Welcome them!
+        </a>
+      </span>
+    : <span>
+        a community that is no longer active.
+      </span>}
   </div>
 }
-WelcomePostHeader.contextTypes = {post: object}
 
-export const Menu = ({ expanded, post }, { dispatch, currentUser, community }) => {
+export const Menu = ({ post, actions, expanded }, { currentUser, community }) => {
   const canEdit = canEditPost(currentUser, post)
   const following = some(post.follower_ids, id => id === get('id', currentUser))
   const pinned = isPinned(post, community)
   const edit = () => isMobile()
-    ? dispatch(navigate(`/p/${post.id}/edit`))
-    : dispatch(startPostEdit(post)) &&
-      expanded && dispatch(showModal('post-editor', {post}))
+    ? actions.navigate(`/p/${post.id}/edit`)
+    : actions.startPostEdit(post) &&
+      expanded && actions.showModal('post-editor', {post})
   const remove = () => window.confirm('Are you sure? This cannot be undone.') &&
-    dispatch(removePost(post.id))
-  const pin = () => dispatch(pinPost(get('slug', community), post.id))
+    actions.removePost(post.id)
+  const pin = () => actions.pinPost(get('slug', community), post.id)
 
   const toggleChildren = pinned
     ? <span className='pinned'><span className='label'>Pinned</span><span className='icon-More' /></span>
@@ -349,7 +316,7 @@ export const Menu = ({ expanded, post }, { dispatch, currentUser, community }) =
     {canEdit && <li><a className='edit' onClick={edit}>Edit</a></li>}
     {canEdit && <li><a onClick={remove}>Remove</a></li>}
     <li>
-      <a onClick={() => dispatch(followPost(post.id, currentUser))}>
+      <a onClick={() => actions.followPost(post.id, currentUser)}>
         Turn {following ? 'off' : 'on'} notifications for this post
       </a>
     </li>
@@ -358,19 +325,19 @@ export const Menu = ({ expanded, post }, { dispatch, currentUser, community }) =
     </li> */}
   </Dropdown>
 }
-Menu.contextTypes = {currentUser: object, dispatch: func, community: object}
+Menu.contextTypes = {currentUser: object, community: object}
 
-export const VoteButton = (props, { post, currentUser, dispatch }) => {
-  let vote = () => dispatch(voteOnPost(post, currentUser))
+export const VoteButton = ({ post, actions }, { currentUser }) => {
+  let vote = () => actions.voteOnPost(post, currentUser)
   let myVote = includes(map(post.voters, 'id'), (currentUser || {}).id)
   return <a className='vote-button' onClick={vote}>
     {myVote ? <Icon name='Heart2' /> : <Icon name='Heart' />}
     {myVote ? 'Liked' : 'Like'}
   </a>
 }
-VoteButton.contextTypes = {post: object, currentUser: object, dispatch: func}
+VoteButton.contextTypes = {currentUser: object}
 
-export const Voters = (props, { post, currentUser }) => {
+export const Voters = ({ post }, { currentUser }) => {
   const voters = post.voters || []
 
   let onlyAuthorIsVoting = voters.length === 1 && same('id', first(voters), post.user)
@@ -380,7 +347,7 @@ export const Voters = (props, { post, currentUser }) => {
       </LinkedPersonSentence>
     : <span />
 }
-Voters.contextTypes = {post: object, currentUser: object}
+Voters.contextTypes = {currentUser: object}
 
 export const RequestContributorsSentence = ({ post }) => {
   const contributors = post.contributors || []

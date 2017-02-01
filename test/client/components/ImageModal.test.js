@@ -9,5 +9,6 @@ describe('ImageModal', () => {
     document.documentElement.clientWidth = 0
     const node = mount(<ImageModal url={url} />)
     expect(node.find('img').at(0).props().src).to.equal(url)
+    document.documentElement.clientWidth = undefined
   })
 })

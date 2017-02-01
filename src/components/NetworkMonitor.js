@@ -14,9 +14,13 @@ export default class NetworkMonitor extends React.Component {
     return null
   }
 
+  componentWillUnmount () {
+    clearInterval(this.interval)
+  }
+
   componentDidMount () {
     this.visibility = require('visibility')()
-    setInterval(() => {
+    this.interval = setInterval(() => {
       if (!this.visibility.visible()) return
 
       fetchJSON('/noo/user/status')

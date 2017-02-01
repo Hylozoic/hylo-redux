@@ -91,6 +91,7 @@ export class PostEditor extends React.PureComponent {
     onCancel: func,
     imagePending: bool,
     type: string,
+    tag: string,
     currentCommunitySlug: string,
     editingTagDescriptions: bool,
     creatingTagAndDescription: bool,
@@ -111,8 +112,9 @@ export class PostEditor extends React.PureComponent {
 
   componentDidMount () {
     // initialize the communities list when opening the editor in a community
-    const { parentPost, community, postEdit: { communities } } = this.props
+    const { parentPost, community, postEdit: { communities }, tag } = this.props
     if (!parentPost && community && isEmpty(communities)) this.addCommunity(community)
+    if (tag) this.updateStore({tag})
     this.refs.title.focus()
   }
 

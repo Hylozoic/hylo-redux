@@ -193,7 +193,7 @@ class ProjectRequest extends React.Component {
 
 const spacer = <span>&nbsp; •&nbsp; </span>
 
-const UndecoratedProjectPostCard = ({ post, parentPost, community, comments, dispatch, isMobile }, { currentUser }) => {
+const UndecoratedProjectPostCard = ({ post, community, comments, isMobile, dispatch }, { currentUser }) => {
   const { name, user, ends_at, id } = post
   const url = `/p/${post.id}`
   const backgroundImage = `url(${imageUrl(post)})`
@@ -224,21 +224,17 @@ const UndecoratedProjectPostCard = ({ post, parentPost, community, comments, dis
     </div>}
     <Supporters post={post} simple />
     <div className='comments-section-spacer' />
-    <CommentSection
-      onExpand={() => dispatch(navigate(url))}
-      isProjectRequest
-      {...{post, canComment, comments}}
-    />
+    <CommentSection onExpand={() => dispatch(navigate(url))}
+      isProjectRequest {...{post, canComment, comments}} />
   </div>
 }
-UndecoratedProjectPostCard.contextTypes = { currentUser: object }
+UndecoratedProjectPostCard.contextTypes = {currentUser: object}
 
 export const ProjectPostCard = connect(
-  (state, { post, parentPost }) => ({
+  (state, { post }) => ({
+    post: denormalizedPost(post, state),
     comments: getComments(post, state),
     community: getCurrentCommunity(state),
-    isMobile: state.isMobile,
-    post: denormalizedPost(post, state),
-    parentPost
+    isMobile: state.isMobile
   })
 )(UndecoratedProjectPostCard)

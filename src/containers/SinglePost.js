@@ -3,7 +3,7 @@ import Post from '../components/Post'
 import { prefetch } from 'react-fetcher'
 import { connect } from 'react-redux'
 import { includes } from 'lodash'
-import { get, pick } from 'lodash/fp'
+import { get } from 'lodash/fp'
 import {
   navigate,
   notify,
@@ -35,11 +35,12 @@ const subject = 'post'
 @prefetch(({ store, dispatch, params: { id }, query }) =>
   dispatch(fetchPost(id))
   .then(action => {
+    if (action.error) return
     if (action.payload.parent_post_id) {
       return dispatch(fetchPost(action.payload.parent_post_id))
-        .then(() => Promise.resolve(action))
+        .then(() => action)
     } else {
-      return Promise.resolve(action)
+      return action
     }
   })
   .then(action =>
@@ -95,7 +96,7 @@ export default class SinglePost extends React.Component {
       <CoverImagePage id='single-post' image={get('banner_url', community)}>
         {editing
           ? <PostEditor post={post} parentPost={parentPost} expanded />
-          : <ShowPost post={post} parentPost={parentPost} comments={comments} />
+          : showPost(post, parentPost, comments)
         }
         {post.type === 'project' && <div>
           {currentUser &&
@@ -113,7 +114,7 @@ export default class SinglePost extends React.Component {
   }
 }
 
-const ShowPost = ({ post, parentPost, comments }) => {
+const showPost = (post, parentPost, comments) => {
   if (parentPost) {
     return <ProjectActivityCard {...{post, parentPost}} expanded />
   }

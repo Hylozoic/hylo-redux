@@ -1,7 +1,6 @@
 import React from 'react'
 import { prefetch } from 'react-fetcher'
 import { connect } from 'react-redux'
-import { pick } from 'lodash/fp'
 import {
   fetchPost, fetchComments, findError
 } from '../actions'
@@ -36,10 +35,10 @@ export default class ThreadPage extends React.Component {
   }
 
   render () {
-    const { post, comments, error } = this.props
+    const { post, error } = this.props
     if (error) return <AccessErrorMessage error={error} />
     if (!post || !post.user) return <div className='loading'>Loading...</div>
 
-    return <Thread post={post} comments={comments} />
+    return <Thread post={post} />
   }
 }

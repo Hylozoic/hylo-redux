@@ -38,20 +38,16 @@ export const isTester = user =>
   ], membership(user))
 
 export const canEditPost = (currentUser, permissionsPost) => {
-  if (currentUser && permissionsPost) {
-    return same('id', currentUser, permissionsPost.user) ||
-      some(permissionsPost.communities.map(c => c.id ? c.id : c), canModerate(currentUser)) ||
-      isAdmin(currentUser)
-  }
+  return permissionsPost && (same('id', currentUser, permissionsPost.user) ||
+    some(permissionsPost.communities.map(c => c.id ? c.id : c), canModerate(currentUser)) ||
+    isAdmin(currentUser))
 }
 
 export const canCommentOnPost = (currentUser, permissionsPost) => {
-  if (currentUser && permissionsPost) {
-    return includes(permissionsPost.follower_ids, currentUser.id) ||
-      !isEmpty(intersection(
-        map('community_id', get('memberships', currentUser)),
-        permissionsPost.community_ids))
-  }
+  return currentUser && permissionsPost && (includes(permissionsPost.follower_ids, currentUser.id) ||
+    !isEmpty(intersection(
+      map('community_id', get('memberships', currentUser)),
+      permissionsPost.community_ids)))
 }
 
 export const canEditComment = (currentUser, comment, community) =>

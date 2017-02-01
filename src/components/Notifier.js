@@ -20,8 +20,8 @@ export default class Notifier extends React.Component {
     let { messages, remove } = this.props
     return <div id='notifier'>
       <VelocityTransitionGroup
-        enter={{animation: {translateX: [0, '-120%']}}}
-        leave={{animation: {translateX: '-120%'}}}>
+        enter={{animation: {translateX: [0, '120%']}}}
+        leave={{animation: {translateX: '120%'}}}>
         {messages.map(m => <Message key={m.id} message={m} remove={remove} />)}
       </VelocityTransitionGroup>
     </div>

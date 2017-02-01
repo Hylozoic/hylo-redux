@@ -55,6 +55,13 @@ export default class CommentForm extends React.PureComponent {
     this.state = {}
   }
 
+  componentDidMount () {
+    const modifierKey = window.navigator.platform.startsWith('Mac')
+      ? 'Cmd' : 'Ctrl'
+    this.setState({modifierKey})
+    this.socket = getSocket()
+  }
+
   submit = (event, newTagDescriptions) => {
     const { dispatch, postId, commentId, newComment, close, pending } = this.props
     if (event) event.preventDefault()
@@ -89,71 +96,73 @@ export default class CommentForm extends React.PureComponent {
     this.submit(null, tagDescriptions)
   }
 
-  componentDidMount () {
-    const modifierKey = window.navigator.platform.startsWith('Mac')
-      ? 'Cmd' : 'Ctrl'
-    this.setState({modifierKey})
-    this.socket = getSocket()
-  }
-
   setText (text) {
     const { dispatch, commentId, postId, newComment } = this.props
     const storeId = newComment ? postId : commentId
     dispatch(updateCommentEditor(storeId, text, newComment))
   }
 
-  delaySetText = debounce(text => this.setText(text), 50)
-
-  render () {
-    const { postId, text, newComment, close, pending } = this.props
-    const { currentUser, isMobile } = this.context
-    const editing = text !== undefined
-    const edit = () => this.setText('')
-    const placeholder = this.props.placeholder || 'Add a comment...'
-
-    const stoppedTyping = () => {
-      if (!newComment) return
-      if (this.socket) this.socket.post(socketUrl(`/noo/post/${postId}/typing`), { isTyping: false })
-    }
+  handleKeyDown = (e) => {
+    const { postId, newComment } = this.props
     const startedTyping = () => {
       if (!newComment) return
       if (this.socket) this.socket.post(socketUrl(`/noo/post/${postId}/typing`), { isTyping: true })
     }
-
-    const stopTyping = debounce(stoppedTyping, STOPPED_TYPING_WAIT_TIME)
     const startTyping = throttle(startedTyping, STARTED_TYPING_INTERVAL, {trailing: false})
-    const handleKeyDown = e => {
-      this.setState({enabled: this.refs.editor.getContent().length > 0})
-      startTyping()
-      onCmdOrCtrlEnter(e => {
-        stoppedTyping()
-        e.preventDefault()
-        this.submit()
-      }, e)
-    }
+    this.setEnabled(this.refs.editor.getContent())
+    startTyping()
+    onCmdOrCtrlEnter(e => {
+      this.stoppedTyping()
+      e.preventDefault()
+      this.submit()
+    }, e)
+  }
 
+  stoppedTyping = () => {
+    const { postId, newComment } = this.props
+    if (!newComment) return
+    if (this.socket) this.socket.post(socketUrl(`/noo/post/${postId}/typing`), { isTyping: false })
+  }
+
+  setEnabled = (text) => {
+    this.setState({enabled: text.length > 0})
+  }
+
+  stopTyping = debounce(this.stoppedTyping, STOPPED_TYPING_WAIT_TIME)
+
+  delaySetText = debounce(text => {
+    this.setEnabled(text)
+    this.setText(text)
+  }, 50)
+
+  render () {
+    const { text, close, pending } = this.props
+    const { currentUser, isMobile } = this.context
     const { enabled, modifierKey } = this.state
+    const editing = text !== undefined
+    const edit = () => this.setText('')
+    const placeholder = this.props.placeholder || 'Add a comment...'
 
     return <form onSubmit={this.submit} className='comment-form'>
       <Avatar person={currentUser} />
       {editing
         ? <div className='content'>
-            <RichTextEditor ref='editor' name='comment' startFocused
-              content={text}
-              onBlur={() => this.setText(this.refs.editor.getContent())}
-              onChange={ev => this.delaySetText(ev.target.value)}
-              onKeyUp={stopTyping}
-              onKeyDown={handleKeyDown} />
-            <input type='submit' value='Post' ref='button'
-              className={cx({enabled: enabled && !pending})} />
-            {close && <button onClick={close}>Cancel</button>}
-            {!isMobile && modifierKey && <span className='meta help-text'>
-              or press {modifierKey}-Enter
-            </span>}
-          </div>
-        : <div className='content placeholder' onClick={edit}>
-            {placeholder}
-          </div>}
+          <RichTextEditor ref='editor' name='comment' startFocused
+            content={text}
+            onBlur={() => this.setText(this.refs.editor.getContent())}
+            onChange={ev => this.delaySetText(ev.target.value)}
+            onKeyUp={this.stopTyping}
+            onKeyDown={this.handleKeyDown} />
+          <input type='submit' value='Post' ref='button'
+            className={cx({enabled: enabled && !pending})} />
+          {close && <button onClick={close}>Cancel</button>}
+          {!isMobile && modifierKey && <span className='meta help-text'>
+            or press {modifierKey}-Enter
+          </span>}
+        </div>
+      : <div className='content placeholder' onClick={edit}>
+        {placeholder}
+      </div>}
     </form>
   }
 }

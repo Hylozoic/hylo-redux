@@ -608,14 +608,16 @@ ul.tags {
 
 #notifier {
   position: fixed;
-  bottom: 0;
-  left: 0;
-  width: 35vw;
-  padding-left: 15px;
+  top: @top-nav-height;
+  right: 0;
+  width: 30vw;
+  margin-top: 10px;
+  padding-right: 15px;
   z-index: 100;
   .mobile({
+    top: @mobile-top-nav-height;
     width: 100%;
-    padding-right: 15px;
+    padding-left: 15px;
   });
 
   .close {
@@ -623,10 +625,6 @@ ul.tags {
     margin-left: 5px;
     margin-bottom: 5px;
   }
-}
-
-.leftNavIsOpen #notifier {
-  left: @left-nav-width;
 }
 
 #onboarding-start {

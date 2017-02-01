@@ -20,8 +20,8 @@ export default class Notifier extends React.Component {
     let { messages, remove } = this.props
     return <div id='notifier'>
       <VelocityTransitionGroup
-        enter={{animation: {translateX: [0, '-120%']}}}
-        leave={{animation: {translateX: '-120%'}}}>
+        enter={{animation: {translateX: [0, '120%']}}}
+        leave={{animation: {translateX: '120%'}}}>
         {messages.map(m => <Message key={m.id} message={m} remove={remove} />)}
       </VelocityTransitionGroup>
     </div>
@@ -36,9 +36,9 @@ const className = messageType => {
   return messageType
 }
 
-const Message = ({ message, remove }) => {
-  return <div className={`alert alert-${className(message.type)}`}>
-    <a className='close' onClick={() => remove(message.id)}>&times;</a>
-    <div>{message.text}</div>
+const Message = ({ message: { type, id, text, noClose }, remove }) => {
+  return <div className={`alert alert-${className(type)}`}>
+    {!noClose && <a className='close' onClick={() => remove(id)}>&times;</a>}
+    <div>{text}</div>
   </div>
 }

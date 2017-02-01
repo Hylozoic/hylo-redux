@@ -5,6 +5,7 @@ import { prefetch } from 'react-fetcher'
 import { connect } from 'react-redux'
 import { debounce, isEmpty, pick } from 'lodash'
 import { get } from 'lodash/fp'
+import NetworkMonitor from '../components/NetworkMonitor'
 import Notifier from '../components/Notifier'
 import LiveStatusPoller from '../components/LiveStatusPoller'
 import PageTitleController from '../components/PageTitleController'
@@ -124,6 +125,7 @@ export default class App extends React.Component {
     return <div className={classes}>
       {children}
 
+      <NetworkMonitor />
       <Notifier messages={notifierMessages}
         remove={id => dispatch(removeNotification(id))} />
       <LiveStatusPoller community={community} />

@@ -87,7 +87,7 @@ export const tagsByCommunity = (state = {}, action) => {
       oldCommunityTags = state[id] || {}
       return {
         ...state,
-        [id]: {...oldCommunityTags, [tagName]: payload}
+        [id]: {...oldCommunityTags, [payload.name]: payload}
       }
     case FETCH_LIVE_STATUS:
     case FETCH_CURRENT_USER:

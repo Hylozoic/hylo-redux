@@ -25,3 +25,10 @@ export const tagsInText = (text = '') => {
   }
   return uniq(tags)
 }
+
+export const getTagForCommunity = (tagName, slug = 'all', state) => {
+  const tagsForCommunity = get(['tagsByCommunity', slug], state)
+  const tagKey = Object.keys(tagsForCommunity).find(k =>
+    k.toLowerCase() === tagName.toLowerCase())
+  return tagsForCommunity[tagKey]
+}

@@ -3,7 +3,7 @@ import Post from '../components/Post'
 import { prefetch } from 'react-fetcher'
 import { connect } from 'react-redux'
 import { includes } from 'lodash'
-import { get, pick } from 'lodash/fp'
+import { get } from 'lodash/fp'
 import {
   navigate,
   notify,
@@ -24,24 +24,33 @@ import AccessErrorMessage from '../components/AccessErrorMessage'
 import CoverImagePage from '../components/CoverImagePage'
 import EventPost from '../components/EventPost'
 import ProjectPost from '../components/ProjectPost'
+import ProjectActivityCard from '../components/ProjectActivityCard'
 import { getCurrentCommunity } from '../models/community'
 import { denormalizedPost, getComments, getPost, isMessageThread } from '../models/post'
 import { fetch, ConnectedPostList } from './ConnectedPostList'
 const { array, bool, object, string, func } = React.PropTypes
 
-const subject = 'community'
-
-const showTaggedPosts = post =>
-  post.tag && post.type === 'project'
+const subject = 'post'
 
 @prefetch(({ store, dispatch, params: { id }, query }) =>
   dispatch(fetchPost(id))
+  .then(action => {
+    if (action.error) return
+    if (action.payload.parent_post_id) {
+      return dispatch(fetchPost(action.payload.parent_post_id))
+        .then(() => action)
+    } else {
+      return action
+    }
+  })
   .then(action =>
     redirect(store, id) || setupPage(store, id, query, action)))
 @connect((state, { params: { id } }) => {
   const post = getPost(id, state)
+  const parentPost = post ? getPost(post.parent_post_id, state) : null
   return {
     post: post ? denormalizedPost(post, state) : null,
+    parentPost: parentPost ? denormalizedPost(parentPost, state) : null,
     community: getCurrentCommunity(state),
     comments: getComments(post, state),
     editing: !!state.postEdits[id],
@@ -51,6 +60,7 @@ const showTaggedPosts = post =>
 export default class SinglePost extends React.Component {
   static propTypes = {
     post: object,
+    parentPost: object,
     community: object,
     editing: bool,
     error: string,
@@ -58,23 +68,19 @@ export default class SinglePost extends React.Component {
     location: object
   }
 
-  static childContextTypes = {
-    community: object,
-    post: object,
-    comments: array
-  }
-
   static contextTypes = {
     isMobile: bool,
     currentUser: object
   }
 
+  static childContextTypes = { community: object }
+
   getChildContext () {
-    return pick(['community', 'post', 'comments'], this.props)
+    return { community: this.props.community }
   }
 
   render () {
-    const { post, community, editing, error, location: { query } } = this.props
+    const { post, parentPost, comments, community, editing, error, location: { query } } = this.props
     const { currentUser, isMobile } = this.context
     if (error) return <AccessErrorMessage error={error} />
     if (!post || !post.user) return <div className='loading'>Loading...</div>
@@ -88,38 +94,43 @@ export default class SinglePost extends React.Component {
         </A>
       </div>}
       <CoverImagePage id='single-post' image={get('banner_url', community)}>
-        {editing ? <PostEditor post={post} expanded /> : showPost(post)}
-
-        {showTaggedPosts(post) && <div>
-          {currentUser && <PostEditor community={community} tag={post.tag} />}
-          <p className='meta other-posts-label'>
-            Other posts for&nbsp;
-            <span className='hashtag'>#{post.tag}</span>
-          </p>
-          {community && <ConnectedPostList subject={subject} id={community.id}
-            omit={post.id}
-            query={{...query, tag: post.tag}} />}
+        {editing
+          ? <PostEditor post={post} parentPost={parentPost} expanded />
+          : showPost(post, parentPost, comments)
+        }
+        {post.type === 'project' && <div>
+          {currentUser &&
+            <PostEditor community={community} parentPost={post} />
+          }
+          <ConnectedPostList
+            subject={subject}
+            id={post.id}
+            parentPost={post}
+            query={{...query}}
+            noPostsMessage='There are no project related conversations to show.' />
         </div>}
       </CoverImagePage>
     </div>
   }
 }
 
-const showPost = (post) => {
-  switch (post.type) {
-    case 'event': return <EventPost post={post} />
-    case 'project': return <ProjectPost />
+const showPost = (post, parentPost, comments) => {
+  if (parentPost) {
+    return <ProjectActivityCard {...{post, parentPost}} expanded />
   }
-  return <Post post={post} expanded />
+  switch (post.type) {
+    case 'event':
+      return <EventPost post={post} comments={comments} />
+    case 'project':
+      return <ProjectPost post={post} comments={comments} />
+    default:
+      return <Post {...{post, parentPost}} expanded />
+  }
 }
 
 const redirect = (store, id) => {
   const state = store.getState()
   const post = state.posts[id]
-  if (!state.isMobile && get('parent_post_id', post)) {
-    store.dispatch(navigate(`/p/${post.parent_post_id}`))
-    return true
-  }
   if (isMessageThread(post)) {
     store.dispatch(navigate(`/t/${post.id}`))
     return true
@@ -136,7 +147,12 @@ const setupPage = (store, id, query, action) => {
   if (!post) return
 
   const currentUser = people.current
-  const { community_ids } = post
+  let community_ids
+  if (post.parent_post_id) {
+    community_ids = posts[post.parent_post_id].community_ids
+  } else {
+    community_ids = post.community_ids
+  }
   const communityId = includes(community_ids, currentCommunityId)
     ? currentCommunityId
     : (get('0', community_ids) || 'all')
@@ -161,10 +177,8 @@ const setupPage = (store, id, query, action) => {
     cacheHit && post.numComments > 3 &&
       dispatch(fetchComments(id, {refresh: true})).then(scroll),
 
-    // if this is a project, fetch the first page of results for
-    // tagged posts.
-    showTaggedPosts(post) && dispatch(fetch(subject, communityId,
-      {...query, tag: post.tag, omit: post.id})),
+    // if this is a project, fetch the first page of results for child posts.
+    post.type === 'project' && dispatch(fetch(subject, id, {...query})),
 
     get('action', query) === 'unfollow' && currentUser &&
       dispatch(unfollowPost(post.id, currentUser.id)).then(({ error }) => !error &&

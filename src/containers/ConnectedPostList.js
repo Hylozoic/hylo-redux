@@ -17,7 +17,8 @@ const findExpandedPostId = state => {
 
 @connect((state, props) => ({
   ...connectedListProps(state, props, 'posts'),
-  expandedPostId: findExpandedPostId(state)
+  expandedPostId: findExpandedPostId(state),
+  parentPost: props.parentPost
 }), null, null, {withRef: true})
 export class ConnectedPostList extends React.Component {
   static propTypes = {
@@ -33,8 +34,10 @@ export class ConnectedPostList extends React.Component {
     hide: array, // just hide posts with this id from the results
     hideMobileSearch: bool,
     expandedPostId: string,
+    parentPost: object,
     noPostsMessage: string,
-    module: object
+    module: object,
+    showProjectActivity: bool
   }
 
   static contextTypes = {
@@ -102,8 +105,8 @@ export class ConnectedPostList extends React.Component {
 
   render () {
     const {
-      dispatch, freshCount, posts, total, pending, subject, id, query,
-      hideMobileSearch, expandedPostId, noPostsMessage, module
+      dispatch, freshCount, posts, parentPost, total, pending, subject, id, query,
+      hideMobileSearch, expandedPostId, noPostsMessage, module, showProjectActivity
     } = this.props
 
     const hide = union(this.props.hide, [expandedPostId])
@@ -123,9 +126,19 @@ export class ConnectedPostList extends React.Component {
     }
 
     debug(`posts: ${posts ? posts.length : 0} / ${total || '??'}`)
-    return <PostList posts={feedItems || []} loadMore={this.loadMore} hide={hide}
-      hideMobileSearch={hideMobileSearch}
-      {...{pending, refreshPostList, freshCount, noPostsMessage}} />
+    return <PostList
+      posts={feedItems || []}
+      loadMore={this.loadMore}
+      {...{
+        hide,
+        hideMobileSearch,
+        pending,
+        refreshPostList,
+        freshCount,
+        noPostsMessage,
+        parentPost,
+        showProjectActivity
+      }} />
   }
 }
 

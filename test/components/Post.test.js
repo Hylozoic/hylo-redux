@@ -16,9 +16,7 @@ describe('Voters', () => {
   ]
 
   const renderWithVoters = voters => {
-    let component = createElement(Voters, {stateless: true}, {
-      post: {voters}, currentUser
-    })
+    let component = createElement(Voters, {post: {voters}, stateless: true}, { currentUser })
     return renderToString(component)
   }
 
@@ -64,9 +62,11 @@ describe('Post Details', () => {
     user friendly. Can offer compensation in the form of plants or ca$h. thank
     you!! #permaculture <a>#design</a> #support`
 
-    const props = {stateless: true}
+    const props = {
+      stateless: true,
+      post: {description, tag: 'request'}
+    }
     const context = {
-      post: {description, tag: 'request'},
       community: {slug: 'foo'},
       dispatch: () => {}
     }

@@ -1,10 +1,10 @@
-require('../support')
-import { mount } from 'enzyme'
+import '../support'
 import React from 'react'
-import Comment from '../../../src/components/Comment'
+import { mount } from 'enzyme'
 import { configureStore } from '../../../src/store'
-const { object } = React.PropTypes
+import Comment from '../../../src/components/Comment'
 
+const { object } = React.PropTypes
 const currentUser = {id: '5', name: 'me'}
 
 describe('Comment', () => {
@@ -20,7 +20,7 @@ describe('Comment', () => {
       comments: {[comment.id]: comment}
     }).store
 
-    node = mount(<Comment comment={comment}/>, {
+    node = mount(<Comment comment={comment} />, {
       context: {store, dispatch: store.dispatch, currentUser},
       childContextTypes: {store: object, currentUser: object}
     })

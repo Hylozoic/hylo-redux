@@ -13,7 +13,7 @@ import { get, find, isEmpty, some, sortBy } from 'lodash'
 import { same } from '../models'
 import { denormalizedPost, getComments, imageUrl } from '../models/post'
 import { getCurrentCommunity } from '../models/community'
-import { canComment } from '../models/currentUser'
+import { canCommentOnPost } from '../models/currentUser'
 import { Header, Menu, presentDescription } from './Post'
 import CommentSection from './CommentSection'
 import decode from 'ent/decode'
@@ -31,6 +31,8 @@ const UndecoratedEventPostCard = ({ post, comments, community, isMobile, dispatc
   const url = `/p/${id}`
   const backgroundImage = `url(${imageUrl(post)})`
 
+  const canComment = canCommentOnPost(currentUser, post)
+
   return <div className='post event-summary'>
     <Menu post={post} />
     <LazyLoader className='image'>
@@ -46,9 +48,8 @@ const UndecoratedEventPostCard = ({ post, comments, community, isMobile, dispatc
     </div>}
     <Attendance post={post} showButton limit={7} alignRight />
     <div className='comments-section-spacer' />
-    {canComment(currentUser, post) && <CommentSection post={post}
-      comments={comments}
-      onExpand={() => dispatch(navigate(url))} />}
+    {canComment &&
+      <CommentSection {...{post, comments, canComment}} onExpand={() => dispatch(navigate(url))} />}
   </div>
 }
 UndecoratedEventPostCard.contextTypes = {currentUser: object}
@@ -105,16 +106,18 @@ const RSVPSelect = ({ post, alignRight }, { currentUser, dispatch }) => {
 RSVPSelect.contextTypes = {currentUser: object, dispatch: func}
 
 const EventPost = (props, context) => {
-  const { post, community, communities, comments, currentUser } = context
+  const { post, comments } = props
+  const { community, communities, currentUser } = context
   const { name, starts_at, ends_at, location } = post
   const description = presentDescription(post, community)
   const title = decode(name || '')
   const start = new Date(starts_at)
   const end = ends_at && new Date(ends_at)
   const image = imageUrl(post, false)
+  const canComment = canCommentOnPost(currentUser, post)
 
   return <div className='post event boxy-post'>
-    <Header communities={communities} />
+    <Header post={post} communities={communities} />
     <p className='title post-section'>{title}</p>
 
     <div className='box'>
@@ -137,15 +140,11 @@ const EventPost = (props, context) => {
         <ClickCatchingSpan dangerouslySetInnerHTML={{__html: description}} />
       </div>}
     </div>
-
-    {canComment(currentUser, post) && <CommentSection post={post}
-      comments={comments} expanded />}
+    <CommentSection {...{post, comments, canComment}} expanded />
   </div>
 }
 EventPost.contextTypes = {
-  post: object,
   communities: array,
-  comments: array,
   currentUser: object
 }
 

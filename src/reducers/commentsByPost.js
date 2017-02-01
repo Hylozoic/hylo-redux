@@ -25,6 +25,11 @@ export default function (state = {}, action) {
           const existing = state[post.id] || []
           acc[post.id] = sortedUniq(existing.concat(map('id', post.comments)).sort())
         }
+        // the post.child is for the sake of project activity cards
+        if (post.child && post.child.comments) {
+          const existing = state[post.child.id] || []
+          acc[post.child.id] = sortedUniq(existing.concat(map('id', post.child.comments)).sort())
+        }
         return acc
       }, {})
       return {...state, ...commentsByPost}

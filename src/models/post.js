@@ -7,7 +7,7 @@ import { getCommunity } from './community'
 
 const fallbackImageUrl = () => assetUrl('/img/axolotl.jpg')
 
-const media = curry((type, post) => find(m => m.type === type, post.media))
+const media = curry((type, post) => find(m => m.type === type, get('media', post)))
 export const getVideo = media('video')
 export const getImage = media('image')
 
@@ -50,3 +50,7 @@ export const denormalizedPost = (post, state) => ({
 })
 
 export const isMessageThread = post => get('type', post) === 'thread'
+
+export const isChildPost = post => !!get('parent_post_id', post)
+
+export const isCompleteRequest = post => !!get('fulfilled_at', post)

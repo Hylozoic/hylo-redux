@@ -34,7 +34,7 @@ export const createElement = (componentClass, props, context) => {
 
 // this is just setTimeout promisified
 export const wait = (millis, cb) =>
-  new Promise((resolve, _) =>
+  new Promise((resolve, reject) =>
     setTimeout(() => resolve(cb ? cb() : null), millis))
 
 const isSpy = (func) => !!func.__spy

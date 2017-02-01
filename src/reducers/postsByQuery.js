@@ -36,6 +36,7 @@ export default function (state = {}, action) {
         let tags = get('tags', meta) || []
 
         if ((key.subject === 'person' && key.id === post.user.id) ||
+          (key.subject === 'post' && key.id === post.parent_post_id) ||
           key.subject === 'all-posts' ||
           keyMatchesPost(key, post, tags)) {
           changedLists[id] = [post.id, ...postIds]

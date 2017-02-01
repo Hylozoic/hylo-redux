@@ -1,7 +1,6 @@
 import React from 'react'
 import { prefetch } from 'react-fetcher'
 import { connect } from 'react-redux'
-import { pick } from 'lodash/fp'
 import {
   fetchPost, fetchComments, findError
 } from '../actions'
@@ -25,22 +24,14 @@ const { array, bool, func, object } = React.PropTypes
 export default class ThreadPage extends React.Component {
   static propTypes = {
     post: object,
+    comments: array,
     error: object,
     dispatch: func
-  }
-
-  static childContextTypes = {
-    post: object,
-    comments: array
   }
 
   static contextTypes = {
     isMobile: bool,
     currentUser: object
-  }
-
-  getChildContext () {
-    return pick(['post', 'comments'], this.props)
   }
 
   render () {

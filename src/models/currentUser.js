@@ -37,17 +37,18 @@ export const isTester = user =>
     {id: '1972', slug: 'testmetalab'}
   ], membership(user))
 
-export const canEditPost = (currentUser, post) => {
-  return same('id', currentUser, post.user) ||
-    some(post.communities.map(c => c.id ? c.id : c), canModerate(currentUser)) ||
-    isAdmin(currentUser)
+export const canEditPost = (currentUser, permissionsPost) => {
+  return permissionsPost && (same('id', currentUser, permissionsPost.user) ||
+    some(permissionsPost.communities.map(c => c.id ? c.id : c), canModerate(currentUser)) ||
+    isAdmin(currentUser))
 }
 
-export const canComment = (currentUser, post) =>
-  currentUser && includes(post.follower_ids, currentUser.id) ||
+export const canCommentOnPost = (currentUser, permissionsPost) => {
+  return currentUser && permissionsPost && (includes(permissionsPost.follower_ids, currentUser.id) ||
     !isEmpty(intersection(
       map('community_id', get('memberships', currentUser)),
-      post.community_ids))
+      permissionsPost.community_ids)))
+}
 
 export const canEditComment = (currentUser, comment, community) =>
   canModerate(currentUser, community) || same('id', currentUser, comment.user)

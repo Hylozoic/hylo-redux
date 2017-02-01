@@ -52,7 +52,7 @@ const { array, bool, func, object, string } = React.PropTypes
 
 export const newPostId = 'new-post'
 
-@autoproxy(connect((state, { community, post, project, type, tag }) => {
+@autoproxy(connect((state, { community, post, parentPost, project, type, tag }) => {
   const id = post ? post.id
     : type === 'project' ? 'new-project'
     : type === 'event' ? 'new-event' : newPostId
@@ -66,6 +66,7 @@ export const newPostId = 'new-post'
   return {
     id,
     postEdit,
+    parentPost,
     mentionOptions: state.typeaheadMatches.post,
     saving: pending[CREATE_POST] || pending[UPDATE_POST],
     imagePending: pending[UPLOAD_IMAGE],
@@ -84,6 +85,7 @@ export class PostEditor extends React.PureComponent {
     post: object,
     id: string.isRequired,
     postEdit: object,
+    parentPost: object,
     community: object,
     saving: bool,
     onCancel: func,
@@ -110,8 +112,8 @@ export class PostEditor extends React.PureComponent {
 
   componentDidMount () {
     // initialize the communities list when opening the editor in a community
-    const { community, postEdit: { communities }, tag } = this.props
-    if (community && isEmpty(communities)) this.addCommunity(community)
+    const { parentPost, community, postEdit: { communities }, tag } = this.props
+    if (!parentPost && community && isEmpty(communities)) this.addCommunity(community)
     if (tag) this.updateStore({tag})
     this.refs.title.focus()
   }
@@ -146,8 +148,8 @@ export class PostEditor extends React.PureComponent {
   }
 
   validate () {
-    let { postEdit } = this.props
-    const { title, subeditor } = this.refs
+    let { parentPost, postEdit } = this.props
+    const { title } = this.refs
 
     if (!postEdit.name) {
       window.alert('The title of a post cannot be blank.')
@@ -155,14 +157,9 @@ export class PostEditor extends React.PureComponent {
       return Promise.resolve(false)
     }
 
-    if (isEmpty(postEdit.community_ids)) {
+    if (!parentPost && isEmpty(postEdit.community_ids)) {
       window.alert('Please pick at least one community.')
       return Promise.resolve(false)
-    }
-
-    if (subeditor) {
-      const subvalidate = subeditor.validate || subeditor.getWrappedInstance().validate
-      return Promise.resolve(subvalidate())
     }
 
     return Promise.resolve(true)
@@ -187,14 +184,14 @@ export class PostEditor extends React.PureComponent {
 
   save () {
     const {
-      dispatch, post, postEdit, id, postCommunities, currentCommunitySlug, onSave
+      dispatch, post, postEdit, id, postCommunities, currentCommunitySlug, onSave, parentPost
     } = this.props
     const params = {
       type: this.editorType(),
       ...postEdit,
       ...attachmentParams(post && post.media, postEdit.media)
     }
-
+    if (parentPost) params.parent_post_id = parentPost.id
     return dispatch((post ? updatePost : createPost)(id, params, currentCommunitySlug))
     .then(action => {
       if (responseMissingTagDescriptions(action)) {
@@ -285,14 +282,14 @@ export class PostEditor extends React.PureComponent {
 
   render () {
     const {
-      post, postEdit, dispatch, imagePending, saving, id, defaultTags, placeholder
+      parentPost, post, postEdit, dispatch, imagePending, saving, id, defaultTags, placeholder
     } = this.props
     const { currentUser } = this.context
     const { description, community_ids, tag, linkPreview } = postEdit
     const selectableTags = uniq(compact([this.props.tag, tag].concat(defaultTags)))
     const { name, showDetails } = this.state
     const editorType = this.editorType()
-    const shouldSelectTag = editorType !== 'project'
+    const shouldSelectTag = !includes(['project', 'event'], editorType)
     const selectTag = tag => this.updateStore({tag})
     const createTag = () => dispatch(showModal('tag-editor', {
       useCreatedTag: this.updatePostTagAndDescription,
@@ -353,18 +350,17 @@ export class PostEditor extends React.PureComponent {
       {Subeditor && <Subeditor ref='subeditor'
         {...{post, postEdit, update: this.updateStore}} />}
 
-      <div className='communities'>
+      {!parentPost && <div className='communities'>
         <span>in&nbsp;</span>
         <CommunitySelector ids={community_ids}
           onSelect={this.addCommunity}
           onRemove={this.removeCommunity} />
-      </div>
+      </div>}
 
       <div className='buttons'>
-
-        <VisibilityDropdown
+        {!parentPost && <VisibilityDropdown
           isPublic={postEdit.public || false}
-          setPublic={isPublic => this.updateStore({public: isPublic})} />
+          setPublic={isPublic => this.updateStore({public: isPublic})} />}
 
         <AttachmentsDropdown id={this.props.id}
           media={postEdit.media}
@@ -524,6 +520,7 @@ const PostEditorHeader = ({ person }) =>
 export default class PostEditorWrapper extends React.Component {
   static propTypes = {
     post: object,
+    parentPost: object,
     community: object,
     type: string,
     expanded: bool,

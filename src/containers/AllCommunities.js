@@ -54,7 +54,7 @@ export class AllPosts extends React.Component {
 
     return <div>
       <PostEditor />
-      <ConnectedPostList {...{subject, id, query}} />
+      <ConnectedPostList {...{subject, id, query}} showProjectActivity />
     </div>
   }
 }

@@ -2,31 +2,22 @@ import React from 'react'
 import { connect } from 'react-redux'
 import Icon from './Icon'
 import DatetimePicker from 'react-datetime'
-import { sanitizeTagInput } from '../util/textInput'
-import { fetchTag } from '../actions'
 import { debounce } from 'lodash'
-import { get, map, pick } from 'lodash/fp'
+import { get, map, pick, filter } from 'lodash/fp'
 import { getPost, getVideo } from '../models/post'
 const { array, func, object } = React.PropTypes
 
 const random = () => Math.random().toString().slice(2, 8)
 
 const getSimplePost = state => id =>
-  pick(['id', 'name', 'description'], getPost(id, state))
+  pick(['id', 'name', 'description', 'is_project_request'], getPost(id, state))
 
-const validateTag = (tag, dispatch) => {
-  return dispatch(fetchTag(tag))
-  .then(({ payload, error, meta: { tagName } }) => {
-    if (error && get('response.status', payload) === 404) return true
-
-    window.alert(`The tag "${tagName}" is already in use.`)
-    return false
-  })
-}
-
-@connect((state, { postEdit }) => ({
-  requests: postEdit.requests || map(getSimplePost(state), postEdit.children)
-}), null, null, {withRef: true})
+@connect((state, { postEdit }) => {
+  if (postEdit.requests) return {requests: postEdit.requests}
+  const children = map(getSimplePost(state), postEdit.children)
+  const requests = filter(p => p.is_project_request, children)
+  return {requests}
+}, null, null, {withRef: true})
 export default class ProjectPostEditor extends React.Component {
   static propTypes = {
     postEdit: object,
@@ -45,12 +36,6 @@ export default class ProjectPostEditor extends React.Component {
     update({requests})
   }
 
-  validate = () => {
-    const { postEdit: { tag }, post } = this.props
-    return tag === get('tag', post) ? true
-      : validateTag(tag, this.context.dispatch)
-  }
-
   addRequest = () => {
     const { update, requests } = this.props
     update({requests: [...requests, {id: `new-${random()}`}]})
@@ -65,9 +50,8 @@ export default class ProjectPostEditor extends React.Component {
 
   render () {
     const { postEdit, update, requests } = this.props
-    const { ends_at, tag, type } = postEdit
+    const { ends_at, type } = postEdit
     const endsAt = ends_at ? new Date(ends_at) : null
-    const updateTag = tag => update({tag, tagEdited: true})
     const videoUrl = get('url', getVideo(postEdit)) || ''
     if (type !== 'project') setTimeout(() => update({type: 'project'}))
 
@@ -99,12 +83,6 @@ export default class ProjectPostEditor extends React.Component {
           <input type='text' placeholder='location'
             defaultValue={postEdit.location}
             onChange={event => update({location: event.target.value})} />
-        </div>
-        <div className='hashtag'>
-          <Icon name='Tag' />
-          <input type='text' placeholder='hashtag' value={tag}
-            onKeyPress={sanitizeTagInput}
-            onChange={event => updateTag(event.target.value)} />
         </div>
       </div>
     </div>

@@ -3,7 +3,7 @@ import truncHtml from 'trunc-html'
 import { filter, isEmpty } from 'lodash/fp'
 const { object } = React.PropTypes
 
-const Attachments = (props, { post }) => {
+const Attachments = ({ post }) => {
   const attachments = filter(m => m.type === 'gdoc', post.media)
   if (isEmpty(attachments)) return <span />
 
@@ -15,6 +15,5 @@ const Attachments = (props, { post }) => {
       </a>)}
   </div>
 }
-Attachments.contextTypes = {post: object}
 
 export default Attachments

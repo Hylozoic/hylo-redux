@@ -1,4 +1,4 @@
-import support from '../support' // eslint-disable-line no-unused-vars
+import '../support'
 import React from 'react'
 import App from '../../../src/containers/App'
 import TagPosts from '../../../src/containers/tag/TagPosts'
@@ -80,7 +80,7 @@ describe('TagPosts', () => {
     }
 
     // wrap TagPosts in App so we can render TagEditorModal
-    const node = mount(<App><TagPosts {...props}/></App>, {
+    const node = mount(<App><TagPosts {...props} /></App>, {
       context: {store, currentUser},
       childContextTypes: {currentUser: React.PropTypes.object}
     })

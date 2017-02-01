@@ -9,20 +9,20 @@ import PeopleTyping from './PeopleTyping'
 import Comment from './Comment'
 import { appendComment } from '../actions'
 import { getSocket, socketUrl } from '../client/websockets'
-import { canComment } from '../models/currentUser'
 
 export default class CommentSection extends React.Component {
   static propTypes = {
-    comments: array,
-    onExpand: func,
     post: object,
-    expanded: bool
+    comments: array,
+    canComment: bool,
+    onExpand: func,
+    expanded: bool,
+    isProjectRequest: bool
   }
 
   static contextTypes = {
-    community: object,
     currentUser: object,
-    isProjectRequest: bool,
+    community: object,
     dispatch: func
   }
 
@@ -50,12 +50,12 @@ export default class CommentSection extends React.Component {
   }
 
   render () {
-    let { post, comments, onExpand, expanded } = this.props
+    const { post, canComment, onExpand, expanded, isProjectRequest } = this.props
     const truncate = !expanded
-    const { currentUser, isProjectRequest } = this.context
     const placeholder = isProjectRequest ? 'How can you help?' : null
     const community = this.context.community || post.communities[0]
 
+    let { comments } = this.props
     if (!comments) comments = []
     comments = sortBy('created_at', comments)
     if (truncate) comments = comments.slice(-3)
@@ -71,8 +71,7 @@ export default class CommentSection extends React.Component {
         expanded={expanded}
         key={c.id} />)}
       <PeopleTyping showNames={false} />
-      {(canComment(currentUser, post) || isProjectRequest) &&
-        <CommentForm postId={post.id} {...{placeholder}} />}
+      {canComment && <CommentForm postId={post.id} {...{placeholder}} />}
     </div>
   }
 }

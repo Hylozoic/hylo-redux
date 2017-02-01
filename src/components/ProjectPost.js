@@ -6,11 +6,11 @@ import CommentSection from './CommentSection'
 import decode from 'ent/decode'
 import { textLength, truncate } from '../util/text'
 import { isEmpty } from 'lodash'
-import { find, some } from 'lodash/fp'
+import { find, some, filter, map } from 'lodash/fp'
 import { same } from '../models'
 import { denormalizedPost, getComments, getPost, imageUrl } from '../models/post'
 import { getCurrentCommunity } from '../models/community'
-import { canComment } from '../models/currentUser'
+import { canCommentOnPost } from '../models/currentUser'
 import Icon from './Icon'
 import Video from './Video'
 import LazyLoader from './LazyLoader'
@@ -32,65 +32,76 @@ const Deadline = ({ time }) => {
   </span>
 }
 
-const ProjectPost = (props, context) => {
-  const { post, community, comments, communities, currentUser } = context
-  const { tag, media, location, user } = post
-  const title = decode(post.name || '')
-  const video = find(m => m.type === 'video', media)
-  const image = find(m => m.type === 'image', media)
-  const description = presentDescription(post, community)
-  const requests = post.children || []
+@connect((state, { post }) => ({
+  children: map(id => denormalizedPost(getPost(id, state), state), post.children || [])
+}))
+export default class ProjectPost extends React.Component {
+  static propTypes = {
+    post: object,
+    children: array
+  }
 
-  return <div className='post project boxy-post'>
-    <Header communities={communities} />
-    <p className='title post-section'>{title}</p>
-    {tag && <p className='hashtag'>#{tag}</p>}
-    <div className='box'>
-      {video
-        ? <div className='video-wrapper'><Video url={video.url} /></div>
-        : image && <div className='image'><img src={image.url} /></div>}
-      <div className='row'>
-        <div className='main-col'>
-          {location && <div className='meta location'>
-            <Icon name='Pin-1' />
-            <span title={location}>{location}</span>
-          </div>}
-          {description && <div className='details'>
-            <h3>Description</h3>
-            <ClickCatchingSpan dangerouslySetInnerHTML={{__html: description}} />
-          </div>}
-          <div className='leads'>
-            <h3>Project leads</h3>
-            <Avatar person={user} />
-            <div className='person-info'>
-              <A className='name' to={`/u/${user.id}`}>{user.name}</A>
-              <p>{user.bio}</p>
+  static contextTypes = {
+    currentUser: object,
+    community: object
+  }
+
+  render () {
+    const { children, post, comments } = this.props
+    const requests = filter(p => p.is_project_request, children)
+    const { currentUser, community } = this.context
+    const { communities, media, location, user } = post
+    const title = decode(post.name || '')
+    const video = find(m => m.type === 'video', media)
+    const image = find(m => m.type === 'image', media)
+    const canComment = canCommentOnPost(currentUser, post)
+    const description = presentDescription(post, community)
+
+    return <div className='post project boxy-post'>
+      <Header post={post} communities={communities} />
+      <p className='title post-section'>{title}</p>
+      <div className='box'>
+        {video
+          ? <div className='video-wrapper'><Video url={video.url} /></div>
+          : image && <div className='image'><img src={image.url} /></div>}
+        <div className='row'>
+          <div className='main-col'>
+            {location && <div className='meta location'>
+              <Icon name='Pin-1' />
+              <span title={location}>{location}</span>
+            </div>}
+            {description && <div className='details'>
+              <h3>Description</h3>
+              <ClickCatchingSpan dangerouslySetInnerHTML={{__html: description}} />
+            </div>}
+            <div className='leads'>
+              <h3>Project leads</h3>
+              <Avatar person={user} />
+              <div className='person-info'>
+                <A className='name' to={`/u/${user.id}`}>{user.name}</A>
+                <p>{user.bio}</p>
+              </div>
             </div>
           </div>
+          <Supporters post={post} />
         </div>
-        <Supporters post={post} />
       </div>
+      {requests.length > 0 && <div className='requests'>
+        <h3>
+          {requests.length} request{requests.length === 1 ? '' : 's'}&nbsp;
+          <span className='soft'>to make this happen</span>
+        </h3>
+        {requests.map(request => {
+          return <ProjectRequest key={request.id}
+                                 post={request}
+                                 parentPost={post}
+                                 community={community} />
+        })}
+      </div>}
+      <CommentSection {...{post, comments, canComment}} expanded />
     </div>
-    {requests.length > 0 && <div className='requests'>
-      <h3>
-        {requests.length} request{requests.length === 1 ? '' : 's'}&nbsp;
-        <span className='soft'>to make this happen</span>
-      </h3>
-      {requests.map(id => <ProjectRequest key={id} {...{id, community}} />)}
-    </div>}
-    {canComment(currentUser, post) && <CommentSection post={post}
-      comments={comments} expanded />}
-  </div>
+  }
 }
-ProjectPost.contextTypes = {
-  community: object,
-  communities: array,
-  post: object,
-  comments: array,
-  currentUser: object
-}
-
-export default ProjectPost
 
 const Supporters = ({ post, simple }, { currentUser, dispatch }) => {
   const { followers, ends_at } = post
@@ -119,26 +130,16 @@ const Supporters = ({ post, simple }, { currentUser, dispatch }) => {
 }
 Supporters.contextTypes = {currentUser: object, dispatch: func}
 
-@connect((state, { id }) => ({
-  post: denormalizedPost(getPost(id, state), state)
-}))
 class ProjectRequest extends React.Component {
   static propTypes = {
     post: object.isRequired,
+    parentPost: object.isRequired,
     community: object
   }
 
   static contextTypes = {
     dispatch: func,
     isMobile: bool
-  }
-
-  static childContextTypes = {
-    isProjectRequest: bool
-  }
-
-  getChildContext () {
-    return {isProjectRequest: true}
   }
 
   constructor (props) {
@@ -148,7 +149,7 @@ class ProjectRequest extends React.Component {
 
   render () {
     const { dispatch, isMobile } = this.context
-    const { post, community } = this.props
+    const { post, parentPost, community } = this.props
     const { name, id, numComments } = post
     let description = presentDescription(post, community)
     const truncated = textLength(description) > 200
@@ -169,7 +170,7 @@ class ProjectRequest extends React.Component {
     return <div className='nested-request'>
       {this.state.zoomed && <div className='zoomed'>
         <div className='backdrop' onClick={unzoom} />
-        {post.user && <Post post={post} expanded />}
+        {post.user && <Post post={post} parentPost={parentPost} expanded />}
       </div>}
       <p className='title'>{name}</p>
       {description && <ClickCatchingSpan className='details'
@@ -192,16 +193,15 @@ class ProjectRequest extends React.Component {
 
 const spacer = <span>&nbsp; •&nbsp; </span>
 
-const UndecoratedProjectPostCard = ({ post, community, comments, dispatch, isMobile }, { currentUser }) => {
-  const { name, user, tag, ends_at, id } = post
+const UndecoratedProjectPostCard = ({ post, community, comments, isMobile, dispatch }, { currentUser }) => {
+  const { name, user, ends_at, id } = post
   const url = `/p/${post.id}`
   const backgroundImage = `url(${imageUrl(post)})`
+  const canComment = canCommentOnPost(currentUser, post)
 
   let description = presentDescription(post, community)
   const truncated = textLength(description) > 140
-  if (truncated) {
-    description = truncate(description, 140)
-  }
+  if (truncated) description = truncate(description, 140)
 
   return <div className='post project-summary'>
     <LazyLoader className='image'>
@@ -210,10 +210,6 @@ const UndecoratedProjectPostCard = ({ post, community, comments, dispatch, isMob
     <div className='meta'>
       {ends_at && <span>
         <Deadline time={ends_at} />
-        {spacer}
-      </span>}
-      {tag && <span className='hashtag-segment'>
-        <A className='hashtag' to={url}>#{tag}</A>
         {spacer}
       </span>}
       <A to={`/u/${user.id}`}>{user.name}</A>
@@ -228,18 +224,17 @@ const UndecoratedProjectPostCard = ({ post, community, comments, dispatch, isMob
     </div>}
     <Supporters post={post} simple />
     <div className='comments-section-spacer' />
-    {canComment(currentUser, post) && <CommentSection post={post}
-      comments={comments}
-      onExpand={() => dispatch(navigate(url))} />}
+    <CommentSection onExpand={() => dispatch(navigate(url))}
+      isProjectRequest {...{post, canComment, comments}} />
   </div>
 }
 UndecoratedProjectPostCard.contextTypes = {currentUser: object}
 
 export const ProjectPostCard = connect(
   (state, { post }) => ({
+    post: denormalizedPost(post, state),
     comments: getComments(post, state),
     community: getCurrentCommunity(state),
-    isMobile: state.isMobile,
-    post: denormalizedPost(post, state)
+    isMobile: state.isMobile
   })
 )(UndecoratedProjectPostCard)

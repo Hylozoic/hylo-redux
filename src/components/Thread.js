@@ -26,17 +26,11 @@ export default class Thread extends React.Component {
     pending: bool
   }
 
-  static childContextTypes = {post: object}
-
   constructor (props) {
     super(props)
     this.state = {
       scrolledUp: false
     }
-  }
-
-  getChildContext () {
-    return {post: this.props.post}
   }
 
   static contextTypes = {

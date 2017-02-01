@@ -104,6 +104,7 @@
     "babelify": "^7.3.0",
     "browserify": "^13.1.0",
     "chai": "^3.4.1",
+    "chai-enzyme": "^0.6.1",
     "chai-spies": "^0.7.1",
     "envify": "^4.0.0",
     "enzyme": "^2.4.1",

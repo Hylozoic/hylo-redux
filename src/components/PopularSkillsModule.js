@@ -31,17 +31,10 @@ const fetchPopularSkills = slug =>
     }
   })
 
-@connect((state, { community }) =>
-  connectedListProps(state, {subject: 'community', id: community.slug}, 'people'))
-export default class PopularSkillsModule extends React.Component {
-
+export class PopularSkillsModule extends React.Component {
   static propTypes = {
     people: array,
     community: object
-  }
-
-  static contextTypes = {
-    dispatch: func
   }
 
   componentDidMount () {
@@ -67,3 +60,7 @@ export default class PopularSkillsModule extends React.Component {
     </div>
   }
 }
+
+export default connect(
+  (state, { community }) => connectedListProps(state, {subject: 'community', id: community.slug}, 'people')
+)(PopularSkillsModule)

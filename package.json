@@ -90,7 +90,7 @@
     "sails.io.js": "^1.0.1",
     "socket.io-client": "^1.4.8",
     "streamifier": "^0.1.1",
-    "striptags": "^2.1.1",
+    "striptags": "^3.0.0",
     "trunc-html": "^1.1.2",
     "validator": "^6.1.0",
     "velocity-react": "^1.1.5",

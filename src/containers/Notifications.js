@@ -79,7 +79,7 @@ const Activity = ({ activity }, { dispatch }) => {
 
   let text = bodyText(action, comment, post)
 
-  let postName = !isEmpty(post) && post.tag === 'welcome'
+  let postName = !isEmpty(post) && post.type === 'welcome'
     ? `${post.relatedUsers[0].name}'s' welcoming post`
     : truncate(decode(post.name), 140).html
 

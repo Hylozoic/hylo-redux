@@ -20,6 +20,8 @@ import AccessErrorMessage from '../../components/AccessErrorMessage'
 import { canInvite } from '../../models/currentUser'
 import { getTagForCommunity } from '../../models/hashtag'
 import Tooltip from '../../components/Tooltip'
+import { makeUrl } from '../../util/navigation'
+import { tagUrl } from '../../routes'
 const { bool, func, object } = React.PropTypes
 
 const subject = 'community'
@@ -28,10 +30,21 @@ function reloadTag (dispatch, name, communityId, query) {
   // resetError needs to be dispatched here in case we loaded the page for a tag
   // that didn't yet exist, and then created a first post with that tag
   dispatch(resetError(FETCH_TAG))
+
   return dispatch(fetchTag(name, communityId))
-  .then(({ payload }) => payload.post
-    ? dispatch(navigate(`/p/${payload.post.id}`))
-    : dispatch(fetch(subject, communityId || 'all', {...query, tag: name})))
+  .then(({ error, payload }) => {
+    if (error) return
+
+    // if the real tag name and the name shown in the URL differ by case, then
+    // redirect to the name with correct casing. This ensures that the tag is
+    // highlighted correctly in the left nav
+    if (payload.name !== name) {
+      const url = makeUrl(tagUrl(payload.name, communityId), query)
+      return dispatch(navigate(url))
+    }
+
+    return dispatch(fetch(subject, communityId || 'all', {...query, tag: name}))
+  })
 }
 
 @prefetch(({ dispatch, params: { tagName, id }, query }) =>

@@ -1,7 +1,7 @@
 /* eslint-disable camelcase */
 import React from 'react'
 import { difference, first, includes, map, some, sortBy } from 'lodash'
-import { find, filter, get } from 'lodash/fp'
+import { find, filter, get, uniq } from 'lodash/fp'
 const { array, bool, func, object, string } = React.PropTypes
 import cx from 'classnames'
 import cheerio from 'cheerio'
@@ -176,7 +176,7 @@ const getTags = text =>
 
 const extractTags = (shortDesc, fullDesc, omitTag) => {
   const tags = filter(t => t !== omitTag, getTags(fullDesc))
-  return tags.length === 0 ? [] : difference(tags, getTags(shortDesc))
+  return tags.length === 0 ? [] : uniq(difference(tags, getTags(shortDesc)))
 }
 
 const HashtagLink = ({ tag, slug }, { dispatch }) => {

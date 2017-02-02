@@ -74,7 +74,7 @@ export class CommunityPosts extends Component {
     this.state = {
       optimisticSent: false,
       joinRequestError: false,
-      moduleChoice: coinToss()
+      module: null
     }
   }
 
@@ -101,18 +101,15 @@ export class CommunityPosts extends Component {
       !isMember(currentUser, community)) {
       this.requestToJoin({maxage: false})
     }
+    if (hasFeature(currentUser, IN_FEED_ENGAGEMENT_MODULES)) {
+      this.setState({module: getFeedModule(community, currentUser, coinToss())})
+    }
   }
 
   render () {
     let { location: { query }, dispatch, community, params: { id } } = this.props
     const { currentUser } = this.context
-    const { optimisticSent, joinRequestError } = this.state
-
-    var module
-
-    if (hasFeature(currentUser, IN_FEED_ENGAGEMENT_MODULES)) {
-      module = getFeedModule(community, currentUser, this.state.moduleChoice)
-    }
+    const { optimisticSent, joinRequestError, module } = this.state
 
     return <div>
       {hasFeature(currentUser, COMMUNITY_SETUP_CHECKLIST) && canModerate(currentUser, community) &&

@@ -34,7 +34,7 @@ export default class NetworkMonitor extends React.Component {
         if (this.state.offline) return
 
         this.props.notify(
-          'You seem to be offline. Please wait while we try to connect...',
+          'You seem to be offline. Please wait while we try to reconnect...',
           {
             noClose: true,
             type: 'warning',

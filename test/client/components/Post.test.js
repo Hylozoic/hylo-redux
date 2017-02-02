@@ -8,7 +8,7 @@ import {
 import React from 'react'
 import { mount } from 'enzyme'
 import { configureStore } from '../../../src/store'
-import ConnectedPost, { Post } from '../../../src/components/Post'
+import ConnectedPost from '../../../src/components/Post'
 
 const { object, func } = React.PropTypes
 

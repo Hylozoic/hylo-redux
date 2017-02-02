@@ -8,57 +8,44 @@ import cheerio from 'cheerio'
 import decode from 'ent/decode'
 import {
   humanDate, nonbreaking, present, textLength, truncate, appendInP
-} from '../util/text'
+} from '../../util/text'
 import { sanitize } from 'hylo-utils/text'
-import { linkifyHashtags } from '../util/linkify'
-import { tagUrl } from '../routes'
-import { connect } from 'react-redux'
-import { compose } from 'redux'
-import { isMobile } from '../client/util'
-import { same } from '../models'
+import { linkifyHashtags } from '../../util/linkify'
+import { tagUrl } from '../../routes'
+import { isMobile } from '../../client/util'
+import { same } from '../../models'
 import {
-  denormalizedPost, getComments, isPinned, isChildPost, isCompleteRequest
-} from '../models/post'
+  isPinned, isChildPost, isCompleteRequest
+} from '../../models/post'
 import {
   canEditPost, canModerate, canCommentOnPost, hasFeature
-} from '../models/currentUser'
-import { getCurrentCommunity } from '../models/community'
-import {
-  showModal,
-  navigate,
-  followPost,
-  removePost,
-  startPostEdit,
-  voteOnPost,
-  pinPost
-} from '../actions'
-import { CONTRIBUTORS } from '../config/featureFlags'
-import CompleteRequest from './CompleteRequest'
-import RequestCompleteHeader from './RequestCompleteHeader'
-import CommentSection from './CommentSection'
-import LinkPreview from './LinkPreview'
-import LinkedPersonSentence from './LinkedPersonSentence'
-import A from './A'
-import Avatar from './Avatar'
-import Dropdown from './Dropdown'
-import Attachments from './Attachments'
-import LazyLoader from './LazyLoader'
-import Icon from './Icon'
-import { ClickCatchingP, ClickCatchingSpan } from './ClickCatcher'
-import { handleMouseOver } from './Popover'
+} from '../../models/currentUser'
+import { CONTRIBUTORS } from '../../config/featureFlags'
+import CompleteRequest from '../CompleteRequest'
+import RequestCompleteHeader from '../RequestCompleteHeader'
+import CommentSection from '../CommentSection'
+import LinkPreview from '../LinkPreview'
+import LinkedPersonSentence from '../LinkedPersonSentence'
+import A from '../A'
+import Avatar from '../Avatar'
+import Dropdown from '../Dropdown'
+import Attachments from '../Attachments'
+import LazyLoader from '../LazyLoader'
+import Icon from '../Icon'
+import { ClickCatchingSpan } from '../ClickCatcher'
 
 const spacer = <span>&nbsp; •&nbsp; </span>
 
 export const presentDescription = (post, community, opts = {}) =>
   present(sanitize(post.description), {slug: get('slug', community), ...opts})
 
-export class Post extends React.Component {
+export default class Post extends React.Component {
   static propTypes = {
     post: object,
     parentPost: object,
     community: object,
     comments: array,
-    dispatch: func,
+    actions: object,
     expanded: bool,
     onExpand: func,
     commentId: string,
@@ -71,7 +58,7 @@ export class Post extends React.Component {
 
   render () {
     const {
-      inActivityCard, post, parentPost, expanded, onExpand, community, dispatch
+      inActivityCard, post, parentPost, expanded, onExpand, community, actions
     } = this.props
     let { comments } = this.props
     if (inActivityCard && !expanded) comments = comments.slice(-1)
@@ -89,15 +76,16 @@ export class Post extends React.Component {
 
     return <div className={classes}>
       <a name={`post-${post.id}`} />
-      <Header post={post} parentPost={parentPost} communities={communities} expanded={expanded} />
-      <ClickCatchingP className='title post-section' dangerouslySetInnerHTML={{__html: title}} />
+      <Header {...{post, parentPost, communities, actions, expanded}} />
+      <ClickCatchingSpan className='title post-section' dangerouslySetInnerHTML={{__html: title}} />
+      <p className='title post-section' dangerouslySetInnerHTML={{__html: title}} />
       {image && <LazyLoader>
         <img src={image.url} className='post-section full-image' />
       </LazyLoader>}
-      <Details {...{post, expanded, onExpand}} />
+      <Details {...{post, expanded, onExpand, onMouseOver: actions.personPopoverOnMouseOver}} />
       {linkPreview && <LinkPreview {...{linkPreview}} />}
       <div className='voting post-section'>
-        <VoteButton post={post} onClick={() => dispatch(voteOnPost(post, currentUser))} />
+        <VoteButton post={post} onClick={() => actions.voteOnPost(post, currentUser)} />
         <Voters post={post} />
       </div>
       <Attachments post={post} />
@@ -110,25 +98,17 @@ export class Post extends React.Component {
   }
 }
 
-export default compose(connect((state, {post}) => {
-  return {
-    comments: getComments(post, state),
-    community: getCurrentCommunity(state),
-    post: denormalizedPost(post, state)
-  }
-}))(Post)
-
-export const Header = ({ post, parentPost, communities, expanded }, { currentUser, dispatch }) => {
-  const { type } = post
-  const person = type === 'welcome' ? post.relatedUsers[0] : post.user
+export const Header = ({ post, parentPost, actions, communities, expanded }, { currentUser, dispatch }) => {
+  const { tag } = post
+  const person = tag === 'welcome' ? post.relatedUsers[0] : post.user
   const createdAt = new Date(post.created_at)
   const isChild = isChildPost(post)
   return <div className='header'>
-    <Menu expanded={expanded} post={post} isChild={isChild} />
+    <Menu expanded={expanded} post={post} actions={actions} isChild={isChild} />
     <Avatar person={person} showPopover />
-    {type === 'welcome'
+    {tag === 'welcome'
       ? <WelcomePostHeader post={post} communities={communities} />
-      : <div onMouseOver={handleMouseOver(dispatch)}>
+      : <div onMouseOver={actions.personPopoverOnMouseOver}>
         <A className='name' to={`/u/${person.id}`}>
           {person.name}
         </A>
@@ -177,15 +157,13 @@ const extractTags = (shortDesc, fullDesc, omitTag) => {
   return tags.length === 0 ? [] : uniq(difference(tags, getTags(shortDesc)))
 }
 
-const HashtagLink = ({ tag, slug }, { dispatch }) => {
-  const onMouseOver = handleMouseOver(dispatch)
+const HashtagLink = ({ tag, slug, onMouseOver }) => {
   return <a className='hashtag' href={tagUrl(tag, slug)} {...{onMouseOver}}>
     {`#${tag}`}
   </a>
 }
-HashtagLink.contextTypes = {dispatch: func}
 
-export const Details = ({ post, expanded, onExpand }, { community, dispatch }) => {
+export const Details = ({ post, expanded, onExpand, onMouseOver }, { community, dispatch }) => {
   const truncatedSize = 300
   const { tag } = post
   if (!community) community = post.communities[0]
@@ -209,7 +187,7 @@ export const Details = ({ post, expanded, onExpand }, { community, dispatch }) =
     </span>}
     {extractedTags.map(tag => <span key={tag}>
       <wbr />
-      <HashtagLink tag={tag} slug={slug} />
+      <HashtagLink tag={tag} slug={slug} onMouseOver={onMouseOver} />
       &nbsp;
     </span>)}
     {tag && <HashtagLink tag={tag} slug={slug} />}
@@ -236,17 +214,18 @@ const WelcomePostHeader = ({ post, communities }) => {
   </div>
 }
 
-export const Menu = ({ post, expanded, isChild }, { dispatch, currentUser, community }) => {
+export const Menu = ({ post, actions, expanded, isChild }, { currentUser, community }) => {
+  const { pinPost, followPost, removePost, showModal, navigate, startPostEdit } = actions
   const canEdit = canEditPost(currentUser, post)
   const following = some(post.follower_ids, id => id === get('id', currentUser))
   const pinned = isPinned(post, community)
   const edit = () => isMobile()
-    ? dispatch(navigate(`/p/${post.id}/edit`))
-    : dispatch(startPostEdit(post)) &&
-      expanded && !isChild && dispatch(showModal('post-editor', {post}))
+    ? navigate(`/p/${post.id}/edit`)
+    : startPostEdit(post) &&
+      expanded && !isChild && showModal('post-editor', {post})
   const remove = () => window.confirm('Are you sure? This cannot be undone.') &&
-    dispatch(removePost(post.id))
-  const pin = () => dispatch(pinPost(get('slug', community), post.id))
+    removePost(post.id)
+  const pin = () => pinPost(get('slug', community), post.id)
 
   const toggleChildren = pinned
     ? <span className='pinned'><span className='label'>Pinned</span><span className='icon-More' /></span>
@@ -259,7 +238,7 @@ export const Menu = ({ post, expanded, isChild }, { dispatch, currentUser, commu
     {canEdit && <li><a className='edit' onClick={edit}>Edit</a></li>}
     {canEdit && <li><a onClick={remove}>Remove</a></li>}
     <li>
-      <a onClick={() => dispatch(followPost(post.id, currentUser))}>
+      <a onClick={() => followPost(post.id, currentUser)}>
         Turn {following ? 'off' : 'on'} notifications for this post
       </a>
     </li>
@@ -268,7 +247,7 @@ export const Menu = ({ post, expanded, isChild }, { dispatch, currentUser, commu
     </li> */}
   </Dropdown>
 }
-Menu.contextTypes = {currentUser: object, dispatch: func, community: object}
+Menu.contextTypes = {currentUser: object, community: object}
 
 export const VoteButton = ({ post, onClick }, { currentUser }) => {
   let myVote = includes(map(post.voters, 'id'), (currentUser || {}).id)

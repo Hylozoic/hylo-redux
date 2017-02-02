@@ -1,6 +1,6 @@
 require('../support')
 import { renderToString } from 'react-dom/server'
-import { Details, Voters } from '../../src/components/Post'
+import { Details, Voters } from '../../src/components/Post/component'
 import cheerio from 'cheerio'
 import decode from 'ent/decode'
 import { createElement } from '../support/helpers'

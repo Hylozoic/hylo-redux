@@ -24,10 +24,8 @@ import {
 } from '../models/currentUser'
 import { getCurrentCommunity } from '../models/community'
 import {
-  typeahead,
   showModal,
   navigate,
-  completePost,
   followPost,
   removePost,
   startPostEdit,

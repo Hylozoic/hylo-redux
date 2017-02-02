@@ -190,7 +190,7 @@ describe('appHandler', () => {
   describe('on a page that redirects during prefetch', () => {
     beforeEach(() => {
       nock(HOST).get('/noo/user/me').reply(200, {id: 1, name: 'cat'})
-      nock(HOST).get('/noo/tag/foo').reply(200, {name: 'foo', post: {id: 'f'}})
+      nock(HOST).get('/noo/tag/foo').reply(200, {name: 'Foo'})
     })
 
     it('responds with 302', () => {
@@ -198,7 +198,7 @@ describe('appHandler', () => {
 
       return appHandler(req, res)
       .then(() => {
-        expect(res.redirect).to.have.been.called.with(302, '/p/f')
+        expect(res.redirect).to.have.been.called.with(302, '/tag/Foo')
       })
     })
   })

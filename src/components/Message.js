@@ -1,6 +1,7 @@
 import React from 'react'
 import cx from 'classnames'
 import Avatar from './Avatar'
+import { showModal } from '../actions'
 import { humanDate } from '../util/text'
 import { sanitize } from 'hylo-utils/text'
 var { func, object, bool } = React.PropTypes
@@ -17,7 +18,8 @@ class Message extends React.Component {
   }
 
   render () {
-    const { message, isHeader } = this.props
+    const { message, message: { image }, isHeader } = this.props
+    const { dispatch } = this.context
 
     const person = message.user
     let text = sanitize(message.text).replace(/\n/g, '<br />')
@@ -30,9 +32,13 @@ class Message extends React.Component {
           <strong className='name'>{sanitize(person.name)}</strong>
           <span className='date'>{humanDate(message.created_at)}</span>
         </div>}
-        <div className='text'>
+        {image
+        ? <a onClick={() => dispatch(showModal('image', {url: image.url}))}>
+          <img className='thumbnail' src={image.thumbnail_url} />
+        </a>
+        : <div className='text'>
           <span dangerouslySetInnerHTML={{__html: text}} />
-        </div>
+        </div>}
       </div>
     </div>
   }

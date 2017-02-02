@@ -1,12 +1,13 @@
 import React from 'react'
 import Avatar from './Avatar'
 import A from './A'
+import Icon from './Icon'
 import { some } from 'lodash'
 import { get } from 'lodash/fp'
 import { humanDate, prependInP, present, textLength } from '../util/text'
 import { sanitize } from 'hylo-utils/text'
 import { commentUrl } from '../routes'
-import { removeComment, thank, updateCommentEditor } from '../actions'
+import { removeComment, thank, updateCommentEditor, showModal, navigate } from '../actions'
 import truncateHtml from 'trunc-html'
 import { ClickCatchingSpan } from './ClickCatcher'
 import CommentForm from './CommentForm'
@@ -27,7 +28,9 @@ class Comment extends React.Component {
 
   static contextTypes = {
     dispatch: func.isRequired,
-    currentUser: object
+    currentUser: object,
+    isMobile: bool,
+    location: object
   }
 
   constructor (props) {
@@ -37,7 +40,7 @@ class Comment extends React.Component {
 
   render () {
     const { comment, truncate, expand, community } = this.props
-    const { dispatch, currentUser } = this.context
+    const { dispatch, currentUser, isMobile, location } = this.context
     const { editing } = this.state
 
     const person = comment.user
@@ -62,17 +65,29 @@ class Comment extends React.Component {
 
     if (editing) return <CommentForm commentId={comment.id} close={closeEdit} />
 
+    const { image } = comment
+
+    const encodeUrl = url => url.replace(/\//g, '%2F')
+
+    const showImage = isMobile
+      ? () => dispatch(navigate(`/image/${encodeUrl(image.url)}/${encodeUrl(location.pathname)}`))
+      : () => dispatch(showModal('image', {url: image.url}))
+
     return <div className='comment' data-comment-id={comment.id}>
       {canEditComment(currentUser, comment, community) &&
-        <Dropdown alignRight toggleChildren={<span className='icon-More'></span>}>
-          <li><a onClick={edit}>Edit</a></li>
+        <Dropdown alignRight toggleChildren={<Icon name='More' />}>
+          {!image && <li><a onClick={edit}>Edit</a></li>}
           <li><a onClick={remove}>Remove</a></li>
         </Dropdown>}
-      <a name={`comment-${comment.id}`}></a>
+      <a name={`comment-${comment.id}`} />
       <Avatar person={person} showPopover />
       <div className='content'>
-        <ClickCatchingSpan className='text' dangerouslySetInnerHTML={{__html: text}} />
-        {truncated && <span> <a onClick={expand} className='show-more'>Show&nbsp;more</a></span>}
+        {image && <div className='text'><a href={`/u/${person.id}`} className='name'>{person.name}</a></div>}
+        {image && <a onClick={showImage}>
+          <img className='thumbnail' src={image.thumbnail_url} />
+        </a>}
+        {!image && <ClickCatchingSpan className='text' dangerouslySetInnerHTML={{__html: text}} />}
+        {!image && truncated && <span> <a onClick={expand} className='show-more'>Show&nbsp;more</a></span>}
         <div>
           {currentUser && <span>
             {currentUser.id !== person.id &&

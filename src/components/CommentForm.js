@@ -2,6 +2,7 @@ import React from 'react'
 import { debounce, throttle } from 'lodash'
 import { connect } from 'react-redux'
 import Avatar from './Avatar'
+import CommentImageButton from './CommentImageButton'
 import RichTextEditor from './RichTextEditor'
 import {
   showModal, createComment, updateCommentEditor, updateComment
@@ -76,7 +77,7 @@ export default class CommentForm extends React.PureComponent {
       saveParent: this.saveWithTagDescriptions
     }))
     if (newComment) {
-      dispatch(createComment(postId, text, tagDescriptions))
+      dispatch(createComment({postId, text, tagDescriptions}))
       .then(action => {
         if (responseMissingTagDescriptions(action)) return showTagEditor()
         if (action.error) return
@@ -136,7 +137,7 @@ export default class CommentForm extends React.PureComponent {
   }, 50)
 
   render () {
-    const { text, close, pending } = this.props
+    const { text, close, pending, postId } = this.props
     const { currentUser, isMobile } = this.context
     const { enabled, modifierKey } = this.state
     const editing = text !== undefined
@@ -153,6 +154,7 @@ export default class CommentForm extends React.PureComponent {
             onChange={ev => this.delaySetText(ev.target.value)}
             onKeyUp={this.stopTyping}
             onKeyDown={this.handleKeyDown} />
+          <CommentImageButton postId={postId} />
           <input type='submit' value='Post' ref='button'
             className={cx({enabled: enabled && !pending})} />
           {close && <button onClick={close}>Cancel</button>}

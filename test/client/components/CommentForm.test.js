@@ -63,7 +63,8 @@ describe('CommentForm', () => {
       text: 'some generic comment',
       tagDescriptions: {
         thenewtag: {description: 'something', is_default: false}
-      }
+      },
+      imageUrl: undefined
     })
   })
 })

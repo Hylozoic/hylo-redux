@@ -43,8 +43,8 @@ export function appendComment (postId, comment) {
   }
 }
 
-export function createComment (postId, text, tagDescriptions) {
-  const params = {text, tagDescriptions}
+export function createComment ({postId, text, tagDescriptions, imageUrl}) {
+  const params = {text, tagDescriptions, imageUrl}
   return {
     type: CREATE_COMMENT,
     payload: {api: true, path: `/noo/post/${postId}/comment`, params, method: 'POST'},

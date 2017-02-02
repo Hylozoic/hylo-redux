@@ -32,7 +32,7 @@ const state = {
   },
 
   postsByQuery: {
-    threads: ['1', '2']
+    threads: ['1', '2', '3']
   },
 
   posts: {
@@ -42,6 +42,10 @@ const state = {
     },
     '2': {
       id: '2',
+      follower_ids: ['2', '5']
+    },
+    '3': {
+      id: '3',
       follower_ids: ['2', '5']
     }
   },
@@ -60,11 +64,21 @@ const state = {
     '22': {
       text: 'right back atcha!',
       user_id: '5'
+    },
+
+    '31': {
+      text: '',
+      image: {
+        url: 'image.png'
+      },
+      user_id: '2'
     }
+
   },
   commentsByPost: {
     '1': ['11'],
-    '2': ['21', '22']
+    '2': ['21', '22', '23'],
+    '3': ['31']
   }
 
 }
@@ -77,7 +91,7 @@ describe('ThreadsDropdown', () => {
   })
 
   it('renders without errors', () => {
-    const node = mount(<ThreadsDropdown newCount={5}/>, {
+    const node = mount(<ThreadsDropdown newCount={5} />, {
       context: {store, currentUser, dispatch: store.dispatch},
       childContextTypes: {currentUser: React.PropTypes.object, dispatch: React.PropTypes.func}
     })
@@ -87,10 +101,12 @@ describe('ThreadsDropdown', () => {
     node.find('.dropdown-menu').first().simulate('click')
 
     const threads = node.find('.unread')
-    expect(threads.length).to.equal(2)
+    expect(threads.length).to.equal(3)
 
-    expect(threads.at(0).text()).to.equal('sue You: right back atcha!')
+    expect(threads.at(0).text()).to.equal('sue sent an image')
 
-    expect(threads.at(1).text()).to.equal('Joe Hey there!')
+    expect(threads.at(1).text()).to.equal('sue You: right back atcha!')
+
+    expect(threads.at(2).text()).to.equal('Joe Hey there!')
   })
 })

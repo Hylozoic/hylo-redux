@@ -35,6 +35,7 @@ import NetworkEditor from '../containers/network/NetworkEditor'
 import Search from '../containers/Search'
 import Events from '../containers/Events'
 import StandalonePostEditor from '../containers/StandalonePostEditor'
+import ImageViewer from '../containers/ImageViewer'
 import Admin from '../containers/Admin'
 import PageWithNav from '../containers/PageWithNav'
 import TestBench from '../containers/TestBench'
@@ -80,6 +81,7 @@ export default function makeRoutes (store) {
     <Route path='invite' component={CreateCommunityInvite} onEnter={requireLogin} />
 
     <Route path='set-password' component={SetPassword} />
+    <Route path='image/:url/:fromUrl' component={ImageViewer} />
 
     <Route path='add-skills' component={SkillsPrompt} onEnter={requireLogin} />
     <Route path='add-bio' component={BioPrompt} onEnter={requireLogin} />

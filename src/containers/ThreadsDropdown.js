@@ -162,13 +162,15 @@ const ThreadListItem = ({ thread }, { currentUser, dispatch }) => {
   const follower = followers.find(f => f.id !== currentUser.id)
   if (!comment || !follower) return null
 
+  const text = comment.image ? 'sent an image' : truncate(comment.text, 80)
+
   return <A to={threadUrl(thread.id)} className={cx({unread})}>
     {unread && <div className='dot-badge' />}
     <NonLinkAvatar person={follower} />
     <span>
       <strong>{follower.name}</strong>&nbsp;
       {comment.user_id === currentUser.id ? 'You: ' : ''}
-      {truncate(comment.text, 80)}
+      {text}
     </span>
   </A>
 }

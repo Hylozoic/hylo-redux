@@ -121,14 +121,14 @@ export default compose(connect((state, {post}) => {
 }))(Post)
 
 export const Header = ({ post, parentPost, communities, expanded }, { currentUser, dispatch }) => {
-  const { tag } = post
-  const person = tag === 'welcome' ? post.relatedUsers[0] : post.user
+  const { type } = post
+  const person = type === 'welcome' ? post.relatedUsers[0] : post.user
   const createdAt = new Date(post.created_at)
   const isChild = isChildPost(post)
   return <div className='header'>
     <Menu expanded={expanded} post={post} isChild={isChild} />
     <Avatar person={person} showPopover />
-    {tag === 'welcome'
+    {type === 'welcome'
       ? <WelcomePostHeader post={post} communities={communities} />
       : <div onMouseOver={handleMouseOver(dispatch)}>
         <A className='name' to={`/u/${person.id}`}>

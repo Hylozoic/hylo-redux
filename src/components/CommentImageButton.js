@@ -3,9 +3,13 @@ import Icon from './Icon'
 import { notify } from '../actions'
 import { uploadImage } from '../actions/uploadImage'
 import { imageUploadSettings } from '../models/comment'
+import { hasFeature } from '../models/currentUser'
+import { COMMENT_IMAGES } from '../config/featureFlags'
 import { createComment } from '../actions/comments'
 
 const CommentImageButton = ({ postId }, { dispatch, currentUser }) => {
+  if (!hasFeature(currentUser, COMMENT_IMAGES)) return null
+
   const sendImage = () =>
     dispatch(uploadImage(imageUploadSettings(currentUser.id, postId)))
     .then(({ payload, error }) => {

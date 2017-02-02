@@ -1,4 +1,6 @@
 # hylo-redux
+
+[![Greenkeeper badge](https://badges.greenkeeper.io/Hylozoic/hylo-redux.svg)](https://greenkeeper.io/)
 Experimental version of the Hylo.com frontend, written with React and Redux.
 
 ## Goals

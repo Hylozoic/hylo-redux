@@ -15,7 +15,11 @@ export default class PostPromptModule extends React.PureComponent {
   constructor (props) {
     super(props)
     // store tag here so it doesn't change every time the component is rendered
-    this.state = {open: false, tag: coinToss() ? 'offer' : 'request'}
+    this.state = {open: false, tag: 'offer'}
+  }
+
+  componentDidMount () {
+    this.setState({tag: coinToss() ? 'offer' : 'request'})
   }
 
   render () {

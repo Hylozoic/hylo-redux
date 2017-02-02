@@ -8,7 +8,7 @@ import {
 import { get, map, isEmpty } from 'lodash/fp'
 import cx from 'classnames'
 import ScrollListener from '../components/ScrollListener'
-import Avatar from '../components/Avatar'
+import Avatar, { NonLinkAvatar } from '../components/Avatar'
 import truncate from 'trunc-html'
 import { humanDate } from '../util/text'
 import { VIEWED_NOTIFICATIONS, trackEvent } from '../util/analytics'
@@ -18,11 +18,10 @@ import decode from 'ent/decode'
 import {
   getActivitiesProps, actionText, bodyText, destination, activityAction
 } from '../models/activity'
-import { Modal } from '../components/Modal'
+import { Modal, modalWrapperCSSId } from '../components/Modal'
 import A from '../components/A'
 import Dropdown from '../components/Dropdown'
 import Icon from '../components/Icon'
-import { modalWrapperCSSId } from '../components/Modal'
 
 const Notifications = compose(
   prefetch(({ dispatch, params: { id } }) => dispatch(fetchActivity(0, true, id))),

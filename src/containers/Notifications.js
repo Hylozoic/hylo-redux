@@ -182,7 +182,8 @@ const NotificationsDropdownItem = ({ activity, comment }, { dispatch }) => {
   const markAsRead = () => unread && dispatch(markActivityRead(id))
   const onClick = () => {
     markAsRead()
-    dispatch(activityAction(activity))
+    const extraAction = activityAction(activity)
+    if (extraAction) dispatch(extraAction)
   }
   return <A to={destination(activity)} className={cx({unread})}
     onClick={onClick}>

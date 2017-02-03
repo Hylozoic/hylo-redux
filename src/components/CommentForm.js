@@ -54,12 +54,15 @@ export default class CommentForm extends React.PureComponent {
   constructor (props) {
     super(props)
     this.state = {}
+    if (typeof window !== 'undefined') {
+      this.modifierKey = window.navigator.platform.startsWith('Mac')
+      ? 'Cmd' : 'Ctrl'
+    }
+
+    this.id = Math.random().toString().slice(2, 7)
   }
 
   componentDidMount () {
-    const modifierKey = window.navigator.platform.startsWith('Mac')
-      ? 'Cmd' : 'Ctrl'
-    this.setState({modifierKey})
     this.socket = getSocket()
   }
 
@@ -139,7 +142,7 @@ export default class CommentForm extends React.PureComponent {
   render () {
     const { text, close, pending, postId } = this.props
     const { currentUser, isMobile } = this.context
-    const { enabled, modifierKey } = this.state
+    const { enabled } = this.state
     const editing = text !== undefined
     const edit = () => this.setText('')
     const placeholder = this.props.placeholder || 'Add a comment...'
@@ -158,8 +161,8 @@ export default class CommentForm extends React.PureComponent {
           <input type='submit' value='Post' ref='button'
             className={cx({enabled: enabled && !pending})} />
           {close && <button onClick={close}>Cancel</button>}
-          {!isMobile && modifierKey && <span className='meta help-text'>
-            or press {modifierKey}-Enter
+          {!isMobile && this.modifierKey && <span className='meta help-text'>
+            or press {this.modifierKey}-Enter
           </span>}
         </div>
       : <div className='content placeholder' onClick={edit}>

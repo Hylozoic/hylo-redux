@@ -8,6 +8,7 @@ import {
   SHOW_EXPANDED_POST,
   SHOW_DIRECT_MESSAGE
 } from './constants'
+import { showModal } from './modals'
 
 export function navigate (path) {
   return push(path)
@@ -42,4 +43,14 @@ export function showExpandedPost (id, commentId) {
 
 export function showDirectMessage (userId, userName) {
   return {type: SHOW_DIRECT_MESSAGE, payload: {userId, userName}}
+}
+
+export const showImage = (url, fromUrl, isMobile) => {
+  const encodeUrl = url => url.replace(/\//g, '%2F')
+
+  if (isMobile) {
+    return navigate(`/image/${encodeUrl(url)}/${encodeUrl(fromUrl)}`)
+  } else {
+    return showModal('image', {url})
+  }
 }

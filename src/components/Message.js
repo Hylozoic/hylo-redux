@@ -1,7 +1,7 @@
 import React from 'react'
 import cx from 'classnames'
 import Avatar from './Avatar'
-import { showImage } from '../actions/util'
+import { showImage } from '../actions/ui'
 import { humanDate } from '../util/text'
 import { sanitize } from 'hylo-utils/text'
 var { func, object, bool } = React.PropTypes

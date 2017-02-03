@@ -1,6 +1,7 @@
 import React, { PropTypes } from 'react'
-import { reject } from 'lodash'
 import { connect } from 'react-redux'
+import { bindActionCreators } from 'redux'
+import { reject } from 'lodash'
 import { isCompleteRequest } from '../models/post'
 import { typeahead } from '../actions'
 import { completePost } from '../actions/posts'
@@ -8,14 +9,10 @@ import TagInput from './TagInput'
 
 export class CompleteRequest extends React.Component {
   static propTypes = {
-    post: PropTypes.object,
+    post: PropTypes.object.isRequired,
+    actions: PropTypes.object.isRequired,
     canEdit: PropTypes.bool,
     contributorChoices: PropTypes.array
-  }
-
-  static contextTypes = {
-    currentUser: PropTypes.object,
-    dispatch: PropTypes.func
   }
 
   constructor (props, context) {
@@ -32,11 +29,10 @@ export class CompleteRequest extends React.Component {
 
   completeRequest = () => {
     const { contributors } = this.state
-    const { post } = this.props
-    const { dispatch } = this.context
+    const { post, actions: { completePost } } = this.props
     if (contributors.length > 0) this.setState({contributors: []})
     this.toggleRequestCompleting()
-    dispatch(completePost(post.id, contributors))
+    completePost(post.id, contributors)
   }
 
   addContributor = (person) => {
@@ -50,10 +46,10 @@ export class CompleteRequest extends React.Component {
   }
 
   handleContributorInput = (term) => {
-    const { post } = this.props
-    this.context.dispatch(typeahead(term, 'contributors', {
+    const { post, actions: { typeahead } } = this.props
+    typeahead(term, 'contributors', {
       type: 'people', communityIds: post.community_ids }
-    ))
+    )
   }
 
   render () {
@@ -98,6 +94,15 @@ export function mapsStateToProps (state, {post}) {
     contributorChoices: reject(
       state.typeaheadMatches.contributors, {id: post.user_id}
     )
+  }
+}
+
+export function mapDispatchToProps (dispatch) {
+  return {
+    actions: bindActionCreators({
+      typeahead,
+      completePost
+    }, dispatch)
   }
 }
 

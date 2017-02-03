@@ -1,31 +1,40 @@
 import React, { PropTypes } from 'react'
+import { connect } from 'react-redux'
 import { first } from 'lodash'
 import { same } from '../models'
 import { isCompleteRequest } from '../models/post'
 import { completePost } from '../actions/posts'
 import LinkedPersonSentence from './LinkedPersonSentence'
 
-export default class RequestCompleteHeader extends React.Component {
+export class RequestCompleteHeader extends React.Component {
   static propTypes = {
-    post: PropTypes.object,
+    post: PropTypes.object.isRequired,
+    completePost: PropTypes.func.isRequired,
+    confirmFun: PropTypes.func.isRequired,
     canEdit: PropTypes.bool
   }
-  static contextTypes = {
-    currentUser: PropTypes.object,
-    dispatch: PropTypes.func
+
+  static defaultProps ={
+    confirmFun: window.confirm
   }
 
   unCompleteRequest = () => {
-    const { post } = this.props
-    const { dispatch } = this.context
-    if (window.confirm('This will mark this request as Incomplete. Are you sure?')) {
-      dispatch(completePost(post.id))
+    const { post, completePost, confirmFun } = this.props
+    if (confirmFun('This will mark this request as Incomplete. Are you sure?')) {
+      completePost(post.id)
     }
   }
 
   render () {
     const { post, canEdit } = this.props
     const isComplete = isCompleteRequest(post)
+    const contributors = post.contributors || []
+    const onlyAuthorIsContributing = contributors.length === 1 && same('id', first(contributors), post.user)
+    const contributorsSentence = contributors.length > 0 && !onlyAuthorIsContributing
+      ? <LinkedPersonSentence people={contributors} showPopover className='contributors'>
+          helped complete this request!
+        </LinkedPersonSentence>
+      : <div className='contributors'>Request has been completed</div>
     return <div className='request-completed-bar'>
       <div className='request-complete-heading'>
         <div className='request-complete-message'>
@@ -34,19 +43,17 @@ export default class RequestCompleteHeader extends React.Component {
             checked={isComplete}
             disabled={!canEdit}
             onChange={this.unCompleteRequest} />
-          <RequestContributorsSentence post={post} />
+          {contributorsSentence}
         </div>
       </div>
     </div>
   }
 }
 
-export const RequestContributorsSentence = ({ post }) => {
-  const contributors = post.contributors || []
-  const onlyAuthorIsContributing = contributors.length === 1 && same('id', first(contributors), post.user)
-  return contributors.length > 0 && !onlyAuthorIsContributing
-    ? <LinkedPersonSentence people={contributors} showPopover className='contributors'>
-        helped complete this request!
-      </LinkedPersonSentence>
-    : <div className='contributors'>Request has been completed</div>
+export function mapDispatchToProps (dispatch) {
+  return {
+    completePost: dispatch(completePost)
+  }
 }
+
+export default connect(null, mapDispatchToProps)(RequestCompleteHeader)

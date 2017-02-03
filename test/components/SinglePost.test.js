@@ -1,5 +1,5 @@
 require('../support')
-import SinglePost from '../../src/containers/SinglePost'
+import SinglePost from '../../src/components/SinglePost'
 import { fetchPost, unfollowPost } from '../../src/actions'
 import { configureStore } from '../../src/store'
 import { getPrefetchedData } from 'react-fetcher'
@@ -17,6 +17,9 @@ describe('SinglePost', () => {
       store = configureStore({
         people: {current: eva}
       }).store
+
+      console.log(store.getState())
+
       store.dispatch = spy(store.dispatch)
       mockActionResponse(fetchPost(post.id), {...post, people: [bob]})
       mockActionResponse(unfollowPost(post.id, eva.id), {})
@@ -30,6 +33,7 @@ describe('SinglePost', () => {
       })
       .then(() => {
         const state = store.getState()
+        console.log(state)
         expect(state.posts[post.id].follower_ids).to.be.empty
         const message = state.notifierMessages[0]
         expect(message).to.exist

@@ -64,10 +64,10 @@ describe('Post Details', () => {
 
     const props = {
       stateless: true,
-      post: {description, tag: 'request'}
+      post: {description, tag: 'request'},
+      community: {slug: 'foo'}
     }
     const context = {
-      community: {slug: 'foo'},
       dispatch: () => {}
     }
 

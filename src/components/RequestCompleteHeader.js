@@ -1,6 +1,6 @@
 import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
-import { get, first } from 'lodash'
+import { first } from 'lodash'
 import { same } from '../models'
 import { isCompleteRequest } from '../models/post'
 import { completePost } from '../actions/posts'
@@ -50,10 +50,4 @@ export class RequestCompleteHeader extends React.Component {
   }
 }
 
-export function mapDispatchToProps (dispatch) {
-  return {
-    completePost: dispatch(completePost)
-  }
-}
-
-export default connect(null, mapDispatchToProps)(RequestCompleteHeader)
+export default connect(null, { completePost })(RequestCompleteHeader)

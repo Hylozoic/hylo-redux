@@ -1,6 +1,6 @@
 import '../support'
 import { wait } from '../../support/helpers'
-import React, { PropTypes } from 'react'
+import React from 'react'
 import { mount } from 'enzyme'
 import { merge } from 'lodash'
 import { CompleteRequest } from '../../../src/components/CompleteRequest'
@@ -17,10 +17,8 @@ const contributor = {
 const setupNode = (withProps) => {
   const props = merge({
     post: requestPost,
-    actions: {
-      completePost: () => {},
-      typeahead: () => {}
-    },
+    completePost: () => {},
+    typeahead: () => {},
     contributorChoices: [contributor]
   }, withProps)
   return mount(<CompleteRequest {...props} />)
@@ -30,7 +28,7 @@ describe('CompleteRequest', () => {
   describe('with edit permissions', () => {
     it('can be completed (with contributors)', () => {
       const completePost = spy()
-      const node = setupNode({canEdit: true, actions: { completePost }})
+      const node = setupNode({canEdit: true, completePost})
       expect(node.find('.toggle')).to.be.length(1)
       node.find('.toggle').simulate('change')
       expect(node.find('.request-complete-heading').text()).to.contain('Awesome')
@@ -45,7 +43,7 @@ describe('CompleteRequest', () => {
 
     it('can be completed (without contributors)', () => {
       const completePost = spy()
-      const node = setupNode({canEdit: true, actions: { completePost }})
+      const node = setupNode({canEdit: true, completePost})
       expect(node.find('.toggle')).to.be.length(1)
       node.find('.toggle').simulate('change')
       expect(node.find('.done')).to.be.length(1)
@@ -56,7 +54,7 @@ describe('CompleteRequest', () => {
 
     it('requests contributors from all communities associated with a post', () => {
       const typeahead = spy()
-      const node = setupNode({canEdit: true, actions: { typeahead }})
+      const node = setupNode({canEdit: true, typeahead})
       node.find('.toggle').simulate('change')
       node.find('.request-complete-people-input input').simulate('change', {
         target: {value: contributor.name}, keyCode: 13

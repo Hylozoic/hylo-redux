@@ -1,17 +1,16 @@
 import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
-import { bindActionCreators } from 'redux'
 import { reject } from 'lodash'
 import { isCompleteRequest } from '../models/post'
 import { typeahead } from '../actions'
-import { completePost } from '../actions/posts'
 import TagInput from './TagInput'
 
 export class CompleteRequest extends React.Component {
   static propTypes = {
     post: PropTypes.object.isRequired,
-    actions: PropTypes.object.isRequired,
     canEdit: PropTypes.bool,
+    completePost: PropTypes.func.isRequired,
+    typeahead: PropTypes.func.isRequired,
     contributorChoices: PropTypes.array
   }
 
@@ -29,7 +28,7 @@ export class CompleteRequest extends React.Component {
 
   completeRequest = () => {
     const { contributors } = this.state
-    const { post, actions: { completePost } } = this.props
+    const { post, completePost } = this.props
     if (contributors.length > 0) this.setState({contributors: []})
     this.toggleRequestCompleting()
     completePost(post.id, contributors)
@@ -46,7 +45,7 @@ export class CompleteRequest extends React.Component {
   }
 
   handleContributorInput = (term) => {
-    const { post, actions: { typeahead } } = this.props
+    const { post, typeahead } = this.props
     typeahead(term, 'contributors', {
       type: 'people', communityIds: post.community_ids }
     )
@@ -97,13 +96,6 @@ export function mapsStateToProps (state, {post}) {
   }
 }
 
-export function mapDispatchToProps (dispatch) {
-  return {
-    actions: bindActionCreators({
-      typeahead,
-      completePost
-    }, dispatch)
-  }
-}
-
-export default connect(mapsStateToProps)(CompleteRequest)
+export default connect(mapsStateToProps, {
+  typeahead
+})(CompleteRequest)

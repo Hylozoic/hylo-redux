@@ -1,16 +1,10 @@
-import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
+import { bindActionCreators } from 'redux'
 import { denormalizedPost, getComments } from '../../models/post'
 import { getCurrentCommunity } from '../../models/community'
 import { handleMouseOver } from '../Popover'
 import {
-  showModal,
-  navigate,
-  followPost,
-  removePost,
-  startPostEdit,
-  voteOnPost,
-  pinPost
+  voteOnPost
 } from '../../actions'
 
 export function mapsStateToProps (state, { post }) {
@@ -22,22 +16,13 @@ export function mapsStateToProps (state, { post }) {
 }
 
 export function mapDispatchToProps (dispatch, { post }) {
-  let actions = bindActionCreators({
-    showModal,
-    navigate,
-    followPost,
-    removePost,
-    startPostEdit,
-    voteOnPost,
-    pinPost
+  const actions = bindActionCreators({
+    voteOnPost
   }, dispatch)
-  // LEJ: The dispatch dependent Popover#handleMouseOver is turned into
-  //      an "action". The rule here is basically if it needs dispatch it
-  //      doesn't go in the component and does go in the connector.
   return {
     actions: {
       ...actions,
-      personPopoverOnMouseOver: handleMouseOver(dispatch)
+      onMouseOver: handleMouseOver(dispatch)
     }
   }
 }

@@ -92,7 +92,10 @@ export default connect((state, { posts }) => ({
 }))(PostList)
 
 const ShowPost = ({ showProjectActivity, post, parentPost, editingPostIds, expand }) => {
-  let onExpand = commentId => expand(post.id, commentId, post.parent_post_id)
+  let onExpand = commentId => {
+    console.log('!!! heres', commentId, post)
+    return expand(post.id, commentId, post.parent_post_id)
+  }
   if (includes(post.id, editingPostIds)) {
     return <PostEditor {...{post, parentPost}} expanded />
   } else if (showProjectActivity && post.type === 'project' && post.child) {

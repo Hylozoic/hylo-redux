@@ -1,7 +1,9 @@
 /* eslint-disable camelcase */
 import React from 'react'
 import { connect } from 'react-redux'
-import Post, { Header, presentDescription } from './Post'
+import { presentDescription } from './Post/component'
+import Post from './Post'
+import PostHeader from './PostHeader'
 import CommentSection from './CommentSection'
 import decode from 'ent/decode'
 import { textLength, truncate } from '../util/text'
@@ -58,7 +60,7 @@ export default class ProjectPost extends React.Component {
     const description = presentDescription(post, community)
 
     return <div className='post project boxy-post'>
-      <Header post={post} communities={communities} />
+      <PostHeader post={post} communities={communities} />
       <p className='title post-section'>{title}</p>
       <div className='box'>
         {video

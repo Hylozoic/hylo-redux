@@ -7,7 +7,8 @@ import { get } from 'lodash/fp'
 import { humanDate, prependInP, present, textLength } from '../util/text'
 import { sanitize } from 'hylo-utils/text'
 import { commentUrl } from '../routes'
-import { removeComment, thank, updateCommentEditor, showModal, navigate } from '../actions'
+import { removeComment, thank, updateCommentEditor } from '../actions'
+import { showImage } from '../actions/util'
 import truncateHtml from 'trunc-html'
 import { ClickCatchingSpan } from './ClickCatcher'
 import CommentForm from './CommentForm'
@@ -67,12 +68,6 @@ class Comment extends React.Component {
 
     const { image } = comment
 
-    const encodeUrl = url => url.replace(/\//g, '%2F')
-
-    const showImage = isMobile
-      ? () => dispatch(navigate(`/image/${encodeUrl(image.url)}/${encodeUrl(location.pathname)}`))
-      : () => dispatch(showModal('image', {url: image.url}))
-
     return <div className='comment' data-comment-id={comment.id}>
       {canEditComment(currentUser, comment, community) &&
         <Dropdown alignRight toggleChildren={<Icon name='More' />}>
@@ -85,7 +80,7 @@ class Comment extends React.Component {
         {image && <div className='text'>
           <A to={`/u/${person.id}`} className='name'>{person.name}</A>
         </div>}
-        {image && <a onClick={showImage}>
+        {image && <a onClick={() => dispatch(showImage(image.url, location.pathname, isMobile))}>
           <img className='thumbnail' src={image.thumbnail_url} />
         </a>}
         {!image && <ClickCatchingSpan className='text' dangerouslySetInnerHTML={{__html: text}} />}

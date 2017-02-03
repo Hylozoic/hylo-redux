@@ -1,7 +1,7 @@
 import React from 'react'
 import cx from 'classnames'
 import Avatar from './Avatar'
-import { showModal } from '../actions'
+import { showImage } from '../actions/util'
 import { humanDate } from '../util/text'
 import { sanitize } from 'hylo-utils/text'
 var { func, object, bool } = React.PropTypes
@@ -14,12 +14,14 @@ class Message extends React.Component {
 
   static contextTypes = {
     dispatch: func.isRequired,
-    currentUser: object
+    currentUser: object,
+    location: object,
+    isMobile: bool
   }
 
   render () {
     const { message, message: { image }, isHeader } = this.props
-    const { dispatch } = this.context
+    const { dispatch, location, isMobile } = this.context
 
     const person = message.user
     let text = sanitize(message.text).replace(/\n/g, '<br />')
@@ -33,7 +35,7 @@ class Message extends React.Component {
           <span className='date'>{humanDate(message.created_at)}</span>
         </div>}
         {image
-        ? <a onClick={() => dispatch(showModal('image', {url: image.url}))}>
+        ? <a onClick={() => dispatch(showImage(image.url, location.pathname, isMobile))}>
           <img className='thumbnail' src={image.thumbnail_url} />
         </a>
         : <div className='text'>

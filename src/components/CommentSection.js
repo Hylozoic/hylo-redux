@@ -58,7 +58,7 @@ export default class CommentSection extends React.Component {
     let { comments } = this.props
     if (!comments) comments = []
     comments = sortBy('created_at', comments)
-    if (truncate) comments = comments.slice(-3)
+    if (truncate) comments = comments.slice(-2)
 
     return <div className={cx('comments-section post-section', {empty: isEmpty(comments)})}>
       {truncate && post.numComments > comments.length && <div className='comment show-all'>

@@ -54,7 +54,7 @@ class SearchMenuItem extends React.Component {
   }
 }
 
-const UserMenu = ({ slug, newMessageCount, newNotificationCount }, { isMobile, dispatch, currentUser }) => {
+export const UserMenu = ({ slug, newMessageCount, newNotificationCount }, { isMobile, dispatch, currentUser }) => {
   const { settings: { last_viewed_messages_at }, id } = currentUser
   const doLogout = () => {
     calliOSBridge({type: 'logout'})

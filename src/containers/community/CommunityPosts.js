@@ -173,16 +173,21 @@ const ProfileCompletionModules = ({ person }) => {
 
 // Redux connection
 
-const mapStateToProps = (state, { params }) => ({
-  community: state.communities[params.id],
-  currentUser: state.people.current
-})
+export function serverFetchToState ({ dispatch, params: { id }, query }) {
+  return Promise.all([
+    dispatch(fetch(subject, id, query)),
+    dispatch(fetchCommunityStats(id))
+  ])
+}
+
+export function mapStateToProps (state, { params }) {
+  return {
+    community: state.communities[params.id],
+    currentUser: state.people.current
+  }
+}
 
 export default compose(
-  prefetch(({ dispatch, params: { id }, query }) =>
-    Promise.all([
-      dispatch(fetch(subject, id, query)),
-      dispatch(fetchCommunityStats(id))
-    ])),
+  prefetch(serverFetchToState),
   connect(mapStateToProps)
 )(CommunityPosts)

@@ -4,7 +4,6 @@ import { connect } from 'react-redux'
 import { isCompleteRequest } from '../models/post'
 import { typeahead } from '../actions'
 import { completePost } from '../actions/posts'
-
 import TagInput from './TagInput'
 
 export class CompleteRequest extends React.Component {
@@ -94,10 +93,12 @@ export class CompleteRequest extends React.Component {
   }
 }
 
-export default connect((state, {post}) => {
+export function mapsStateToProps (state, {post}) {
   return {
     contributorChoices: reject(
       state.typeaheadMatches.contributors, {id: post.user_id}
     )
   }
-})(CompleteRequest)
+}
+
+export default connect(mapsStateToProps)(CompleteRequest)

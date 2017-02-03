@@ -155,6 +155,12 @@
   }
 
   .message-form {
+    display:flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    align-content: flex-start;
+    align-items: flex-start;
     width: 100%;
     background: #FFF;
     position: fixed;
@@ -162,17 +168,29 @@
     border-top: 1px solid @post-border;
     height: @message-form-height;
 
+
+    .send-image {
+      flex-grow: 0;
+      flex-shrink: 0;
+      flex-basis: 0;
+      width: 100px;
+      margin-left: 15px;
+      font-size: 22px;
+      position: relative;
+      top: 11px;
+      text-decoration: none;
+    }
+
     textarea {
-      width: 90%;
+      width: 300px;
+      height: 250px;
+      flex-grow: 1;
+      flex-shrink: 0;
+      flex-basis: 200px;
       height: 50px;
       resize: none;
       padding: 15px;
-      .mobile({
-        width: auto;
-        padding-right: 50px;
-      });
       border: none;
-
       &:focus {
         outline: none;
       }
@@ -180,10 +198,12 @@
 
     button {
       .round-button;
-
+      flex-grow: 0;
+      flex-shrink: 0;
+      flex-basis: 0;
+      width: 100px;
       position: relative;
-      float: right;
-      top: -46px;
+      top: 9px;
 
       height: 32px;
       line-height: 30px;
@@ -200,15 +220,6 @@
         background-color: @damian-green;
       }
     }
-
-    .send-image {
-      margin-left: 15px;
-      font-size: 22px;
-      position: relative;
-      top: -15px;
-      text-decoration: none;
-    }
-
   }
 
 }

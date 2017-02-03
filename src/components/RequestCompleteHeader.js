@@ -1,6 +1,6 @@
 import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
-import { first } from 'lodash'
+import { get, first } from 'lodash'
 import { same } from '../models'
 import { isCompleteRequest } from '../models/post'
 import { completePost } from '../actions/posts'
@@ -15,7 +15,7 @@ export class RequestCompleteHeader extends React.Component {
   }
 
   static defaultProps ={
-    confirmFun: window.confirm
+    confirmFun: (msg) => window.confirm(msg)
   }
 
   unCompleteRequest = () => {

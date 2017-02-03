@@ -4,6 +4,10 @@ import { handleMouseOver } from './Popover'
 const { func } = React.PropTypes
 
 const ClickCatcher = ({ tag, ...props }, { dispatch }) => {
+  if (!['div', 'span', 'p'].includes(tag)) {
+    throw new Error(`invalid tag for ClickCatcher: ${tag}`)
+  }
+
   const handleClick = event => {
     var node = event.target
     if (node.nodeName.toLowerCase() !== 'a') return
@@ -19,16 +23,12 @@ const ClickCatcher = ({ tag, ...props }, { dispatch }) => {
     }
   }
 
-  switch (tag) {
-    case 'div':
-      return <div {...props} onClick={handleClick} onMouseOver={handleMouseOver(dispatch)} />
-    case 'span':
-      return <span {...props} onClick={handleClick} onMouseOver={handleMouseOver(dispatch)} />
-  }
+  return React.createElement(tag, {...props, onClick: handleClick, onMouseOver: handleMouseOver(dispatch)})
 }
 
 ClickCatcher.contextTypes = {
   dispatch: func.isRequired
 }
 
+export const ClickCatchingP = props => <ClickCatcher tag='p' {...props} />
 export const ClickCatchingSpan = props => <ClickCatcher tag='span' {...props} />

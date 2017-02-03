@@ -44,7 +44,7 @@ import Dropdown from './Dropdown'
 import Attachments from './Attachments'
 import LazyLoader from './LazyLoader'
 import Icon from './Icon'
-import { ClickCatchingSpan } from './ClickCatcher'
+import { ClickCatchingP, ClickCatchingSpan } from './ClickCatcher'
 import { handleMouseOver } from './Popover'
 
 const spacer = <span>&nbsp; •&nbsp; </span>
@@ -90,7 +90,7 @@ export class Post extends React.Component {
     return <div className={classes}>
       <a name={`post-${post.id}`} />
       <Header post={post} parentPost={parentPost} communities={communities} expanded={expanded} />
-      <p className='title post-section' dangerouslySetInnerHTML={{__html: title}} />
+      <ClickCatchingP className='title post-section' dangerouslySetInnerHTML={{__html: title}} />
       {image && <LazyLoader>
         <img src={image.url} className='post-section full-image' />
       </LazyLoader>}

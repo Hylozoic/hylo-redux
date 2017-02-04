@@ -85,6 +85,11 @@ export default class RichTextEditor extends React.PureComponent {
   _handleChange = event => {
     // use the standard property name
     event.target.value = event.target.getContent()
+
+    if (!this.sentFirstChange) {
+      this.sentFirstChange = true
+      return
+    }
     return this.props.onChange(event)
   }
 

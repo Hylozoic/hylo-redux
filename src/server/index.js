@@ -11,6 +11,7 @@ import request from 'request'
 import { readFileSync } from 'fs'
 import compression from 'compression'
 import cookieParser from 'cookie-parser'
+import path from 'path'
 
 const port = process.env.PORT || 9000
 const upstreamHostname = parse(upstreamHost).hostname
@@ -64,7 +65,8 @@ const setupAssetManifest = callback => {
 
   if (process.env.NODE_ENV !== 'production') {
     info('using local asset manifest: dist/manifest.json')
-    setManifest(JSON.parse(readFileSync(__dirname + '/../../dist/manifest.json')))
+    const manifestPath = path.join(__dirname, '/../../dist/manifest.json')
+    setManifest(JSON.parse(readFileSync(manifestPath)))
     return callback()
   }
 
@@ -78,10 +80,19 @@ const setupAssetManifest = callback => {
   })
 }
 
-setupAssetManifest(() => server.listen(port, err => {
-  if (err) throw err
-  info('listening on port ' + port)
-}))
+setupAssetManifest(() => {
+  const listener = server.listen(port, err => {
+    if (err) throw err
+    info(`listening on port ${port} (pid ${process.pid})`)
+  })
+
+  const shutdown = () => listener.close(() => {
+    console.log(`shutting down (pid ${process.pid})`)
+    process.exit()
+  })
+  process.once('SIGINT', shutdown)
+  process.once('SIGUSR2', shutdown) // used by nodemon
+})
 
 if (process.env.PRELOAD_PROXY_CACHE) {
   preloadCache()

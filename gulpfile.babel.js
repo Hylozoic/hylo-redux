@@ -20,6 +20,7 @@ gulp.task('build-dev-css', lessDev)
 
 gulp.task('serve', function () {
   require('nodemon')({
+    verbose: true,
     script: './src/server',
     exec: './node_modules/.bin/babel-node',
     ignore: ['public/**/*', 'dist/**/*']

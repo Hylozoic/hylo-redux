@@ -121,7 +121,7 @@ export class ConnectedPostList extends React.Component {
 
     const feedItems = posts
 
-    if (module) {
+    if (module && feedItems.length > 0) {
       feedItems.splice(2, 0, module)
     }
 

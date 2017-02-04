@@ -49,7 +49,7 @@ const getFeedModule = (community, currentUser, moduleChoice) => {
   } else if (showPostPrompt) {
     module.component = <PostPromptModule />
   } else {
-    module.component = null
+    module = null
   }
 
   return module

@@ -130,7 +130,7 @@ const PersonProfile = compose(
     trackEvent(STARTED_MESSAGE, {context: 'profile'})
     return dispatch(showDirectMessage(person.id, person.name))
   }
-  const ActivityItemsForCategory = ({category, person}) => {
+  const activityItems = (category, person) => {
     switch (category) {
       case 'thank':
         return <Thanks person={person} />
@@ -145,7 +145,8 @@ const PersonProfile = compose(
     }
   }
 
-  return <CoverImagePage id='person' image={banner_url || defaultBanner} person={isSelf ? currentUser : null}>
+  return <CoverImagePage id='person' image={banner_url || defaultBanner}
+    person={isSelf ? currentUser : null}>
     <div className='opener'>
       <NonLinkAvatar person={isSelf ? currentUser : person} showEdit={isSelf} />
       <h2>
@@ -195,14 +196,13 @@ const PersonProfile = compose(
       <PostList posts={[recentOffer]} hideMobileSearch />
     </div>}
     <ListLabel category={category} />
-    <ActivityItemsForCategory category={category} person={person} />
+    {activityItems(category, person)}
   </CoverImagePage>
 })
 
 PersonProfile.propTypes = {
   params: object,
   person: object,
-  children: object,
   error: object,
   location: object,
   dispatch: func,

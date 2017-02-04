@@ -94,9 +94,8 @@ export default connect((state, { posts }) => ({
 const ShowPost = ({ showProjectActivity, post, parentPost, editingPostIds, expand }) => {
   let onExpand = commentId => expand(post.id, commentId, post.parent_post_id)
   if (includes(post.id, editingPostIds)) {
-    return  <PostEditor {...{post, parentPost}} expanded />
-  }
-  else if (showProjectActivity && post.type === 'project' && post.child) {
+    return <PostEditor {...{post, parentPost}} expanded />
+  } else if (showProjectActivity && post.type === 'project' && post.child) {
     onExpand = commentId => expand(post.child.id, commentId, post.id)
     return <ProjectActivityCard post={post.child} parentPost={post} onExpand={onExpand} />
   }

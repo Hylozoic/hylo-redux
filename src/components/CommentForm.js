@@ -1,5 +1,6 @@
 import React from 'react'
 import { debounce, throttle } from 'lodash'
+import { get } from 'lodash/fp'
 import { connect } from 'react-redux'
 import Avatar from './Avatar'
 import CommentImageButton from './CommentImageButton'
@@ -8,7 +9,7 @@ import {
   showModal, createComment, updateCommentEditor, updateComment
 } from '../actions'
 import {
-  CREATE_COMMENT
+  CREATE_COMMENT, UPDATE_COMMENT
 } from '../actions/constants'
 import { ADDED_COMMENT, trackEvent } from '../util/analytics'
 import { textLength } from '../util/text'
@@ -27,10 +28,13 @@ const STARTED_TYPING_INTERVAL = 5000
 const STOPPED_TYPING_WAIT_TIME = 8000
 
 @connect((state, { postId, commentId }) => {
+  const isPending = (actionType, id) =>
+    !!id && get(['pending', actionType, 'id'], state) === id
+
   return ({
     text: postId ? state.commentEdits.new[postId] : state.commentEdits.edit[commentId],
     newComment: !commentId,
-    pending: state.pending[CREATE_COMMENT]
+    pending: isPending(CREATE_COMMENT, postId) || isPending(UPDATE_COMMENT, commentId)
   })
 }, null, null, {withRef: true})
 export default class CommentForm extends React.PureComponent {

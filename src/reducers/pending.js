@@ -42,6 +42,6 @@ export default function pending (state = {}, action) {
     toggle(FETCH_COMMUNITIES) ||
     toggle(FETCH_TAGS) ||
     toggle(SEARCH) ||
-    toggle(CREATE_COMMENT) ||
+    toggle(CREATE_COMMENT, true) ||
     state
 }

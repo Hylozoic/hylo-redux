@@ -5,6 +5,7 @@ import { connect } from 'react-redux'
 import Avatar from './Avatar'
 import CommentImageButton from './CommentImageButton'
 import RichTextEditor from './RichTextEditor'
+import Icon from './Icon'
 import {
   showModal, createComment, updateCommentEditor, updateComment
 } from '../actions'
@@ -143,6 +144,19 @@ export default class CommentForm extends React.PureComponent {
     this.setText(text)
   }, 50)
 
+  cancel = () => {
+    this.setText(undefined)
+  }
+
+  handleBlur = () => {
+    const text = this.refs.editor.getContent()
+    if (!text) {
+      this.cancel()
+    } else {
+      this.setText(text)
+    }
+  }
+
   render () {
     const { text, close, pending, postId } = this.props
     const { currentUser, isMobile } = this.context
@@ -157,10 +171,17 @@ export default class CommentForm extends React.PureComponent {
         ? <div className='content'>
           <RichTextEditor ref='editor' name='comment' startFocused
             content={text}
-            onBlur={() => this.setText(this.refs.editor.getContent())}
+            onBlur={this.handleBlur}
             onChange={ev => this.delaySetText(ev.target.value)}
             onKeyUp={this.stopTyping}
             onKeyDown={this.handleKeyDown} />
+
+          <div className='right'>
+            <a className='cancel' onClick={this.cancel}>
+              <Icon name='Fail' />
+            </a>
+          </div>
+
           <CommentImageButton postId={postId} />
           <input type='submit' value='Post' ref='button'
             className={cx({enabled: enabled && !pending})} />

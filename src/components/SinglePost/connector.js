@@ -1,7 +1,8 @@
 import { prefetch } from 'react-fetcher'
 import { connect } from 'react-redux'
 import { compose } from 'redux'
-import { get, includes } from 'lodash'
+import { includes } from 'lodash'
+import { get } from 'lodash/fp'
 import { ogMetaTags } from '../../util'
 import { scrollToComment } from '../../util/scrolling'
 import { getCurrentCommunity } from '../../models/community'
@@ -22,7 +23,7 @@ import { fetch } from '../../containers/ConnectedPostList'
 import { subject } from './component'
 
 export function fetchToState ({ store, dispatch, params: { id }, query }) {
-  dispatch(fetchPost(id))
+  return dispatch(fetchPost(id))
     .then(action => {
       if (action.error) return action
       if (action.payload.parent_post_id) {

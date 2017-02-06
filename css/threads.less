@@ -4,6 +4,7 @@
 .thread {
   height: 100vh;
   margin-top: -@top-nav-height;
+  position: relative;
   .mobile({
     margin-top: -@mobile-top-nav-height;
   });
@@ -163,7 +164,7 @@
     align-items: flex-start;
     width: 100%;
     background: #FFF;
-    position: fixed;
+    position: absolute;
     bottom: 0;
     border-top: 1px solid @post-border;
     height: @message-form-height;

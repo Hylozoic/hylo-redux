@@ -4,7 +4,7 @@ import A from './A'
 import Avatar from './Avatar'
 import { get } from 'lodash'
 import { nounCount } from '../util/text'
-import { navigate, fetchTagSummary, followTag } from '../actions'
+import { navigate, fetchTagSummary, followTag, hidePopover } from '../actions'
 const { string, func, array, number, bool } = React.PropTypes
 
 @connect(({ tagsByCommunity }, { slug, tagName }) => {
@@ -44,10 +44,15 @@ export default class TagPopover extends React.Component {
 
     const toggleFollow = () => dispatch(followTag(slug, tagName))
 
+    const goToTag = () => {
+      dispatch(hidePopover())
+      dispatch(navigate(`/c/${slug}/tag/${tagName}`))
+    }
+
     return <span className='tag-popover'>
       <div>
         <a className='tag-name'
-          onClick={() => dispatch(navigate(`/c/${slug}/tag/${tagName}`))}>
+          onClick={gotToTag}>
           #{tagName}
         </a>
         <span className='description meta-text'>{description}</span>

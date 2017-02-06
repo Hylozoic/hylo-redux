@@ -4,7 +4,7 @@ import { connect } from 'react-redux'
 import Avatar from './Avatar'
 import Icon from './Icon'
 import { STARTED_MESSAGE, trackEvent } from '../util/analytics'
-import { fetchPerson, showDirectMessage } from '../actions'
+import { fetchPerson, showDirectMessage, hidePopover } from '../actions'
 import { getPerson, sharesCommunity } from '../models/person'
 import { truncate } from '../util/text'
 const { object, func, string } = React.PropTypes
@@ -27,13 +27,14 @@ export default class PersonPopover extends React.Component {
     if (!person) return null
     const bio = person.bio ? truncate(person.bio, 36) : ''
     const startMessage = () => {
+      dispatch(hidePopover())
       trackEvent(STARTED_MESSAGE, {context: 'popover'})
       return dispatch(showDirectMessage(person.id, person.name))
     }
 
     return <span className='person-popover'>
       <Avatar person={person} />
-      <div className='name'><Link to={`/u/${person.id}`}>{person.name}</Link></div>
+      <div className='name'><Link to={`/u/${person.id}`} onClick={() => dispatch(hidePopover())}>{person.name}</Link></div>
       <div className='bio'>{bio}</div>
       {sharesCommunity(person) && <button onClick={startMessage} className='message'>
         <Icon name='Message-Smile' /> Message

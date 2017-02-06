@@ -22,7 +22,8 @@ const post = {
 const parentPost = {
   id: 'parentPost',
   name: 'The Parent Project',
-  created_at: new Date()
+  created_at: new Date(),
+  communities: [{slug: 'testcommunity'}]
 }
 
 const setupNode = () => {

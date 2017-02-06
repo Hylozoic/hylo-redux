@@ -122,6 +122,13 @@ export function Details ({ post, community, expanded, onExpand, onMouseOver }) {
     {tag && <HashtagLink tag={tag} slug={slug} />}
   </div>
 }
+Details.propTypes = {
+  post: PropTypes.object.isRequired,
+  community: PropTypes.object.isRequired,
+  expanded: PropTypes.bool,
+  onExpand: PropTypes.func,
+  onMouseOver: PropTypes.func
+}
 
 export function Voters ({ post }) {
   const voters = post.voters || []
@@ -133,6 +140,9 @@ export function Voters ({ post }) {
     </LinkedPersonSentence>
     : <span />
   )
+}
+Details.propTypes = {
+  post: PropTypes.object.isRequired
 }
 
 function VoteButton ({ forUser, post, onClick }) {

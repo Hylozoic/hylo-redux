@@ -10,6 +10,14 @@ const { string, object, func } = React.PropTypes
 
 let canceledPopover
 
+/*
+  NOTES:
+  in any popover, the calling of any 'navigate' action will cause the popover to hide, but
+  anything else will not. so if you want to add a different action into a popover besides navigate
+  and would like the popover to hide when its called, either add it to the popover reducer
+  or also call the 'hidePopover' action
+*/
+
 export const handleMouseOver = dispatch => event => {
   const node = event.target
   const isTag = node.getAttribute('class') === 'hashtag'

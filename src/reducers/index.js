@@ -55,8 +55,8 @@ import {
   FIND_OR_CREATE_THREAD,
   FINISH_LOGIN,
   HIDE_POPOVER,
+  LOCATION_CHANGE,
   LOGIN,
-  NAVIGATE,
   NOTIFY,
   ON_THREAD_PAGE,
   OFF_THREAD_PAGE,
@@ -235,7 +235,7 @@ const combinedReducers = combineReducers({
     switch (action.type) {
       case SHOW_POPOVER:
         return action.payload
-      case NAVIGATE:
+      case LOCATION_CHANGE:
       case HIDE_POPOVER:
         return {}
     }

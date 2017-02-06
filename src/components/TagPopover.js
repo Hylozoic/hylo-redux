@@ -44,15 +44,10 @@ export default class TagPopover extends React.Component {
 
     const toggleFollow = () => dispatch(followTag(slug, tagName))
 
-    const goToTag = () => {
-      dispatch(hidePopover())
-      dispatch(navigate(`/c/${slug}/tag/${tagName}`))
-    }
-
     return <span className='tag-popover'>
       <div>
         <a className='tag-name'
-          onClick={gotToTag}>
+          onClick={() => dispatch(navigate(`/c/${slug}/tag/${tagName}`))}>
           #{tagName}
         </a>
         <span className='description meta-text'>{description}</span>

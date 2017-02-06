@@ -34,7 +34,7 @@ export default class PersonPopover extends React.Component {
 
     return <span className='person-popover'>
       <Avatar person={person} />
-      <div className='name'><Link to={`/u/${person.id}`} onClick={() => dispatch(hidePopover())}>{person.name}</Link></div>
+      <div className='name'><Link to={`/u/${person.id}`}>{person.name}</Link></div>
       <div className='bio'>{bio}</div>
       {sharesCommunity(person) && <button onClick={startMessage} className='message'>
         <Icon name='Message-Smile' /> Message

@@ -32,12 +32,13 @@ import LazyLoader from '../LazyLoader'
 import Icon from '../Icon'
 
 export default function Post (
-  { post, parentPost, community, comments, expanded, onExpand, inActivityCard, actions },
+  { post, parentPost, comments, expanded, onExpand, inActivityCard, actions },
   { currentUser }
 ) {
   const { tag, media, linkPreview } = post
   const { voteOnPost, onMouseOver } = actions
   const communities = parentPost ? parentPost.communities : post.communities
+  const community = communities[0]
   const image = find(m => m.type === 'image', media)
   const classes = cx('post', tag, {image, expanded: expanded && !inActivityCard})
   const title = linkifyHashtags(decode(sanitize(post.name || '')), get('slug', community))
@@ -73,13 +74,14 @@ export default function Post (
   </div>
 }
 Post.propTypes = {
-  post: PropTypes.object.isRequired,
+  post: PropTypes.shape({
+    communities: PropTypes.arrayOf(PropTypes.object.isRequired).isRequired
+  }),
   comments: PropTypes.array.isRequired,
   actions: PropTypes.shape({
     voteOnPost: PropTypes.func.isRequired
   }),
   parentPost: PropTypes.object,
-  community: PropTypes.object,
   expanded: PropTypes.bool,
   onExpand: PropTypes.func,
   inActivityCard: PropTypes.bool
@@ -94,7 +96,6 @@ export const presentDescription = (post, community, opts = {}) =>
 export function Details ({ post, community, expanded, onExpand, onMouseOver }) {
   const truncatedSize = 300
   const { tag } = post
-  if (!community) community = post.communities[0]
   const slug = get('slug', community)
   let description = presentDescription(post, community)
   let extractedTags = []

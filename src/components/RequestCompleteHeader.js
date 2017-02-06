@@ -50,4 +50,6 @@ export class RequestCompleteHeader extends React.Component {
   }
 }
 
-export default connect(null, { completePost })(RequestCompleteHeader)
+export default connect(null, {
+  completePost
+})(RequestCompleteHeader)

@@ -36,7 +36,7 @@ export default function Post (
   { currentUser }
 ) {
   const { tag, media, linkPreview } = post
-  const { completePost, voteOnPost, onMouseOver } = actions
+  const { voteOnPost, onMouseOver } = actions
   const communities = parentPost ? parentPost.communities : post.communities
   const image = find(m => m.type === 'image', media)
   const classes = cx('post', tag, {image, expanded: expanded && !inActivityCard})
@@ -46,39 +46,43 @@ export default function Post (
   const canEdit = canEditPost(currentUser, post)
   const canComment = canCommentOnPost(currentUser, isChildPost(post) ? parentPost : post)
 
-  let selectedComments
+  let selectedComments = comments
   if (inActivityCard && !expanded) selectedComments = comments.slice(-1)
 
   return <div className={classes}>
     <a name={`post-${post.id}`} />
     <PostHeader {...{post, parentPost, communities, expanded}} />
     <p className='title post-section' dangerouslySetInnerHTML={{__html: title}} />
-    {image && <LazyLoader>
-      <img src={image.url} className='post-section full-image' />
-    </LazyLoader>}
+    {image &&
+      <LazyLoader>
+        <img src={image.url} className='post-section full-image' />
+      </LazyLoader>}
     <Details {...{post, community, expanded, onExpand, onMouseOver}} />
-    {linkPreview && <LinkPreview {...{linkPreview}} />}
+    {linkPreview &&
+      <LinkPreview {...{linkPreview}} />}
     <div className='voting post-section'>
       <VoteButton post={post} forUser={currentUser} onClick={() => voteOnPost(post, currentUser)} />
       <Voters post={post} />
     </div>
     <Attachments post={post} />
     {hasFeature(currentUser, CONTRIBUTORS) && isComplete &&
-      <RequestCompleteHeader post={post} canEdit={canEdit} completePost={completePost} />}
+      <RequestCompleteHeader post={post} canEdit={canEdit} />}
     <CommentSection {...{comments: selectedComments, post, expanded, onExpand, canComment}} />
     {hasFeature(currentUser, CONTRIBUTORS) && isRequest && !isComplete &&
-      <CompleteRequest post={post} canEdit={canEdit} completePost={completePost} />}
+      <CompleteRequest post={post} canEdit={canEdit} />}
   </div>
 }
 Post.propTypes = {
   post: PropTypes.object.isRequired,
+  comments: PropTypes.array.isRequired,
+  actions: PropTypes.shape({
+    voteOnPost: PropTypes.func.isRequired
+  }),
   parentPost: PropTypes.object,
   community: PropTypes.object,
-  comments: PropTypes.array,
   expanded: PropTypes.bool,
   onExpand: PropTypes.func,
-  inActivityCard: PropTypes.bool,
-  actions: PropTypes.object.isRequired
+  inActivityCard: PropTypes.bool
 }
 Post.contextTypes = {
   currentUser: PropTypes.object
@@ -87,7 +91,7 @@ Post.contextTypes = {
 export const presentDescription = (post, community, opts = {}) =>
   present(sanitize(post.description), {slug: get('slug', community), ...opts})
 
-export const Details = ({ post, community, expanded, onExpand, onMouseOver }) => {
+export function Details ({ post, community, expanded, onExpand, onMouseOver }) {
   const truncatedSize = 300
   const { tag } = post
   if (!community) community = post.communities[0]
@@ -118,7 +122,7 @@ export const Details = ({ post, community, expanded, onExpand, onMouseOver }) =>
   </div>
 }
 
-export const Voters = ({ post }) => {
+export function Voters ({ post }) {
   const voters = post.voters || []
   const onlyAuthorIsVoting = voters.length === 1 && same('id', first(voters), post.user)
   const votersExist = voters.length > 0 && !onlyAuthorIsVoting
@@ -130,11 +134,17 @@ export const Voters = ({ post }) => {
   )
 }
 
-const VoteButton = ({ forUser, post, onClick }) => {
+function VoteButton ({ forUser, post, onClick }) {
   let myVote = includes(map(post.voters, 'id'), (forUser || {}).id)
   return <a className='vote-button' onClick={onClick}>
     {myVote ? <Icon name='Heart2' /> : <Icon name='Heart' />}
     {myVote ? 'Liked' : 'Like'}
+  </a>
+}
+
+function HashtagLink ({ tag, slug, onMouseOver }) {
+  return <a className='hashtag' href={tagUrl(tag, slug)} {...{onMouseOver}}>
+    {`#${tag}`}
   </a>
 }
 
@@ -145,10 +155,4 @@ const getTags = text =>
 const extractTags = (shortDesc, fullDesc, omitTag) => {
   const tags = filter(t => t !== omitTag, getTags(fullDesc))
   return tags.length === 0 ? [] : difference(tags, getTags(shortDesc))
-}
-
-const HashtagLink = ({ tag, slug, onMouseOver }) => {
-  return <a className='hashtag' href={tagUrl(tag, slug)} {...{onMouseOver}}>
-    {`#${tag}`}
-  </a>
 }

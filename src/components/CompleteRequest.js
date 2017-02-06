@@ -2,7 +2,7 @@ import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
 import { reject } from 'lodash'
 import { isCompleteRequest } from '../models/post'
-import { typeahead } from '../actions'
+import { typeahead, completePost } from '../actions'
 import TagInput from './TagInput'
 
 export class CompleteRequest extends React.Component {
@@ -97,5 +97,6 @@ export function mapsStateToProps (state, {post}) {
 }
 
 export default connect(mapsStateToProps, {
+  completePost,
   typeahead
 })(CompleteRequest)

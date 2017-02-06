@@ -1,16 +1,165 @@
 import '../support'
+import { merge } from 'lodash'
 import { mocks } from '../../support'
-import { mockActionResponse, createElement } from '../../support/helpers'
+import { createElement } from '../../support/helpers'
 import {
   findRenderedDOMComponentWithClass,
   renderIntoDocument
 } from 'react-addons-test-utils'
 import React from 'react'
-import { mount } from 'enzyme'
+import { mount, shallow } from 'enzyme'
 import { configureStore } from '../../../src/store'
 import ConnectedPost from '../../../src/components/Post'
+import Post from '../../../src/components/Post/component'
 
 const { object, func } = React.PropTypes
+
+const requiredProps = {
+  post: {
+    tag: ''
+  },
+  actions: {
+    voteOnPost: () => {}
+  },
+  comments: []
+}
+
+const defaultContext = {
+  currentUser: {}
+}
+
+describe('Post', () => {
+  it('will render with minimum required props', () => {
+    const wrapper = shallow(<Post {...requiredProps} />)
+    expect(wrapper.find('.post').length).to.equal(1)
+  })
+
+  describe('post', () => {
+  })
+
+  describe('child post', () => {
+  })
+
+  describe('with image', () => {
+  })
+
+  describe('prop: expanded', () => {
+    it('expanded', () => {
+      const wrapper = shallow(<Post {...requiredProps} />)
+      expect(wrapper.find('.expanded').length).to.equal(0)
+    })
+
+    it('not expanded', () => {
+      const wrapper = shallow(<Post expanded {...requiredProps} />)
+      expect(wrapper.find('.expanded').length).to.equal(1)
+    })
+  })
+
+  describe('prop: parentPost', () => {
+    const props = {
+      post: { communities: { foo: {}, bar: {} } },
+      parentPost: { communities: { goo: {}, car: {} } }
+    }
+
+    it('inherits communities from parent', () => {
+      const wrapper = shallow(<Post {...merge(requiredProps, props)} />)
+      expect(wrapper.find('Connect(PostHeader)').prop('communities'))
+      .to.deep.equal(props.parentPost.communities)
+    })
+  })
+
+  describe('prop: community', () => {
+    const props = {
+      community: {slug: ''}
+    }
+
+    it('is set as prop for details component', () => {
+      const wrapper = shallow(<Post {...merge(requiredProps, props)} />)
+      expect(wrapper.find('Details').prop('community'))
+      .to.deep.equal(props.community)
+    })
+  })
+
+  describe('prop: comments', () => {
+    const props = {
+      comments: [
+        {id: '1', text: 'yes!', user: {id: '6', name: 'jo klunk'}},
+        {id: '2', text: 'yes!', user: {id: '6', name: 'jo klunk'}}
+      ]
+    }
+
+    it('is set as prop for comments component', () => {
+      const wrapper = shallow(<Post {...merge(requiredProps, props)} />)
+      expect(wrapper.find('CommentSection').prop('comments'))
+      .to.deep.equal(props.comments)
+    })
+  })
+    // const props = {post, expanded: true}
+    // const store = mocks.redux.store(state)
+    // const context = {store, dispatch: store.dispatch}
+    // let component = createElement(ConnectedPost, props, context)
+    // let node = renderIntoDocument(component)
+    // findRenderedDOMComponentWithClass(node, 'post')
+    // let details = findRenderedDOMComponentWithClass(node, 'details')
+    // let expected = new RegExp(
+    //   `<span[^>]*><p>${post.description}&nbsp;<\/p><\/span><a class="hashtag" [^>]*>#offer<\/a>` // eslint-disable-line
+    // )
+    // expect(details.innerHTML).to.match(expected)
+    // let title = findRenderedDOMComponentWithClass(node, 'title')
+    // expect(title.innerHTML).to.equal('i have "something" for you!')
+  // })
+
+  it('renders for a logged-out visitor', () => {
+    const props = {post, expanded: true}
+    const store = mocks.redux.store({
+      ...state,
+      people: {
+        ...state.people,
+        current: null
+      }
+    })
+    const context = {store, dispatch: store.dispatch}
+    let component = createElement(ConnectedPost, props, context)
+    let node = renderIntoDocument(component)
+    findRenderedDOMComponentWithClass(node, 'post')
+    let details = findRenderedDOMComponentWithClass(node, 'details')
+    let expected = new RegExp(
+      `<span[^>]*><p>${post.description}&nbsp;<\/p><\/span><a class="hashtag" [^>]*>#offer<\/a>` // eslint-disable-line
+    )
+    expect(details.innerHTML).to.match(expected)
+    let title = findRenderedDOMComponentWithClass(node, 'title')
+    expect(title.innerHTML).to.equal('i have "something" for you!')
+  })
+
+  it('visualizes cross posting between communities', () => {
+    const props = {post: post2}
+    const store = mocks.redux.store(state)
+    const context = {store, dispatch: store.dispatch}
+    let component = createElement(ConnectedPost, props, context)
+    let node = renderIntoDocument(component)
+    let communities = findRenderedDOMComponentWithClass(node, 'communities')
+    let expected = '&nbsp;in&nbsp;<a>Foomunity</a><span> + </span><div class="dropdown post-communities-dropdown" tabindex="99"><a class="dropdown-toggle"><span>3 others</span></a><ul class="dropdown-menu"></ul><span></span></div>'
+    expect(stripComments(communities.innerHTML)).to.equal(expected)
+  })
+
+  it('opens PostEditorModal on edit when expanded', () => {
+    const store = configureStore(state).store
+    const node = mount(<ConnectedPost expanded post={post} />, {
+      context: {store, dispatch: store.dispatch, currentUser: state.people.current},
+      childContextTypes: {store: object, dispatch: func, currentUser: object}
+    })
+    node.find('.dropdown-toggle').first().simulate('click')
+    node.find('.post-menu .edit').first().simulate('click')
+    const updatedState = store.getState()
+    expect(updatedState.openModals[0].type).to.equal('post-editor')
+    expect(updatedState.openModals[0].params.post).to.contain({
+      name: post.name, description: post.description
+    })
+    expect(updatedState.postEdits[post.id]).to.contain({
+      name: post.name, description: post.description
+    })
+  })
+})
 
 const stripComments = markup => markup.replace(/<!--[^>]*-->/g, '')
 
@@ -37,20 +186,6 @@ const post2 = {
   updated_at: new Date(),
   user_id: 'x',
   community_ids: ['1', '2', '3', '4']
-}
-
-const projectSpecialRequestPost = {
-  id: 'projectSpecialRequestPost',
-  name: 'I am a project special request posting',
-  description: 'it is very special.',
-  type: 'request',
-  tag: 'request',
-  created_at: new Date(),
-  updated_at: new Date(),
-  user_id: 'x',
-  community_ids: ['1'],
-  follower_ids: ['x', 'y'],
-  is_project_request: true
 }
 
 const contributor = {
@@ -117,68 +252,3 @@ const normalizedChildPost = {
   communities: [state.communities.foo],
   project: {}
 }
-
-describe('Post', () => {
-  it('renders expanded', () => {
-    const props = {post, expanded: true}
-    const store = mocks.redux.store(state)
-    const context = {store, dispatch: store.dispatch}
-    let component = createElement(ConnectedPost, props, context)
-    let node = renderIntoDocument(component)
-    findRenderedDOMComponentWithClass(node, 'post')
-    let details = findRenderedDOMComponentWithClass(node, 'details')
-    let expected = new RegExp(`<span[^>]*><p>${post.description}&nbsp;<\/p><\/span><a class="hashtag" [^>]*>#offer<\/a>`)
-    expect(details.innerHTML).to.match(expected)
-    let title = findRenderedDOMComponentWithClass(node, 'title')
-    expect(title.innerHTML).to.equal('i have "something" for you!')
-  })
-
-  it('renders for a logged-out visitor', () => {
-    const props = {post, expanded: true}
-    const store = mocks.redux.store({
-      ...state,
-      people: {
-        ...state.people,
-        current: null
-      }
-    })
-    const context = {store, dispatch: store.dispatch}
-    let component = createElement(ConnectedPost, props, context)
-    let node = renderIntoDocument(component)
-    findRenderedDOMComponentWithClass(node, 'post')
-    let details = findRenderedDOMComponentWithClass(node, 'details')
-    let expected = new RegExp(`<span[^>]*><p>${post.description}&nbsp;<\/p><\/span><a class="hashtag" [^>]*>#offer<\/a>`)
-    expect(details.innerHTML).to.match(expected)
-    let title = findRenderedDOMComponentWithClass(node, 'title')
-    expect(title.innerHTML).to.equal('i have "something" for you!')
-  })
-
-  it('visualizes cross posting between communities', () => {
-    const props = {post: post2}
-    const store = mocks.redux.store(state)
-    const context = {store, dispatch: store.dispatch}
-    let component = createElement(ConnectedPost, props, context)
-    let node = renderIntoDocument(component)
-    let communities = findRenderedDOMComponentWithClass(node, 'communities')
-    let expected = '&nbsp;in&nbsp;<a>Foomunity</a><span> + </span><div class="dropdown post-communities-dropdown" tabindex="99"><a class="dropdown-toggle"><span>3 others</span></a><ul class="dropdown-menu"></ul><span></span></div>'
-    expect(stripComments(communities.innerHTML)).to.equal(expected)
-  })
-
-  it('opens PostEditorModal on edit when expanded', () => {
-    const store = configureStore(state).store
-    const node = mount(<ConnectedPost expanded post={post} />, {
-      context: {store, dispatch: store.dispatch, currentUser: state.people.current},
-      childContextTypes: {store: object, dispatch: func, currentUser: object}
-    })
-    node.find('.dropdown-toggle').first().simulate('click')
-    node.find('.post-menu .edit').first().simulate('click')
-    const updatedState = store.getState()
-    expect(updatedState.openModals[0].type).to.equal('post-editor')
-    expect(updatedState.openModals[0].params.post).to.contain({
-      name: post.name, description: post.description
-    })
-    expect(updatedState.postEdits[post.id]).to.contain({
-      name: post.name, description: post.description
-    })
-  })
-})

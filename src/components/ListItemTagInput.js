@@ -68,7 +68,7 @@ export class ListItemTagInput extends Component {
   }
 }
 
-export function mapStateToProps ({ typeaheadMatches }, { type }) {
+const mapStateToProps = ({ typeaheadMatches }, { type }) => {
   return {
     matches: get(typeaheadMatches, type)
   }

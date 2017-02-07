@@ -4,7 +4,8 @@ import { fetchLiveStatus, clearCache } from '../actions'
 import { get } from 'lodash'
 const { func, object } = React.PropTypes
 
-export class LiveStatusPoller extends React.Component {
+@connect()
+export default class LiveStatusPoller extends React.Component {
 
   static propTypes = {
     dispatch: func,
@@ -51,5 +52,3 @@ export class LiveStatusPoller extends React.Component {
     return null
   }
 }
-
-export default connect()(LiveStatusPoller)

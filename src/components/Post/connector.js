@@ -7,7 +7,7 @@ import {
   voteOnPost
 } from '../../actions'
 
-export function mapsStateToProps (state, { post }) {
+export function mapStateToProps (state, { post }) {
   return {
     comments: getComments(post, state),
     community: getCurrentCommunity(state),
@@ -27,4 +27,4 @@ export function mapDispatchToProps (dispatch, { post }) {
   }
 }
 
-export default connect(mapsStateToProps, mapDispatchToProps)
+export default connect(mapStateToProps, mapDispatchToProps)

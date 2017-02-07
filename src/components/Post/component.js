@@ -1,14 +1,7 @@
-<<<<<<< HEAD
 /* eslint-disable camelcase */
-import React from 'react'
-import { difference, first, includes, map, some, sortBy } from 'lodash'
-import { find, filter, get, uniq } from 'lodash/fp'
-const { array, bool, func, object, string } = React.PropTypes
-=======
 import React, { PropTypes } from 'react'
 import { difference, first, includes, map } from 'lodash'
 import { find, filter, get } from 'lodash/fp'
->>>>>>> Better decouple Post component
 import cx from 'classnames'
 import cheerio from 'cheerio'
 import decode from 'ent/decode'
@@ -20,7 +13,7 @@ import { same } from '../../models'
 import { isChildPost, isCompleteRequest } from '../../models/post'
 import { canEditPost, canCommentOnPost, hasFeature } from '../../models/currentUser'
 import { CONTRIBUTORS } from '../../config/featureFlags'
-import { ClickCatchingSpan } from '../ClickCatcher'
+import { ClickCatchingSpan, ClickCatchingP } from '../ClickCatcher'
 import PostHeader from '../PostHeader'
 import CompleteRequest from '../CompleteRequest'
 import RequestCompleteHeader from '../RequestCompleteHeader'
@@ -53,14 +46,12 @@ export default function Post (
   return <div className={classes}>
     <a name={`post-${post.id}`} />
     <PostHeader {...{post, parentPost, communities, expanded}} />
-    <p className='title post-section' dangerouslySetInnerHTML={{__html: title}} />
-    {image &&
-      <LazyLoader>
-        <img src={image.url} className='post-section full-image' />
-      </LazyLoader>}
+    <ClickCatchingP className='title post-section' dangerouslySetInnerHTML={{__html: title}} />
+    {image && <LazyLoader>
+      <img src={image.url} className='post-section full-image' />
+    </LazyLoader>}
     <Details {...{post, community, expanded, onExpand, onMouseOver}} />
-    {linkPreview &&
-      <LinkPreview {...{linkPreview}} />}
+    {linkPreview && <LinkPreview {...{linkPreview}} />}
     <div className='voting post-section'>
       <VoteButton post={post} forUser={currentUser} onClick={() => voteOnPost(post, currentUser)} />
       <Voters post={post} />

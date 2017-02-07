@@ -10,7 +10,20 @@ import { assetUrl } from '../util/assets'
 import { navigate } from '../actions'
 const { object, func, bool } = React.PropTypes
 
-export const CommunityMenu = ({ network, community }, { isMobile, dispatch, currentUser, location }) => {
+const getMenuItems = (currentUser, firstItem) =>
+  [firstItem].concat(flow(
+    get('memberships'),
+    sortBy(m => -Date.parse(m.last_viewed_at || '2001-01-01')),
+    map('community')
+  )(currentUser))
+
+export const allCommunities = () => ({
+  id: null,
+  avatar_url: assetUrl('/img/hylo-merkaba-300x300.png'),
+  name: 'All Communities'
+})
+
+const CommunityMenu = ({ network, community }, { isMobile, dispatch, currentUser, location }) => {
   // don't show All Communities if the user is in only one
   const onlyOneCommunity = get('memberships.length', currentUser) === 1
   if (onlyOneCommunity && !community.id) {
@@ -71,18 +84,5 @@ export const CommunityMenu = ({ network, community }, { isMobile, dispatch, curr
   </div>
 }
 CommunityMenu.contextTypes = {isMobile: bool, dispatch: func, currentUser: object, location: object}
-
-const getMenuItems = (currentUser, firstItem) =>
-  [firstItem].concat(flow(
-    get('memberships'),
-    sortBy(m => -Date.parse(m.last_viewed_at || '2001-01-01')),
-    map('community')
-  )(currentUser))
-
-export const allCommunities = () => ({
-  id: null,
-  avatar_url: assetUrl('/img/hylo-merkaba-300x300.png'),
-  name: 'All Communities'
-})
 
 export default CommunityMenu

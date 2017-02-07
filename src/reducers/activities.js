@@ -1,4 +1,5 @@
 import {
+  CLEAR_CACHE,
   FETCH_ACTIVITY,
   MARK_ACTIVITY_READ,
   MARK_ALL_ACTIVITIES_READ_PENDING
@@ -47,6 +48,11 @@ export const activitiesByCommunity = (state = {}, action) => {
         ...state,
         [meta.id]: (state[meta.id] || []).concat(map(payload.items, 'id'))
       }
+    case CLEAR_CACHE:
+      if (payload.bucket === 'activitiesByCommunity') {
+        return {...state, [payload.id]: null}
+      }
+      break
   }
 
   return state

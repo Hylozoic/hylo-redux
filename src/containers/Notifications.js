@@ -160,7 +160,7 @@ export const NotificationsDropdown = connect(
 )(props => {
   const { dispatch, newCount, activities, comments, pending } = props
   return <Dropdown alignRight rivalrous='nav' className='notifications-list'
-    onFirstOpen={() => dispatch(fetchActivity(0, true))}
+    onOpen={() => dispatch(fetchActivity(0, true))}
     toggleChildren={<span>
       <Icon name='Bell' />
       {newCount > 0 && <div className='badge'>{newCount}</div>}

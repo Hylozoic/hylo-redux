@@ -88,7 +88,7 @@ export class CompleteRequest extends React.Component {
   }
 }
 
-export function mapsStateToProps (state, {post}) {
+export function mapStateToProps (state, {post}) {
   return {
     contributorChoices: reject(
       state.typeaheadMatches.contributors, {id: post.user_id}
@@ -96,7 +96,7 @@ export function mapsStateToProps (state, {post}) {
   }
 }
 
-export default connect(mapsStateToProps, {
+export default connect(mapStateToProps, {
   completePost,
   typeahead
 })(CompleteRequest)

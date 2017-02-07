@@ -1,14 +1,14 @@
 import React from 'react'
 import { get } from 'lodash/fp'
-import A from '../A'
-import PostEditor from '../PostEditor'
-import AccessErrorMessage from '../AccessErrorMessage'
-import CoverImagePage from '../CoverImagePage'
-import EventPost from '../EventPost'
-import ProjectPost from '../ProjectPost'
-import ProjectActivityCard from '../ProjectActivityCard'
-import Post from '../Post'
-import { ConnectedPostList } from '../../containers/ConnectedPostList'
+import A from '../../components/A'
+import PostEditor from '../../components/PostEditor'
+import AccessErrorMessage from '../../components/AccessErrorMessage'
+import CoverImagePage from '../../components/CoverImagePage'
+import EventPost from '../../components/EventPost'
+import ProjectPost from '../../components/ProjectPost'
+import ProjectActivityCard from '../../components/ProjectActivityCard'
+import Post from '../../components/Post'
+import { ConnectedPostList } from '../ConnectedPostList'
 
 const { array, bool, object, string, func } = React.PropTypes
 

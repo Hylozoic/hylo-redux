@@ -4,7 +4,7 @@ import { configureStore } from '../../src/store'
 import { getPrefetchedData } from 'react-fetcher'
 import { mockActionResponse } from '../support/helpers'
 
-import { fetchToState } from  '../../src/components/SinglePost/connector'
+import { fetchToState } from  '../../src/containers/SinglePost/connector'
 
 const bob = {id: '2', name: 'bob'}
 const eva = {id: '5', name: 'eva'}

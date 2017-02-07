@@ -55,13 +55,19 @@ const renderComponent = (props, store) =>
     <RouterContext location='history' {...props} />
   </Provider>)
 
+const safeStringify = obj =>
+  JSON.stringify(obj)
+  .replace('</script>', '')
+  .replace(/\u2028/g, '\\u2028')
+  .replace(/\u2029/g, '\\u2029')
+
 const createElement = state => markup =>
   React.createElement(Html, {
     markup,
     initNewRelic: browserSnippet(),
-    state: `window.INITIAL_STATE=${JSON.stringify(state).replace('</script>', '')}`,
-    assetManifest: `window.ASSET_MANIFEST=${JSON.stringify(getManifest())}`,
-    featureFlags: `window.FEATURE_FLAGS=${JSON.stringify(featureFlags())}`,
+    state: `window.INITIAL_STATE=${safeStringify(state)}`,
+    assetManifest: `window.ASSET_MANIFEST=${safeStringify(getManifest())}`,
+    featureFlags: `window.FEATURE_FLAGS=${safeStringify(featureFlags())}`,
     metaTags: state.metaTags
   })
 

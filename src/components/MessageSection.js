@@ -5,14 +5,13 @@ const { array, bool, func, object } = React.PropTypes
 import cx from 'classnames'
 import Message from './Message'
 import { position } from '../util/scrolling'
-import { findDOMNode } from 'react-dom'
 import { updatePostReadTime } from '../actions'
 
 // the maximum amount of time in minutes that can pass between messages to still
 // include them under the same avatar and timestamp
 const MAX_MINS_TO_BATCH = 5
 
-function createMessageList (messages, messageSection) {
+function createMessageList (messages) {
   let currentHeader
   return messages.map((m, index) => {
     let headerDate, messageDate, diff, greaterThanMax
@@ -71,11 +70,15 @@ export default class MessageSection extends React.Component {
   }
 
   scrollToMessage (id) {
-    const message = findDOMNode(this['message' + id])
-    const messageTop = position(message, this.list).y -
+    const message = document.querySelector(`[data-message-id="${id}"]`)
+
+    // the last portion of the offset varies because sometimes the message that
+    // is first in the list before pagination won't have a header after the
+    // pagination is done
+    this.list.scrollTop = position(message, this.list).y -
       document.querySelector('#topNav').offsetHeight -
-      document.querySelector('.thread .header').offsetHeight - 11
-    this.list.scrollTop = messageTop
+      document.querySelector('.thread .header').offsetHeight -
+      (message.className.includes('messageHeader') ? 11 : 41)
   }
 
   detectScrollExtremes = throttle(target => {
@@ -117,7 +120,7 @@ export default class MessageSection extends React.Component {
 
   render () {
     const { messages } = this.props
-    const messageList = createMessageList(messages, this)
+    const messageList = createMessageList(messages)
 
     return <div className={cx('messages-section', {empty: isEmpty(messages)})}
       ref={list => { this.list = list }}

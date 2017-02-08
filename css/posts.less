@@ -1313,6 +1313,12 @@ ul.posts {
     border-bottom: 2px solid @faint-gray-border;
     height: 80px;
     line-height: 80px;
+    display:flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    align-content: flex-start;
+    align-items: flex-start;
     .image {
       width: 50px;
       height: 50px;
@@ -1327,9 +1333,15 @@ ul.posts {
       color: @dark-gray-bg;
       margin-left: 20px;
       font-size: 20px;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      overflow: hidden;
+      flex-grow: 1;
+      flex-shrink: 0;
+      flex-basis: 200px;
     }
     .spacer {
-      margin: 0 3px;
+      margin: 0 6px;
       color: @dark-gray-bg;
       font-size: 14px;
     }
@@ -1338,6 +1350,7 @@ ul.posts {
       font-weight: 300;
       position: relative;
       top: -1px;
+      margin-right: 10px;
     }
     .orange-button {
       .round-button;

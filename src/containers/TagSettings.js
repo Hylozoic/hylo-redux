@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 import React from 'react'
 import { prefetch } from 'react-fetcher'
 import { connect } from 'react-redux'
@@ -71,9 +72,10 @@ export default class TagSettings extends React.Component {
       <table>
         <thead>
           <tr>
-            <th></th>
-            <th className='small-column'></th>
-            <th className='small-column'></th>
+            <th />
+            <th className='small-column' />
+            <th className='small-column' />
+            <th className='small-column' />
             <th className='small-column'>default</th>
           </tr>
         </thead>
@@ -85,6 +87,11 @@ export default class TagSettings extends React.Component {
                 {tag.post_type}
               </span>}
               <p>{tag.description}</p>
+            </td>
+            <td className='small-column'>
+              <a onClick={() => console.log('editing tag', tag)}>
+                <Icon name='Pencil' />
+              </a>
             </td>
             <td className='small-column'>
               <A to={`/c/${slug}/tag/${tag.name}`}>
@@ -104,8 +111,7 @@ export default class TagSettings extends React.Component {
           </tr>)}
         </tbody>
       </table>
-      <div className='add-button-row'>
-      </div>
+      <div className='add-button-row' />
       <ScrollListener onBottom={loadMore} />
     </div>
   }

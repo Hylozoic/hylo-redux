@@ -7,12 +7,14 @@ import {
   voteOnPost
 } from '../../actions'
 
-export function mapStateToProps (state, { post }) {
-  return {
+export function mapStateToProps (state, { post, parentPost }) {
+  const props = {
     comments: getComments(post, state),
     community: getCurrentCommunity(state),
     post: denormalizedPost(post, state)
   }
+  if (parentPost) props.parentPost = denormalizedPost(parentPost, state)
+  return props
 }
 
 export function mapDispatchToProps (dispatch, { post }) {

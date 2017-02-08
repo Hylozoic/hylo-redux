@@ -69,20 +69,16 @@ const WelcomePostHeader = ({ person, community }) => {
   </div>
 }
 
-const AppearsIn = ({ community, communities, parentPost }) => {
+const AppearsIn = ({ community, communities }) => {
+  console.log('appears in')
   communities = communities || []
   if (community) communities = sortBy(communities, c => c.id !== community.id)
   const { length } = communities
-  if (length === 0 && !parentPost) return null
+  if (length === 0) return null
   const communityLink = community => <A to={`/c/${community.slug}`}>{community.name}</A>
-  const parentPostLink = parentPost => <span>
-    <A to={`/p/${parentPost.id}`} className='project-link'>{parentPost.name}</A>
-    {length > 0 && spacer}
-  </span>
 
   return <span className='communities'>
     &nbsp;in&nbsp;
-    {parentPost && parentPostLink(parentPost)}
     {length > 0 && communityLink(communities[0])}
     {length > 1 && <span> + </span>}
     {length > 1 &&

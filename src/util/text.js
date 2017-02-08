@@ -17,7 +17,7 @@ export const truncate = (text, length) =>
 export function present (text, opts = {}) {
   if (!text) return ''
 
-  // wrap in a <p> tag, do this be default, require opt out
+  // wrap in a <p> tag, do this by default, require opt out
   if (text.substring(0, 3) !== '<p>' && !opts.noP) text = `<p>${text}</p>`
 
   // make links and hashtags

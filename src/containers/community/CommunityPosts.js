@@ -46,7 +46,7 @@ const getFeedModule = (community, currentUser, moduleChoice) => {
     ? <PopularSkillsModule slug={community.slug} />
     : <PostPromptModule />
   } else if (showPopularSkills) {
-    module.component = <PopularSkillsModule slug={community.slug} />
+    module.component = <PopularSkillsModule community={community} />
   } else if (showPostPrompt) {
     module.component = <PostPromptModule />
   } else {

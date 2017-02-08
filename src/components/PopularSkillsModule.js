@@ -6,9 +6,8 @@ import { connectedListProps } from '../util/caching'
 import Avatar from './Avatar'
 import A from './A'
 import { peopleUrl } from '../routes'
-import { getCommunity } from '../models/community'
 
-const { string, array } = React.PropTypes
+const { func, object, array } = React.PropTypes
 
 const fetchPopularSkills = slug =>
   sendGraphqlQuery(`query ($slug: String) {
@@ -39,7 +38,7 @@ const fetchPopularSkills = slug =>
 export class PopularSkillsModule extends React.Component {
   static propTypes = {
     people: array,
-    slug: string
+    community: object
   }
 
   componentDidMount () {
@@ -49,8 +48,7 @@ export class PopularSkillsModule extends React.Component {
 
   render () {
     const { community, people } = this.props
-
-    const popularSkills = (community.popularSkills || []).slice(0, 4)
+    const popularSkills = community.popularSkills || []
 
     return <div className='post popular-skills'>
       <div className='title'>Check out popular skills in the community!</div>
@@ -68,8 +66,5 @@ export class PopularSkillsModule extends React.Component {
 }
 
 export default connect(
-  (state, { slug }) => ({
-    ...connectedListProps(state, {subject: 'community', id: slug}, 'people'),
-    community: getCommunity(slug, state)
-  })
+  (state, { community }) => connectedListProps(state, {subject: 'community', id: community.slug}, 'people')
 )(PopularSkillsModule)

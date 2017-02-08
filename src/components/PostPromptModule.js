@@ -44,7 +44,7 @@ export default class PostPromptModule extends React.PureComponent {
         break
       case 'request':
         title = <div className='title'>
-          Looking for something in particular?<br />
+          Looking for something?<br />
           Make a #request!
         </div>
         body = <div className={cx('body', {isMobile})}>

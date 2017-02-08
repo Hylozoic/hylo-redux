@@ -1,5 +1,5 @@
 import { combineReducers } from 'redux'
-import { routerReducer } from 'react-router-redux'
+import { LOCATION_CHANGE, routerReducer } from 'react-router-redux'
 import { some, includes, partition, transform } from 'lodash'
 import { filter, flow, get, map, compact } from 'lodash/fp'
 import { activities, activitiesByCommunity } from './activities'
@@ -56,7 +56,6 @@ import {
   FINISH_LOGIN,
   HIDE_POPOVER,
   LOGIN,
-  NAVIGATE,
   NOTIFY,
   ON_THREAD_PAGE,
   OFF_THREAD_PAGE,
@@ -235,7 +234,7 @@ const combinedReducers = combineReducers({
     switch (action.type) {
       case SHOW_POPOVER:
         return action.payload
-      case NAVIGATE:
+      case LOCATION_CHANGE:
       case HIDE_POPOVER:
         return {}
     }

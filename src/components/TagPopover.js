@@ -4,7 +4,7 @@ import A from './A'
 import Avatar from './Avatar'
 import { get } from 'lodash'
 import { nounCount } from '../util/text'
-import { navigate, fetchTagSummary, followTag } from '../actions'
+import { navigate, fetchTagSummary, followTag, hidePopover } from '../actions'
 const { string, func, array, number, bool } = React.PropTypes
 
 @connect(({ tagsByCommunity }, { slug, tagName }) => {

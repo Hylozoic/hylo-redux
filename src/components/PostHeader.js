@@ -70,7 +70,6 @@ const WelcomePostHeader = ({ person, community }) => {
 }
 
 const AppearsIn = ({ community, communities }) => {
-  console.log('appears in')
   communities = communities || []
   if (community) communities = sortBy(communities, c => c.id !== community.id)
   const { length } = communities

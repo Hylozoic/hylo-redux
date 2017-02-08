@@ -30,6 +30,7 @@ export const MIN_MEMBERS_FOR_SKILLS_MODULE = 6
 export const MIN_POSTS_FOR_POST_PROMPT_MODULE = 4
 
 const getFeedModule = (community, currentUser, moduleChoice) => {
+
   let module
 
   const showPopularSkills = community.memberCount >= MIN_MEMBERS_FOR_SKILLS_MODULE
@@ -42,7 +43,7 @@ const getFeedModule = (community, currentUser, moduleChoice) => {
 
   if (showPopularSkills && showPostPrompt) {
     module.component = moduleChoice
-    ? <PopularSkillsModule community={community} />
+    ? <PopularSkillsModule slug={community.slug} />
     : <PostPromptModule />
   } else if (showPopularSkills) {
     module.component = <PopularSkillsModule slug={community.slug} />

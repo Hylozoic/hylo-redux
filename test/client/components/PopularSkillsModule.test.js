@@ -13,7 +13,7 @@ const community = {
 
 const setupNode = () => {
   return mount(
-    <PopularSkillsModule people={[]} slug={community.slug} dispatch={() => {}} />
+    <PopularSkillsModule people={[]} community={community} dispatch={() => {}} />
   )
 }
 

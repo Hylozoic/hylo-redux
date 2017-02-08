@@ -8,12 +8,13 @@ import {
 } from '../../actions'
 
 export function mapStateToProps (state, { post, parentPost }) {
-  return {
+  const props = {
     comments: getComments(post, state),
     community: getCurrentCommunity(state),
-    post: denormalizedPost(post, state),
-    parentPost: denormalizedPost(post, state)
+    post: denormalizedPost(post, state)
   }
+  if (parentPost) props.parentPost = denormalizedPost(parentPost, state)
+  return props
 }
 
 export function mapDispatchToProps (dispatch, { post }) {

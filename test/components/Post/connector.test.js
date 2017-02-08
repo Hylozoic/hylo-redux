@@ -30,6 +30,11 @@ describe('Post Connector', () => {
         voter_ids: ['testuser3'],
         community_ids: ['testcommunity']
       }
+      const parentPost = {
+        id: 'testparentpost',
+        community_ids: ['testcommunity'],
+        user_id: ['testuser1'],
+      }
       const expectedProps = {
         comments: [
           {id: 'comment1', user_id: 'testuser1', user: state.people.testuser1},
@@ -46,9 +51,19 @@ describe('Post Connector', () => {
           communities: [state.communities.testcommunity],
           followers: [state.people.testuser2],
           voters: [state.people.testuser3]
+        },
+        parentPost: {
+          id: 'testparentpost',
+          user_id: ['testuser1'],
+          community_ids: ['testcommunity'],
+          followers: [],
+          voters: [],
+          user: {id: 'testuser1'},
+          communities: [state.communities.testcommunity]
         }
       }
-      const props = mapStateToProps(state, { post })
+      const props = mapStateToProps(state, { post, parentPost })
+
       expect(props).to.deep.equal(expectedProps)
     })
   })

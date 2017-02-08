@@ -30,7 +30,6 @@ export const MIN_MEMBERS_FOR_SKILLS_MODULE = 6
 export const MIN_POSTS_FOR_POST_PROMPT_MODULE = 4
 
 const getFeedModule = (community, currentUser, moduleChoice) => {
-
   let module
 
   const showPopularSkills = community.memberCount >= MIN_MEMBERS_FOR_SKILLS_MODULE
@@ -43,7 +42,7 @@ const getFeedModule = (community, currentUser, moduleChoice) => {
 
   if (showPopularSkills && showPostPrompt) {
     module.component = moduleChoice
-    ? <PopularSkillsModule slug={community.slug} />
+    ? <PopularSkillsModule community={community} />
     : <PostPromptModule />
   } else if (showPopularSkills) {
     module.component = <PopularSkillsModule community={community} />
@@ -104,14 +103,17 @@ export class CommunityPosts extends Component {
       this.requestToJoin({maxage: false})
     }
     if (hasFeature(currentUser, IN_FEED_ENGAGEMENT_MODULES)) {
-      this.setState({module: getFeedModule(community, currentUser, coinToss())})
+      this.setState({moduleChoice: coinToss()})
     }
   }
 
   render () {
     let { location: { query }, dispatch, community, params: { id } } = this.props
     const { currentUser } = this.context
-    const { optimisticSent, joinRequestError, module } = this.state
+    const { optimisticSent, joinRequestError, moduleChoice } = this.state
+    const module = typeof moduleChoice !== 'undefined'
+      ? getFeedModule(community, currentUser, moduleChoice)
+      : null
 
     return <div>
       {hasFeature(currentUser, COMMUNITY_SETUP_CHECKLIST) && canModerate(currentUser, community) &&

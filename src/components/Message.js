@@ -24,7 +24,7 @@ class Message extends React.Component {
     const { dispatch, location, isMobile } = this.context
 
     const person = message.user
-    let text = present(sanitize(message.text).replace(/\n/g, '<br />'))
+    let text = present(sanitize(message.text).replace(/\n/g, '<br />'), {noP: true})
 
     return <div className={cx('message', {messageHeader: isHeader})}
       data-message-id={message.id}>

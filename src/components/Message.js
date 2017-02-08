@@ -2,7 +2,7 @@ import React from 'react'
 import cx from 'classnames'
 import Avatar from './Avatar'
 import { showImage } from '../actions/ui'
-import { humanDate } from '../util/text'
+import { humanDate, present } from '../util/text'
 import { sanitize } from 'hylo-utils/text'
 var { func, object, bool } = React.PropTypes
 
@@ -24,7 +24,7 @@ class Message extends React.Component {
     const { dispatch, location, isMobile } = this.context
 
     const person = message.user
-    let text = sanitize(message.text).replace(/\n/g, '<br />')
+    let text = present(sanitize(message.text).replace(/\n/g, '<br />'), {noP: true})
 
     return <div className={cx('message', {messageHeader: isHeader})}
       data-message-id={message.id}>

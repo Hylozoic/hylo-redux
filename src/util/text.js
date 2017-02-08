@@ -17,13 +17,13 @@ export const truncate = (text, length) =>
 export function present (text, opts = {}) {
   if (!text) return ''
 
-  // wrap in a <p> tag
-  if (text.substring(0, 3) !== '<p>') text = `<p>${text}</p>`
+  // wrap in a <p> tag, do this by default, require opt out
+  if (text.substring(0, 3) !== '<p>' && !opts.noP) text = `<p>${text}</p>`
 
   // make links and hashtags
   text = linkify(text, opts.slug)
 
-  if (opts && opts.maxlength) text = truncate(text, opts.maxlength)
+  if (opts.maxlength) text = truncate(text, opts.maxlength)
   return text
 }
 

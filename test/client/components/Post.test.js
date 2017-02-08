@@ -1,6 +1,6 @@
 import '../support'
 import { mocks } from '../../support'
-import { mockActionResponse, createElement } from '../../support/helpers'
+import { createElement } from '../../support/helpers'
 import {
   findRenderedDOMComponentWithClass,
   renderIntoDocument
@@ -8,7 +8,7 @@ import {
 import React from 'react'
 import { mount } from 'enzyme'
 import { configureStore } from '../../../src/store'
-import ConnectedPost, { Post } from '../../../src/components/Post'
+import ConnectedPost from '../../../src/components/Post'
 
 const { object, func } = React.PropTypes
 
@@ -37,20 +37,6 @@ const post2 = {
   updated_at: new Date(),
   user_id: 'x',
   community_ids: ['1', '2', '3', '4']
-}
-
-const projectSpecialRequestPost = {
-  id: 'projectSpecialRequestPost',
-  name: 'I am a project special request posting',
-  description: 'it is very special.',
-  type: 'request',
-  tag: 'request',
-  created_at: new Date(),
-  updated_at: new Date(),
-  user_id: 'x',
-  community_ids: ['1'],
-  follower_ids: ['x', 'y'],
-  is_project_request: true
 }
 
 const contributor = {
@@ -92,32 +78,6 @@ const state = {
   pending: {}
 }
 
-const normalizedParentPost = {
-  id: 'parentPost',
-  name: 'Project otherwise known as a parentPost',
-  description: 'it is very special.',
-  type: 'project',
-  tag: 'project',
-  created_at: new Date(),
-  updated_at: new Date(),
-  user: state.people.x,
-  communities: [state.communities.foo],
-  parent_post_id: null,
-  project: {}
-}
-
-const normalizedChildPost = {
-  id: 'childPost',
-  parent_post_id: 'parentPost',
-  name: 'I am a project posting, but not a special request',
-  description: 'it is very special.',
-  created_at: new Date(),
-  updated_at: new Date(),
-  user: state.people.x,
-  communities: [state.communities.foo],
-  project: {}
-}
-
 describe('Post', () => {
   it('renders expanded', () => {
     const props = {post, expanded: true}
@@ -127,7 +87,7 @@ describe('Post', () => {
     let node = renderIntoDocument(component)
     findRenderedDOMComponentWithClass(node, 'post')
     let details = findRenderedDOMComponentWithClass(node, 'details')
-    let expected = new RegExp(`<span[^>]*><p>${post.description}&nbsp;<\/p><\/span><a class="hashtag" [^>]*>#offer<\/a>`)
+    let expected = new RegExp(`<span[^>]*><p>${post.description}&nbsp;<\/p><\/span><a class="hashtag" [^>]*>#offer<\/a>`) // eslint-disable-line
     expect(details.innerHTML).to.match(expected)
     let title = findRenderedDOMComponentWithClass(node, 'title')
     expect(title.innerHTML).to.equal('i have "something" for you!')
@@ -147,7 +107,7 @@ describe('Post', () => {
     let node = renderIntoDocument(component)
     findRenderedDOMComponentWithClass(node, 'post')
     let details = findRenderedDOMComponentWithClass(node, 'details')
-    let expected = new RegExp(`<span[^>]*><p>${post.description}&nbsp;<\/p><\/span><a class="hashtag" [^>]*>#offer<\/a>`)
+    let expected = new RegExp(`<span[^>]*><p>${post.description}&nbsp;<\/p><\/span><a class="hashtag" [^>]*>#offer<\/a>`) // eslint-disable-line
     expect(details.innerHTML).to.match(expected)
     let title = findRenderedDOMComponentWithClass(node, 'title')
     expect(title.innerHTML).to.equal('i have "something" for you!')

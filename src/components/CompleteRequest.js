@@ -1,22 +1,17 @@
 import React, { PropTypes } from 'react'
-import { reject } from 'lodash'
 import { connect } from 'react-redux'
+import { reject } from 'lodash'
 import { isCompleteRequest } from '../models/post'
-import { typeahead } from '../actions'
-import { completePost } from '../actions/posts'
-
+import { typeahead, completePost } from '../actions'
 import TagInput from './TagInput'
 
 export class CompleteRequest extends React.Component {
   static propTypes = {
-    post: PropTypes.object,
+    post: PropTypes.object.isRequired,
     canEdit: PropTypes.bool,
+    completePost: PropTypes.func.isRequired,
+    typeahead: PropTypes.func.isRequired,
     contributorChoices: PropTypes.array
-  }
-
-  static contextTypes = {
-    currentUser: PropTypes.object,
-    dispatch: PropTypes.func
   }
 
   constructor (props, context) {
@@ -33,11 +28,10 @@ export class CompleteRequest extends React.Component {
 
   completeRequest = () => {
     const { contributors } = this.state
-    const { post } = this.props
-    const { dispatch } = this.context
+    const { post, completePost } = this.props
     if (contributors.length > 0) this.setState({contributors: []})
     this.toggleRequestCompleting()
-    dispatch(completePost(post.id, contributors))
+    completePost(post.id, contributors)
   }
 
   addContributor = (person) => {
@@ -51,10 +45,10 @@ export class CompleteRequest extends React.Component {
   }
 
   handleContributorInput = (term) => {
-    const { post } = this.props
-    this.context.dispatch(typeahead(term, 'contributors', {
+    const { post, typeahead } = this.props
+    typeahead(term, 'contributors', {
       type: 'people', communityIds: post.community_ids }
-    ))
+    )
   }
 
   render () {
@@ -94,10 +88,15 @@ export class CompleteRequest extends React.Component {
   }
 }
 
-export default connect((state, {post}) => {
+export function mapStateToProps (state, {post}) {
   return {
     contributorChoices: reject(
       state.typeaheadMatches.contributors, {id: post.user_id}
     )
   }
+}
+
+export default connect(mapStateToProps, {
+  completePost,
+  typeahead
 })(CompleteRequest)

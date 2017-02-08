@@ -1,5 +1,4 @@
 import React from 'react'
-const { array, bool, func, object, number, string } = React.PropTypes
 import { connect } from 'react-redux'
 import { changeViewportTop } from '../util/scrolling'
 import { filter, includes, isEmpty } from 'lodash/fp'
@@ -15,6 +14,8 @@ import RefreshButton from './RefreshButton'
 import ProjectActivityCard from './ProjectActivityCard'
 import SearchInput from './SearchInput'
 import Icon from './Icon'
+
+const { array, bool, func, object, number, string } = React.PropTypes
 
 export class PostList extends React.Component {
   static propTypes = {
@@ -92,7 +93,9 @@ export default connect((state, { posts }) => ({
 }))(PostList)
 
 const ShowPost = ({ showProjectActivity, post, parentPost, editingPostIds, expand }) => {
-  let onExpand = commentId => expand(post.id, commentId, post.parent_post_id)
+  let onExpand = commentId => {
+    return expand(post.id, commentId, post.parent_post_id)
+  }
   if (includes(post.id, editingPostIds)) {
     return <PostEditor {...{post, parentPost}} expanded />
   } else if (showProjectActivity && post.type === 'project' && post.child) {

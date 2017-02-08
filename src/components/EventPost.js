@@ -14,7 +14,9 @@ import { same } from '../models'
 import { denormalizedPost, getComments, imageUrl } from '../models/post'
 import { getCurrentCommunity } from '../models/community'
 import { canCommentOnPost } from '../models/currentUser'
-import { Header, Menu, presentDescription } from './Post'
+import { presentDescription } from './Post/component'
+import PostHeader from './PostHeader'
+import PostMenu from './PostMenu'
 import CommentSection from './CommentSection'
 import decode from 'ent/decode'
 import cx from 'classnames'
@@ -34,7 +36,7 @@ const UndecoratedEventPostCard = ({ post, comments, community, isMobile, dispatc
   const canComment = canCommentOnPost(currentUser, post)
 
   return <div className='post event-summary'>
-    <Menu post={post} />
+    <PostMenu post={post} />
     <LazyLoader className='image'>
       <A to={url} style={{backgroundImage}} />
     </LazyLoader>
@@ -117,7 +119,7 @@ const EventPost = (props, context) => {
   const canComment = canCommentOnPost(currentUser, post)
 
   return <div className='post event boxy-post'>
-    <Header post={post} communities={communities} />
+    <PostHeader post={post} communities={communities} />
     <p className='title post-section'>{title}</p>
 
     <div className='box'>

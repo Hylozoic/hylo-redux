@@ -15,7 +15,7 @@ export default class BrowseTopicsModal extends React.Component {
     fetchTags: func,
     followTag: func,
     tags: array,
-    community: object,
+    community: object.isRequired,
     pending: bool,
     total: number,
     followedTags: array,

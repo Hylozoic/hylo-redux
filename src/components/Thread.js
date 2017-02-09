@@ -104,7 +104,7 @@ export default class Thread extends React.Component {
     const header = document.querySelector('.thread .header')
     const pos = position(header)
     const vpos = positionInViewport(header)
-    const targetY = this.refs.form.getWrappedInstance().isFocused() ? 0 : 60
+    const targetY = this.refs.form.isFocused() ? 0 : 60
     if (vpos.y !== targetY) {
       header.style.top = (pos.y + (targetY - vpos.y)) + 'px'
     }

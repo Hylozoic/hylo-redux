@@ -62,13 +62,13 @@ export default class TagSettings extends React.Component {
     return <div id='topic-settings'>
       <h2>Manage Topics</h2>
       <p className='meta'>
-        When a topic is set as default, it shows up in the topic dropdown menu for new posts,
+        When a topic is  set as default, it shows up in the topic dropdown menu for new posts,
         and all new members start out following that topic.
         Removing a topic from this community prevents it from appearing in lists,
         but does not change or erase any posts or comments.
       </p>
       <a className='button' onClick={() => this.createTag()}>Add Topic</a>
-      <div><span>default</span></div>
+      <div className='header-row'>default</div>
       {communityTags.map(tag =>
         <TopicRow key={tag.id}
           tag={tag}
@@ -85,27 +85,27 @@ export default class TagSettings extends React.Component {
 
 const TopicRow = ({ tag, slug, remove, updateDefault, canDelete }) => {
   return <div className='topic-row'>
-    <div className='header-row'>
+    <div className='icon-row'>
       <span className='name'>{tag.name}</span>
       {tag.post_type && <span className='topic-post-type'>
         {tag.post_type}
       </span>}
-      <span className='small-column'>
+      <span className='icon-column'>
         <a onClick={() => console.log('editing tag', tag)}>
           <Icon name='Pencil' />
         </a>
       </span>
-      <span className='small-column'>
+      <span className='icon-column'>
         <A to={`/c/${slug}/tag/${tag.name}`}>
           <Icon name='View' />
         </A>
       </span>
-      <span className='small-column'>
+      <span className='icon-column'>
         {canDelete(tag) && <a onClick={() => remove(tag)}>
           <Icon name='Trash' />
         </a>}
       </span>
-      <span className='small-column'>
+      <span className='icon-column'>
         <input type='checkbox'
           defaultChecked={tag.is_default}
           onChange={() => updateDefault(tag, !tag.is_default)} />

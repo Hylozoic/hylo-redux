@@ -10,7 +10,7 @@ import {
   showModal, createComment, updateCommentEditor, updateComment
 } from '../actions'
 import {
-  CREATE_COMMENT, UPDATE_COMMENT
+  CREATE_COMMENT, UPDATE_COMMENT, UPLOAD_IMAGE
 } from '../actions/constants'
 import { ADDED_COMMENT, trackEvent } from '../util/analytics'
 import { textLength } from '../util/text'
@@ -35,7 +35,9 @@ const STOPPED_TYPING_WAIT_TIME = 8000
   return ({
     text: postId ? state.commentEdits.new[postId] : state.commentEdits.edit[commentId],
     newComment: !commentId,
-    pending: isPending(CREATE_COMMENT, postId) || isPending(UPDATE_COMMENT, commentId)
+    pending: isPending(CREATE_COMMENT, postId) ||
+      isPending(UPDATE_COMMENT, commentId) ||
+      isPending(UPLOAD_IMAGE, postId)
   })
 }, null, null, {withRef: true})
 export default class CommentForm extends React.PureComponent {

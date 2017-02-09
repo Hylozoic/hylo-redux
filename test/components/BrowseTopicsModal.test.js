@@ -1,7 +1,7 @@
-require('../support')
+import '../support'
 import React from 'react'
 import { shallow } from 'enzyme'
-import BrowseTopicsModal from '../../../src/components/BrowseTopicsModal/component'
+import BrowseTopicsModal from '../../src/components/BrowseTopicsModal/component'
 
 describe('BrowseTopicsModal', () => {
   var node

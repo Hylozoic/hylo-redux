@@ -79,9 +79,10 @@ export function createTagInCommunity (tag, slug) {
   }
 }
 
-export function showAllTags (slug) {
+export function showAllTags (community) {
   return {
-    type: SHOW_ALL_TAGS
+    type: SHOW_ALL_TAGS,
+    payload: {community}
   }
 }
 

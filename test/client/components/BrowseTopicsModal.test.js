@@ -1,8 +1,7 @@
 require('../support')
 import React from 'react'
-import { mount } from 'enzyme'
-import { configureStore } from '../../../src/store'
-import BrowseTopicsModal from '../../../src/containers/BrowseTopicsModal'
+import { shallow } from 'enzyme'
+import BrowseTopicsModal from '../../../src/components/BrowseTopicsModal/component'
 
 describe('BrowseTopicsModal', () => {
   var node, store, currentUser
@@ -72,16 +71,8 @@ describe('BrowseTopicsModal', () => {
 
   describe('with onboarding set', () => {
     beforeEach(() => {
-      currentUser = {
-        memberships: [
-          {...community, community_id: '1'}
-        ]
-      }
-      store = configureStore(initialState).store
-      node = mount(<BrowseTopicsModal onboarding community={community}/>, {
-        context: { store, currentUser },
-        childContextTypes: {currentUser: React.PropTypes.object}
-      })
+      node = shallow(<BrowseTopicsModal onboarding
+        community={community} />)
     })
 
     it('renders correctly', () => {

@@ -5,7 +5,7 @@ import NavMenuButton from './NavMenuButton'
 import Tooltip from './Tooltip'
 import { VelocityTransitionGroup } from 'velocity-react'
 import { isEmpty } from 'lodash'
-import { filter, get, sortBy } from 'lodash/fp'
+import { filter, sortBy } from 'lodash/fp'
 import { tagUrl } from '../routes'
 import { showAllTags } from '../actions'
 import cx from 'classnames'
@@ -27,7 +27,7 @@ const animations = {
   }
 }
 
-const TopicList = ({ tags, slug }, { dispatch }) => {
+const TopicList = ({ tags, community }, { dispatch }) => {
   const followed = sortBy(t => {
     switch (t.name) {
       case 'offer': return 'a'
@@ -38,6 +38,8 @@ const TopicList = ({ tags, slug }, { dispatch }) => {
         return 'e' + t.name.toLowerCase()
     }
   }, filter('followed', tags))
+
+  const { slug } = community || {}
 
   const TagLink = ({ name, highlight }) => {
     var allTopics = name === 'all-topics'
@@ -57,7 +59,7 @@ const TopicList = ({ tags, slug }, { dispatch }) => {
     {!isEmpty(followed) && followed.map(tag =>
       <TagLink name={tag.name} key={tag.name} highlight={tag.new_post_count} />)}
     {slug && <li>
-      <a onClick={() => dispatch(showAllTags(slug))} className='browse-all'>
+      <a onClick={() => dispatch(showAllTags(community))} className='browse-all'>
         Follow more topics...
       </a>
     </li>}
@@ -112,7 +114,7 @@ export const LeftNav = ({ opened, community, network, tags, close, links }, { is
         {network
           ? <NetworkNav network={network} />
           : <CommunityNav links={links} />}
-        <TopicList tags={tags} slug={get('slug', community)} />
+        <TopicList tags={tags} community={community} />
       </nav>}
       {opened && <div id='leftNavBackdrop' onClick={close} />}
     </VelocityTransitionGroup>

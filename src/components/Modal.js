@@ -2,7 +2,7 @@ import React from 'react'
 import Icon from '../components/Icon'
 import { closeModal } from '../actions'
 // circular import; code smell; refactor?
-import BrowseTopicsModal from '../containers/BrowseTopicsModal'
+import BrowseTopicsModal from './BrowseTopicsModal'
 import ShareTopicModal from '../containers/ShareTopicModal'
 import ExpandedPostModal from '../containers/ExpandedPostModal'
 import DirectMessageModal from '../containers/DirectMessageModal'
@@ -85,7 +85,7 @@ export class ModalWrapper extends React.Component {
     const close = () => dispatch(closeModal())
     switch (type) {
       case 'tags':
-        modal = <BrowseTopicsModal onCancel={close} />
+        modal = <BrowseTopicsModal onCancel={close} community={params.community} />
         clickToClose = true
         break
       case 'share-tag':

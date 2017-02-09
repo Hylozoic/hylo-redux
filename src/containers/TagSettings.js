@@ -13,7 +13,6 @@ import { connectedListProps } from '../util/caching'
 import { includes } from 'lodash'
 import { map, find } from 'lodash/fp'
 const { object, bool, array, func, number } = React.PropTypes
-
 const subject = 'community'
 
 @prefetch(({ params: { id }, dispatch }) =>
@@ -69,50 +68,51 @@ export default class TagSettings extends React.Component {
         but does not change or erase any posts or comments.
       </p>
       <a className='button' onClick={() => this.createTag()}>Add Topic</a>
-      <table>
-        <thead>
-          <tr>
-            <th />
-            <th className='small-column' />
-            <th className='small-column' />
-            <th className='small-column' />
-            <th className='small-column'>default</th>
-          </tr>
-        </thead>
-        <tbody>
-          {communityTags.map(tag => <tr key={tag.id} className='topic-row'>
-            <td>
-              <span className='name'>{tag.name}</span>
-              {tag.post_type && <span className='topic-post-type'>
-                {tag.post_type}
-              </span>}
-              <p>{tag.description}</p>
-            </td>
-            <td className='small-column'>
-              <a onClick={() => console.log('editing tag', tag)}>
-                <Icon name='Pencil' />
-              </a>
-            </td>
-            <td className='small-column'>
-              <A to={`/c/${slug}/tag/${tag.name}`}>
-                <Icon name='View' />
-              </A>
-            </td>
-            <td className='small-column'>
-              {canDelete(tag) && <a onClick={() => remove(tag)}>
-                <Icon name='Trash' />
-              </a>}
-            </td>
-            <td className='small-column'>
-              <input type='checkbox'
-                defaultChecked={tag.is_default}
-                onChange={() => updateDefault(tag, !tag.is_default)} />
-            </td>
-          </tr>)}
-        </tbody>
-      </table>
+      <div><span>default</span></div>
+      {communityTags.map(tag =>
+        <TopicRow key={tag.id}
+          tag={tag}
+          slug={slug}
+          remove={remove}
+          canDelete={canDelete}
+          updateDefault={updateDefault} />
+      )}
       <div className='add-button-row' />
       <ScrollListener onBottom={loadMore} />
     </div>
   }
+}
+
+const TopicRow = ({ tag, slug, remove, updateDefault, canDelete }) => {
+  return <div className='topic-row'>
+    <div className='header-row'>
+      <span className='name'>{tag.name}</span>
+      {tag.post_type && <span className='topic-post-type'>
+        {tag.post_type}
+      </span>}
+      <span className='small-column'>
+        <a onClick={() => console.log('editing tag', tag)}>
+          <Icon name='Pencil' />
+        </a>
+      </span>
+      <span className='small-column'>
+        <A to={`/c/${slug}/tag/${tag.name}`}>
+          <Icon name='View' />
+        </A>
+      </span>
+      <span className='small-column'>
+        {canDelete(tag) && <a onClick={() => remove(tag)}>
+          <Icon name='Trash' />
+        </a>}
+      </span>
+      <span className='small-column'>
+        <input type='checkbox'
+          defaultChecked={tag.is_default}
+          onChange={() => updateDefault(tag, !tag.is_default)} />
+      </span>
+    </div>
+    <div className='description-row'>
+      {tag.description}
+    </div>
+  </div>
 }

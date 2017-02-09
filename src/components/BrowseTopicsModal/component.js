@@ -87,7 +87,7 @@ export default class BrowseTopicsModal extends React.Component {
   }
 }
 
-const TagRow = ({ tag, community, followed, onClick, onFollow }, { isMobile }) => {
+function TagRow ({ tag, community, followed, onClick, onFollow }, { isMobile }) {
   const { id, name } = tag
   const { slug } = community
   const membership = find(m => same('id', community), tag.memberships)
@@ -108,7 +108,7 @@ const TagRow = ({ tag, community, followed, onClick, onFollow }, { isMobile }) =
 }
 TagRow.contextTypes = {isMobile: bool, dispatch: func}
 
-const TagRowControls = ({ followed, follower_count, name, onFollow }) => {
+function TagRowControls ({ followed, follower_count, name, onFollow }) {
   return <div className='right'>
     <span className='followers'>
       <Icon name='Users' />

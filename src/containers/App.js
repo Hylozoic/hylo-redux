@@ -14,7 +14,7 @@ import { removeNotification, toggleLeftNav, navigate, notify, setMobileDevice } 
 import {
   iOSAppVersion, androidAppVersion, isMobile as testIsMobile, calliOSBridge
 } from '../client/util'
-import { ModalWrapper } from '../components/ModalWrapper'
+import ModalWrapper from '../components/ModalWrapper'
 import { getCurrentCommunity } from '../models/community'
 import { getCurrentNetwork } from '../models/network'
 import { denormalizedCurrentUser } from '../models/currentUser'

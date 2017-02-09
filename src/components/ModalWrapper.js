@@ -1,4 +1,6 @@
 import React from 'react'
+import { bindActionCreators } from 'redux'
+import { connect } from 'react-redux'
 const { bool, func, object, string } = React.PropTypes
 import BrowseTopicsModal from './BrowseTopicsModal'
 import ShareTopicModal from '../containers/ShareTopicModal'
@@ -15,10 +17,15 @@ import { ThreadsModal } from '../containers/ThreadsDropdown'
 import { closeModal } from '../actions'
 import { get } from 'lodash/fp'
 
-export class ModalWrapper extends React.Component {
-  static propTypes = {type: string, params: object, top: bool, bottom: bool}
+class ModalWrapper extends React.Component {
+  static propTypes = {
+    type: string,
+    params: object,
+    top: bool,
+    bottom: bool,
+    actions: object.isRequired
+  }
   static defaultProps = {top: true}
-  static contextTypes = {dispatch: func}
 
   lockScrolling = () => {
     window.scrollTo(0, this.lockedScrollTop)
@@ -36,20 +43,19 @@ export class ModalWrapper extends React.Component {
   }
 
   render () {
-    const { type, params, top } = this.props
-    const { dispatch } = this.context
+    const { type, params, top, actions: { closeModal } } = this.props
     if (!type) return null
 
     let modal, clickToClose
-    const close = () => dispatch(closeModal())
     switch (type) {
       case 'tags':
-        modal = <BrowseTopicsModal onCancel={close} community={params.community} />
+        modal = <BrowseTopicsModal onCancel={closeModal}
+          community={params.community} />
         clickToClose = true
         break
       case 'share-tag':
         modal = <ShareTopicModal tagName={params.tagName} slug={params.slug}
-          onCancel={close} />
+          onCancel={closeModal} />
         clickToClose = true
         break
       case 'expanded-post':
@@ -57,52 +63,58 @@ export class ModalWrapper extends React.Component {
         clickToClose = true
         break
       case 'direct-message':
-        modal = <DirectMessageModal userId={params.userId} userName={params.userName} onCancel={close} />
+        modal = <DirectMessageModal userId={params.userId}
+          userName={params.userName}
+          onCancel={closeModal} />
         clickToClose = true
         break
       case 'notifications':
-        modal = <NotificationsModal onCancel={close} />
+        modal = <NotificationsModal onCancel={closeModal} />
         clickToClose = true
         break
       case 'checklist':
-        modal = <ChecklistModal onCancel={close} />
+        modal = <ChecklistModal onCancel={closeModal} />
         clickToClose = true
         break
       case 'tag-editor':
-        modal = <TagEditorModal onCancel={close}
+        modal = <TagEditorModal onCancel={closeModal}
           saveParent={params.saveParent}
           useCreatedTag={params.useCreatedTag}
           creating={params.creating} />
         clickToClose = true
         break
       case 'add-logo':
-        modal = <AddLogoModal onCancel={close} />
+        modal = <AddLogoModal onCancel={closeModal} />
         clickToClose = true
         break
       case 'invite':
-        modal = <InviteModal onCancel={close} />
+        modal = <InviteModal onCancel={closeModal} />
         clickToClose = true
         break
       case 'post-editor':
         modal = <PostEditorModal
           post={get('post', params)}
           tag={get('tag', params)}
-          onCancel={close} />
+          onCancel={closeModal} />
         clickToClose = true
         break
       case 'threads':
-        modal = <ThreadsModal onCancel={close} />
+        modal = <ThreadsModal onCancel={closeModal} />
         break
       case 'image':
-        modal = <ImageModal {...params} onCancel={close} />
+        modal = <ImageModal {...params} onCancel={closeModal} />
         clickToClose = true
     }
 
-    return <BareModalWrapper top={top} onClick={() => clickToClose && close()}>
+    return <BareModalWrapper top={top} onClick={clickToClose && closeModal}>
       {modal}
     </BareModalWrapper>
   }
 }
+
+export default connect(null, (dispatch, props) => ({
+  actions: bindActionCreators({closeModal}, dispatch)
+}))(ModalWrapper)
 
 class BareModalWrapper extends React.Component {
   static propTypes = {children: object, onClick: func, top: bool}

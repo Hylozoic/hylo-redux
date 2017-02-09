@@ -30,8 +30,8 @@ export default class ImageViewer extends React.Component {
     }
 
     return <div className='image-viewer'>
-      <div id='mobile-top-bar'>
-        <a className='back' onClick={goBack}>
+      <div id='mobile-top-bar' onClick={goBack}>
+        <a className='back'>
           <span className='left-angle-bracket'>&#x3008;</span>
           Back
         </a>

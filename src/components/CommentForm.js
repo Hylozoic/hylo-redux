@@ -149,7 +149,7 @@ export default class CommentForm extends React.PureComponent {
   }
 
   render () {
-    const { text, close, pending, postId } = this.props
+    const { text, close, pending, postId, newComment } = this.props
     const { currentUser, isMobile } = this.context
     const { enabled } = this.state
     const editing = text !== undefined
@@ -172,7 +172,7 @@ export default class CommentForm extends React.PureComponent {
             </a>
           </div>
 
-          <CommentImageButton postId={postId} />
+          {newComment && <CommentImageButton postId={postId} />}
           <input type='submit' value='Post' ref='button'
             className={cx({enabled: enabled && !pending})} />
           {close && <button onClick={close}>Cancel</button>}

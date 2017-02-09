@@ -12,7 +12,7 @@ import ScrollListener from '../components/ScrollListener'
 import { connectedListProps } from '../util/caching'
 import { includes } from 'lodash'
 import { map, find } from 'lodash/fp'
-const { object, bool, array, func, number } = React.PropTypes
+const { object, bool, array, func, number, string } = React.PropTypes
 const subject = 'community'
 
 @prefetch(({ params: { id }, dispatch }) =>
@@ -83,36 +83,59 @@ export default class TagSettings extends React.Component {
   }
 }
 
-const TopicRow = ({ tag, slug, remove, updateDefault, canDelete }) => {
-  return <div className='topic-row'>
-    <div className='icon-row'>
-      <span className='name'>{tag.name}</span>
-      {tag.post_type && <span className='topic-post-type'>
-        {tag.post_type}
-      </span>}
-      <span className='icon-column'>
-        <a onClick={() => console.log('editing tag', tag)}>
-          <Icon name='Pencil' />
-        </a>
-      </span>
-      <span className='icon-column'>
-        <A to={`/c/${slug}/tag/${tag.name}`}>
-          <Icon name='View' />
-        </A>
-      </span>
-      <span className='icon-column'>
-        {canDelete(tag) && <a onClick={() => remove(tag)}>
-          <Icon name='Trash' />
-        </a>}
-      </span>
-      <span className='icon-column'>
-        <input type='checkbox'
-          defaultChecked={tag.is_default}
-          onChange={() => updateDefault(tag, !tag.is_default)} />
-      </span>
+class TopicRow extends React.Component {
+  static propTypes = {
+    tag: object,
+    slug: string,
+    remove: func,
+    updateDefault: func,
+    canDelete: func
+  }
+
+  constructor (props) {
+    super(props)
+    this.state = {}
+  }
+
+  render () {
+    const { tag, slug, remove, updateDefault, canDelete } = this.props
+
+    const { editing } = this.state
+
+    const edit = id => this.setState({editing: id})
+
+    return <div className='topic-row'>
+      <div className='icon-row'>
+        <span className='name'>{tag.name}</span>
+        {tag.post_type && <span className='topic-post-type'>
+          {tag.post_type}
+        </span>}
+        <span className='icon-column'>
+          <a onClick={() => edit(tag.id)}>
+            <Icon name='Pencil' />
+          </a>
+        </span>
+        <span className='icon-column'>
+          <A to={`/c/${slug}/tag/${tag.name}`}>
+            <Icon name='View' />
+          </A>
+        </span>
+        <span className='icon-column'>
+          {canDelete(tag) && <a onClick={() => remove(tag)}>
+            <Icon name='Trash' />
+          </a>}
+        </span>
+        <span className='icon-column'>
+          <input type='checkbox'
+            defaultChecked={tag.is_default}
+            onChange={() => updateDefault(tag, !tag.is_default)} />
+        </span>
+      </div>
+      <div className='description-row'>
+        {editing === tag.id
+          ? <input type='text' />
+          : tag.description}
+      </div>
     </div>
-    <div className='description-row'>
-      {tag.description}
-    </div>
-  </div>
+  }
 }

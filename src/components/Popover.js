@@ -26,14 +26,17 @@ export const handleMouseOver = dispatch => event => {
   if (node.nodeName.toLowerCase() === 'a' && (isTag || userId)) {
     canceledPopover = false
 
-    const hide = () =>
+    const hide = () => {
+      cancel()
       dispatch(hidePopover())
+    }
 
     const cancel = () => {
       canceledPopover = true
       node.removeEventListener('mouseleave', cancel)
       node.removeEventListener('click', hide)
     }
+
     node.addEventListener('mouseleave', cancel)
     node.addEventListener('click', hide)
 

@@ -103,14 +103,17 @@ export class CommunityPosts extends Component {
       this.requestToJoin({maxage: false})
     }
     if (hasFeature(currentUser, IN_FEED_ENGAGEMENT_MODULES)) {
-      this.setState({module: getFeedModule(community, currentUser, coinToss())})
+      this.setState({moduleChoice: coinToss()})
     }
   }
 
   render () {
     let { location: { query }, dispatch, community, params: { id } } = this.props
     const { currentUser } = this.context
-    const { optimisticSent, joinRequestError, module } = this.state
+    const { optimisticSent, joinRequestError, moduleChoice } = this.state
+    const module = typeof moduleChoice !== 'undefined'
+      ? getFeedModule(community, currentUser, moduleChoice)
+      : null
 
     return <div>
       {hasFeature(currentUser, COMMUNITY_SETUP_CHECKLIST) && canModerate(currentUser, community) &&

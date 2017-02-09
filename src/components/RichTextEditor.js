@@ -55,6 +55,8 @@ export default class RichTextEditor extends React.PureComponent {
     dispatch: func
   }
 
+  static contextTypes = {isMobile: bool}
+
   constructor (props) {
     super(props)
     this.state = {dropdown: {x: 0, y: 0}}
@@ -164,6 +166,7 @@ export default class RichTextEditor extends React.PureComponent {
 
   autocomplete = debounce((term, node) => {
     const { dispatch, name } = this.props
+    const { isMobile } = this.context
     dispatch(typeahead(term, name, {limit: 20}))
     if (!node || !term) return
 
@@ -172,10 +175,17 @@ export default class RichTextEditor extends React.PureComponent {
     const editorPos = position(this.getEditor().iframeElement)
     const containerPos = position(this.refs.container)
     const lineHeight = 15
+    const margin = 10
+
     this.setState({
       dropdown: {
-        left: nodePos.x + editorPos.x - containerPos.x,
-        top: nodePos.y + editorPos.y - containerPos.y + lineHeight
+        top: nodePos.y + editorPos.y - containerPos.y + lineHeight,
+        left: isMobile
+          ? margin - containerPos.x
+          : nodePos.x + editorPos.x - containerPos.x,
+        width: isMobile
+          ? document.documentElement.clientWidth - margin * 2
+          : 'auto'
       }
     })
   }, 200)
@@ -200,7 +210,7 @@ export default class RichTextEditor extends React.PureComponent {
 
   render () {
     const { className, content, typeaheadOptions, onAddTag } = this.props
-    const { dropdown: { left, top }, loadedTinyMCE } = this.state
+    const { dropdown: { left, top, width }, loadedTinyMCE } = this.state
 
     const selectTypeahead = (choice, event) => {
       this.autocomplete(null)
@@ -215,7 +225,7 @@ export default class RichTextEditor extends React.PureComponent {
         content={content} />}
 
       {!isEmpty(typeaheadOptions) && this.tagger && this.tagger.isInTag() &&
-        <div className='dropdown active' style={{left, top}}>
+        <div className='dropdown active' style={{left, top, width}}>
           <KeyControlledItemList className='dropdown-menu'
             ref='list'
             items={typeaheadOptions}

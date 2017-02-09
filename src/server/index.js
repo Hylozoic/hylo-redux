@@ -86,10 +86,15 @@ setupAssetManifest(() => {
     info(`listening on port ${port} (pid ${process.pid})`)
   })
 
-  const shutdown = () => listener.close(() => {
-    console.log(`shutting down (pid ${process.pid})`)
-    process.exit()
-  })
+  const shutdown = () => {
+    const waitForClose = process.env.NODE_ENV === 'production'
+      ? listener.close.bind(listener)
+      : fn => fn()
+    waitForClose(() => {
+      console.log(`shutting down (pid ${process.pid})`)
+      process.exit()
+    })
+  }
   process.once('SIGINT', shutdown)
   process.once('SIGUSR2', shutdown) // used by nodemon
 })

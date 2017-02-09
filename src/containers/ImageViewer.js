@@ -22,7 +22,7 @@ export default class ImageViewer extends React.Component {
     }
 
     const goBack = () => {
-      if (window.history && window.history.length > 2) {
+      if (window.history && window.history.length > 1) {
         browserHistory.goBack()
       } else {
         dispatch(navigate(fromUrl || '/app'))

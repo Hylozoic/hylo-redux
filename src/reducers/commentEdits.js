@@ -14,6 +14,7 @@ export default function (state = {new: {}, edit: {}}, action) {
       // payload.bucket will be either 'new' or 'edit'
       return {...state, [payload.bucket]: {...state[payload.bucket], [payload.id]: payload.text}}
     case CREATE_COMMENT:
+      if (payload.image) return state
       return {...state, new: {...state.new, [meta.id]: undefined}}
     case UPDATE_COMMENT:
       return {...state, edit: {...state.edit, [meta.id]: undefined}}

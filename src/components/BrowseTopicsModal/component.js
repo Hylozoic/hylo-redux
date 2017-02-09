@@ -1,7 +1,7 @@
 import React from 'react'
 import Icon from '../../components/Icon'
 import A from '../../components/A'
-import { Modal } from '../../components/Modal'
+import Modal from '../../components/Modal'
 import { isEmpty, some } from 'lodash'
 import { find } from 'lodash/fp'
 import { same } from '../../models'
@@ -50,7 +50,7 @@ export default class BrowseTopicsModal extends React.Component {
       tags, community, pending, total, followedTags, onCancel, onboarding,
       nextUrl
     } = this.props
-    const offset = tags.length
+    const offset = tags ? tags.length : 0
     const title = onboarding
       ? 'What are you interested in?'
       : (total ? `Browse all ${total} topics` : 'Browse all topics')

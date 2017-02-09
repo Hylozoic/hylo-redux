@@ -4,7 +4,7 @@ import { shallow } from 'enzyme'
 import BrowseTopicsModal from '../../../src/components/BrowseTopicsModal/component'
 
 describe('BrowseTopicsModal', () => {
-  var node, store, currentUser
+  var node
 
   const community = {
     id: '1',
@@ -58,34 +58,28 @@ describe('BrowseTopicsModal', () => {
     }
   ]
 
-  const initialState = {
-    communities: {
-      coo: community
-    },
-    currentCommunityId: '1',
-    tagsByQuery: {
-      'subject=community&id=coo': tags
-    },
-    totalTagsByQuery: tags.length
-  }
-
   describe('with onboarding set', () => {
+    var props
+
     beforeEach(() => {
-      node = shallow(<BrowseTopicsModal onboarding
-        community={community} />)
+      props = {
+        onboarding: true,
+        community,
+        tags
+      }
+      node = shallow(<BrowseTopicsModal {...props} />)
     })
 
     it('renders correctly', () => {
-      expect(node.find('.title h2').first().text())
+      const container = node.find('#browse-all-topics')
+      expect(container.prop('title'))
       .to.equal('What are you interested in?')
-      expect(node.find('.subtitle').first().text())
+      expect(container.prop('subtitle'))
       .to.equal("Follow the topics you're interested in to join the conversation with other members.")
-      expect(node.find('.name').map(l => l.text()))
-      .to.deep.equal(tags.map(t => `# ${t.name}`))
 
-      expect(node.find('.description').at(1).text()).to.equal('Description for the offer tag')
-      expect(node.find('li .meta a').first().text()).to.equal('Mr Tag Creator')
-      expect(node.find('.followers .count').at(3).text()).to.equal('1')
+      const tagRows = node.find('TagRow')
+      expect(tagRows.length).to.equal(4)
+      expect(tagRows.at(2).prop('tag')).to.deep.equal(tags[2])
     })
   })
 })

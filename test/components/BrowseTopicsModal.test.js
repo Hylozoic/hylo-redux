@@ -4,7 +4,6 @@ import { shallow } from 'enzyme'
 import BrowseTopicsModal from '../../src/components/BrowseTopicsModal/component'
 
 describe('BrowseTopicsModal', () => {
-  var node
 
   const community = {
     id: '1',
@@ -58,28 +57,23 @@ describe('BrowseTopicsModal', () => {
     }
   ]
 
-  describe('with onboarding set', () => {
-    var props
+  it('renders with minimal props', () => {
+    const node = shallow(<BrowseTopicsModal community={community} />)
+    const container = node.find('#browse-all-topics')
+    expect(container.prop('title')).to.equal('Browse all topics')
+  })
 
-    beforeEach(() => {
-      props = {
-        onboarding: true,
-        community,
-        tags
-      }
-      node = shallow(<BrowseTopicsModal {...props} />)
-    })
+  it('renders for onboarding', () => {
+    const props = {onboarding: true, community, tags}
+    const node = shallow(<BrowseTopicsModal {...props} />)
+    const container = node.find('#browse-all-topics')
+    expect(container.prop('title'))
+    .to.equal('What are you interested in?')
+    expect(container.prop('subtitle'))
+    .to.equal("Follow the topics you're interested in to join the conversation with other members.")
 
-    it('renders correctly', () => {
-      const container = node.find('#browse-all-topics')
-      expect(container.prop('title'))
-      .to.equal('What are you interested in?')
-      expect(container.prop('subtitle'))
-      .to.equal("Follow the topics you're interested in to join the conversation with other members.")
-
-      const tagRows = node.find('TagRow')
-      expect(tagRows.length).to.equal(4)
-      expect(tagRows.at(2).prop('tag')).to.deep.equal(tags[2])
-    })
+    const tagRows = node.find('TagRow')
+    expect(tagRows.length).to.equal(4)
+    expect(tagRows.at(2).prop('tag')).to.deep.equal(tags[2])
   })
 })

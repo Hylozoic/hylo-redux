@@ -10,6 +10,7 @@ import A from '../components/A'
 import Icon from '../components/Icon'
 import ScrollListener from '../components/ScrollListener'
 import { connectedListProps } from '../util/caching'
+import { onEnter } from '../util/textInput'
 import { includes } from 'lodash'
 import { map, find } from 'lodash/fp'
 const { object, bool, array, func, number, string } = React.PropTypes
@@ -55,9 +56,8 @@ export default class TagSettings extends React.Component {
         dispatch(removeTagFromCommunity(tag, slug))
     const canDelete = tag => !includes(['request', 'offer', 'intention'], tag.name)
 
-    const updateDefault = (tag, is_default) => {
-      dispatch(updateCommunityTag(tag, community, {is_default}))
-    }
+    const update = (tag, params) =>
+      dispatch(updateCommunityTag(tag, community, params))
 
     return <div id='topic-settings'>
       <h2>Manage Topics</h2>
@@ -75,7 +75,7 @@ export default class TagSettings extends React.Component {
           slug={slug}
           remove={remove}
           canDelete={canDelete}
-          updateDefault={updateDefault} />
+          update={update} />
       )}
       <div className='add-button-row' />
       <ScrollListener onBottom={loadMore} />
@@ -88,7 +88,7 @@ class TopicRow extends React.Component {
     tag: object,
     slug: string,
     remove: func,
-    updateDefault: func,
+    update: func,
     canDelete: func
   }
 
@@ -97,12 +97,34 @@ class TopicRow extends React.Component {
     this.state = {}
   }
 
+  componentDidUpdate (prevProps, prevState) {
+    if (prevState.editing !== this.state.editing && this.refs.description) {
+      this.refs.description.focus()
+    }
+  }
+
   render () {
-    const { tag, slug, remove, updateDefault, canDelete } = this.props
+    const { tag, slug, remove, update, canDelete } = this.props
 
-    const { editing } = this.state
+    const { editing, description } = this.state
 
-    const edit = id => this.setState({editing: id})
+    const edit = tag => {
+      this.setState({editing: tag.id})
+      this.setState({description: tag.description})
+    }
+
+    const cancelEdit = () =>
+      setTimeout(() => this.setState({editing: null}), 100)
+
+    const setDescription = event => this.setState({description: event.target.value})
+
+    const updateDefault = (tag, is_default) =>
+      update(tag, {is_default})
+
+    const updateDescription = tag => {
+      update(tag, {description})
+      cancelEdit()
+    }
 
     return <div className='topic-row'>
       <div className='icon-row'>
@@ -111,7 +133,7 @@ class TopicRow extends React.Component {
           {tag.post_type}
         </span>}
         <span className='icon-column'>
-          <a onClick={() => edit(tag.id)}>
+          <a onClick={() => edit(tag)}>
             <Icon name='Pencil' />
           </a>
         </span>
@@ -133,7 +155,15 @@ class TopicRow extends React.Component {
       </div>
       <div className='description-row'>
         {editing === tag.id
-          ? <input type='text' />
+          ? <span>
+            <input ref='description'
+              type='text'
+              value={description || ''}
+              onChange={setDescription}
+              onBlur={cancelEdit}
+              onKeyDown={onEnter(() => updateDescription(tag))} />
+            <a onClick={() => updateDescription(tag)}><Icon name='big-check' /></a>
+          </span>
           : tag.description}
       </div>
     </div>

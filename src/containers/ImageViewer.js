@@ -5,7 +5,7 @@ const { object, func } = React.PropTypes
 
 export default class ImageViewer extends React.Component {
   static propTypes = {
-    params: object
+    params: object.isRequired
   }
 
   static contextTypes = {

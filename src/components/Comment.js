@@ -94,7 +94,7 @@ class Comment extends React.Component {
               </a>}
             {currentUser.id !== person.id && spacer}
           </span>}
-          {notPending && <A className='date' to={commentUrl(comment)}>{humanDate(comment.created_at)}</A>}
+          <A className='date' to={commentUrl(comment)}>{notPending ? humanDate(comment.created_at) : 'sending...'}</A>
         </div>
       </div>
     </div>

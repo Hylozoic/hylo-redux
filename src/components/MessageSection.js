@@ -24,7 +24,7 @@ function createMessageList (messages) {
       messageDate = new Date(m.created_at)
       diff = Math.abs(headerDate - messageDate)
       greaterThanMax = Math.floor(diff / 60000) > MAX_MINS_TO_BATCH
-      isHeader = greaterThanMax || m.user.id !== currentHeader.user.id
+      isHeader = greaterThanMax || m.user.id !== currentHeader.user.id || !m.created_at // last case means pending
       currentHeader = isHeader ? m : currentHeader
     }
     return <Message message={m} key={m.id} isHeader={isHeader} />

@@ -24,7 +24,7 @@ class Message extends React.Component {
     const { dispatch, location, isMobile } = this.context
 
     const person = message.user
-    const notPending = comment.id.slice(0,4) === 'post' ? null : true
+    const notPending = message.id.slice(0,4) === 'post' ? null : true
     let text = present(sanitize(message.text).replace(/\n/g, '<br />'), {noP: true})
 
     return <div className={cx('message', {messageHeader: isHeader})}
@@ -33,7 +33,7 @@ class Message extends React.Component {
       <div className='content'>
         {isHeader && <div>
           <strong className='name'>{sanitize(person.name)}</strong>
-          {notPending && <span className='date'>{humanDate(message.created_at)}</span>}
+          <span className='date'>{notPending ? humanDate(message.created_at) : 'sending...'}</span>
         </div>}
         {image
         ? <a onClick={() => dispatch(showImage(image.url, location.pathname, isMobile))}>

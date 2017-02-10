@@ -10,7 +10,7 @@ import { COMMENT_IMAGES } from '../config/featureFlags'
 import { createComment } from '../actions/comments'
 import { get } from 'lodash/fp'
 
-const CommentImageButton = ({ postId, pending }, { dispatch, currentUser }) => {
+export const CommentImageButton = ({ postId, pending }, { dispatch, currentUser }) => {
   if (!hasFeature(currentUser, COMMENT_IMAGES)) return null
 
   const sendImage = () =>
@@ -28,9 +28,12 @@ const CommentImageButton = ({ postId, pending }, { dispatch, currentUser }) => {
   </a>
 }
 CommentImageButton.contextTypes = {
-  dispatch: React.PropTypes.func, currentUser: React.PropTypes.object
+  dispatch: React.PropTypes.func.isRequired,
+  currentUser: React.PropTypes.object.isRequired
 }
 
-export default connect((state, props) => ({
+const mapStateToProps = (state, props) => ({
   pending: get([UPLOAD_IMAGE, 'subject'], state.pending) === 'comment-image'
-}))(CommentImageButton)
+})
+
+export default connect(mapStateToProps)(CommentImageButton)

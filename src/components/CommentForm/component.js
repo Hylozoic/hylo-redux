@@ -1,49 +1,24 @@
 import React from 'react'
 import { debounce, throttle } from 'lodash'
-import { get } from 'lodash/fp'
-import { connect } from 'react-redux'
-import Avatar from './Avatar'
-import CommentImageButton from './CommentImageButton'
-import RichTextEditor from './RichTextEditor'
-import Icon from './Icon'
+import Avatar from '../Avatar'
+import CommentImageButton from '../CommentImageButton'
+import RichTextEditor from '../RichTextEditor'
+import Icon from '../Icon'
 import {
   showModal, createComment, updateCommentEditor, updateComment
-} from '../actions'
-import {
-  CREATE_COMMENT, UPDATE_COMMENT, UPLOAD_IMAGE
-} from '../actions/constants'
-import { ADDED_COMMENT, trackEvent } from '../util/analytics'
-import { textLength } from '../util/text'
-import { onCmdOrCtrlEnter } from '../util/textInput'
-import { responseMissingTagDescriptions } from '../util/api'
+} from '../../actions'
+import { ADDED_COMMENT, trackEvent } from '../../util/analytics'
+import { textLength } from '../../util/text'
+import { onCmdOrCtrlEnter } from '../../util/textInput'
+import { responseMissingTagDescriptions } from '../../util/api'
 import cx from 'classnames'
-import { getSocket, socketUrl } from '../client/websockets'
+import { getSocket, socketUrl } from '../../client/websockets'
 var { array, bool, func, object, string } = React.PropTypes
 
-// The interval between repeated typing notifications to the web socket. We send
-// repeated notifications to make sure that a user gets notified even if they
-// load a comment thread after someone else has already started typing.
-const STARTED_TYPING_INTERVAL = 5000
-
-// The time to wait for inactivity before announcing that typing has stopped.
-const STOPPED_TYPING_WAIT_TIME = 8000
-
-@connect((state, { postId, commentId }) => {
-  const isPending = (actionType, id) =>
-    !!id && get(['pending', actionType, 'id'], state) === id
-
-  return ({
-    text: postId ? state.commentEdits.new[postId] : state.commentEdits.edit[commentId],
-    newComment: !commentId,
-    pending: isPending(CREATE_COMMENT, postId) ||
-      isPending(UPDATE_COMMENT, commentId) ||
-      isPending(UPLOAD_IMAGE, postId)
-  })
-}, null, null, {withRef: true})
 export default class CommentForm extends React.PureComponent {
   static propTypes = {
-    dispatch: func,
-    postId: string,
+    dispatch: func.isRequired,
+    postId: string.isRequired,
     commentId: string,
     mentionOptions: array,
     placeholder: string,
@@ -55,7 +30,7 @@ export default class CommentForm extends React.PureComponent {
 
   static contextTypes = {
     isMobile: bool,
-    currentUser: object
+    currentUser: object.isRequired
   }
 
   constructor (props) {
@@ -188,3 +163,11 @@ export default class CommentForm extends React.PureComponent {
     </form>
   }
 }
+
+// The interval between repeated typing notifications to the web socket. We send
+// repeated notifications to make sure that a user gets notified even if they
+// load a comment thread after someone else has already started typing.
+const STARTED_TYPING_INTERVAL = 5000
+
+// The time to wait for inactivity before announcing that typing has stopped.
+const STOPPED_TYPING_WAIT_TIME = 8000

@@ -4,7 +4,8 @@ import {
   FETCH_POSTS,
   FOLLOW_POST_PENDING,
   UPDATE_POST,
-  COMPLETE_POST_PENDING
+  COMPLETE_POST_PENDING,
+  CREATE_COMMENT
 } from '../../src/actions/constants'
 
 describe('posts', () => {
@@ -251,36 +252,83 @@ describe('posts', () => {
       expect(newState.a.follower_ids).to.deep.equal([cat.id, person.id])
     })
   })
-})
 
+  describe('on COMPLETE_POST', () => {
+    it('adds contributors', () => {
+      let contributors = [
+        {id: 1, name: 'Johnny Appleseed'},
+        {id: 2, name: 'Suzy Sparrow'}
+      ]
+      let action = {
+        type: COMPLETE_POST_PENDING,
+        meta: { id: 'a', contributors }
+      }
+      let state = {
+        a: { contributors: contributors }
+      }
+      let newState = posts(state, action)
+      expect(newState.a.contributors).to.deep.equal(contributors)
+    })
 
-describe('on COMPLETE_POST', () => {
-  it('adds contributors', () => {
-    let contributors = [
-      {id: 1, name: 'Johnny Appleseed'},
-      {id: 2, name: 'Suzy Sparrow'}
-    ]
-    let action = {
-      type: COMPLETE_POST_PENDING,
-      meta: { id: 'a', contributors }
-    }
-    let state = {
-      a: { contributors: contributors }
-    }
-    let newState = posts(state, action)
-    expect(newState.a.contributors).to.deep.equal(contributors)
+    it('completes a post even if no contributors specified', () => {
+      let action = {
+        type: COMPLETE_POST_PENDING,
+        meta: {id: 'a'}
+      }
+      let state = {
+        a: {}
+      }
+      let newState = posts(state, action)
+      expect(newState.a.contributors).to.not.exist
+      expect(newState.a.fulfilled_at).to.exist
+    })
   })
 
-  it('completes a post even if no contributors specified', () => {
-    let action = {
-      type: COMPLETE_POST_PENDING,
-      meta: {id: 'a'}
-    }
-    let state = {
-      a: {}
-    }
-    let newState = posts(state, action)
-    expect(newState.a.contributors).to.not.exist
-    expect(newState.a.fulfilled_at).to.exist
+  describe('on CREATE_COMMENT', () => {
+    it('updates post follower_ids and num_comments', () => {
+      const action = {
+        type: CREATE_COMMENT,
+        payload: {
+          id: 'comment_id',
+          text: '<p>yes</p>',
+          user_id: 'commenter_id'
+        },
+        meta: {
+          id: 'child_id'
+        }
+      }
+
+      const state = {
+        project_id: {
+          id: 'project_id',
+          name: 'project',
+          description: 'hello',
+          child: {
+            id: 'child_id',
+            name: 'child',
+            follower_ids: ['1'],
+            num_comments: 0,
+            description: "is it me you're looking for?"
+          }
+        }
+      }
+
+      const expectedState = {
+        project_id: {
+          id: 'project_id',
+          name: 'project',
+          description: 'hello',
+          child: {
+            id: 'child_id',
+            name: 'child',
+            follower_ids: ['1', 'commenter_id'],
+            num_comments: 1,
+            description: "is it me you're looking for?"
+          }
+        }
+      }
+
+      expect(posts(state, action)).to.deep.equal(expectedState)
+    })
   })
 })

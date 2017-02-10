@@ -1,31 +1,18 @@
 /* eslint-disable camelcase */
 import React from 'react'
-import { prefetch } from 'react-fetcher'
-import { connect } from 'react-redux'
 import {
   fetchTags, removeTagFromCommunity, updateCommunityTag, showModal
-} from '../actions'
-import { getCurrentCommunity } from '../models/community'
-import A from '../components/A'
-import Icon from '../components/Icon'
-import ScrollListener from '../components/ScrollListener'
-import { connectedListProps } from '../util/caching'
-import { onEnter } from '../util/textInput'
+} from '../../actions'
+import A from '../../components/A'
+import Icon from '../../components/Icon'
+import ScrollListener from '../../components/ScrollListener'
+import { onEnter } from '../../util/textInput'
 import { includes } from 'lodash'
 import { map, find } from 'lodash/fp'
 const { object, bool, array, func, number, string } = React.PropTypes
 const subject = 'community'
 
-@prefetch(({ params: { id }, dispatch }) =>
-  dispatch(fetchTags({subject, id})))
-@connect((state, { params: { id }, location: { query } }) => {
-  return ({
-    ...connectedListProps(state, {subject, id, query}, 'tags'),
-    community: getCurrentCommunity(state)
-  })
-})
 export default class TagSettings extends React.Component {
-
   static propTypes = {
     dispatch: func,
     tags: array,

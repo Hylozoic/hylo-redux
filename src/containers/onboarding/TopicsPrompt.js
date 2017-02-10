@@ -1,7 +1,7 @@
 import React from 'react'
 import ModalOnlyPage from '../../components/ModalOnlyPage'
 import CommunityHeader from '../../components/CommunityHeader'
-import BrowseTopicsModal from '../BrowseTopicsModal'
+import BrowseTopicsModal from '../../components/BrowseTopicsModal'
 import { nextOnboardingUrl } from '../../util/navigation'
 import { find, map } from 'lodash/fp'
 const { func, object } = React.PropTypes

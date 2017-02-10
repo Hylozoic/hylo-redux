@@ -1,15 +1,16 @@
 import React from 'react'
+import { connect } from 'react-redux'
 import { A, IndexA } from './A'
 import Icon from './Icon'
 import NavMenuButton from './NavMenuButton'
 import Tooltip from './Tooltip'
 import { VelocityTransitionGroup } from 'velocity-react'
 import { isEmpty } from 'lodash'
-import { filter, get, sortBy } from 'lodash/fp'
+import { filter, sortBy } from 'lodash/fp'
 import { tagUrl } from '../routes'
 import { showAllTags } from '../actions'
 import cx from 'classnames'
-const { bool, func } = React.PropTypes
+const { bool } = React.PropTypes
 
 export const leftNavEasing = [70, 25]
 // these values are duplicated in CSS
@@ -27,7 +28,7 @@ const animations = {
   }
 }
 
-const TopicList = ({ tags, slug }, { dispatch }) => {
+const TopicList = ({ tags, community, showMore }) => {
   const followed = sortBy(t => {
     switch (t.name) {
       case 'offer': return 'a'
@@ -38,6 +39,8 @@ const TopicList = ({ tags, slug }, { dispatch }) => {
         return 'e' + t.name.toLowerCase()
     }
   }, filter('followed', tags))
+
+  const { slug } = community || {}
 
   const TagLink = ({ name, highlight }) => {
     var allTopics = name === 'all-topics'
@@ -57,13 +60,12 @@ const TopicList = ({ tags, slug }, { dispatch }) => {
     {!isEmpty(followed) && followed.map(tag =>
       <TagLink name={tag.name} key={tag.name} highlight={tag.new_post_count} />)}
     {slug && <li>
-      <a onClick={() => dispatch(showAllTags(slug))} className='browse-all'>
+      <a onClick={showMore} className='browse-all'>
         Follow more topics...
       </a>
     </li>}
   </ul>
 }
-TopicList.contextTypes = {dispatch: func}
 
 const CommunityNav = ({ links }) => {
   const LinkItem = ({ link }) => {
@@ -99,7 +101,7 @@ const NetworkNav = ({ network }) => {
   </ul>
 }
 
-export const LeftNav = ({ opened, community, network, tags, close, links }, { isMobile }) => {
+export function LeftNav ({ opened, community, network, tags, close, links, actions }, { isMobile }) {
   const onMenuClick = event => {
     close()
     event.stopPropagation()
@@ -112,7 +114,7 @@ export const LeftNav = ({ opened, community, network, tags, close, links }, { is
         {network
           ? <NetworkNav network={network} />
           : <CommunityNav links={links} />}
-        <TopicList tags={tags} slug={get('slug', community)} />
+        <TopicList tags={tags} community={community} showMore={actions.showAllTags} />
       </nav>}
       {opened && <div id='leftNavBackdrop' onClick={close} />}
     </VelocityTransitionGroup>
@@ -127,4 +129,8 @@ export const LeftNav = ({ opened, community, network, tags, close, links }, { is
 }
 LeftNav.contextTypes = {isMobile: bool}
 
-export default LeftNav
+export default connect(null, (dispatch, { community }) => ({
+  actions: {
+    showAllTags: () => dispatch(showAllTags(community))
+  }
+}))(LeftNav)

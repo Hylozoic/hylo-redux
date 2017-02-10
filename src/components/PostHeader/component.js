@@ -1,15 +1,13 @@
 import React, { PropTypes } from 'react'
-import { connect } from 'react-redux'
 import { sortBy } from 'lodash'
-import { humanDate, nonbreaking } from '../util/text'
-import { isChildPost } from '../models/post'
-import { handleMouseOver } from './Popover'
-import A from './A'
-import Avatar from './Avatar'
-import Dropdown from './Dropdown'
-import PostMenu from './PostMenu'
+import { humanDate, nonbreaking } from '../../util/text'
+import { isChildPost } from '../../models/post'
+import A from '../A'
+import Avatar from '../Avatar'
+import Dropdown from '../Dropdown'
+import PostMenu from '../PostMenu'
 
-export function PostHeader (
+export default function PostHeader (
   { post, parentPost, communities, expanded, onMouseOver },
   { currentUser, community }
 ) {
@@ -48,9 +46,6 @@ PostHeader.contextTypes = {
   currentUser: PropTypes.object,
   community: PropTypes.object
 }
-export default connect(null, (dispatch) => ({
-  onMouseOver: handleMouseOver(dispatch)
-}))(PostHeader)
 
 const WelcomePostHeader = ({ person, community }) => {
   return <div>

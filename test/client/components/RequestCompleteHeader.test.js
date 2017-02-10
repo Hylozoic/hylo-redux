@@ -1,7 +1,7 @@
 import '../support'
 import { merge } from 'lodash'
-import React, { PropTypes } from 'react'
-import { mount } from 'enzyme'
+import React from 'react'
+import { shallow } from 'enzyme'
 import { RequestCompleteHeader } from '../../../src/components/RequestCompleteHeader'
 
 const contributor1 = {
@@ -25,13 +25,14 @@ const setupNode = (withProps) => {
     post: completedRequest,
     completePost: () => {}
   }, withProps)
-  return mount(<RequestCompleteHeader {...props} />)
+  return shallow(<RequestCompleteHeader {...props} />)
 }
 
 describe('#request type', () => {
   it('displays the list of contributors', () => {
     const node = setupNode()
-    expect(node.find('.contributors .person')).to.be.length(2)
+    expect(node.find('Connect(LinkedPersonSentence)').prop('people'))
+      .to.equal(completedRequest.contributors)
   })
 
   describe('with edit permissions', () => {

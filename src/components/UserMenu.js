@@ -8,7 +8,7 @@ import ThreadsDropdown from '../containers/ThreadsDropdown'
 import { NotificationsDropdown } from '../containers/Notifications'
 import A from './A'
 import Dropdown from './Dropdown'
-import { NonLinkAvatar } from './Avatar'
+import Avatar from './Avatar'
 import { isAdmin, hasFeature } from '../models/currentUser'
 import { DIRECT_MESSAGES } from '../config/featureFlags'
 import cx from 'classnames'
@@ -81,7 +81,7 @@ const UserMenu = ({ slug, newMessageCount, newNotificationCount }, { isMobile, d
       <Dropdown className='user-menu' alignRight triangle={isMobile}
         rivalrous='nav' backdrop={isMobile} toggleChildren={
           <div>
-            <NonLinkAvatar person={currentUser} />
+            <Avatar person={currentUser} isLink={false} />
             {showDotBadge && <div className='dot-badge' />}
           </div>
         }>

@@ -8,7 +8,7 @@ import {
 import { get, map, isEmpty } from 'lodash/fp'
 import cx from 'classnames'
 import ScrollListener from '../components/ScrollListener'
-import Avatar, { NonLinkAvatar } from '../components/Avatar'
+import Avatar from '../components/Avatar'
 import truncate from 'trunc-html'
 import { humanDate } from '../util/text'
 import { VIEWED_NOTIFICATIONS, trackEvent } from '../util/analytics'
@@ -188,7 +188,7 @@ const NotificationsDropdownItem = ({ activity, comment }, { dispatch }) => {
   return <A to={destination(activity)} className={cx({unread})}
     onClick={onClick}>
     {unread && <div className='dot-badge' />}
-    <NonLinkAvatar person={actor} />
+    <Avatar person={actor} isLink={false} />
     <span>
       <strong>{actor.name}</strong>&nbsp;
       {actionText(action, comment, post, community, reasons)} {postName}

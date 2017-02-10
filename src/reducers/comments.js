@@ -24,7 +24,7 @@ export default function (state = {}, action) {
     case CREATE_COMMENT_PENDING:
       return {
         ...state,
-        [get('optimism.id', meta)]: meta.optimism
+        [get('comment.id', meta)]: meta.comment
       }
     case THANK_PENDING:
       let { id, personId } = meta
@@ -45,7 +45,7 @@ export default function (state = {}, action) {
       break
     case APPEND_COMMENT:
     case CREATE_COMMENT:
-      return {...state, [payload.id]: omit('people', payload), [get('optimism.id', meta)]: null}
+      return {...state, [payload.id]: omit('people', payload), [get('comment.id', meta)]: null}
     case FETCH_POSTS:
       comments = payload.posts.reduce((acc, post) => {
         // the post.child is for the sake of project activity cards

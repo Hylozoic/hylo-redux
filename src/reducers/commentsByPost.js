@@ -39,9 +39,9 @@ export default function (state = {}, action) {
       if (!payload.comments) return state
       return {...state, [payload.id]: payload.comments.map(c => c.id)}
     case CREATE_COMMENT_PENDING:
-      return appendUniq(state, meta.id, [get('optimism.id', meta)])
+      return appendUniq(state, meta.id, [get('comment.id', meta)])
     case CREATE_COMMENT:
-      return omit(get('optimism.id', meta), appendUniq(state, meta.id, [payload.id]))
+      return omit(get('comment.id', meta), appendUniq(state, meta.id, [payload.id]))
     case APPEND_COMMENT:
       return appendUniq(state, meta.id, [payload.id])
   }

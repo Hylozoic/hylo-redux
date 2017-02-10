@@ -1,8 +1,12 @@
 import { get } from 'lodash/fp'
 import { connect } from 'react-redux'
+import { bindActionCreators } from 'redux'
 import {
   CREATE_COMMENT, UPDATE_COMMENT, UPLOAD_IMAGE
 } from '../../actions/constants'
+import {
+  showModal, createComment, updateComment, updateCommentEditor
+} from '../../actions'
 
 export function mapStateToProps (state, { postId, commentId }) {
   const isPending = (actionType, id) =>
@@ -17,4 +21,14 @@ export function mapStateToProps (state, { postId, commentId }) {
   })
 }
 
-export default connect(mapStateToProps, null, null, {withRef: true})
+export function mapDispatchToProps (dispatch, { post }) {
+  let actions = bindActionCreators({
+    showModal,
+    createComment,
+    updateComment,
+    updateCommentEditor
+  }, dispatch)
+  return { actions }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps, null, {withRef: true})

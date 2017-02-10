@@ -24,6 +24,7 @@ class Message extends React.Component {
     const { dispatch, location, isMobile } = this.context
 
     const person = message.user
+    const hasSaved = comment.id.slice(0,4) === 'post' ? null : true
     let text = present(sanitize(message.text).replace(/\n/g, '<br />'), {noP: true})
 
     return <div className={cx('message', {messageHeader: isHeader})}
@@ -32,7 +33,7 @@ class Message extends React.Component {
       <div className='content'>
         {isHeader && <div>
           <strong className='name'>{sanitize(person.name)}</strong>
-          <span className='date'>{humanDate(message.created_at)}</span>
+          {hasSaved && <span className='date'>{humanDate(message.created_at)}</span>}
         </div>}
         {image
         ? <a onClick={() => dispatch(showImage(image.url, location.pathname, isMobile))}>

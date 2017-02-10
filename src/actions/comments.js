@@ -7,6 +7,7 @@ import {
   UPDATE_COMMENT,
   UPDATE_COMMENT_EDITOR
 } from './constants'
+import { uniqueId } from 'lodash'
 import { get } from 'lodash/fp'
 import { cleanAndStringify } from '../util/caching'
 
@@ -43,12 +44,23 @@ export function appendComment (postId, comment) {
   }
 }
 
-export function createComment ({postId, text, tagDescriptions, imageUrl}) {
+export function createComment ({postId, text, tagDescriptions, imageUrl, userId}) {
   const params = {text, tagDescriptions, imageUrl}
+  const optimism = {
+    id: uniqueId(`post${postId}_`),
+    user_id: userId,
+    thank_ids: []
+  }
+  if (text) {
+    optimism.text = text
+  }
+  else if (imageUrl) {
+    optimism.image = {url: imageUrl, thumbnail_url: imageUrl}
+  }
   return {
     type: CREATE_COMMENT,
     payload: {api: true, path: `/noo/post/${postId}/comment`, params, method: 'POST'},
-    meta: {id: postId}
+    meta: {id: postId, optimism, optimistic: true}
   }
 }
 

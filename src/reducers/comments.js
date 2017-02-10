@@ -1,5 +1,5 @@
 import { addOrRemovePersonId, hashBy, mergeList } from './util'
-import { omit } from 'lodash/fp'
+import { omit, get } from 'lodash/fp'
 import {
   ADD_DATA_TO_STORE,
   APPEND_COMMENT,
@@ -8,6 +8,7 @@ import {
   FETCH_POST,
   FETCH_POSTS,
   CREATE_COMMENT,
+  CREATE_COMMENT_PENDING,
   UPDATE_COMMENT_PENDING,
   REMOVE_COMMENT,
   THANK_PENDING,
@@ -20,6 +21,11 @@ export default function (state = {}, action) {
 
   // the cases where there isn't a payload
   switch (type) {
+    case CREATE_COMMENT_PENDING:
+      return {
+        ...state,
+        [get('optimism.id', meta)]: meta.optimism
+      }
     case THANK_PENDING:
       let { id, personId } = meta
       return addOrRemovePersonId(state, id, personId, 'thank_ids')
@@ -39,7 +45,7 @@ export default function (state = {}, action) {
       break
     case APPEND_COMMENT:
     case CREATE_COMMENT:
-      return {...state, [payload.id]: omit('people', payload)}
+      return {...state, [payload.id]: omit('people', payload), [get('optimism.id', meta)]: null}
     case FETCH_POSTS:
       comments = payload.posts.reduce((acc, post) => {
         // the post.child is for the sake of project activity cards

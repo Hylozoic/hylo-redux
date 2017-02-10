@@ -73,6 +73,8 @@ export default class CommentForm extends React.PureComponent {
 
   submit = (event, newTagDescriptions) => {
     const { dispatch, postId, commentId, newComment, close, pending } = this.props
+    const { currentUser } = this.context
+    const userId = currentUser.id
     if (event) event.preventDefault()
     if (!this.state.enabled || pending) return
     const text = this.refs.editor.getContent().replace(/<p>&nbsp;<\/p>$/m, '')
@@ -85,7 +87,7 @@ export default class CommentForm extends React.PureComponent {
       saveParent: this.saveWithTagDescriptions
     }))
     if (newComment) {
-      dispatch(createComment({postId, text, tagDescriptions}))
+      dispatch(createComment({postId, text, tagDescriptions, userId}))
       .then(action => {
         if (responseMissingTagDescriptions(action)) return showTagEditor()
         if (action.error) return

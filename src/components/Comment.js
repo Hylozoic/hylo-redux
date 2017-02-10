@@ -45,7 +45,8 @@ class Comment extends React.Component {
     const { editing } = this.state
 
     const person = comment.user
-    const { thank_ids } = comment
+    const hasSaved = comment.id.slice(0,4) === 'post' ? null : true
+    const { thank_ids, image } = comment
     const isThanked = some(thank_ids, id => id === get('id', currentUser))
 
     let text = present(sanitize(comment.text), {slug: get('slug', community)})
@@ -66,15 +67,15 @@ class Comment extends React.Component {
 
     if (editing) return <CommentForm commentId={comment.id} close={closeEdit} />
 
-    const { image } = comment
+    const {  } = comment
 
     return <div className='comment' data-comment-id={comment.id}>
-      {canEditComment(currentUser, comment, community) &&
+      {hasSaved && canEditComment(currentUser, comment, community) &&
         <Dropdown alignRight toggleChildren={<Icon name='More' />}>
           {!image && <li><a onClick={edit}>Edit</a></li>}
           <li><a onClick={remove}>Remove</a></li>
         </Dropdown>}
-      <a name={`comment-${comment.id}`} />
+      {hasSaved && <a name={`comment-${comment.id}`} />}
       <Avatar person={person} showPopover />
       <div className='content'>
         {image && <div className='text'>
@@ -86,14 +87,14 @@ class Comment extends React.Component {
         {!image && <ClickCatchingSpan className='text' dangerouslySetInnerHTML={{__html: text}} />}
         {!image && truncated && <span> <a onClick={expand} className='show-more'>Show&nbsp;more</a></span>}
         <div>
-          {currentUser && <span>
+          {hasSaved && currentUser && <span>
             {currentUser.id !== person.id &&
               <a className='thanks' onClick={() => dispatch(thank(comment.id, currentUser))}>
                 {isThanked ? `You thanked ${person.name.split(' ')[0]}` : 'Say thanks'}
               </a>}
             {currentUser.id !== person.id && spacer}
           </span>}
-          <A className='date' to={commentUrl(comment)}>{humanDate(comment.created_at)}</A>
+          {hasSaved && <A className='date' to={commentUrl(comment)}>{humanDate(comment.created_at)}</A>}
         </div>
       </div>
     </div>

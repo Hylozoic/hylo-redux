@@ -10,6 +10,7 @@ import { get } from 'lodash/fp'
 
 const CommentImageButton = ({ postId }, { dispatch, currentUser }) => {
   if (!hasFeature(currentUser, COMMENT_IMAGES)) return null
+  const userId = currentUser.id
 
   const sendImage = () =>
     dispatch(uploadImage(imageUploadSettings(currentUser.id, postId)))
@@ -18,7 +19,7 @@ const CommentImageButton = ({ postId }, { dispatch, currentUser }) => {
         if (payload === 'Cancelled' || get('code', payload) === 101) return
         return dispatch(notify('There was a problem sending your image. Please try again in a moment', {type: 'error'}))
       }
-      return dispatch(createComment({postId, imageUrl: payload}))
+      return dispatch(createComment({postId, imageUrl: payload, userId}))
     })
 
   return <a className='send-image' onClick={sendImage}><Icon name='Camera' /></a>

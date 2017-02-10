@@ -1,4 +1,4 @@
-import { map, sortedUniq } from 'lodash/fp'
+import { get, map, omit, sortedUniq } from 'lodash/fp'
 import { appendUniq } from './util'
 import {
   APPEND_COMMENT,
@@ -6,7 +6,8 @@ import {
   FETCH_COMMENTS,
   FETCH_POST,
   FETCH_POSTS,
-  CREATE_COMMENT
+  CREATE_COMMENT,
+  CREATE_COMMENT_PENDING
 } from '../actions/constants'
 
 export default function (state = {}, action) {
@@ -37,7 +38,10 @@ export default function (state = {}, action) {
     case FETCH_POST:
       if (!payload.comments) return state
       return {...state, [payload.id]: payload.comments.map(c => c.id)}
+    case CREATE_COMMENT_PENDING:
+      return appendUniq(state, meta.id, [get('optimism.id', meta)])
     case CREATE_COMMENT:
+      return omit(get('optimism.id', meta), appendUniq(state, meta.id, [payload.id]))
     case APPEND_COMMENT:
       return appendUniq(state, meta.id, [payload.id])
   }

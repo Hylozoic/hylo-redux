@@ -20,7 +20,7 @@ export function mapStateToProps (state, { post, parentPost }) {
 export function mapDispatchToProps (dispatch) {
   const actions = bindActionCreators({
     voteOnPost
-  })
+  }, dispatch)
   return {
     actions: {
       ...actions,

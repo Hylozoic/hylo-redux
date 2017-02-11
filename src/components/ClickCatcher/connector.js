@@ -8,7 +8,7 @@ import {
 export function mapDispatchToProps (dispatch) {
   const actions = bindActionCreators({
     navigate
-  })
+  }, dispatch)
   return {
     ...actions,
     handleMouseOver: showPopoverHandler(dispatch)

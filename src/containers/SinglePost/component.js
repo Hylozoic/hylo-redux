@@ -7,6 +7,7 @@ import CoverImagePage from '../../components/CoverImagePage'
 import EventPost from '../../components/EventPost'
 import ProjectPost from '../../components/ProjectPost'
 import ProjectActivityCard from '../../components/ProjectActivityCard'
+import { isChildPost } from '../../models/post'
 import Post from '../../components/Post'
 import { ConnectedPostList } from '../ConnectedPostList'
 
@@ -16,7 +17,7 @@ export const subject = 'post'
 
 export default class SinglePost extends React.Component {
   static propTypes = {
-    post: object,
+    post: object.isRequired,
     parentPost: object,
     community: object,
     editing: bool,
@@ -55,7 +56,7 @@ export default class SinglePost extends React.Component {
     const { currentUser, isMobile } = this.context
     if (error) return <AccessErrorMessage error={error} />
     if (!post || !post.user) return <div className='loading'>Loading...</div>
-    const isChild = !!post.parent_post_id
+    const isChild = isChildPost(post)
 
     return <div>
       {isMobile && isChild && <div id='mobile-top-bar'>

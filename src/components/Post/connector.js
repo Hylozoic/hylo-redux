@@ -2,9 +2,9 @@ import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import { denormalizedPost, getComments } from '../../models/post'
 import { getCurrentCommunity } from '../../models/community'
-import { handleMouseOver } from '../Popover'
 import {
-  voteOnPost
+  voteOnPost,
+  showPopoverHandler
 } from '../../actions'
 
 export function mapStateToProps (state, { post, parentPost }) {
@@ -17,14 +17,14 @@ export function mapStateToProps (state, { post, parentPost }) {
   return props
 }
 
-export function mapDispatchToProps (dispatch, { post }) {
+export function mapDispatchToProps (dispatch) {
   const actions = bindActionCreators({
     voteOnPost
-  }, dispatch)
+  })
   return {
     actions: {
       ...actions,
-      onMouseOver: handleMouseOver(dispatch)
+      showPopoverHandler: showPopoverHandler(dispatch)
     }
   }
 }

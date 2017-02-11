@@ -21,7 +21,7 @@ describe('Comment', () => {
     }).store
 
     node = mount(<Comment comment={comment} />, {
-      context: {store, dispatch: store.dispatch, currentUser},
+      context: {store, currentUser},
       childContextTypes: {store: object, currentUser: object}
     })
   }

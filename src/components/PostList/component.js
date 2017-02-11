@@ -1,25 +1,23 @@
 import React from 'react'
-import { connect } from 'react-redux'
-import { changeViewportTop } from '../util/scrolling'
 import { filter, includes, isEmpty } from 'lodash/fp'
-import { navigate, showExpandedPost } from '../actions'
-import { getEditingPostIds } from '../models/post'
-import { makeUrl } from '../util/navigation'
-import Post from './Post'
-import PostEditor from './PostEditor'
-import { EventPostCard } from './EventPost'
-import { ProjectPostCard } from './ProjectPost'
-import ScrollListener from './ScrollListener'
-import RefreshButton from './RefreshButton'
-import ProjectActivityCard from './ProjectActivityCard'
-import SearchInput from './SearchInput'
-import Icon from './Icon'
+import { changeViewportTop } from '../../util/scrolling'
+import { navigate, showExpandedPost } from '../../actions'
+import { makeUrl } from '../../util/navigation'
+import Post from '../Post'
+import PostEditor from '../PostEditor'
+import EventPostCard from '../EventPostCard'
+import ProjectPostCard from '../ProjectPostCard'
+import ScrollListener from '../ScrollListener'
+import RefreshButton from '../RefreshButton'
+import ProjectActivityCard from '../ProjectActivityCard'
+import SearchInput from '../SearchInput'
+import Icon from '../Icon'
 
 const { array, bool, func, object, number, string } = React.PropTypes
 
-export class PostList extends React.Component {
+export default class PostList extends React.Component {
   static propTypes = {
-    posts: array,
+    posts: array.isRequired,
     parentPost: object,
     loadMore: func,
     refreshPostList: func,
@@ -88,11 +86,7 @@ export class PostList extends React.Component {
   }
 }
 
-export default connect((state, { posts }) => ({
-  editingPostIds: state.isMobile ? [] : getEditingPostIds(posts, state)
-}))(PostList)
-
-const ShowPost = ({ showProjectActivity, post, parentPost, editingPostIds, expand }) => {
+function ShowPost ({ showProjectActivity, post, parentPost, editingPostIds, expand }) {
   let onExpand = commentId => {
     return expand(post.id, commentId, post.parent_post_id)
   }

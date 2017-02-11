@@ -19,7 +19,7 @@ import { unseenThreadCount } from '../util/threads'
 import { getComments, getPost, denormalizedPost } from '../models/post'
 const { number, bool, string, array, func, object } = React.PropTypes
 import A from '../components/A'
-import { NonLinkAvatar } from '../components/Avatar'
+import Avatar from '../components/Avatar'
 import Dropdown from '../components/Dropdown'
 import Icon from '../components/Icon'
 import { getSocket, socketUrl } from '../client/websockets'
@@ -166,7 +166,7 @@ const ThreadListItem = ({ thread }, { currentUser, dispatch }) => {
 
   return <A to={threadUrl(thread.id)} className={cx({unread})}>
     {unread && <div className='dot-badge' />}
-    <NonLinkAvatar person={follower} />
+    <Avatar person={follower} isLink={false} />
     <span>
       <strong>{follower.name}</strong>&nbsp;
       {comment.user_id === currentUser.id ? 'You: ' : ''}

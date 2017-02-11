@@ -1,4 +1,4 @@
-import support from '../support'
+import '../support'
 import { mount } from 'enzyme'
 import React from 'react'
 import CommunityInvite from '../../../src/containers/community/CommunityInvite'
@@ -30,8 +30,8 @@ describe('CommunityInvite', () => {
     store = configureStore({
       communities: {[community.slug]: community},
       people: {current: currentUser},
-      invitations: {[community.slug]: [{id: 1}]},
-      joinRequests: {[community.slug]: [{id: 1, user: {}}]}
+      invitations: {[community.slug]: [{id: 1, user: {id: 'required'}}]},
+      joinRequests: {[community.slug]: [{id: 1, user: {id: 'required'}}]}
     }).store
     window.FEATURE_FLAGS = {REQUEST_TO_JOIN_COMMUNITY: 'on'}
   })
@@ -41,7 +41,7 @@ describe('CommunityInvite', () => {
       params: {id: community.slug}
     }
 
-    const node = mount(<CommunityInvite {...props}/>, {
+    const node = mount(<CommunityInvite {...props} />, {
       context: {store, currentUser},
       childContextTypes: {currentUser: React.PropTypes.object}
     })

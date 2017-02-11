@@ -1,12 +1,14 @@
+
 import React, { PropTypes } from 'react'
 import { find, without } from 'lodash'
-import { same } from '../models'
-import Dropdown from './Dropdown'
-import { handleMouseOver } from './Popover'
-import A from './A'
-import PersonDropdownItem from './PersonDropdownItem'
+import { same } from '../../models'
+import Dropdown from '../Dropdown'
+import PersonDropdownItem from '../PersonDropdownItem'
 
-const LinkedPersonSentence = ({ people, children, className, showPopover }, { currentUser, dispatch }) => {
+export default function LinkedPersonSentence (
+  { people, children, className, showPopover, onMouseOver },
+  { currentUser, dispatch }
+) {
   const me = find(people, same('id', currentUser))
   const others = me ? without(people, me) : people
 
@@ -24,7 +26,7 @@ const LinkedPersonSentence = ({ people, children, className, showPopover }, { cu
     {me && <span className='person'>You</span>}
     {me && separator(1)}
     {others.slice(0, numShown).map((person, index) =>
-      <span className='person' key={person.id} onMouseOver={showPopover ? handleMouseOver(dispatch) : ''}>
+      <span className='person' key={person.id} onMouseOver={showPopover ? onMouseOver : ''}>
         <a href={`/u/${person.id}`}>
           {person.name}
         </a>
@@ -40,8 +42,12 @@ const LinkedPersonSentence = ({ people, children, className, showPopover }, { cu
     </Dropdown>} {children}
   </div>
 }
-LinkedPersonSentence.contextTypes = {
-  currentUser: PropTypes.object, dispatch: PropTypes.func
+LinkedPersonSentence.propTypes = {
+  people: PropTypes.array.isRequired,
+  className: PropTypes.string,
+  showPopover: PropTypes.bool,
+  onMouseOver: PropTypes.func
 }
-
-export default LinkedPersonSentence
+LinkedPersonSentence.contextTypes = {
+  currentUser: PropTypes.object
+}

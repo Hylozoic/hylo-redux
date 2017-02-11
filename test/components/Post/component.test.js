@@ -21,6 +21,14 @@ function renderComponent (props) {
 }
 
 describe('<Post />', () => {
+  before(() => {
+    process.env.FEATURE_FLAG_CONTRIBUTORS = 'on' // window.FEATURE_FLAGS = { CONTRIBUTORS: 'on' }
+  })
+
+  after(() => {
+    delete process.env.FEATURE_FLAG_CONTRIBUTORS // delete window.FEATURE_FLAGS
+  })
+
   it('will render with minimum required props', () => {
     const wrapper = renderComponent()
     expect(wrapper.find('.post').length).to.equal(1)
@@ -71,12 +79,10 @@ describe('<Post />', () => {
     .to.deep.equal(props.post.communities[0])
   })
 
-  it('should have the complete request feature if enabled and the post is a request', () => {
-    process.env.FEATURE_FLAG_CONTRIBUTORS = 'on' // window.FEATURE_FLAGS = { CONTRIBUTORS: 'on' }
+  it('should have the complete request feature when the post is a request', () => {
     const props = {post: {tag: 'request'}}
     const wrapper = renderComponent(props)
     expect(wrapper.find('Connect(CompleteRequest)').length).to.equal(1)
-    delete process.env.FEATURE_FLAG_CONTRIBUTORS // delete window.FEATURE_FLAGS
   })
 
   describe('with a parent post', () => {

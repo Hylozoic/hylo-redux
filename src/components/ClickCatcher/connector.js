@@ -11,7 +11,7 @@ export function mapDispatchToProps (dispatch) {
   })
   return {
     ...actions,
-    onMouseOver: showPopoverHandler(dispatch)
+    handleMouseOver: showPopoverHandler(dispatch)
   }
 }
 

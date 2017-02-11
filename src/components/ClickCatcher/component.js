@@ -1,6 +1,6 @@
 import React, { PropTypes } from 'react'
 
-export default function ClickCatcher ({ tag, onMouseOver, navigate, ...props }) {
+export default function ClickCatcher ({ tag, handleMouseOver, navigate, ...props }) {
   if (!['div', 'span', 'p'].includes(tag)) {
     throw new Error(`invalid tag for ClickCatcher: ${tag}`)
   }
@@ -19,11 +19,11 @@ export default function ClickCatcher ({ tag, onMouseOver, navigate, ...props }) 
       node.setAttribute('target', '_blank')
     }
   }
-  return React.createElement(tag, {...props, onClick: handleClick, onMouseOver: onMouseOver})
+  return React.createElement(tag, {...props, onClick: handleClick, onMouseOver: handleMouseOver})
 }
 ClickCatcher.propTypes = {
   tag: PropTypes.string.isRequired,
-  onMouseOver: PropTypes.func,
+  handleMouseOver: PropTypes.func,
   navigate: PropTypes.func
 }
 ClickCatcher.defaultProps = {

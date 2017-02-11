@@ -2,13 +2,13 @@ import React, { PropTypes } from 'react'
 import { Link } from 'react-router'
 import ChangeImageButton from '../ChangeImageButton'
 
-export default function Avatar ({ person, isLink, showEdit, showPopover, onMouseOver }) {
+export default function Avatar ({ person, isLink, showEdit, showPopover, showPopoverHandler }) {
   if (!person) return <span />
   const { id, avatar_url } = person
   const props = {
     className: 'avatar',
     style: bgStyle(avatar_url),
-    onMouseOver: showPopover ? onMouseOver : null
+    onMouseOver: showPopover ? showPopoverHandler : null
   }
   return <div {...props}>
     {showEdit && <ChangeImageButton person={person} type='avatar_url' />}
@@ -26,7 +26,7 @@ Avatar.propTypes = {
   isLink: PropTypes.bool,
   showEdit: PropTypes.bool,
   showPopover: PropTypes.bool,
-  onMouseOver: PropTypes.func
+  showPopoverHandler: PropTypes.func
 }
 Avatar.defaultProps = {
   isLink: true

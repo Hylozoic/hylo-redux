@@ -27,7 +27,7 @@ describe('<Avatar />', () => {
     expect(wrapper.find('Connect(ChangeImageButton)').length).to.equal(1)
   })
 
-  it('shows link when isLink is false', () => {
+  it('doesn\'t show link when isLink is false', () => {
     const wrapper = renderComponent({isLink: false})
     expect(wrapper.find('Link').length).to.equal(0)
   })
@@ -40,14 +40,14 @@ describe('<Avatar />', () => {
   })
 
   describe('with showPopover', () => {
-    it('sets a mouseover when true', () => {
-      const props = {showPopover: true, onMouseOver: () => {}}
+    it('sets showPopoverHandler when true', () => {
+      const props = {showPopover: true, showPopoverHandler: () => {}}
       const wrapper = renderComponent(props)
-      expect(wrapper.find('div.avatar').prop('onMouseOver')).to.equal(props.onMouseOver)
+      expect(wrapper.find('div.avatar').prop('onMouseOver')).to.equal(props.showPopoverHandler)
     })
 
-    it('doesn\'t set a mouseOver when false', () => {
-      const props = {showPopover: false, onMouseOver: () => {}}
+    it('doesn\'t set a showPopoverHandler when false', () => {
+      const props = {showPopover: false, showPopoverHandler: () => {}}
       const wrapper = renderComponent(props)
       expect(wrapper.find('div.avatar').prop('onMouseOver')).to.equal(null)
     })

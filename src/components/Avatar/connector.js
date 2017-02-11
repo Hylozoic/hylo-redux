@@ -3,7 +3,7 @@ import { showPopoverHandler } from '../../actions'
 
 export function mapDispatchToProps (dispatch) {
   return {
-    onMouseOver: showPopoverHandler(dispatch)
+    showPopoverHandler: showPopoverHandler(dispatch)
   }
 }
 

@@ -1,8 +1,5 @@
 /* eslint-disable camelcase */
 import React from 'react'
-import {
-  fetchTags, removeTagFromCommunity, updateCommunityTag, showModal
-} from '../../actions'
 import A from '../../components/A'
 import Icon from '../../components/Icon'
 import ScrollListener from '../../components/ScrollListener'
@@ -14,37 +11,42 @@ const subject = 'community'
 
 export default class TagSettings extends React.Component {
   static propTypes = {
-    dispatch: func,
     tags: array,
     community: object,
     location: object,
     pending: bool,
-    total: number
+    total: number,
+    showModal: func.isRequired,
+    fetchTags: func.isRequired,
+    removeTagFromCommunity: func.isRequired,
+    updateCommunityTag: func.isRequired
   }
 
   createTag () {
-    this.props.dispatch(showModal('tag-editor', {
+    this.props.showModal('tag-editor', {
       creating: true
-    }))
+    })
   }
 
   render () {
-    const { tags, community, dispatch, pending, total } = this.props
+    const {
+      tags, community, pending, total, fetchTags, removeTagFromCommunity, updateCommunityTag
+    } = this.props
     const findMembership = tag =>
       find(m => m.community_id === community.id, tag.memberships)
     const communityTags = map(tag => ({...tag, ...findMembership(tag)}), tags)
     const { slug } = community
     const offset = tags.length
     const loadMore = !pending && offset < total
-      ? () => dispatch(fetchTags({subject, id: slug, offset}))
+      ? () => fetchTags({subject, id: slug, offset})
       : () => {}
     const remove = tag =>
       window.confirm('Are you sure? This cannot be undone.') &&
-        dispatch(removeTagFromCommunity(tag, slug))
+        removeTagFromCommunity(tag, slug)
     const canDelete = tag => !includes(['request', 'offer', 'intention'], tag.name)
 
     const update = (tag, params) =>
-      dispatch(updateCommunityTag(tag, community, params))
+      updateCommunityTag(tag, community, params)
 
     return <div id='topic-settings'>
       <h2>Manage Topics</h2>

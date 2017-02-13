@@ -1,7 +1,9 @@
 import { prefetch } from 'react-fetcher'
 import { connect } from 'react-redux'
 import { compose } from 'redux'
-import { fetchTags } from '../../actions'
+import {
+  fetchTags, removeTagFromCommunity, updateCommunityTag, showModal
+} from '../../actions'
 import { getCurrentCommunity } from '../../models/community'
 import { connectedListProps } from '../../util/caching'
 const subject = 'community'
@@ -17,7 +19,9 @@ export function mapStateToProps (state, { params: { id }, location: { query } })
   })
 }
 
+export const mapDispatchToProps = {fetchTags, removeTagFromCommunity, updateCommunityTag, showModal}
+
 export default compose(
   prefetch(fetchToState),
-  connect(mapStateToProps)
+  connect(mapStateToProps, mapDispatchToProps)
 )

@@ -1,36 +1,26 @@
 import React from 'react'
 import { debounce, filter, sortBy } from 'lodash'
 import { get, map, min, max } from 'lodash/fp'
-const { array, bool, func, object } = React.PropTypes
-import MessageSection from './MessageSection'
-import MessageForm from './MessageForm'
-import A from './A'
-import PeopleTyping from './PeopleTyping'
-import { connect } from 'react-redux'
-import { FETCH_COMMENTS } from '../actions/constants'
-import { fetchComments, onThreadPage, offThreadPage } from '../actions'
-import { getComments } from '../models/post'
-import { getSocket, socketUrl } from '../client/websockets'
-import { trackEvent, VIEWED_MESSAGE_THREAD } from '../util/analytics'
-import { position, positionInViewport } from '../util/scrolling'
+const { array, bool, object } = React.PropTypes
+import MessageSection from '../MessageSection'
+import MessageForm from '../MessageForm'
+import A from '../A'
+import PeopleTyping from '../PeopleTyping'
+import { getSocket, socketUrl } from '../../client/websockets'
+import { trackEvent, VIEWED_MESSAGE_THREAD } from '../../util/analytics'
+import { position, positionInViewport } from '../../util/scrolling'
 
-@connect((state, { post }) => ({
-  messages: getComments(post, state),
-  pending: state.pending[FETCH_COMMENTS]
-}))
 export default class Thread extends React.Component {
   static propTypes = {
     post: object,
     messages: array,
-    dispatch: func,
-    pending: bool
+    pending: bool,
+    actions: object.isRequired
   }
 
   constructor (props) {
     super(props)
-    this.state = {
-      scrolledUp: false
-    }
+    this.state = {scrolledUp: false}
   }
 
   static contextTypes = {
@@ -38,21 +28,22 @@ export default class Thread extends React.Component {
     currentUser: object
   }
 
-  setupForThread (post) {
-    this.props.dispatch(onThreadPage(post.id))
+  setupForThread () {
+    const { post: { id } } = this.props
+    this.props.actions.onThreadPage()
     if (this.socket) {
-      this.socket.post(socketUrl(`/noo/post/${post.id}/subscribe`)) // for people typing
+      this.socket.post(socketUrl(`/noo/post/${id}/subscribe`)) // for people typing
 
       if (this.reconnectHandler) {
         this.socket.off('reconnect', this.reconnectHandler)
       }
 
       this.reconnectHandler = () => {
-        const { messages, dispatch } = this.props
+        const { messages } = this.props
         const afterId = max(map('id', messages))
-        dispatch(fetchComments(post.id, {afterId, refresh: true}))
+        this.props.actions.fetchAfter(afterId)
         .then(() => this.refs.messageSection.scrollToBottom())
-        this.socket.post(socketUrl(`/noo/post/${post.id}/subscribe`))
+        this.socket.post(socketUrl(`/noo/post/${id}/subscribe`))
       }
       this.socket.on('reconnect', this.reconnectHandler)
     }
@@ -76,55 +67,56 @@ export default class Thread extends React.Component {
 
   componentDidMount () {
     this.socket = getSocket()
-    this.setupForThread(this.props.post)
+    this.setupForThread()
   }
 
-  componentWillReceiveProps (nextProps) {
-    const oldId = get('post.id', this.props)
-    const newId = get('post.id', nextProps)
-    if (newId !== oldId) {
-      if (this.socket) {
-        this.socket.off('reconnect', this.reconnectHandler)
-        this.socket.post(socketUrl(`/noo/post/${oldId}/unsubscribe`))
-      }
-      this.setupForThread(nextProps.post)
-    }
-  }
-
-  componentWillUnmount () {
+  disableSocket () {
     const postId = get('post.id', this.props)
-    this.props.dispatch(offThreadPage())
     if (this.socket) {
       this.socket.off('reconnect', this.reconnectHandler)
       this.socket.post(socketUrl(`/noo/post/${postId}/unsubscribe`))
     }
   }
 
+  componentWillReceiveProps (nextProps) {
+    const oldId = get('post.id', this.props)
+    const newId = get('post.id', nextProps)
+    if (newId !== oldId) this.disableSocket()
+  }
+
+  componentDidUpdate (prevProps) {
+    const oldId = get('post.id', prevProps)
+    const newId = get('post.id', this.props)
+    if (newId !== oldId && newId) this.setupForThread()
+  }
+
+  componentWillUnmount () {
+    this.props.actions.offThreadPage()
+    this.disableSocket()
+  }
+
   _moveHeader = debounce(() => {
     const header = document.querySelector('.thread .header')
     const pos = position(header)
     const vpos = positionInViewport(header)
-    const targetY = this.refs.form.getWrappedInstance().isFocused() ? 0 : 60
+    const targetY = this.refs.form.isFocused() ? 0 : 60
     if (vpos.y !== targetY) {
       header.style.top = (pos.y + (targetY - vpos.y)) + 'px'
     }
   }, 50)
 
   render () {
-    const { post, pending, dispatch } = this.props
+    const { post, pending, actions } = this.props
     const { currentUser, isMobile } = this.context
     const { scrolledUp } = this.state
     const loadMore = () => {
       if (pending || messages.length >= post.numComments) return
       const beforeId = min(map('id', messages))
-      dispatch(fetchComments(post.id, {refresh: true, newest: true, limit: 20, beforeId}))
+      actions.fetchBefore(beforeId)
       .then(() => this.refs.messageSection.scrollToMessage(beforeId))
     }
     const moveHeader = isMobile ? () => setTimeout(this._moveHeader, 20) : null
     const messages = sortBy(this.props.messages || [], 'created_at')
-    const latestMessage = messages.length && messages[messages.length - 1]
-    const latestFromOther = latestMessage && latestMessage.user_id !== currentUser.id
-    const newFromOther = latestFromOther && post.last_read_at && new Date(latestMessage.created_at) > new Date(post.last_read_at)
 
     return <div className='thread'>
       <Header post={post} />
@@ -134,17 +126,24 @@ export default class Thread extends React.Component {
         onScroll={isMobile ? this._moveHeader : null}
         onScrollToTop={loadMore} ref='messageSection' />
       <PeopleTyping showNames showBorder={scrolledUp} />
-      {newFromOther && scrolledUp &&
+      {hasNewMessages(messages, currentUser, post) && scrolledUp &&
         <div className='newMessagesNotify' onClick={this.refs.messageSection.scrollToBottom}>
           New Messages
         </div>}
       <MessageForm postId={post.id} ref='form' onFocus={moveHeader}
-        onBlur={moveHeader} />
+        onBlur={moveHeader} createComment={actions.createComment} />
     </div>
   }
 }
 
-export const Header = ({ post }, { currentUser }) => {
+function hasNewMessages (messages, post, currentUser) {
+  const latestMessage = messages.length && messages[messages.length - 1]
+  const latestFromOther = latestMessage && latestMessage.user_id !== currentUser.id
+  return latestFromOther && post.last_read_at &&
+    new Date(latestMessage.created_at) > new Date(post.last_read_at)
+}
+
+function Header ({ post }, { currentUser }) {
   const followers = post.followers
   const gt2 = followers.length - 2
   const { id } = currentUser

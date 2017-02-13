@@ -19,7 +19,7 @@ import {
   sendGraphqlQuery
 } from '../actions'
 import qs from 'querystring'
-import { NonLinkAvatar } from '../components/Avatar'
+import Avatar from '../components/Avatar'
 import { humanDate } from '../util/text'
 import { tagUrl, inviteSettingsUrl } from '../routes'
 import { SEARCHED, trackEvent } from '../util/analytics'
@@ -177,7 +177,7 @@ export default class People extends React.Component {
 const PersonRow = ({ person }) => {
   const { id, name, joined_at, isModerator } = person
   return <A className='person-row' to={`/u/${id}`}>
-    <NonLinkAvatar person={person} />
+    <Avatar person={person} isLink={false} />
     <span className='name'>{name}</span>
     <span className='subtitle'>
       {isModerator ? 'Moderator' : 'Member'}

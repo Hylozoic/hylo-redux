@@ -44,7 +44,7 @@ export function appendComment (postId, comment) {
   }
 }
 
-export function createComment ({postId, text, tagDescriptions, imageUrl, userId}) {
+export function createComment ({ postId, text, tagDescriptions, imageUrl, userId }) {
   const params = {text, tagDescriptions, imageUrl}
   const comment = {
     id: uniqueId(`post${postId}_`),

@@ -1,7 +1,6 @@
 import React from 'react'
 import { throttle, isEmpty } from 'lodash'
 import CommentImageButton from './CommentImageButton'
-import { createComment } from '../actions'
 import { SENT_MESSAGE, trackEvent } from '../util/analytics'
 import { onEnterNoShift } from '../util/textInput'
 import { getSocket, socketUrl } from '../client/websockets'
@@ -14,13 +13,13 @@ export default class MessageForm extends React.Component {
     placeholder: string,
     text: string,
     onFocus: func,
-    onBlur: func
+    onBlur: func,
+    createComment: func.isRequired
   }
 
   static contextTypes = {
     isMobile: bool,
-    currentUser: object,
-    dispatch: func
+    currentUser: object
   }
 
   constructor (props) {
@@ -37,7 +36,7 @@ export default class MessageForm extends React.Component {
     const userId = currentUser.id
     const { text } = this.state
 
-    this.context.dispatch(createComment({postId, text, userId}))
+    this.props.createComment(text, userId)
     .then(({ error }) => {
       if (error) {
         this.setState({text})

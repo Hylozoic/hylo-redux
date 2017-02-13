@@ -11,7 +11,11 @@ const state = {
       id: 'x',
       avatar_url: 'image.png'
     }
+  },
+  communities: {
+    testcommunity: {slug: 'testcommunity'}
   }
+
 }
 
 const post = {
@@ -23,7 +27,7 @@ const parentPost = {
   id: 'parentPost',
   name: 'The Parent Project',
   created_at: new Date(),
-  communities: [{slug: 'testcommunity'}]
+  community_ids: ['testcommunity']
 }
 
 const setupNode = () => {

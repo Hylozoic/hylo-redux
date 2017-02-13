@@ -19,7 +19,7 @@ import Dropdown from './Dropdown'
 import EventPostEditor from './EventPostEditor'
 import ProjectPostEditor from './ProjectPostEditor'
 import RichTextEditor from './RichTextEditor'
-import { NonLinkAvatar } from './Avatar'
+import Avatar from './Avatar'
 import AutosizingTextarea from './AutosizingTextarea'
 import Icon, { IconGoogleDrive } from './Icon'
 import LinkPreview from './LinkPreview'
@@ -511,7 +511,7 @@ class CommunitySelector extends React.Component {
 
 const PostEditorHeader = ({ person }) =>
   <div className='header'>
-    <NonLinkAvatar person={person} />
+    <Avatar person={person} isLink={false} />
     <div>
       <span className='name'>{person.name}</span>
     </div>

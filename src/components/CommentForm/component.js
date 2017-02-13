@@ -1,47 +1,26 @@
 import React from 'react'
 import { debounce, throttle } from 'lodash'
-import { get } from 'lodash/fp'
-import { connect } from 'react-redux'
-import Avatar from './Avatar'
-import CommentImageButton from './CommentImageButton'
-import RichTextEditor from './RichTextEditor'
-import Icon from './Icon'
-import {
-  showModal, createComment, updateCommentEditor, updateComment
-} from '../actions'
-import {
-  CREATE_COMMENT, UPDATE_COMMENT
-} from '../actions/constants'
-import { ADDED_COMMENT, trackEvent } from '../util/analytics'
-import { textLength } from '../util/text'
-import { onCmdOrCtrlEnter } from '../util/textInput'
-import { responseMissingTagDescriptions } from '../util/api'
+import Avatar from '../Avatar'
+import CommentImageButton from '../CommentImageButton'
+import RichTextEditor from '../RichTextEditor'
+import Icon from '../Icon'
+import { ADDED_COMMENT, trackEvent } from '../../util/analytics'
+import { textLength } from '../../util/text'
+import { onCmdOrCtrlEnter } from '../../util/textInput'
+import { responseMissingTagDescriptions } from '../../util/api'
 import cx from 'classnames'
-import { getSocket, socketUrl } from '../client/websockets'
-var { array, bool, func, object, string } = React.PropTypes
+import { getSocket, socketUrl } from '../../client/websockets'
+var { array, bool, func, object, string, shape } = React.PropTypes
 
-// The interval between repeated typing notifications to the web socket. We send
-// repeated notifications to make sure that a user gets notified even if they
-// load a comment thread after someone else has already started typing.
-const STARTED_TYPING_INTERVAL = 5000
-
-// The time to wait for inactivity before announcing that typing has stopped.
-const STOPPED_TYPING_WAIT_TIME = 8000
-
-@connect((state, { postId, commentId }) => {
-  const isPending = (actionType, id) =>
-    !!id && get(['pending', actionType, 'id'], state) === id
-
-  return ({
-    text: postId ? state.commentEdits.new[postId] : state.commentEdits.edit[commentId],
-    newComment: !commentId,
-    pending: isPending(CREATE_COMMENT, postId) || isPending(UPDATE_COMMENT, commentId)
-  })
-}, null, null, {withRef: true})
 export default class CommentForm extends React.PureComponent {
   static propTypes = {
-    dispatch: func,
-    postId: string,
+    postId: string.isRequired,
+    actions: shape({
+      showModal: func.isRequired,
+      createComment: func.isRequired,
+      updateComment: func.isRequired,
+      updateCommentEditor: func.isRequired
+    }),
     commentId: string,
     mentionOptions: array,
     placeholder: string,
@@ -53,7 +32,7 @@ export default class CommentForm extends React.PureComponent {
 
   static contextTypes = {
     isMobile: bool,
-    currentUser: object
+    currentUser: object.isRequired
   }
 
   constructor (props) {
@@ -72,7 +51,9 @@ export default class CommentForm extends React.PureComponent {
   }
 
   submit = (event, newTagDescriptions) => {
-    const { dispatch, postId, commentId, newComment, close, pending } = this.props
+    const {
+      actions: { showModal, createComment, updateComment }, postId, commentId, newComment, close, pending
+    } = this.props
     if (event) event.preventDefault()
     if (!this.state.enabled || pending) return
     const text = this.refs.editor.getContent().replace(/<p>&nbsp;<\/p>$/m, '')
@@ -80,19 +61,19 @@ export default class CommentForm extends React.PureComponent {
 
     const tagDescriptions = newTagDescriptions || this.state.tagDescriptions
 
-    const showTagEditor = () => dispatch(showModal('tag-editor', {
+    const showTagEditor = () => showModal('tag-editor', {
       creating: false,
       saveParent: this.saveWithTagDescriptions
-    }))
+    })
     if (newComment) {
-      dispatch(createComment({postId, text, tagDescriptions}))
+      createComment({postId, text, tagDescriptions})
       .then(action => {
         if (responseMissingTagDescriptions(action)) return showTagEditor()
         if (action.error) return
         trackEvent(ADDED_COMMENT, {post: {id: postId}})
       })
     } else {
-      dispatch(updateComment(commentId, text, tagDescriptions))
+      updateComment(commentId, text, tagDescriptions)
       .then(action => responseMissingTagDescriptions(action) && showTagEditor())
       close()
     }
@@ -106,9 +87,9 @@ export default class CommentForm extends React.PureComponent {
   }
 
   setText (text) {
-    const { dispatch, commentId, postId, newComment } = this.props
+    const { actions: { updateCommentEditor }, commentId, postId, newComment } = this.props
     const storeId = newComment ? postId : commentId
-    dispatch(updateCommentEditor(storeId, text, newComment))
+    updateCommentEditor(storeId, text, newComment)
   }
 
   handleKeyDown = (e) => {
@@ -149,7 +130,7 @@ export default class CommentForm extends React.PureComponent {
   }
 
   render () {
-    const { text, close, pending, postId } = this.props
+    const { text, close, pending, postId, newComment } = this.props
     const { currentUser, isMobile } = this.context
     const { enabled } = this.state
     const editing = text !== undefined
@@ -172,7 +153,7 @@ export default class CommentForm extends React.PureComponent {
             </a>
           </div>
 
-          <CommentImageButton postId={postId} />
+          {newComment && <CommentImageButton postId={postId} />}
           <input type='submit' value='Post' ref='button'
             className={cx({enabled: enabled && !pending})} />
           {close && <button onClick={close}>Cancel</button>}
@@ -186,3 +167,11 @@ export default class CommentForm extends React.PureComponent {
     </form>
   }
 }
+
+// The interval between repeated typing notifications to the web socket. We send
+// repeated notifications to make sure that a user gets notified even if they
+// load a comment thread after someone else has already started typing.
+const STARTED_TYPING_INTERVAL = 5000
+
+// The time to wait for inactivity before announcing that typing has stopped.
+const STOPPED_TYPING_WAIT_TIME = 8000

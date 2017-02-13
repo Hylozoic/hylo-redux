@@ -1,26 +1,25 @@
 import React from 'react'
 import { throttle, isEmpty } from 'lodash'
-import CommentImageButton from './CommentImageButton'
-import { createComment } from '../actions'
-import { SENT_MESSAGE, trackEvent } from '../util/analytics'
-import { onEnterNoShift } from '../util/textInput'
-import { getSocket, socketUrl } from '../client/websockets'
+import CommentImageButton from '../CommentImageButton'
+import { SENT_MESSAGE, trackEvent } from '../../util/analytics'
+import { onEnterNoShift } from '../../util/textInput'
+import { getSocket, socketUrl } from '../../client/websockets'
 import cx from 'classnames'
 var { func, object, string, bool } = React.PropTypes
 
 export default class MessageForm extends React.Component {
   static propTypes = {
-    postId: string,
+    postId: string.isRequired,
     placeholder: string,
-    text: string,
     onFocus: func,
-    onBlur: func
+    onBlur: func,
+    pending: bool,
+    createComment: func.isRequired
   }
 
   static contextTypes = {
     isMobile: bool,
-    currentUser: object,
-    dispatch: func
+    currentUser: object
   }
 
   constructor (props) {
@@ -32,10 +31,10 @@ export default class MessageForm extends React.Component {
     if (event) event.preventDefault()
     if (!this.state.text) return false
 
-    const { postId } = this.props
+    const { postId, createComment } = this.props
     const { text } = this.state
 
-    this.context.dispatch(createComment({postId, text}))
+    createComment({postId, text})
     .then(({ error }) => error || trackEvent(SENT_MESSAGE))
 
     this.setState({text: ''})
@@ -75,7 +74,7 @@ export default class MessageForm extends React.Component {
   }, 5000)
 
   render () {
-    const { onFocus, onBlur, postId } = this.props
+    const { onFocus, onBlur, postId, pending } = this.props
     const placeholder = this.props.placeholder || 'Type a message...'
     const { isMobile } = this.context
     const { text } = this.state
@@ -100,7 +99,7 @@ export default class MessageForm extends React.Component {
         onKeyUp={this.stopTyping}
         onKeyDown={handleKeyDown} />
       {isMobile && <button onClick={isMobile ? this.submit : null}
-        className={cx({enabled: !isEmpty(text)})}>Send</button>}
+        className={cx({enabled: !isEmpty(text) && !pending})}>Send</button>}
     </form>
   }
 }

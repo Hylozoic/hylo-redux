@@ -59,7 +59,7 @@ export default class Thread extends React.Component {
     //
     // so for now we have a simple workaround: just skip it on mobile entirely.
     if (!this.context.isMobile) {
-      this.refs.form.focus()
+      this.refs.form.getWrappedInstance().focus()
     }
 
     trackEvent(VIEWED_MESSAGE_THREAD)

@@ -20,9 +20,7 @@ export default class Thread extends React.Component {
 
   constructor (props) {
     super(props)
-    this.state = {
-      scrolledUp: false
-    }
+    this.state = {scrolledUp: false}
   }
 
   static contextTypes = {
@@ -69,28 +67,32 @@ export default class Thread extends React.Component {
 
   componentDidMount () {
     this.socket = getSocket()
-    this.setupForThread(this.props.post)
+    this.setupForThread()
+  }
+
+  disableSocket () {
+    const postId = get('post.id', this.props)
+    if (this.socket) {
+      this.socket.off('reconnect', this.reconnectHandler)
+      this.socket.post(socketUrl(`/noo/post/${postId}/unsubscribe`))
+    }
+  }
+
+  componentWillReceiveProps (nextProps) {
+    const oldId = get('post.id', this.props)
+    const newId = get('post.id', nextProps)
+    if (newId !== oldId) this.disableSocket()
   }
 
   componentDidUpdate (prevProps) {
     const oldId = get('post.id', prevProps)
     const newId = get('post.id', this.props)
-    if (newId !== oldId) {
-      if (this.socket) {
-        this.socket.off('reconnect', this.reconnectHandler)
-        this.socket.post(socketUrl(`/noo/post/${oldId}/unsubscribe`))
-      }
-      this.setupForThread()
-    }
+    if (newId !== oldId && newId) this.setupForThread()
   }
 
   componentWillUnmount () {
-    const postId = get('post.id', this.props)
     this.props.actions.offThreadPage()
-    if (this.socket) {
-      this.socket.off('reconnect', this.reconnectHandler)
-      this.socket.post(socketUrl(`/noo/post/${postId}/unsubscribe`))
-    }
+    this.disableSocket()
   }
 
   _moveHeader = debounce(() => {
@@ -115,10 +117,6 @@ export default class Thread extends React.Component {
     }
     const moveHeader = isMobile ? () => setTimeout(this._moveHeader, 20) : null
     const messages = sortBy(this.props.messages || [], 'created_at')
-    const latestMessage = messages.length && messages[messages.length - 1]
-    const latestFromOther = latestMessage && latestMessage.user_id !== currentUser.id
-    const newFromOther = latestFromOther && post.last_read_at &&
-      new Date(latestMessage.created_at) > new Date(post.last_read_at)
 
     return <div className='thread'>
       <Header post={post} />
@@ -128,7 +126,7 @@ export default class Thread extends React.Component {
         onScroll={isMobile ? this._moveHeader : null}
         onScrollToTop={loadMore} ref='messageSection' />
       <PeopleTyping showNames showBorder={scrolledUp} />
-      {newFromOther && scrolledUp &&
+      {hasNewMessages(messages, currentUser, post) && scrolledUp &&
         <div className='newMessagesNotify' onClick={this.refs.messageSection.scrollToBottom}>
           New Messages
         </div>}
@@ -136,6 +134,13 @@ export default class Thread extends React.Component {
         onBlur={moveHeader} createComment={actions.createComment} />
     </div>
   }
+}
+
+function hasNewMessages (messages, post, currentUser) {
+  const latestMessage = messages.length && messages[messages.length - 1]
+  const latestFromOther = latestMessage && latestMessage.user_id !== currentUser.id
+  return latestFromOther && post.last_read_at &&
+    new Date(latestMessage.created_at) > new Date(post.last_read_at)
 }
 
 function Header ({ post }, { currentUser }) {

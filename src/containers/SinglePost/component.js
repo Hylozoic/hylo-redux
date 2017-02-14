@@ -11,13 +11,13 @@ import { isChildPost } from '../../models/post'
 import Post from '../../components/Post'
 import { ConnectedPostList } from '../ConnectedPostList'
 
-const { array, bool, object, string, func } = React.PropTypes
+const { bool, object, string, func } = React.PropTypes
 
 export const subject = 'post'
 
 export default class SinglePost extends React.Component {
   static propTypes = {
-    post: object.isRequired,
+    post: object,
     parentPost: object,
     community: object,
     editing: bool,

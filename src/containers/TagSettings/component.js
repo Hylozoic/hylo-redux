@@ -98,7 +98,7 @@ class TopicRow extends React.Component {
     const { editing, description } = this.state
 
     const edit = tag => {
-      this.setState({editing: tag.id})
+      this.setState({editing: true})
       this.setState({description: tag.description})
     }
 
@@ -122,9 +122,11 @@ class TopicRow extends React.Component {
           {tag.post_type}
         </span>}
         <span className='icon-column'>
-          <a onClick={() => edit(tag)}>
-            <Icon name='Pencil' />
-          </a>
+          {editing
+            ? <span className='disabled'><Icon name='Pencil' /></span>
+            : <a onClick={() => edit(tag)}>
+              <Icon name='Pencil' />
+            </a>}
         </span>
         <span className='icon-column'>
           <A to={`/c/${slug}/tag/${tag.name}`}>
@@ -143,16 +145,17 @@ class TopicRow extends React.Component {
         </span>
       </div>
       <div className='description-row'>
-        {editing === tag.id
-          ? <span>
+        {editing
+          ? <div className='edit-description'>
             <input ref='description'
               type='text'
               value={description || ''}
               onChange={setDescription}
               onBlur={cancelEdit}
               onKeyDown={onEnter(() => updateDescription(tag))} />
-            <a onClick={() => updateDescription(tag)}><Icon name='big-check' /></a>
-          </span>
+            <a className='cross'><Icon name='Cross' /></a>
+            <a className='check' onClick={() => updateDescription(tag)}><Icon name='Tick' /></a>
+          </div>
           : tag.description}
       </div>
     </div>

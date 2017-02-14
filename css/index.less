@@ -856,6 +856,10 @@ ul.tags {
         text-align: center;
         box-sizing: content-box;
 
+        .disabled {
+          color: @faint-gray-text;
+        }
+
         input[type="checkbox"] {
           margin-top: 0;
           position: relative;
@@ -867,6 +871,36 @@ ul.tags {
     .description-row {
       .light;
       margin-top: 5px;
+      .edit-description {
+        display: flex;
+        border: 1px solid @light-gray-border;
+        border-radius: 5px;
+        margin-top: 15px;
+
+        input {
+          border: none;
+          border-radius: 5px;
+          padding-left: 10px;
+          flex-grow: 1;
+          flex-shrink: 0;
+          flex-basis: 200px;
+          &:focus {
+            outline: none;
+          }
+        }
+        .cross, .check {
+          font-size: 18px;
+          display: inline-block;
+          width: 40px;
+          height: 40px;
+          line-height: 40px;
+          text-align: center;
+        }
+        .check {
+          color: white;
+          background-color: #0bbd96;
+        }
+      }
     }
 
   }

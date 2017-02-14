@@ -92,7 +92,7 @@ export default class App extends React.Component {
   render () {
     const {
       children, community, leftNavIsOpen, notifierMessages, openModals,
-      popover, currentUser, location, removeNotification
+      popover, currentUser, location, isMobile, removeNotification
     } = this.props
 
     const classes = cx({
@@ -104,6 +104,7 @@ export default class App extends React.Component {
 
     const { pathname } = location || {}
     const showIntercomButton = pathname && !pathname.startsWith('/t/')
+    const showPopover = !isEmpty(popover) && !isMobile
 
     return <div className={classes}>
       {children}
@@ -113,7 +114,7 @@ export default class App extends React.Component {
         remove={id => removeNotification(id)} />
       <LiveStatusPoller community={community} />
       <PageTitleController />
-      {!isEmpty(popover) && <Popover {...{popover}} />}
+      {showPopover && <Popover {...{popover}} />}
       {openModals.map((modal, i) =>
         <ModalWrapper key={i}
           bottom={i === 0}

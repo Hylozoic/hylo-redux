@@ -2,8 +2,8 @@ require('../support')
 import React from 'react'
 import { mount } from 'enzyme'
 import { configureStore } from '../../../src/store'
-import App from '../../../src/containers/App.js'
-import ShareTopicModal from '../../../src/containers/ShareTopicModal.js'
+import App from '../../../src/containers/App'
+import ShareTopicModal from '../../../src/containers/ShareTopicModal'
 import {
   renderIntoDocument, findRenderedDOMComponentWithClass
 } from 'react-addons-test-utils'
@@ -12,7 +12,7 @@ import { keyMap } from '../../../src/util/textInput'
 
 describe('ShareTopicModal', () => {
   var store
-  const beta_access_code = 'foocode'
+  const beta_access_code = 'foocode' // eslint-disable-line camelcase
   const slug = 'foomunity'
   const tagName = 'bartag'
   const currentCommunityId = '1'
@@ -52,7 +52,7 @@ describe('ShareTopicModal', () => {
   })
 
   it('validates emails', () => {
-    const node = mount(<ShareTopicModal slug={slug}/>, {
+    const node = mount(<ShareTopicModal slug={slug} />, {
       context: {store}
     })
     const input = node.find('input[type="text"]')

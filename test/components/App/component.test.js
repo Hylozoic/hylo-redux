@@ -40,5 +40,14 @@ describe('<App />', () => {
       const wrapper = renderComponent(props)
       expect(wrapper.find('Connect(Popover)').length).to.equal(1)
     })
+
+    it('does not render on mobile', () => {
+      const props = {
+        popover: {notempty: 'test'},
+        isMobile: true
+      }
+      const wrapper = renderComponent(props)
+      expect(wrapper.find('Connect(Popover)').length).to.equal(0)
+    })
   })
 })

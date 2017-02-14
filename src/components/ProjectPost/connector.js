@@ -1,5 +1,5 @@
 import { connect } from 'react-redux'
-import { map } from 'lodash'
+import { map } from 'lodash/fp'
 import { getPost, denormalizedPost } from '../../models/post'
 
 export function mapStateToProps (state, { post }) {

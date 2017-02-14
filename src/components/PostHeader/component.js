@@ -18,21 +18,19 @@ export default function PostHeader (
   return <div className='header'>
     <PostMenu expanded={expanded} post={post} isChild={isChild} />
     <Avatar person={person} showPopover />
-    {tag === 'welcome'
-      ? <WelcomePostHeader person={post.relatedUsers[0]} community={communities[0]} />
-      : <div onMouseOver={onMouseOver}>
-        <A className='name' to={`/u/${person.id}`}>
-          {person.name}
+    <div onMouseOver={onMouseOver}>
+      {person && <A className='name' to={`/u/${person.id}`}>
+        {person.name}
+      </A>}
+      <span className='meta'>
+        <A to={`/p/${post.id}`} title={createdAt}>
+          {nonbreaking(humanDate(createdAt))}
         </A>
-        <span className='meta'>
-          <A to={`/p/${post.id}`} title={createdAt}>
-            {nonbreaking(humanDate(createdAt))}
-          </A>
-          {(communities || parentPost) &&
-            <AppearsIn community={community} communities={communities} parentPost={parentPost} />}
-          {post.public && <span>{spacer}Public</span>}
-        </span>
-      </div>}
+        {(communities || parentPost) &&
+          <AppearsIn community={community} communities={communities} parentPost={parentPost} />}
+        {post.public && <span>{spacer}Public</span>}
+      </span>
+    </div>
   </div>
 }
 PostHeader.propTypes = {
@@ -45,23 +43,6 @@ PostHeader.propTypes = {
 PostHeader.contextTypes = {
   currentUser: PropTypes.object,
   community: PropTypes.object
-}
-
-const WelcomePostHeader = ({ person, community }) => {
-  return <div>
-    <strong><A to={`/u/${person.id}`}>{person.name}</A></strong> joined
-    <span />
-    {community ? <span>
-      <A to={`/c/${community.slug}`}>{community.name}</A>.
-      <span />
-      <a className='open-comments'>
-        Welcome them!
-      </a>
-    </span>
-    : <span>
-        a community that is no longer active.
-      </span>}
-  </div>
 }
 
 const AppearsIn = ({ community, communities }) => {

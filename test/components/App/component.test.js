@@ -12,9 +12,16 @@ const minProps = {
   openModals: []
 }
 
+const minContext = {
+  store: {
+    dispatch: () => {}
+  }
+}
+
 function renderComponent (props) {
   return shallow(
-    <App {...merge(minProps, props)} />
+    <App {...merge(minProps, props)} />,
+    {context: minContext}
   )
 }
 

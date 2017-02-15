@@ -33,8 +33,12 @@ export default class App extends React.Component {
     popover: object
   }
 
+  static contextTypes = {
+    store: object.isRequired
+  }
+
   static childContextTypes = {
-    dispatch: func,
+    dispatch: func.isRequired,
     currentUser: object,
     isMobile: bool,
     location: object
@@ -47,8 +51,8 @@ export default class App extends React.Component {
 
   getChildContext () {
     const { currentUser, isMobile, location } = this.props
-    const { dispatch } = this.context
-    return { dispatch, currentUser, isMobile, location }
+    const { store } = this.context
+    return { dispatch: store.dispatch, currentUser, isMobile, location }
   }
 
   componentDidMount () {

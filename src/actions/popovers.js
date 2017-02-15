@@ -13,12 +13,31 @@ import {
 */
 
 export function showPopoverHandler (dispatch) {
+  var canceledPopover
+
   return function (event) {
     const node = event.target
     const isTag = node.getAttribute('class') === 'hashtag'
     const userId = node.getAttribute('data-user-id') || userIdFromUrl(node.getAttribute('href'))
     if (node.nodeName.toLowerCase() === 'a' && (isTag || userId)) {
+      canceledPopover = false
+
+      const hide = () => {
+        cancel()
+        dispatch(hidePopover())
+      }
+
+      const cancel = () => {
+        canceledPopover = true
+        node.removeEventListener('mouseleave', cancel)
+        node.removeEventListener('click', hide)
+      }
+
+      node.addEventListener('mouseleave', cancel)
+      node.addEventListener('click', hide)
+
       setTimeout(() => {
+        if (canceledPopover) return
         if (isTag) {
           const { tagName, slug } = tagUrlComponents(node.getAttribute('href'))
           dispatch(showPopover('tag', {tagName, slug}, node))

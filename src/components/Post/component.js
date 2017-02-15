@@ -57,9 +57,9 @@ export default function Post (
     <Attachments post={post} />
     {hasFeature(currentUser, CONTRIBUTORS) && isComplete &&
       <RequestCompleteHeader post={post} canEdit={canEdit} />}
-    <CommentSection {...{comments: selectedComments, post, expanded, onExpand, canComment}} />
     {hasFeature(currentUser, CONTRIBUTORS) && isRequest && !isComplete &&
       <CompleteRequest post={post} canEdit={canEdit} />}
+    <CommentSection {...{comments: selectedComments, post, expanded, onExpand, canComment}} />
   </div>
 }
 Post.propTypes = {

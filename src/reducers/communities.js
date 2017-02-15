@@ -78,7 +78,11 @@ export default function (state = {}, action) {
     case UPDATE_COMMUNITY_CHECKLIST:
       community = state[meta.slug]
       return {
-        ...state, [meta.slug]: {...community, settings: payload}
+        ...state,
+        [meta.slug]: {
+          ...community,
+          settings: merge(community.settings, payload)
+        }
       }
     case SEND_GRAPHQL_QUERY:
       switch (meta.subject) {

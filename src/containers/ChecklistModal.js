@@ -1,42 +1,27 @@
 import React from 'react'
 import { connect } from 'react-redux'
-import { prefetch } from 'react-fetcher'
 import { filter } from 'lodash/fp'
 import { getCurrentCommunity, getChecklist } from '../models/community'
-import { fetchCommunity, updateCommunityChecklist, closeModal } from '../actions'
-const { func, object } = React.PropTypes
 import Modal from '../components/Modal'
+import { closeModal } from '../actions'
+const { array, object } = React.PropTypes
 
-@prefetch(({ dispatch, params: { id } }) =>
-  dispatch(updateCommunityChecklist(id))
-  .then(() => dispatch(fetchCommunity(id)))
-)
-@connect((state) => ({
-  community: getCurrentCommunity(state)
-}))
-export default class ChecklistModal extends React.Component {
-  static propTypes = {
-    dispatch: func,
-    community: object,
-    onCancel: func
-  }
+class ChecklistModal extends React.Component {
+  static propTypes = {community: object, checklist: array}
 
   render () {
-    const { community, dispatch, onCancel } = this.props
-    const checklist = getChecklist(community)
+    const { community, checklist, close } = this.props
     const percent = filter('done', checklist).length / checklist.length * 100
-    const close = () => dispatch(closeModal())
 
     return <Modal title='Getting started.'
       subtitle={<div>
         <PercentBar percent={percent} />
         To build a successful community with Hylo, we suggest completing the following:
       </div>}
-      className='community-setup-checklist'
-      onCancel={onCancel}>
-      {checklist.map(({ title, action, done }) =>
+      className='community-setup-checklist'>
+      {checklist.map(({ title, onClick, done }) =>
         <CheckItem title={title} done={done} key={title} slug={community.slug}
-          onClick={() => dispatch(action)} />)}
+          onClick={onClick} />)}
       <div className='footer'>
         <a className='button ok' onClick={close}>
           Done
@@ -46,7 +31,25 @@ export default class ChecklistModal extends React.Component {
   }
 }
 
-const CheckItem = ({ title, onClick, done, slug }) => {
+function mapStateToProps (state) {
+  return {community: getCurrentCommunity(state)}
+}
+
+function mergeProps ({ community }, { dispatch }, props) {
+  const checklist = getChecklist(community)
+  checklist.forEach(item => {
+    item.onClick = () => dispatch(item.action)
+  })
+  return Object.assign({}, props, {
+    community,
+    checklist,
+    close: () => dispatch(closeModal())
+  })
+}
+
+export default connect(mapStateToProps, null, mergeProps)(ChecklistModal)
+
+function CheckItem ({ title, onClick, done, slug }) {
   const completedTopic = done && title === 'Add a topic'
   return <div className='check-item form-sections' onClick={!completedTopic && onClick}>
     <input type='checkbox' checked={done} readOnly />
@@ -57,10 +60,10 @@ const CheckItem = ({ title, onClick, done, slug }) => {
   </div>
 }
 
-export const PercentBar = ({ percent }) => {
+export function PercentBar ({ percent }) {
   return <div className='percent-bar'>
     <div className='bar'>
-      <div className='completed-portion' style={{width: `${percent}%`}}></div>
+      <div className='completed-portion' style={{width: `${percent}%`}} />
     </div>
     <div className='label'>
       {percent}% completed

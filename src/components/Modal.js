@@ -49,7 +49,7 @@ export class ModalContainer extends React.Component {
   }
 }
 
-function Modal (props, { isMobile }) {
+export function Modal (props, { isMobile }) {
   const { children, title, subtitle, onCancel, standalone } = props
   return <ModalContainer {...props}>
     {(title || subtitle) && <div className='title'>

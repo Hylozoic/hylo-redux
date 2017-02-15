@@ -3,7 +3,12 @@ import { compose } from 'redux'
 import { connect } from 'react-redux'
 import { defer, prefetch } from 'react-fetcher'
 import {
-  markActivityRead, markAllActivitiesRead, navigate, showModal, fetchActivity
+  closeModal,
+  fetchActivity,
+  markActivityRead,
+  markAllActivitiesRead,
+  navigate,
+  showModal
 } from '../actions'
 import { get, map, isEmpty } from 'lodash/fp'
 import cx from 'classnames'
@@ -18,7 +23,7 @@ import decode from 'ent/decode'
 import {
   getActivitiesProps, actionText, bodyText, destination, activityAction
 } from '../models/activity'
-import { Modal, modalWrapperCSSId } from '../components/Modal'
+import Modal, { modalWrapperCSSId } from '../components/Modal'
 import A from '../components/A'
 import Dropdown from '../components/Dropdown'
 import Icon from '../components/Icon'
@@ -126,7 +131,7 @@ export class NotificationsModal extends React.Component {
   }
 
   render () {
-    const { dispatch, activities, comments, total, pending, onCancel } = this.props
+    const { dispatch, activities, comments, total, pending } = this.props
     const offset = activities.length
     const loadMore = !pending && offset < total
       ? () => dispatch(fetchActivity(offset, false))
@@ -140,11 +145,11 @@ export class NotificationsModal extends React.Component {
     const markAllRead = () =>
       dispatch(markAllActivitiesRead(null, map('id', activities)))
 
-    return <Modal id='notifications-modal' onCancel={onCancel}
+    return <Modal id='notifications-modal'
       title={<button onClick={markAllRead}>
         Mark all as read
       </button>}>
-      <ul className='notifications-list' onClick={onCancel}>
+      <ul className='notifications-list' onClick={() => dispatch(closeModal())}>
         {activities.map(activity => <li key={activity.id}>
           <NotificationsDropdownItem activity={activity}
             comment={comments[activity.comment_id]} />

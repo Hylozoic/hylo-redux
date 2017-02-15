@@ -1,6 +1,11 @@
 import { connect } from 'react-redux'
 import { map } from 'lodash/fp'
 import { getPost, denormalizedPost } from '../../models/post'
+import {
+  fetchPost,
+  followPost,
+  navigate
+} from '../../actions'
 
 export function mapStateToProps (state, { post }) {
   return {
@@ -8,4 +13,10 @@ export function mapStateToProps (state, { post }) {
   }
 }
 
-export default connect(mapStateToProps)
+const mapDispatchToProps = {
+  fetchPost,
+  followPost,
+  navigate
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)

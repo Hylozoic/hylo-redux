@@ -11,7 +11,7 @@ import { isChildPost } from '../../models/post'
 import Post from '../../components/Post'
 import { ConnectedPostList } from '../ConnectedPostList'
 
-const { bool, object, string, func } = React.PropTypes
+const { bool, object, string } = React.PropTypes
 
 export const subject = 'post'
 
@@ -22,7 +22,6 @@ export default class SinglePost extends React.Component {
     community: object,
     editing: bool,
     error: string,
-    dispatch: func,
     location: object
   }
 

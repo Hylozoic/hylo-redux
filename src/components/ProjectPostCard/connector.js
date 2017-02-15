@@ -1,6 +1,7 @@
 import { connect } from 'react-redux'
 import { denormalizedPost, getComments } from '../../models/post'
 import { getCurrentCommunity } from '../../models/community'
+import { navigate } from '../../actions'
 
 function mapStateToProps (state, { post }) {
   return {
@@ -11,4 +12,8 @@ function mapStateToProps (state, { post }) {
   }
 }
 
-export default connect(mapStateToProps)
+const mapDispatchToProps = {
+  navigate
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)

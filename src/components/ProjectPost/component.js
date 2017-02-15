@@ -7,7 +7,6 @@ import moment from 'moment'
 import { textLength, truncate } from '../../util/text'
 import { same } from '../../models'
 import { canCommentOnPost } from '../../models/currentUser'
-import { fetchPost, followPost, navigate } from '../../actions'
 import Icon from '../Icon'
 import Video from '../Video'
 import Avatar from '../Avatar'
@@ -19,11 +18,14 @@ import CommentSection from '../CommentSection'
 import A from '../A'
 import ClickCatcher from '../ClickCatcher'
 
-const { array, bool, func, object } = React.PropTypes
+const { array, bool, string, func, object } = React.PropTypes
 
 export default class ProjectPost extends React.Component {
   static propTypes = {
     post: object,
+    fetchPost: func.isRequired,
+    followPost: func.isRequired,
+    navigate: func.isRequired,
     children: array
   }
 
@@ -33,7 +35,7 @@ export default class ProjectPost extends React.Component {
   }
 
   render () {
-    const { children, post, comments } = this.props
+    const { children, post, comments, fetchPost, followPost, navigate } = this.props
     const requests = filter(p => p.is_project_request, children)
     const { currentUser, community } = this.context
     const { communities, media, location, user } = post
@@ -69,7 +71,7 @@ export default class ProjectPost extends React.Component {
               </div>
             </div>
           </div>
-          <Supporters post={post} />
+          <Supporters post={post} followPost={followPost} />
         </div>
       </div>
       {requests.length > 0 && <div className='requests'>
@@ -82,7 +84,9 @@ export default class ProjectPost extends React.Component {
             key={request.id}
             post={request}
             parentPost={post}
-            community={community} />
+            community={community}
+            navigate={navigate}
+            fetchPost={fetchPost} />
         })}
       </div>}
       <CommentSection {...{post, comments, canComment}} expanded />
@@ -94,11 +98,12 @@ export class ProjectRequest extends React.Component {
   static propTypes = {
     post: object.isRequired,
     parentPost: object.isRequired,
+    navigate: func.isRequired,
+    fetchPost: func.isRequired,
     community: object
   }
 
   static contextTypes = {
-    dispatch: func,
     isMobile: bool
   }
 
@@ -108,8 +113,8 @@ export class ProjectRequest extends React.Component {
   }
 
   render () {
-    const { dispatch, isMobile } = this.context
-    const { post, parentPost, community } = this.props
+    const { isMobile } = this.context
+    const { post, parentPost, community, navigate, fetchPost } = this.props
     const { name, id, numComments } = post
     let description = presentDescription(post, community)
     const truncated = textLength(description) > 200
@@ -119,10 +124,10 @@ export class ProjectRequest extends React.Component {
 
     const zoom = () => {
       if (isMobile) {
-        dispatch(navigate(`/p/${post.id}`))
+        navigate(`/p/${post.id}`)
       } else {
         this.setState({zoomed: true})
-        dispatch(fetchPost(id))
+        fetchPost(id)
       }
     }
     const unzoom = () => this.setState({zoomed: false})
@@ -151,10 +156,10 @@ export class ProjectRequest extends React.Component {
   }
 }
 
-export function Supporters ({ post, simple }, { currentUser, dispatch }) {
+export function Supporters ({ post, simple, followPost }, { currentUser }) {
   const { followers, ends_at } = post
   const isFollowing = some(same('id', currentUser), followers)
-  const follow = () => dispatch(followPost(post.id, currentUser))
+  const follow = () => followPost(post.id, currentUser)
 
   return <div className='supporters'>
     {!simple && <div className='top'>
@@ -176,7 +181,12 @@ export function Supporters ({ post, simple }, { currentUser, dispatch }) {
     </a>}
   </div>
 }
-Supporters.contextTypes = {currentUser: object, dispatch: func}
+Supporters.propTypes = {
+  post: object.isRequired,
+  simple: bool,
+  followPost: func
+}
+Supporters.contextTypes = {currentUser: object}
 
 export function Deadline ({ time }) {
   const then = moment(time)
@@ -186,4 +196,7 @@ export function Deadline ({ time }) {
   return <span className={classes.join(' ')} title={then.format('LLLL')}>
     {moment(time).toNow(true)} to go
   </span>
+}
+Deadline.propTypes = {
+  time: string.isRequired
 }

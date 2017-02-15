@@ -14,7 +14,7 @@ var { array, bool, func, object, string, shape } = React.PropTypes
 
 export default class CommentForm extends React.PureComponent {
   static propTypes = {
-    postId: string.isRequired,
+    postId: string,
     actions: shape({
       showModal: func.isRequired,
       createComment: func.isRequired,

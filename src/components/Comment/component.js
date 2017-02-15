@@ -77,8 +77,6 @@ export default class Comment extends React.Component {
 
     if (editing) return <CommentForm commentId={comment.id} close={closeEdit} />
 
-    const {  } = comment
-
     return <div className='comment' data-comment-id={comment.id}>
       {notPending && canEditComment(currentUser, comment, community) &&
         <Dropdown alignRight toggleChildren={<Icon name='More' />}>

@@ -11,6 +11,7 @@ import Dropdown from '../Dropdown'
 import Avatar from '../Avatar'
 import A from '../A'
 import Icon from '../Icon'
+import ImageWithFallback from '../ImageWithFallback'
 import { some } from 'lodash'
 
 const spacer = <span>&nbsp;&nbsp;•&nbsp;&nbsp;</span>
@@ -91,7 +92,7 @@ export default class Comment extends React.Component {
           <A to={`/u/${person.id}`} className='name'>{person.name}</A>
         </div>}
         {image && <a onClick={() => showImage(image.url, location.pathname, isMobile)}>
-          <img className='thumbnail' src={image.thumbnail_url} />
+          <ImageWithFallback useClass='thumbnail' preferredSrc={image.thumbnail_url} fallbackSrc={image.url} />
         </a>}
         {!image && <ClickCatcher className='text' dangerouslySetInnerHTML={{__html: text}} />}
         {!image && truncated && <span> <a onClick={expand} className='show-more'>Show&nbsp;more</a></span>}

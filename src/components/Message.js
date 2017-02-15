@@ -1,6 +1,7 @@
 import React from 'react'
 import cx from 'classnames'
 import Avatar from './Avatar'
+import ImageWithFallback from './ImageWithFallback'
 import { showImage } from '../actions/ui'
 import { humanDate, present } from '../util/text'
 import { sanitize } from 'hylo-utils/text'
@@ -37,7 +38,7 @@ class Message extends React.Component {
         </div>}
         {image
         ? <a onClick={() => dispatch(showImage(image.url, location.pathname, isMobile))}>
-          <img className='thumbnail' src={image.thumbnail_url} />
+          <ImageWithFallback useClass='thumbnail' preferredSrc={image.thumbnail_url} fallbackSrc={image.url} />
         </a>
         : <div className='text'>
           <span dangerouslySetInnerHTML={{__html: text}} />

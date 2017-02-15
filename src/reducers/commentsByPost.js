@@ -1,4 +1,4 @@
-import { get, map, omit, sortedUniq } from 'lodash/fp'
+import { get, filter, map, sortedUniq } from 'lodash/fp'
 import { appendUniq } from './util'
 import {
   APPEND_COMMENT,
@@ -41,7 +41,8 @@ export default function (state = {}, action) {
     case CREATE_COMMENT_PENDING:
       return appendUniq(state, meta.id, [get('comment.id', meta)])
     case CREATE_COMMENT:
-      return omit(get('comment.id', meta), appendUniq(state, meta.id, [payload.id]))
+      const appended = appendUniq(state, meta.id, [payload.id])
+      return {...appended, [meta.id]: filter(x => x !== get('comment.id', meta), appended[meta.id])}
     case APPEND_COMMENT:
       return appendUniq(state, meta.id, [payload.id])
   }

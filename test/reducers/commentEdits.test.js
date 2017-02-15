@@ -2,7 +2,7 @@ require('../support')
 import commentEdits from '../../src/reducers/commentEdits'
 import {
   UPDATE_COMMENT_EDITOR,
-  CREATE_COMMENT,
+  CREATE_COMMENT_PENDING,
   UPDATE_COMMENT
 } from '../../src/actions/constants'
 
@@ -60,10 +60,10 @@ describe('commentEdits', () => {
     })
   })
 
-  describe('on CREATE_COMMENT', () => {
+  describe('on CREATE_COMMENT_PENDING', () => {
     it('clears the comment text', () => {
       const action = {
-        type: CREATE_COMMENT,
+        type: CREATE_COMMENT_PENDING,
         meta: {
           id: '2'
         }

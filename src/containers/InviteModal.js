@@ -10,7 +10,7 @@ import { canInvite, canModerate } from '../models/currentUser'
 import A from '../components/A'
 import AccessErrorMessage from '../components/AccessErrorMessage'
 import Icon from '../components/Icon'
-import { Modal } from '../components/Modal'
+import Modal from '../components/Modal'
 import { ModalInput } from '../components/ModalRow'
 import {
   closeModal,

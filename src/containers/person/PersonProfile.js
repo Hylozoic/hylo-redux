@@ -279,11 +279,9 @@ const Contributions = connect((state, {person}) => ({
   contributions: sortBy(contribution => -contribution.created_at, state.contributions[person.id])
 }))(({ contributions, person, dispatch }) => {
   return <div className='contributions'>
-    {contributions.map(contribution => <div key={contribution.id}>
+    {contributions.map(({ post }) => <div key={post.id}>
       <span>
-        <A to={`/u/${person.id}`}>{person.name.split(' ')[0]}</A>
-        &nbsp;helped {contribution.post.user.name} complete their request.
-        <Post post={contribution.post} onExpand={() => dispatch(navigate(`/p/${contribution.post.id}`))} />
+        {person.name.split(' ')[0]} helped {post.user.name} complete their request, <A to={`/p/${post.id}`}>"{post.name}"</A>.
       </span>
     </div>)}
   </div>

@@ -1,19 +1,19 @@
 import React from 'react'
 import { throttle, isEmpty } from 'lodash'
-import CommentImageButton from './CommentImageButton'
-import { SENT_MESSAGE, trackEvent } from '../util/analytics'
-import { onEnterNoShift } from '../util/textInput'
-import { getSocket, socketUrl } from '../client/websockets'
+import CommentImageButton from '../CommentImageButton'
+import { SENT_MESSAGE, trackEvent } from '../../util/analytics'
+import { onEnterNoShift } from '../../util/textInput'
+import { getSocket, socketUrl } from '../../client/websockets'
 import cx from 'classnames'
 var { func, object, string, bool } = React.PropTypes
 
 export default class MessageForm extends React.Component {
   static propTypes = {
-    postId: string,
+    postId: string.isRequired,
     placeholder: string,
-    text: string,
     onFocus: func,
     onBlur: func,
+    pending: bool,
     createComment: func.isRequired
   }
 
@@ -31,12 +31,12 @@ export default class MessageForm extends React.Component {
     if (event) event.preventDefault()
     if (!this.state.text) return false
 
-    const { postId } = this.props
+    const { postId, createComment } = this.props
     const { currentUser } = this.context
     const userId = currentUser.id
     const { text } = this.state
 
-    this.props.createComment(text, userId)
+    createComment(text, userId)
     .then(({ error }) => {
       if (error) {
         this.setState({text})
@@ -83,7 +83,7 @@ export default class MessageForm extends React.Component {
   }, 5000)
 
   render () {
-    const { onFocus, onBlur, postId } = this.props
+    const { onFocus, onBlur, postId, pending } = this.props
     const placeholder = this.props.placeholder || 'Type a message...'
     const { isMobile } = this.context
     const { text } = this.state
@@ -108,7 +108,7 @@ export default class MessageForm extends React.Component {
         onKeyUp={this.stopTyping}
         onKeyDown={handleKeyDown} />
       {isMobile && <button onClick={isMobile ? this.submit : null}
-        className={cx({enabled: !isEmpty(text)})}>Send</button>}
+        className={cx({enabled: !isEmpty(text) && !pending})}>Send</button>}
     </form>
   }
 }

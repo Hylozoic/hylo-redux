@@ -9,7 +9,7 @@ import {
   typeahead
 } from '../actions'
 import { SEND_COMMUNITY_TAG_INVITATION } from '../actions/constants'
-import { Modal } from '../components/Modal'
+import Modal from '../components/Modal'
 import ModalRow from '../components/ModalRow'
 import Avatar from '../components/Avatar'
 import { KeyControlledItemList } from '../components/KeyControlledList'

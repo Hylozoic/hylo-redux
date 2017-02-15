@@ -1,4 +1,6 @@
 import React from 'react'
+import { connect } from 'react-redux'
+import { closeModal } from '../actions'
 import Icon from '../components/Icon'
 import cx from 'classnames'
 const { array, bool, func, node, object, string, oneOfType } = React.PropTypes
@@ -47,7 +49,7 @@ export class ModalContainer extends React.Component {
   }
 }
 
-export const Modal = (props, { isMobile }) => {
+export function Modal (props, { isMobile }) {
   const { children, title, subtitle, onCancel, standalone } = props
   return <ModalContainer {...props}>
     {(title || subtitle) && <div className='title'>
@@ -75,4 +77,13 @@ Modal.propTypes = {
 }
 Modal.contextTypes = {isMobile: bool}
 
-export default Modal
+function mapDispatchToProps (dispatch, { onCancel }) {
+  return {
+    onCancel: () => {
+      if (typeof onCancel === 'function') onCancel()
+      dispatch(closeModal())
+    }
+  }
+}
+
+export default connect(null, mapDispatchToProps)(Modal)

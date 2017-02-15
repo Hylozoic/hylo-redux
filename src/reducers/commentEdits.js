@@ -1,4 +1,4 @@
-import { } from 'lodash'
+import { get } from 'lodash/fp'
 import {
   UPDATE_COMMENT_EDITOR,
   CREATE_COMMENT_PENDING,

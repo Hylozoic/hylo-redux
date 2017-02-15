@@ -1,58 +1,44 @@
 import React from 'react'
 import cx from 'classnames'
-import { intercom } from '../config'
-import { prefetch } from 'react-fetcher'
-import { connect } from 'react-redux'
-import { debounce, isEmpty, pick } from 'lodash'
+import { intercom } from '../../config'
+import { debounce, isEmpty } from 'lodash'
 import { get } from 'lodash/fp'
-import NetworkMonitor from '../components/NetworkMonitor'
-import Notifier from '../components/Notifier'
-import LiveStatusPoller from '../components/LiveStatusPoller'
-import PageTitleController from '../components/PageTitleController'
-import Popover from '../components/Popover'
-import { removeNotification, toggleLeftNav, navigate, notify, setMobileDevice } from '../actions'
+import NetworkMonitor from '../../components/NetworkMonitor'
+import Notifier from '../../components/Notifier'
+import LiveStatusPoller from '../../components/LiveStatusPoller'
+import PageTitleController from '../../components/PageTitleController'
+import Popover from '../../components/Popover'
 import {
   iOSAppVersion, androidAppVersion, isMobile as testIsMobile, calliOSBridge
-} from '../client/util'
-import ModalWrapper from '../components/ModalWrapper'
-import { getCurrentCommunity } from '../models/community'
-import { getCurrentNetwork } from '../models/network'
-import { denormalizedCurrentUser } from '../models/currentUser'
-import { OPENED_MOBILE_APP, NAVIGATED_FROM_PUSH_NOTIFICATION, trackEvent } from '../util/analytics'
+} from '../../client/util'
+import ModalWrapper from '../../components/ModalWrapper'
+import { OPENED_MOBILE_APP, NAVIGATED_FROM_PUSH_NOTIFICATION, trackEvent } from '../../util/analytics'
 const { array, bool, func, object } = React.PropTypes
 
-@prefetch(({ store, dispatch, currentUser }) => {
-  const { isMobile } = store.getState()
-  if (!isMobile && typeof window === 'undefined' && currentUser &&
-    get('settings.leftNavIsOpen', currentUser) !== false) {
-    return dispatch(toggleLeftNav())
-  }
-})
-@connect((state, { params }) => {
-  return {
-    ...pick(state, 'isMobile', 'leftNavIsOpen', 'notifierMessages', 'openModals', 'popover'),
-    network: getCurrentNetwork(state),
-    community: getCurrentCommunity(state),
-    currentUser: denormalizedCurrentUser(state)
-  }
-}, null, null, {withRef: true})
 export default class App extends React.Component {
   static propTypes = {
+    removeNotification: func.isRequired,
+    navigate: func.isRequired,
+    notify: func.isRequired,
+    setMobileDevice: func.isRequired,
+    openModals: array.isRequired,
     children: object,
     community: object,
     currentUser: object,
     leftNavIsOpen: bool,
     network: object,
     notifierMessages: array,
-    dispatch: func,
     isMobile: bool,
-    openModals: array,
     location: object,
     popover: object
   }
 
+  static contextTypes = {
+    store: object.isRequired
+  }
+
   static childContextTypes = {
-    dispatch: func,
+    dispatch: func.isRequired,
     currentUser: object,
     isMobile: bool,
     location: object
@@ -64,12 +50,13 @@ export default class App extends React.Component {
   }
 
   getChildContext () {
-    const { dispatch, currentUser, isMobile, location } = this.props
-    return {dispatch, currentUser, isMobile, location}
+    const { currentUser, isMobile, location } = this.props
+    const { store } = this.context
+    return { dispatch: store.dispatch, currentUser, isMobile, location }
   }
 
   componentDidMount () {
-    const { dispatch, location } = this.props
+    const { location, navigate, setMobileDevice, notify } = this.props
 
     const query = get('query', location) || {}
 
@@ -90,26 +77,26 @@ export default class App extends React.Component {
     if (iOSVersion >= 1.9) {
       calliOSBridge({type: 'loaded'}, path => {
         if (path) {
-          this.props.dispatch(navigate(path))
+          navigate(path)
           trackEvent(NAVIGATED_FROM_PUSH_NOTIFICATION, {path})
         }
       })
     }
 
     window.addEventListener('resize', debounce(event => {
-      dispatch(setMobileDevice(testIsMobile()))
+      setMobileDevice(testIsMobile())
     }, 1000))
 
     if (query.notification) {
       const type = query.error ? 'error' : 'info'
-      dispatch(notify(query.notification, {type, maxage: null}))
+      notify(query.notification, {type, maxage: null})
     }
   }
 
   render () {
     const {
-      children, community, dispatch, leftNavIsOpen, notifierMessages,
-      openModals, popover, currentUser, location
+      children, community, leftNavIsOpen, notifierMessages, openModals,
+      popover, currentUser, location, isMobile, removeNotification
     } = this.props
 
     const classes = cx({
@@ -121,16 +108,17 @@ export default class App extends React.Component {
 
     const { pathname } = location || {}
     const showIntercomButton = pathname && !pathname.startsWith('/t/')
+    const showPopover = !isEmpty(popover) && !isMobile
 
     return <div className={classes}>
       {children}
 
       <NetworkMonitor />
       <Notifier messages={notifierMessages}
-        remove={id => dispatch(removeNotification(id))} />
+        remove={id => removeNotification(id)} />
       <LiveStatusPoller community={community} />
       <PageTitleController />
-      {!isEmpty(popover) && <Popover {...{popover}} />}
+      {showPopover && <Popover {...{popover}} />}
       {openModals.map((modal, i) =>
         <ModalWrapper key={i}
           bottom={i === 0}
@@ -142,7 +130,7 @@ export default class App extends React.Component {
   }
 }
 
-const IntercomButton = () => {
+function IntercomButton () {
   const href = `mailto:${intercom.appId}@incoming.intercom.io`
   const id = 'custom-intercom-launcher'
   return <a {...{id, href}} target='_blank'>?</a>

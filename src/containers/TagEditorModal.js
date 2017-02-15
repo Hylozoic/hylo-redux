@@ -8,7 +8,7 @@ import {
   createTagInCommunity,
   updateCommunityChecklist
 } from '../actions'
-import { Modal } from '../components/Modal'
+import Modal from '../components/Modal'
 import ModalRow, { ModalInput } from '../components/ModalRow'
 import { getCurrentCommunity } from '../models/community'
 import { hashtagWordRegex } from '../models/hashtag'

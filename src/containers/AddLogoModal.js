@@ -12,7 +12,7 @@ import {
   updateCommunityChecklist,
   updateCommunitySettings
 } from '../actions'
-import { Modal } from '../components/Modal'
+import Modal from '../components/Modal'
 const { func, object } = React.PropTypes
 
 @prefetch(({ dispatch, params: { id } }) =>

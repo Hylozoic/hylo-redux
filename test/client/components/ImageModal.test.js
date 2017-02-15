@@ -1,14 +1,20 @@
 require('../support')
 import React from 'react'
-import { mount } from 'enzyme'
+import { shallow } from 'enzyme'
 import ImageModal from '../../../src/containers/ImageModal.js'
 
 describe('ImageModal', () => {
+  before(() => {
+    document.documentElement.clientWidth = 0
+  })
+
+  after(() => {
+    document.documentElement.clientWidth = undefined
+  })
+
   it('renders correctly', () => {
     const url = 'http://image.com/image.png'
-    document.documentElement.clientWidth = 0
-    const node = mount(<ImageModal url={url} />)
+    const node = shallow(<ImageModal url={url} />)
     expect(node.find('img').at(0).props().src).to.equal(url)
-    document.documentElement.clientWidth = undefined
   })
 })

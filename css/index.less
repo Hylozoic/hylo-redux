@@ -829,71 +829,83 @@ ul.tags {
     .medium;
   }
 
-  table {
-    width: 100%;
-  }
-
-  thead tr {
-    border-bottom: 1px solid @post-border;
-  }
-
-  th {
-    font-weight: normal;
-    .meta-text;
-  }
-
-  th, td {
-    padding: 10px 25px;
-    &.small-column {
-      padding-left: 0;
-      padding-right: 0;
-      width: 40px;
-      text-align: center;
-      box-sizing: content-box;
-    }
-    &:last-child {
-      padding-right: 25px;
-    }
-    vertical-align: top;
-    input[type="checkbox"] {
-      margin-top: 0;
-      position: relative;
-      top: -2px;
-    }
-  }
-
   > .button {
     margin-left: 25px;
   }
 
+  .header-row {
+    padding: 10px 25px 10px 0;
+    border-bottom: 1px solid @post-border;
+    text-align: right;
+    font-weight: normal;
+    .meta-text;
+  }
+
   .topic-row {
     border-bottom: 1px solid @post-border;
+    padding: 10px 25px;
 
+    .icon-row {
+      display: flex;
 
-    .topic-post-type {
-      margin-left: 1em;
-      color: @faint-gray-text;
-    }
+      .name {
+        flex-grow: 1;
+        flex-shrink: 0;
+        flex-basis: 200px;
+      }
 
-    a {
-      text-decoration: none;
-      &:hover {
-        opacity: 0.6;
+      .icon-column {
+        width: 40px;
+        text-align: center;
+        box-sizing: content-box;
+
+        .disabled {
+          color: @faint-gray-text;
+        }
+
+        input[type="checkbox"] {
+          margin-top: 0;
+          position: relative;
+          top: -2px;
+        }
       }
     }
 
-    .right a {
-      margin-left: 20px;
-    }
-
-    .right input {
-      margin-left: 20px;
-    }
-
-    p {
+    .description-row {
       .light;
-      margin-bottom: 0;
+      margin-top: 5px;
+      .edit-description {
+        display: flex;
+        border: 1px solid @light-gray-border;
+        border-radius: 5px;
+        margin-top: 15px;
+
+        input {
+          border: none;
+          border-radius: 5px;
+          padding-left: 10px;
+          flex-grow: 1;
+          flex-shrink: 0;
+          flex-basis: 200px;
+          &:focus {
+            outline: none;
+          }
+        }
+        .cross, .check {
+          font-size: 18px;
+          display: inline-block;
+          width: 40px;
+          height: 40px;
+          line-height: 40px;
+          text-align: center;
+        }
+        .check {
+          color: white;
+          background-color: #0bbd96;
+        }
+      }
     }
+
   }
 }
 

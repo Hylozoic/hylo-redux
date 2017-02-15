@@ -7,6 +7,7 @@ import {
   FETCH_TAGS,
   FETCH_TAG_SUMMARY,
   REMOVE_TAG,
+  UPDATE_COMMUNITY_TAG,
   UPDATE_POST
 } from '../../src/actions/constants'
 
@@ -78,6 +79,52 @@ describe('tagsByQuery', () => {
           {id: 2, name: 'bar'}
         ]
       })
+    })
+  })
+
+  describe('on UPDATE_COMMUNITY_TAG', () => {
+    it('updates the description in the right membership in the right tag', () => {
+      const state = {
+        'subject=community&id=hum': [
+          {id: 1, name: 'foo'},
+          {
+            id: 2,
+            name: 'bar',
+            memberships: [
+              {community_id: '12', description: 'unchanging'},
+              {community_id: '34', description: 'impermanent'}
+            ]
+          }
+        ]
+      }
+
+      const expected = {
+        'subject=community&id=hum': [
+          {id: 1, name: 'foo'},
+          {
+            id: 2,
+            name: 'bar',
+            memberships: [
+              {community_id: '12', description: 'unchanging'},
+              {community_id: '34', description: 'new description'}
+            ]
+          }
+        ]
+      }
+
+      const action = {
+        type: UPDATE_COMMUNITY_TAG,
+        meta: {
+          name: 'bar',
+          slug: 'hum',
+          communityId: '34',
+          params: {
+            description: 'new description'
+          }
+        }
+      }
+
+      expect(tagsByQuery(state, action)).to.deep.equal(expected)
     })
   })
 })

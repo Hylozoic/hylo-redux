@@ -49,13 +49,11 @@ class ModalWrapper extends React.Component {
     let modal, clickToClose
     switch (type) {
       case 'tags':
-        modal = <BrowseTopicsModal onCancel={closeModal}
-          community={params.community} />
+        modal = <BrowseTopicsModal community={params.community} />
         clickToClose = true
         break
       case 'share-tag':
-        modal = <ShareTopicModal tagName={params.tagName} slug={params.slug}
-          onCancel={closeModal} />
+        modal = <ShareTopicModal tagName={params.tagName} slug={params.slug} />
         clickToClose = true
         break
       case 'expanded-post':
@@ -64,45 +62,43 @@ class ModalWrapper extends React.Component {
         break
       case 'direct-message':
         modal = <DirectMessageModal userId={params.userId}
-          userName={params.userName}
-          onCancel={closeModal} />
+          userName={params.userName} />
         clickToClose = true
         break
       case 'notifications':
-        modal = <NotificationsModal onCancel={closeModal} />
+        modal = <NotificationsModal />
         clickToClose = true
         break
       case 'checklist':
-        modal = <ChecklistModal onCancel={closeModal} />
+        modal = <ChecklistModal />
         clickToClose = true
         break
       case 'tag-editor':
-        modal = <TagEditorModal onCancel={closeModal}
+        modal = <TagEditorModal
           saveParent={params.saveParent}
           useCreatedTag={params.useCreatedTag}
           creating={params.creating} />
         clickToClose = true
         break
       case 'add-logo':
-        modal = <AddLogoModal onCancel={closeModal} />
+        modal = <AddLogoModal />
         clickToClose = true
         break
       case 'invite':
-        modal = <InviteModal onCancel={closeModal} />
+        modal = <InviteModal />
         clickToClose = true
         break
       case 'post-editor':
         modal = <PostEditorModal
           post={get('post', params)}
-          tag={get('tag', params)}
-          onCancel={closeModal} />
+          tag={get('tag', params)} />
         clickToClose = true
         break
       case 'threads':
-        modal = <ThreadsModal onCancel={closeModal} />
+        modal = <ThreadsModal />
         break
       case 'image':
-        modal = <ImageModal {...params} onCancel={closeModal} />
+        modal = <ImageModal {...params} />
         clickToClose = true
     }
 

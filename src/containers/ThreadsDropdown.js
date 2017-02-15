@@ -24,7 +24,7 @@ import Dropdown from '../components/Dropdown'
 import Icon from '../components/Icon'
 import { getSocket, socketUrl } from '../client/websockets'
 import { truncate } from '../util/text'
-import { Modal } from '../components/Modal'
+import Modal from '../components/Modal'
 import { trackEvent, STARTED_MESSAGE, VIEWED_MESSAGE_THREAD_LIST } from '../util/analytics'
 
 const setLastViewedToNow = () =>

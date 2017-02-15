@@ -1,5 +1,5 @@
 import React from 'react'
-import { Modal } from '../components/Modal'
+import Modal from '../components/Modal'
 import Icon from '../components/Icon'
 const { func, string } = React.PropTypes
 

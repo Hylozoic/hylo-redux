@@ -5,7 +5,7 @@ import {
   closeModal, navigate, showDirectMessage, findOrCreateThread
 } from '../actions'
 import { threadUrl } from '../routes'
-import { Modal } from '../components/Modal'
+import Modal from '../components/Modal'
 import MessageToUserForm from '../components/MessageToUserForm'
 import PersonChooser from '../components/PersonChooser'
 const { func, object, string } = React.PropTypes

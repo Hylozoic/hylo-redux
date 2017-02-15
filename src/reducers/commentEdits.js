@@ -1,4 +1,4 @@
-import { } from 'lodash'
+import { get } from 'lodash/fp'
 import {
   UPDATE_COMMENT_EDITOR,
   CREATE_COMMENT,
@@ -14,6 +14,7 @@ export default function (state = {new: {}, edit: {}}, action) {
       // payload.bucket will be either 'new' or 'edit'
       return {...state, [payload.bucket]: {...state[payload.bucket], [payload.id]: payload.text}}
     case CREATE_COMMENT:
+      if (get('image', payload)) return state
       return {...state, new: {...state.new, [meta.id]: undefined}}
     case UPDATE_COMMENT:
       return {...state, edit: {...state.edit, [meta.id]: undefined}}

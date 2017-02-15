@@ -43,7 +43,7 @@ export function appendComment (postId, comment) {
   }
 }
 
-export function createComment ({postId, text, tagDescriptions, imageUrl}) {
+export function createComment ({ postId, text, tagDescriptions, imageUrl }) {
   const params = {text, tagDescriptions, imageUrl}
   return {
     type: CREATE_COMMENT,

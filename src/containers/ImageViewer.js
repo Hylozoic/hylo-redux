@@ -5,7 +5,7 @@ const { object, func } = React.PropTypes
 
 export default class ImageViewer extends React.Component {
   static propTypes = {
-    params: object
+    params: object.isRequired
   }
 
   static contextTypes = {
@@ -22,16 +22,16 @@ export default class ImageViewer extends React.Component {
     }
 
     const goBack = () => {
-      if (window.history && window.history.length > 2) {
+      if (window.history && window.history.length > 1) {
         browserHistory.goBack()
       } else {
         dispatch(navigate(fromUrl || '/app'))
       }
     }
 
-    return <div className='image-viewer'>
-      <div id='mobile-top-bar'>
-        <a className='back' onClick={goBack}>
+    return <div id='image-viewer'>
+      <div id='mobile-top-bar' onClick={goBack}>
+        <a className='back'>
           <span className='left-angle-bracket'>&#x3008;</span>
           Back
         </a>

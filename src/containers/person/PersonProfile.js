@@ -27,7 +27,7 @@ import CoverImagePage from '../../components/CoverImagePage'
 import Icon from '../../components/Icon'
 import Comment from '../../components/Comment'
 import { normalizeUrl } from '../../util/text'
-import { NonLinkAvatar } from '../../components/Avatar'
+import Avatar from '../../components/Avatar'
 import moment from 'moment'
 import { getPost } from '../../models/post'
 import { getCurrentCommunity } from '../../models/community'
@@ -148,7 +148,7 @@ const PersonProfile = compose(
   return <CoverImagePage id='person' image={banner_url || defaultBanner}
     person={isSelf ? currentUser : null}>
     <div className='opener'>
-      <NonLinkAvatar person={isSelf ? currentUser : person} showEdit={isSelf} />
+      <Avatar person={isSelf ? currentUser : person} showEdit={isSelf} isLink={false} />
       <h2>
         {person.name}
         <div className='social-media'>
@@ -279,11 +279,9 @@ const Contributions = connect((state, {person}) => ({
   contributions: sortBy(contribution => -contribution.created_at, state.contributions[person.id])
 }))(({ contributions, person, dispatch }) => {
   return <div className='contributions'>
-    {contributions.map(contribution => <div key={contribution.id}>
+    {contributions.map(({ post }) => <div key={post.id}>
       <span>
-        <A to={`/u/${person.id}`}>{person.name.split(' ')[0]}</A>
-        &nbsp;helped {contribution.post.user.name} complete their request.
-        <Post post={contribution.post} onExpand={() => dispatch(navigate(`/p/${contribution.post.id}`))} />
+        {person.name.split(' ')[0]} helped {post.user.name} complete their request, <A to={`/p/${post.id}`}>"{post.name}"</A>.
       </span>
     </div>)}
   </div>

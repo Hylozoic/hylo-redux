@@ -107,6 +107,8 @@ export default function (state = {}, action) {
         updated_at: new Date().toISOString()
       })
     case CREATE_COMMENT:
+      // this is a temporary fix to a bug in creating comments for project activity posts
+      if (!post) return state
       return updatePostProps(state, id, {
         follower_ids: uniq((post.follower_ids || []).concat(payload.user_id)),
         numComments: (post.numComments || 0) + 1,

@@ -13,7 +13,11 @@ import {
   isMember, canModerate, hasFeature, hasBio, hasSkills
 } from '../../models/currentUser'
 import {
-  navigate, showModal, sendGraphqlQuery, requestToJoinCommunity
+  navigate,
+  requestToJoinCommunity,
+  showModal,
+  sendGraphqlQuery,
+  updateCommunityChecklist
 } from '../../actions'
 import { getChecklist, checklistPercentage } from '../../models/community'
 import { coinToss } from '../../util'
@@ -117,7 +121,10 @@ export class CommunityPosts extends Component {
 
     return <div>
       {hasFeature(currentUser, COMMUNITY_SETUP_CHECKLIST) && canModerate(currentUser, community) &&
-        <CommunitySetup community={community} dispatch={dispatch} />}
+        <CommunitySetup community={community} actions={{
+          showModal: () => dispatch(showModal('checklist')),
+          update: () => dispatch(updateCommunityChecklist(community.slug))
+        }} />}
       {hasFeature(currentUser, IN_FEED_PROFILE_COMPLETION_MODULES) && isMember(currentUser, community) &&
         <ProfileCompletionModules person={currentUser} />}
       {isMember(currentUser, community) && <PostEditor community={community} />}
@@ -153,15 +160,22 @@ const fetchCommunityStats = slug =>
     variables: {slug}
   })
 
-const CommunitySetup = ({ community, dispatch }) => {
-  const checklist = getChecklist(community)
-  const percent = checklistPercentage(checklist)
-  if (percent === 100) return null
-  return <div className='community-setup'
-    onClick={() => dispatch(showModal('checklist'))}>
-    <PercentBar percent={percent} />
-    Your community is {percent}% set up. <a>Click here</a> to continue setting it up.
-  </div>
+class CommunitySetup extends React.Component {
+  componentDidMount () {
+    this.props.actions.update()
+  }
+
+  render () {
+    const { community, actions } = this.props
+    const checklist = getChecklist(community)
+    const percent = checklistPercentage(checklist)
+    if (percent === 100) return null
+    return <div className='community-setup'
+      onClick={actions.showModal}>
+      <PercentBar percent={percent} />
+      Your community is {percent}% set up. <a>Click here</a> to continue setting it up.
+    </div>
+  }
 }
 
 const ProfileCompletionModules = ({ person }) => {

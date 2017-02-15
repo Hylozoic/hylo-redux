@@ -17,14 +17,26 @@ export function CommentImageButton (
   if (!hasFeature(currentUser, COMMENT_IMAGES)) return null
   const userId = currentUser.id
 
+  const hitError = () => {
+    return notify('There was a problem sending your image. Please try again in a moment', {type: 'error'})
+  }
+
+  const createImageComment = imageUrl =>
+    createComment({postId, imageUrl, userId})
+    .then(({ payload, error }) => {
+      if (error) {
+        return hitError()
+      }
+    })
+
   const sendImage = () =>
     uploadImage(imageUploadSettings(currentUser.id, postId))
     .then(({ payload, error }) => {
       if (error) {
         if (payload === 'Cancelled' || get('code', payload) === 101) return
-        return notify('There was a problem sending your image. Please try again in a moment', {type: 'error'})
+        return hitError()
       }
-      return createComment({postId, imageUrl: payload, userId})
+      return createImageComment(payload)
     })
 
   return <a className='send-image' onClick={pending ? () => {} : sendImage}>

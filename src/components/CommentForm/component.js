@@ -91,7 +91,7 @@ export default class CommentForm extends React.PureComponent {
   setText (text) {
     const { actions: { updateCommentEditor }, commentId, pending, postId, newComment } = this.props
     const storeId = newComment ? postId : commentId
-    if(!pending) updateCommentEditor(storeId, text, newComment)
+    if (!pending) updateCommentEditor(storeId, text, newComment)
   }
 
   handleKeyDown = (e) => {

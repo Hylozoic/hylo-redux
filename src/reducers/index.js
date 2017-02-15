@@ -1,5 +1,5 @@
 import { combineReducers } from 'redux'
-import { LOCATION_CHANGE, routerReducer } from 'react-router-redux'
+import { routerReducer } from 'react-router-redux'
 import { some, includes, partition, transform } from 'lodash'
 import { filter, flow, get, map, compact } from 'lodash/fp'
 import { activities, activitiesByCommunity } from './activities'
@@ -55,6 +55,7 @@ import {
   FIND_OR_CREATE_THREAD,
   FINISH_LOGIN,
   HIDE_POPOVER,
+  LOCATION_CHANGE,
   LOGIN,
   NOTIFY,
   ON_THREAD_PAGE,
@@ -570,6 +571,8 @@ const combinedReducers = combineReducers({
         return state.concat({type: 'direct-message', params: payload})
       case CLOSE_MODAL:
         return state.slice(0, -1)
+      case LOCATION_CHANGE:
+        return []
     }
 
     return state

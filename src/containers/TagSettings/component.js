@@ -6,16 +6,15 @@ import ScrollListener from '../../components/ScrollListener'
 import { onEnter } from '../../util/textInput'
 import { includes } from 'lodash'
 import { map, find } from 'lodash/fp'
-const { object, bool, array, func, number, string } = React.PropTypes
+const { object, bool, array, func, number, string, shape } = React.PropTypes
 const subject = 'community'
 
 export default class TagSettings extends React.Component {
   static propTypes = {
-    tags: array,
-    community: object,
-    location: object,
+    tags: array.isRequired,
+    community: object.isRequired,
     pending: bool,
-    total: number,
+    total: number.isRequired,
     showModal: func.isRequired,
     fetchTags: func.isRequired,
     removeTagFromCommunity: func.isRequired,
@@ -72,13 +71,17 @@ export default class TagSettings extends React.Component {
   }
 }
 
-class TopicRow extends React.Component {
+export class TopicRow extends React.Component {
   static propTypes = {
-    tag: object,
-    slug: string,
-    remove: func,
-    update: func,
-    canDelete: func
+    tag: shape({
+      id: string.isRequired,
+      name: string.isRequired,
+      description: string.isRequired
+    }).isRequired,
+    slug: string.isRequired,
+    remove: func.isRequired,
+    update: func.isRequired,
+    canDelete: func.isRequired
   }
 
   constructor (props) {
@@ -124,7 +127,7 @@ class TopicRow extends React.Component {
         <span className='icon-column'>
           {editing
             ? <span className='disabled'><Icon name='Pencil' /></span>
-            : <a onClick={() => edit(tag)}>
+            : <a className='edit-link' onClick={() => edit(tag)}>
               <Icon name='Pencil' />
             </a>}
         </span>

@@ -1,5 +1,5 @@
 import React from 'react'
-import { A, IndexA } from './A'
+import A, { IndexA } from './A'
 import Icon from './Icon'
 import Dropdown from './Dropdown'
 import { filter } from 'lodash/fp'

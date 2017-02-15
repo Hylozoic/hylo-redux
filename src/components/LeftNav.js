@@ -1,5 +1,5 @@
 import React from 'react'
-import { A, IndexA } from './A'
+import A, { IndexA } from './A'
 import Icon from './Icon'
 import NavMenuButton from './NavMenuButton'
 import Tooltip from './Tooltip'

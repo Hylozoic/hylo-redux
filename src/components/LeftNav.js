@@ -1,6 +1,6 @@
 import React from 'react'
+import A, { IndexA } from './A'
 import { connect } from 'react-redux'
-import { A, IndexA } from './A'
 import Icon from './Icon'
 import NavMenuButton from './NavMenuButton'
 import Tooltip from './Tooltip'

@@ -13,10 +13,11 @@ import {
   CREATE_POST,
   UPDATE_POST,
   CREATE_TAG_IN_COMMUNITY,
-  FETCH_COMMUNITY
+  FETCH_COMMUNITY,
+  UPDATE_COMMUNITY_TAG
 } from '../actions/constants'
 import { filter, fromPairs, merge, omitBy, toPairs, isEmpty } from 'lodash'
-import { get, pickBy, some, includes, mapValues } from 'lodash/fp'
+import { get, pickBy, some, includes, mapValues, map } from 'lodash/fp'
 import qs from 'querystring'
 
 const matchesRemovedTag = (id, slug) => {
@@ -48,7 +49,29 @@ const decrementForRemovedTag = (state, { type, error, meta }) => {
 
 export const tagsByQuery = composeReducers(
   appendPayloadByPath(FETCH_TAGS, 'meta.cache.id', 'items', t => t.id),
-  filterOutRemovedTag
+  filterOutRemovedTag,
+  (state, { type, meta }) => {
+    // the gnarliness here is the result of majorly denormalized tags in this reducer
+    if (type === UPDATE_COMMUNITY_TAG) {
+      const key = `subject=community&id=${meta.slug}`
+      return {
+        ...state,
+        [key]: map(t => {
+          if (t.name !== meta.name) return t
+
+          const newTag = {...t,
+            memberships: map(m => {
+              if (m.community_id !== meta.communityId) return m
+              return {...m, ...meta.params}
+            }, t.memberships)}
+
+          return newTag
+        }, state[key])
+      }
+    } else {
+      return state
+    }
+  }
 )
 
 export const totalTagsByQuery = composeReducers(
@@ -141,6 +164,13 @@ export const tagsByCommunity = (state = {}, action) => {
           ...t,
           is_default: includes(t.name, payload.defaultTags)
         }), state[slug])
+      }
+    case UPDATE_COMMUNITY_TAG:
+      oldTag = state[meta.slug][meta.name]
+      const newTag = {...oldTag, ...meta.params}
+      return {
+        ...state,
+        [meta.slug]: {...state[meta.slug], [meta.name]: newTag}
       }
   }
   return state

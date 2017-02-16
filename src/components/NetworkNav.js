@@ -1,5 +1,5 @@
 import React from 'react'
-import { A } from './A'
+import A from './A'
 import Icon from './Icon'
 import Dropdown from './Dropdown'
 import { sortBy } from 'lodash/fp'

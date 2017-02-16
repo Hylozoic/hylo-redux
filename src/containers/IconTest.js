@@ -57,7 +57,9 @@ const names = [
   'Chevron-Down2',
   'Chevron-Left2',
   'Chevron-Right2',
-  'World'
+  'World',
+  'Tick',
+  'Cross'
 ]
 
 export default class IconTest extends React.Component {

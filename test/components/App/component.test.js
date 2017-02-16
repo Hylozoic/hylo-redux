@@ -20,7 +20,7 @@ const minContext = {
 
 function renderComponent (props) {
   return shallow(
-    <App {...merge(minProps, props)} />,
+    <App {...merge({}, minProps, props)} />,
     {context: minContext}
   )
 }

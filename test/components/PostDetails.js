@@ -14,7 +14,7 @@ const requiredContext = {
 }
 
 function renderComponent (props) {
-  return shallow(<PostDetails {...merge(minProps, props)} />, {context: requiredContext})
+  return shallow(<PostDetails {...merge({}, minProps, props)} />, {context: requiredContext})
 }
 
 describe('<PostDetails />', () => {

@@ -50,7 +50,7 @@ const minProps = {
 }
 
 function renderComponent (props) {
-  return shallow(<PostList {...merge(minProps, props)} />)
+  return shallow(<PostList {...merge({}, minProps, props)} />)
 }
 
 describe('<PostList />', () => {

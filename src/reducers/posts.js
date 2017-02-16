@@ -28,6 +28,7 @@ const normalize = (post) => omitBy(x => isNull(x) || isUndefined(x), {
   child_id: post.child ? post.child.id : null,
   numComments: post.num_comments || post.numComments,
   num_comments: null,
+  child: null,
   comments: null,
   communities: null,
   people: null

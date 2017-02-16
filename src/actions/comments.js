@@ -46,21 +46,20 @@ export function appendComment (postId, comment) {
 
 export function createComment ({ postId, text, tagDescriptions, imageUrl, userId }) {
   const params = {text, tagDescriptions, imageUrl}
-  const comment = {
+  const tempComment = {
     id: uniqueId(`post${postId}_`),
     user_id: userId,
     thank_ids: []
   }
   if (text) {
-    comment.text = text
-  }
-  else if (imageUrl) {
-    comment.image = {url: imageUrl, thumbnail_url: imageUrl}
+    tempComment.text = text
+  } else if (imageUrl) {
+    tempComment.image = {url: imageUrl, thumbnail_url: imageUrl}
   }
   return {
     type: CREATE_COMMENT,
     payload: {api: true, path: `/noo/post/${postId}/comment`, params, method: 'POST'},
-    meta: {id: postId, comment, optimistic: true}
+    meta: {id: postId, tempComment, optimistic: true}
   }
 }
 

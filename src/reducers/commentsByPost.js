@@ -39,10 +39,10 @@ export default function (state = {}, action) {
       if (!payload.comments) return state
       return {...state, [payload.id]: payload.comments.map(c => c.id)}
     case CREATE_COMMENT_PENDING:
-      return appendUniq(state, meta.id, [get('comment.id', meta)])
+      return appendUniq(state, meta.id, [get('tempComment.id', meta)])
     case CREATE_COMMENT:
       const appended = appendUniq(state, meta.id, [payload.id])
-      return {...appended, [meta.id]: filter(x => x !== get('comment.id', meta), appended[meta.id])}
+      return {...appended, [meta.id]: filter(x => x !== get('tempComment.id', meta), appended[meta.id])}
     case APPEND_COMMENT:
       return appendUniq(state, meta.id, [payload.id])
   }

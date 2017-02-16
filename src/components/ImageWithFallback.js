@@ -4,36 +4,36 @@ export default class ImageWithFallback extends React.Component {
  static propTypes = {
     preferredSrc: PropTypes.string.isRequired,
     fallbackSrc: PropTypes.string.isRequired,
-    useClass: PropTypes.string
+    className: PropTypes.string
   }
 
   constructor (props) {
     super(props)
     this.state = {
-      imageStatus: false
+      preferredImageLoaded: false
     }
   }
 
   handleImageLoaded = () => {
-    this.setState({imageStatus: true});
+    this.setState({preferredImageLoaded: true})
   }
 
   render () {
     const {
       preferredSrc,
       fallbackSrc,
-      useClass
+      className
     } = this.props
-    const { imageStatus } = this.state
+    const { preferredImageLoaded } = this.state
     
-    const srcToUse = imageStatus ? preferredSrc : fallbackSrc
+    const srcToUse = preferredImageLoaded ? preferredSrc : fallbackSrc
     const hiddenStyle = {
       display: 'none'
     }
 
-    return <div className={useClass}>
+    return <div className={className}>
       <img src={srcToUse} />
-      {!imageStatus && <img src={preferredSrc} style={hiddenStyle} onLoad={this.handleImageLoaded} />}
+      {!preferredImageLoaded && <img src={preferredSrc} style={hiddenStyle} onLoad={this.handleImageLoaded} />}
     </div>
   }   
 }

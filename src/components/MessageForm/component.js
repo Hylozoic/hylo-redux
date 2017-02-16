@@ -40,8 +40,7 @@ export default class MessageForm extends React.Component {
     .then(({ error }) => {
       if (error) {
         this.setState({text})
-      }
-      else {
+      } else {
         trackEvent(SENT_MESSAGE)
       }
     })

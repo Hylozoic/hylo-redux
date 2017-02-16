@@ -39,7 +39,7 @@ describe('commentsByPost', () => {
     it('appends the temporary comment to state', () => {
       let action = {
         type: CREATE_COMMENT_PENDING,
-        meta: {id: 1, comment: {id: 'post1_123', text: 'foo'}}
+        meta: {id: 1, tempComment: {id: 'post1_123', text: 'foo'}}
       }
 
       let state = {
@@ -61,7 +61,7 @@ describe('commentsByPost', () => {
       let action = {
         type: CREATE_COMMENT,
         payload: {id: 14, text: 'foo'},
-        meta: {id: 2, comment: {id: 'post2_123'}}
+        meta: {id: 2, tempComment: {id: 'post2_123'}}
       }
 
       let state = {

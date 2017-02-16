@@ -43,7 +43,7 @@ describe('comments', () => {
         type: CREATE_COMMENT_PENDING,
         meta: {
           id: '2',
-          comment: {id: 'post2_123', text: 'bar'}
+          tempComment: {id: 'post2_123', text: 'bar'}
         }
       }
 
@@ -65,7 +65,7 @@ describe('comments', () => {
       let action = {
         type: CREATE_COMMENT,
         payload: {id: '2', text: 'bar'},
-        meta: {comment: {id: 'post2_123'}}
+        meta: {tempComment: {id: 'post2_123'}}
       }
 
       let state = {

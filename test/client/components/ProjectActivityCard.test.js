@@ -2,7 +2,7 @@ import '../support'
 import { mount } from 'enzyme'
 import React from 'react'
 import { configureStore } from '../../../src/store'
-import ProjectActivityCard from '../../../src/components/ProjectActivityCard'
+import ProjectActivityCard from '../../../src/components/ProjectActivityCard/component'
 
 const state = {
   people: {

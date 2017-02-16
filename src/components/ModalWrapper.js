@@ -49,7 +49,7 @@ class ModalWrapper extends React.Component {
     let modal, clickToClose
     switch (type) {
       case 'tags':
-        modal = <BrowseTopicsModal community={params.community} />
+        modal = <BrowseTopicsModal community={params.community} onCancel={closeModal} />
         clickToClose = true
         break
       case 'share-tag':
@@ -98,7 +98,7 @@ class ModalWrapper extends React.Component {
         modal = <ThreadsModal />
         break
       case 'image':
-        modal = <ImageModal {...params} />
+        modal = <ImageModal {...params} onCancel={closeModal} />
         clickToClose = true
     }
 

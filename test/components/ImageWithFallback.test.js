@@ -16,8 +16,8 @@ describe('<ImageWithFallback />', () => {
     expect(wrapper.find('.testClass').length).to.equal(1)
   })
 
-  it('will only display preferred if passed onlyUsePreferred', () => {
-    const props = {className: 'testClass', preferredSrc: 'src1', fallbackSrc: 'src2', onlyUsePreferred: true}
+  it('will only display preferred if no fallback is passed', () => {
+    const props = {className: 'testClass', preferredSrc: 'src1'}
     const wrapper = renderComponent(props)
     expect(wrapper.find('img[src="src1"]').length).to.equal(1)
     expect(wrapper.find('img[src="src2"]').length).to.equal(0)
@@ -26,6 +26,7 @@ describe('<ImageWithFallback />', () => {
   it('will initially insert, but hide the preferred image', () => {
     const props = {preferredSrc: 'src1', fallbackSrc: 'src2'}
     const wrapper = renderComponent(props)
+    expect(wrapper.find('img[src="src2"]').length).to.equal(1)
     expect(wrapper.find('img[src="src1"]').length).to.equal(1)
   })
 

@@ -21,7 +21,7 @@ class Message extends React.Component {
   }
 
   render () {
-    const { message, message: { image }, isHeader } = this.props
+    const { message, message: { fromTemp, image }, isHeader } = this.props
     const { dispatch, location, isMobile } = this.context
 
     const person = message.user
@@ -38,7 +38,7 @@ class Message extends React.Component {
         </div>}
         {image
         ? <a onClick={() => dispatch(showImage(image.url, location.pathname, isMobile))}>
-          <ImageWithFallback className='thumbnail' preferredSrc={image.thumbnail_url} fallbackSrc={image.url} onlyUsePreferred={!message.fromTemp} />
+          <ImageWithFallback className='thumbnail' preferredSrc={image.thumbnail_url} fallbackSrc={fromTemp && image.url} />
         </a>
         : <div className='text'>
           <span dangerouslySetInnerHTML={{__html: text}} />

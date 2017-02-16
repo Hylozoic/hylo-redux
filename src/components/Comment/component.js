@@ -90,7 +90,7 @@ export default class Comment extends React.Component {
           <A to={`/u/${person.id}`} className='name'>{person.name}</A>
         </div>}
         {image && <a onClick={() => showImage(image.url, location.pathname, isMobile)}>
-          <ImageWithFallback className='thumbnail' preferredSrc={image.thumbnail_url} fallbackSrc={image.url} onlyUsePreferred={!fromTemp} />
+          <ImageWithFallback className='thumbnail' preferredSrc={image.thumbnail_url} fallbackSrc={fromTemp && image.url} />
         </a>}
         {!image && <ClickCatcher className='text' dangerouslySetInnerHTML={{__html: text}} />}
         {!image && truncated && <span> <a onClick={expand} className='show-more'>Show&nbsp;more</a></span>}

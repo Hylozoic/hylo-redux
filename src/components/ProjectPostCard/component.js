@@ -3,7 +3,6 @@ import React, { PropTypes } from 'react'
 import { textLength, truncate } from '../../util/text'
 import { imageUrl } from '../../models/post'
 import { canCommentOnPost } from '../../models/currentUser'
-import { navigate } from '../../actions'
 import A from '../A'
 import { presentDescription } from '../PostDetails'
 import LazyLoader from '../LazyLoader'
@@ -11,7 +10,7 @@ import CommentSection from '../CommentSection'
 import ClickCatcher from '../ClickCatcher'
 import { Supporters, Deadline } from '../ProjectPost/component'
 
-export default function ProjectPostCard ({ post, community, comments, isMobile, dispatch }, { currentUser }) {
+export default function ProjectPostCard ({ post, community, comments, isMobile, navigate }, { currentUser }) {
   const { name, user, ends_at, id } = post
   const url = `/p/${post.id}`
   const backgroundImage = `url(${imageUrl(post)})`
@@ -20,6 +19,8 @@ export default function ProjectPostCard ({ post, community, comments, isMobile, 
   let description = presentDescription(post, community)
   const truncated = textLength(description) > 140
   if (truncated) description = truncate(description, 140)
+
+  const spacer = <span>&nbsp; •&nbsp; </span>
 
   return <div className='post project-summary'>
     <LazyLoader className='image'>
@@ -42,12 +43,16 @@ export default function ProjectPostCard ({ post, community, comments, isMobile, 
     </div>}
     <Supporters post={post} simple />
     <div className='comments-section-spacer' />
-    <CommentSection onExpand={() => dispatch(navigate(url))}
+    <CommentSection onExpand={() => navigate(url)}
       isProjectRequest {...{post, canComment, comments}} />
   </div>
+}
+ProjectPostCard.propTypes = {
+  post: PropTypes.object.isRequired,
+  navigate: PropTypes.func.isRequired,
+  community: PropTypes.object,
+  isMobile: PropTypes.bool
 }
 ProjectPostCard.contextTypes = {
   currentUser: PropTypes.object
 }
-
-const spacer = <span>&nbsp; •&nbsp; </span>

@@ -1,7 +1,6 @@
 import React from 'react'
 import { filter, includes, isEmpty } from 'lodash/fp'
 import { changeViewportTop } from '../../util/scrolling'
-import { navigate, showExpandedPost } from '../../actions'
 import { makeUrl } from '../../util/navigation'
 import Post from '../Post'
 import PostEditor from '../PostEditor'
@@ -18,6 +17,8 @@ const { array, bool, func, object, number, string } = React.PropTypes
 export default class PostList extends React.Component {
   static propTypes = {
     posts: array.isRequired,
+    navigate: func.isRequired,
+    showExpandedPost: func.isRequired,
     parentPost: object,
     loadMore: func,
     refreshPostList: func,
@@ -25,7 +26,6 @@ export default class PostList extends React.Component {
     pending: bool,
     editingPostIds: array,
     hide: array,
-    dispatch: func,
     hideMobileSearch: bool,
     isMobile: bool,
     noPostsMessage: string,
@@ -42,26 +42,26 @@ export default class PostList extends React.Component {
   }
 
   expand = (id, commentId, parentPostId) => {
-    const { dispatch } = this.props
+    const { navigate, showExpandedPost } = this.props
     const { isMobile } = this.context
 
     if (isMobile || parentPostId) {
-      dispatch(navigate(`/p/${id}` + (commentId ? `#comment-${commentId}` : '')))
+      navigate(`/p/${id}` + (commentId ? `#comment-${commentId}` : ''))
     } else {
-      dispatch(showExpandedPost(id, commentId))
+      showExpandedPost(id, commentId)
     }
   }
 
   render () {
     const {
       hide, editingPostIds, pending, loadMore, refreshPostList, freshCount,
-      dispatch, hideMobileSearch, noPostsMessage, parentPost, showProjectActivity
+      hideMobileSearch, noPostsMessage, parentPost, showProjectActivity, navigate
     } = this.props
     const { isMobile } = this.context
     const expand = this.expand
 
     const posts = filter(p => !includes(p.id, hide), this.props.posts)
-    const doSearch = text => dispatch(navigate(makeUrl('/search', {q: text})))
+    const doSearch = text => navigate(makeUrl('/search', {q: text}))
 
     if (!pending && posts.length === 0) {
       return <span>

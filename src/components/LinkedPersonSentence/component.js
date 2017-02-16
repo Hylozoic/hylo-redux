@@ -7,7 +7,7 @@ import PersonDropdownItem from '../PersonDropdownItem'
 
 export default function LinkedPersonSentence (
   { people, children, className, showPopover, onMouseOver },
-  { currentUser, dispatch }
+  { currentUser }
 ) {
   const me = find(people, same('id', currentUser))
   const others = me ? without(people, me) : people

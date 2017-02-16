@@ -53,5 +53,7 @@ export const isMessageThread = post => get('type', post) === 'thread'
 
 export const isChildPost = post => !!get('parent_post_id', post)
 
+export const isRequest = post => get('tag', post) === 'request'
+
 export const isCompleteRequest = post =>
-  !!get('fulfilled_at', post) && get('tag', post) === 'request'
+  !!get('fulfilled_at', post) && isRequest(post)

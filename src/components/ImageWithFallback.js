@@ -14,6 +14,14 @@ export default class ImageWithFallback extends React.Component {
     }
   }
 
+  componentDidMount () {
+    const { fallbackSrc, preferredSrc } = this.props
+    if (!fallbackSrc) return
+    const img = new Image()
+    img.onload = this.handleImageLoaded
+    img.src = preferredSrc
+  }
+
   handleImageLoaded = () => {
     this.setState({preferredImageLoaded: true})
   }
@@ -25,18 +33,7 @@ export default class ImageWithFallback extends React.Component {
       className
     } = this.props
     const { preferredImageLoaded } = this.state
-    if (!fallbackSrc || preferredImageLoaded) {
-      return <div className={className}>
-        <img src={preferredSrc} />
-      </div>
-    }
-
-    const hiddenStyle = {
-      display: 'none'
-    }
-    return <div className={className}>
-      <img src={fallbackSrc} />
-      <img src={preferredSrc} style={hiddenStyle} onLoad={this.handleImageLoaded} />
-    </div>
-  }   
+    const srcToUse = !fallbackSrc || preferredImageLoaded ? preferredSrc : fallbackSrc
+    return <img className={className} src={srcToUse} />
+  }
 }

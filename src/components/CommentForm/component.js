@@ -54,6 +54,8 @@ export default class CommentForm extends React.PureComponent {
     const {
       actions: { showModal, createComment, updateComment }, postId, commentId, newComment, close, pending
     } = this.props
+    const { currentUser } = this.context
+    const userId = currentUser.id
     if (event) event.preventDefault()
     if (!this.state.enabled || pending) return
     const text = this.refs.editor.getContent().replace(/<p>&nbsp;<\/p>$/m, '')
@@ -66,7 +68,7 @@ export default class CommentForm extends React.PureComponent {
       saveParent: this.saveWithTagDescriptions
     })
     if (newComment) {
-      createComment({postId, text, tagDescriptions})
+      createComment({postId, text, tagDescriptions, userId})
       .then(action => {
         if (responseMissingTagDescriptions(action)) return showTagEditor()
         if (action.error) return
@@ -87,9 +89,9 @@ export default class CommentForm extends React.PureComponent {
   }
 
   setText (text) {
-    const { actions: { updateCommentEditor }, commentId, postId, newComment } = this.props
+    const { actions: { updateCommentEditor }, commentId, pending, postId, newComment } = this.props
     const storeId = newComment ? postId : commentId
-    updateCommentEditor(storeId, text, newComment)
+    if (!pending) updateCommentEditor(storeId, text, newComment)
   }
 
   handleKeyDown = (e) => {

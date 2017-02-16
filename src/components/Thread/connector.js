@@ -17,7 +17,7 @@ export function mapDispatchToProps (dispatch, { post }) {
   return {
     actions: {
       ...bindActionCreators({offThreadPage}, dispatch),
-      createComment: text => dispatch(createComment({postId: post.id, text})),
+      createComment: (text, userId) => dispatch(createComment({postId: post.id, text, userId})),
       onThreadPage: () => dispatch(onThreadPage(post.id)),
       fetchBefore: beforeId =>
         dispatch(fetchComments(post.id,

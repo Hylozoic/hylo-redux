@@ -2,6 +2,7 @@ require('../support')
 import comments from '../../src/reducers/comments'
 import {
   FETCH_COMMENTS,
+  CREATE_COMMENT_PENDING,
   CREATE_COMMENT,
   THANK_PENDING
 } from '../../src/actions/constants'
@@ -36,11 +37,14 @@ describe('comments', () => {
     })
   })
 
-  describe('on CREATE_COMMENT', () => {
-    it('appends comment to state', () => {
+  describe('on CREATE_COMMENT_PENDING', () => {
+    it('appends comment to state temporarily', () => {
       let action = {
-        type: CREATE_COMMENT,
-        payload: {id: '2', text: 'bar'}
+        type: CREATE_COMMENT_PENDING,
+        meta: {
+          id: '2',
+          tempComment: {id: 'post2_123', text: 'bar'}
+        }
       }
 
       let state = {
@@ -49,7 +53,30 @@ describe('comments', () => {
 
       let expectedState = {
         '1': {id: '1', text: 'foo'},
-        '2': {id: '2', text: 'bar'}
+        'post2_123': {id: 'post2_123', text: 'bar'}
+      }
+
+      expect(comments(state, action)).to.deep.equal(expectedState)
+    })
+  })
+
+  describe('on CREATE_COMMENT', () => {
+    it('removes optimistic comment and appends saved one with fromTemp as true', () => {
+      let action = {
+        type: CREATE_COMMENT,
+        payload: {id: '2', text: 'bar'},
+        meta: {tempComment: {id: 'post2_123'}}
+      }
+
+      let state = {
+        '1': {id: '1', text: 'foo'},
+        'post2_123': {id: 'post2_123', text: 'bar'}
+      }
+
+      let expectedState = {
+        '1': {id: '1', text: 'foo'},
+        'post2_123': null, 
+        '2': {id: '2', text: 'bar', fromTemp: true}
       }
 
       expect(comments(state, action)).to.deep.equal(expectedState)

@@ -11,6 +11,7 @@ import Dropdown from '../Dropdown'
 import Avatar from '../Avatar'
 import A from '../A'
 import Icon from '../Icon'
+import ImageWithFallback from '../ImageWithFallback'
 import { some } from 'lodash'
 
 const spacer = <span>&nbsp;&nbsp;•&nbsp;&nbsp;</span>
@@ -54,7 +55,8 @@ export default class Comment extends React.Component {
     const { editing } = this.state
 
     const person = comment.user
-    const { thank_ids } = comment
+    const notPending = comment.id.slice(0,4) === 'post' ? null : true
+    const { thank_ids, image, fromTemp } = comment
     const isThanked = some(thank_ids, id => id === get('id', currentUser))
 
     let text = present(sanitize(comment.text), {slug: get('slug', community)})
@@ -75,34 +77,32 @@ export default class Comment extends React.Component {
 
     if (editing) return <CommentForm commentId={comment.id} close={closeEdit} />
 
-    const { image } = comment
-
     return <div className='comment' data-comment-id={comment.id}>
-      {canEditComment(currentUser, comment, community) &&
+      {notPending && canEditComment(currentUser, comment, community) &&
         <Dropdown alignRight toggleChildren={<Icon name='More' />}>
           {!image && <li><a onClick={edit}>Edit</a></li>}
           <li><a onClick={remove}>Remove</a></li>
         </Dropdown>}
-      <a name={`comment-${comment.id}`} />
+      {notPending && <a name={`comment-${comment.id}`} />}
       <Avatar person={person} showPopover />
       <div className='content'>
         {image && <div className='text'>
           <A to={`/u/${person.id}`} className='name'>{person.name}</A>
         </div>}
         {image && <a onClick={() => showImage(image.url, location.pathname, isMobile)}>
-          <img className='thumbnail' src={image.thumbnail_url} />
+          <ImageWithFallback className='thumbnail' preferredSrc={image.thumbnail_url} fallbackSrc={fromTemp && image.url} />
         </a>}
         {!image && <ClickCatcher className='text' dangerouslySetInnerHTML={{__html: text}} />}
         {!image && truncated && <span> <a onClick={expand} className='show-more'>Show&nbsp;more</a></span>}
         <div>
-          {currentUser && <span>
+          {notPending && currentUser && <span>
             {currentUser.id !== person.id &&
               <a className='thanks' onClick={() => thank(comment.id, currentUser)}>
                 {isThanked ? `You thanked ${person.name.split(' ')[0]}` : 'Say thanks'}
               </a>}
             {currentUser.id !== person.id && spacer}
           </span>}
-          <A className='date' to={commentUrl(comment)}>{humanDate(comment.created_at)}</A>
+          <A className='date' to={commentUrl(comment)}>{notPending ? humanDate(comment.created_at) : 'sending...'}</A>
         </div>
       </div>
     </div>

@@ -13,14 +13,12 @@ const NEW_MESSAGE_ID = 'new'
 
 @connect((state, { userId }) => {
   return ({
-    currentUser: get(state, 'people.current'),
     text: state.messageEdits[userId],
     newText: state.messageEdits[NEW_MESSAGE_ID]
   })
 }, null, null, {withRef: true})
 export default class MessageToUserForm extends React.Component {
   static propTypes = {
-    currentUser: object,
     onComplete: func,
     postId: string,
     userId: string,
@@ -29,6 +27,7 @@ export default class MessageToUserForm extends React.Component {
   }
 
   static contextTypes = {
+    currentUser: object,
     isMobile: bool,
     dispatch: func
   }
@@ -60,13 +59,13 @@ export default class MessageToUserForm extends React.Component {
 
   submit = event => {
     const { onComplete, postId, userId, text } = this.props
-    const { dispatch } = this.context
+    const { currentUser, dispatch } = this.context
     if (event) event.preventDefault()
     if (!userId) return false
     const cleanText = text.replace(/<p>&nbsp;<\/p>$/m, '')
     if (!cleanText || textLength(cleanText) < 2) return false
 
-    dispatch(createComment({postId, text})).then(({ error }) => {
+    dispatch(createComment({postId, text, userId: currentUser.id})).then(({ error }) => {
       if (error) return
       onComplete()
       trackEvent(SENT_MESSAGE)

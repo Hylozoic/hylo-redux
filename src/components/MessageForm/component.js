@@ -32,10 +32,18 @@ export default class MessageForm extends React.Component {
     if (!this.state.text) return false
 
     const { postId, createComment } = this.props
+    const { currentUser } = this.context
+    const userId = currentUser.id
     const { text } = this.state
 
-    createComment({postId, text})
-    .then(({ error }) => error || trackEvent(SENT_MESSAGE))
+    createComment({postId, text, userId})
+    .then(({ error }) => {
+      if (error) {
+        this.setState({text})
+      } else {
+        trackEvent(SENT_MESSAGE)
+      }
+    })
 
     this.setState({text: ''})
     return false

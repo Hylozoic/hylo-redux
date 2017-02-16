@@ -1,7 +1,6 @@
-import React from 'react'
-import Modal from '../components/Modal'
-import Icon from '../components/Icon'
-const { func, string } = React.PropTypes
+import React, { PropTypes } from 'react'
+import Modal from '../../components/Modal'
+import Icon from '../../components/Icon'
 
 const leftOffset = () => {
   if (typeof window === 'undefined') return 0
@@ -12,12 +11,14 @@ const leftOffset = () => {
 
 export default class ImageModal extends React.Component {
   static propTypes = {
-    url: string,
-    onCancel: func
+    url: PropTypes.string.isRequired,
+    actions: PropTypes.shape({
+      closeModal: PropTypes.func.isRequired
+    })
   }
 
   render () {
-    const { url, onCancel } = this.props
+    const { url, actions: { closeModal } } = this.props
 
     const marginLeft = leftOffset() + 100
 
@@ -26,13 +27,15 @@ export default class ImageModal extends React.Component {
     const modalStyle = {marginLeft, width: maxWidth}
     const imgStyle = {maxWidth}
 
-    return <Modal className='modal' id='image-modal' title='' style={modalStyle} onCancel={onCancel}>
+    return <Modal className='modal' id='image-modal' title='' style={modalStyle} onCancel={closeModal}>
       <div className='image-wrapper'>
         <img src={url} style={imgStyle} />
-        <a className='close' onClick={onCancel}>
+        <a className='close' onClick={closeModal}>
           <Icon name='Fail' />
         </a>
       </div>
     </Modal>
   }
 }
+
+

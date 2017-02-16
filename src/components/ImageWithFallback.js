@@ -4,7 +4,8 @@ export default class ImageWithFallback extends React.Component {
  static propTypes = {
     preferredSrc: PropTypes.string.isRequired,
     fallbackSrc: PropTypes.string.isRequired,
-    className: PropTypes.string
+    className: PropTypes.string,
+    onlyUsePreferred: PropTypes.bool
   }
 
   constructor (props) {
@@ -22,18 +23,19 @@ export default class ImageWithFallback extends React.Component {
     const {
       preferredSrc,
       fallbackSrc,
-      className
+      className,
+      onlyUsePreferred
     } = this.props
     const { preferredImageLoaded } = this.state
-    
-    const srcToUse = preferredImageLoaded ? preferredSrc : fallbackSrc
+    const usePreferred = preferredImageLoaded || onlyUsePreferred
+    const srcToUse = usePreferred ? preferredSrc : fallbackSrc
     const hiddenStyle = {
       display: 'none'
     }
 
     return <div className={className}>
       <img src={srcToUse} />
-      {!preferredImageLoaded && <img src={preferredSrc} style={hiddenStyle} onLoad={this.handleImageLoaded} />}
+      {!usePreferred && <img src={preferredSrc} style={hiddenStyle} onLoad={this.handleImageLoaded} />}
     </div>
   }   
 }

@@ -56,7 +56,7 @@ export default class Comment extends React.Component {
 
     const person = comment.user
     const notPending = comment.id.slice(0,4) === 'post' ? null : true
-    const { thank_ids, image } = comment
+    const { thank_ids, image, fromTemp } = comment
     const isThanked = some(thank_ids, id => id === get('id', currentUser))
 
     let text = present(sanitize(comment.text), {slug: get('slug', community)})
@@ -90,7 +90,7 @@ export default class Comment extends React.Component {
           <A to={`/u/${person.id}`} className='name'>{person.name}</A>
         </div>}
         {image && <a onClick={() => showImage(image.url, location.pathname, isMobile)}>
-          <ImageWithFallback className='thumbnail' preferredSrc={image.thumbnail_url} fallbackSrc={image.url} />
+          <ImageWithFallback className='thumbnail' preferredSrc={image.thumbnail_url} fallbackSrc={image.url} onlyUsePreferred={!fromTemp} />
         </a>}
         {!image && <ClickCatcher className='text' dangerouslySetInnerHTML={{__html: text}} />}
         {!image && truncated && <span> <a onClick={expand} className='show-more'>Show&nbsp;more</a></span>}

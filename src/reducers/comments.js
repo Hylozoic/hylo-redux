@@ -45,7 +45,7 @@ export default function (state = {}, action) {
       break
     case APPEND_COMMENT:
     case CREATE_COMMENT:
-      return {...state, [payload.id]: omit('people', payload), [get('tempComment.id', meta)]: null}
+      return {...state, [payload.id]: {...omit('people', payload), fromTemp: true}, [get('tempComment.id', meta)]: null}
     case FETCH_POSTS:
       comments = payload.posts.reduce((acc, post) => {
         // the post.child is for the sake of project activity cards

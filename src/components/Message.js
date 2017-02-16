@@ -38,7 +38,7 @@ class Message extends React.Component {
         </div>}
         {image
         ? <a onClick={() => dispatch(showImage(image.url, location.pathname, isMobile))}>
-          <ImageWithFallback className='thumbnail' preferredSrc={image.thumbnail_url} fallbackSrc={image.url} />
+          <ImageWithFallback className='thumbnail' preferredSrc={image.thumbnail_url} fallbackSrc={image.url} onlyUsePreferred={!message.fromTemp} />
         </a>
         : <div className='text'>
           <span dangerouslySetInnerHTML={{__html: text}} />

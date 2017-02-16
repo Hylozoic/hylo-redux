@@ -61,7 +61,7 @@ describe('comments', () => {
   })
 
   describe('on CREATE_COMMENT', () => {
-    it('removes optimistic comment and appends saved one', () => {
+    it('removes optimistic comment and appends saved one with fromTemp as true', () => {
       let action = {
         type: CREATE_COMMENT,
         payload: {id: '2', text: 'bar'},
@@ -76,7 +76,7 @@ describe('comments', () => {
       let expectedState = {
         '1': {id: '1', text: 'foo'},
         'post2_123': null, 
-        '2': {id: '2', text: 'bar'}
+        '2': {id: '2', text: 'bar', fromTemp: true}
       }
 
       expect(comments(state, action)).to.deep.equal(expectedState)

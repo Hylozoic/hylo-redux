@@ -1,6 +1,4 @@
-import { LOCATION_CHANGE } from 'react-router-redux'
-
-export { LOCATION_CHANGE }
+export { LOCATION_CHANGE } from 'react-router-redux'
 
 export const _PENDING = '_PENDING'
 export const ADD_COMMUNITY_MODERATOR = 'ADD_COMMUNITY_MODERATOR'

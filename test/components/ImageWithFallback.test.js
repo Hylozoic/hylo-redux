@@ -10,7 +10,7 @@ function renderComponent (props) {
 describe('<ImageWithFallback />', () => {
 
   it('will initially display the fallback image', () => {
-    const props = {useClass: 'testClass', preferredSrc: 'src1', fallbackSrc: 'src2'}
+    const props = {className: 'testClass', preferredSrc: 'src1', fallbackSrc: 'src2'}
     const wrapper = renderComponent(props)
     expect(wrapper.find('img[src="src2"]').length).to.equal(1)
     expect(wrapper.find('.testClass').length).to.equal(1)

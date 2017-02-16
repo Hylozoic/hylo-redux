@@ -17,7 +17,7 @@ const requiredContext = {
 }
 
 function renderComponent (props) {
-  return shallow(<Post {...merge(minProps, props)} />, {context: requiredContext})
+  return shallow(<Post {...merge({}, minProps, props)} />, {context: requiredContext})
 }
 
 describe('<Post />', () => {
@@ -82,7 +82,7 @@ describe('<Post />', () => {
   it('should have the complete request feature when the post is a request', () => {
     const props = {post: {tag: 'request'}}
     const wrapper = renderComponent(props)
-    expect(wrapper.find('Connect(CompleteRequest)').length).to.equal(1)
+    expect(wrapper.find('Connect(RequestHeader)').length).to.equal(1)
   })
 
   describe('with a parent post', () => {

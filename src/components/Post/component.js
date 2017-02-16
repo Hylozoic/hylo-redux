@@ -7,14 +7,12 @@ import decode from 'ent/decode'
 import { sanitize } from 'hylo-utils/text'
 import { linkifyHashtags } from '../../util/linkify'
 import { same } from '../../models'
-import { isChildPost, isCompleteRequest } from '../../models/post'
-import { canEditPost, canCommentOnPost, hasFeature } from '../../models/currentUser'
-import { CONTRIBUTORS } from '../../config/featureFlags'
+import { isChildPost, isRequest } from '../../models/post'
+import { canEditPost, canCommentOnPost } from '../../models/currentUser'
 import ClickCatcher from '../ClickCatcher'
 import PostHeader from '../PostHeader'
 import PostDetails from '../PostDetails'
-import CompleteRequest from '../CompleteRequest'
-import RequestCompleteHeader from '../RequestCompleteHeader'
+import RequestHeader from '../RequestHeader'
 import CommentSection from '../CommentSection'
 import LinkPreview from '../LinkPreview'
 import LinkedPersonSentence from '../LinkedPersonSentence'
@@ -33,8 +31,6 @@ export default function Post (
   const image = find(m => m.type === 'image', media)
   const classes = cx('post', tag, {image, expanded: expanded && !inActivityCard})
   const title = linkifyHashtags(decode(sanitize(post.name || '')), get('slug', community))
-  const isRequest = post.tag === 'request'
-  const isComplete = isCompleteRequest(post)
   const canEdit = canEditPost(currentUser, post)
   const canComment = canCommentOnPost(currentUser, isChildPost(post) ? parentPost : post)
 
@@ -55,10 +51,7 @@ export default function Post (
       <Voters post={post} />
     </div>
     <Attachments post={post} />
-    {hasFeature(currentUser, CONTRIBUTORS) && isComplete &&
-      <RequestCompleteHeader post={post} canEdit={canEdit} />}
-    {hasFeature(currentUser, CONTRIBUTORS) && isRequest && !isComplete &&
-      <CompleteRequest post={post} canEdit={canEdit} />}
+    {isRequest(post) && <RequestHeader post={post} canEdit={canEdit} />}
     <CommentSection {...{comments: selectedComments, post, expanded, onExpand, canComment}} />
   </div>
 }

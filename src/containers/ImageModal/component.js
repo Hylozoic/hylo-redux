@@ -1,9 +1,6 @@
 import React, { PropTypes } from 'react'
-import { bindActionCreators } from 'redux'
-import { connect } from 'react-redux'
-import Modal from '../components/Modal'
-import Icon from '../components/Icon'
-import { closeModal } from '../actions'
+import Modal from '../../components/Modal'
+import Icon from '../../components/Icon'
 
 const leftOffset = () => {
   if (typeof window === 'undefined') return 0
@@ -12,7 +9,7 @@ const leftOffset = () => {
   return main.offsetLeft
 }
 
-class ImageModal extends React.Component {
+export default class ImageModal extends React.Component {
   static propTypes = {
     url: PropTypes.string.isRequired,
     actions: PropTypes.shape({
@@ -41,6 +38,4 @@ class ImageModal extends React.Component {
   }
 }
 
-export default connect(null, (dispatch, props) => ({
-  actions: bindActionCreators({closeModal}, dispatch)
-}))(ImageModal)
+

@@ -1,8 +1,8 @@
 import { connect } from 'react-redux'
 
-export function mapStateToProps (state, { postId }) {
+export function mapStateToProps (state, { postId, post }) {
   return {
-    post: state.posts[postId]
+    post: post || state.posts[postId]
   }
 }
 

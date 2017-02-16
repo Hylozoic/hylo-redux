@@ -1,8 +1,8 @@
 import React from 'react'
-import Post from './Post'
-import A from './A'
-import { imageUrl } from '../models/post'
-import { humanDate } from '../util/text'
+import Post from '../Post'
+import A from '../A'
+import { imageUrl } from '../../models/post'
+import { humanDate } from '../../util/text'
 
 const spacer = <span>&nbsp;&nbsp;•&nbsp;&nbsp;</span>
 

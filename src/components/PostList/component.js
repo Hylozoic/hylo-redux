@@ -92,9 +92,9 @@ function ShowPost ({ showProjectActivity, post, parentPost, editingPostIds, expa
   }
   if (includes(post.id, editingPostIds)) {
     return <PostEditor {...{post, parentPost}} expanded />
-  } else if (showProjectActivity && post.type === 'project' && post.child) {
-    onExpand = commentId => expand(post.child.id, commentId, post.id)
-    return <ProjectActivityCard post={post.child} parentPost={post} onExpand={onExpand} />
+  } else if (showProjectActivity && post.type === 'project' && post.child_id) {
+    onExpand = commentId => expand(post.child_id, commentId, post.id)
+    return <ProjectActivityCard postId={post.child_id} parentPost={post} onExpand={onExpand} />
   }
   switch (post.type) {
     case 'event':

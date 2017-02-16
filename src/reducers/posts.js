@@ -25,8 +25,10 @@ import { addOrRemovePersonId, mergeList } from './util'
 const normalize = (post) => omitBy(x => isNull(x) || isUndefined(x), {
   ...post,
   children: post.children ? map(post.children, c => c.id) : null, // FIXME should be child_ids
+  child_id: post.child ? post.child.id : null,
   numComments: post.num_comments || post.numComments,
   num_comments: null,
+  child: null,
   comments: null,
   communities: null,
   people: null
@@ -41,6 +43,14 @@ const normalizeUpdate = (post, params, payload) => {
     normalized.children = map(payload.children, c => c.id)
   }
   return normalized
+}
+
+const handleActivityPosts = posts => {
+  return posts.reduce((acc, post) => {
+    if (post.child) acc.push(normalize(post.child))
+    acc.push(normalize(post))
+    return acc
+  }, [])
 }
 
 const listWithChildren = (post, payload) => {
@@ -76,7 +86,7 @@ export default function (state = {}, action) {
 
   switch (type) {
     case FETCH_POSTS:
-      return mergeList(state, payload.posts.map(normalize), 'id')
+      return mergeList(state, handleActivityPosts(payload.posts), 'id')
     case APPEND_THREAD:
     case CREATE_POST:
     case FETCH_POST:
@@ -107,8 +117,6 @@ export default function (state = {}, action) {
         updated_at: new Date().toISOString()
       })
     case CREATE_COMMENT:
-      // this is a temporary fix to a bug in creating comments for project activity posts
-      if (!post) return state
       return updatePostProps(state, id, {
         follower_ids: uniq((post.follower_ids || []).concat(payload.user_id)),
         numComments: (post.numComments || 0) + 1,

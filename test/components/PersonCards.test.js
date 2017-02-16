@@ -12,7 +12,7 @@ const minProps = {
 }
 
 function renderComponent (props) {
-  return shallow(<PersonCards {...merge(minProps, props)} />)
+  return shallow(<PersonCards {...merge({}, minProps, props)} />)
 }
 
 describe('<PersonCards />', () => {

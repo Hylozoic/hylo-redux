@@ -10,7 +10,7 @@ const minProps = {
 }
 
 function renderComponent (props) {
-  return shallow(<ClickCatcher {...merge(minProps, props)} />)
+  return shallow(<ClickCatcher {...merge({}, minProps, props)} />)
 }
 
 describe('<ClickCatcher />', () => {

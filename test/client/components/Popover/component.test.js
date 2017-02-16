@@ -18,7 +18,7 @@ const minProps = {
 }
 
 function renderComponent (props) {
-  return shallow(<Popover {...merge(minProps, props)} />)
+  return shallow(<Popover {...merge({}, minProps, props)} />)
 }
 
 describe('<Popover />', () => {

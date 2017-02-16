@@ -53,8 +53,13 @@ export default class ShareTopicModal extends React.Component {
   }
 
   render () {
-    const { onCancel, tagName, community, dispatch, pending,
-      tagInvitationEditor: { recipients, error, success } } = this.props
+    const {
+      tagName,
+      community,
+      dispatch,
+      pending,
+      tagInvitationEditor: { recipients, error, success }
+    } = this.props
 
     const { copied } = this.state
 
@@ -104,16 +109,15 @@ export default class ShareTopicModal extends React.Component {
       Invite people to join <span className='hashtag'>#{tagName}</span>
     </span>
 
-    return <Modal title={title} id='share-topic-modal'
-      onCancel={onCancel}>
+    return <Modal title={title} id='share-topic-modal'>
       <div className='join-url'>
         Anyone with this link can join.
         {copyLink
           ? <span>
-              &nbsp;
-              <a className='copy-link' onClick={copyLink}>Copy Link</a>
-              {copied && <span className='copied'> (copied)</span>}
-            </span>
+            &nbsp;
+            <a className='copy-link' onClick={copyLink}>Copy Link</a>
+            {copied && <span className='copied'> (copied)</span>}
+          </span>
           : <span> Loading...</span>}
       </div>
       <HybridInviteInput recipients={recipients}

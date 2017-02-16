@@ -195,15 +195,16 @@ export class ThreadsModal extends React.Component {
   }
 
   render () {
-    const { onCancel, threads, pending, dispatch } = this.props
+    const { threads, pending, dispatch } = this.props
+    const close = () => dispatch(closeModal())
     const startNewMessage = event => {
-      dispatch(closeModal())
+      close()
       dispatch(showDirectMessage())
       event.stopPropagation()
     }
 
-    return <Modal id='threads-modal' onCancel={onCancel} title='Messages'>
-      <ul onClick={onCancel} className='thread-list'>
+    return <Modal id='threads-modal' title='Messages'>
+      <ul onClick={close} className='thread-list'>
         {!pending && <li className='top'>
           <div className='newMessage' onClick={startNewMessage}>
             <Icon name='Compose' /><span className='button-text'>New Message</span>

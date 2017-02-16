@@ -13,7 +13,6 @@ import Icon from '../components/Icon'
 import Modal from '../components/Modal'
 import { ModalInput } from '../components/ModalRow'
 import {
-  closeModal,
   updateInvitationEditor,
   sendCommunityInvitation,
   clearInvitationEditor,
@@ -42,16 +41,11 @@ export default class InviteModal extends React.Component {
   }
 
   render () {
-    const {
-      community, dispatch, standalone, onClose
-    } = this.props
+    const { community, standalone, onClose } = this.props
 
-    const close = onClose || (() => dispatch(closeModal()))
-
-    return <Modal title='Invite people to join you.'
-      standalone={standalone}
-      onCancel={close}>
-      <InviteForm onClose={close} community={community} standalone={standalone} />
+    return <Modal title='Invite people to join you.' standalone={standalone}>
+      <InviteForm onClose={onClose} community={community}
+        standalone={standalone} />
     </Modal>
   }
 }

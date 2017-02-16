@@ -11,22 +11,16 @@ const leftOffset = () => {
 }
 
 export default class ImageModal extends React.Component {
-  static propTypes = {
-    url: string,
-    onCancel: func
-  }
+  static propTypes = {url: string, onCancel: func}
 
   render () {
     const { url, onCancel } = this.props
-
     const marginLeft = leftOffset() + 100
-
     const maxWidth = document.documentElement.clientWidth - marginLeft * 2
-
     const modalStyle = {marginLeft, width: maxWidth}
     const imgStyle = {maxWidth}
 
-    return <Modal className='modal' id='image-modal' title='' style={modalStyle} onCancel={onCancel}>
+    return <Modal className='modal' id='image-modal' title='' style={modalStyle}>
       <div className='image-wrapper'>
         <img src={url} style={imgStyle} />
         <a className='close' onClick={onCancel}>

@@ -89,10 +89,8 @@ class ModalWrapper extends React.Component {
         clickToClose = true
         break
       case 'post-editor':
-        modal = <PostEditorModal
-          post={get('post', params)}
+        modal = <PostEditorModal post={get('post', params)}
           tag={get('tag', params)} />
-        clickToClose = true
         break
       case 'threads':
         modal = <ThreadsModal />
@@ -102,7 +100,7 @@ class ModalWrapper extends React.Component {
         clickToClose = true
     }
 
-    return <BareModalWrapper top={top} onClick={clickToClose && closeModal}>
+    return <BareModalWrapper top={top} onClick={clickToClose ? closeModal : () => {}}>
       {modal}
     </BareModalWrapper>
   }

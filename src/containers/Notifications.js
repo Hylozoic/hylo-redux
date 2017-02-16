@@ -122,8 +122,7 @@ export class NotificationsModal extends React.Component {
     activities: array,
     comments: object,
     total: number,
-    pending: bool,
-    onCancel: func
+    pending: bool
   }
 
   componentDidMount () {

@@ -21,11 +21,10 @@ const { func, object } = React.PropTypes
 @connect((state) => ({
   community: getCurrentCommunity(state)
 }))
-export default class ChecklistModal extends React.Component {
+export default class AddLogoModal extends React.Component {
   static propTypes = {
     dispatch: func,
-    community: object,
-    onCancel: func
+    community: object
   }
 
   update (path, value) {
@@ -52,13 +51,12 @@ export default class ChecklistModal extends React.Component {
   }
 
   render () {
-    const { dispatch, onCancel, community } = this.props
+    const { dispatch, community } = this.props
     const { avatar_url, banner_url } = community
     const close = () => dispatch(closeModal())
 
     return <Modal title='Add a logo and banner'
-      className='form-sections'
-      onCancel={onCancel}>
+      className='form-sections'>
       <div className='section-item icon'>
         <div className='half-column'>
           <label>Icon</label>
@@ -73,7 +71,7 @@ export default class ChecklistModal extends React.Component {
         <div className='full-column'>
           <label>Banner</label>
           <p className='summary'>This image appears at the top of your community page. (Suggested size: 1400x500 pixels.)</p>
-          <div className='banner' style={{backgroundImage: `url(${banner_url})`}}></div>
+          <div className='banner' style={{backgroundImage: `url(${banner_url})`}} />
         </div>
         <div className='full-column right-align'>
           <button type='button' onClick={() => this.attachImage('banner_url')}>Change</button>

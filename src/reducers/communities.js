@@ -12,6 +12,7 @@ import {
   UPDATE_COMMUNITY_SETTINGS_PENDING,
   ADD_COMMUNITY_MODERATOR_PENDING,
   REMOVE_COMMUNITY_MODERATOR_PENDING,
+  REMOVE_COMMUNITY_MEMBER_PENDING,
   TYPEAHEAD,
   UPDATE_COMMUNITY_CHECKLIST,
   USE_INVITATION
@@ -59,9 +60,11 @@ export default function (state = {}, action) {
       moderators = community.moderators
       return {...state, [meta.slug]: {...community, moderators: union(moderators, [meta.moderator])}}
     case REMOVE_COMMUNITY_MODERATOR_PENDING:
+    case REMOVE_COMMUNITY_MEMBER_PENDING:
+      const removedId = meta.moderatorId || meta.userId
       community = state[meta.slug]
       moderators = community.moderators
-      return {...state, [meta.slug]: {...community, moderators: filter(moderators, m => m.id !== meta.moderatorId)}}
+      return {...state, [meta.slug]: {...community, moderators: moderators && filter(moderators, m => m.id !== removedId)}}
     case CREATE_COMMUNITY:
       let community = payload.community
       return {

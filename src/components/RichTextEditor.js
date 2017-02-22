@@ -125,8 +125,18 @@ export default class RichTextEditor extends React.PureComponent {
     } = this.props
 
     Promise.resolve(window.tinymce || loadScript(TINYMCE_ASSET_URL))
+    .then(() => new Promise(resolve => {
+      const mutex = setInterval(() => {
+        if (window.RichTextEditorMutex) return
+
+        window.RichTextEditorMutex = true
+        clearInterval(mutex)
+        resolve()
+      }, 400)
+    }))
     .then(() => this.setState({loadedTinyMCE: true}))
     .then(() => this._pollForEditor(editor => {
+      window.RichTextEditorMutex = false
       onReady && onReady(editor)
       startFocused && setTimeout(() => editor.focus())
 

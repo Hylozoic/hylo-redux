@@ -71,11 +71,12 @@ export function removeTagFromCommunity (tag, slug) {
   }
 }
 
-export function createTagInCommunity (tag, slug) {
+export function createTagInCommunity (tag, community, currentUser) {
+  const { slug } = community
   return {
     type: CREATE_TAG_IN_COMMUNITY,
     payload: {api: true, params: tag, path: `/noo/community/${slug}/tag/`, method: 'POST'},
-    meta: {slug, tag, optimistic: true}
+    meta: {slug, communityId: community.id, owner: currentUser, tag, optimistic: true}
   }
 }
 

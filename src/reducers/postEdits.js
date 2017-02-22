@@ -1,10 +1,11 @@
-import { includes, mapValues, startCase, uniq } from 'lodash'
+import { includes, mapValues, uniq } from 'lodash'
 import { pick, get } from 'lodash/fp'
 import {
   CANCEL_POST_EDIT,
   CANCEL_TAG_DESCRIPTION_EDIT,
   CREATE_COMMENT,
   CREATE_POST,
+  CREATE_TAG_IN_COMMUNITY,
   CREATE_TAG_IN_MODAL,
   EDIT_TAG_DESCRIPTION,
   EDIT_NEW_TAG_AND_DESCRIPTION,
@@ -18,7 +19,6 @@ import {
 } from '../actions/constants'
 import { updateMedia } from './util'
 import { prepareHashtagsForEditing } from '../util/linkify'
-import { invalidCharacterRegex } from '../models/hashtag'
 
 const stateWithDoc = (state, id, doc) => {
   let obj = state[id]
@@ -107,6 +107,13 @@ export const creatingTagAndDescription = (state = false, action) => {
 
 export const tagDescriptionEdits = (state = {}, action) => {
   const { type, error, payload } = action
+  const actionTypesToClear = [
+    START_POST_EDIT,
+    CANCEL_POST_EDIT,
+    CREATE_COMMENT,
+    CREATE_TAG_IN_MODAL,
+    CREATE_TAG_IN_COMMUNITY
+  ]
   if (includes([CREATE_POST, UPDATE_POST, CREATE_COMMENT], type) && error) {
     if (!payload.response) return state // e.g. network error
 
@@ -117,13 +124,11 @@ export const tagDescriptionEdits = (state = {}, action) => {
         ...state
       }
     }
-  } else if (includes([START_POST_EDIT, CANCEL_POST_EDIT, CREATE_COMMENT], type)) {
-    return {}
   } else if (type === EDIT_TAG_DESCRIPTION) {
     return {...state, [payload.tag]: pick(['description', 'is_default'], payload)}
   } else if (type === EDIT_NEW_TAG_AND_DESCRIPTION) {
     return {[payload.tag]: pick(['description', 'is_default'], payload)}
-  } else if (type === CREATE_TAG_IN_MODAL) {
+  } else if (includes(actionTypesToClear, type)) {
     return {}
   }
 

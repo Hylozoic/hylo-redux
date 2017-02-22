@@ -27,6 +27,25 @@ const fetchAction = {
   }
 }
 
+const createAction = {
+  type: CREATE_TAG_IN_COMMUNITY,
+  meta: {
+    slug: 'hum',
+    communityId: '3', 
+    tag: {
+      name: 'foo',
+      description: '',
+      is_default: false
+    },
+    owner: {
+      avatar_url: 'http://something.com/image.png',
+      name: 'MrMr',
+      id: '21'
+    }
+  }, 
+  payload: {id: 1}
+}
+
 const removeAction = {
   type: REMOVE_TAG,
   meta: {
@@ -60,6 +79,40 @@ describe('tagsByQuery', () => {
           {id: 3, name: 'lol'},
           {id: 2, name: 'bar'},
           {id: 1, name: 'foo'}
+        ]
+      })
+    })
+  })
+
+  describe('on CREATE_TAG_IN_COMMUNITY', () => {
+    it('appends the new tag', () => {
+      const state = {
+        'subject=community&id=hum': [
+          {id: 3, name: 'lol'},
+          {id: 2, name: 'bar'}
+        ]
+      }
+
+      expect(tagsByQuery(state, createAction)).to.deep.equal({
+        'subject=community&id=hum': [
+          {id: 2, name: 'bar'},
+          {
+            id: 1,
+            name: 'foo',
+            memberships: [{
+              created_at: null,
+              description: '',
+              community_id: '3',
+              is_default: false,
+              follower_count: 1,
+              owner: {
+                avatar_url: 'http://something.com/image.png',
+                name: 'MrMr',
+                id: '21'
+              } 
+            }]
+          },
+          {id: 3, name: 'lol'}
         ]
       })
     })
@@ -138,6 +191,18 @@ describe('totalTagsByQuery', () => {
     expect(totalTagsByQuery(state, fetchAction)).to.deep.equal({
       'subject=community&id=wow': 7,
       'subject=community&id=hum': 70
+    })
+  })
+
+  it('increments on CREATE_TAG_IN_COMMUNITY', () => {
+    const state = {
+      'subject=community&id=hum': 3,
+      'subject=community&id=ah': 3
+    }
+
+    expect(totalTagsByQuery(state, createAction)).to.deep.equal({
+      'subject=community&id=hum': 4,
+      'subject=community&id=ah': 3
     })
   })
 
@@ -338,13 +403,22 @@ describe('tagsByCommunity', () => {
         bar: {id: 8, name: 'bar', followed: true},
         bip: {name: 'bip'}
       },
-      zoop: {
+      zoop: { 
         bop: {name: 'bop'},
         thenewtagname: {
+          id: 9,
           name: 'thenewtagname',
           followed: true,
           description: 'its good',
-          is_default: true
+          is_default: true,
+          memberships: [{
+            created_at: null,
+            description: 'its good',
+            community_id: '3',
+            is_default: true,
+            follower_count: 1,
+            owner: {avatar_url: 'website-image', name: 'person', id: '25'}
+          }]  
         }
       }
     }
@@ -353,8 +427,11 @@ describe('tagsByCommunity', () => {
       type: CREATE_TAG_IN_COMMUNITY,
       meta: {
         tag: {name: 'thenewtagname', description: 'its good', is_default: true},
-        slug: 'zoop'
-      }
+        slug: 'zoop',
+        communityId: '3',
+        owner: {avatar_url: 'website-image', name: 'person', id: '25'}
+      },
+      payload: {id: 9}
     }
 
     expect(tagsByCommunity(state, action)).to.deep.equal(expected)

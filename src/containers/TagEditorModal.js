@@ -6,6 +6,7 @@ import {
   editTagDescription,
   editNewTagAndDescription,
   createTagInCommunity,
+  notify,
   updateCommunityChecklist
 } from '../actions'
 import Modal from '../components/Modal'
@@ -43,9 +44,11 @@ export default class TagEditorModal extends React.Component {
       dispatch(editAction(tag, value, is_default)), 200)
 
     useCreatedTag = useCreatedTag || ((params) => {
-      const { dispatch, community: { slug } } = this.props
+      const { dispatch, community } = this.props
+      const { currentUser } = this.context
       const name = Object.keys(params)[0]
-      dispatch(createTagInCommunity({...params[name], name}, slug))
+      dispatch(createTagInCommunity({...params[name], name}, community, currentUser))
+      .then(({error}) => !error && dispatch(notify('Topic was successfully added')))
     })
 
     if (isEmpty(tags)) {

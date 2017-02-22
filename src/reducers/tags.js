@@ -155,7 +155,7 @@ export const tagsByCommunity = (state = {}, action) => {
       return addCreatedTags(state, slug, tagDescriptions)
     case CREATE_TAG_IN_COMMUNITY:
       newTag = createNewTag(payload.id, meta.tag, meta.communityId, meta.owner)
-      let tags = [{...newTag, followed: true}]
+      let tags = [{...meta.tag, ...newTag, followed: true}]
       return {...state, [slug]: mergeList(state[slug], tags, 'name')}
     case FOLLOW_TAG_PENDING:
       oldCommunityTags = state[id] || {}

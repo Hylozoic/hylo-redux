@@ -16,11 +16,11 @@ import {
   FETCH_COMMUNITY,
   UPDATE_COMMUNITY_TAG
 } from '../actions/constants'
-import { filter, fromPairs, merge, omitBy, toPairs, isEmpty } from 'lodash'
+import { cloneDeep, pick, filter, fromPairs, merge, omitBy, sortBy, toPairs, isEmpty } from 'lodash'
 import { get, pickBy, some, includes, mapValues, map } from 'lodash/fp'
 import qs from 'querystring'
 
-const matchesRemovedTag = (id, slug) => {
+const matchesTag = (id, slug) => {
   const key = qs.parse(id)
   return key.subject === 'community' && key.id === slug
 }
@@ -28,7 +28,7 @@ const matchesRemovedTag = (id, slug) => {
 const filterOutRemovedTag = (state, { type, error, meta }) => {
   if (type !== REMOVE_TAG || error) return state
   const updated = toPairs(state).reduce((acc, [id, tags]) => {
-    if (matchesRemovedTag(id, meta.slug)) {
+    if (matchesTag(id, meta.slug)) {
       acc[id] = filter(tags, t => t.id !== meta.id)
     }
     return acc
@@ -36,47 +36,78 @@ const filterOutRemovedTag = (state, { type, error, meta }) => {
   return {...state, ...updated}
 }
 
-const decrementForRemovedTag = (state, { type, error, meta }) => {
-  if (type !== REMOVE_TAG || error) return state
+const incrementOrDecrementTag = (state, { type, error, meta }) => {
+  if (!(type === REMOVE_TAG || type === CREATE_TAG_IN_COMMUNITY) || error) return state
   const updated = toPairs(state).reduce((acc, [id, count]) => {
-    if (matchesRemovedTag(id, meta.slug)) {
-      acc[id] = count - 1
+    if (matchesTag(id, meta.slug)) {
+      acc[id] = type === REMOVE_TAG ? count - 1 : count + 1
     }
     return acc
   }, {})
   return {...state, ...updated}
 }
 
+const createNewTag = (id, tag, communityId, owner) => ({
+  id,
+  name: tag.name,
+  memberships: [{
+    community_id: communityId,
+    created_at: null,
+    description: tag.description,
+    follower_count: 1,
+    is_default: tag.is_default,
+    owner: pick(owner, ['avatar_url', 'name', 'id'])
+  }]
+})
+
+// the ! is to ensure that the default tags will come first, as sortBy uses ascending order
+const tagIsDefaultSort = communityId => tag => {
+  const membership = tag.memberships && tag.memberships.find(m => m.community_id === communityId)
+  return !(membership && membership.is_default)
+}
+const tagNameSort = tag => tag.name.toLowerCase()
+
 export const tagsByQuery = composeReducers(
   appendPayloadByPath(FETCH_TAGS, 'meta.cache.id', 'items', t => t.id),
   filterOutRemovedTag,
-  (state, { type, meta }) => {
+  (state, { type, payload, meta, error }) => {
+    if (error) return state
     // the gnarliness here is the result of majorly denormalized tags in this reducer
-    if (type === UPDATE_COMMUNITY_TAG) {
-      const key = `subject=community&id=${meta.slug}`
-      return {
-        ...state,
-        [key]: map(t => {
-          if (t.name !== meta.name) return t
+    // and also empty api responses pushing hard work to the frontend
+    let key
+    switch (type) {
+      case CREATE_TAG_IN_COMMUNITY:
+        key = `subject=community&id=${meta.slug}`
+        const cId = meta.communityId
+        const newTag = createNewTag(payload.id, meta.tag, cId, meta.owner)
+        return {
+          ...state,
+          [key]: sortBy(cloneDeep(state[key]).concat([newTag]), [tagIsDefaultSort(cId), tagNameSort])
+        }
+      case UPDATE_COMMUNITY_TAG:
+        key = `subject=community&id=${meta.slug}`
+        return {
+          ...state,
+          [key]: map(t => {
+            if (t.name !== meta.name) return t
 
-          const newTag = {...t,
-            memberships: map(m => {
-              if (m.community_id !== meta.communityId) return m
-              return {...m, ...meta.params}
-            }, t.memberships)}
+            const newTag = {...t,
+              memberships: map(m => {
+                if (m.community_id !== meta.communityId) return m
+                return {...m, ...meta.params}
+              }, t.memberships)}
 
-          return newTag
-        }, state[key])
-      }
-    } else {
-      return state
+            return newTag
+          }, state[key])
+        }
     }
+    return state
   }
 )
 
 export const totalTagsByQuery = composeReducers(
   keyedCounter(FETCH_TAGS, 'total'),
-  decrementForRemovedTag
+  incrementOrDecrementTag
 )
 
 export const tagsByCommunity = (state = {}, action) => {
@@ -95,7 +126,7 @@ export const tagsByCommunity = (state = {}, action) => {
   let { type, payload, meta, error } = action
   if (error) return state
 
-  let oldCommunityTags, oldTag
+  let oldCommunityTags, newTag, oldTag
   let { slug, tagName, id } = meta || {}
 
   const addCreatedTags = (state, slug, createdTags) => {
@@ -123,7 +154,8 @@ export const tagsByCommunity = (state = {}, action) => {
       const { params: { tagDescriptions } } = meta
       return addCreatedTags(state, slug, tagDescriptions)
     case CREATE_TAG_IN_COMMUNITY:
-      let tags = [{...meta.tag, followed: true}]
+      newTag = createNewTag(payload.id, meta.tag, meta.communityId, meta.owner)
+      let tags = [{...newTag, followed: true}]
       return {...state, [slug]: mergeList(state[slug], tags, 'name')}
     case FOLLOW_TAG_PENDING:
       oldCommunityTags = state[id] || {}
@@ -167,7 +199,7 @@ export const tagsByCommunity = (state = {}, action) => {
       }
     case UPDATE_COMMUNITY_TAG:
       oldTag = state[meta.slug][meta.name]
-      const newTag = {...oldTag, ...meta.params}
+      newTag = {...oldTag, ...meta.params}
       return {
         ...state,
         [meta.slug]: {...state[meta.slug], [meta.name]: newTag}

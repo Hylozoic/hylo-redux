@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 import React from 'react'
 import { connect } from 'react-redux'
 import Icon from './Icon'
@@ -125,6 +126,14 @@ class ProjectRequestEditor extends React.Component {
     const showDetails = this.state.showDetails || !!description
     const editorClass = cx('details', {empty: !showDetails})
 
+    const onBlur = () => {
+      // we have to update description here because RichTextEditor doesn't always
+      // send onChange events
+      console.log('on blur called', this.refs.details.getContent())
+      this.props.update('description', this.refs.details.getContent())
+      this.setState({showDetails: false})
+    }
+
     return <div>
       <div className='title-wrapper'>
         <AutosizingTextarea type='text' ref='title' className='title'
@@ -136,7 +145,7 @@ class ProjectRequestEditor extends React.Component {
       <RichTextEditor className={editorClass} ref='details' name={`post-${id}`}
         content={description}
         onChange={handleChange('description')}
-        onBlur={() => this.setState({showDetails: false})} />
+        onBlur={onBlur} />
       {!showDetails &&
         <div className='details-placeholder' onClick={this.goToDetails}>
           More details

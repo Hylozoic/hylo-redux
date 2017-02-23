@@ -49,7 +49,8 @@ export function createComment ({ postId, text, tagDescriptions, imageUrl, userId
   const tempComment = {
     id: uniqueId(`post${postId}_`),
     user_id: userId,
-    thank_ids: []
+    thank_ids: [],
+    created_at: new Date().toISOString()
   }
   if (text) {
     tempComment.text = text

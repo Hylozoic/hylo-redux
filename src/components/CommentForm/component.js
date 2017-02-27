@@ -104,6 +104,7 @@ export default class CommentForm extends React.PureComponent {
     this.setEnabled(this.refs.editor.getContent())
     startTyping()
     onCmdOrCtrlEnter(e => {
+      startTyping.cancel()
       this.stoppedTyping()
       e.preventDefault()
       this.submit()
@@ -119,8 +120,6 @@ export default class CommentForm extends React.PureComponent {
   setEnabled = (text) => {
     this.setState({enabled: text.length > 0})
   }
-
-  stopTyping = debounce(this.stoppedTyping, STOPPED_TYPING_WAIT_TIME)
 
   delaySetText = debounce(text => {
     this.setEnabled(text)
@@ -146,7 +145,6 @@ export default class CommentForm extends React.PureComponent {
           <RichTextEditor ref='editor' name='comment' startFocused
             content={text}
             onChange={ev => this.delaySetText(ev.target.value)}
-            onKeyUp={this.stopTyping}
             onKeyDown={this.handleKeyDown} />
 
           <div className='right'>
@@ -174,6 +172,3 @@ export default class CommentForm extends React.PureComponent {
 // repeated notifications to make sure that a user gets notified even if they
 // load a comment thread after someone else has already started typing.
 const STARTED_TYPING_INTERVAL = 5000
-
-// The time to wait for inactivity before announcing that typing has stopped.
-const STOPPED_TYPING_WAIT_TIME = 8000

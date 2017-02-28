@@ -171,4 +171,4 @@ export default class CommentForm extends React.PureComponent {
 // The interval between repeated typing notifications to the web socket. We send
 // repeated notifications to make sure that a user gets notified even if they
 // load a comment thread after someone else has already started typing.
-const STARTED_TYPING_INTERVAL = 5000
+const STARTED_TYPING_INTERVAL = 3000

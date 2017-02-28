@@ -74,7 +74,7 @@ export default class MessageForm extends React.Component {
   // typing.
   startTyping = throttle(() => {
     this.sendIsTyping(true)
-  }, 5000)
+  }, 3000)
 
   render () {
     const { onFocus, onBlur, postId, pending } = this.props

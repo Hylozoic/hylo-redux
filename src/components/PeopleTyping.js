@@ -4,7 +4,7 @@ import cx from 'classnames'
 import { getSocket } from '../client/websockets'
 const { bool } = React.PropTypes
 
-const MS_CLEAR_TYPING = 8000
+const MS_CLEAR_TYPING = 4000
 
 export default class PeopleTyping extends React.Component {
 
@@ -23,7 +23,7 @@ export default class PeopleTyping extends React.Component {
   componentDidMount () {
     this.socket = getSocket()
     this.socket.on('userTyping', this.userTyping.bind(this))
-    this.clearTypingInterval = window.setInterval(this.clearTyping.bind(this), MS_CLEAR_TYPING)
+    this.clearTypingInterval = window.setInterval(this.clearTyping.bind(this), 1000)
   }
 
   componentWillUnmount () {
@@ -34,7 +34,7 @@ export default class PeopleTyping extends React.Component {
   clearTyping () {
     let newState = this.state
     const now = Date.now()
-    const stale = user => user.timestamp - now > MS_CLEAR_TYPING
+    const stale = user => now - user.timestamp > MS_CLEAR_TYPING
     each(keys(newState.peopleTyping), userId => stale(newState.peopleTyping[userId]) && (delete newState.peopleTyping[userId]))
     this.setState(newState)
   }

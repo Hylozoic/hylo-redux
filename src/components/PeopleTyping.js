@@ -2,9 +2,10 @@ import React from 'react'
 import { each, keys, values } from 'lodash'
 import cx from 'classnames'
 import { getSocket } from '../client/websockets'
+import { STARTED_TYPING_INTERVAL } from './CommentForm/component'
 const { bool } = React.PropTypes
 
-const MS_CLEAR_TYPING = 4000
+const MS_CLEAR_TYPING = STARTED_TYPING_INTERVAL + 1000
 
 export default class PeopleTyping extends React.Component {
 

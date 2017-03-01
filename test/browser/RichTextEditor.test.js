@@ -19,7 +19,6 @@ describe('RichTextEditor', () => {
     .evaluate(() => !!window.tinymce)
     .then(hasTinymce => {
       expect(hasTinymce).to.be.true
-      expect(some(m => m.match(/got react-tinymce-\d/), runner.log)).to.be.true
     })
   })
 })

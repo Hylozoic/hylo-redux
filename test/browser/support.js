@@ -85,7 +85,7 @@ export class TestRunner {
   }
 
   evaluate (...args) {
-    return this.mare.wait(...args)
+    return this.mare.evaluate(...args)
   }
 }
 

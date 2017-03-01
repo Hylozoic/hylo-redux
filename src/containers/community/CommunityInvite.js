@@ -79,7 +79,7 @@ export default class CommunityInvite extends React.Component {
         <a className='invitation-link' href={joinUrl}>{joinUrl}</a>
       </div>
       <div>
-        <InviteForm community={community} allowModerators />
+        <InviteForm community={community} allowModerators showHeader />
       </div>
       {hasFeature(currentUser, REQUEST_TO_JOIN_COMMUNITY) && !isEmpty(joinRequests) &&
         <JoinRequestList id={community.slug} />}

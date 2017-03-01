@@ -58,6 +58,15 @@
 }
 
 #community-invite-form {
+  .community-invite-form-header {
+    font-size: 20px;
+    font-weight: 500;
+    padding-left: @modal-row-side-padding;
+    padding-right: @modal-row-side-padding;
+    border-top: 1px solid @post-border;
+    padding-top: 5px;
+  }
+
   input[type="file"] {
     display: none
   }
@@ -98,16 +107,24 @@
   }
 
   .moderator {
-    float: right;
+    margin-bottom: 10px;
     input {
-      position: relative;
-      top: 5px;
+      display: inline-block;
+      vertical-align: middle;
+      .mobile({
+        float: left;
+        display: block;
+      });
     }
     .meta{
       .meta-text;
       margin-left: 10px;
-      position: relative;
-      top: -5px;
+      display: inline-block;
+      .mobile({
+        margin-left: 42px;
+        display: block;
+        min-height: 32px;
+      });
     }
   }
 }
@@ -261,18 +278,15 @@
       label {
         font-size: 20px;
         font-weight: 500;
-        .count {
-          .meta-text;
-          margin-left: 10px;
-        }
+      }
+      .count {
+        .meta-text;
       }
       .resend-all {
         .round-button;
         color: @damian-green;
-        float: right;
         border: 1px solid @post-border;
-        position: relative;
-        top: -60px;
+        margin-bottom: 10px;
       }
 
     }
@@ -299,10 +313,8 @@
       .approve-all {
         .round-button;
         color: @damian-green;
-        float: right;
         border: 1px solid @post-border;
-        position: relative;
-        top: -60px;
+        margin-bottom: 10px;
       }
     }
   }

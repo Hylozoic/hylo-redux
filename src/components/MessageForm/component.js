@@ -4,6 +4,7 @@ import CommentImageButton from '../CommentImageButton'
 import { SENT_MESSAGE, trackEvent } from '../../util/analytics'
 import { onEnterNoShift } from '../../util/textInput'
 import { getSocket, socketUrl } from '../../client/websockets'
+import { STARTED_TYPING_INTERVAL } from '../CommentForm/component'
 import cx from 'classnames'
 var { func, object, string, bool } = React.PropTypes
 
@@ -74,7 +75,7 @@ export default class MessageForm extends React.Component {
   // typing.
   startTyping = throttle(() => {
     this.sendIsTyping(true)
-  }, 3000)
+  }, STARTED_TYPING_INTERVAL)
 
   render () {
     const { onFocus, onBlur, postId, pending } = this.props

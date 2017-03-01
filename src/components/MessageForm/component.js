@@ -4,6 +4,7 @@ import CommentImageButton from '../CommentImageButton'
 import { SENT_MESSAGE, trackEvent } from '../../util/analytics'
 import { onEnterNoShift } from '../../util/textInput'
 import { getSocket, socketUrl } from '../../client/websockets'
+import { STARTED_TYPING_INTERVAL } from '../CommentForm/component'
 import cx from 'classnames'
 var { func, object, string, bool } = React.PropTypes
 
@@ -72,14 +73,9 @@ export default class MessageForm extends React.Component {
   // We send repeated notifications to make sure that a user gets notified even
   // if they load a comment thread after someone else has already started
   // typing.
-  //
-  // then, 8 seconds after typing stops, broadcast "I'm not typing!". if typing
-  // resumes, cancel the 8-second countdown.
   startTyping = throttle(() => {
     this.sendIsTyping(true)
-    if (this.queuedStop) clearTimeout(this.queuedStop)
-    this.queuedStop = setTimeout(() => this.sendIsTyping(false), 8000)
-  }, 5000)
+  }, STARTED_TYPING_INTERVAL)
 
   render () {
     const { onFocus, onBlur, postId, pending } = this.props

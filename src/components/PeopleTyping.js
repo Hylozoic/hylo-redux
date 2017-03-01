@@ -1,8 +1,11 @@
 import React from 'react'
-import { values } from 'lodash'
+import { each, keys, values } from 'lodash'
 import cx from 'classnames'
 import { getSocket } from '../client/websockets'
+import { STARTED_TYPING_INTERVAL } from './CommentForm/component'
 const { bool } = React.PropTypes
+
+const MS_CLEAR_TYPING = STARTED_TYPING_INTERVAL + 1000
 
 export default class PeopleTyping extends React.Component {
 
@@ -21,16 +24,29 @@ export default class PeopleTyping extends React.Component {
   componentDidMount () {
     this.socket = getSocket()
     this.socket.on('userTyping', this.userTyping.bind(this))
+    this.clearTypingInterval = window.setInterval(this.clearTyping.bind(this), 1000)
   }
 
   componentWillUnmount () {
     if (this.socket) this.socket.off('userTyping')
+    window.clearInterval(this.clearTypingInterval)
+  }
+
+  clearTyping () {
+    let newState = this.state
+    const now = Date.now()
+    const stale = user => now - user.timestamp > MS_CLEAR_TYPING
+    each(keys(newState.peopleTyping), userId => stale(newState.peopleTyping[userId]) && (delete newState.peopleTyping[userId]))
+    this.setState(newState)
   }
 
   userTyping (data) {
     let newState = this.state
     if (data.isTyping) {
-      newState.peopleTyping[data.userId] = data.userName
+      newState.peopleTyping[data.userId] = {
+        name: data.userName,
+        timestamp: Date.now()
+      }
     } else {
       delete newState.peopleTyping[data.userId]
     }
@@ -39,7 +55,7 @@ export default class PeopleTyping extends React.Component {
 
   render () {
     const { showNames, showBorder } = this.props
-    const names = values(this.state.peopleTyping)
+    const names = values(this.state.peopleTyping).map(v => v.name)
     return names.length ? <div className={cx('typing', {showBorder})}>
       {names.length === 1 && <div>
         {showNames ? names[0] : 'Someone'} is typing

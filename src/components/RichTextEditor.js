@@ -124,9 +124,21 @@ export default class RichTextEditor extends React.PureComponent {
       startFocused
     } = this.props
 
+    // When multiple RichTextEditor components are mounted at once, we have to
+    // serialize initialization, or weird things happen.
     Promise.resolve(window.tinymce || loadScript(TINYMCE_ASSET_URL))
+    .then(() => new Promise(resolve => {
+      const mutex = setInterval(() => {
+        if (window.RichTextEditorMutex) return
+
+        window.RichTextEditorMutex = true
+        clearInterval(mutex)
+        resolve()
+      }, 400)
+    }))
     .then(() => this.setState({loadedTinyMCE: true}))
     .then(() => this._pollForEditor(editor => {
+      window.RichTextEditorMutex = false
       onReady && onReady(editor)
       startFocused && setTimeout(() => editor.focus())
 

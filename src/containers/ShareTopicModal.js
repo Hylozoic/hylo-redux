@@ -129,10 +129,10 @@ export default class ShareTopicModal extends React.Component {
       {error && <div className='alert alert-danger'>{error}</div>}
       {success && <div className='alert alert-success'>{success}</div>}
       <div className='footer'>
-        <button onClick={() => dispatch(closeModal())}>Cancel</button>
-        <button onClick={submit} className={cx({ok: !pending})}>
+        <button onClick={() => dispatch(closeModal())}>{success ? 'Close' : 'Cancel'}</button>
+        {!success && <button onClick={submit} className={cx({ok: !pending})}>
           {pending ? 'Sending...' : 'Invite'}
-        </button>
+        </button>}
       </div>
     </Modal>
   }

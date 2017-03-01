@@ -129,7 +129,6 @@ class ProjectRequestEditor extends React.Component {
     const onBlur = () => {
       // we have to update description here because RichTextEditor doesn't always
       // send onChange events
-      console.log('on blur called', this.refs.details.getContent())
       this.props.update('description', this.refs.details.getContent())
       this.setState({showDetails: false})
     }

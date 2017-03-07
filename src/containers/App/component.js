@@ -68,6 +68,7 @@ export default class App extends React.Component {
       trackEvent(OPENED_MOBILE_APP, {'App Version (iOS)': iOSVersion})
     } else if (androidVersion > 0) {
       trackEvent(OPENED_MOBILE_APP, {'App Version (Android)': androidVersion})
+      window.AndroidBridge.pageLoaded()
     }
 
     if (iOSVersion < 1.7) {

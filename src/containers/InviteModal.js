@@ -60,11 +60,13 @@ export class InviteForm extends React.Component {
     invitationEditor: object,
     onClose: func,
     standalone: bool,
+    showHeader: bool,
     allowModerators: bool
   }
 
   static contextTypes = {
-    currentUser: object
+    currentUser: object,
+    isMobile: bool
   }
 
   constructor (props) {
@@ -112,9 +114,9 @@ export class InviteForm extends React.Component {
   render () {
     const { expanded } = this.state
     const {
-      dispatch, invitationEditor, community, onClose, standalone, allowModerators
+      dispatch, invitationEditor, community, onClose, standalone, showHeader, allowModerators
     } = this.props
-    const { currentUser } = this.context
+    const { currentUser, isMobile } = this.context
 
     if (!canInvite(currentUser, community)) {
       return <AccessErrorMessage error={{status: 403}} />
@@ -163,14 +165,17 @@ export class InviteForm extends React.Component {
     }
 
     return <span id='community-invite-form'>
-      <div className='modal-input csv-upload'>
+      {showHeader && <label className='community-invite-form-header'>
+        Send Email Invitations
+      </label>}
+      {!isMobile && <div className='modal-input csv-upload'>
         <label className='custom-file-upload'>
           <input type='file' onChange={() => this.processCSV()} ref='fileInput' />
           Upload CSV
         </label>
         <label className='normal-label'>Import CSV File (optional)</label>
         <p className='help-text'>The file should have a header row named "email" for the email column. Or it can be a file in which each line is a single email address.</p>
-      </div>
+      </div>}
       <ModalInput
         className='emails'
         ref='emails'
@@ -199,12 +204,12 @@ export class InviteForm extends React.Component {
         onChange={update('message')} />}
       {error && <div className='alert alert-danger'>{error}</div>}
       <div className='footer'>
+        {allowModerators && canModerate(currentUser, community) && <div className='moderator'>
+          <input type='checkbox' checked={moderator} onChange={update('moderator', true)} />
+          <div className='meta'>Check to invite these people to be moderators of the community.</div>
+        </div>}
         <a className='button ok' onClick={submit}>Invite</a>
         {standalone && <A to={checklistUrl(community)} onClick={clearEditor} className='skip'>Skip</A>}
-        {allowModerators && canModerate(currentUser, community) && <span className='moderator'>
-          <input type='checkbox' checked={moderator} onChange={update('moderator', true)} />
-          <span className='meta'>Check to invite these people to be moderators of the community.</span>
-        </span>}
       </div>
     </span>
   }

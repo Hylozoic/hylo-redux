@@ -39,7 +39,7 @@ const JoinRequestList = connect((state, { id }) => ({
   return <div className='join-requests'>
     <a name='join_requests' />
     <div className='join-requests-header'>
-      <label>Requests<span className='count'>{total}</span></label>
+      <label>Join Requests <span className='count'>{total}</span></label>
       <p className='summary'>These are people who have asked to join.</p>
       <a className='approve-all' onClick={approveAll}>Approve All</a>
     </div>

@@ -49,7 +49,8 @@ const InvitationList = connect((state, { id }) => ({
     })
   return <div className='invitations'>
     <div className='invitations-header'>
-      <label>Pending Invitations <span className='count'>{countText}</span></label>
+      <label>Pending Invitations</label>
+      <p className='count'>{countText}</p>
       <p className='summary'>These are people you have already sent invitations to.</p>
       <a className='resend-all' onClick={resendAll}>Resend All</a>
     </div>

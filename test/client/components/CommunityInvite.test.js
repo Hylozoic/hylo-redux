@@ -50,7 +50,7 @@ describe('CommunityInvite', () => {
     .to.equal(`${process.env.UPSTREAM_HOST}/c/foomunity/join/foom`)
 
     expect(node.find('#community-invite-form label').map(n => n.text().trim()))
-    .to.deep.equal(['Upload CSV', 'Import CSV File (optional)', ''])
+    .to.deep.equal(['Send Email Invitations', 'Upload CSV', 'Import CSV File (optional)', ''])
 
     expect(node.find('.invitations').length).to.equal(1)
 

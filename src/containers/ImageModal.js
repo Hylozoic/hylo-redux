@@ -15,7 +15,6 @@ export default class ImageModal extends React.Component {
 
   handleClick (event) {
     const { onCancel } = this.props
-    event.persist()
     if (event.target.nodeName !== 'IMG') onCancel()
   }
 

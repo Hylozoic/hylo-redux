@@ -1,7 +1,7 @@
 import React from 'react'
 import { navigate, logout, showModal, resetTooltips } from '../actions'
 import { makeUrl } from '../util/navigation'
-import { calliOSBridge } from '../client/util'
+import { callAndroidBridge, calliOSBridge } from '../client/util'
 import Icon from './Icon'
 import SearchInput from './SearchInput'
 import ThreadsDropdown from '../containers/ThreadsDropdown'
@@ -58,6 +58,7 @@ const UserMenu = ({ slug, newMessageCount, newNotificationCount }, { isMobile, d
   const { settings: { last_viewed_messages_at }, id } = currentUser
   const doLogout = () => {
     calliOSBridge({type: 'logout'})
+    callAndroidBridge('logout')
     dispatch(navigate('/login'))
     dispatch(logout())
     return false

@@ -13,6 +13,11 @@ const leftOffset = () => {
 export default class ImageModal extends React.Component {
   static propTypes = {url: string, onCancel: func}
 
+  handleClick (event) {
+    const { onCancel } = this.props
+    if (event.target.nodeName !== 'IMG') onCancel()
+  }
+
   render () {
     const { url, onCancel } = this.props
     const marginLeft = leftOffset() + 100
@@ -21,11 +26,13 @@ export default class ImageModal extends React.Component {
     const imgStyle = {maxWidth}
 
     return <Modal className='modal' id='image-modal' title='' style={modalStyle}>
-      <div className='image-wrapper'>
-        <img src={url} style={imgStyle} />
-        <a className='close' onClick={onCancel}>
-          <Icon name='Fail' />
-        </a>
+      <div className='image-cancel' onClick={this.handleClick.bind(this)}>
+        <div className='image-wrapper'>
+          <img src={url} style={imgStyle} />
+          <a className='close' onClick={onCancel}>
+            <Icon name='Fail' />
+          </a>
+        </div>
       </div>
     </Modal>
   }

@@ -26,7 +26,7 @@ export function androidAppVersion () {
 }
 
 export function callAndroidBridge (methodName) {
-  if (!isAndroidApp()) return
+  if (!isAndroidApp() || !AndroidBridge[methodName]) return
   AndroidBridge[methodName]()
 }
 

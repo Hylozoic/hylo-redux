@@ -9,7 +9,7 @@ import LiveStatusPoller from '../../components/LiveStatusPoller'
 import PageTitleController from '../../components/PageTitleController'
 import Popover from '../../components/Popover'
 import {
-  iOSAppVersion, androidAppVersion, isMobile as testIsMobile, calliOSBridge
+  iOSAppVersion, androidAppVersion, isMobile as testIsMobile, callAndroidBridge, calliOSBridge
 } from '../../client/util'
 import ModalWrapper from '../../components/ModalWrapper'
 import { OPENED_MOBILE_APP, NAVIGATED_FROM_PUSH_NOTIFICATION, trackEvent } from '../../util/analytics'
@@ -68,6 +68,7 @@ export default class App extends React.Component {
       trackEvent(OPENED_MOBILE_APP, {'App Version (iOS)': iOSVersion})
     } else if (androidVersion > 0) {
       trackEvent(OPENED_MOBILE_APP, {'App Version (Android)': androidVersion})
+      callAndroidBridge('pageLoaded')
     }
 
     if (iOSVersion < 1.7) {

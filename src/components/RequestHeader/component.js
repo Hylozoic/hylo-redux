@@ -11,6 +11,7 @@ export default class RequestHeader extends React.Component {
       id: PropTypes.string.isRequired,
       tag: PropTypes.oneOf(['request']).isRequired
     }),
+    invertedColor: PropTypes.bool,
     canEdit: PropTypes.bool,
     completePost: PropTypes.func.isRequired,
     typeahead: PropTypes.func.isRequired,
@@ -67,7 +68,7 @@ export default class RequestHeader extends React.Component {
   }
 
   render () {
-    const { post, contributorChoices, canEdit } = this.props
+    const { post, contributorChoices, canEdit, invertedColor } = this.props
     const { requestCompleting, chosenContributors } = this.state
 
     const isComplete = isCompleteRequest(post)
@@ -119,7 +120,7 @@ export default class RequestHeader extends React.Component {
         <a className='done' onClick={this.completeRequest}>Done</a>
       </div>
 
-    return <div className='request-completed-bar'>
+    return <div className={`request-completed-bar ${invertedColor ? 'inverted-color' : ''}`}>
       <div className='request-complete-heading'>
         {isComplete ? completeHeader() : incompleteHeader()}
       </div>

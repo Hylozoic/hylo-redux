@@ -616,63 +616,78 @@ ul.posts {
   });
 }
 
-.post.request {
-  .request-completed-bar {
+.request-completed-bar {
+  .clearfix;
+  div.request-complete-heading {
+    background-color: @damian-green;
+    padding: 9px 15px 9px 25px;
+    line-height: 0px;
+  }
+  div.request-complete-message {
+    margin-bottom: 0px;
+    color: #ffffff;
+    font-size: 14px;
     .clearfix;
+    input.toggle[type=checkbox] {
+      float: left;
+      .round-checkbox(12.5px, 13px, #ffffff, #ffffff, #ffffff);
+      border: solid 1px #ffffff;
+      background-color: rgba(255, 255, 255, 0.4);
+      &:checked {
+        background-color: #ffffff;
+      }
+      &:checked:after {
+        color: @damian-green;
+      }
+    }
+    p, div.contributors {
+      margin: 5px 0 0 45px;
+      line-height: normal;
+      a {
+        font-weight: bold;
+        color: white;
+      }
+    }
+  }
+  &.inverted-color {
     div.request-complete-heading {
-      background-color: @damian-green;
-      padding: 9px 15px 9px 25px;
-      line-height: 0px;
+      background-color: #ffffff;
     }
     div.request-complete-message {
-      margin-bottom: 0px;
-      color: #ffffff;
-      font-size: 14px;
-      .clearfix;
+      color: @damian-green;
       input.toggle[type=checkbox] {
-        float: left;
-        .round-checkbox(12.5px, 13px, #ffffff, #ffffff, #ffffff);
-        border: solid 1px #ffffff;
-        background-color: rgba(255, 255, 255, 0.4);
-        &:checked {
-          background-color: #ffffff;
-        }
-        &:checked:after {
+        border: solid 1px @damian-green;
+        &:after, &:checked:after {
           color: @damian-green;
         }
       }
-      p, div.contributors {
-        margin: 5px 0 0 45px;
-        line-height: normal;
-        a {
-          font-weight: bold;
-          color: white;
-        }
+      div.contributors a {
+        color: @damian-green;
       }
     }
-    div.request-complete-people-input {
-      width: initial;
-      border-color: @damian-green;
-      margin: 10px 80px 15px 75px;
-      padding: 8px 8px 3px 8px;
+  }
+  div.request-complete-people-input {
+    width: initial;
+    border-color: @damian-green;
+    margin: 10px 80px 15px 75px;
+    padding: 8px 8px 3px 8px;
+  }
+  a.done {
+    .round-button;
+    margin-left: 75px;
+    margin-bottom: 8px;
+    background-color: @damian-green;
+    color: #ffffff;
+  }
+  a.cancel {
+    display: block;
+    text-align: right;
+    margin: 8px 12px 0px 0px;
+    .icon {
+      font-size: 28px;
     }
-    a.done {
-      .round-button;
-      margin-left: 75px;
-      margin-bottom: 8px;
-      background-color: @damian-green;
-      color: #ffffff;
-    }
-    a.cancel {
-      display: block;
-      text-align: right;
-      margin: 8px 12px 0px 0px;
-      .icon {
-        font-size: 28px;
-      }
-      &:hover {
-        text-decoration: none;
-      }
+    &:hover {
+      text-decoration: none;
     }
   }
 }
@@ -1068,9 +1083,6 @@ ul.posts {
       });
       border-bottom: 1px solid @post-border;
       position: relative;
-      &:last-child {
-        border-bottom: 0;
-      }
 
       > div.meta {
         line-height: @button-size;
@@ -1080,9 +1092,19 @@ ul.posts {
         }
       }
 
-      .help.button {
+      .meta .button {
         margin-right: 10px;
-        color: @damian-orange;
+        color: @gray-text;
+        &.help {
+          color: @damian-orange;
+        }
+      }
+
+      > .request-completed-bar .request-complete-heading {
+        margin-top: @p-bottom-margin;
+        padding-left: 0;
+        padding-right: 0;
+        padding-bottom: 0;
       }
 
       .zoomed {

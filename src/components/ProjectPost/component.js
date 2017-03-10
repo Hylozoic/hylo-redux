@@ -1,12 +1,12 @@
 /* eslint-disable camelcase */
 import React from 'react'
 import decode from 'ent/decode'
-import { isEmpty } from 'lodash'
+import { isEmpty, clone } from 'lodash'
 import { find, some, filter } from 'lodash/fp'
 import moment from 'moment'
 import { textLength, truncate } from '../../util/text'
 import { same } from '../../models'
-import { canCommentOnPost } from '../../models/currentUser'
+import { canEditPost, canCommentOnPost } from '../../models/currentUser'
 import Icon from '../Icon'
 import Video from '../Video'
 import Avatar from '../Avatar'
@@ -14,6 +14,7 @@ import LinkedPersonSentence from '../LinkedPersonSentence'
 import { presentDescription } from '../PostDetails'
 import Post from '../Post'
 import PostHeader from '../PostHeader'
+import RequestHeader from '../RequestHeader'
 import CommentSection from '../CommentSection'
 import A from '../A'
 import ClickCatcher from '../ClickCatcher'
@@ -104,7 +105,8 @@ export class ProjectRequest extends React.Component {
   }
 
   static contextTypes = {
-    isMobile: bool
+    isMobile: bool,
+    currentUser: object
   }
 
   constructor (props) {
@@ -113,13 +115,25 @@ export class ProjectRequest extends React.Component {
   }
 
   render () {
-    const { isMobile } = this.context
+    const { currentUser, isMobile } = this.context
     const { post, parentPost, community, navigate, fetchPost } = this.props
-    const { name, id, numComments } = post
+    const { name, id, numComments, fulfilled_at, contributors } = post
+    const canEdit = canEditPost(currentUser, parentPost)
     let description = presentDescription(post, community)
     const truncated = textLength(description) > 200
     if (truncated) {
       description = truncate(description, 200)
+    }
+    const listLength = contributors && contributors.length
+    let contributorsList = ''
+    if (listLength > 1) {
+      const cloned = clone(contributors)
+      const remaining = cloned.splice(0, listLength-1)[0]
+      contributorsList = cloned.map(c => c.name).join(', ')
+      contributorsList += ` and ${remaining.name}`
+    }
+    else if (listLength === 1) {
+      contributorsList = contributors[0].name
     }
 
     const zoom = () => {
@@ -144,14 +158,16 @@ export class ProjectRequest extends React.Component {
         <A to={`/p/${id}`} className='show-more'>Show&nbsp;more</A>
       </span>}
       <div className='meta'>
-        <a className='help button has-icon' onClick={zoom}>
+        {!fulfilled_at && <a className='help button has-icon' onClick={zoom}>
           <Icon name='plus-sign' glyphicon />
           Offer to help
-        </a>
+        </a>}
+        {fulfilled_at && <a className='button has-icon' onClick={zoom}>Add a comment</a>}
         {numComments > 0 && <a onClick={zoom}>
           {numComments} comment{numComments === 1 ? '' : 's'}
         </a>}
       </div>
+      <RequestHeader post={post} canEdit={canEdit} invertedColor={true} />
     </div>
   }
 }

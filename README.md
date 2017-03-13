@@ -17,18 +17,38 @@ Experimental version of the Hylo.com frontend, written with React and Redux.
 
 Use node ^6.2.2.
 
-For local development, create a file named `.env` in the project root:
+For local development, create a file named `.env` in the project root. Values in square brackets are team-specific and should be supplied:
 
-```
-LIVERELOAD=true
-PORT=9000
+```shell
+FEATURE_FLAG_DIRECT_MESSAGES=on
+FEATURE_FLAG_GENERATE_TOKEN=on
+FEATURE_FLAG_COMMUNITY_SETUP_CHECKLIST=on
+FEATURE_FLAG_PAYMENT_SETTINGS=on
+FEATURE_FLAG_REQUEST_TO_JOIN_COMMUNITY=on
+FEATURE_FLAG_CONTRIBUTORS=on
+FEATURE_FLAG_IN_FEED_PROFILE_COMPLETION_MODULES=on
+FEATURE_FLAG_IN_FEED_ENGAGEMENT_MODULES=on
+FEATURE_FLAG_COMMENT_IMAGES=on
+ASSET_HOST=[ host URL ]
+PROXY_HOST=[ host URL ]
 UPSTREAM_HOST=http://localhost:3001
+SOCKET_HOST=http://localhost:3001
+HOST=http://localhost:3001
+AWS_S3_BUCKET=[ bucket name ] 
+AWS_S3_HOST=[ host URL ]
+BUNDLE_VERSION=[ version ]
+FILEPICKER_API_KEY=[ key ]
+GOOGLE_BROWSER_KEY=[ key ]
+GOOGLE_CLIENT_ID=[ client id ]
+LIVERELOAD=true
 LOG_LEVEL=debug
+PORT=9000
+SEGMENT_KEY=[ key ]
 ```
 
-Then it's just the usual: `npm install`, `npm start`, `npm test`.
+Then it's just the usual: `npm install`, `npm start`, `npm test`. After you start it, you may need to trigger a LESS build with `touch css/index.less`.
 
-It depends on a running instance of [hylo-node](https://github.com/Hylozoic/hylo-node), the location of which is set with `UPSTREAM_HOST`.
+It depends on a running instance of [hylo-node](https://github.com/Hylozoic/hylo-node), the location of which is set with `UPSTREAM_HOST`. You may notice a foreign key constraint error when first creating a community: a reload of the index page shows that the community is created regardless.
 
 ## Testing
 

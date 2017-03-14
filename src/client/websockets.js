@@ -20,6 +20,7 @@ export const getSocket = () => {
     const io = sailsIOClient(socketIOClient)
     io.sails.url = socketHost
     io.sails.environment = environment
+    io.sails.reconnection = true
     socket = io.socket
   }
   return socket

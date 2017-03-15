@@ -46,6 +46,8 @@ export default class MessageForm extends React.Component {
       }
     })
 
+    this.startTyping.cancel()
+    this.sendIsTyping(false)
     this.setState({text: ''})
     return false
   }
@@ -86,8 +88,6 @@ export default class MessageForm extends React.Component {
     const handleKeyDown = e => {
       this.startTyping()
       onEnterNoShift(e => {
-        this.startTyping.cancel()
-        this.sendIsTyping(false)
         e.preventDefault()
         this.submit()
       }, e)

@@ -113,12 +113,13 @@ export default class ThreadsDropdown extends React.Component {
       this.initialFetchThreads(true)
     } else {
       dispatch(appendComment(postId, message))
-      const updatedThreads = map(t => t.id === postId ? { ...t, updated_at: message.created_at } : t, threads)
+      const updatedThreads = map(t => t.id === postId ? { ...t, comments: (t.comments || []).concat([message]) } : t, threads)
       this.setUnseen(updatedThreads, lastViewed)
     }
   }
 
   initialFetchThreads (setUnseen) {
+    const { lastViewed } = this.props
     const { dispatch } = this.context
     dispatch(fetchPosts({cacheId: 'threads', subject: 'threads', refresh: true}))
     .then(({ payload }) => {

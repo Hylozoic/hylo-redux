@@ -133,11 +133,23 @@ ul.posts {
 
     .close {
       position: absolute;
-      right: 0;
+      right: 5px;
+      top: 5px;
       width: 20px;
+      height: 20px;
       text-align: center;
+      border-radius: 50%;
+      background-color: rgba(255, 255, 255, 0.15);
+    }
+
+    &:hover {
+      .close {
+        background-color: rgba(255, 255, 255, 0.5);
+      }
     }
   }
+
+  
 
   .link-preview-title {
     display: block;

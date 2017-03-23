@@ -145,6 +145,12 @@ const PersonProfile = compose(
     }
   }
 
+  let sectionLinks
+  const scrollIntoView = (e) => {
+    if (sectionLinks.firstChild === e.target) sectionLinks.scrollLeft = 0
+    else if (sectionLinks.lastChild === e.target) sectionLinks.scrollLeft = e.target.offsetLeft
+  }
+
   return <CoverImagePage id='person' image={banner_url || defaultBanner}
     person={isSelf ? currentUser : null}>
     <div className='opener'>
@@ -178,7 +184,8 @@ const PersonProfile = compose(
         #{tag}
       </A>)}
     </div>}
-    <div className={`section-links ${hasFeature(currentUser, CONTRIBUTORS) ? 'contributions-feature' : ''}`}>
+    <div className={`section-links ${hasFeature(currentUser, CONTRIBUTORS) ? 'contributions-feature' : ''}`}
+         ref={div => sectionLinks = div} onClick={scrollIntoView}>
       <TabLink category='offer' count={offerCount} />
       <TabLink category='request' count={requestCount} />
       <TabLink category='thank' count={person.thank_count} />
@@ -222,7 +229,7 @@ const setupTabLink = (props) => {
     if (isActive) { cssClasses.push('active') }
     const toggle = () =>
       dispatch(refetch({show: isActive ? null : category}, location))
-    return <a className={cssClasses} onClick={toggle}>
+    return <a className={cssClasses.join(' ')} onClick={toggle}>
       {count} {capitalize(category)}{Number(count) === 1 ? '' : 's'}
     </a>
   }

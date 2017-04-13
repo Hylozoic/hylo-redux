@@ -15,8 +15,10 @@ const fetchPopularSkills = slug =>
       slug
       popularSkills(first: 4)
       members(first: 3) {
-        id
-        avatarUrl
+        items {
+          id
+          avatarUrl
+        }
       }
       memberCount
     }
@@ -24,9 +26,9 @@ const fetchPopularSkills = slug =>
     variables: {slug},
     addDataToStore: {
       communities: flow(get('community'), pick(['slug', 'popularSkills']), c => [c]),
-      people: get('community.members'),
+      people: get('community.members.items'),
       peopleByQuery: flow(
-        get('community.members'),
+        get('community.members.items'),
         map('id'),
         ids => ({[`subject=community&id=${slug}`]: ids})),
       totalPeopleByQuery: flow(

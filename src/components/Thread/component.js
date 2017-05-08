@@ -150,8 +150,10 @@ function Header ({ post }, { currentUser }) {
   const others = filter(followers, f => f.id !== id)
 
   return <div className='header'>
-    You and <A to={`/u/${others[0].id}`}>{others[0].name}</A>
-    {others.length > 1 && <span>and ${gt2} other{gt2 === 1 ? '' : 's'}</span>}
+    You
+    {others.length > 1 ? <span>,&nbsp;</span> : <span>&nbsp;and&nbsp;</span>}
+    <A to={`/u/${others[0].id}`}>{others[0].name}</A>
+    {others.length > 1 && <span>&nbsp;and {gt2} other{gt2 === 1 ? '' : 's'}</span>}
   </div>
 }
 Header.contextTypes = {currentUser: object}

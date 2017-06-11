@@ -4,7 +4,7 @@ const request = require('request')
 const streamifier = require('streamifier')
 const cache = LRU(50)
 import { gzip } from 'zlib'
-// import { setTransactionName } from './newrelic'
+import { setTransactionName } from './newrelic'
 
 const staticPages = [
   '',
@@ -66,7 +66,7 @@ const handlePage = (req, res) => {
   }
 
   const pathname = require('url').parse(req.url).pathname
-  // setTransactionName(pathname)
+  setTransactionName(pathname)
   const newUrl = transformPathname(pathname)
   const cachedValue = cache.get(newUrl)
 

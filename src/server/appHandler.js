@@ -1,4 +1,4 @@
-import { browserSnippet, setTransactionNameFromProps } from './newrelic' // this line must be first
+// import { browserSnippet, setTransactionNameFromProps } from './newrelic' // this line must be first
 import React from 'react'
 import { renderToString, renderToStaticMarkup } from 'react-dom/server'
 import Html from '../containers/Html'
@@ -64,7 +64,7 @@ const safeStringify = obj =>
 const createElement = state => markup =>
   React.createElement(Html, {
     markup,
-    initNewRelic: browserSnippet(),
+    // initNewRelic: browserSnippet(),
     state: `window.INITIAL_STATE=${safeStringify(state)}`,
     assetManifest: `window.ASSET_MANIFEST=${safeStringify(getManifest())}`,
     featureFlags: `window.FEATURE_FLAGS=${safeStringify(featureFlags())}`,
@@ -81,7 +81,7 @@ export default function (req, res) {
   .then(([redirectLocation, props]) => {
     if (redirectLocation) return res.redirect(302, getPath(redirectLocation))
     if (!props) return res.status(404).send('Not found')
-    setTransactionNameFromProps(req, props)
+    // setTransactionNameFromProps(req, props)
 
     return prefetch(props, store).then(() => {
       const state = store.getState()

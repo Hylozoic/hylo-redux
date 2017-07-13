@@ -5,6 +5,7 @@ const streamifier = require('streamifier')
 const cache = LRU(50)
 import { gzip } from 'zlib'
 import { setTransactionName } from './newrelic'
+import path from 'path'
 
 const staticPages = [
   '',
@@ -31,11 +32,7 @@ const transformPathname = pathname => {
     pathname += '/index.html'
   }
 
-  // add the deploy-specific (cache-busting) path prefix
-  if (!pathname.startsWith('/assets')) {
-    pathname = `/assets/${process.env.BUNDLE_VERSION}${pathname}`
-  }
-
+  pathname = path.join(process.env.PROXY_PATH_PREFIX, pathname)
   return process.env.PROXY_HOST.replace(/\/$/, '') + pathname
 }
 
@@ -92,6 +89,11 @@ export const handleStaticPages = server => {
   staticPages.forEach(page => {
     if (page === '') page = '/'
     server.get(page, handlePage)
+  })
+
+  server.use((req, res, next) => {
+    if (!req.originalUrl.startsWith('/static-assets')) return next()
+    return handlePage(req, res)
   })
 }
 

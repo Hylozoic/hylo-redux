@@ -17,6 +17,7 @@ const staticPages = [
   '/about/team',
   '/subscribe',
   '/styleguide',
+  '/team',
   '/terms',
   '/terms/privacy',
   '/newapp'

@@ -183,7 +183,7 @@ export function updatePostReadTime (id) {
 
 export function fetchPosts (opts) {
   const {
-    subject, id, limit, type, tag, sort, search, filter, cacheId, omit
+    subject, id, limit, type, tag, sort, search, filter, cacheId, omit, refresh
   } = opts
   const offset = opts.offset || 0
   const queryParams = {
@@ -232,7 +232,7 @@ export function fetchPosts (opts) {
     type: FETCH_POSTS,
     payload: {api: true, path},
     meta: {
-      cache: {id: cacheId, bucket: 'postsByQuery', limit, offset, array: true},
+      cache: {id: cacheId, bucket: 'postsByQuery', limit, offset, array: true, refresh},
       addDataToStore: {
         people: get('people'),
         communities: get('communities')

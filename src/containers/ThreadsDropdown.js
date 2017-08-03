@@ -74,7 +74,7 @@ export default class ThreadsDropdown extends React.Component {
       this.socket.on('messageAdded', this.messageAdded)
 
       this.reconnectHandler = () => {
-        // TODO clear cache in dropdown
+        this.initialFetchThreads(true)
         this.socket.post(socketUrl('/noo/threads/subscribe'))
       }
       this.socket.on('reconnect', this.reconnectHandler)
@@ -109,14 +109,22 @@ export default class ThreadsDropdown extends React.Component {
 
     if (this.state.open || thisThreadOpen) return dispatch(appendComment(postId, message))
 
-    if (!threads.length) { // or you don't have the thread in question?
-      dispatch(fetchPosts({cacheId: 'threads', subject: 'threads'}))
-      .then(({ payload }) => this.setUnseen(payload.posts, lastViewed))
+    if (!threads.length) {
+      this.initialFetchThreads(true)
     } else {
       dispatch(appendComment(postId, message))
-      const updatedThreads = map(t => t.id === postId ? { ...t, updated_at: message.created_at } : t, threads)
+      const updatedThreads = map(t => t.id === postId ? { ...t, comments: (t.comments || []).concat([message]) } : t, threads)
       this.setUnseen(updatedThreads, lastViewed)
     }
+  }
+
+  initialFetchThreads (setUnseen) {
+    const { lastViewed } = this.props
+    const { dispatch } = this.context
+    dispatch(fetchPosts({cacheId: 'threads', subject: 'threads', refresh: true}))
+    .then(({ payload }) => {
+      if (setUnseen && !this.state.open) this.setUnseen(payload.posts, lastViewed)
+    })
   }
 
   render () {
@@ -135,7 +143,7 @@ export default class ThreadsDropdown extends React.Component {
     }
 
     return <Dropdown alignRight rivalrous='nav' className='thread-list'
-      onFirstOpen={() => dispatch(fetchPosts({cacheId: 'threads', subject: 'threads'}))}
+      onFirstOpen={() => this.initialFetchThreads(false)}
       onOpen={onOpen}
       onClose={onClose}
       toggleChildren={<span>

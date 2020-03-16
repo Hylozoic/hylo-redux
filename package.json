@@ -123,7 +123,7 @@
     "heroku-client": "^2.4.0",
     "jsdom": "^9.4.2",
     "livereactload": "^3.0.1",
-    "minimist": "^1.2.0",
+    "minimist": "^1.2.2",
     "mocha": "^3.0.2",
     "nightmare": "^2.9.0",
     "nock": "^8.0.0",
